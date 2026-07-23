@@ -35,6 +35,7 @@ export function Settings({
     // Email State
     const [isEditingEmail, setIsEditingEmail] = useState(false)
     const [emailDraft, setEmailDraft] = useState(currentUser.email || '')
+    const [emailError, setEmailError] = useState(false)
 
     const [isDeleting, setIsDeleting] = useState(false)
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
@@ -75,6 +76,11 @@ export function Settings({
 
     const handleSaveEmail = () => {
         if (emailDraft && emailDraft !== currentUser.email) {
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailDraft.trim())) {
+                setEmailError(true)
+                return
+            }
+            setEmailError(false)
             withProcessing(t.settings.updatingEmail, async () => {
                 await onUpdateEmail?.(emailDraft)
                 setIsEditingEmail(false)
@@ -245,21 +251,30 @@ export function Settings({
                             <div className="group">
                                 <label htmlFor="settings-email" className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
                                 {isEditingEmail ? (
+                                    <>
                                     <div className="flex items-center gap-2">
                                         <input
                                             id="settings-email"
                                             type="email"
                                             value={emailDraft}
-                                            onChange={(e) => setEmailDraft(e.target.value)}
+                                            onChange={(e) => { setEmailDraft(e.target.value); if (emailError) setEmailError(false) }}
+                                            aria-invalid={emailError || undefined}
+                                            aria-describedby={emailError ? "settings-email-error" : undefined}
                                             className="pw-input pw-input-sm flex-1 bg-black/5 border-black/10"
                                         />
                                         <button onClick={handleSaveEmail} aria-label={t.common.save} className="pw-primary-button shadow-primary/25">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => { setIsEditingEmail(false); setEmailDraft(currentUser.email) }} aria-label={t.common.cancel} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                                        <button onClick={() => { setIsEditingEmail(false); setEmailDraft(currentUser.email); setEmailError(false) }} aria-label={t.common.cancel} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
                                             <X className="w-4 h-4" />
                                         </button>
                                     </div>
+                                    {emailError && (
+                                        <p id="settings-email-error" role="alert" className="mt-2 text-caption font-semibold text-red-600 dark:text-red-400">
+                                            {t.invite.emailInvalid}
+                                        </p>
+                                    )}
+                                    </>
                                 ) : (
                                     <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-primary/35 transition-all">
                                         <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.email}</span>
