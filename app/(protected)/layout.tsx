@@ -14,7 +14,7 @@ import { signOut } from "@/app/auth/actions"
 import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, Gift } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, Gift, FileText, Inbox, Coins } from 'lucide-react'
 
 export default async function ProtectedLayout({
     children,
@@ -92,12 +92,19 @@ export default async function ProtectedLayout({
             ]
         })
     } else if (currentRole === "admin") {
+        // Single source of truth for admin nav. This used to be one of TWO admin
+        // navs — AppShell's (10 translated items) plus a nested AdminSidebar
+        // (14 hardcoded-English items), which disagreed about what exists.
+        // The four AdminSidebar-only destinations are merged in here.
         navigation.push({
             title: t.nav.admin,
             items: [
                 { label: t.nav.dashboard, href: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.users, href: "/admin/users", icon: <Users className="w-5 h-5" /> },
+                { label: t.nav.policies, href: "/admin/policies", icon: <FileText className="w-5 h-5" /> },
                 { label: t.nav.dsrQueue, href: "/admin/dsr", icon: <ShieldAlert className="w-5 h-5" /> },
+                { label: t.nav.submissions, href: "/admin/submissions", icon: <Inbox className="w-5 h-5" /> },
+                { label: t.nav.aiTokens, href: "/admin/tokens", icon: <Coins className="w-5 h-5" /> },
                 { label: t.nav.billingReconciliation, href: "/admin/billing-reconciliation", icon: <ReceiptText className="w-5 h-5" /> },
                 { label: t.nav.launchReadiness, href: "/admin/launch-readiness", icon: <Shield className="w-5 h-5" /> },
                 { label: t.nav.extractionFlags, href: "/admin/extraction-flags", icon: <Flag className="w-5 h-5" /> },
@@ -105,6 +112,7 @@ export default async function ProtectedLayout({
                 { label: t.nav.partners, href: "/admin/partners", icon: <Handshake className="w-5 h-5" /> },
                 { label: t.nav.insurers, href: "/admin/insurers", icon: <Building2 className="w-5 h-5" /> },
                 { label: t.nav.insuranceTypes, href: "/admin/types", icon: <Gavel className="w-5 h-5" /> },
+                { label: t.nav.activity, href: "/admin/activity", icon: <Activity className="w-5 h-5" /> },
             ]
         })
     }

@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import { PageContainer, type PageContainerWidth } from './PageContainer'
 
 interface PageHeaderProps {
     title: string
@@ -9,6 +10,8 @@ interface PageHeaderProps {
     actions?: ReactNode
     sticky?: boolean
     className?: string
+    /** Must match the width of the page body this header sits above. */
+    width?: PageContainerWidth
 }
 
 export function PageHeader({
@@ -16,7 +19,8 @@ export function PageHeader({
     subtitle,
     actions,
     sticky = true,
-    className = ''
+    className = '',
+    width = 'default'
 }: PageHeaderProps) {
     return (
         <motion.div
@@ -27,7 +31,7 @@ export function PageHeader({
                 ${className}
             `}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <PageContainer width={width} className="py-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         <h1 className="text-3xl font-semibold text-black dark:text-white tracking-tight">
@@ -45,7 +49,7 @@ export function PageHeader({
                         </div>
                     )}
                 </div>
-            </div>
+            </PageContainer>
         </motion.div>
     )
 }

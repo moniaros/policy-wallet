@@ -2,8 +2,13 @@ export const runtime = 'nodejs'
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
-import AdminSidebar from "@/components/admin/AdminSidebar"
 
+/**
+ * Auth gate only. The admin navigation lives in the parent (protected) layout's
+ * AppShell — this layout used to nest a second sidebar AND a second <main>
+ * inside AppShell's <main>, which cost ~512px of chrome on desktop and produced
+ * duplicate landmarks.
+ */
 export default async function AdminLayout({
     children,
 }: {
@@ -19,10 +24,5 @@ export default async function AdminLayout({
         redirect("/wallet")
     }
 
-    return (
-        <div className="flex min-h-screen flex-col md:flex-row">
-            <AdminSidebar />
-            <main className="flex-1 min-w-0">{children}</main>
-        </div>
-    )
+    return <>{children}</>
 }

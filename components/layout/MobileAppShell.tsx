@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { MyPoliciesScreen, MyProfileScreen } from '@/components/wallet'
 import type { Policy } from '@/components/wallet/types'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { signOut } from '@/app/auth/actions'
 
 interface MobileAppShellProps {
     policies: Policy[]
@@ -88,13 +89,18 @@ export function MobileAppShell({ policies, user, tier = 'free' }: MobileAppShell
                 )}
 
                 {activeTab === 'account' && (
+                    /* These used to point at /account/edit, /account/payment,
+                       /account/settings and /auth/signout — none of which exist, so
+                       every action on the mobile profile screen 404'd. /account is the
+                       real destination (it has the profile/billing/settings tabs), and
+                       sign-out is a server action, not a route. */
                     <MyProfileScreen
                         user={user}
-                        onEditProfile={() => router.push('/account/edit')}
-                        onPaymentMethods={() => router.push('/account/payment')}
-                        onSettings={() => router.push('/account/settings')}
+                        onEditProfile={() => router.push('/account')}
+                        onPaymentMethods={() => router.push('/account')}
+                        onSettings={() => router.push('/account')}
                         onHelp={() => router.push('/help')}
-                        onLogout={() => router.push('/auth/signout')}
+                        onLogout={() => { void signOut() }}
                     />
                 )}
             </div>

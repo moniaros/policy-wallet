@@ -86,6 +86,11 @@ export const en: TranslationKeys = {
         plans: 'Plans & Pricing',
         partners: 'Partner Offers',
         benefits: 'Benefits',
+        submissions: 'Submissions',
+        aiTokens: 'AI Tokens',
+        skipToContent: 'Skip to content',
+        primaryNavigation: 'Primary navigation',
+        bottomNavigation: 'Quick navigation',
     },
 
     // Auth

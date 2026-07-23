@@ -1,6 +1,7 @@
 ﻿"use client"
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { MainNav } from './MainNav'
 import { UserMenu } from './UserMenu'
@@ -98,6 +99,13 @@ export function AppShell({
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [roleChangeToast, setRoleChangeToast] = useState<string | null>(null)
 
+    /**
+     * Side effects that accompany a navigation. Nav items are real <Link>s now
+     * (middle-click, open-in-new-tab and screen-reader link semantics all work),
+     * so this no longer performs the navigation itself — it only fires analytics
+     * and closes the mobile drawer. Non-route hrefs ('#logout') still route
+     * through here as buttons.
+     */
     const handleNavigate = (href: string, source: 'default' | 'mobile_nav' = 'default', navId?: string) => {
         if (href === '#logout') {
             onLogout?.()
@@ -110,11 +118,7 @@ export function AppShell({
                 role: currentRole.role,
             })
         }
-        if (onNavigate) {
-            onNavigate(href)
-        } else {
-            router.push(href)
-        }
+        onNavigate?.(href)
         setSidebarOpen(false)
     }
 
@@ -132,10 +136,21 @@ export function AppShell({
     }
 
     const bottomNavItems = getBottomNavItems(currentRole.role, t)
+    const hasBottomNav = bottomNavItems.length > 0
 
     return (
         <>
             <div className="min-h-screen pw-app-canvas font-sans text-[var(--pw-text-primary-light)] dark:text-[var(--pw-text-primary-dark)]">
+                {/* Skip link — first focusable element in the authenticated app, so a
+                    keyboard/SR user can jump the sidebar instead of tabbing ~14 items
+                    on every page. Visually hidden until focused. */}
+                <a
+                    href="#main-content"
+                    className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2.5 focus:rounded-xl focus:bg-primary focus:text-white dark:focus:text-[#1A2420] focus:text-sm focus:font-semibold focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                >
+                    {t.nav.skipToContent}
+                </a>
+
                 {/* Mobile Top Header */}
                 <header className="lg:hidden sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-black/10 dark:border-white/10 px-4 flex items-center justify-between">
                     <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-black/60 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors">
@@ -144,9 +159,9 @@ export function AppShell({
                         </svg>
                     </button>
 
-                    <button onClick={() => handleNavigate(roleHomeHref)} className="hover:opacity-80 transition-opacity">
+                    <Link href={roleHomeHref} onClick={() => handleNavigate(roleHomeHref)} className="hover:opacity-80 transition-opacity">
                         <PolicyWalletLogo size="sm" language={user.preferred_language || 'el'} />
-                    </button>
+                    </Link>
 
                     <div className="w-10 h-10 flex items-center justify-center">
                         {/* Placeholder for future specific actions like search, but kept balanced for now */}
@@ -176,9 +191,9 @@ export function AppShell({
                         {/* Enhanced Logo Section */}
                         <div className="flex flex-col border-b border-black/10 dark:border-white/10 bg-gradient-to-br from-white to-black/5 dark:from-black dark:to-[#111111]">
                             <div className="flex items-center justify-between px-6 h-16">
-                                <button onClick={() => handleNavigate(roleHomeHref)} className="hover:opacity-80 transition-opacity">
+                                <Link href={roleHomeHref} onClick={() => handleNavigate(roleHomeHref)} className="hover:opacity-80 transition-opacity">
                                     <PolicyWalletLogo size="md" language={user.preferred_language || 'el'} />
-                                </button>
+                                </Link>
                                 <button
                                     onClick={() => setSidebarOpen(false)}
                                     className="lg:hidden p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-white/70 transition-colors"
@@ -271,53 +286,61 @@ export function AppShell({
                     />
                 )}
 
-                {/* Main content */}
-                <main className="lg:pl-72 pb-24 lg:pb-0">
+                {/* Main content — pb-24 only clears a bottom bar that actually renders. */}
+                <main id="main-content" className={`lg:pl-72 lg:pb-0 ${hasBottomNav ? 'pb-24' : ''}`}>
                     <div className="min-h-screen">
                         {children}
                     </div>
                 </main>
 
-                {/* Mobile Bottom Navigation */}
-                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 border-t border-black/10 dark:border-white/10 safe-area-inset-bottom shadow-xl backdrop-blur-xl">
-                    <div
-                        className="grid gap-1.5 px-2 py-2 min-h-[76px]"
-                        style={{ gridTemplateColumns: `repeat(${Math.max(bottomNavItems.length, 1)}, minmax(0, 1fr))` }}
+                {/* Mobile Bottom Navigation — admins have no bottom-nav items, and an
+                    empty 76px bar was still rendering (plus its pb-24 gutter) on every
+                    admin page. Render the landmark only when it has content. */}
+                {hasBottomNav && (
+                    <nav
+                        aria-label={t.nav.bottomNavigation}
+                        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 border-t border-black/10 dark:border-white/10 safe-area-inset-bottom shadow-xl backdrop-blur-xl"
                     >
-                        {bottomNavItems.map((item) => {
-                            const Icon = item.icon
-                            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                        <div
+                            className="grid gap-1.5 px-2 py-2 min-h-[76px]"
+                            style={{ gridTemplateColumns: `repeat(${bottomNavItems.length}, minmax(0, 1fr))` }}
+                        >
+                            {bottomNavItems.map((item) => {
+                                const Icon = item.icon
+                                const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
 
-                            return (
-                                <button
-                                    key={item.id}
-                                    onClick={() => handleNavigate(item.href, 'mobile_nav', item.id)}
-                                    className={`min-h-[44px] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
-                                        ? 'text-primary dark:text-mint bg-primary/15 dark:bg-primary/15'
-                                        : 'text-black/55 dark:text-white/60 hover:text-black dark:hover:text-white'
-                                        }`}
-                                    aria-label={item.label}
-                                    aria-current={isActive ? 'page' : undefined}
-                                >
-                                    <div className="relative">
-                                        <Icon
-                                            className="w-6 h-6"
-                                            strokeWidth={2.5}
-                                        />
-                                        {item.id === 'notifications' && notificationCount > 0 && (
-                                            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black rounded-full flex items-center justify-center shadow-lg">
-                                                {notificationCount > 9 ? '9+' : notificationCount}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <span className="text-[10px] font-medium whitespace-nowrap">
-                                        {item.label}
-                                    </span>
-                                </button>
-                            )
-                        })}
-                    </div>
-                </nav>
+                                return (
+                                    <Link
+                                        key={item.id}
+                                        href={item.href}
+                                        onClick={() => handleNavigate(item.href, 'mobile_nav', item.id)}
+                                        className={`min-h-[44px] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
+                                            ? 'text-primary dark:text-mint bg-primary/15 dark:bg-primary/15'
+                                            : 'text-black/55 dark:text-white/60 hover:text-black dark:hover:text-white'
+                                            }`}
+                                        aria-label={item.label}
+                                        aria-current={isActive ? 'page' : undefined}
+                                    >
+                                        <div className="relative">
+                                            <Icon
+                                                className="w-6 h-6"
+                                                strokeWidth={2.5}
+                                            />
+                                            {item.id === 'notifications' && notificationCount > 0 && (
+                                                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black rounded-full flex items-center justify-center shadow-lg">
+                                                    {notificationCount > 9 ? '9+' : notificationCount}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span className="text-[10px] font-medium whitespace-nowrap">
+                                            {item.label}
+                                        </span>
+                                    </Link>
+                                )
+                            })}
+                        </div>
+                    </nav>
+                )}
             </div>
             <InstallPrompt />
         </>

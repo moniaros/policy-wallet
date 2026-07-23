@@ -83,6 +83,11 @@ export const el = {
         plans: 'Πλάνα & Τιμολόγηση',
         partners: 'Παροχές Συνεργατών',
         benefits: 'Οφέλη',
+        submissions: 'Υποβολές',
+        aiTokens: 'AI Tokens',
+        skipToContent: 'Μετάβαση στο περιεχόμενο',
+        primaryNavigation: 'Κύρια πλοήγηση',
+        bottomNavigation: 'Γρήγορη πλοήγηση',
     },
 
     // Auth

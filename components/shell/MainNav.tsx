@@ -1,19 +1,28 @@
 "use client"
 
 import React from 'react'
+import Link from 'next/link'
 import type { NavigationGroup } from './AppShell'
 import { motion } from 'framer-motion'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export interface MainNavProps {
     navigation: NavigationGroup[]
+    /** Fired alongside navigation (analytics, closing the mobile drawer). */
     onNavigate?: (href: string) => void
 }
+
+/** Shared classes for every nav row, so the <Link> and the '#' <button> match. */
+const ROW_CLASSES = `
+    w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold
+    transition-all duration-300 group relative isolate
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
+`
 
 export function MainNav({ navigation, onNavigate }: MainNavProps) {
     const { t } = useLanguage()
     return (
-        <nav className="px-3 space-y-6">
+        <nav aria-label={t.nav.primaryNavigation} className="px-3 space-y-6">
             {navigation.map((group, groupIndex) => (
                 <div key={groupIndex}>
                     {group.title && (
@@ -22,20 +31,16 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                         </div>
                     )}
                     <ul className="space-y-1">
-                        {group.items.map((item, itemIndex) => (
-                            <li key={itemIndex}>
-                                <button
-                                    onClick={() => onNavigate?.(item.href)}
-                                    className={`
-                    w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold
-                    transition-all duration-300 group relative isolate
+                        {group.items.map((item, itemIndex) => {
+                            const rowClassName = `${ROW_CLASSES}
                     ${item.isActive
-                                            ? 'text-white dark:text-[#1A2420]'
-                                            : 'text-black/60 dark:text-white/65 hover:text-black dark:hover:text-white'
-                                        }
-                    ${item.isLocked ? 'opacity-70 grayscale-[0.5]' : ''}
-                  `}
-                                >
+                                    ? 'text-white dark:text-[#1A2420]'
+                                    : 'text-black/60 dark:text-white/65 hover:text-black dark:hover:text-white'
+                                }
+                    ${item.isLocked ? 'opacity-70 grayscale-[0.5]' : ''}`
+
+                            const rowContent = (
+                                <>
                                     {/* Liquid Background for Active Item */}
                                     {item.isActive && (
                                         <motion.div
@@ -91,24 +96,51 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                             {item.badge}
                                         </span>
                                     )}
-                                </button>
-                            </li>
-                        ))}
+                                </>
+                            )
+
+                            return (
+                                <li key={itemIndex}>
+                                    {/* Real links: middle-click, open-in-new-tab and the SR "link,
+                                        N of M" semantics all depend on an <a>. Non-route hrefs
+                                        ('#logout') stay buttons, which is what they actually are. */}
+                                    {item.href.startsWith('#') ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => onNavigate?.(item.href)}
+                                            className={rowClassName}
+                                        >
+                                            {rowContent}
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={item.href}
+                                            onClick={() => onNavigate?.(item.href)}
+                                            aria-current={item.isActive ? 'page' : undefined}
+                                            className={rowClassName}
+                                        >
+                                            {rowContent}
+                                        </Link>
+                                    )}
+                                </li>
+                            )
+                        })}
                     </ul>
                 </div>
             ))}
 
             {/* Persistent Help Link */}
             <div className="pt-4 mt-4 border-t border-black/10 dark:border-white/15">
-                <button
+                <Link
+                    href="/help"
                     onClick={() => onNavigate?.('/help')}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-black/55 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-200"
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-black/55 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>{t.common.needHelp}</span>
-                </button>
+                </Link>
             </div>
         </nav>
     )
