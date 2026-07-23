@@ -1338,7 +1338,7 @@ export const el = {
         yourRole: 'τον Ρόλο σας',
         dualRoleDesc: 'Τα πλάνα και η χρήση είναι ξεχωριστά για κάθε ρόλο. Επιλέξτε τον ρόλο που θέλετε να διαχειριστείτε.',
         policyholder: 'Ασφαλισμένος',
-        agent: 'Πράκτορας',
+        agent: 'Ασφαλιστικός Σύμβουλος',
         perMonth: 'ανά μήνα',
         inclVat: 'με ΦΠΑ 24%',
         perYear: 'ανά έτος',
@@ -2003,7 +2003,7 @@ export const el = {
             waitingPeriods: 'Περίοδοι Αναμονής',
             waitingPeriodEnd: 'Λήξη Αναμονής',
             outpatientLimit: 'Όριο Εξωνοσοκομειακών',
-            deductiblePerClaim: 'Απαλλαγή ανά Αξίωση',
+            deductiblePerClaim: 'Απαλλαγή ανά ζημιά',
             classA: 'Κατηγορία Α',
             classB: 'Κατηγορία Β',
             classC: 'Κατηγορία Γ'
