@@ -12,11 +12,12 @@ import { useLanguage } from "@/contexts/LanguageContext"
  * throwing on /renewals) is scoped to that screen and retryable in place,
  * rather than tearing down the whole protected content area. Agent routes point
  * `homeHref` at the agent dashboard; the recovery label follows.
+ * (Default is /dashboard — /home is now only a redirect to it.)
  */
 export function RouteError({
     error,
     reset,
-    homeHref = "/home",
+    homeHref = "/dashboard",
 }: {
     error: Error & { digest?: string }
     reset: () => void
