@@ -31,7 +31,7 @@ function SectionCard({
     children: React.ReactNode
 }) {
     return (
-        <section className="pw-card p-6">
+        <section className="pw-card pw-pad">
             <div className="mb-4 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-mint/10 dark:text-mint">
                     <Icon className="h-4 w-4" aria-hidden />
@@ -188,7 +188,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                             </p>
                                         </div>
                                         <div className="flex flex-shrink-0 items-center gap-3">
-                                            <span className="rounded-full bg-black/5 px-2.5 py-1 text-[10px] font-bold text-black/60 dark:bg-white/10 dark:text-white/65">
+                                            <span className="rounded-full bg-black/5 px-2.5 py-1 text-kicker font-bold text-black/60 dark:bg-white/10 dark:text-white/65">
                                                 {statusLabel}
                                             </span>
                                             <ArrowRight className="h-4 w-4 text-black/40 dark:text-white/45" aria-hidden />
@@ -234,7 +234,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                     <div className="flex items-start justify-between gap-2">
                                         <h3 className="text-sm font-bold text-black dark:text-white">{gap.title[lang]}</h3>
                                         {detected && (
-                                            <span className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
+                                            <span className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-kicker font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
                                                 {t.branches.detectedInPortfolio}
                                             </span>
                                         )}
@@ -291,7 +291,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                         <p className="truncate text-sm font-bold text-black dark:text-white">
                                             {policy.insurerName || "—"}
                                         </p>
-                                        <span className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
+                                        <span className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-kicker font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
                                             {t.branches.expiresInDays.replace('{days}', String(days))}
                                         </span>
                                     </Link>

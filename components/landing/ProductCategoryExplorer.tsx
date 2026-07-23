@@ -23,19 +23,19 @@ export function ProductCategoryExplorer({
 
     return (
         <section className="bg-[#F8FAFC] py-20 px-6 lg:px-12">
-            <div className="mx-auto max-w-[1240px]">
+            <div className="mx-auto max-w-page">
                 <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-[720px]">
-                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
+                        <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
                             {t("Εξερευνήστε κι άλλα", "Explore more")}
                         </p>
-                        <h2 className="text-[32px] lg:text-[40px] font-semibold tracking-[-0.03em] leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] text-[#0F172A]">
                             {t(
                                 "Δείτε και τις υπόλοιπες ασφαλιστικές κατηγορίες.",
                                 "Browse the rest of the insurance categories."
                             )}
                         </h2>
-                        <p className="mt-4 text-[16px] leading-relaxed text-[#475569]">
+                        <p className="mt-4 text-body-lg leading-relaxed text-[#475569]">
                             {currentCategory
                                 ? t(
                                     `Βρίσκεστε στο ${currentCategory.labelEl}. Συγκρίνετέ το με τις υπόλοιπες λύσεις χωρίς να επιστρέψετε στην αρχική σελίδα προϊόντων.`,
@@ -50,7 +50,7 @@ export function ProductCategoryExplorer({
 
                     <Link
                         href={localizeHref("/product", locale)}
-                        className="inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
+                        className="inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-body font-semibold text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
                     >
                         {t("Όλες οι κατηγορίες", "All categories")}
                         <ArrowRight className="h-4 w-4" />
@@ -76,21 +76,21 @@ export function ProductCategoryExplorer({
                                         <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/85 shadow-sm">
                                             <Icon className="h-5 w-5 text-[#0F172A]" />
                                         </div>
-                                        <span className="rounded-full bg-[#29685B] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+                                        <span className="rounded-full bg-[#29685B] px-3 py-1 text-micro font-semibold uppercase tracking-wide text-white">
                                             {t("Τρέχουσα κατηγορία", "Current category")}
                                         </span>
                                     </div>
 
-                                    <h3 className="text-[20px] font-semibold tracking-tight text-[#0F172A]">
+                                    <h3 className="text-title font-semibold tracking-tight text-[#0F172A]">
                                         {t(category.labelEl, category.labelEn)}
                                     </h3>
-                                    <p className="mt-3 text-[14px] font-semibold leading-snug text-[#0F172A]">
+                                    <p className="mt-3 text-body font-semibold leading-snug text-[#0F172A]">
                                         {t(category.headlineEl, category.headlineEn)}
                                     </p>
-                                    <p className="mt-3 flex-1 text-[14px] leading-relaxed text-[#475569]">
+                                    <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569]">
                                         {t(category.descEl, category.descEn)}
                                     </p>
-                                    <div className="mt-5 text-[14px] font-semibold text-[#29685B]">
+                                    <div className="mt-5 text-body font-semibold text-[#29685B]">
                                         {t("Την βλέπετε τώρα", "You're here")}
                                     </div>
                                 </div>
@@ -107,21 +107,21 @@ export function ProductCategoryExplorer({
                                     <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/85 shadow-sm">
                                         <Icon className="h-5 w-5 text-[#0F172A]" />
                                     </div>
-                                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${category.tagBg}`}>
+                                    <span className={`rounded-full px-2.5 py-1 text-micro font-semibold uppercase tracking-wide ${category.tagBg}`}>
                                         {t(category.tagEl, category.tagEn)}
                                     </span>
                                 </div>
 
-                                <h3 className="text-[20px] font-semibold tracking-tight text-[#0F172A]">
+                                <h3 className="text-title font-semibold tracking-tight text-[#0F172A]">
                                     {t(category.labelEl, category.labelEn)}
                                 </h3>
-                                <p className="mt-3 text-[14px] font-semibold leading-snug text-[#0F172A]">
+                                <p className="mt-3 text-body font-semibold leading-snug text-[#0F172A]">
                                     {t(category.headlineEl, category.headlineEn)}
                                 </p>
-                                <p className="mt-3 flex-1 text-[14px] leading-relaxed text-[#475569]">
+                                <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569]">
                                     {t(category.descEl, category.descEn)}
                                 </p>
-                                <div className="mt-5 inline-flex items-center gap-2 text-[14px] font-semibold text-[#0F172A] transition-all duration-150 group-hover:gap-3">
+                                <div className="mt-5 inline-flex items-center gap-2 text-body font-semibold text-[#0F172A] transition-all duration-150 group-hover:gap-3">
                                     {t("Μετάβαση", "Open category")}
                                     <ArrowRight className="h-4 w-4" />
                                 </div>

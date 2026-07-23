@@ -48,7 +48,7 @@ const PERK_ICON: Record<string, typeof Gift> = {
  */
 export function PerksCard({ perks, lang, copy }: PerksCardProps) {
     return (
-        <div className="pw-card p-6 sm:p-7">
+        <div className="pw-card pw-pad sm:p-7">
             <div className="mb-1 flex items-center gap-2">
                 <Gift className="h-4 w-4 text-primary dark:text-mint" />
                 <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">{copy.perksTitle}</h2>
@@ -77,16 +77,16 @@ export function PerksCard({ perks, lang, copy }: PerksCardProps) {
                                     <div className="min-w-0 flex-1">
                                         <p className="text-sm font-semibold text-black dark:text-white">{pickLang(perk.name, lang)}</p>
                                         <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                                            <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black/55 dark:bg-white/10 dark:text-white/60">
+                                            <span className="rounded-full bg-black/5 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:bg-white/10 dark:text-white/60">
                                                 {typeLabel}
                                             </span>
                                             {perk.usageLimit && (
-                                                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary dark:bg-primary/15 dark:text-mint">
+                                                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-kicker font-bold text-primary dark:bg-primary/15 dark:text-mint">
                                                     {copy.usageLimitLabel}: {perk.usageLimit}
                                                 </span>
                                             )}
                                             {perk.reminderRecommended && (
-                                                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300">
+                                                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300">
                                                     {copy.dontForgetChip}
                                                 </span>
                                             )}
@@ -103,7 +103,7 @@ export function PerksCard({ perks, lang, copy }: PerksCardProps) {
                                         {perk.contactPhone && (
                                             <a
                                                 href={`tel:${perk.contactPhone}`}
-                                                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
                                             >
                                                 <Phone className="h-3 w-3" />
                                                 {copy.callServiceCta}
@@ -114,7 +114,7 @@ export function PerksCard({ perks, lang, copy }: PerksCardProps) {
                                                 href={perk.contactUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-1.5 rounded-full border border-black/15 bg-white px-3 py-1.5 text-[11px] font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10"
+                                                className="inline-flex items-center gap-1.5 rounded-full border border-black/15 bg-white px-3 py-1.5 text-micro font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10"
                                             >
                                                 <SquareArrowOutUpRight className="h-3 w-3" />
                                                 {copy.visitSiteCta}

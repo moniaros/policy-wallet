@@ -132,7 +132,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                 </h2>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {metrics.map((metric) => {
                     const Icon = metric.icon
                     return (
@@ -151,7 +151,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                                     {metric.label}
                                 </span>
                             </div>
-                            <p className="mt-0.5 text-[10px] text-neutral-400 dark:text-neutral-500">
+                            <p className="mt-0.5 text-kicker text-neutral-400 dark:text-neutral-500">
                                 {metric.description}
                             </p>
                         </div>
@@ -169,7 +169,7 @@ export function PortfolioHealthSkeleton() {
                 <Skeleton className="h-5 w-5 rounded" />
                 <Skeleton className="h-5 w-40" />
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {[1, 2, 3].map((i) => (
                     <div key={i} className="flex flex-col items-center">
                         <Skeleton className="h-16 w-16 rounded-full" />

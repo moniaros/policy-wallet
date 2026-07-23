@@ -236,12 +236,12 @@ export function AgentPricingClient({
                                 }`}
                             >
                                 {plan.popular && !isCurrent && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white dark:text-[#1A2420] text-kicker font-black uppercase tracking-widest px-4 py-1 rounded-full">
                                         {t.popular}
                                     </div>
                                 )}
                                 {isCurrent && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-kicker font-black uppercase tracking-widest px-4 py-1 rounded-full">
                                         {t.currentPlan}
                                     </div>
                                 )}

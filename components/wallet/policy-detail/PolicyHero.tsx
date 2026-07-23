@@ -81,11 +81,11 @@ export function PolicyHero({
 
             <div className="relative space-y-7">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
+                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
                         {statusLabel}
                     </span>
                     {daysLeft !== null && daysLeft >= 0 && daysLeft <= 30 && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/60 bg-amber-100/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-200">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/60 bg-amber-100/10 px-3 py-1 text-kicker font-black uppercase tracking-widest text-amber-200">
                             <Calendar className="h-3.5 w-3.5" />
                             {copy.expiresIn} {daysLeft} {copy.days}
                         </span>
@@ -125,14 +125,14 @@ export function PolicyHero({
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                             {displayPolicyNumber && (
                                 <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
-                                    <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{copy.policyId}</p>
+                                    <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.policyId}</p>
                                     <p className="font-mono text-sm font-bold text-white">{displayPolicyNumber}</p>
                                 </div>
                             )}
 
                             {plateNumber ? (
                                 <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
-                                    <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{copy.plateNumber}</p>
+                                    <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.plateNumber}</p>
                                     <p className="font-mono text-sm font-bold text-white">{plateNumber}</p>
                                 </div>
                             ) : null}
@@ -140,12 +140,12 @@ export function PolicyHero({
                             {!isAnalyzing && (
                                 <>
                                     <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
-                                        <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{copy.starts}</p>
+                                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.starts}</p>
                                         <p className="text-sm font-bold text-white">{formatPolicyDate(startDate, locale)}</p>
                                     </div>
 
                                     <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
-                                        <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{copy.ends}</p>
+                                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.ends}</p>
                                         <p className="text-sm font-bold text-white">{formatPolicyDate(endDate, locale)}</p>
                                     </div>
                                 </>
@@ -165,7 +165,7 @@ export function PolicyHero({
 
                     {premiumAmount > 0 && (
                         <div className="w-full max-w-xs rounded-3xl border border-white/15 bg-[#111111] p-5 shadow-lg">
-                            <p className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/65">
+                            <p className="mb-2 flex items-center gap-2 text-kicker font-black uppercase tracking-widest text-white/65">
                                 <TrendingUp className="h-3.5 w-3.5 text-mint" />
                                 {premiumFrequency && premiumFrequency !== "annual"
                                     ? `${copy.premiumLabel} · ${copy.premiumFrequencies[premiumFrequency]}`

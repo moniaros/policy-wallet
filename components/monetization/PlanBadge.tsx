@@ -21,7 +21,7 @@ const TIER_LABELS: Record<PlanTier, string> = {
 export function PlanBadge({ tier, className = "" }: { tier: PlanTier; className?: string }) {
     return (
         <span
-            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${TIER_STYLES[tier]} ${className}`}
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-widest ${TIER_STYLES[tier]} ${className}`}
         >
             {tier !== "free" && <Crown className="h-3 w-3" />}
             {TIER_LABELS[tier]}

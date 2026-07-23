@@ -508,7 +508,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         <label htmlFor="add-insurerName" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                             {t.wallet.insurerProvider}
                                         </label>
-                                        <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
+                                        <span className="text-kicker font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                     </div>
                                     <div className="relative">
                                         <select
@@ -534,7 +534,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <label htmlFor="add-policyNumber" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                         {t.wallet.policyNumber}
                                     </label>
-                                    <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
+                                    <span className="text-kicker font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                 </div>
                                 <div className="relative">
                                     <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

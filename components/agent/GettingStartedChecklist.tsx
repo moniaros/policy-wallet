@@ -214,7 +214,7 @@ export function AgentGettingStartedChecklist({
                                                     {language === "el" ? item.titleEl : item.titleEn}
                                                 </p>
                                                 {!item.completed && (
-                                                    <p className="mt-0.5 text-[11px] text-black/50 dark:text-white/55">
+                                                    <p className="mt-0.5 text-micro text-black/50 dark:text-white/55">
                                                         {language === "el" ? item.descEl : item.descEn}
                                                     </p>
                                                 )}

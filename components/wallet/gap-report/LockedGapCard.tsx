@@ -34,7 +34,7 @@ export function LockedGapCard({ item, lang, copy }: LockedGapCardProps) {
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                         <h4 className="text-sm font-bold text-black dark:text-white">{title}</h4>
-                        <span className="rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60">
+                        <span className="rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60">
                             {mechanicLabel}
                         </span>
                     </div>

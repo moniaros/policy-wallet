@@ -115,7 +115,7 @@ export function ClientOverviewTab({
                                             {formatDateGreek(policy.endDate)}
                                         </div>
                                         {policy.status === "expiring_soon" && (
-                                            <span className="text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                                            <span className="text-kicker font-medium text-amber-600 dark:text-amber-400">
                                                 {t.clientOverview.expiringSoon}
                                             </span>
                                         )}
@@ -154,7 +154,7 @@ export function ClientOverviewTab({
                                                 {opp.gapTitle}
                                             </p>
                                             {opp.conversionLikelihood && (
-                                                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                                                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-kicker font-semibold ${
                                                     opp.conversionLikelihood === "high"
                                                         ? "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
                                                         : opp.conversionLikelihood === "medium"

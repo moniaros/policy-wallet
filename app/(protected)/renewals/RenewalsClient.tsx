@@ -232,22 +232,22 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
 
     const getStatusBadge = (status: string, daysLeft: number) => {
         if (status === "completed") return (
-            <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[#166534] bg-primary-soft dark:text-mint dark:bg-primary/15 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-[#166534] bg-primary-soft dark:text-mint dark:bg-primary/15 px-2.5 py-1 rounded-full">
                 <CheckCircle2 className="w-3 h-3" /> {t.completed}
             </span>
         )
         if (status === "overdue" || status === "lapsed") return (
-            <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-rose-700 bg-rose-50 dark:text-rose-400 dark:bg-rose-900/20 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-rose-700 bg-rose-50 dark:text-rose-400 dark:bg-rose-900/20 px-2.5 py-1 rounded-full">
                 <XCircle className="w-3 h-3" /> {status === "overdue" ? t.overdue : t.lapsed}
             </span>
         )
         if (daysLeft <= 7) return (
-            <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20 px-2.5 py-1 rounded-full">
                 <AlertTriangle className="w-3 h-3" /> {daysLeft}d
             </span>
         )
         return (
-            <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-neutral-600 bg-neutral-100 dark:text-neutral-400 dark:bg-neutral-800 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-neutral-600 bg-neutral-100 dark:text-neutral-400 dark:bg-neutral-800 px-2.5 py-1 rounded-full">
                 <Clock className="w-3 h-3" /> {daysLeft}d
             </span>
         )
@@ -258,7 +258,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
 
     return (
         <div className="pw-page-shell min-h-screen">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 {/* Header */}
                 <div className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
@@ -369,13 +369,13 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                 className="rounded border-neutral-300 dark:border-neutral-600"
                                             />
                                         </th>
-                                        <th className="px-4 py-3 text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.customer}</th>
-                                        <th className="px-4 py-3 text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.insurer}</th>
-                                        <th className="px-4 py-3 text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.lob}</th>
-                                        <th className="px-4 py-3 text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.premium}</th>
-                                        <th className="px-4 py-3 text-center text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.expires}</th>
-                                        <th className="px-4 py-3 text-center text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.status}</th>
-                                        <th className="px-4 py-3 text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.actions}</th>
+                                        <th className="px-4 py-3 text-left text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.customer}</th>
+                                        <th className="px-4 py-3 text-left text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.insurer}</th>
+                                        <th className="px-4 py-3 text-left text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.lob}</th>
+                                        <th className="px-4 py-3 text-right text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.premium}</th>
+                                        <th className="px-4 py-3 text-center text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.expires}</th>
+                                        <th className="px-4 py-3 text-center text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.status}</th>
+                                        <th className="px-4 py-3 text-right text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.actions}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -480,7 +480,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.notes}</label>
+                                <label className="text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.notes}</label>
                                 <textarea
                                     value={outcomeNotes}
                                     onChange={(e) => setOutcomeNotes(e.target.value)}
@@ -537,12 +537,12 @@ function StatCard({
     }
 
     return (
-        <div className="pw-card p-4">
+        <div className="pw-card pw-pad-tight">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${accentMap[accent] ?? accentMap.slate}`}>
                 <Icon className="w-4 h-4" />
             </div>
             <p className="text-xl font-black text-foreground">{value}</p>
-            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-0.5">{label}</p>
+            <p className="text-kicker font-bold text-neutral-400 uppercase tracking-widest mt-0.5">{label}</p>
         </div>
     )
 }

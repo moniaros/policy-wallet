@@ -207,7 +207,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                                                     {event.description[isEl ? "el" : "en"]}
                                                                 </p>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 text-neutral-400 dark:text-neutral-500 text-[11px] font-semibold tracking-wider uppercase flex-shrink-0 whitespace-nowrap">
+                                                            <div className="flex items-center gap-1.5 text-neutral-400 dark:text-neutral-500 text-micro font-semibold tracking-wider uppercase flex-shrink-0 whitespace-nowrap">
                                                                 <Clock className="w-3.5 h-3.5" />
                                                                 {formatRelativeTime(event.timestamp, t, language || "en")}
                                                             </div>
@@ -221,7 +221,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                                                     {event.customerName}
                                                                 </div>
                                                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                    <div className="flex items-center gap-1 text-[11px] font-bold text-primary dark:text-mint">
+                                                                    <div className="flex items-center gap-1 text-micro font-bold text-primary dark:text-mint">
                                                                         {t.activity.view}
                                                                         <ChevronRight className="w-3 h-3" />
                                                                     </div>

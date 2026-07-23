@@ -314,7 +314,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
             />
 
             {/* Collaboration Section — below ClientDetailView */}
-            <div className="max-w-[1200px] mx-auto px-6 pb-32">
+            <div className="max-w-page mx-auto px-6 pb-32">
                 <div className="grid gap-6 lg:grid-cols-2 mt-6">
                     {/* Document Requests */}
                     <div className="pw-card rounded-2xl p-5">
@@ -323,7 +323,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                                 <FileText className="h-5 w-5 text-primary dark:text-mint" />
                                 {PROFILE_COPY.documentRequests[language]}
                                 {documentRequests.filter(r => r.status === "pending").length > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
+                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-kicker font-bold text-white">
                                         {documentRequests.filter(r => r.status === "pending").length}
                                     </span>
                                 )}
@@ -364,7 +364,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                                 <Send className="h-5 w-5 text-primary dark:text-mint" />
                                 {PROFILE_COPY.proposals[language]}
                                 {proposals.filter(p => p.status === "pending").length > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white dark:text-[#1A2420]">
+                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-kicker font-bold text-white dark:text-[#1A2420]">
                                         {proposals.filter(p => p.status === "pending").length}
                                     </span>
                                 )}

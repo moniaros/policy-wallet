@@ -99,7 +99,7 @@ export function DesktopDashboard({
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950">
             {/* Header */}
             <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
-                <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-6">
+                <div className="max-w-page-wide mx-auto px-4 sm:px-8 py-6">
                     <div className="flex items-center justify-between flex-wrap gap-3">
                         <div className="flex items-center gap-4">
                             <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
@@ -130,7 +130,7 @@ export function DesktopDashboard({
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-6 space-y-6">
+            <div className="max-w-page-wide mx-auto px-4 sm:px-8 py-6 space-y-6">
                 {/* ── Book-of-business KPI strip ─────────────────────────── */}
                 {data.portalStats && <AgentKpiStrip stats={data.portalStats} />}
 
@@ -239,10 +239,10 @@ export function DesktopDashboard({
                                                 <p className="text-xs font-semibold text-foreground truncate">
                                                     {activity.customerName}
                                                 </p>
-                                                <p className="text-[11px] text-muted-foreground truncate">
+                                                <p className="text-micro text-muted-foreground truncate">
                                                     {activity.details}
                                                 </p>
-                                                <p className="text-[10px] text-neutral-400 mt-0.5">
+                                                <p className="text-kicker text-neutral-400 mt-0.5">
                                                     {formatRelativeDate(activity.timestamp, language)}
                                                 </p>
                                             </div>
@@ -273,7 +273,7 @@ export function DesktopDashboard({
                                             className="flex flex-col items-center gap-1.5 rounded-xl border border-[var(--brand-border-subtle)] p-3 text-center transition hover:bg-[var(--brand-surface-elevated)] hover:shadow-sm cursor-pointer"
                                         >
                                             <Icon className="h-4 w-4 text-primary dark:text-mint" />
-                                            <span className="text-[11px] font-medium text-neutral-600 dark:text-neutral-300">
+                                            <span className="text-micro font-medium text-neutral-600 dark:text-neutral-300">
                                                 {label}
                                             </span>
                                         </button>

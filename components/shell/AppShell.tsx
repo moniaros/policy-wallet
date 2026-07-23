@@ -390,12 +390,12 @@ export function AppShell({
                                                 strokeWidth={2.5}
                                             />
                                             {item.showsNotificationBadge && notificationCount > 0 && (
-                                                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg">
+                                                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-kicker font-bold rounded-full flex items-center justify-center shadow-lg">
                                                     {notificationCount > 9 ? '9+' : notificationCount}
                                                 </span>
                                             )}
                                         </div>
-                                        <span className="text-[10px] font-medium whitespace-nowrap">
+                                        <span className="text-kicker font-medium whitespace-nowrap">
                                             {item.label}
                                         </span>
                                     </Link>

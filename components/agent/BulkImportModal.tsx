@@ -194,7 +194,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                     {step === 'preview' && (
                         <div className="space-y-4">
                             {/* Stats */}
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                 <div className="bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 rounded-xl p-4">
                                     <div className="text-3xl font-bold text-[#166534] dark:text-mint">{validCount}</div>
                                     <div className="text-sm font-medium text-primary dark:text-mint">{tt.valid}</div>

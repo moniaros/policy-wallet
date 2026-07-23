@@ -81,9 +81,9 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                     >
                         {client.protectionScore}
                     </span>
-                    <span className="text-[9px] text-neutral-400">/100</span>
+                    <span className="text-kicker text-neutral-400">/100</span>
                     {(client.gapCount ?? 0) > 0 && (
-                        <span className="flex items-center gap-0.5 text-[9px] text-red-500">
+                        <span className="flex items-center gap-0.5 text-kicker text-red-500">
                             <AlertTriangle className="h-2.5 w-2.5" />
                             {client.gapCount}
                         </span>

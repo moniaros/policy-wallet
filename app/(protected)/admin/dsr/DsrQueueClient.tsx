@@ -109,7 +109,7 @@ function DeadlineCell({ requestedAt, open }: { requestedAt: string; open: boolea
     return (
         <div>
             <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${tone}`}>{label}</span>
-            <div className="mt-1 text-[10px] text-stone-500 dark:text-stone-400">{dueAt.toLocaleDateString(DSR_LOCALE, { timeZone: DSR_TZ })}</div>
+            <div className="mt-1 text-kicker text-stone-500 dark:text-stone-400">{dueAt.toLocaleDateString(DSR_LOCALE, { timeZone: DSR_TZ })}</div>
         </div>
     )
 }

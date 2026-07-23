@@ -45,7 +45,7 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy }: Documen
     const docHref = (docId: string) => `/api/v1/policies/${policyId}/documents/${docId}`
 
     return (
-        <div className="pw-card p-6">
+        <div className="pw-card pw-pad">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                 <FileText className="h-4 w-4 text-primary dark:text-mint" />
                 {copy.documentsArea}

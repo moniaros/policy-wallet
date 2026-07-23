@@ -60,7 +60,7 @@ export function CrossSellCard({ items, onClientClick }: CrossSellCardProps) {
                                     <p className="text-sm font-bold text-primary dark:text-mint">
                                         {formatCurrencyCompact(item.estimatedCommission, language)}
                                     </p>
-                                    <p className="text-[10px] text-muted-foreground">{tb.crossSellPotential}</p>
+                                    <p className="text-kicker text-muted-foreground">{tb.crossSellPotential}</p>
                                 </div>
                             </button>
                         )

@@ -101,14 +101,14 @@ export function SummaryCard({
     ].filter(Boolean) as Array<{ id: string; icon: typeof ShieldCheck; label: string; classes: string }>
 
     return (
-        <div className="pw-card p-6 sm:p-7">
+        <div className="pw-card pw-pad sm:p-7">
             <div className="mb-3 flex flex-wrap items-start justify-between gap-4">
                 <div className="flex flex-wrap items-center gap-2">
                     <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                         <FileText className="h-4 w-4 text-primary dark:text-mint" />
                         {copy.summaryTitle}
                     </h2>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-primary dark:bg-primary/15 dark:text-mint">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-kicker font-black uppercase tracking-widest text-primary dark:bg-primary/15 dark:text-mint">
                         <Sparkles className="h-3 w-3" />
                         {copy.summaryAiChip}
                     </span>
@@ -142,7 +142,7 @@ export function SummaryCard({
                             </span>
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                            <p className="text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                                 {copy.healthTitle}
                             </p>
                             <p className={`text-xs font-bold ${healthColorClass}`}>
@@ -156,7 +156,7 @@ export function SummaryCard({
 
             {glanceChips.length > 0 && (
                 <div className="mt-4 border-t border-black/10 pt-4 dark:border-white/10">
-                    <p className="mb-2.5 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <p className="mb-2.5 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                         {copy.atAGlance}
                     </p>
                     <div className="flex flex-wrap gap-2">

@@ -91,7 +91,7 @@ function KpiCard({
                     {value}
                 </p>
                 {hint && (
-                    <p className="mt-1 truncate text-[11px] text-black/50 dark:text-white/50">{hint}</p>
+                    <p className="mt-1 truncate text-micro text-black/50 dark:text-white/50">{hint}</p>
                 )}
             </div>
         </div>

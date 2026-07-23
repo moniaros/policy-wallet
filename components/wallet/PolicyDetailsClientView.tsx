@@ -720,7 +720,7 @@ export function PolicyDetailsClient({
                         {/* 3 ── Coverage breakdown ────────────────────────── */}
                         {hasCoverageDetails ? (
                             <section id="coverage" className="scroll-mt-24">
-                                <div className="pw-card p-6 sm:p-7">
+                                <div className="pw-card pw-pad sm:p-7">
                                     <h2 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                                         <ShieldCheck className="h-4 w-4 text-primary dark:text-mint" />
                                         {detailsCopy.navCoverage}
@@ -734,7 +734,7 @@ export function PolicyDetailsClient({
                             </section>
                         ) : shouldShowReanalyzeHint ? (
                             <section id="coverage" className="scroll-mt-24">
-                                <div className="pw-card p-6 sm:p-7">
+                                <div className="pw-card pw-pad sm:p-7">
                                     <div className="flex items-start gap-3 rounded-2xl border border-amber-300/45 bg-amber-50 px-4 py-4 dark:bg-amber-950/20">
                                         <RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-300" />
                                         <div>
@@ -920,7 +920,7 @@ export function PolicyDetailsClient({
                                         />
                                     </div>
                                 ) : (
-                                    <div className="pw-card p-6 sm:p-7">
+                                    <div className="pw-card pw-pad sm:p-7">
                                         <h2 className="mb-3 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                                             <Lock className="h-4 w-4 text-primary dark:text-mint" />
                                             {detailsCopy.agentSectionTitle}
@@ -968,7 +968,7 @@ export function PolicyDetailsClient({
 
                         {/* Trigger J: savings report export — visible to all, Pro-unlocked */}
                         {isOwner && (
-                            <div className="pw-card p-6">
+                            <div className="pw-card pw-pad">
                                 <h3 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                                     <FileDown className="h-4 w-4 text-primary dark:text-mint" />
                                     {pickCopy(EXPORT_COPY.title, lang)}

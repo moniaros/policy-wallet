@@ -79,7 +79,7 @@ export function GapRecommendationCard({ gap, onAddCoverage }: GapRecommendationC
                     <h4 className="text-base font-bold text-stone-900 dark:text-white mb-1">
                         {gap.title}
                     </h4>
-                    <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border rounded-full ${styles.badge}`}>
+                    <span className={`inline-flex items-center px-2 py-0.5 text-kicker font-bold uppercase tracking-wider border rounded-full ${styles.badge}`}>
                         {styles.label}
                     </span>
                 </div>

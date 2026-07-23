@@ -147,7 +147,7 @@ export function TeamClient({ team, pipeline }: Props) {
 
     return (
         <div className="pw-page-shell min-h-screen">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 {/* Header */}
                 <div className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
@@ -217,14 +217,14 @@ function StatCard({ icon, label, value, color }: {
         amber: "bg-amber-50 dark:bg-amber-900/20",
     }
     return (
-        <div className="pw-card p-5">
+        <div className="pw-card pw-pad">
             <div className="flex items-center gap-3 mb-2">
                 <div className={`w-9 h-9 rounded-xl ${bgMap[color] ?? bgMap.slate} flex items-center justify-center`}>
                     {icon}
                 </div>
             </div>
             <p className="text-2xl font-black text-foreground">{value}</p>
-            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mt-1">{label}</p>
+            <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mt-1">{label}</p>
         </div>
     )
 }
@@ -264,13 +264,13 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
     }
 
     const statusBadge = (status: string) => {
-        if (status === "invited") return <span className="text-[9px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full uppercase tracking-widest">{t.invited}</span>
-        if (status === "suspended") return <span className="text-[9px] font-black text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase tracking-widest">{t.suspended}</span>
+        if (status === "invited") return <span className="text-kicker font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full uppercase tracking-widest">{t.invited}</span>
+        if (status === "suspended") return <span className="text-kicker font-black text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase tracking-widest">{t.suspended}</span>
         return null
     }
 
     return (
-        <div className="pw-card p-6">
+        <div className="pw-card pw-pad">
             <div className="flex items-center justify-between mb-5">
                 <h3 className="text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
                     <Users className="w-4 h-4 text-primary dark:text-mint" />
@@ -278,7 +278,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                 </h3>
                 <button
                     onClick={() => setShowInvite(!showInvite)}
-                    className="text-[10px] font-black text-primary hover:text-primary-hover dark:text-mint uppercase tracking-widest flex items-center gap-1"
+                    className="text-kicker font-black text-primary hover:text-primary-hover dark:text-mint uppercase tracking-widest flex items-center gap-1"
                 >
                     <UserPlus className="w-3.5 h-3.5" />
                     {t.invite}
@@ -344,10 +344,10 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                                 {statusBadge(m.status)}
                             </div>
                             <div className="flex items-center gap-3 mt-0.5">
-                                <span className="text-[10px] font-bold text-neutral-400">
+                                <span className="text-kicker font-bold text-neutral-400">
                                     {m.customerCount} {t.customers}
                                 </span>
-                                <span className="text-[10px] font-bold text-primary dark:text-mint">
+                                <span className="text-kicker font-bold text-primary dark:text-mint">
                                     {fmt(m.wonValue)}
                                 </span>
                             </div>
@@ -409,7 +409,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
     }
 
     return (
-        <div className="pw-card p-6">
+        <div className="pw-card pw-pad">
             <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-primary dark:text-mint" />
                 {t.sharedPipeline}
@@ -427,11 +427,11 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                     <table className="pw-stacked-table w-full text-sm">
                         <thead>
                             <tr className="border-b border-neutral-100 dark:border-neutral-800">
-                                <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.customer}</th>
-                                <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.agent}</th>
-                                <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
-                                <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.status}</th>
-                                <th className="text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.value}</th>
+                                <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.customer}</th>
+                                <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.agent}</th>
+                                <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
+                                <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.status}</th>
+                                <th className="text-right text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.value}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -443,7 +443,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                                             {item.agentPhoto ? (
                                                 <img src={item.agentPhoto} alt="" className="w-6 h-6 rounded-lg object-cover" />
                                             ) : (
-                                                <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-[10px] font-black text-neutral-500">
+                                                <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-kicker font-black text-neutral-500">
                                                     {item.agentName.charAt(0)}
                                                 </div>
                                             )}
@@ -452,7 +452,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                                     </td>
                                     <td data-label={t.lob} className="py-3 text-neutral-500 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
                                     <td data-label={t.status} className="py-3">
-                                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${statusColor[item.status] || statusColor.open}`}>
+                                        <span className={`text-kicker font-black uppercase tracking-widest px-2 py-1 rounded-full ${statusColor[item.status] || statusColor.open}`}>
                                             {item.status}
                                         </span>
                                     </td>
@@ -490,7 +490,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
     return (
         <div className="pw-page-shell min-h-screen">
             <div className="max-w-lg mx-auto px-4 py-16">
-                <div className="pw-card p-8 text-center">
+                <div className="pw-card pw-pad-roomy text-center">
                     <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-6">
                         <Building2 className="w-8 h-8 text-primary dark:text-mint" />
                     </div>
@@ -503,7 +503,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
 
                     <div className="space-y-3 text-left">
                         <div>
-                            <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
+                            <label className="block text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
                             <input
                                 type="text"
                                 value={name}
@@ -514,7 +514,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.phone}</label>
+                                <label className="block text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.phone}</label>
                                 <input
                                     type="tel"
                                     value={phone}
@@ -523,7 +523,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.taxId}</label>
+                                <label className="block text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.taxId}</label>
                                 <input
                                     type="text"
                                     value={taxId}
@@ -533,7 +533,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.website}</label>
+                            <label className="block text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.website}</label>
                             <input
                                 type="url"
                                 value={website}
@@ -542,7 +542,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.address}</label>
+                            <label className="block text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.address}</label>
                             <input
                                 type="text"
                                 value={address}

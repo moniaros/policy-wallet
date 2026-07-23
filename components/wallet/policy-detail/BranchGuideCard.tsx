@@ -42,7 +42,7 @@ function GuideList({ icon: Icon, title, items }: { icon: typeof Eye; title: stri
     if (items.length === 0) return null
     return (
         <div>
-            <h3 className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+            <h3 className="mb-2 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                 <Icon className="h-3.5 w-3.5 text-primary dark:text-mint" />
                 {title}
             </h3>
@@ -70,7 +70,7 @@ export function BranchGuideCard({
     const [open, setOpen] = useState(false)
 
     return (
-        <div className="pw-card p-6 sm:p-7">
+        <div className="pw-card pw-pad sm:p-7">
             <button
                 type="button"
                 onClick={() => setOpen((prev) => !prev)}
@@ -104,7 +104,7 @@ export function BranchGuideCard({
 
                     {commonGaps.length > 0 && (
                         <div>
-                            <h3 className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                            <h3 className="mb-2 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                                 <ShieldAlert className="h-3.5 w-3.5 text-primary dark:text-mint" />
                                 {copy.guideCommonGaps}
                             </h3>
@@ -121,7 +121,7 @@ export function BranchGuideCard({
                                         <div className="flex flex-wrap items-center gap-2">
                                             <p className="text-xs font-bold text-black dark:text-white">{gap.title}</p>
                                             {gap.detected && (
-                                                <span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-[#B45309] dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
+                                                <span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-kicker font-black uppercase tracking-widest text-[#B45309] dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
                                                     {copy.guideDetectedChip}
                                                 </span>
                                             )}

@@ -151,7 +151,7 @@ export function CustomerList({
                                 <button
                                     key={status}
                                     onClick={() => setStatusFilter(status)}
-                                    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${isActive ? "bg-white dark:bg-neutral-700 shadow-sm text-foreground" : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"}`}
+                                    className={`px-2.5 py-1.5 rounded-lg text-micro font-semibold transition-all cursor-pointer ${isActive ? "bg-white dark:bg-neutral-700 shadow-sm text-foreground" : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"}`}
                                 >
                                     {label} ({statusCounts[status]})
                                 </button>
@@ -249,7 +249,7 @@ export function CustomerList({
                 <div className="hidden lg:block bg-white/80 dark:bg-neutral-900/80 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 overflow-hidden shadow-sm">
                     <TableShell label={t.nav.customers}>
                         <table className="w-full text-sm text-left">
-                            <thead className="bg-neutral-50/80 dark:bg-neutral-950/50 text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 border-b border-neutral-200/60 dark:border-neutral-800/60">
+                            <thead className="bg-neutral-50/80 dark:bg-neutral-950/50 text-micro font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 border-b border-neutral-200/60 dark:border-neutral-800/60">
                                 <tr>
                                     <th className="px-4 py-3.5 w-10">
                                         <input type="checkbox" checked={selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0} onChange={toggleAll} className="rounded border-neutral-300 text-primary focus:ring-primary" />
@@ -275,34 +275,34 @@ export function CustomerList({
                                         </td>
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-1.5">
-                                                <span className="font-semibold text-foreground text-[13px]">{customer.name} {customer.surname}</span>
-                                                <span className="inline-flex items-center rounded-md bg-neutral-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+                                                <span className="font-semibold text-foreground text-body-sm">{customer.name} {customer.surname}</span>
+                                                <span className="inline-flex items-center rounded-md bg-neutral-100 px-1.5 py-0.5 text-kicker font-bold uppercase tracking-wider text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
                                                     {roleCopy.customerList[customer.activationStatus]}
                                                 </span>
                                             </div>
-                                            <div className="mt-0.5 truncate max-w-[200px] text-[11px] text-neutral-400 dark:text-neutral-500">{customer.email}</div>
+                                            <div className="mt-0.5 truncate max-w-[200px] text-micro text-neutral-400 dark:text-neutral-500">{customer.email}</div>
                                         </td>
                                         <td className="px-4 py-3.5 text-center">
                                             <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-neutral-50 dark:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-300">{customer.policyCount}</span>
                                         </td>
                                         <td className="px-4 py-3.5 text-center">
-                                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold ${healthTone(intel?.healthScore)}`}>
+                                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-micro font-bold ${healthTone(intel?.healthScore)}`}>
                                                 {intel?.healthScore !== null && intel?.healthScore !== undefined ? intel.healthScore : "—"}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3.5 whitespace-nowrap text-[12px]">
+                                        <td className="px-4 py-3.5 whitespace-nowrap text-caption">
                                             <span className={renewalSoon(intel?.nextRenewalDate) ? "font-semibold text-amber-600 dark:text-amber-400" : "text-muted-foreground"}>
                                                 {formatRenewal(intel?.nextRenewalDate)}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3.5 text-center">
                                             {intel && intel.gapCount > 0 ? (
-                                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${intel.criticalGapCount > 0 ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}`}>
+                                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-micro font-bold ${intel.criticalGapCount > 0 ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}`}>
                                                     <Sparkles className="w-3 h-3" />
                                                     {intel.gapCount}
                                                 </span>
                                             ) : (
-                                                <span className="text-[12px] text-neutral-300 dark:text-neutral-600">0</span>
+                                                <span className="text-caption text-neutral-300 dark:text-neutral-600">0</span>
                                             )}
                                         </td>
                                         <td className="px-4 py-3.5">
@@ -311,10 +311,10 @@ export function CustomerList({
                                                 label={CONSENT_LABELS[consentStatusOf(intel?.consentStatus)]}
                                             />
                                         </td>
-                                        <td className="px-4 py-3.5 text-right text-[12px] text-neutral-400 whitespace-nowrap">{formatLastContact(customer.lastInteractionDate)}</td>
+                                        <td className="px-4 py-3.5 text-right text-caption text-neutral-400 whitespace-nowrap">{formatLastContact(customer.lastInteractionDate)}</td>
                                         <td className="px-4 py-3.5">
                                             {intel && (
-                                                <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${ACTION_TONES[intel.recommendedAction]}`}>
+                                                <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-kicker font-semibold ${ACTION_TONES[intel.recommendedAction]}`}>
                                                     {ACTION_LABELS[intel.recommendedAction]}
                                                 </span>
                                             )}
@@ -340,29 +340,29 @@ export function CustomerList({
                         <div key={customer.id} onClick={() => onCustomerClick(customer.id)} className="group relative bg-white/80 dark:bg-neutral-900/80 p-5 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 transition-all duration-300 cursor-pointer">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <h3 className="font-bold text-foreground text-[15px]">{customer.name} {customer.surname}</h3>
-                                    <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-muted text-neutral-600 dark:text-neutral-300">
+                                    <h3 className="font-bold text-foreground text-body">{customer.name} {customer.surname}</h3>
+                                    <span className="inline-flex items-center gap-1 text-kicker px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-muted text-neutral-600 dark:text-neutral-300">
                                         {roleCopy.customerList[customer.activationStatus]}
                                     </span>
                                 </div>
                                 <input type="checkbox" checked={selectedIds.has(customer.id)} onChange={(e) => { e.stopPropagation(); toggleSelection(customer.id) }} className="rounded border-neutral-300 text-primary focus:ring-primary" />
                             </div>
-                            <div className="flex justify-between items-center text-[12px] text-muted-foreground mb-4">
+                            <div className="flex justify-between items-center text-caption text-muted-foreground mb-4">
                                 <span className="flex items-center gap-1"><FileText className="w-3 h-3" />{customer.policyCount} {roleCopy.customerList.policies}</span>
                                 <span>{formatLastContact(customer.lastInteractionDate)}</span>
                             </div>
                             {customer.intelligence && (
                                 <div className="mb-3 flex flex-wrap items-center gap-1.5">
-                                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${healthTone(customer.intelligence.healthScore)}`}>
+                                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-kicker font-bold ${healthTone(customer.intelligence.healthScore)}`}>
                                         {roleCopy.customerList.tableHealth}: {customer.intelligence.healthScore ?? "—"}
                                     </span>
-                                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${ACTION_TONES[customer.intelligence.recommendedAction]}`}>
+                                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-kicker font-semibold ${ACTION_TONES[customer.intelligence.recommendedAction]}`}>
                                         {ACTION_LABELS[customer.intelligence.recommendedAction]}
                                     </span>
                                 </div>
                             )}
                             {customer.openGapsCount > 0 && (
-                                <div className="flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 font-semibold mb-3 bg-amber-50/80 dark:bg-amber-900/15 px-2.5 py-1.5 rounded-lg border border-amber-200/40 dark:border-amber-800/30">
+                                <div className="flex items-center gap-1.5 text-micro text-amber-600 dark:text-amber-400 font-semibold mb-3 bg-amber-50/80 dark:bg-amber-900/15 px-2.5 py-1.5 rounded-lg border border-amber-200/40 dark:border-amber-800/30">
                                     <Sparkles className="w-3 h-3" />
                                     <span>{customer.openGapsCount} {customer.openGapsCount === 1 ? roleCopy.customerList.openOpportunityOne : roleCopy.customerList.openOpportunityMany}</span>
                                 </div>

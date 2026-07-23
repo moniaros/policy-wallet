@@ -223,7 +223,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                     {view === 'upload' && (
                         <div className="space-y-10">
                             <header>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.kicker}</span>
+                                <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.kicker}</span>
                                 <h2 id="upload-policy-title" className="text-3xl font-black text-foreground tracking-tighter mt-3 mb-2">
                                     {up.title} <span className="text-neutral-400 dark:text-neutral-500 italic">{up.titleAccent}</span>
                                 </h2>
@@ -240,14 +240,14 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 <div className="text-center">
                                     <p className="text-base font-black text-foreground">{up.uploadCta}</p>
                                     <p className="text-xs text-neutral-400 font-medium mt-1">{up.dropHint}</p>
-                                    <p className="text-[10px] text-neutral-400 font-medium mt-2 uppercase tracking-widest">{up.uploadHint}</p>
+                                    <p className="text-kicker text-neutral-400 font-medium mt-2 uppercase tracking-widest">{up.uploadHint}</p>
                                 </div>
                                 <input type="file" ref={fileInputRef} onChange={handleFile} accept={ACCEPTED} className="hidden" />
                             </button>
 
                             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
 
-                            <button onClick={closeAll} className="w-full py-4 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors">
+                            <button onClick={closeAll} className="w-full py-4 text-kicker font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors">
                                 {up.cancel}
                             </button>
                         </div>
@@ -271,7 +271,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                     {view === 'resolve' && resolution && (
                         <div className="space-y-8">
                             <header>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.resolveKicker}</span>
+                                <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.resolveKicker}</span>
                                 <h2 className="text-2xl font-black text-foreground tracking-tighter mt-2">
                                     {up.resolveTitle} <span className="text-neutral-400 italic">{up.resolveAccent}</span>
                                 </h2>
@@ -279,7 +279,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
                             {/* Extracted identity card */}
                             <div className="p-6 rounded-[28px] bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-3">{up.extractedTitle}</p>
+                                <p className="text-kicker font-black uppercase tracking-widest text-neutral-400 mb-3">{up.extractedTitle}</p>
                                 <div className="grid grid-cols-2 gap-3 text-sm">
                                     <div><span className="text-neutral-400 font-medium">{up.nameLabel}: </span><span className="font-bold text-foreground">{[customer.name, customer.surname].filter(Boolean).join(' ') || '—'}</span></div>
                                     <div><span className="text-neutral-400 font-medium">{up.afmLabel}: </span><span className="font-bold text-foreground">{customer.taxId || '—'}</span></div>
@@ -335,8 +335,8 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
 
                             <div className="flex gap-4">
-                                <button onClick={() => setView('upload')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.back}</button>
-                                <button disabled={!canContinueResolve} onClick={() => setView('confirm')} className="flex-[2] px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-40">
+                                <button onClick={() => setView('upload')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.back}</button>
+                                <button disabled={!canContinueResolve} onClick={() => setView('confirm')} className="flex-[2] px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-kicker font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-40">
                                     {isCreateNew ? up.createNewOption : up.confirmCustomer}
                                 </button>
                             </div>
@@ -347,7 +347,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                     {view === 'confirm' && (
                         <div className="space-y-8">
                             <header>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.confirmKicker}</span>
+                                <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.confirmKicker}</span>
                                 <h2 className="text-2xl font-black text-foreground tracking-tighter mt-2">
                                     {up.confirmTitle} <span className="text-neutral-400 italic">{up.confirmAccent}</span>
                                 </h2>
@@ -383,8 +383,8 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
 
                             <div className="flex gap-4">
-                                <button onClick={() => setView(presetCustomerId ? 'upload' : 'resolve')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.back}</button>
-                                <button disabled={loading || !canSubmitPolicy} onClick={() => handleSubmit()} className="flex-[2] px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50">
+                                <button onClick={() => setView(presetCustomerId ? 'upload' : 'resolve')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.back}</button>
+                                <button disabled={loading || !canSubmitPolicy} onClick={() => handleSubmit()} className="flex-[2] px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-kicker font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50">
                                     {loading ? up.submitting : (isCreateNew ? up.submitCreate : up.submitAttach)}
                                 </button>
                             </div>
@@ -403,15 +403,15 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             </header>
 
                             <div className="p-6 rounded-[28px] bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-3">{up.duplicateExistingLabel}</p>
+                                <p className="text-kicker font-black uppercase tracking-widest text-neutral-400 mb-3">{up.duplicateExistingLabel}</p>
                                 <p className="text-base font-black text-foreground">{duplicate.policyNumber} <span className="text-neutral-400 font-medium">· {duplicate.insurerName}</span></p>
                             </div>
 
                             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
 
                             <div className="flex gap-4">
-                                <button disabled={loading} onClick={() => setView('confirm')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all disabled:opacity-50">{up.duplicateCancel}</button>
-                                <button disabled={loading} onClick={() => handleSubmit(true)} className="flex-[2] px-6 py-4 bg-amber-500 text-white rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-amber-600 transition-all disabled:opacity-50">
+                                <button disabled={loading} onClick={() => setView('confirm')} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all disabled:opacity-50">{up.duplicateCancel}</button>
+                                <button disabled={loading} onClick={() => handleSubmit(true)} className="flex-[2] px-6 py-4 bg-amber-500 text-white rounded-[20px] text-kicker font-black uppercase tracking-widest shadow-xl hover:bg-amber-600 transition-all disabled:opacity-50">
                                     {loading ? up.submitting : up.duplicateKeep}
                                 </button>
                             </div>
@@ -435,16 +435,16 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 <div className="space-y-3">
                                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400">{up.analysisConsentRequired}</p>
                                     {!consentSent && (
-                                        <button disabled={loading} onClick={handleRequestConsent} className="px-6 py-3 bg-primary text-white dark:text-[#1A2420] rounded-[18px] text-[10px] font-black uppercase tracking-widest disabled:opacity-50">{up.requestConsentCta}</button>
+                                        <button disabled={loading} onClick={handleRequestConsent} className="px-6 py-3 bg-primary text-white dark:text-[#1A2420] rounded-[18px] text-kicker font-black uppercase tracking-widest disabled:opacity-50">{up.requestConsentCta}</button>
                                     )}
                                 </div>
                             )}
 
                             <div className="flex gap-4 pt-2">
                                 {result.customerId && (
-                                    <button onClick={() => { const id = result.customerId; closeAll(); router.push(`/customers/${id}`) }} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.viewCustomer}</button>
+                                    <button onClick={() => { const id = result.customerId; closeAll(); router.push(`/customers/${id}`) }} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.viewCustomer}</button>
                                 )}
-                                <button onClick={closeAll} className="flex-1 px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all">{up.done}</button>
+                                <button onClick={closeAll} className="flex-1 px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-kicker font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all">{up.done}</button>
                             </div>
                         </div>
                     )}
@@ -457,7 +457,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{label}</label>
+            <label className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{label}</label>
             {children}
         </div>
     )

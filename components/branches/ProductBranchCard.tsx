@@ -62,7 +62,7 @@ export function ProductBranchCard({
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-mint/10 dark:text-mint">
                     <Icon className="h-5 w-5" aria-hidden />
                 </div>
-                <span className={cn('inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold', styles.pill)}>
+                <span className={cn('inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-micro font-bold', styles.pill)}>
                     <span className={cn('h-1.5 w-1.5 rounded-full', styles.dot)} aria-hidden />
                     {stateLabel}
                 </span>

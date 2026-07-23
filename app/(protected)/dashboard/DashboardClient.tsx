@@ -155,7 +155,7 @@ export function DashboardClient({
                 once every step is done or the agent dismisses it, so the empty
                 wrapper collapses via [&:empty]:hidden — no stray gap above the
                 dashboard header for established agents. */}
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 pt-6 [&:empty]:hidden">
+            <div className="max-w-page-wide mx-auto px-4 sm:px-8 pt-6 [&:empty]:hidden">
                 <AgentGettingStartedChecklist
                     language={language}
                     profileComplete={checklistSignals.profileComplete}

@@ -196,7 +196,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                         <PlanBadge tier="pro" />
                     </span>
                 </div>
-                <p className="mt-1 text-center text-[10px] font-bold uppercase tracking-widest text-primary dark:text-mint">
+                <p className="mt-1 text-center text-kicker font-bold uppercase tracking-widest text-primary dark:text-mint">
                     {pick(MODAL_COPY.recommendedTag, language)}
                 </p>
 
@@ -227,7 +227,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                         >
                             {period === "monthly" ? pick(MODAL_COPY.monthly, language) : pick(MODAL_COPY.annual, language)}
                             {period === "annual" && (
-                                <span className="ml-1.5 rounded-full bg-primary-soft px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-primary dark:bg-primary/20 dark:text-mint">
+                                <span className="ml-1.5 rounded-full bg-primary-soft px-1.5 py-0.5 text-kicker font-black uppercase tracking-wider text-primary dark:bg-primary/20 dark:text-mint">
                                     {pick(MODAL_COPY.savings, language)}
                                 </span>
                             )}

@@ -74,7 +74,7 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.catastropheCoverage}</span>
           </div>
-          <div className="grid grid-cols-3 gap-2 ml-10.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 ml-10.5">
             <div className={`flex flex-col items-center p-2 rounded-lg border ${
               home.catastropheCoverage.fire
                 ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"

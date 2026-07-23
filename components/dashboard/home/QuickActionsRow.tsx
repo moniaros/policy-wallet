@@ -28,7 +28,7 @@ export function QuickActionsRow({
 }) {
     return (
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <Link href="/coverage-insights" className="pw-card p-5">
+            <Link href="/coverage-insights" className="pw-card pw-pad">
                 <p className="pw-kicker">{labels.aiAnalysis}</p>
                 <div className="mt-3 flex items-start gap-3">
                     <Sparkles className="mt-0.5 h-5 w-5 text-primary dark:text-mint" />
@@ -41,7 +41,7 @@ export function QuickActionsRow({
                 </div>
             </Link>
 
-            <Link href="/wallet/add" className="pw-card p-5">
+            <Link href="/wallet/add" className="pw-card pw-pad">
                 <p className="pw-kicker">{labels.quickUpload}</p>
                 <div className="mt-3 flex items-center gap-3">
                     <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-white dark:text-[#1A2420]">
@@ -51,7 +51,7 @@ export function QuickActionsRow({
                 </div>
             </Link>
 
-            <div className="pw-card p-5">
+            <div className="pw-card pw-pad">
                 <p className="pw-kicker">{labels.recentDocuments}</p>
                 <div className="mt-3">
                     {recentDocuments.length === 0 ? (
@@ -68,7 +68,7 @@ export function QuickActionsRow({
                                         <span className="truncate text-xs font-semibold text-black dark:text-white">{document.fileName}</span>
                                         <FileText className="h-4 w-4 flex-shrink-0 text-black/45 dark:text-white/55" />
                                     </div>
-                                    <p className="mt-2 truncate text-[11px] text-black/45 dark:text-white/60">
+                                    <p className="mt-2 truncate text-micro text-black/45 dark:text-white/60">
                                         {document.insurerName}
                                     </p>
                                 </Link>

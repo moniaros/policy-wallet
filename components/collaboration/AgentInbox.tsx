@@ -267,7 +267,7 @@ function ThreadRow({
                     <Icon className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                 </div>
                 {thread.unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
+                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-kicker font-bold text-white">
                         {thread.unreadCount}
                     </span>
                 )}
@@ -277,7 +277,7 @@ function ThreadRow({
                     <p className="text-sm font-semibold text-foreground truncate">
                         {thread.subject}
                     </p>
-                    <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-medium ${STATUS_STYLES[thread.status] || STATUS_STYLES.open}`}>
+                    <span className={`rounded-full px-1.5 py-0.5 text-kicker font-medium ${STATUS_STYLES[thread.status] || STATUS_STYLES.open}`}>
                         {thread.status}
                     </span>
                 </div>
@@ -294,7 +294,7 @@ function ThreadRow({
                 </div>
             </div>
             <div className="text-right shrink-0">
-                <p className="text-[10px] text-neutral-400">
+                <p className="text-kicker text-neutral-400">
                     {formatRelativeDate(thread.lastActivityAt, language as "en" | "el")}
                 </p>
             </div>

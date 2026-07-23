@@ -75,18 +75,18 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
             {/* Summary */}
             <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="pw-card rounded-2xl p-4">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-black/50 dark:text-white/55">Open</p>
+                    <p className="text-micro font-bold uppercase tracking-wider text-black/50 dark:text-white/55">Open</p>
                     <p className="mt-1 text-3xl font-black text-black dark:text-white">{summary.open}</p>
                 </div>
                 <div className="pw-card rounded-2xl p-4">
-                    <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-black/50 dark:text-white/55">
+                    <p className="flex items-center gap-1.5 text-micro font-bold uppercase tracking-wider text-black/50 dark:text-white/55">
                         <Sparkles className="h-3 w-3" />
                         Self-healed (re-analyzed or confirmed)
                     </p>
                     <p className="mt-1 text-3xl font-black text-black dark:text-white">{summary.selfHealed}</p>
                 </div>
                 <div className="pw-card rounded-2xl p-4">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-black/50 dark:text-white/55">Total reports</p>
+                    <p className="text-micro font-bold uppercase tracking-wider text-black/50 dark:text-white/55">Total reports</p>
                     <p className="mt-1 text-3xl font-black text-black dark:text-white">{summary.total}</p>
                 </div>
             </div>
@@ -103,7 +103,7 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                 <div className="pw-card overflow-hidden rounded-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
-                            <thead className="border-b border-black/10 text-[11px] font-bold uppercase tracking-wider text-black/45 dark:border-white/10 dark:text-white/50">
+                            <thead className="border-b border-black/10 text-micro font-bold uppercase tracking-wider text-black/45 dark:border-white/10 dark:text-white/50">
                                 <tr>
                                     <th className="px-4 py-3">Flagged</th>
                                     <th className="px-4 py-3">User</th>
@@ -123,13 +123,13 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                                                 {formatDate(item.flaggedAt)}
                                             </td>
                                             <td className="px-4 py-3">
-                                                <p className="text-[13px] font-semibold text-black dark:text-white">
+                                                <p className="text-body-sm font-semibold text-black dark:text-white">
                                                     {item.userName || "-"}
                                                 </p>
                                                 <p className="text-xs text-black/50 dark:text-white/55">{item.userEmail}</p>
                                             </td>
                                             <td className="px-4 py-3">
-                                                <p className="text-[13px] font-semibold text-black dark:text-white">
+                                                <p className="text-body-sm font-semibold text-black dark:text-white">
                                                     {item.insurerName || "-"}
                                                 </p>
                                                 <p className="text-xs text-black/50 dark:text-white/55">
@@ -139,7 +139,7 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                                             <td className="max-w-[280px] px-4 py-3 text-xs leading-relaxed text-black/70 dark:text-white/75">
                                                 {item.reason}
                                                 {item.provider && (
-                                                    <span className="mt-0.5 block text-[10px] uppercase tracking-wider text-black/40 dark:text-white/45">
+                                                    <span className="mt-0.5 block text-kicker uppercase tracking-wider text-black/40 dark:text-white/45">
                                                         via {item.provider}
                                                     </span>
                                                 )}
@@ -148,7 +148,7 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                                                 {item.currentConfidence !== null ? `${Math.round(item.currentConfidence)}%` : "-"}
                                             </td>
                                             <td className="px-4 py-3">
-                                                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${pill.classes}`}>
+                                                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-wider ${pill.classes}`}>
                                                     {pill.label}
                                                 </span>
                                             </td>
@@ -158,7 +158,7 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                                                         type="button"
                                                         disabled={busyId === item.id}
                                                         onClick={() => handleResolve(item.id)}
-                                                        className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
+                                                        className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
                                                     >
                                                         {busyId === item.id ? (
                                                             <RefreshCw className="h-3 w-3 animate-spin" />

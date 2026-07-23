@@ -120,7 +120,7 @@ export function GettingStartedChecklist({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
-            className="pw-card p-6"
+            className="pw-card pw-pad"
         >
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -219,7 +219,7 @@ export function GettingStartedChecklist({
                                                     {language === "el" ? item.titleEl : item.titleEn}
                                                 </p>
                                                 {!item.completed && (
-                                                    <p className="mt-0.5 text-[11px] text-black/50 dark:text-white/55">
+                                                    <p className="mt-0.5 text-micro text-black/50 dark:text-white/55">
                                                         {language === "el" ? item.descEl : item.descEn}
                                                     </p>
                                                 )}

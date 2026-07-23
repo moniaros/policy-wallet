@@ -39,11 +39,11 @@ export function RenewalsTimelineCard({
     }
 }) {
     return (
-        <div className="pw-card p-5">
+        <div className="pw-card pw-pad">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 {items.length > 0 && (
-                    <p className="text-[11px] font-semibold text-black/45 dark:text-white/55">
+                    <p className="text-micro font-semibold text-black/45 dark:text-white/55">
                         {items.length} {labels.policiesSuffix}
                     </p>
                 )}
@@ -97,14 +97,14 @@ export function RenewalsTimelineCard({
                                     </span>
                                     <div className="min-w-0 flex-1">
                                         <p className="truncate text-xs font-semibold text-black dark:text-white">{item.insurerName}</p>
-                                        <p className="text-[11px] text-black/50 dark:text-white/55">{item.typeLabel} · {item.endDateLabel}</p>
+                                        <p className="text-micro text-black/50 dark:text-white/55">{item.typeLabel} · {item.endDateLabel}</p>
                                     </div>
                                     <div className="flex-shrink-0 text-right">
                                         <p className={`text-xs font-bold ${urgencyText}`}>
                                             {item.days} {labels.daysShort}
                                         </p>
                                         {item.premiumLabel && (
-                                            <p className="text-[11px] text-black/50 dark:text-white/55">{item.premiumLabel}</p>
+                                            <p className="text-micro text-black/50 dark:text-white/55">{item.premiumLabel}</p>
                                         )}
                                     </div>
                                 </Link>

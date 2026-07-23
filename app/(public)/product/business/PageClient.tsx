@@ -58,14 +58,14 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
 
             {/* HERO */}
             <section className="px-6 lg:px-12">
-                <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
+                <div className="mx-auto max-w-form text-center">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Ασφάλεια Επιχείρησης", "Business Insurance")}
                     </span>
-                    <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
+                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
                         {t("Έξι κίνδυνοι, ένα πολυασφαλιστήριο, μηδέν ασάφεια.", "Six risks, one multi-risk policy, zero ambiguity.")}
                     </h1>
-                    <p className="mx-auto max-w-[680px] text-[20px] leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] mb-10">
                         {t("Το πολυασφαλιστήριο μιας μικρής επιχείρησης καλύπτει στέγη, εξοπλισμό, εμπορεύματα, διακοπή εργασιών και ευθύνες — αλλά όχι πάντα όλα μαζί. Η AI δείχνει ποια σκέλη έχετε αγοράσει και ποια λείπουν.", "A small business multi-risk policy covers premises, equipment, stock, interruption and liabilities — but rarely all of them at once. Our AI shows which sections you actually bought and which are missing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -78,12 +78,12 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
 
             {/* MULTI-RISK GRID */}
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
-                <div className="mx-auto max-w-[1240px]">
+                <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
                             {t("Τα σκέλη που πρέπει να ξέρει κάθε ΜμΕ.", "The sections every SME should know.")}
                         </h2>
-                        <p className="text-[#475569] text-[18px] leading-relaxed">
+                        <p className="text-[#475569] text-lead leading-relaxed">
                             {t("Ανεβάστε το συμβόλαιο της επιχείρησης και δείτε το χαρτογραφημένο σε αυτές τις κατηγορίες — με τα όρια, τις απαλλαγές και τα κενά ανά σκέλος.", "Upload your business policy and see it mapped across these categories — with limits, deductibles and gaps per section.")}
                         </p>
                     </div>
@@ -96,8 +96,8 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
                                     <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA]">
                                         <Icon className="h-5 w-5 text-[#0F172A]" />
                                     </div>
-                                    <h3 className="text-[20px] font-semibold text-[#0F172A] mb-3">{t(section.titleEl, section.titleEn)}</h3>
-                                    <p className="text-[14px] leading-relaxed text-[#475569]">{t(section.descEl, section.descEn)}</p>
+                                    <h3 className="text-title font-semibold text-[#0F172A] mb-3">{t(section.titleEl, section.titleEn)}</h3>
+                                    <p className="text-body leading-relaxed text-[#475569]">{t(section.descEl, section.descEn)}</p>
                                 </div>
                             )
                         })}
@@ -109,7 +109,7 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">
-                <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Η επιχείρησή σας δεν χωράει «μάλλον καλυπτόμαστε».", "Your business can't run on “we're probably covered”.")}
                 </h2>
                 <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">

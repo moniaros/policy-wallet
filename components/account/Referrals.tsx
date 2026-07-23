@@ -57,11 +57,11 @@ export function Referrals({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
                 <div className="lg:col-span-2 relative group">
                     <div className="absolute -inset-0.5 bg-primary/20 rounded-[40px] blur opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-                    <div className="relative pw-card p-8 h-full flex flex-col justify-between">
+                    <div className="relative pw-card pw-pad-roomy h-full flex flex-col justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-6">
                                 <span className="w-8 h-px bg-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint">{t.referrals.growthNetwork}</span>
+                                <span className="text-kicker font-black uppercase tracking-widest text-primary dark:text-mint">{t.referrals.growthNetwork}</span>
                             </div>
 
                             <h2 className="text-3xl font-black text-black dark:text-white tracking-tighter mb-4">
@@ -73,14 +73,14 @@ export function Referrals({
                         </div>
 
                         <div className="space-y-6">
-                            <label className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest block px-1">{t.referrals.yourLink}</label>
+                            <label className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest block px-1">{t.referrals.yourLink}</label>
                             <div className="flex flex-col sm:flex-row items-stretch gap-4">
                                 <div className="flex-1 px-5 py-3 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl text-xs text-black/70 dark:text-white/70 font-black tracking-tight overflow-hidden text-ellipsis flex items-center">
                                     {referralLink}
                                 </div>
                                 <button
                                     onClick={handleCopyLink}
-                                    className="px-6 py-3 border border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white rounded-2xl text-[10px] font-black uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
+                                    className="px-6 py-3 border border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white rounded-2xl text-kicker font-black uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
                                 >
                                     {copied ? t.referrals.copied : t.referrals.copyLink}
                                 </button>
@@ -99,7 +99,7 @@ export function Referrals({
                                             onCopyLink?.()
                                         }
                                     }}
-                                    className="flex-1 flex items-center justify-center gap-3 px-5 py-3 bg-primary text-white dark:text-[#1A2420] rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-primary-hover transition-all shadow-lg shadow-primary/25"
+                                    className="flex-1 flex items-center justify-center gap-3 px-5 py-3 bg-primary text-white dark:text-[#1A2420] rounded-xl text-kicker font-black uppercase tracking-wider hover:bg-primary-hover transition-all shadow-lg shadow-primary/25"
                                 >
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                     {t.referrals.shareInvite}
@@ -117,7 +117,7 @@ export function Referrals({
                                 <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z" strokeWidth="2.5" /></svg>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-mint">{t.referrals.creditBalance}</span>
+                                <span className="text-kicker font-black uppercase tracking-widest text-mint">{t.referrals.creditBalance}</span>
                             </div>
                             <div className="text-4xl font-black tracking-tighter mb-3">
                                 {formatPrice(creditBalance)}
@@ -125,7 +125,7 @@ export function Referrals({
                         </div>
 
                         <div className="p-6 bg-white/10 backdrop-blur-md rounded-3xl border border-white/10">
-                            <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-mint">{t.referrals.valueProp}</p>
+                            <p className="text-kicker font-black uppercase tracking-widest mb-3 text-mint">{t.referrals.valueProp}</p>
                             <p className="text-xs font-medium italic leading-relaxed text-white/80">
                                 {t.referrals.valuePropDesc}
                             </p>
@@ -139,7 +139,7 @@ export function Referrals({
                     <div className="px-8 py-6 border-b border-black/10 dark:border-white/15">
                         <div className="flex items-center gap-3">
                             <span className="w-8 h-px bg-black/10 dark:bg-white/20" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.referrals.successRegistry}</h3>
+                            <h3 className="text-kicker font-black uppercase tracking-widest text-black dark:text-white">{t.referrals.successRegistry}</h3>
                         </div>
                     </div>
 
@@ -158,12 +158,12 @@ export function Referrals({
                                                 <div className="text-sm font-black text-black dark:text-white mb-1 group-hover:text-primary dark:group-hover:text-mint transition-colors">
                                                     {referral.referred_email}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-black/45 dark:text-white/60 uppercase tracking-widest">
+                                                <div className="text-kicker font-bold text-black/45 dark:text-white/60 uppercase tracking-widest">
                                                     {t.referrals.added}: {formatDate(referral.created_at)}
                                                     {referral.credited_at && ` • ${t.referrals.earned}: ${formatDate(referral.credited_at)}`}
                                                 </div>
                                             </div>
-                                            <span className={`inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${statusBadge.color}`}>
+                                            <span className={`inline-flex px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest border ${statusBadge.color}`}>
                                                 {statusBadge.label}
                                             </span>
                                         </div>
@@ -178,7 +178,7 @@ export function Referrals({
                     <div className="px-8 py-6 border-b border-black/10 dark:border-white/15">
                         <div className="flex items-center gap-3">
                             <span className="w-8 h-px bg-black/10 dark:bg-white/20" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.referrals.ledger}</h3>
+                            <h3 className="text-kicker font-black uppercase tracking-widest text-black dark:text-white">{t.referrals.ledger}</h3>
                         </div>
                     </div>
 
@@ -191,16 +191,16 @@ export function Referrals({
                             <table className="w-full">
                                 <thead className="bg-black/5 dark:bg-black">
                                     <tr>
-                                        <th className="px-8 py-4 text-left text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.timestamp}</th>
-                                        <th className="px-8 py-4 text-left text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.event}</th>
-                                        <th className="px-8 py-4 text-right text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.delta}</th>
-                                        <th className="px-8 py-4 text-right text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.final}</th>
+                                        <th className="px-8 py-4 text-left text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.timestamp}</th>
+                                        <th className="px-8 py-4 text-left text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.event}</th>
+                                        <th className="px-8 py-4 text-right text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.delta}</th>
+                                        <th className="px-8 py-4 text-right text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.final}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-black/10 dark:divide-white/10">
                                     {creditTransactions.map((transaction) => (
                                         <tr key={transaction.transaction_id} className="hover:bg-black/5 dark:hover:bg-black/80 transition-all">
-                                            <td className="px-8 py-5 whitespace-nowrap text-[10px] font-bold text-black/45 dark:text-white/60 uppercase tracking-wider">
+                                            <td className="px-8 py-5 whitespace-nowrap text-kicker font-bold text-black/45 dark:text-white/60 uppercase tracking-wider">
                                                 {formatDate(transaction.created_at)}
                                             </td>
                                             <td className="px-8 py-5 text-xs font-black text-black dark:text-white uppercase tracking-tight">

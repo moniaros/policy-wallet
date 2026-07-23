@@ -70,7 +70,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           <ShieldOff className="w-4 h-4" />
           {copy.whatsNotCovered}
           {hasExclusions && (
-            <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+            <span className="ml-1 px-1.5 py-0.5 rounded-full text-kicker font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
               {acordData.exclusions!.length}
             </span>
           )}
@@ -110,12 +110,12 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
                       {(coverage.limit || coverage.deductible) && (
                         <div className="flex flex-wrap gap-2 mt-1.5">
                           {coverage.limit && (
-                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#EFF6FF] dark:bg-blue-900/30 text-[#1E40AF] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                            <span className="px-2 py-0.5 rounded-full text-micro font-semibold bg-[#EFF6FF] dark:bg-blue-900/30 text-[#1E40AF] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
                               {copy.limit}: {formatExtractedAmount(coverage.limit, language)}
                             </span>
                           )}
                           {coverage.deductible && (
-                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEF3C7]/60 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
+                            <span className="px-2 py-0.5 rounded-full text-micro font-semibold bg-[#FEF3C7]/60 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
                               {copy.deductible}: {formatExtractedAmount(coverage.deductible, language)}
                             </span>
                           )}

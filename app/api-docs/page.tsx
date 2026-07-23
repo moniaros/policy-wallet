@@ -87,7 +87,7 @@ export default function ApiDocsPage() {
                             <p className="mt-1 text-sm font-semibold text-black dark:text-white">{item.path}</p>
                             <div className="mt-3 space-y-2">
                                 {item.apis.map((api) => (
-                                    <div key={api} className="rounded-lg border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-2.5 py-2 text-[11px] font-medium text-black/80 dark:text-white/80">
+                                    <div key={api} className="rounded-lg border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-2.5 py-2 text-micro font-medium text-black/80 dark:text-white/80">
                                         {api}
                                     </div>
                                 ))}

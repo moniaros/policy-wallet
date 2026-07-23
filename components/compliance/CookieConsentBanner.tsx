@@ -113,7 +113,7 @@ export function CookieConsentBanner() {
                             <label className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
                                 <p className="text-sm font-bold text-slate-900 dark:text-white">{copy.necessaryTitle}</p>
                                 <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{copy.necessaryDescription}</p>
-                                <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-primary dark:text-mint">{copy.alwaysOn}</p>
+                                <p className="mt-2 text-micro font-semibold uppercase tracking-wider text-primary dark:text-mint">{copy.alwaysOn}</p>
                             </label>
 
                             <label className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">

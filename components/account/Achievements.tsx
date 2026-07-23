@@ -109,7 +109,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
                         key={cat}
                         type="button"
                         onClick={() => setFilter(cat)}
-                        className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${
+                        className={`rounded-lg px-3 py-1.5 text-micro font-bold transition ${
                             filter === cat
                                 ? "bg-black text-white dark:bg-white dark:text-black"
                                 : "bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10"
@@ -143,11 +143,11 @@ export function AchievementsPanel({ language }: AchievementsProps) {
                                     <p className="text-xs font-bold text-black dark:text-white truncate">
                                         {language === "el" ? ach.titleEl : ach.titleEn}
                                     </p>
-                                    <p className="mt-0.5 text-[10px] text-black/50 dark:text-white/50 truncate">
+                                    <p className="mt-0.5 text-kicker text-black/50 dark:text-white/50 truncate">
                                         {language === "el" ? ach.descriptionEl : ach.descriptionEn}
                                     </p>
                                     {ach.unlocked && ach.unlockedAt && (
-                                        <p className="mt-1 text-[9px] text-amber-600 dark:text-amber-400">
+                                        <p className="mt-1 text-kicker text-amber-600 dark:text-amber-400">
                                             {formatDate(ach.unlockedAt)}
                                         </p>
                                     )}

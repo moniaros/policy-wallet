@@ -137,7 +137,7 @@ export function QuestionnairesClient({ templates, instances }: Props) {
 
     return (
         <div className="pw-page-shell min-h-screen">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-10">
                     <div>
@@ -233,10 +233,10 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {templates.map((tpl) => (
-                <div key={tpl.id} className="pw-card p-5 group">
+                <div key={tpl.id} className="pw-card pw-pad group">
                     <div className="flex items-start justify-between mb-3">
                         <div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${tpl.isSystem
+                            <span className={`text-kicker font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${tpl.isSystem
                                 ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                                 : "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
                                 }`}>
@@ -262,7 +262,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                     </div>
 
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{tpl.name}</h4>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                    <p className="text-kicker font-bold text-slate-400 uppercase tracking-widest mb-3">
                         {tpl.lineOfBusiness} · {tpl.questions.length} {t.questions} · {tpl.instanceCount} {t.sentCount}
                     </p>
 
@@ -270,14 +270,14 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                     <div className="space-y-1.5">
                         {tpl.questions.slice(0, 3).map((q, i) => (
                             <div key={i} className="flex items-center gap-2 text-xs text-slate-500">
-                                <span className="w-4 h-4 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[9px] font-bold flex-shrink-0">
+                                <span className="w-4 h-4 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-kicker font-bold flex-shrink-0">
                                     {i + 1}
                                 </span>
                                 <span className="truncate">{language === "el" && q.labelEl ? q.labelEl : q.label}</span>
                             </div>
                         ))}
                         {tpl.questions.length > 3 && (
-                            <p className="text-[10px] text-slate-400 pl-6">+{tpl.questions.length - 3} more...</p>
+                            <p className="text-kicker text-slate-400 pl-6">+{tpl.questions.length - 3} more...</p>
                         )}
                     </div>
                 </div>
@@ -373,7 +373,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                     {/* Meta */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.templateName}</label>
+                            <label className="block text-kicker font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.templateName}</label>
                             <input
                                 type="text"
                                 value={name}
@@ -383,7 +383,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.lob}</label>
+                            <label className="block text-kicker font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.lob}</label>
                             <select
                                 value={lob}
                                 onChange={(e) => setLob(e.target.value)}
@@ -404,7 +404,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                             <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                                 <div className="flex items-center gap-2 mb-3">
                                     <GripVertical className="w-4 h-4 text-slate-300" />
-                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <span className="text-kicker font-black text-slate-400 uppercase tracking-widest">
                                         Q{i + 1}
                                     </span>
                                     <div className="flex-1" />
@@ -420,7 +420,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     </select>
                                     <button
                                         onClick={() => updateQuestion(i, "required", !q.required)}
-                                        className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${q.required
+                                        className={`px-2 py-1 rounded-lg text-kicker font-black uppercase tracking-widest ${q.required
                                             ? "bg-amber-50 text-amber-600 dark:bg-amber-900/20"
                                             : "bg-slate-100 text-slate-400 dark:bg-slate-700"
                                             }`}
@@ -557,11 +557,11 @@ function SentList({ instances, t, language }: {
                 <table className="pw-stacked-table w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-100 dark:border-slate-800">
-                            <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest p-4">{t.customer}</th>
-                            <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest p-4">{t.template}</th>
-                            <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest p-4">{t.status}</th>
-                            <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest p-4">{t.sentAt}</th>
-                            <th className="text-right text-[10px] font-black text-slate-400 uppercase tracking-widest p-4"></th>
+                            <th className="text-left text-kicker font-black text-slate-400 uppercase tracking-widest p-4">{t.customer}</th>
+                            <th className="text-left text-kicker font-black text-slate-400 uppercase tracking-widest p-4">{t.template}</th>
+                            <th className="text-left text-kicker font-black text-slate-400 uppercase tracking-widest p-4">{t.status}</th>
+                            <th className="text-left text-kicker font-black text-slate-400 uppercase tracking-widest p-4">{t.sentAt}</th>
+                            <th className="text-right text-kicker font-black text-slate-400 uppercase tracking-widest p-4"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -571,11 +571,11 @@ function SentList({ instances, t, language }: {
                                 <td data-label={t.template} className="p-4 text-slate-600 dark:text-slate-400">{inst.templateName}</td>
                                 <td data-label={t.status} className="p-4">
                                     {inst.status === "completed" ? (
-                                        <span className="inline-flex items-center gap-1 text-[10px] font-black text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint px-2.5 py-1 rounded-full uppercase tracking-widest">
+                                        <span className="inline-flex items-center gap-1 text-kicker font-black text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint px-2.5 py-1 rounded-full uppercase tracking-widest">
                                             <CheckCircle2 className="w-3 h-3" /> {t.completed}
                                         </span>
                                     ) : (
-                                        <span className="inline-flex items-center gap-1 text-[10px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
+                                        <span className="inline-flex items-center gap-1 text-kicker font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
                                             <Clock className="w-3 h-3" /> {t.pending}
                                         </span>
                                     )}
@@ -588,7 +588,7 @@ function SentList({ instances, t, language }: {
                                         <button
                                             onClick={() => handleAnalyze(inst.id)}
                                             disabled={analyzingId === inst.id}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-kicker font-black uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50"
                                         >
                                             <Sparkles className="w-3 h-3" />
                                             {analyzingId === inst.id ? "..." : t.analyze}
@@ -631,7 +631,7 @@ function SentList({ instances, t, language }: {
 
                             {/* Answer summary */}
                             <div className="mb-6">
-                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{t.answers}</h4>
+                                <h4 className="text-kicker font-black text-slate-400 uppercase tracking-widest mb-3">{t.answers}</h4>
                                 <div className="space-y-2">
                                     {analysisData.answerSummary.map((a: any, i: number) => (
                                         <div key={i} className="flex items-start justify-between gap-4 py-2 border-b border-slate-50 dark:border-slate-800">
@@ -644,7 +644,7 @@ function SentList({ instances, t, language }: {
 
                             {/* Needs */}
                             <div className="mb-6">
-                                <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-3">{t.needs}</h4>
+                                <h4 className="text-kicker font-black text-amber-600 uppercase tracking-widest mb-3">{t.needs}</h4>
                                 <div className="space-y-2">
                                     {analysisData.needsIdentified.map((n: string, i: number) => (
                                         <div key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
@@ -657,7 +657,7 @@ function SentList({ instances, t, language }: {
 
                             {/* Recommendations */}
                             <div className="mb-6">
-                                <h4 className="text-[10px] font-black text-primary dark:text-mint uppercase tracking-widest mb-3">{t.recommendations}</h4>
+                                <h4 className="text-kicker font-black text-primary dark:text-mint uppercase tracking-widest mb-3">{t.recommendations}</h4>
                                 <div className="space-y-2">
                                     {analysisData.recommendations.map((r: string, i: number) => (
                                         <div key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
@@ -671,7 +671,7 @@ function SentList({ instances, t, language }: {
                             {/* Missing coverage */}
                             {analysisData.missingCoverage.length > 0 && (
                                 <div>
-                                    <h4 className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-3">{t.missingCoverage}</h4>
+                                    <h4 className="text-kicker font-black text-red-600 uppercase tracking-widest mb-3">{t.missingCoverage}</h4>
                                     <div className="flex flex-wrap gap-2">
                                         {analysisData.missingCoverage.map((mc: any, i: number) => (
                                             <span key={i} className={`px-3 py-1.5 rounded-full text-xs font-bold ${mc.essential
@@ -679,7 +679,7 @@ function SentList({ instances, t, language }: {
                                                 : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                                                 }`}>
                                                 {mc.label}
-                                                {mc.essential && <span className="ml-1 text-[9px]">({t.essential})</span>}
+                                                {mc.essential && <span className="ml-1 text-kicker">({t.essential})</span>}
                                             </span>
                                         ))}
                                     </div>

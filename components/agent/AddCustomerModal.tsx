@@ -138,7 +138,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t.agentModals.addCustomer.kicker}</span>
+                                    <span className="text-kicker font-black uppercase tracking-[0.2em]">{t.agentModals.addCustomer.kicker}</span>
                                 </div>
                                 <h2 id="add-customer-title" className="text-3xl font-black text-foreground tracking-tighter mb-2">{t.agentModals.addCustomer.title} <span className="text-neutral-400 dark:text-neutral-500 italic">{t.agentModals.addCustomer.titleAccent}</span></h2>
                                 <p className="text-base text-muted-foreground font-medium text-balance">{t.agentModals.addCustomer.desc}</p>
@@ -171,7 +171,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
 
                             <button
                                 onClick={onClose}
-                                className="w-full py-5 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors"
+                                className="w-full py-5 text-kicker font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors"
                             >
                                 {t.agentModals.addCustomer.goBack}
                             </button>
@@ -196,14 +196,14 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                             <header className="flex justify-between items-start">
                                 <div>
                                     <h2 id="add-customer-title" className="text-2xl font-black text-foreground tracking-tighter mb-1">{t.agentModals.addCustomer.detailsTitle} <span className="text-neutral-400 italic">{t.agentModals.addCustomer.detailsAccent}</span></h2>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint">{t.agentModals.addCustomer.manualProtocol}</p>
+                                    <p className="text-kicker font-black uppercase tracking-widest text-primary dark:text-mint">{t.agentModals.addCustomer.manualProtocol}</p>
                                 </div>
-                                <button type="button" onClick={() => setView('choice')} className="text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors">{t.agentModals.addCustomer.changeMethod}</button>
+                                <button type="button" onClick={() => setView('choice')} className="text-kicker font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors">{t.agentModals.addCustomer.changeMethod}</button>
                             </header>
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-1.5">
-                                    <label htmlFor="addcustomermodal-f1" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.firstName}</label>
+                                    <label htmlFor="addcustomermodal-f1" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.firstName}</label>
                                     <input id="addcustomermodal-f1"
                                         required
                                         value={formData.name}
@@ -213,7 +213,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="addcustomermodal-f2" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.lastName}</label>
+                                    <label htmlFor="addcustomermodal-f2" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.lastName}</label>
                                     <input id="addcustomermodal-f2"
                                         required
                                         value={formData.surname}
@@ -223,7 +223,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="addcustomermodal-f3" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.emailAddress}</label>
+                                    <label htmlFor="addcustomermodal-f3" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.emailAddress}</label>
                                     <input id="addcustomermodal-f3"
                                         required
                                         type="email"
@@ -234,7 +234,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="addcustomermodal-f4" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.phoneNumber}</label>
+                                    <label htmlFor="addcustomermodal-f4" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.phoneNumber}</label>
                                     <input id="addcustomermodal-f4"
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
@@ -243,7 +243,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label htmlFor="addcustomermodal-f5" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.taxId}</label>
+                                    <label htmlFor="addcustomermodal-f5" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.taxId}</label>
                                     <input id="addcustomermodal-f5"
                                         value={formData.taxId}
                                         onChange={e => setFormData({ ...formData, taxId: e.target.value })}
@@ -267,7 +267,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 {formData.addPolicy && (
                                     <div className="grid grid-cols-2 gap-6 animate-in slide-in-from-top-4 duration-300">
                                         <div className="space-y-1.5">
-                                            <label htmlFor="addcustomermodal-f6" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.insurer}</label>
+                                            <label htmlFor="addcustomermodal-f6" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.insurer}</label>
                                             <input id="addcustomermodal-f6"
                                                 required={formData.addPolicy}
                                                 value={formData.policy.insurerName}
@@ -277,7 +277,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label htmlFor="addcustomermodal-f7" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.policyNumber}</label>
+                                            <label htmlFor="addcustomermodal-f7" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.policyNumber}</label>
                                             <input id="addcustomermodal-f7"
                                                 required={formData.addPolicy}
                                                 value={formData.policy.policyNumber}
@@ -287,7 +287,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label htmlFor="addcustomermodal-f8" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.lineOfBusiness}</label>
+                                            <label htmlFor="addcustomermodal-f8" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.lineOfBusiness}</label>
                                             <select id="addcustomermodal-f8"
                                                 required={formData.addPolicy}
                                                 value={formData.policy.lineOfBusiness}
@@ -303,7 +303,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             </select>
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label htmlFor="addcustomermodal-f9" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.premium}</label>
+                                            <label htmlFor="addcustomermodal-f9" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.premium}</label>
                                             <input id="addcustomermodal-f9"
                                                 type="number"
                                                 value={formData.policy.premiumAmount}
@@ -313,7 +313,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label htmlFor="addcustomermodal-f10" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.startDate}</label>
+                                            <label htmlFor="addcustomermodal-f10" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.startDate}</label>
                                             <input id="addcustomermodal-f10"
                                                 required={formData.addPolicy}
                                                 type="date"
@@ -323,7 +323,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label htmlFor="addcustomermodal-f11" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.endDate}</label>
+                                            <label htmlFor="addcustomermodal-f11" className="text-kicker font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.endDate}</label>
                                             <input id="addcustomermodal-f11"
                                                 required={formData.addPolicy}
                                                 type="date"
@@ -342,14 +342,14 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 <button
                                     type="button"
                                     onClick={() => { reset(); onClose(); }}
-                                    className="flex-1 px-8 py-5 bg-muted text-foreground rounded-[24px] text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all"
+                                    className="flex-1 px-8 py-5 bg-muted text-foreground rounded-[24px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all"
                                 >
                                     {t.agentModals.addCustomer.cancel}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="flex-[2] px-8 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50"
+                                    className="flex-[2] px-8 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-kicker font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50"
                                 >
                                     {loading ? t.agentModals.addCustomer.processing : t.agentModals.addCustomer.addToPipeline}
                                 </button>
@@ -366,7 +366,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                             <p className="text-muted-foreground font-medium mb-12 max-w-sm mx-auto">{t.agentModals.addCustomer.successDesc}</p>
                             <button
                                 onClick={() => { reset(); onClose(); }}
-                                className="px-12 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all"
+                                className="px-12 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-kicker font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all"
                             >
                                 {t.agentModals.addCustomer.continueToCrm}
                             </button>

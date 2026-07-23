@@ -646,7 +646,7 @@ export function AnalysisCard({
                                         {missingArtifacts.map((artifact) => (
                                             <span
                                                 key={artifact}
-                                                className="rounded-full border border-amber-300/70 bg-white px-2 py-0.5 text-[10px] font-bold text-amber-900 dark:border-amber-600/70 dark:bg-amber-900/40 dark:text-amber-100"
+                                                className="rounded-full border border-amber-300/70 bg-white px-2 py-0.5 text-kicker font-bold text-amber-900 dark:border-amber-600/70 dark:bg-amber-900/40 dark:text-amber-100"
                                             >
                                                 {missingArtifactLabels[artifact as keyof typeof missingArtifactLabels] || actionCopy.unknownSection}
                                             </span>

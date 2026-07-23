@@ -54,7 +54,7 @@ export function Field({ label, error, hint, required = false, children, classNam
             <div className={`space-y-1.5 ${className}`}>
                 <label
                     htmlFor={controlId}
-                    className="ml-1 block text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+                    className="ml-1 block text-kicker font-bold uppercase tracking-widest text-muted-foreground"
                 >
                     {label}
                     {required && <span aria-hidden="true" className="ml-0.5 text-red-500">*</span>}

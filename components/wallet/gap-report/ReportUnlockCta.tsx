@@ -72,7 +72,7 @@ export function ReportUnlockCta({ policyId, lockedCount, copy }: ReportUnlockCta
                 {starting ? <Loader2 className="h-4 w-4 animate-spin" /> : <LockOpen className="h-4 w-4" />}
                 {copy.unlockCtaPrefix} {lockedCount} {copy.unlockCtaSuffix}
             </button>
-            <p className="mt-2 flex items-center gap-1.5 text-[11px] text-black/50 dark:text-white/55">
+            <p className="mt-2 flex items-center gap-1.5 text-micro text-black/50 dark:text-white/55">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 {copy.unlockTrust}
             </p>

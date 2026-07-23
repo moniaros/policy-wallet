@@ -28,7 +28,7 @@ export function UsageMeter({ label, used, limit, hint, className = "" }: UsageMe
     return (
         <div className={className}>
             <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-black/50 dark:text-white/55">
+                <p className="text-micro font-bold uppercase tracking-wider text-black/50 dark:text-white/55">
                     {label}
                 </p>
                 <p className="text-xs font-bold text-black/70 dark:text-white/75" aria-live="polite">
@@ -49,7 +49,7 @@ export function UsageMeter({ label, used, limit, hint, className = "" }: UsageMe
                     />
                 </div>
             )}
-            {hint && <p className="mt-1.5 text-[11px] text-black/45 dark:text-white/50">{hint}</p>}
+            {hint && <p className="mt-1.5 text-micro text-black/45 dark:text-white/50">{hint}</p>}
         </div>
     )
 }

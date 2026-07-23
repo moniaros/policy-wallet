@@ -37,14 +37,14 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
 
             {/* HERO */}
             <section className="px-6 lg:px-12">
-                <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
+                <div className="mx-auto max-w-form text-center">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Αστική Ευθύνη", "Personal Liability")}
                     </span>
-                    <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
+                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
                         {t("Όταν η ζημιά είναι σε ξένη περιουσία, ποιος πληρώνει;", "When the damage is to someone else's property, who pays?")}
                     </h1>
-                    <p className="mx-auto max-w-[680px] text-[20px] leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] mb-10">
                         {t("Η αστική ευθύνη καλύπτει ζημιές που προκαλείτε εσείς, το παιδί ή ο σκύλος σας σε τρίτους. Συχνά όμως υπάρχει ήδη μέσα στο συμβόλαιο κατοικίας σας — και την ξαναγοράζετε χωρίς να το ξέρετε.", "Liability cover pays for damage you, your child or your dog cause to others. But it often already sits inside your home policy — and you buy it again without knowing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -57,12 +57,12 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
 
             {/* SCENARIOS */}
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
-                <div className="mx-auto max-w-[1240px]">
+                <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
                             {t("Τρεις καθημερινές στιγμές που γίνονται λογαριασμός.", "Three everyday moments that turn into a bill.")}
                         </h2>
-                        <p className="text-[#475569] text-[18px] leading-relaxed">
+                        <p className="text-[#475569] text-lead leading-relaxed">
                             {t("Καμία δεν είναι σπάνια και καμία δεν προαναγγέλλεται. Δείτε αν το συμβόλαιό σας απαντά σε καθεμία — με τα όρια και τις εξαιρέσεις της.", "None of them is rare and none announces itself. See whether your policy answers each one — with its limits and exclusions.")}
                         </p>
                     </div>
@@ -75,8 +75,8 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                                     <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA]">
                                         <Icon className="h-5 w-5 text-[#0F172A]" />
                                     </div>
-                                    <h3 className="text-[20px] font-semibold text-[#0F172A] mb-3">{t(scenario.titleEl, scenario.titleEn)}</h3>
-                                    <p className="text-[14px] leading-relaxed text-[#475569]">{t(scenario.descEl, scenario.descEn)}</p>
+                                    <h3 className="text-title font-semibold text-[#0F172A] mb-3">{t(scenario.titleEl, scenario.titleEn)}</h3>
+                                    <p className="text-body leading-relaxed text-[#475569]">{t(scenario.descEl, scenario.descEn)}</p>
                                 </div>
                             )
                         })}
@@ -86,15 +86,15 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
 
             {/* DUPLICATE-COVERAGE CHECK */}
             <section className="px-6 lg:px-12 py-24">
-                <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
+                <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
                             {t("Πριν την αγοράσετε, δείτε αν την έχετε ήδη.", "Before you buy it, see if you already own it.")}
                         </h2>
-                        <p className="text-[#475569] text-[18px] leading-relaxed mb-6">
+                        <p className="text-[#475569] text-lead leading-relaxed mb-6">
                             {t("Πολλά συμβόλαια κατοικίας περιλαμβάνουν αστική ευθύνη ως ενσωματωμένη κάλυψη — αγορασμένη μαζί με την πυρκαγιά και ξεχασμένη από την πρώτη μέρα. Όταν ανεβάζετε τα συμβόλαιά σας, η ανάλυση διαβάζει κάθε κάλυψη ξεχωριστά και δείχνει πού η ίδια προστασία εμφανίζεται δύο φορές.", "Many home policies include liability as a bundled cover — bought together with the fire section and forgotten since day one. When you upload your policies, the analysis reads every cover separately and shows where the same protection appears twice.")}
                         </p>
-                        <p className="text-[#475569] text-[18px] leading-relaxed">
+                        <p className="text-[#475569] text-lead leading-relaxed">
                             {t("Αν λείπει, το βλέπετε κι αυτό: το κενό εμφανίζεται δίπλα στα υπόλοιπα, με τα όρια που ισχύουν σήμερα.", "And if it's missing, you see that too: the gap appears next to everything else, with the limits that apply today.")}
                         </p>
                     </div>
@@ -103,8 +103,8 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                     <div className="bg-white p-8 rounded-[12px] border border-[#E2E8F0] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-[14px] font-bold text-[#0F172A] uppercase tracking-wider">Liability Check</h3>
-                                <p className="text-[13px] text-gray-500">2 policies scanned</p>
+                                <h3 className="text-body font-bold text-[#0F172A] uppercase tracking-wider">Liability Check</h3>
+                                <p className="text-body-sm text-gray-500">2 policies scanned</p>
                             </div>
                         </div>
                         <div className="space-y-5">
@@ -141,7 +141,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">
-                <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Μία κάλυψη αρκεί. Δύο είναι σπατάλη.", "One cover is enough. Two is a waste.")}
                 </h2>
                 <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">

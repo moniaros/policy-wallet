@@ -49,7 +49,7 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
                 </h2>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {stats.map((stat) => {
                     const Icon = stat.icon
                     return (
@@ -66,7 +66,7 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
                             )}
                             <div className="flex items-center gap-1.5 text-muted-foreground">
                                 <Icon className="h-3.5 w-3.5" />
-                                <span className="text-[11px] font-medium">{stat.label}</span>
+                                <span className="text-micro font-medium">{stat.label}</span>
                             </div>
                             <p className="mt-1 text-xl font-bold text-foreground">
                                 {stat.value}
@@ -105,7 +105,7 @@ export function RevenuePulseSkeleton() {
                 <Skeleton className="h-5 w-5 rounded" />
                 <Skeleton className="h-5 w-32" />
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {[1, 2, 3].map((i) => (
                     <Skeleton key={i} className="h-24 w-full rounded-xl" />
                 ))}

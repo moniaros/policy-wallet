@@ -30,6 +30,8 @@ export default function ForgotPasswordPage() {
     const [serverError, setServerError] = useState<string | null>(null)
 
     const isGreek = language === "el"
+
+    const otherLocale = isGreek ? "en" : "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
     const copy = {
@@ -79,7 +81,7 @@ export default function ForgotPasswordPage() {
     }
 
     const inputBase =
-        "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[14px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white dark:placeholder:text-white/40"
+        "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-body text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white dark:placeholder:text-white/40"
 
     return (
         <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
@@ -87,16 +89,17 @@ export default function ForgotPasswordPage() {
             <header className="flex items-center justify-between px-6 py-4">
                 <Link
                     href="/"
-                    className="text-[13px] font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
+                    className="text-body-sm font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
                 >
                     {copy.backHome}
                 </Link>
                 <button
                     type="button"
-                    onClick={() => setLanguage(isGreek ? "en" : "el")}
-                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-[12px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
+                    onClick={() => setLanguage(otherLocale)}
+                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-caption font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
                 >
-                    {isGreek ? "EN" : "EL"}
+                    {/* A locale CODE, shown verbatim in both languages — not copy. */}
+                    {otherLocale.toUpperCase()}
                 </button>
             </header>
 
@@ -192,7 +195,7 @@ export default function ForgotPasswordPage() {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-[15px] font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-70 dark:text-[#1A2420]"
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-body font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-70 dark:text-[#1A2420]"
                             >
                                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                                 {submitting ? copy.sending : copy.send}

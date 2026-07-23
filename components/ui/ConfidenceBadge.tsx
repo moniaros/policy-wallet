@@ -19,7 +19,7 @@ export function ConfidenceBadge({
     if (level === "unknown") {
         if (!missing) return null
         return (
-            <span className="inline-flex flex-shrink-0 items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+            <span className="inline-flex flex-shrink-0 items-center rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                 {labels.notFound}
             </span>
         )
@@ -35,7 +35,7 @@ export function ConfidenceBadge({
 
     return (
         <span
-            className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${styles}`}
+            className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-kicker font-semibold ${styles}`}
             title={`${Math.round(score as number)}%`}
             aria-label={`${label} (${Math.round(score as number)}%)`}
         >

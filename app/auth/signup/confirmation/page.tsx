@@ -245,14 +245,14 @@ function SignupConfirmationContent() {
             <header className="flex items-center justify-between px-6 py-4">
                 <Link
                     href="/"
-                    className="text-[13px] font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
+                    className="text-body-sm font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
                 >
                     {copy.backHome}
                 </Link>
                 <button
                     type="button"
                     onClick={() => setLanguage(language === "el" ? "en" : "el")}
-                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-[12px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
+                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-caption font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
                 >
                     {language === "el" ? "EN" : "EL"} {/* i18n-hardcoded-ignore — language switcher shows target code */}
                 </button>

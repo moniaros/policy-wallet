@@ -82,7 +82,7 @@ export default async function OpportunitiesPage() {
         <>
             <OpportunitiesClient initialOpportunities={formattedOpportunities} />
             {/* Opportunities are generated from AI gap detection — informational. */}
-            <div className="mx-auto max-w-[1200px] px-4 sm:px-6 pb-10">
+            <div className="mx-auto max-w-page px-4 sm:px-6 pb-10">
                 <AiDisclaimer />
             </div>
         </>

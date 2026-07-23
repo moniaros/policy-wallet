@@ -113,7 +113,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
             <div className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-background dark:bg-neutral-900 p-5">
                 <div className="flex-1">
                     <div className="mb-2 flex items-center justify-between">
-                        <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t.tasks.completion}</span>
+                        <span className="text-micro font-semibold uppercase tracking-wide text-muted-foreground">{t.tasks.completion}</span>
                         <span className="text-xs font-bold text-foreground">{progress}%</span>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -124,7 +124,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     </div>
                 </div>
                 <div className="text-right">
-                    <span className="block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t.tasks.questions}</span>
+                    <span className="block text-micro font-semibold uppercase tracking-wide text-muted-foreground">{t.tasks.questions}</span>
                     <span className="text-lg font-bold text-foreground">{answeredCount}/{totalCount}</span>
                 </div>
             </div>

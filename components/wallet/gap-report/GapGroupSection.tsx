@@ -26,7 +26,7 @@ export function GapGroupSection({ area, count, copy, children }: GapGroupSection
                 aria-expanded={open}
                 className="mb-2.5 flex w-full items-center justify-between text-left"
             >
-                <span className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                <span className="text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                     {label} ({count})
                 </span>
                 {open ? (

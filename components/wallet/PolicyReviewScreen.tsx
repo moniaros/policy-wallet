@@ -287,7 +287,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         </p>
                         {CHIP_FIELDS.includes(field) && !isDirty && (
                             fieldFlagged ? (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-kicker font-semibold text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300">
                                     <AlertTriangle className="h-3 w-3" />
                                     {reviewCopy.confidenceInvalidated}
                                 </span>
@@ -296,19 +296,19 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                             )
                         )}
                         {isDirty && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-semibold text-[#166534] dark:bg-primary/15 dark:text-mint">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-semibold text-[#166534] dark:bg-primary/15 dark:text-mint">
                                 <Check className="h-3 w-3" />
                                 {reviewCopy.edit}
                             </span>
                         )}
                         {fieldFlagged && isSkipped && !isDirty && (
-                            <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                            <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                                 {reviewCopy.skippedChip}
                             </span>
                         )}
                     </div>
                     {sublabel && (
-                        <p className="mt-0.5 text-[10px] text-slate-400 dark:text-slate-500">{sublabel}</p>
+                        <p className="mt-0.5 text-kicker text-slate-400 dark:text-slate-500">{sublabel}</p>
                     )}
                     {isEditing ? (
                         <div className="mt-2 flex items-center gap-2">
@@ -331,7 +331,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         <button
                             type="button"
                             onClick={() => setSkippedFields((prev) => ({ ...prev, [field]: true }))}
-                            className="mt-1.5 text-[11px] font-semibold text-slate-400 underline-offset-2 hover:underline dark:text-slate-500"
+                            className="mt-1.5 text-micro font-semibold text-slate-400 underline-offset-2 hover:underline dark:text-slate-500"
                         >
                             {reviewCopy.skipField}
                         </button>
@@ -381,7 +381,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                     <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         {title}
                     </span>
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                         {count}
                     </span>
                     <span className="ml-auto text-slate-400">
@@ -417,14 +417,14 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         <p className="text-sm text-slate-500 dark:text-slate-400">
                             {lobLabel(data.lineOfBusiness)}
                         </p>
-                        <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                        <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                             {statusLabel}
                         </span>
                     </div>
                 </div>
                 {data.overallConfidence !== null && (
                     <div className="flex-shrink-0 text-right">
-                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                        <p className="text-kicker font-semibold uppercase tracking-wider text-slate-400">
                             {reviewCopy.overallConfidence}
                         </p>
                         <p className={`text-lg font-black ${confidenceLevel(data.overallConfidence) === "high" ? "text-primary dark:text-mint" : confidenceLevel(data.overallConfidence) === "medium" ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"}`}>
@@ -514,7 +514,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                                     {pick(perk.name)}
                                 </p>
                                 {perk.usageLimit && (
-                                    <span className="flex-shrink-0 text-[10px] font-semibold text-slate-400">
+                                    <span className="flex-shrink-0 text-kicker font-semibold text-slate-400">
                                         {formatExtractedAmount(perk.usageLimit, language === "el" ? "el" : "en")}
                                     </span>
                                 )}
@@ -532,12 +532,12 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                             <div className="flex flex-wrap items-center gap-2">
                                 <p className="text-sm text-slate-700 dark:text-slate-300">{pick(condition.summary)}</p>
                                 {condition.value && (
-                                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                                         {formatExtractedAmount(condition.value, language === "el" ? "el" : "en")}
                                     </span>
                                 )}
                                 {condition.userActionRequired && (
-                                    <span className="rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#B45309] dark:bg-amber-900/30 dark:text-amber-400">
+                                    <span className="rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#B45309] dark:bg-amber-900/30 dark:text-amber-400">
                                         {reviewCopy.actionRequired}
                                     </span>
                                 )}
@@ -600,7 +600,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
 
             {/* CTAs */}
             <div className="flex flex-col gap-3 pt-2">
-                <p className="text-center text-[11px] text-slate-400 dark:text-slate-500">
+                <p className="text-center text-micro text-slate-400 dark:text-slate-500">
                     {reviewCopy.aiMistakeNotice}
                 </p>
                 <button

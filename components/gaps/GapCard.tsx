@@ -69,7 +69,7 @@ export function GapCard({ gap }: GapCardProps) {
             {/* AI Content Area */}
             <div className="bg-white/50 dark:bg-stone-900/30 rounded-xl p-4 border border-white/20">
                 <div className="flex items-center gap-2 mb-3">
-                    <div className="p-1 px-2 bg-[#EEF2FF] dark:bg-indigo-900/50 text-[#4F46E5] dark:text-indigo-300 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                    <div className="p-1 px-2 bg-[#EEF2FF] dark:bg-indigo-900/50 text-[#4F46E5] dark:text-indigo-300 rounded-full text-kicker font-bold uppercase tracking-widest">
                         AI Insight
                     </div>
                 </div>

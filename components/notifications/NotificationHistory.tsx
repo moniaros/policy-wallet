@@ -177,8 +177,8 @@ export function NotificationHistory({
                 {/* Active Filters */}
                 {activeFilter && (
                     <div className="flex items-center gap-3 px-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Φίλτρο:</span>
-                        <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/10 transition-all">
+                        <span className="text-kicker font-black uppercase tracking-widest text-muted-foreground">Φίλτρο:</span>
+                        <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground rounded-full text-kicker font-black uppercase tracking-widest shadow-lg shadow-primary/10 transition-all">
                             {activeFilter.type === 'policy' && 'Ασφάλεια'}
                             {activeFilter.type === 'customer' && 'Πελάτης'}
                             {activeFilter.type === 'event_type' && 'Τύπος'}
@@ -223,7 +223,7 @@ export function NotificationHistory({
                                             <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform ${channelBadge.color}`}>
                                                 {channelBadge.icon}
                                             </div>
-                                            <div className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border text-center ${statusBadge.color}`}>
+                                            <div className={`px-2.5 py-1 rounded-full text-kicker font-black uppercase tracking-widest border text-center ${statusBadge.color}`}>
                                                 {statusBadge.label}
                                             </div>
                                         </div>
@@ -237,13 +237,13 @@ export function NotificationHistory({
                                                             {event.subject}
                                                         </div>
                                                         <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-                                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{getEventTypeLabel(event.event_type)}</span>
+                                                        <span className="text-kicker font-black text-muted-foreground uppercase tracking-widest">{getEventTypeLabel(event.event_type)}</span>
                                                     </div>
                                                     <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
                                                         {event.message}
                                                     </p>
                                                 </div>
-                                                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest bg-muted px-3 py-1.5 rounded-full border border-border whitespace-nowrap">
+                                                <div className="text-kicker font-black text-muted-foreground uppercase tracking-widest bg-muted px-3 py-1.5 rounded-full border border-border whitespace-nowrap">
                                                     {formatDateTime(event.sent_at || event.created_at)}
                                                 </div>
                                             </div>
@@ -258,7 +258,7 @@ export function NotificationHistory({
                                                         <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover/link:bg-primary group-hover/link:text-primary-foreground transition-all">
                                                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeWidth="2.5" /></svg>
                                                         </div>
-                                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_policy_name}</span>
+                                                        <span className="text-kicker font-black text-muted-foreground uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_policy_name}</span>
                                                     </button>
                                                 )}
                                                 {event.related_customer_name && (
@@ -269,14 +269,14 @@ export function NotificationHistory({
                                                         <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover/link:bg-primary group-hover/link:text-primary-foreground transition-all">
                                                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeWidth="2.5" /></svg>
                                                         </div>
-                                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_customer_name}</span>
+                                                        <span className="text-kicker font-black text-muted-foreground uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_customer_name}</span>
                                                     </button>
                                                 )}
 
                                                 {event.status === 'failed' && event.failure_reason && (
                                                     <div className="flex items-center gap-2 text-red-600 bg-red-50 dark:bg-red-950/20 px-4 py-1.5 rounded-full border border-red-100 dark:border-red-900/50 ml-auto">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest">Αποτυχία: {event.failure_reason}</span>
+                                                        <span className="text-kicker font-black uppercase tracking-widest">Αποτυχία: {event.failure_reason}</span>
                                                     </div>
                                                 )}
                                             </div>

@@ -49,7 +49,7 @@ export function GapReportSummaryBand({ summary, copy }: GapReportSummaryBandProp
                 {mechanicChips.map(([mechanic, count]) => (
                     <span
                         key={mechanic}
-                        className="rounded-full border border-black/10 bg-white px-2.5 py-1 text-[11px] font-semibold text-black/70 dark:border-white/15 dark:bg-white/10 dark:text-white/75"
+                        className="rounded-full border border-black/10 bg-white px-2.5 py-1 text-micro font-semibold text-black/70 dark:border-white/15 dark:bg-white/10 dark:text-white/75"
                     >
                         {copy.mechanics[MECHANIC_CHIP_KEY[mechanic]]} · {count}
                     </span>
@@ -57,7 +57,7 @@ export function GapReportSummaryBand({ summary, copy }: GapReportSummaryBandProp
                 {areaChips.map(([area, count]) => (
                     <span
                         key={area}
-                        className="rounded-full border border-primary/25 bg-primary/5 px-2.5 py-1 text-[11px] font-semibold text-primary dark:border-primary/35 dark:bg-primary/15 dark:text-mint"
+                        className="rounded-full border border-primary/25 bg-primary/5 px-2.5 py-1 text-micro font-semibold text-primary dark:border-primary/35 dark:bg-primary/15 dark:text-mint"
                     >
                         {copy.areas[AREA_CHIP_KEY[area]]} · {count}
                     </span>

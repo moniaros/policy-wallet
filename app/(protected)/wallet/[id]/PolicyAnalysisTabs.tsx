@@ -71,7 +71,7 @@ export function PolicyAnalysisTabs({
                 >
                     {t.wallet.aiAnalysis}
                     {gapBadgeCount > 0 && (
-                        <span className="ml-2 px-2 py-0.5 text-[10px] bg-red-100 text-red-700 rounded-full">
+                        <span className="ml-2 px-2 py-0.5 text-kicker bg-red-100 text-red-700 rounded-full">
                             {gapBadgeCount}
                         </span>
                     )}
@@ -109,12 +109,12 @@ export function PolicyAnalysisTabs({
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
                                 <h2 className="text-sm font-black text-black dark:text-white uppercase tracking-widest">{heading(t.wallet.aiPolicyInsights)}</h2>
-                                <span className="px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/15 text-primary dark:text-mint text-[9px] font-black uppercase tracking-widest border border-primary/30 dark:border-primary/35">
+                                <span className="px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/15 text-primary dark:text-mint text-kicker font-black uppercase tracking-widest border border-primary/30 dark:border-primary/35">
                                     {heading(t.wallet.acordVerified)}
                                 </span>
                             </div>
                             {lastAnalyzedAt && (
-                                <span className="text-[10px] text-black/45 dark:text-white/60 font-bold uppercase tracking-widest hidden sm:inline-block">
+                                <span className="text-kicker text-black/45 dark:text-white/60 font-bold uppercase tracking-widest hidden sm:inline-block">
                                     {heading(t.wallet.lastCheck)}: {new Date(lastAnalyzedAt).toLocaleDateString(locale)}
                                 </span>
                             )}
@@ -123,7 +123,7 @@ export function PolicyAnalysisTabs({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-6">
                                 <div>
-                                    <p className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-2">{heading(t.wallet.verificationOverview)}</p>
+                                    <p className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-2">{heading(t.wallet.verificationOverview)}</p>
                                     <div className="p-4 bg-black/5 dark:bg-black rounded-2xl border border-black/10 dark:border-white/15">
                                         <p className="text-xs text-black/65 dark:text-white/70 leading-relaxed">
                                             {t.wallet.verificationDesc}
@@ -133,13 +133,13 @@ export function PolicyAnalysisTabs({
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-3 bg-black/5 dark:bg-black rounded-xl border border-black/10 dark:border-white/15">
-                                        <p className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-1">{heading(t.wallet.contractInsurer)}</p>
+                                        <p className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-1">{heading(t.wallet.contractInsurer)}</p>
                                         <p className="text-xs font-bold text-black dark:text-white truncate">
                                             {String((acordData as any).policy?.insurer || '')}
                                         </p>
                                     </div>
                                     <div className="p-3 bg-primary/10 dark:bg-primary/15 rounded-xl border border-primary/30">
-                                        <p className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-1">{heading(t.wallet.premiumFound)}</p>
+                                        <p className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-1">{heading(t.wallet.premiumFound)}</p>
                                         <p className="text-xs font-bold text-primary dark:text-mint">
                                             {String((acordData as any).policy?.premium?.amount || '')} {String((acordData as any).policy?.premium?.currency || '')}
                                         </p>
@@ -148,7 +148,7 @@ export function PolicyAnalysisTabs({
                             </div>
 
                             <div className="space-y-3">
-                                <p className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-2">{heading(t.wallet.structuredCoverages)}</p>
+                                <p className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-2">{heading(t.wallet.structuredCoverages)}</p>
                                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                     {(acordData as any).coverages?.map((cov: any, idx: number) => (
                                         <div key={idx} className="flex flex-col gap-2 p-3 bg-white dark:bg-black rounded-xl border border-black/10 dark:border-white/15 hover:border-primary/35 transition-colors shadow-sm group">
@@ -157,14 +157,14 @@ export function PolicyAnalysisTabs({
                                                     <span className="font-bold text-xs text-black dark:text-white uppercase tracking-tight">
                                                         {localizeCoverageName(String(cov.name || ''), t.coverage_names as Record<string, string>)}
                                                     </span>
-                                                    {cov.deductible && <span className="text-[9px] text-black/45 dark:text-white/60">{t.wallet.deductibleLabel} {String(cov.deductible)}</span>}
+                                                    {cov.deductible && <span className="text-kicker text-black/45 dark:text-white/60">{t.wallet.deductibleLabel} {String(cov.deductible)}</span>}
                                                 </div>
                                                 <span className="font-mono text-xs text-primary dark:text-mint font-black bg-primary/10 dark:bg-primary/15 px-2 py-1 rounded-lg">{String(cov.limit || '')}</span>
                                             </div>
 
                                             {getExplanation(cov) && (
                                                 <div className="mt-1 pt-2 border-t border-black/10 dark:border-white/15">
-                                                    <p className="text-[11px] text-black/60 dark:text-white/65 leading-snug">
+                                                    <p className="text-micro text-black/60 dark:text-white/65 leading-snug">
                                                         {getExplanation(cov)}
                                                     </p>
                                                 </div>

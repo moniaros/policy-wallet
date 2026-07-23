@@ -217,7 +217,7 @@ export function RecommendationCards({
     }
 
     return (
-        <div className="pw-card p-6">
+        <div className="pw-card pw-pad">
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100/80 dark:bg-amber-900/25">
@@ -248,7 +248,7 @@ export function RecommendationCards({
                     const isAgentCard = rec.ruleId === "no_agent_connected"
                     const reviewLabel = t("Έλεγχος", "Review this")
                     const reviewClasses =
-                        "inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                        "inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
 
                     return (
                         <div
@@ -269,7 +269,7 @@ export function RecommendationCards({
                                             {rec.title[lang] || rec.title.en}
                                         </h3>
                                         <span
-                                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${styles.badgeBg} ${styles.badge}`}
+                                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider ${styles.badgeBg} ${styles.badge}`}
                                         >
                                             {rec.urgency === "critical" && (
                                                 <AlertTriangle className="h-2.5 w-2.5" />
@@ -291,7 +291,7 @@ export function RecommendationCards({
                                             className="mt-2.5"
                                         >
                                             <div className="rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
+                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
                                                     <FileSearch className="h-3 w-3" />
                                                     {t("Από τα στοιχεία σας", "From your policy data")}
                                                 </p>
@@ -310,7 +310,7 @@ export function RecommendationCards({
                                     ) : smart ? (
                                         <>
                                             <div className="mt-2.5 rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
+                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
                                                     <FileSearch className="h-3 w-3" />
                                                     {t("Από τα στοιχεία σας", "From your policy data")}
                                                 </p>
@@ -336,7 +336,7 @@ export function RecommendationCards({
                                             </p>
                                             {rec.matchedProduct && (
                                                 <div className="rounded-lg bg-black/[0.03] dark:bg-white/[0.04] p-2.5 space-y-1.5">
-                                                    <p className="text-[10px] font-bold uppercase tracking-wider text-black/40 dark:text-white/45">
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-black/40 dark:text-white/45">
                                                         {t("Ενδεικτική επιλογή στην αγορά", "One option on the market")}
                                                     </p>
                                                     <p className="text-xs font-semibold text-black/80 dark:text-white/80">
@@ -351,7 +351,7 @@ export function RecommendationCards({
                                                         </p>
                                                     )}
                                                     {rec.matchedProduct.keyBenefits && rec.matchedProduct.keyBenefits.length > 0 && (
-                                                        <ul className="text-[11px] text-black/55 dark:text-white/55 space-y-0.5">
+                                                        <ul className="text-micro text-black/55 dark:text-white/55 space-y-0.5">
                                                             {rec.matchedProduct.keyBenefits.slice(0, 3).map((b, i) => (
                                                                 <li key={i} className="flex items-center gap-1.5">
                                                                     <span className="h-1 w-1 rounded-full bg-primary dark:bg-mint flex-shrink-0" />

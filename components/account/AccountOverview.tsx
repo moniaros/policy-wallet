@@ -98,11 +98,11 @@ export function AccountOverview({
 
                 <div className="flex-1 text-center md:text-left relative z-10">
                     <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                        <span className="px-3 py-1 bg-black/5 dark:bg-black rounded-full text-[10px] font-black uppercase tracking-widest text-black/60 dark:text-white/65">
+                        <span className="px-3 py-1 bg-black/5 dark:bg-black rounded-full text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/65">
                             {currentPlan.name} {t.account.tier}
                         </span>
                         {isDualRole && (
-                            <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 rounded-full text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint border border-primary/30 dark:border-primary/30">
+                            <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 rounded-full text-kicker font-black uppercase tracking-widest text-primary dark:text-mint border border-primary/30 dark:border-primary/30">
                                 {t.account.dualRoleAccount}
                             </span>
                         )}
@@ -128,7 +128,7 @@ export function AccountOverview({
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="w-8 h-px bg-mint" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-mint">{t.account.dualRoleContext}</span>
+                                <span className="text-kicker font-black uppercase tracking-[0.3em] text-mint">{t.account.dualRoleContext}</span>
                             </div>
                             <h3 className="text-xl font-black tracking-tight mb-2">
                                 {t.account.manageFor} <span className="text-white/70 italic">{t.account.yourRole}</span>
@@ -141,7 +141,7 @@ export function AccountOverview({
                             <button
                                 onClick={() => onSwitchRole?.('policyholder')}
                                 aria-pressed={isPolicyholder}
-                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-black ${isPolicyholder
+                                className={`px-6 py-2.5 rounded-xl text-kicker font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-black ${isPolicyholder
                                     ? 'bg-white text-black shadow-xl'
                                     : 'text-white/65 hover:text-white'
                                     }`}
@@ -151,7 +151,7 @@ export function AccountOverview({
                             <button
                                 onClick={() => onSwitchRole?.('agent')}
                                 aria-pressed={!isPolicyholder}
-                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-black ${!isPolicyholder
+                                className={`px-6 py-2.5 rounded-xl text-kicker font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-black ${!isPolicyholder
                                     ? 'bg-white text-black shadow-xl'
                                     : 'text-white/65 hover:text-white'
                                     }`}
@@ -173,7 +173,7 @@ export function AccountOverview({
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
                                         <span className="w-6 h-px bg-primary" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint">{t.account.currentPlan}</span>
+                                        <span className="text-kicker font-black uppercase tracking-widest text-primary dark:text-mint">{t.account.currentPlan}</span>
                                     </div>
                                     <h2 className="text-3xl font-black text-black dark:text-white tracking-tighter">
                                         {currentPlan.name}
@@ -183,7 +183,7 @@ export function AccountOverview({
                                     <div className="text-3xl font-black text-black dark:text-white tracking-tight">
                                         {formatPrice(currentPlan.price)}
                                     </div>
-                                    <div className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest mt-1">
+                                    <div className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest mt-1">
                                         {currentPlan.billing_interval === 'month' ? t.account.perMonth : t.account.perYear}
                                     </div>
                                 </div>
@@ -191,7 +191,7 @@ export function AccountOverview({
                         </div>
 
                         <div className="p-8">
-                            <h3 className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] mb-6">
+                            <h3 className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] mb-6">
                                 {t.account.includedPrivileges}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
@@ -213,7 +213,7 @@ export function AccountOverview({
                                 <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth="2.5" /></svg>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-white/85 dark:text-[#1A2420]/85">{t.account.walletCredits}</span>
+                                <span className="text-kicker font-black uppercase tracking-widest text-white/85 dark:text-[#1A2420]/85">{t.account.walletCredits}</span>
                             </div>
                             <div className="text-4xl font-black tracking-tighter mb-3">
                                 {formatPrice(creditBalance)}
@@ -225,8 +225,8 @@ export function AccountOverview({
                     </div>
 
                     {/* Metrics Card */}
-                    <div className="pw-card p-8">
-                        <h3 className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] mb-8">
+                    <div className="pw-card pw-pad-roomy">
+                        <h3 className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] mb-8">
                             {t.account.cycleMetrics}
                         </h3>
                         <div className="space-y-8">
@@ -242,7 +242,7 @@ export function AccountOverview({
                                                 {metric.usage_type === 'customer_count' && t.account.activeRelationships}
                                                 {metric.usage_type === 'customer_invite' && t.account.networkGrowth}
                                             </span>
-                                            <span className="text-[10px] font-bold text-black/45 dark:text-white/60">
+                                            <span className="text-kicker font-bold text-black/45 dark:text-white/60">
                                                 {metric.amount_used} / {isUnlimited ? "∞" : metric.amount_limit}
                                             </span>
                                         </div>
@@ -303,7 +303,7 @@ export function AccountOverview({
                         <div>
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="w-8 h-px bg-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{t.account.expandCapabilities}</span>
+                                <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{t.account.expandCapabilities}</span>
                             </div>
                             <h2 className="text-4xl font-black text-black dark:text-white tracking-tighter">
                                 {t.account.scalingTitle} <span className="text-black/45 dark:text-white/60 italic">{t.account.scalingSubtitle}</span>
@@ -327,7 +327,7 @@ export function AccountOverview({
                                         className={`pw-card ${isFeatured ? 'border-primary' : ''} p-8 hover:scale-[1.02] transition-all group relative overflow-hidden`}
                                     >
                                         {hasTrial && (
-                                            <div className="absolute top-5 right-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
+                                            <div className="absolute top-5 right-5 bg-primary text-white dark:text-[#1A2420] text-kicker font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
                                                 {subscriptionCopy.trial.badge[language]}
                                             </div>
                                         )}
@@ -337,7 +337,7 @@ export function AccountOverview({
                                             </h4>
                                             <div className="flex items-end gap-1">
                                                 <span className="text-3xl font-black text-black dark:text-white">{formatPrice(plan.price)}</span>
-                                                <span className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest pb-1">{t.account.perMonth} · {t.account.inclVat}</span>
+                                                <span className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest pb-1">{t.account.perMonth} · {t.account.inclVat}</span>
                                             </div>
                                         </div>
 
@@ -354,7 +354,7 @@ export function AccountOverview({
 
                                         <button
                                             onClick={() => onUpgrade?.(plan.plan_id)}
-                                            className="w-full py-4 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl text-[10px] font-black uppercase tracking-wider shadow-xl shadow-primary/20 transition-all active:scale-95"
+                                            className="w-full py-4 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl text-kicker font-black uppercase tracking-wider shadow-xl shadow-primary/20 transition-all active:scale-95"
                                         >
                                             {hasTrial
                                                 ? subscriptionCopy.trial.startCta[language]

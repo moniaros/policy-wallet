@@ -74,7 +74,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                             <p className="text-sm font-bold text-black dark:text-white">
                                 {t("Πόσο πιθανό είναι να μας προτείνετε;", "How likely are you to recommend us?")}
                             </p>
-                            <p className="mt-1 text-[11px] text-black/50 dark:text-white/55">
+                            <p className="mt-1 text-micro text-black/50 dark:text-white/55">
                                 {t("0 = Καθόλου πιθανό · 10 = Σίγουρα", "0 = Not likely · 10 = Very likely")}
                             </p>
                         </div>
@@ -102,7 +102,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
                             >
-                                <p className="mb-1 text-[11px] font-semibold text-black/60 dark:text-white/60">
+                                <p className="mb-1 text-micro font-semibold text-black/60 dark:text-white/60">
                                     {getScoreLabel(score)} — {t("Πείτε μας τον λόγο:", "Tell us why:")}
                                 </p>
                                 <textarea

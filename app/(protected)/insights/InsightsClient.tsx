@@ -220,7 +220,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
             {/* ── Header ── */}
             <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
                 <div className="absolute inset-0 bg-primary/5" />
-                <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+                <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
                     <div className="flex items-center gap-4">
                         <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
                             <BarChart3 className="w-6 h-6" />
@@ -237,13 +237,13 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* ── KPI Cards ── */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
                     {kpis.map((kpi, i) => {
                         const Icon = kpi.icon
                         return (
-                            <FadeIn key={kpi.label} delay={i * 0.08} className="pw-card p-6">
+                            <FadeIn key={kpi.label} delay={i * 0.08} className="pw-card pw-pad">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className={`p-3 rounded-xl ${kpi.bgAccent}`}>
                                         <Icon className="w-5 h-5 text-neutral-700 dark:text-neutral-200" />
@@ -263,7 +263,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 {/* ── Row: Portfolio Health + Premium Breakdown ── */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Portfolio Health Ring */}
-                    <FadeIn delay={0.35} className="pw-card p-6">
+                    <FadeIn delay={0.35} className="pw-card pw-pad">
                         <h2 className="text-lg font-extrabold text-foreground mb-6 flex items-center gap-2">
                             <Users className="w-5 h-5 text-primary dark:text-mint" />
                             {p.portfolioHealth}
@@ -275,7 +275,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                     <span className="text-3xl font-black text-foreground">
                                         {data.portfolioHealth.totalCustomers}
                                     </span>
-                                    <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+                                    <span className="text-micro font-semibold uppercase tracking-wider text-neutral-400">
                                         {p.customers}
                                     </span>
                                 </div>
@@ -302,7 +302,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     </FadeIn>
 
                     {/* Premium Breakdown */}
-                    <FadeIn delay={0.45} className="pw-card p-6">
+                    <FadeIn delay={0.45} className="pw-card pw-pad">
                         <h2 className="text-lg font-extrabold text-foreground mb-6 flex items-center gap-2">
                             <BarChart3 className="w-5 h-5 text-primary dark:text-mint" />
                             {p.premiumBreakdown}
@@ -350,7 +350,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 {/* ── Row: Opportunity Funnel + Renewal Timeline ── */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Opportunity Funnel */}
-                    <FadeIn delay={0.55} className="pw-card p-6">
+                    <FadeIn delay={0.55} className="pw-card pw-pad">
                         <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                             <Target className="w-5 h-5 text-primary dark:text-mint" />
                             {p.opportunityFunnel}
@@ -397,7 +397,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     </FadeIn>
 
                     {/* Renewal Timeline */}
-                    <FadeIn delay={0.65} className="pw-card p-6">
+                    <FadeIn delay={0.65} className="pw-card pw-pad">
                         <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                             <CalendarClock className="w-5 h-5 text-amber-500" />
                             {p.renewalTimeline}
@@ -432,7 +432,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                     </p>
                                                 </div>
                                                 <div className="text-right flex-shrink-0">
-                                                    <span className={`inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${uc.badge}`}>
+                                                    <span className={`inline-block text-kicker font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${uc.badge}`}>
                                                         {item.daysUntilExpiry}{p.daysAbbr}
                                                     </span>
                                                     <p className="text-xs font-bold text-neutral-500 mt-1">
@@ -450,7 +450,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                 {/* ── Renewal Metrics ── */}
                 {data.renewalMetrics && (
-                    <FadeIn delay={0.7} className="pw-card p-6 mb-6">
+                    <FadeIn delay={0.7} className="pw-card pw-pad mb-6">
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-lg font-extrabold text-foreground flex items-center gap-2">
                                 <RefreshCw className="w-5 h-5 text-primary dark:text-mint" />
@@ -475,7 +475,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             ].map((metric) => (
                                 <div key={metric.label} className="text-center">
                                     <p className={`text-2xl font-black ${metric.color}`}>{metric.value}</p>
-                                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">{metric.label}</p>
+                                    <p className="text-kicker font-bold text-neutral-400 uppercase tracking-widest mt-1">{metric.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -491,7 +491,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 )}
 
                 {/* ── Coverage Gaps Summary ── */}
-                <FadeIn delay={0.75} className="pw-card p-6">
+                <FadeIn delay={0.75} className="pw-card pw-pad">
                     <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                         <ShieldAlert className="w-5 h-5 text-red-500" />
                         {p.coverageGaps}
@@ -515,7 +515,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                     <div key={gap.id} className={`rounded-xl p-4 ${sev.bg}`}>
                                         <div className="flex items-start justify-between mb-2">
                                             <ShieldAlert className={`w-4 h-4 flex-shrink-0 mt-0.5 ${sev.color}`} />
-                                            <span className={`text-[10px] font-black uppercase tracking-wider ${sev.color}`}>
+                                            <span className={`text-kicker font-black uppercase tracking-wider ${sev.color}`}>
                                                 {sev.label[language === "el" ? "el" : "en"]}
                                             </span>
                                         </div>
@@ -523,7 +523,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                             {gap.title}
                                         </p>
                                         <p className="text-xs text-muted-foreground truncate">{gap.customerName}</p>
-                                        <p className="text-[11px] text-neutral-400 mt-2">
+                                        <p className="text-micro text-neutral-400 mt-2">
                                             {gap.policyNumber} · {new Date(gap.detectedAt).toLocaleDateString(locale)}
                                         </p>
                                     </div>

@@ -95,7 +95,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
     const hasActions = Boolean(onRunAnalysis || onViewDocuments || onShare || onDelete)
 
     return (
-        <div className="group pw-card p-4 transition-all">
+        <div className="group pw-card pw-pad-tight transition-all">
             <button
                 type="button"
                 id={id}
@@ -118,7 +118,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                     {/* Row 1: insurer name + status badge */}
                     <div className="mb-0.5 flex items-center justify-between gap-2">
                         <div className="flex min-w-0 items-center gap-1.5">
-                            <span className="truncate text-[13px] font-semibold text-foreground">
+                            <span className="truncate text-body-sm font-semibold text-foreground">
                                 {displayInsurer}
                             </span>
                             {policy.verified && !isAnalyzing && (
@@ -129,7 +129,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                     </div>
 
                     {/* Row 2: LOB type + expiry inline */}
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-micro text-muted-foreground">
                         {localizedLob}
                         {expiryInline && <> · {expiryInline}</>}
                     </p>
@@ -162,7 +162,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
 
 export function PolicyCardSkeleton() {
     return (
-        <div className="pw-card p-4">
+        <div className="pw-card pw-pad-tight">
             <div className="flex items-center gap-3">
                 <Skeleton className="h-9 w-9 rounded-lg" />
                 <div className="flex-1 space-y-1.5">

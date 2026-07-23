@@ -209,15 +209,15 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                             Γ
                         </div>
                         <div className="min-w-0 flex-1 text-left">
-                            <p className="truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">
+                            <p className="truncate text-body-sm font-semibold text-[#0F172A] dark:text-white">
                                 {NO_AGENT_COPY.exampleName[lang]}
                             </p>
-                            <p className="inline-flex items-center gap-1 text-[11px] text-[#64748B] dark:text-white/55">
+                            <p className="inline-flex items-center gap-1 text-micro text-[#64748B] dark:text-white/55">
                                 <ShieldCheck className="h-3 w-3 text-primary dark:text-mint" />
                                 {NO_AGENT_COPY.exampleMeta[lang]}
                             </p>
                         </div>
-                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#166534] dark:bg-primary/15 dark:text-mint">
+                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#166534] dark:bg-primary/15 dark:text-mint">
                             {NO_AGENT_COPY.exampleBadge[lang]}
                         </span>
                     </div>
@@ -533,7 +533,7 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                                 <Icon className="w-4 h-4" />
                                 {tab.label}
                                 {tab.count && tab.count > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
+                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-kicker font-bold text-white">
                                         {tab.count}
                                     </span>
                                 )}
@@ -662,7 +662,7 @@ function OverviewTab({
                             </p>
                         </div>
                         {agent.branding?.licenseNumber && (
-                            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
+                            <p className="text-kicker font-bold text-neutral-400 uppercase tracking-widest mt-1">
                                 License: {agent.branding.licenseNumber}
                             </p>
                         )}
@@ -719,7 +719,7 @@ function OverviewTab({
                                     <p className="truncate text-sm font-semibold text-foreground">
                                         {sp.insurerName ? `${sp.insurerName} · ${sp.policyNumber}` : sp.policyNumber}
                                     </p>
-                                    <p className="text-[11px] text-muted-foreground">
+                                    <p className="text-micro text-muted-foreground">
                                         {sp.addedByAdvisor
                                             ? pick(PAGE_COPY.addedByAdvisor, language)
                                             : pick(PAGE_COPY.sharedByYou, language)}

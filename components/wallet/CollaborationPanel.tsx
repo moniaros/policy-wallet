@@ -153,7 +153,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
             return (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft dark:bg-primary/15 border border-primary/30 dark:border-primary/40 rounded-full">
                     <Shield className="w-3 h-3 text-[#166534] dark:text-mint" />
-                    <span className="text-[10px] font-bold text-[#166534] dark:text-mint uppercase tracking-wider">{MANAGE_BADGE_COPY[language]}</span>
+                    <span className="text-kicker font-bold text-[#166534] dark:text-mint uppercase tracking-wider">{MANAGE_BADGE_COPY[language]}</span>
                 </div>
             )
         }
@@ -162,7 +162,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
             return (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-full">
                     <Edit3 className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                    <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">{copy.canEdit}</span>
+                    <span className="text-kicker font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">{copy.canEdit}</span>
                 </div>
             )
         }
@@ -170,7 +170,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
         return (
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft dark:bg-primary/15 border border-primary/30 dark:border-primary/40 rounded-full">
                 <Eye className="w-3 h-3 text-primary dark:text-mint" />
-                <span className="text-[10px] font-bold text-primary dark:text-mint uppercase tracking-wider">{copy.viewOnly}</span>
+                <span className="text-kicker font-bold text-primary dark:text-mint uppercase tracking-wider">{copy.viewOnly}</span>
             </div>
         )
     }
@@ -284,7 +284,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                             {copy.viewOnly}
                                         </span>
                                     </div>
-                                    <p className={`text-[10px] font-medium ${permissions === "view" ? "text-[#166534] dark:text-mint" : "text-slate-500"}`}>
+                                    <p className={`text-kicker font-medium ${permissions === "view" ? "text-[#166534] dark:text-mint" : "text-slate-500"}`}>
                                         {copy.readOnlyAccess}
                                     </p>
                                 </button>
@@ -303,7 +303,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                             {copy.canEdit}
                                         </span>
                                     </div>
-                                    <p className={`text-[10px] font-medium ${permissions === "edit" ? "text-amber-700 dark:text-amber-300" : "text-slate-500"}`}>
+                                    <p className={`text-kicker font-medium ${permissions === "edit" ? "text-amber-700 dark:text-amber-300" : "text-slate-500"}`}>
                                         {copy.fullManagement}
                                     </p>
                                 </button>
@@ -355,7 +355,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                     <div className="space-y-3">
                         <div className="flex items-center gap-2 mb-4">
                             <Clock className="w-4 h-4 text-slate-400" />
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{walletCopy.accessGrantedTo}</p>
+                            <p className="text-kicker font-black text-slate-400 uppercase tracking-widest">{walletCopy.accessGrantedTo}</p>
                         </div>
                         {shares.map((share, index) => (
                             <div
@@ -388,7 +388,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                                 {getPermissionBadge(share.permissions)}
                                             </div>
                                             <p className="text-xs text-slate-500 dark:text-slate-400 truncate mb-1">{share.email}</p>
-                                            <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                                            <div className="flex items-center gap-1.5 text-kicker text-slate-400">
                                                 <Clock className="w-3 h-3" />
                                                 <span>{getTimeAgo(share.grantedAt)}</span>
                                             </div>

@@ -17,12 +17,12 @@ export function TrustSignalsFooter({ licenseNumber, lastUpdated }: TrustSignalsF
     return (
         <div className="flex items-center justify-between border-t border-neutral-200/60 dark:border-neutral-700/60 pt-3 mt-4">
             {licenseNumber && (
-                <p className="text-[10px] text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
+                <p className="text-kicker text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
                     <ShieldCheck className="h-3 w-3" />
                     {t.agentUi.eaeeNo}: {licenseNumber}
                 </p>
             )}
-            <p className="text-[10px] text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
+            <p className="text-kicker text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 {t.agentUi.lastUpdated}: {formatRelativeDate(lastUpdated, language)}
             </p>
@@ -64,7 +64,7 @@ export function DataConfidenceBadge({ confidence, className }: DataConfidenceBad
     const Icon = config.icon
 
     return (
-        <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${config.style} ${className || ""}`}>
+        <span className={`inline-flex items-center gap-1 text-kicker font-medium ${config.style} ${className || ""}`}>
             <Icon className="h-3 w-3" />
             {language === "el" ? config.label.el : config.label.en}
         </span>

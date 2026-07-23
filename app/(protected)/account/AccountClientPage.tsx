@@ -174,7 +174,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                                     document.getElementById(`account-tab-${nextId}`)?.focus()
                                 }}
                                 className={`
-                                    flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider
+                                    flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-kicker font-black uppercase tracking-wider
                                     transition-all duration-300 relative isolate whitespace-nowrap
                                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
                                     ${activeTab === tab.id

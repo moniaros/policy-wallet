@@ -122,7 +122,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
 
     if (loading) {
         return (
-            <div className={`pw-card p-6 ${className}`}>
+            <div className={`pw-card pw-pad ${className}`}>
                 <div className="animate-pulse space-y-3">
                     <div className="h-4 bg-muted rounded w-1/2" />
                     <div className="h-3 bg-muted rounded w-full" />
@@ -146,7 +146,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
                 : "bg-primary"
 
     return (
-        <div className={`pw-card p-6 space-y-5 ${className}`}>
+        <div className={`pw-card pw-pad space-y-5 ${className}`}>
             {/* Header */}
             <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold arc-text">{i18n.title}</h3>

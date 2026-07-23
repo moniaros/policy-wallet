@@ -325,16 +325,16 @@ export function CollaborationTimeline({
                                                 <TypeIcon className={`w-4 h-4 flex-shrink-0 ${typeConfig.color}`} />
                                                 <p className="text-sm font-semibold text-foreground truncate">{thread.subject}</p>
                                             </div>
-                                            <span className="text-[10px] uppercase font-bold text-neutral-500">{thread.priority}</span>
+                                            <span className="text-kicker uppercase font-bold text-neutral-500">{thread.priority}</span>
                                         </div>
                                         <div className="mt-1 flex gap-2 items-center flex-wrap">
-                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-muted`}>{t.collaboration.timeline.threadType[threadTypeKey]}</span>
+                                            <span className={`text-kicker px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-muted`}>{t.collaboration.timeline.threadType[threadTypeKey]}</span>
                                             <span className="text-xs text-neutral-500">{thread.status}</span>
                                             {waitingOnYou ? (
-                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">{t.collaboration.timeline.waitingOnYou}</span>
+                                                <span className="text-kicker px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">{t.collaboration.timeline.waitingOnYou}</span>
                                             ) : null}
                                             {overdue ? (
-                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">{t.collaboration.timeline.overdue}</span>
+                                                <span className="text-kicker px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">{t.collaboration.timeline.overdue}</span>
                                             ) : null}
                                         </div>
                                     </button>
@@ -391,13 +391,13 @@ export function CollaborationTimeline({
                                             <div className="flex items-center gap-1.5">
                                                 <p className="font-semibold text-neutral-800 dark:text-neutral-200">{item.sender.name || item.sender.email}</p>
                                                 {item.isPrivate && (
-                                                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                                                    <span className="inline-flex items-center gap-0.5 text-kicker font-bold text-amber-600 dark:text-amber-400">
                                                         <Lock className="w-3 h-3" />
                                                         {t.collaboration.timeline.privateLabel}
                                                     </span>
                                                 )}
                                                 {item.messageType === "system" && (
-                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase">{t.collaboration.timeline.system}</span>
+                                                    <span className="text-kicker font-bold text-neutral-400 uppercase">{t.collaboration.timeline.system}</span>
                                                 )}
                                             </div>
                                             <p className="text-neutral-600 dark:text-neutral-300">{item.body}</p>
@@ -441,7 +441,7 @@ export function CollaborationTimeline({
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowTemplates(!showTemplates)}
-                                                    className="text-[10px] font-semibold text-primary dark:text-mint hover:underline"
+                                                    className="text-kicker font-semibold text-primary dark:text-mint hover:underline"
                                                 >
                                                     {showTemplates ? t.collaboration.timeline.hideTemplates : t.collaboration.timeline.templates}
                                                 </button>
@@ -452,7 +452,7 @@ export function CollaborationTimeline({
                                                         onChange={(e) => setIsPrivateMessage(e.target.checked)}
                                                         className="w-3 h-3 rounded border-neutral-300 text-amber-500 focus:ring-amber-500"
                                                     />
-                                                    <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
+                                                    <span className="text-kicker font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
                                                         <Lock className="w-3 h-3" />
                                                         {t.collaboration.timeline.privateNote}
                                                     </span>

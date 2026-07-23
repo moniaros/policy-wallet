@@ -78,7 +78,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
     return (
         <div className="pw-page-shell min-h-screen">
-            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 <div className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">PREFERENCES</span>
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
@@ -94,7 +94,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         "Verification" and "Payouts" were dead buttons (no handler,
                         no matching pane), so they've been removed. */}
                     <div className="space-y-3">
-                        <button className="w-full flex items-center gap-3 px-5 py-4 bg-neutral-900 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all shadow-xl shadow-neutral-900/10 dark:bg-neutral-100 dark:text-neutral-900">
+                        <button className="w-full flex items-center gap-3 px-5 py-4 bg-neutral-900 text-white rounded-2xl text-body-sm font-black uppercase tracking-widest transition-all shadow-xl shadow-neutral-900/10 dark:bg-neutral-100 dark:text-neutral-900">
                             <Building className="w-4 h-4" /> {roleCopy.agentSettings.agencyProfile}
                         </button>
                     </div>
@@ -124,10 +124,10 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         </div>
 
                         {/* Agency Profile */}
-                        <div className="pw-card p-8 space-y-8 border-t-4 border-t-primary">
+                        <div className="pw-card pw-pad-roomy space-y-8 border-t-4 border-t-primary">
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.agencyName}</label>
+                                    <label className="text-kicker font-black text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.agencyName}</label>
                                     <input
                                         type="text"
                                         value={agencyName}
@@ -138,7 +138,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.licenseNumber}</label>
+                                    <label className="text-kicker font-black text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.licenseNumber}</label>
                                     <input
                                         type="text"
                                         value={licenseNumber}
@@ -162,7 +162,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         </div>
 
                         {/* Commission Rates */}
-                        <div className="pw-card p-8 space-y-6 border-t-4 border-t-primary">
+                        <div className="pw-card pw-pad-roomy space-y-6 border-t-4 border-t-primary">
                             <div>
                                 <h3 className="text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
                                     <Percent className="w-4 h-4 text-primary dark:text-mint" />
@@ -214,12 +214,12 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
                         {/* Subscription */}
                         {subscription && (
-                            <div className="pw-card p-8 space-y-4 border-t-4 border-t-primary">
+                            <div className="pw-card pw-pad-roomy space-y-4 border-t-4 border-t-primary">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xs font-black text-foreground uppercase tracking-widest">
                                         {pick(SETTINGS_COPY.subscription, language)}
                                     </h3>
-                                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
+                                    <span className={`text-kicker font-black uppercase tracking-widest px-3 py-1 rounded-full ${
                                         subscription.isPaid
                                             ? "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
                                             : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
@@ -230,7 +230,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-4">
-                                        <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">
+                                        <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1">
                                             {pick(SETTINGS_COPY.customers, language)}
                                         </p>
                                         <p className="text-lg font-black text-foreground">
@@ -241,7 +241,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                         </p>
                                     </div>
                                     <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-4">
-                                        <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">
+                                        <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1">
                                             {pick(SETTINGS_COPY.aiAnalysesPerMo, language)}
                                         </p>
                                         <p className="text-lg font-black text-foreground">
@@ -264,7 +264,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                             real GDPR deletion flow on the account page; the button
                             here had no handler, so it links there instead of
                             being a dead (destructive) control. */}
-                        <div className="pw-card p-8 border border-rose-100 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">
+                        <div className="pw-card pw-pad-roomy border border-rose-100 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">
                             <h3 className="text-xs font-black text-rose-900 dark:text-rose-400 uppercase tracking-widest mb-2">{roleCopy.agentSettings.dangerZone}</h3>
                             <p className="text-sm text-rose-700/70 dark:text-rose-400/70 mb-6 font-medium">{roleCopy.agentSettings.dangerDescription}</p>
                             <Link href="/account" className="arc-btn bg-rose-600 hover:bg-rose-700 text-white transition-all inline-flex">

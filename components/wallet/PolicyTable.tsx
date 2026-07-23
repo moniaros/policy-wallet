@@ -124,12 +124,12 @@ export function PolicyTable({
                                                 <Icon className="h-4 w-4" />
                                             </span>
                                             <div className="min-w-0">
-                                                <p className="truncate text-[13px] font-semibold text-foreground">
+                                                <p className="truncate text-body-sm font-semibold text-foreground">
                                                     {summary.assetTitle}
                                                 </p>
                                                 {/* assetTitle falls back to the insurer when there is no
                                                     vehicle/property to name — don't print it twice. */}
-                                                <p className="truncate text-[11px] text-muted-foreground">
+                                                <p className="truncate text-micro text-muted-foreground">
                                                     {summary.assetTitle === policy.insurerName
                                                         ? policy.policyNumber
                                                         : policy.insurerName}
@@ -139,17 +139,17 @@ export function PolicyTable({
                                     </td>
 
                                     <td className="px-4 py-2.5">
-                                        <span className="text-[12px] text-black/70 dark:text-white/70">
+                                        <span className="text-caption text-black/70 dark:text-white/70">
                                             {branch.label[lang]}
                                         </span>
                                     </td>
 
                                     <td className="px-4 py-2.5">
-                                        <span className="inline-flex items-center gap-1.5 text-[12px] whitespace-nowrap text-black/70 dark:text-white/70">
+                                        <span className="inline-flex items-center gap-1.5 text-caption whitespace-nowrap text-black/70 dark:text-white/70">
                                             <CalendarDays className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                                             <span className="tabular-nums">{renewalLabel}</span>
                                             {daysLeft !== null && (
-                                                <span className="tabular-nums text-[11px] text-muted-foreground">
+                                                <span className="tabular-nums text-micro text-muted-foreground">
                                                     ({daysLeft}
                                                     {lang === 'el' ? 'η' : 'd'})
                                                 </span>
@@ -158,7 +158,7 @@ export function PolicyTable({
                                     </td>
 
                                     <td className="px-4 py-2.5 text-right">
-                                        <span className="text-[13px] font-semibold tabular-nums text-foreground">
+                                        <span className="text-body-sm font-semibold tabular-nums text-foreground">
                                             {summary.premiumDisplay}
                                         </span>
                                     </td>
@@ -174,7 +174,7 @@ export function PolicyTable({
                                         >
                                             <button
                                                 onClick={() => onViewPolicy?.(policy.id)}
-                                                className="cursor-pointer rounded-full bg-primary px-3 py-1.5 text-[12px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none"
+                                                className="cursor-pointer rounded-full bg-primary px-3 py-1.5 text-caption font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none"
                                             >
                                                 {columns.manage}
                                             </button>
@@ -291,8 +291,8 @@ export function PolicyTable({
             {currentPolicies.length === 0 && (
                 <div className="px-6 py-10 text-center">
                     <AlertCircle className="mx-auto mb-2 h-6 w-6 text-black/30 dark:text-white/30" />
-                    <h3 className="text-[13px] font-semibold text-black dark:text-white">{t.dashboard.noPolicies}</h3>
-                    <p className="mt-0.5 text-[12px] text-black/55 dark:text-white/55">{t.dashboard.addFirstPolicy}</p>
+                    <h3 className="text-body-sm font-semibold text-black dark:text-white">{t.dashboard.noPolicies}</h3>
+                    <p className="mt-0.5 text-caption text-black/55 dark:text-white/55">{t.dashboard.addFirstPolicy}</p>
                 </div>
             )}
 
@@ -301,19 +301,19 @@ export function PolicyTable({
                     <button
                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-medium text-black/70 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10"
+                        className="cursor-pointer rounded-full px-3 py-1.5 text-caption font-medium text-black/70 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10"
                     >
                         {t.dashboard.previous}
                     </button>
 
-                    <span className="text-[12px] tabular-nums text-black/50 dark:text-white/50">
+                    <span className="text-caption tabular-nums text-black/50 dark:text-white/50">
                         {page} / {totalPages}
                     </span>
 
                     <button
                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages}
-                        className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-medium text-black/70 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10"
+                        className="cursor-pointer rounded-full px-3 py-1.5 text-caption font-medium text-black/70 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10"
                     >
                         {t.dashboard.next}
                     </button>
@@ -339,7 +339,7 @@ function MenuItem({
             role="menuitem"
             onClick={onClick}
             className={cn(
-                'flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-[13px] font-medium transition-colors',
+                'flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-body-sm font-medium transition-colors',
                 destructive
                     ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/15'
                     : 'text-black/80 hover:bg-black/5 dark:text-white/85 dark:hover:bg-white/10'

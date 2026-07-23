@@ -30,7 +30,7 @@ export function CoverageGapsWidget({
     const total = counts.critical + counts.high + counts.medium + counts.low
 
     return (
-        <Link href="/coverage-insights" className="pw-card p-5">
+        <Link href="/coverage-insights" className="pw-card pw-pad">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 <ShieldAlert className="h-4 w-4 text-black/40 dark:text-white/45" aria-hidden />

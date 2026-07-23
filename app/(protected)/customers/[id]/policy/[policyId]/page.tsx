@@ -144,11 +144,11 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} border ${statusColor.border}`}>
+                                        <span className={`px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} border ${statusColor.border}`}>
                                             {statusLabel}
                                         </span>
                                         {isManagedByViewer && (
-                                            <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
+                                            <span className="px-3 py-1 rounded-full text-kicker font-black uppercase tracking-widest bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
                                                 {pd.managedByYou}
                                             </span>
                                         )}
@@ -220,12 +220,12 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-sm font-black text-foreground uppercase tracking-widest">{pd.aiInsights}</h2>
-                                    <span className="px-2 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-[9px] font-black uppercase tracking-widest border border-primary/20 dark:border-primary/30">
+                                    <span className="px-2 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-kicker font-black uppercase tracking-widest border border-primary/20 dark:border-primary/30">
                                         {pd.acordVerified}
                                     </span>
                                 </div>
                                 {(policy as any).lastAnalyzedAt && (
-                                    <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">
+                                    <span className="text-kicker text-neutral-400 font-bold uppercase tracking-widest">
                                         {pd.lastCheck}: {new Date((policy as any).lastAnalyzedAt).toLocaleDateString(locale)}
                                     </span>
                                 )}
@@ -234,7 +234,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <div>
-                                        <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">{pd.verificationOverview}</p>
+                                        <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-2">{pd.verificationOverview}</p>
                                         <div className="p-4 bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl border border-neutral-100 dark:border-neutral-800">
                                             <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed">
                                                 {pd.verificationOverviewDesc}
@@ -244,11 +244,11 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">{pd.contractInsurer}</p>
+                                            <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1">{pd.contractInsurer}</p>
                                             <p className="text-xs font-bold text-foreground">{(policy as any).acordData.policy?.insurer || policy.insurerName}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">{pd.premiumFound}</p>
+                                            <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1">{pd.premiumFound}</p>
                                             <p className="text-xs font-bold text-primary dark:text-mint">
                                                 {(policy as any).acordData.policy?.premium?.amount} {(policy as any).acordData.policy?.premium?.currency}
                                             </p>
@@ -257,13 +257,13 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                 </div>
 
                                 <div className="space-y-3">
-                                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">{pd.structuredCoverages}</p>
+                                    <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-2">{pd.structuredCoverages}</p>
                                     <div className="space-y-2">
                                         {(policy as any).acordData.coverages?.map((cov: any, idx: number) => (
-                                            <div key={idx} className="flex justify-between items-center text-[11px] p-3 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700 shadow-sm">
+                                            <div key={idx} className="flex justify-between items-center text-micro p-3 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700 shadow-sm">
                                                 <div className="flex flex-col">
                                                     <span className="font-black text-neutral-900 dark:text-neutral-100 uppercase tracking-tighter">{cov.name}</span>
-                                                    {cov.deductible && <span className="text-[9px] text-neutral-400">{pd.deductible}: {cov.deductible}</span>}
+                                                    {cov.deductible && <span className="text-kicker text-neutral-400">{pd.deductible}: {cov.deductible}</span>}
                                                 </div>
                                                 <span className="font-mono text-primary dark:text-mint font-black">{cov.limit}</span>
                                             </div>
@@ -280,17 +280,17 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     {/* Quick Stats Sidebar */}
                     <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 shadow-sm border border-neutral-200 dark:border-neutral-700 space-y-6">
                         <div>
-                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">{pd.policyId}</p>
+                            <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-2">{pd.policyId}</p>
                             <p className="font-mono text-sm text-neutral-900 dark:text-neutral-100 font-bold bg-neutral-50 dark:bg-neutral-900/50 p-3 rounded-xl">{policy.policyNumber}</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">{pd.starts}</p>
+                                <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1">{pd.starts}</p>
                                 <p className="text-neutral-900 dark:text-neutral-100 font-bold">{policy.startDate.toLocaleDateString(locale)}</p>
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">{pd.ends}</p>
+                                <p className="text-kicker font-black text-neutral-400 uppercase tracking-widest mb-1">{pd.ends}</p>
                                 <p className="text-neutral-900 dark:text-neutral-100 font-bold">{policy.endDate.toLocaleDateString(locale)}</p>
                             </div>
                         </div>

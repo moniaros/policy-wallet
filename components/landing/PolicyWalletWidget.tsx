@@ -56,7 +56,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                         <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                     </div>
-                    <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-[11px] text-[#64748B]">
+                    <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#64748B]">
                         {`${PRODUCT_DISPLAY_HOST}/wallet`}
                     </div>
                 </div>
@@ -65,16 +65,16 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                     {/* Portfolio header */}
                     <div className="mb-4 flex items-center justify-between">
                         <div>
-                            <p className="text-[13px] font-semibold text-[#0F172A]">
+                            <p className="text-body-sm font-semibold text-[#0F172A]">
                                 {t("Χαρτοφυλάκιο", "My Portfolio")}
                             </p>
-                            <p className="text-[11px] text-[#64748B]">
+                            <p className="text-micro text-[#64748B]">
                                 {t("3 ενεργά συμβόλαια", "3 active policies")}
                             </p>
                         </div>
                         <div className="flex items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1">
                             <Shield className="h-3 w-3 text-[#29685B]" />
-                            <span className="text-[11px] font-semibold text-[#29685B]">
+                            <span className="text-micro font-semibold text-[#29685B]">
                                 87% {t("κάλυψη", "covered")}
                             </span>
                         </div>
@@ -103,11 +103,11 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <div className="mb-0.5 flex items-center justify-between gap-2">
-                                        <span className="truncate text-[13px] font-semibold text-[#0F172A]">
+                                        <span className="truncate text-body-sm font-semibold text-[#0F172A]">
                                             {p.name}
                                         </span>
                                         <span
-                                            className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                            className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
                                                 p.type === "expiring"
                                                     ? "bg-[#FEF3C7] text-[#B45309]"
                                                     : "bg-[#F0FDF4] text-[#166534]"
@@ -116,7 +116,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                             {p.status}
                                         </span>
                                     </div>
-                                    <p className="mb-1.5 text-[11px] text-[#64748B]">{p.insurer}</p>
+                                    <p className="mb-1.5 text-micro text-[#64748B]">{p.insurer}</p>
                                     <div className="flex items-center gap-2">
                                         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#F1F5F9]">
                                             <div
@@ -129,7 +129,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                                 }}
                                             />
                                         </div>
-                                        <span className="text-[10px] font-medium text-[#64748B]">
+                                        <span className="text-kicker font-medium text-[#64748B]">
                                             {p.coverage}%
                                         </span>
                                     </div>
@@ -147,10 +147,10 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                     >
                         <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 animate-pulse text-[#D97706]" />
                         <div className="flex-1 min-w-0">
-                            <p className="text-[12px] font-semibold text-[#92400E]">
+                            <p className="text-caption font-semibold text-[#92400E]">
                                 {t("Κενό κάλυψης εντοπίστηκε", "Coverage gap detected")}
                             </p>
-                            <p className="text-[11px] text-[#B45309]">
+                            <p className="text-micro text-[#B45309]">
                                 {t(
                                     "Κατοικία — λείπει κάλυψη πλημμύρας",
                                     "Home — missing flood coverage"
@@ -160,7 +160,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <Link
                             href="/auth/signup?role=policyholder&source=widget_gap_fix"
                             aria-label={t("Διόρθωση κενού κάλυψης κατοικίας", "Fix home coverage gap")}
-                            className="flex-shrink-0 rounded-full bg-[#ECFDF5] px-2.5 py-1 text-[11px] font-semibold text-[#29685B] hover:bg-[#D1FAE5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B]"
+                            className="flex-shrink-0 rounded-full bg-[#ECFDF5] px-2.5 py-1 text-micro font-semibold text-[#29685B] hover:bg-[#D1FAE5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B]"
                         >
                             {t("Διόρθωση →", "Fix →")}
                         </Link>
@@ -176,8 +176,8 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                 style={{ transitionDelay: "1100ms" }}
             >
                 <span className="h-2 w-2 animate-pulse rounded-full bg-[#29685B]" />
-                <span className="text-[11px] font-semibold text-[#0F172A]">AI</span>
-                <span className="text-[11px] text-[#64748B]">
+                <span className="text-micro font-semibold text-[#0F172A]">AI</span>
+                <span className="text-micro text-[#64748B]">
                     {t("Ανάλυση σε 28s", "Analyzed in 28s")}
                 </span>
             </div>
@@ -190,7 +190,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                 style={{ transitionDelay: "1300ms" }}
             >
                 <Clock className="h-3.5 w-3.5 text-[#D97706]" />
-                <span className="text-[11px] font-semibold text-[#92400E]">
+                <span className="text-micro font-semibold text-[#92400E]">
                     {t("Λήγει σε 14 μέρες", "Expires in 14 days")}
                 </span>
             </div>

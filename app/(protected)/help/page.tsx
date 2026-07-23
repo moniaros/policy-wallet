@@ -295,10 +295,10 @@ export default function HelpPage() {
                                     className="text-left h-full p-5 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-md transition-all group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                 >
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
+                                        <span className="px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-kicker font-bold uppercase tracking-widest">
                                             {article.categoryLabel}
                                         </span>
-                                        <span className="text-[10px] font-bold text-muted-foreground">{article.readTime}</span>
+                                        <span className="text-kicker font-bold text-muted-foreground">{article.readTime}</span>
                                     </div>
                                     <h3 className="text-base font-black text-foreground mb-2 leading-tight group-hover:text-primary dark:group-hover:text-mint transition-colors">
                                         {article.title}

@@ -99,24 +99,24 @@ export function KeyDatesCard({
     })()
 
     return (
-        <div className="pw-card p-6 sm:p-7">
+        <div className="pw-card pw-pad sm:p-7">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                     <Calendar className="h-4 w-4 text-primary dark:text-mint" />
                     {copy.keyDatesTitle}
                 </h2>
-                <span className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
+                <span className={`inline-flex items-center rounded-full border px-3 py-1 text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
                     {copy.renewalStatusLabel}: {statusLabel}
                 </span>
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
-                    <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.startedOn}</p>
+                    <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.startedOn}</p>
                     <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(startDate, locale)}</p>
                 </div>
                 <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
-                    <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                         {isExpired ? copy.expiredOn : copy.expiresOn}
                     </p>
                     <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(endDate, locale)}</p>
@@ -131,7 +131,7 @@ export function KeyDatesCard({
                                 : "border-black/10 bg-black/[0.03] dark:border-white/15 dark:bg-white/5"
                         }`}
                     >
-                        <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.expiresIn}</p>
+                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.expiresIn}</p>
                         <p
                             className={`text-sm font-bold ${
                                 isExpiringSoon ? "text-[#B45309] dark:text-amber-400" : "text-black dark:text-white"
@@ -143,7 +143,7 @@ export function KeyDatesCard({
                 )}
                 {renewalDate && (
                     <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
-                        <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.renewalDateLabel}</p>
+                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.renewalDateLabel}</p>
                         <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(renewalDate, locale)}</p>
                     </div>
                 )}
@@ -177,7 +177,7 @@ export function KeyDatesCard({
             )}
 
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
-                <h3 className="mb-3 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.renewalHistory}</h3>
+                <h3 className="mb-3 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.renewalHistory}</h3>
                 {renewalHistory.length === 0 ? (
                     <p className="text-xs text-black/55 dark:text-white/60">{copy.noRenewalHistory}</p>
                 ) : (

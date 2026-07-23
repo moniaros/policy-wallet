@@ -72,7 +72,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
 
     return (
         <div className="pw-page-shell min-h-screen">
-            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 lg:py-16">
+            <div className="max-w-page mx-auto px-4 sm:px-6 py-12 lg:py-16">
                 <header className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">{opp_t.kicker}</span>
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
@@ -130,12 +130,12 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         <table className="pw-stacked-table w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-800/60">
-                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest pl-8">{opp_t.colCustomer}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colOpportunity}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colStatus}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colLikelihood}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colNextAction}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
+                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest pl-8">{opp_t.colCustomer}</th>
+                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colOpportunity}</th>
+                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colStatus}</th>
+                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colLikelihood}</th>
+                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colNextAction}</th>
+                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
@@ -148,7 +148,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                             <td data-label={opp_t.colOpportunity} className="px-6 py-6">
                                                 <div className="text-sm font-bold text-neutral-800 dark:text-neutral-200">{opp.title}</div>
                                                 {opp.notes && (
-                                                    <div className="text-[13px] text-muted-foreground mt-1.5 line-clamp-1 max-w-[300px]">
+                                                    <div className="text-body-sm text-muted-foreground mt-1.5 line-clamp-1 max-w-[300px]">
                                                         {opp.notes}
                                                     </div>
                                                 )}
@@ -174,7 +174,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                             {opp_t.likelihood[opp.conversionLikelihood]}
                                                         </span>
                                                         {opp.conversionScore != null && (
-                                                            <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">
+                                                            <span className="text-kicker text-neutral-400 dark:text-neutral-500 font-mono">
                                                                 {opp.conversionScore}%
                                                             </span>
                                                         )}
@@ -190,7 +190,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setSelectedOpp(opp)}
-                                                        className="arc-btn bg-neutral-100 hover:bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-300 px-4 py-2 text-[13px]"
+                                                        className="arc-btn bg-neutral-100 hover:bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-300 px-4 py-2 text-body-sm"
                                                     >
                                                         {opp_t.update}
                                                     </button>
@@ -198,7 +198,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                     {opp.policyId && (
                                                         <a
                                                             href={`/wallet/${opp.policyId}`}
-                                                            className="arc-btn arc-btn-primary px-4 py-2 text-[13px]"
+                                                            className="arc-btn arc-btn-primary px-4 py-2 text-body-sm"
                                                         >
                                                             {opp_t.view}
                                                         </a>

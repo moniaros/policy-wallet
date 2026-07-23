@@ -75,7 +75,7 @@ export function ClaimsGuidanceCard({
     const hasWhatYouNeed = Boolean(insurerPhone) || Boolean(policyNumber)
 
     return (
-        <div className="pw-card p-6 sm:p-7">
+        <div className="pw-card pw-pad sm:p-7">
             <div className="mb-1 flex items-center gap-2">
                 <LifeBuoy className="h-4 w-4 text-primary dark:text-mint" />
                 <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">{copy.claimsTitle}</h2>
@@ -102,14 +102,14 @@ export function ClaimsGuidanceCard({
                 step list so branch bundles of any length still get them. */}
             {hasWhatYouNeed && (
                 <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
-                    <h3 className="mb-2.5 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <h3 className="mb-2.5 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                         {copy.claimWhatYouNeedTitle}
                     </h3>
                     <div className="flex flex-wrap items-center gap-2">
                         {insurerPhone && (
                             <button
                                 onClick={onCallInsurer}
-                                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420] cursor-pointer"
+                                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420] cursor-pointer"
                             >
                                 <Phone className="h-3 w-3" />
                                 {copy.contactInsurer} — {insurerName}
@@ -117,7 +117,7 @@ export function ClaimsGuidanceCard({
                         )}
                         {policyNumber && (
                             <p className="inline-flex items-center gap-2 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                                <span className="text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                                     {copy.policyNumberLabel}
                                 </span>
                                 <span className="font-mono text-xs font-bold text-black dark:text-white">{policyNumber}</span>
@@ -130,7 +130,7 @@ export function ClaimsGuidanceCard({
             {/* Deadlines extracted from THIS policy — amber, never styled like
                 the editorial steps above; this is data, not guidance. */}
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
-                <h3 className="mb-2.5 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                <h3 className="mb-2.5 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                     <CalendarClock className="h-3.5 w-3.5 text-[#B45309] dark:text-amber-400" />
                     {copy.claimDeadlinesTitle}
                 </h3>
@@ -172,7 +172,7 @@ export function ClaimsGuidanceCard({
                         {copy.claimAskAgentCta}
                     </Link>
                 </div>
-                <p className="mt-3 text-[11px] text-black/45 dark:text-white/50">{copy.claimsDisclaimer}</p>
+                <p className="mt-3 text-micro text-black/45 dark:text-white/50">{copy.claimsDisclaimer}</p>
             </div>
         </div>
     )

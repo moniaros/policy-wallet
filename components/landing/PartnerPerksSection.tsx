@@ -30,7 +30,7 @@ export function PartnerPerksSection({
 
     return (
         <section id={id} className="px-6 py-20 lg:px-12">
-            <div className="mx-auto max-w-[1240px]">
+            <div className="mx-auto max-w-page">
                 <div className="mb-10 text-center">
                     <p className="pw-kicker mb-3 inline-flex items-center gap-1.5">
                         <Gift className="h-4 w-4" />
@@ -48,7 +48,7 @@ export function PartnerPerksSection({
                 </div>
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {offers.map((offer) => (
-                        <div key={offer.id} className="pw-card p-5">
+                        <div key={offer.id} className="pw-card pw-pad">
                             <div className="mb-2 flex items-center justify-between gap-3">
                                 <span className="text-xs font-semibold uppercase tracking-wide text-[#64748B] dark:text-slate-400">
                                     {offer.vendorName}

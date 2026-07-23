@@ -40,7 +40,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
         >
             <div className="space-y-5">
                 {/* Top stats */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     <BrandStat
                         value={formatCurrencyCompact(financials.totalPremiums, language)}
                         label={t.clientFinancials.totalPremiums}

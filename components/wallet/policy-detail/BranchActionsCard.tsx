@@ -83,7 +83,7 @@ function AnsweredChip({ item, callLabel }: { item: BranchActionItem; callLabel: 
                     {item.resolved.phone && (
                         <a
                             href={`tel:${item.resolved.phone.replace(/\s+/g, "")}`}
-                            className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-white/70 px-2.5 py-1 text-[11px] font-bold text-primary hover:bg-white dark:border-mint/25 dark:bg-mint/10 dark:text-mint"
+                            className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-white/70 px-2.5 py-1 text-micro font-bold text-primary hover:bg-white dark:border-mint/25 dark:bg-mint/10 dark:text-mint"
                         >
                             <Phone className="h-3 w-3" aria-hidden />
                             <span>{callLabel}</span>
@@ -149,7 +149,7 @@ export function BranchActionsCard({
                 >
                     <span className="min-w-0">{isPending ? copy.actionsWorking : item.label}</span>
                     {agentActionsLocked ? (
-                        <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60">
+                        <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-kicker font-black uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60">
                             <Lock className="h-2.5 w-2.5" aria-hidden />
                             {copy.actionsLocked}
                         </span>
@@ -228,7 +228,7 @@ export function BranchActionsCard({
     }
 
     return (
-        <div className="pw-card p-6 sm:p-7">
+        <div className="pw-card pw-pad sm:p-7">
             <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                 <ListChecks className="h-4 w-4 text-primary dark:text-mint" aria-hidden />
                 {copy.actionsTitle}
@@ -236,7 +236,7 @@ export function BranchActionsCard({
 
             {answered.length > 0 && (
                 <div className="mt-5">
-                    <h3 className="mb-2 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <h3 className="mb-2 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                         {copy.actionsAnsweredHeading}
                     </h3>
                     <ul className="space-y-2">
@@ -248,7 +248,7 @@ export function BranchActionsCard({
                         <button
                             type="button"
                             onClick={() => setShowAllAnswered((prev) => !prev)}
-                            className="mt-2 cursor-pointer text-[11px] font-bold text-primary underline-offset-2 hover:underline dark:text-mint"
+                            className="mt-2 cursor-pointer text-micro font-bold text-primary underline-offset-2 hover:underline dark:text-mint"
                         >
                             {hiddenAnsweredCount > 0 ? copy.actionsShowAll : copy.actionsShowLess}
                         </button>
@@ -258,7 +258,7 @@ export function BranchActionsCard({
 
             {todo.length > 0 && (
                 <div className="mt-5">
-                    <h3 className="mb-2 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <h3 className="mb-2 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                         {copy.actionsTodoHeading}
                     </h3>
                     <ul className="space-y-2">

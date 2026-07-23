@@ -54,7 +54,7 @@ export function NotificationPreferences({
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="w-8 h-px bg-mint" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-mint">Dual-Role Context</span>
+                                <span className="text-kicker font-black uppercase tracking-[0.3em] text-mint">Dual-Role Context</span>
                             </div>
                             <h3 className="text-2xl font-black tracking-tight mb-2">
                                 Προτιμήσεις για <span className="text-stone-400 italic">τον Ρόλο σας</span>
@@ -66,7 +66,7 @@ export function NotificationPreferences({
                         <div className="flex p-2 bg-stone-800/50 backdrop-blur-md rounded-2xl border border-white/5">
                             <button
                                 onClick={() => onSwitchRole?.('policyholder')}
-                                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeRole === 'policyholder'
+                                className={`px-8 py-3 rounded-xl text-kicker font-black uppercase tracking-widest transition-all ${activeRole === 'policyholder'
                                     ? 'bg-white text-stone-900 shadow-xl'
                                     : 'text-stone-400 hover:text-white'
                                     }`}
@@ -75,7 +75,7 @@ export function NotificationPreferences({
                             </button>
                             <button
                                 onClick={() => onSwitchRole?.('agent')}
-                                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeRole === 'agent'
+                                className={`px-8 py-3 rounded-xl text-kicker font-black uppercase tracking-widest transition-all ${activeRole === 'agent'
                                     ? 'bg-white text-stone-900 shadow-xl'
                                     : 'text-stone-400 hover:text-white'
                                     }`}
@@ -102,7 +102,7 @@ export function NotificationPreferences({
                                         {getCategoryLabel(category.category)}
                                     </h2>
                                     {category.category === 'system_confirmation' && (
-                                        <span className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-[8px] font-black text-stone-500 uppercase tracking-widest rounded border border-stone-200 dark:border-stone-700">CORE</span>
+                                        <span className="px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-kicker font-black text-stone-500 uppercase tracking-widest rounded border border-stone-200 dark:border-stone-700">CORE</span>
                                     )}
                                 </div>
                                 <p className="text-sm font-medium text-stone-400 dark:text-stone-500 italic">
@@ -138,7 +138,7 @@ export function NotificationPreferences({
                                                     <div className="flex items-center gap-8 w-full">
                                                         {/* Email Toggle */}
                                                         <div className="flex items-center justify-between flex-1 group/toggle">
-                                                            <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest">Email</span>
+                                                            <span className="text-kicker font-black text-stone-500 uppercase tracking-widest">Email</span>
                                                             <button
                                                                 onClick={() => onToggleChannel?.(eventType.event_type, 'email', !pref.channel_email)}
                                                                 className={`relative inline-flex h-5 w-10 items-center rounded-full transition-all ${pref.channel_email
@@ -157,7 +157,7 @@ export function NotificationPreferences({
 
                                                         {/* Push Toggle */}
                                                         <div className="flex items-center justify-between flex-1 group/toggle">
-                                                            <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest">Push</span>
+                                                            <span className="text-kicker font-black text-stone-500 uppercase tracking-widest">Push</span>
                                                             <button
                                                                 onClick={() => onToggleChannel?.(eventType.event_type, 'push', !pref.channel_push)}
                                                                 className={`relative inline-flex h-5 w-10 items-center rounded-full transition-all ${pref.channel_push
@@ -175,7 +175,7 @@ export function NotificationPreferences({
                                                 ) : (
                                                     <div className="flex items-center gap-2 text-stone-300 dark:text-stone-700">
                                                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" strokeWidth="2.5" /></svg>
-                                                        <span className="text-[9px] font-black uppercase tracking-widest italic">Always active via email</span>
+                                                        <span className="text-kicker font-black uppercase tracking-widest italic">Always active via email</span>
                                                     </div>
                                                 )}
                                             </div>

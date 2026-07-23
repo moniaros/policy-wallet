@@ -285,7 +285,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                     >
                         {tr("Ιστορικό", "History")}
                         {unreadCount > 0 && (
-                            <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                            <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-kicker font-bold text-primary-foreground">
                                 {unreadCount}
                             </span>
                         )}

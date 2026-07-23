@@ -167,7 +167,7 @@ export default function SignInPage() {
         } catch { setResetError(copy.resetFailed) } finally { setResetLoading(false) }
     }
 
-    const inputBase = "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[14px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white dark:placeholder:text-white/40"
+    const inputBase = "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-body text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white dark:placeholder:text-white/40"
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black">
@@ -175,7 +175,7 @@ export default function SignInPage() {
 
                 {/* Back to home */}
                 <div className="mb-6 flex items-center justify-between">
-                    <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#64748B] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
+                    <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#64748B] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
                         ← {copy.backHome}
                     </Link>
                     <div className="flex items-center gap-2">
@@ -186,7 +186,7 @@ export default function SignInPage() {
                                     type="button"
                                     onClick={() => setLanguage(value)}
                                     aria-pressed={language === value}
-                                    className={`text-[12px] font-semibold transition-colors ${language === value ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"}`}
+                                    className={`text-caption font-semibold transition-colors ${language === value ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"}`}
                                 >
                                     {label}
                                 </button>
@@ -202,35 +202,35 @@ export default function SignInPage() {
                         <Link href="/" className="mb-4 inline-block">
                             <PolicyWalletLogo size="md" language={language} />
                         </Link>
-                        <h1 className="text-[20px] font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                        <h1 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
                             {t.auth.welcomeBack}
                         </h1>
-                        <p className="mt-1 text-[14px] text-[#64748B] dark:text-white/65">
+                        <p className="mt-1 text-body text-[#64748B] dark:text-white/65">
                             {copy.signInToContinue}
                         </p>
                     </div>
 
                     {/* Error */}
                     {error && (
-                        <div className="mb-4 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-[13px] text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+                        <div className="mb-4 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
                             <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                             {error}
                         </div>
                     )}
                     {showResend && (
-                        <button type="button" onClick={resendVerification} className="mb-4 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] py-2.5 text-[13px] font-semibold text-[#0F172A] transition hover:bg-[#F1F5F9] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10">
+                        <button type="button" onClick={resendVerification} className="mb-4 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] py-2.5 text-body-sm font-semibold text-[#0F172A] transition hover:bg-[#F1F5F9] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10">
                             {resending ? (copy.sending) : (copy.resendVerification)}
                         </button>
                     )}
-                    {resendMessage && <p className="mb-4 text-[13px] text-[#475569] dark:text-white/65">{resendMessage}</p>}
+                    {resendMessage && <p className="mb-4 text-body-sm text-[#475569] dark:text-white/65">{resendMessage}</p>}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Email / Phone toggle */}
                         <div className="flex rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-1 dark:border-white/10 dark:bg-white/5">
-                            <button type="button" onClick={() => setTab("email")} className={`flex-1 rounded-lg py-2 text-[13px] font-semibold transition-all ${tab === "email" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
+                            <button type="button" onClick={() => setTab("email")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "email" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
                                 Email
                             </button>
-                            <button type="button" onClick={() => setTab("phone")} className={`flex-1 rounded-lg py-2 text-[13px] font-semibold transition-all ${tab === "phone" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
+                            <button type="button" onClick={() => setTab("phone")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "phone" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
                                 {copy.phoneTab}
                             </button>
                         </div>
@@ -238,7 +238,7 @@ export default function SignInPage() {
                         {/* Identifier field */}
                         {tab === "email" ? (
                             <div>
-                                <label className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">Email</label>
+                                <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">Email</label>
                                 <div className="relative">
                                     <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
                                     <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputBase} pl-9`} placeholder="name@example.com" />
@@ -246,7 +246,7 @@ export default function SignInPage() {
                             </div>
                         ) : (
                             <div>
-                                <label className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{copy.phonePlaceholder}</label>
+                                <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{copy.phonePlaceholder}</label>
                                 <div className="relative">
                                     <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
                                     <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className={`${inputBase} pl-9`} placeholder="+30 69X XXX XXXX" />
@@ -256,7 +256,7 @@ export default function SignInPage() {
 
                         {/* Password */}
                         <div>
-                            <label htmlFor="signin-password" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{copy.passwordLabel}</label>
+                            <label htmlFor="signin-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{copy.passwordLabel}</label>
                             <div className="relative">
                                 <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
                                 <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={`${inputBase} pl-9`} />
@@ -265,13 +265,13 @@ export default function SignInPage() {
 
                         {/* Forgot password */}
                         <div className="flex justify-end">
-                            <button type="button" onClick={() => { setShowReset(true); setResetStep("request"); setResetEmail(email) }} className="text-[12px] font-semibold text-primary hover:underline">
+                            <button type="button" onClick={() => { setShowReset(true); setResetStep("request"); setResetEmail(email) }} className="text-caption font-semibold text-primary hover:underline">
                                 {copy.forgotPassword}
                             </button>
                         </div>
 
                         {/* Submit */}
-                        <button type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
+                        <button type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-body font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                             {loading ? (copy.signingIn) : t.auth.signIn}
                         </button>
@@ -292,14 +292,14 @@ export default function SignInPage() {
                     <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-white/10 dark:bg-white/5">
                         <Lock className="h-4 w-4 flex-shrink-0 text-primary" />
                         <div className="min-w-0">
-                            <p className="text-[12px] font-semibold text-[#0F172A] dark:text-white">{copy.encryptionTitle}</p>
-                            <p className="text-[11px] text-[#64748B] dark:text-white/60">{copy.encryptionSubtitle}</p>
+                            <p className="text-caption font-semibold text-[#0F172A] dark:text-white">{copy.encryptionTitle}</p>
+                            <p className="text-micro text-[#64748B] dark:text-white/60">{copy.encryptionSubtitle}</p>
                         </div>
-                        <span className="flex-shrink-0 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2 py-0.5 text-[10px] font-bold text-primary dark:border-primary/30 dark:bg-primary/15">GDPR</span>
+                        <span className="flex-shrink-0 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2 py-0.5 text-kicker font-bold text-primary dark:border-primary/30 dark:bg-primary/15">GDPR</span>
                     </div>
 
                     {/* Sign up link */}
-                    <p className="mt-5 text-center text-[13px] text-[#64748B] dark:text-white/65">
+                    <p className="mt-5 text-center text-body-sm text-[#64748B] dark:text-white/65">
                         {copy.noAccountYet}{" "}
                         <Link href="/auth/signup" className="font-semibold text-primary hover:underline">
                             {copy.createAccount}
@@ -312,22 +312,22 @@ export default function SignInPage() {
             {showReset && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
                     <div ref={resetDialogRef} role="dialog" aria-modal="true" aria-labelledby={resetTitleId} tabIndex={-1} className="w-full max-w-[400px] rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_64px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#111111]">
-                        <h2 id={resetTitleId} className="mb-1 text-[17px] font-semibold text-[#0F172A] dark:text-white">
+                        <h2 id={resetTitleId} className="mb-1 text-lead font-semibold text-[#0F172A] dark:text-white">
                             {copy.resetTitle}
                         </h2>
-                        <p className="mb-4 text-[13px] text-[#64748B] dark:text-white/65">
+                        <p className="mb-4 text-body-sm text-[#64748B] dark:text-white/65">
                             {resetStep === "request"
                                 ? (copy.resetStepRequest)
                                 : (copy.resetStepVerify)}
                         </p>
 
-                        {resetError && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[13px] text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{resetError}</p>}
-                        {resetNotice && <p className="mb-3 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2 text-[13px] text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">{resetNotice}</p>}
+                        {resetError && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{resetError}</p>}
+                        {resetNotice && <p className="mb-3 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2 text-body-sm text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">{resetNotice}</p>}
 
                         {resetStep === "request" && (
                             <div className="space-y-3">
                                 <input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="name@example.com" className={inputBase} />
-                                <button type="button" onClick={requestOtp} disabled={resetLoading} className="w-full rounded-full bg-primary px-4 py-3 text-[14px] font-bold text-white transition hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
+                                <button type="button" onClick={requestOtp} disabled={resetLoading} className="w-full rounded-full bg-primary px-4 py-3 text-body font-bold text-white transition hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
                                     {resetLoading ? (copy.sending) : (copy.sendOtp)}
                                 </button>
                             </div>
@@ -338,20 +338,20 @@ export default function SignInPage() {
                                 <input type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className={inputBase} />
                                 <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={copy.newPassword} className={inputBase} />
                                 <input type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={copy.confirmPassword} className={inputBase} />
-                                <button type="button" onClick={submitReset} disabled={resetLoading} className="w-full rounded-full bg-primary px-4 py-3 text-[14px] font-bold text-white transition hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
+                                <button type="button" onClick={submitReset} disabled={resetLoading} className="w-full rounded-full bg-primary px-4 py-3 text-body font-bold text-white transition hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
                                     {resetLoading ? (copy.processing) : (copy.verifyAndReset)}
                                 </button>
                             </div>
                         )}
 
                         {resetStep === "success" && (
-                            <div className="mb-3 flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2.5 text-[13px] text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
+                            <div className="mb-3 flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2.5 text-body-sm text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
                                 <ShieldCheck className="h-4 w-4 flex-shrink-0" />
                                 {copy.passwordUpdated}
                             </div>
                         )}
 
-                        <button type="button" onClick={() => setShowReset(false)} className="mt-3 w-full rounded-full border border-[#E2E8F0] bg-white px-4 py-2.5 text-[14px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
+                        <button type="button" onClick={() => setShowReset(false)} className="mt-3 w-full rounded-full border border-[#E2E8F0] bg-white px-4 py-2.5 text-body font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
                             {copy.closeLabel}
                         </button>
                     </div>

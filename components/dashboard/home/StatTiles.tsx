@@ -23,7 +23,7 @@ export function StatTiles({
 }) {
     return (
         <>
-            <Link href="/wallet" className="pw-card p-5">
+            <Link href="/wallet" className="pw-card pw-pad">
                 <p className="pw-kicker">{labels.activePolicies}</p>
                 <div className="mt-3 flex items-center justify-between">
                     <p className="text-4xl font-semibold text-black dark:text-white">{activeCount}</p>
@@ -31,7 +31,7 @@ export function StatTiles({
                 </div>
             </Link>
 
-            <Link href="/coverage-insights" className="pw-card p-5">
+            <Link href="/coverage-insights" className="pw-card pw-pad">
                 <p className="pw-kicker">{labels.protectionScore}</p>
                 <div className="mt-3 flex items-center gap-4">
                     <div className="relative h-14 w-14">

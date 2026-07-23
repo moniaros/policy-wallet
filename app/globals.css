@@ -35,6 +35,55 @@
   --color-neutral-900: #0f172a;
   --color-neutral-950: #020617;
 
+  /* ── Container widths ───────────────────────────────────────────────────────
+     Page widths had drifted to ten variants, including THREE near-identical
+     marketing widths (1200 / 1240 / 1400px) that no reader could tell apart but
+     that made adjacent pages fail to line up. These are the sanctioned ceilings,
+     named by role. Tailwind 4 turns each `--container-*` into a `max-w-*`
+     utility, so `max-w-page` etc. work everywhere.
+     Pair any of them with the standard gutter: `px-4 sm:px-6 lg:px-8`
+     (or just use <PageContainer>, which applies both). */
+  --container-reading: 680px;   /* legal/article prose — comfortable measure  */
+  --container-form: 900px;      /* single-column forms and narrow flows       */
+  --container-page: 1240px;     /* standard marketing/content page            */
+  --container-page-wide: 1400px;/* dense dashboards that genuinely need room  */
+
+  /* ── Type ladder ────────────────────────────────────────────────────────────
+     1,083 arbitrary `text-[Npx]` values were in use across 19 distinct sizes
+     with no scale, so nothing lined up between two components that happened to
+     pick 13px and 14px for the same role. These are the sanctioned steps,
+     named by ROLE rather than by pixel value — Tailwind 4 turns each `--text-*`
+     into a `text-*` utility, so `text-body`, `text-kicker`, etc. are available
+     everywhere and re-tuning a step is a one-line change here.
+
+     Accessibility floor: functional text is never below 12px. `kicker` (10px)
+     and `micro` (11px) exist for decorative uppercase labels and pills ONLY —
+     never for content a user must read to make a decision. */
+  --text-kicker: 0.625rem;      /* 10px — uppercase pill/eyebrow labels only  */
+  --text-kicker--line-height: 1.4;
+  --text-micro: 0.6875rem;      /* 11px — dense table meta, decorative only   */
+  --text-micro--line-height: 1.45;
+  --text-caption: 0.75rem;      /* 12px — smallest FUNCTIONAL size            */
+  --text-caption--line-height: 1.5;
+  --text-body-sm: 0.8125rem;    /* 13px — dense rows, secondary body          */
+  --text-body-sm--line-height: 1.55;
+  --text-body: 0.875rem;        /* 14px — default UI body                     */
+  --text-body--line-height: 1.6;
+  --text-body-lg: 1rem;         /* 16px — long-form / marketing body          */
+  --text-body-lg--line-height: 1.65;
+  --text-lead: 1.125rem;        /* 18px — card titles, section leads          */
+  --text-lead--line-height: 1.45;
+  --text-title: 1.25rem;        /* 20px — sub-headings                        */
+  --text-title--line-height: 1.35;
+  --text-h3: 1.5rem;            /* 24px                                       */
+  --text-h3--line-height: 1.3;
+  --text-h2: 2rem;              /* 32px                                       */
+  --text-h2--line-height: 1.2;
+  --text-h1: 2.75rem;           /* 44px                                       */
+  --text-h1--line-height: 1.12;
+  --text-display: 3.5rem;       /* 56px — hero only                           */
+  --text-display--line-height: 1.05;
+
   --font-heading: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-body: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -401,6 +450,23 @@ pre {
       @apply flex-shrink-0 text-[10px] font-bold uppercase tracking-widest;
       color: var(--pw-text-muted);
     }
+  }
+
+  /* ── Density ────────────────────────────────────────────────────────────────
+     `.pw-card` deliberately carries no padding, which left five different
+     densities in use (p-4/5/6/8/10) chosen ad hoc. These are the sanctioned
+     steps, and each TIGHTENS on small screens so a card that is comfortable on
+     desktop does not waste a third of a 375px viewport on its own margins. */
+  .pw-pad-tight {
+    @apply p-3 sm:p-4;      /* list rows, compact tiles      */
+  }
+
+  .pw-pad {
+    @apply p-4 sm:p-6;      /* the default card              */
+  }
+
+  .pw-pad-roomy {
+    @apply p-6 sm:p-8;      /* feature cards, empty states   */
   }
 
   .pw-kicker {

@@ -31,6 +31,8 @@ interface PublicHeaderProps {
  */
 export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHeaderProps) {
     const isGreek = locale === "el"
+    const elActive = isGreek
+    const enActive = !isGreek
     const t = (el: string, en: string) => (isGreek ? el : en)
     const l = (href: string) => localizeHref(href, locale)
 
@@ -109,18 +111,18 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
             {/* ── DESKTOP / TABLET NAV ─────────────────────────────── */}
             <header className="fixed left-4 right-4 top-4 z-50">
                 <div
-                    className={`mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full border px-6 backdrop-blur-xl transition-all duration-300 ${
+                    className={`mx-auto flex h-14 max-w-page-wide items-center justify-between rounded-full border px-6 backdrop-blur-xl transition-all duration-300 ${
                         scrolled
                             ? "border-gray-200/60 bg-white/90 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/90"
                             : "border-gray-200/50 bg-white/80 shadow-sm dark:border-slate-800/50 dark:bg-slate-900/80"
                     }`}
                 >
-                    <Link href={l("/")} className="inline-flex items-center text-[20px] font-bold tracking-tight">
+                    <Link href={l("/")} className="inline-flex items-center text-title font-bold tracking-tight">
                         <span className="text-[#0F172A] dark:text-white">Policy</span>
                         <span className="text-[#64748B]">Wallet</span>
                     </Link>
 
-                    <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 text-[14px] font-medium text-[#475569] md:flex dark:text-slate-300">
+                    <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 text-body font-medium text-[#475569] md:flex dark:text-slate-300">
                         {PUBLIC_NAV_ITEMS.map((item) =>
                             item.kind === "dropdown" ? (
                                 <SolutionsDropdown key={item.key} language={locale} />
@@ -144,7 +146,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             <Link
                                 href={elPath}
                                 aria-current={isGreek ? "true" : undefined}
-                                className={`text-xs font-semibold transition-colors ${isGreek ? "text-[#0F172A] dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"}`}
+                                className={`text-xs font-semibold transition-colors ${elActive ? "text-[#0F172A] dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"}`}
                             >
                                 ΕΛ
                             </Link>
@@ -152,7 +154,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             <Link
                                 href={enPath}
                                 aria-current={!isGreek ? "true" : undefined}
-                                className={`text-xs font-semibold transition-colors ${!isGreek ? "text-[#0F172A] dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"}`}
+                                className={`text-xs font-semibold transition-colors ${enActive ? "text-[#0F172A] dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"}`}
                             >
                                 EN
                             </Link>
@@ -160,7 +162,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                         <ThemeToggle />
                         <Link
                             href={secondaryHref}
-                            className="text-[14px] font-medium text-[#0F172A] transition-colors hover:text-[#29685B] dark:text-white"
+                            className="text-body font-medium text-[#0F172A] transition-colors hover:text-[#29685B] dark:text-white"
                         >
                             {SECONDARY_CTA.label[locale]}
                         </Link>
@@ -195,8 +197,8 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                     open ? "translate-y-0" : "pointer-events-none -translate-y-full"
                 }`}
             >
-                <div className="mx-auto flex h-16 w-full max-w-[1400px] items-center justify-between px-6 pt-4">
-                    <Link href={l("/")} className="inline-flex items-center text-[20px] font-bold tracking-tight" onClick={closeMenu}>
+                <div className="mx-auto flex h-16 w-full max-w-page-wide items-center justify-between px-6 pt-4">
+                    <Link href={l("/")} className="inline-flex items-center text-title font-bold tracking-tight" onClick={closeMenu}>
                         <span className="text-white">Policy</span>
                         <span className="text-white/80">Wallet</span>
                     </Link>
@@ -211,11 +213,11 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                     </button>
                 </div>
 
-                <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-8 pb-24 sm:px-12">
-                    <nav aria-label={t("Πλοήγηση", "Navigation")} className="mb-12 flex flex-col gap-6 text-[44px] font-medium leading-tight tracking-tight sm:text-[56px]">
+                <div className="mx-auto flex w-full max-w-page-wide flex-1 flex-col justify-center px-8 pb-24 sm:px-12">
+                    <nav aria-label={t("Πλοήγηση", "Navigation")} className="mb-12 flex flex-col gap-6 text-h1 font-medium leading-tight tracking-tight sm:text-display">
                         {PUBLIC_NAV_ITEMS.map((item) =>
                             item.kind === "dropdown" ? (
-                                <SolutionsMobileGroup key={item.key} language={locale} onNavigate={closeMenu} className="text-[20px]" />
+                                <SolutionsMobileGroup key={item.key} language={locale} onNavigate={closeMenu} className="text-title" />
                             ) : (
                                 <Link
                                     key={item.key}

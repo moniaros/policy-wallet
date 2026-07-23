@@ -19,7 +19,7 @@ function FAQItem({ q, a }: ProductFaqEntry) {
                 onClick={() => setOpen((value) => !value)}
                 aria-expanded={open}
             >
-                <span className="text-[16px] font-medium text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B]">
+                <span className="text-body-lg font-medium text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B]">
                     {q}
                 </span>
                 {open ? (
@@ -29,7 +29,7 @@ function FAQItem({ q, a }: ProductFaqEntry) {
                 )}
             </button>
             <div className={`overflow-hidden transition-all duration-300 ease-out ${open ? "max-h-[300px] pb-5" : "max-h-0"}`}>
-                <p className="px-1 text-[16px] leading-relaxed text-[#475569]">{a}</p>
+                <p className="px-1 text-body-lg leading-relaxed text-[#475569]">{a}</p>
             </div>
         </div>
     )

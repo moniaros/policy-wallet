@@ -250,7 +250,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">{copy.badge}</span>
+                        <span className="text-kicker font-black uppercase tracking-[0.2em]">{copy.badge}</span>
                     </div>
                     <h2 id={titleId} className="text-3xl font-black text-foreground tracking-tighter mb-2">{copy.title}</h2>
                     <p className="text-base text-muted-foreground font-medium">{copy.subtitle}</p>
@@ -406,7 +406,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                 <div className="p-8 pt-0 flex gap-4">
                     <button
                         onClick={handleClose}
-                        className="flex-1 px-8 py-5 bg-muted text-foreground rounded-[24px] text-[10px] font-black uppercase tracking-widest hover:bg-muted/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="flex-1 px-8 py-5 bg-muted text-foreground rounded-[24px] text-kicker font-black uppercase tracking-widest hover:bg-muted/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                         {copy.cancel}
                     </button>
@@ -415,7 +415,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                             onClick={handleSaveAll}
                             disabled={isSaving || isProcessing}
                             data-testid="batch-upload-save-all"
-                            className="flex-[2] px-8 py-5 bg-primary text-primary-foreground rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                            className="flex-[2] px-8 py-5 bg-primary text-primary-foreground rounded-[24px] text-kicker font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                         >
                             {isSaving ? copy.saving : withVars(copy.savePolicies, { count: successCount })}
                         </button>

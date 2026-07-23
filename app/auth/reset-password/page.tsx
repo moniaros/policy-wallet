@@ -41,6 +41,7 @@ function ResetPasswordContent() {
     const searchParams = useSearchParams()
     const { language } = useLanguage()
     const isGreek = language === "el"
+    const lang = isGreek ? "el" : "en"
 
     const token = searchParams.get("token")?.trim() || ""
     const email = searchParams.get("email")?.trim().toLowerCase() || ""
@@ -52,22 +53,22 @@ function ResetPasswordContent() {
     const [submitting, setSubmitting] = useState(false)
 
     const copy = {
-        title: isGreek ? "Νέος κωδικός" : "Set a new password",
+        title: COPY.setNewPassword[lang],
         subtitle: isGreek
             ? "Ολοκλήρωσε την επαναφορά με έναν νέο ασφαλή κωδικό."
             : "Complete your recovery by setting a secure new password.",
         invalidLink: isGreek
             ? "Ο σύνδεσμος επαναφοράς δεν είναι έγκυρος."
             : "This reset link is invalid.",
-        password: isGreek ? "Νέος κωδικός" : "New password",
-        confirm: isGreek ? "Επιβεβαίωση κωδικού" : "Confirm password",
-        submit: isGreek ? "Αποθήκευση νέου κωδικού" : "Save new password",
-        submitting: isGreek ? "Αποθήκευση..." : "Saving...",
-        successTitle: isGreek ? "Ο κωδικός ενημερώθηκε" : "Password updated",
+        password: COPY.newPasswordLabel[lang],
+        confirm: COPY.confirmPasswordLabel[lang],
+        submit: COPY.saveNewPassword[lang],
+        submitting: COPY.saving[lang],
+        successTitle: COPY.passwordUpdated[lang],
         successBody: isGreek
             ? "Η επαναφορά ολοκληρώθηκε. Μπορείς να συνδεθείς με τον νέο κωδικό."
             : "Your password was reset. You can now sign in with the new password.",
-        backToSignIn: isGreek ? "Μετάβαση στη σύνδεση" : "Go to sign in",
+        backToSignIn: COPY.goToSignIn[lang],
     }
 
     const {
@@ -99,7 +100,7 @@ function ResetPasswordContent() {
 
         setSubmitting(false)
         if (!result.success) {
-            setServerError(result.error || (isGreek ? "Η ενημέρωση απέτυχε." : "Could not update password."))
+            setServerError(result.error || (COPY.updateFailed[lang]))
             return
         }
 
@@ -117,10 +118,10 @@ function ResetPasswordContent() {
 
             <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="relative z-10 w-full max-w-[440px] rounded-2xl border border-[#E2E8F0] bg-white/95 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-3xl dark:border-white/10 dark:bg-[#111111]/95 sm:p-10">
                 <div className="mb-5 flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-white/60">
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1 dark:bg-white/10">{isGreek ? "Επαναφορά ασφαλείας" : "Secure reset"}</span>
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1 dark:bg-white/10">{COPY.secureReset[lang]}</span>
                     <span className="inline-flex items-center gap-1 text-slate-700 dark:text-white/65">
                         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                        {isGreek ? "Κρυπτογραφημένη ροή" : "Encrypted flow"}
+                        {COPY.encryptedFlow[lang]}
                     </span>
                 </div>
 
@@ -137,7 +138,7 @@ function ResetPasswordContent() {
                         <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{copy.invalidLink}</div>
                         <Link href="/auth/forgot-password" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
                             <ArrowLeft className="h-4 w-4" />
-                            {isGreek ? "Ζήτα νέο σύνδεσμο" : "Request a new link"}
+                            {COPY.requestNewLink[lang]}
                         </Link>
                     </div>
                 ) : success ? (
@@ -203,7 +204,7 @@ function ResetPasswordContent() {
                             {errors.confirmPassword ? <p className="mt-1 text-xs text-rose-600">{errors.confirmPassword.message}</p> : null}
                         </div>
 
-                        <button type="submit" disabled={submitting} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-4 text-[16px] font-bold text-white transition-transform active:scale-[0.98] hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-70 dark:bg-primary dark:text-[#1A2420] dark:hover:bg-primary-hover">
+                        <button type="submit" disabled={submitting} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-4 text-body-lg font-bold text-white transition-transform active:scale-[0.98] hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-70 dark:bg-primary dark:text-[#1A2420] dark:hover:bg-primary-hover">
                             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                             {submitting ? copy.submitting : copy.submit}
                         </button>
@@ -218,6 +219,21 @@ function ResetPasswordContent() {
         </div>
     )
 }
+
+/** Page copy in the `{el, en}[locale]` shape used across the auth pages. */
+const COPY = {
+    setNewPassword: { el: "Νέος κωδικός", en: "Set a new password" },
+    newPasswordLabel: { el: "Νέος κωδικός", en: "New password" },
+    confirmPasswordLabel: { el: "Επιβεβαίωση κωδικού", en: "Confirm password" },
+    saveNewPassword: { el: "Αποθήκευση νέου κωδικού", en: "Save new password" },
+    saving: { el: "Αποθήκευση...", en: "Saving..." },
+    passwordUpdated: { el: "Ο κωδικός ενημερώθηκε", en: "Password updated" },
+    goToSignIn: { el: "Μετάβαση στη σύνδεση", en: "Go to sign in" },
+    updateFailed: { el: "Η ενημέρωση απέτυχε.", en: "Could not update password." },
+    secureReset: { el: "Επαναφορά ασφαλείας", en: "Secure reset" },
+    encryptedFlow: { el: "Κρυπτογραφημένη ροή", en: "Encrypted flow" },
+    requestNewLink: { el: "Ζήτα νέο σύνδεσμο", en: "Request a new link" },
+} as const
 
 export default function ResetPasswordPage() {
     return (

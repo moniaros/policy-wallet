@@ -118,7 +118,7 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onViewAll, onG
                                         {item.description}
                                     </p>
                                 </div>
-                                <span className="text-[10px] opacity-60 whitespace-nowrap">
+                                <span className="text-kicker opacity-60 whitespace-nowrap">
                                     {formatRelativeDate(item.dueDate, language)}
                                 </span>
                                 <button

@@ -59,14 +59,14 @@ export function EmptyState({
             <h3 className="mt-5 text-xl font-semibold tracking-tight text-foreground">
                 {headline}
             </h3>
-            <p className="mt-2 max-w-md text-[15px] leading-relaxed text-[var(--pw-text-muted)] dark:text-white/65">
+            <p className="mt-2 max-w-md text-body leading-relaxed text-[var(--pw-text-muted)] dark:text-white/65">
                 {description}
             </p>
 
             {preview && (
                 <div className="relative mt-7 w-full max-w-sm rounded-2xl border border-dashed border-[var(--pw-border)] bg-[var(--pw-surface-light)] p-4 dark:border-white/15 dark:bg-white/5">
                     {previewLabel && (
-                        <span className="absolute -top-2.5 left-4 rounded-full border border-[var(--pw-border)] bg-[var(--pw-bg-light)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[var(--pw-text-muted)] dark:border-white/15 dark:bg-black dark:text-white/60">
+                        <span className="absolute -top-2.5 left-4 rounded-full border border-[var(--pw-border)] bg-[var(--pw-bg-light)] px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[var(--pw-text-muted)] dark:border-white/15 dark:bg-black dark:text-white/60">
                             {previewLabel}
                         </span>
                     )}
@@ -123,11 +123,11 @@ export function PolicyPreviewRow({
                 <Icon className={`h-4 w-4 ${warn ? "text-[#B45309]" : "text-primary dark:text-mint"}`} />
             </div>
             <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-[13px] font-semibold text-foreground">{name}</p>
-                <p className="text-[11px] text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
+                <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
+                <p className="text-micro text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
             </div>
             <span
-                className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest ${
+                className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-widest ${
                     warn
                         ? "bg-[#FEF3C7] text-[#B45309]"
                         : "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
@@ -152,12 +152,12 @@ export function CustomerPreviewRow({
 }) {
     return (
         <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm dark:bg-black">
-            <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-primary text-[13px] font-bold text-primary-foreground">
+            <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-primary text-body-sm font-bold text-primary-foreground">
                 {initial}
             </div>
             <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-[13px] font-semibold text-foreground">{name}</p>
-                <p className="text-[11px] text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
+                <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
+                <p className="text-micro text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
             </div>
             <span
                 className={`h-2 w-2 flex-shrink-0 rounded-full ${healthy ? "bg-primary dark:bg-mint" : "bg-[#F59E0B]"}`}
@@ -181,10 +181,10 @@ export function RenewalPreviewRow({
                 <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
             </div>
             <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-[13px] font-semibold text-foreground">{name}</p>
-                <p className="text-[11px] text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
+                <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
+                <p className="text-micro text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
             </div>
-            <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#B45309]">
+            <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#B45309]">
                 {daysLabel}
             </span>
         </div>
@@ -204,12 +204,12 @@ export function RecommendationPreviewCard({
         <div className="rounded-xl bg-white p-3 text-left shadow-sm dark:bg-black">
             <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
-                <p className="flex-1 truncate text-[13px] font-semibold text-foreground">{title}</p>
-                <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#B45309]">
+                <p className="flex-1 truncate text-body-sm font-semibold text-foreground">{title}</p>
+                <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#B45309]">
                     {urgencyLabel}
                 </span>
             </div>
-            <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
+            <p className="mt-1.5 text-micro leading-relaxed text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
         </div>
     )
 }

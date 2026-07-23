@@ -13,7 +13,7 @@ const CONSENT_TONES: Record<ConsentStatus, string> = {
 
 export function ConsentStatusBadge({ status, label }: { status: ConsentStatus; label: string }) {
     return (
-        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${CONSENT_TONES[status]}`}>
+        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-wider ${CONSENT_TONES[status]}`}>
             {label}
         </span>
     )

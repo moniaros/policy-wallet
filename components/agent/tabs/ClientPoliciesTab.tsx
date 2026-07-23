@@ -178,11 +178,11 @@ export function ClientPoliciesTab({
                                         <p className="text-sm font-semibold text-foreground">
                                             {LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness}
                                         </p>
-                                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`}>
+                                        <span className={`rounded-full px-2 py-0.5 text-kicker font-medium ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`}>
                                             {(STATUS_LABELS[policy.status] || STATUS_LABELS.incomplete)[language]}
                                         </span>
                                         {policy.managedByAgent && (
-                                            <span className="rounded-full px-2 py-0.5 text-[10px] font-medium bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
+                                            <span className="rounded-full px-2 py-0.5 text-kicker font-medium bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
                                                 {TAB_COPY.managedByYou[language]}
                                             </span>
                                         )}
@@ -199,7 +199,7 @@ export function ClientPoliciesTab({
                                         {formatDateGreek(policy.endDate)}
                                     </div>
                                     {showCommission && viewerRole === "agent" && commissionRate > 0 && (
-                                        <p className="text-[10px] font-medium text-primary dark:text-mint mt-0.5">
+                                        <p className="text-kicker font-medium text-primary dark:text-mint mt-0.5">
                                             {commissionRate}% {TAB_COPY.commissionUnit[language]}
                                         </p>
                                     )}

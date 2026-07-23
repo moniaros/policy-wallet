@@ -20,14 +20,14 @@ export function PortfolioSummaryCard({
     excludedNote?: string
 }) {
     return (
-        <div className="pw-card p-5 lg:col-span-3">
+        <div className="pw-card pw-pad lg:col-span-3">
             <p className="pw-kicker">{labels.kicker}</p>
             <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <p className="text-3xl font-semibold text-black dark:text-white">{totalLabel}</p>
                     <p className="mt-1 text-xs text-black/55 dark:text-white/60">{labels.totalAnnualPremium}</p>
                     {excludedNote && (
-                        <p className="mt-1 text-[10px] text-black/45 dark:text-white/45">{excludedNote}</p>
+                        <p className="mt-1 text-kicker text-black/45 dark:text-white/45">{excludedNote}</p>
                     )}
                 </div>
                 <div className="flex flex-wrap gap-2">

@@ -160,7 +160,7 @@ export function InlineMessagesTab({
                     {t("Μηνύματα", "Messages")}
                 </span>
                 {messages.length > 0 && (
-                    <span className="rounded-full bg-black/8 px-2 py-0.5 text-[10px] font-bold text-black/60 dark:bg-white/10 dark:text-white/60">
+                    <span className="rounded-full bg-black/8 px-2 py-0.5 text-kicker font-bold text-black/60 dark:bg-white/10 dark:text-white/60">
                         {messages.filter((m) => m.messageType === "comment").length}
                     </span>
                 )}
@@ -184,7 +184,7 @@ export function InlineMessagesTab({
                         <p className="text-xs text-black/40 dark:text-white/40">
                             {t("Δεν υπάρχουν μηνύματα ακόμα.", "No messages yet.")}
                         </p>
-                        <p className="text-[11px] text-black/30 dark:text-white/30">
+                        <p className="text-micro text-black/30 dark:text-white/30">
                             {t("Στείλτε ένα μήνυμα για να ξεκινήσετε.", "Send a message to get started.")}
                         </p>
                     </div>
@@ -203,7 +203,7 @@ export function InlineMessagesTab({
                                     animate={{ opacity: 1 }}
                                     className="flex justify-center px-4 py-1"
                                 >
-                                    <span className="rounded-full bg-black/5 px-3 py-1 text-[10px] text-black/50 dark:bg-white/5 dark:text-white/50">
+                                    <span className="rounded-full bg-black/5 px-3 py-1 text-kicker text-black/50 dark:bg-white/5 dark:text-white/50">
                                         {msg.body}
                                     </span>
                                 </motion.div>
@@ -225,7 +225,7 @@ export function InlineMessagesTab({
                                     }`}
                                 >
                                     {!isMine && (
-                                        <p className="mb-0.5 text-[10px] font-bold opacity-60">
+                                        <p className="mb-0.5 text-kicker font-bold opacity-60">
                                             {msg.senderName}
                                         </p>
                                     )}
@@ -233,7 +233,7 @@ export function InlineMessagesTab({
                                         {msg.body}
                                     </p>
                                     <div className={`mt-1 flex items-center gap-1 ${isMine ? "justify-end" : "justify-start"}`}>
-                                        <span className="text-[9px] opacity-50">
+                                        <span className="text-kicker opacity-50">
                                             {formatTime(msg.createdAt)}
                                         </span>
                                         {isMine && <CheckCheck className="h-2.5 w-2.5 opacity-50" />}

@@ -140,10 +140,10 @@ export function TasksClient({ actionItems }: TasksClientProps) {
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
             {/* Priority summary */}
             {actionItems.length > 0 && (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {summary.map(({ key, count }) => (
                         <div key={key} className="rounded-2xl border border-border bg-background dark:bg-neutral-900 p-4">
-                            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                            <p className="text-micro font-semibold uppercase tracking-wide text-muted-foreground">
                                 {t.tasks.priorities[key]}
                             </p>
                             <p className={`mt-1 text-2xl font-bold ${key === 'high' ? 'text-primary dark:text-mint' : 'text-foreground'}`}>
@@ -240,7 +240,7 @@ export function TasksClient({ actionItems }: TasksClientProps) {
                                         {task.description || typeLabel(task.type)}
                                     </p>
                                 </div>
-                                <span className={`hidden flex-shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide sm:inline-block ${priorityPill(task.priority)}`}>
+                                <span className={`hidden flex-shrink-0 rounded-full px-2.5 py-1 text-kicker font-bold uppercase tracking-wide sm:inline-block ${priorityPill(task.priority)}`}>
                                     {priorityLabel(task.priority)}
                                 </span>
                                 <ChevronRight className="h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />

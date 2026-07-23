@@ -153,7 +153,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-3">
+                                    <label className="block text-kicker font-black text-neutral-400 uppercase tracking-widest mb-3">
                                         {t.selectTemplate}
                                     </label>
                                     <div className="grid grid-cols-1 gap-3">
@@ -179,7 +179,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
                                                         <p className={`font-bold text-sm ${selectedTemplate === t.id ? 'text-primary dark:text-mint' : 'text-foreground'}`}>
                                                             {t.name}
                                                         </p>
-                                                        <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-0.5">
+                                                        <p className="text-kicker text-neutral-500 uppercase tracking-widest mt-0.5">
                                                             {t.lineOfBusiness} · {questionCount} {questionsLabel}
                                                         </p>
                                                     </div>

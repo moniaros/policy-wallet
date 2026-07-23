@@ -22,10 +22,10 @@ export function NotificationCard({ event, onNavigate }: NotificationCardProps) {
 
             <div className="pl-3">
                 <div className="flex justify-between items-start mb-2">
-                    <span className="text-[10px] font-black tracking-widest uppercase text-stone-400">
+                    <span className="text-kicker font-black tracking-widest uppercase text-stone-400">
                         {formatDate(event.created_at, lang)} • {formatTime(event.created_at, lang)}
                     </span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isFailed
+                    <span className={`text-kicker font-bold px-2 py-0.5 rounded-full ${isFailed
                             ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
                             : 'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'
                         }`}>
@@ -46,7 +46,7 @@ export function NotificationCard({ event, onNavigate }: NotificationCardProps) {
                     {event.related_policy_name && (
                         <button
                             onClick={() => onNavigate('policy', event.related_policy_id)}
-                            className="text-[10px] font-bold text-primary dark:text-mint uppercase tracking-wide flex items-center gap-1 hover:underline"
+                            className="text-kicker font-bold text-primary dark:text-mint uppercase tracking-wide flex items-center gap-1 hover:underline"
                         >
                             View Policy
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>

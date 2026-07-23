@@ -222,17 +222,17 @@ export function Settings({
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="pw-card p-6"
+                        className="pw-card pw-pad"
                     >
                         <div className="flex items-center gap-3 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.identityMatrix}</h3>
+                            <h3 className="text-kicker font-black uppercase tracking-widest text-black dark:text-white">{t.settings.identityMatrix}</h3>
                         </div>
 
                         <div className="space-y-6">
                             {/* Name Edit */}
                             <div className="group">
-                                <label htmlFor="settings-name" className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
+                                <label htmlFor="settings-name" className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
                                 {isEditingName ? (
                                     <div className="flex items-center gap-2">
                                         <input
@@ -253,14 +253,14 @@ export function Settings({
                                 ) : (
                                     <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-primary/35 transition-all">
                                         <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.name || t.settings.setYourName}</span>
-                                        <button onClick={() => setIsEditingName(true)} className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint transition-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">{t.billing.edit}</button>
+                                        <button onClick={() => setIsEditingName(true)} className="text-kicker font-black uppercase tracking-widest text-primary dark:text-mint transition-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
 
                             {/* Email Edit */}
                             <div className="group">
-                                <label htmlFor="settings-email" className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
+                                <label htmlFor="settings-email" className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
                                 {isEditingEmail ? (
                                     <div className="flex items-center gap-2">
                                         <input
@@ -280,26 +280,26 @@ export function Settings({
                                 ) : (
                                     <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-primary/35 transition-all">
                                         <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.email}</span>
-                                        <button onClick={() => setIsEditingEmail(true)} className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint transition-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">{t.billing.edit}</button>
+                                        <button onClick={() => setIsEditingEmail(true)} className="text-kicker font-black uppercase tracking-widest text-primary dark:text-mint transition-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
 
                             {/* Language Matrix */}
                             <div className="group pt-6 border-t border-black/10 dark:border-white/15">
-                                <label className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-4">{t.settings.preferredLanguage}</label>
+                                <label className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-4">{t.settings.preferredLanguage}</label>
                                 <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl">
                                     <button
                                         onClick={() => handleLanguageUpdate('el')}
                                         aria-pressed={currentUser.preferred_language === 'el'}
-                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
+                                        className={`py-3 rounded-xl text-kicker font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.greek}
                                     </button>
                                     <button
                                         onClick={() => handleLanguageUpdate('en')}
                                         aria-pressed={currentUser.preferred_language === 'en'}
-                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
+                                        className={`py-3 rounded-xl text-kicker font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.english}
                                     </button>
@@ -313,11 +313,11 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="pw-card p-6"
+                        className="pw-card pw-pad"
                     >
                         <div className="flex items-center gap-3 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.communicationControl}</h3>
+                            <h3 className="text-kicker font-black uppercase tracking-widest text-black dark:text-white">{t.settings.communicationControl}</h3>
                         </div>
 
                         <div className="space-y-6">
@@ -331,7 +331,7 @@ export function Settings({
                                         <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 flex items-center justify-center text-black/45 dark:text-white/60 group-hover:text-primary dark:group-hover:text-mint transition-all">
                                             <pref.icon className="w-4 h-4" />
                                         </div>
-                                        <span className="text-[11px] font-bold text-black/80 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors">{pref.label}</span>
+                                        <span className="text-micro font-bold text-black/80 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors">{pref.label}</span>
                                     </div>
                                     <button
                                         role="switch"
@@ -355,12 +355,12 @@ export function Settings({
                         <div className="p-6 bg-black rounded-[28px] text-white shadow-2xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-mint/10 blur-3xl"></div>
                             <h4 className="text-xl font-black tracking-tight mb-4">{t.settings.securityFirst} <span className="text-white/70 italic">{t.settings.securityFirstSubtitle}</span></h4>
-                            <p className="text-white/75 text-[10px] font-bold leading-relaxed mb-8 italic">
+                            <p className="text-white/75 text-kicker font-bold leading-relaxed mb-8 italic">
                                 {t.settings.securityFirstDesc}
                             </p>
                             <button
                                 onClick={() => withProcessing(t.settings.masterSignOut, async () => { await onLogoutAllSessions?.() })}
-                                className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:border-red-500 transition-all text-white/80 hover:text-white"
+                                className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-kicker font-black uppercase tracking-widest hover:bg-red-500 hover:border-red-500 transition-all text-white/80 hover:text-white"
                             >
                                 {t.settings.masterSignOut}
                             </button>
@@ -380,9 +380,9 @@ export function Settings({
                         <div className="px-6 py-5 border-b border-black/10 dark:border-white/15 flex items-center justify-between bg-black/5 dark:bg-black/50">
                             <div className="flex items-center gap-3">
                                 <Smartphone className="w-4 h-4 text-black/45 dark:text-white/60" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.activeSessions}</h3>
+                                <h3 className="text-kicker font-black uppercase tracking-widest text-black dark:text-white">{t.settings.activeSessions}</h3>
                             </div>
-                            <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-[10px] font-black uppercase tracking-widest rounded-full">{activeSessions.length} {t.settings.total}</span>
+                            <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-kicker font-black uppercase tracking-widest rounded-full">{activeSessions.length} {t.settings.total}</span>
                         </div>
 
                         <div className="divide-y divide-black/10 dark:divide-white/10">
@@ -398,17 +398,17 @@ export function Settings({
                                                     {session.device_name}
                                                 </span>
                                                 {session.is_current && (
-                                                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-primary text-white dark:text-[#1A2420] rounded-full">
+                                                    <span className="text-kicker font-black uppercase tracking-widest px-2 py-0.5 bg-primary text-white dark:text-[#1A2420] rounded-full">
                                                         {t.settings.activeNow}
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="text-[10px] font-bold text-black/45 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
+                                            <div className="text-kicker font-bold text-black/45 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
                                                 <span>{session.location}</span>
                                                 <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/25" />
                                                 <span className="font-mono">{session.ip_address}</span>
                                             </div>
-                                            <div className="text-[9px] font-medium text-black/45 dark:text-white/60 mt-2 italic flex items-center gap-1.5">
+                                            <div className="text-kicker font-medium text-black/45 dark:text-white/60 mt-2 italic flex items-center gap-1.5">
                                                 <Globe className="w-3 h-3" />
                                                 {t.settings.since} {formatDateTime(session.last_active_at)}
                                             </div>
@@ -416,7 +416,7 @@ export function Settings({
                                         {!session.is_current && (
                                             <button
                                                 onClick={() => withProcessing(t.settings.revokeAccess + "...", async () => { await onLogoutSession?.(session.session_id) })}
-                                                className="text-[9px] font-black uppercase tracking-widest text-black/45 dark:text-white/60 hover:text-red-500 hover:scale-105 transition-all pt-2"
+                                                className="text-kicker font-black uppercase tracking-widest text-black/45 dark:text-white/60 hover:text-red-500 hover:scale-105 transition-all pt-2"
                                             >
                                                 {t.settings.revokeAccess}
                                             </button>
@@ -437,9 +437,9 @@ export function Settings({
                         <div className="px-6 py-5 border-b border-black/10 dark:border-white/15 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Lock className="w-4 h-4 text-black/45 dark:text-white/60" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.auditTrail}</h3>
+                                <h3 className="text-kicker font-black uppercase tracking-widest text-black dark:text-white">{t.settings.auditTrail}</h3>
                             </div>
-                            <button className="text-[9px] font-black text-primary dark:text-mint uppercase tracking-widest hover:underline">{t.settings.downloadReport}</button>
+                            <button className="text-kicker font-black text-primary dark:text-mint uppercase tracking-widest hover:underline">{t.settings.downloadReport}</button>
                         </div>
 
                         <div className="divide-y divide-black/10 dark:divide-white/10">
@@ -453,24 +453,24 @@ export function Settings({
                                             </div>
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-[11px] font-black text-black dark:text-white uppercase tracking-tight">
+                                                    <span className="text-micro font-black text-black dark:text-white uppercase tracking-tight">
                                                         {getEventLabel(event.event_type)}
                                                     </span>
                                                     {!event.success && (
-                                                        <span className="text-[8px] font-black text-red-500 uppercase tracking-widest bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
+                                                        <span className="text-kicker font-black text-red-500 uppercase tracking-widest bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
                                                             Alert
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-black/45 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
+                                                <div className="text-kicker font-bold text-black/45 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
                                                     <span>{event.device_name}</span>
                                                     <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/25" />
                                                     <span>{formatDateTime(event.created_at)}</span>
                                                 </div>
                                             </div>
                                             <div className="text-right flex flex-col items-end">
-                                                <div className="text-[9px] font-black text-black dark:text-white tracking-widest font-mono">{event.ip_address}</div>
-                                                <div className="text-[8px] text-black/45 dark:text-white/60 font-bold uppercase tracking-widest">{event.location}</div>
+                                                <div className="text-kicker font-black text-black dark:text-white tracking-widest font-mono">{event.ip_address}</div>
+                                                <div className="text-kicker text-black/45 dark:text-white/60 font-bold uppercase tracking-widest">{event.location}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -483,14 +483,14 @@ export function Settings({
                     <div className="p-6 border-2 border-dashed border-black/10 dark:border-white/10 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="max-w-md text-center md:text-left">
                             <h4 className="text-xs font-black text-black/70 dark:text-white/70 uppercase tracking-[0.2em] mb-3">{t.settings.myDataTitle}</h4>
-                            <p className="text-[11px] text-black/60 dark:text-white/60 font-bold leading-relaxed">
+                            <p className="text-micro text-black/60 dark:text-white/60 font-bold leading-relaxed">
                                 {t.settings.myDataDesc}
                             </p>
                         </div>
                         <button
                             onClick={handleExportData}
                             disabled={isExporting}
-                            className="bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                            className="bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-2xl text-kicker font-black uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
                         >
                             {isExporting ? t.settings.exportPreparing : t.settings.exportData}
                         </button>
@@ -501,14 +501,14 @@ export function Settings({
                         <div className="p-6 border-2 border-dashed border-amber-500/20 bg-amber-50/30 dark:bg-amber-900/10 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6">
                             <div className="max-w-md text-center md:text-left">
                                 <h4 className="text-xs font-black text-amber-700 dark:text-amber-500 uppercase tracking-[0.2em] mb-3">{t.settings.deletionPendingTitle}</h4>
-                                <p className="text-[11px] text-black/60 dark:text-white/60 font-bold leading-relaxed">
+                                <p className="text-micro text-black/60 dark:text-white/60 font-bold leading-relaxed">
                                     {t.settings.deletionPendingDesc}
                                 </p>
                             </div>
                             <button
                                 onClick={handleCancelDeletion}
                                 disabled={isCancellingDeletion}
-                                className="bg-white dark:bg-black text-black dark:text-white border-2 border-black/15 dark:border-white/20 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                                className="bg-white dark:bg-black text-black dark:text-white border-2 border-black/15 dark:border-white/20 px-8 py-4 rounded-2xl text-kicker font-black uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
                             >
                                 {isCancellingDeletion ? t.settings.processing : t.settings.cancelDeletion}
                             </button>
@@ -517,14 +517,14 @@ export function Settings({
                         <div className="p-6 border-2 border-dashed border-red-500/10 bg-red-50/20 dark:bg-red-900/5 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6 group">
                             <div className="max-w-md text-center md:text-left">
                                 <h4 className="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-3">{t.settings.nuclearDeletion}</h4>
-                                <p className="text-[11px] text-black/60 dark:text-white/60 font-bold leading-relaxed">
+                                <p className="text-micro text-black/60 dark:text-white/60 font-bold leading-relaxed">
                                     {t.settings.nuclearDesc}
                                 </p>
                             </div>
                             <button
                                 onClick={() => setDeleteConfirmOpen(true)}
                                 disabled={isDeleting}
-                                className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-red-600/20 hover:shadow-red-600/40 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                                className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl text-kicker font-black uppercase tracking-widest shadow-xl shadow-red-600/20 hover:shadow-red-600/40 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
                             >
                                 {isDeleting ? t.settings.processing : t.settings.deletePermanently}
                             </button>

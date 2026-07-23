@@ -15,7 +15,7 @@ function BrowserChrome({ url, children }: { url: string; children: React.ReactNo
                     <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                     <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                 </div>
-                <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-[11px] text-[#64748B]">
+                <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#64748B]">
                     {url}
                 </div>
             </div>
@@ -53,17 +53,17 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
             <div className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                     <div>
-                        <p className="text-[13px] font-semibold text-[#0F172A]">{t("Χαρτοφυλάκιο Πελατών", "Client Portfolio")}</p>
-                        <p className="text-[11px] text-[#64748B]">{t("47 ενεργοί πελάτες", "47 active clients")}</p>
+                        <p className="text-body-sm font-semibold text-[#0F172A]">{t("Χαρτοφυλάκιο Πελατών", "Client Portfolio")}</p>
+                        <p className="text-micro text-[#64748B]">{t("47 ενεργοί πελάτες", "47 active clients")}</p>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1">
                         <Shield className="h-3 w-3 text-[#29685B]" />
-                        <span className="text-[11px] font-semibold text-[#29685B]">{t("AI Ενεργό", "AI Active")}</span>
+                        <span className="text-micro font-semibold text-[#29685B]">{t("AI Ενεργό", "AI Active")}</span>
                     </div>
                 </div>
 
                 {/* KPI tiles */}
-                <div className="mb-4 grid grid-cols-3 gap-2">
+                <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {stats.map((s, i) => (
                         <div
                             key={i}
@@ -72,8 +72,8 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                             }`}
                             style={{ transitionDelay: `${i * 80 + 400}ms` }}
                         >
-                            <p className="text-[18px] font-bold text-[#0F172A]">{s.value}</p>
-                            <p className="text-[10px] text-[#64748B]">{s.label}</p>
+                            <p className="text-lead font-bold text-[#0F172A]">{s.value}</p>
+                            <p className="text-kicker text-[#64748B]">{s.label}</p>
                         </div>
                     ))}
                 </div>
@@ -93,7 +93,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                             style={{ transitionDelay: `${i * 100 + 640}ms` }}
                         >
                             <div
-                                className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-[11px] font-bold ${
+                                className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-micro font-bold ${
                                     c.type === "critical"
                                         ? "bg-[#FEF2F2] text-[#B91C1C]"
                                         : c.type === "warn"
@@ -105,9 +105,9 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                             </div>
                             <div className="min-w-0 flex-1">
                                 <div className="mb-0.5 flex items-center justify-between gap-2">
-                                    <span className="truncate text-[12px] font-semibold text-[#0F172A]">{c.name}</span>
+                                    <span className="truncate text-caption font-semibold text-[#0F172A]">{c.name}</span>
                                     <span
-                                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[9px] font-semibold ${
+                                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
                                             c.type === "critical"
                                                 ? "bg-[#FEF2F2] text-[#B91C1C]"
                                                 : c.type === "warn"
@@ -134,7 +134,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                                             }}
                                         />
                                     </div>
-                                    <span className="text-[10px] font-medium text-[#64748B]">{c.score}%</span>
+                                    <span className="text-kicker font-medium text-[#64748B]">{c.score}%</span>
                                 </div>
                             </div>
                         </div>
@@ -200,8 +200,8 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
             <div className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                     <div>
-                        <p className="text-[13px] font-semibold text-[#0F172A]">{t("AI Σαρωτής Κενών", "AI Gap Scanner")}</p>
-                        <p className="text-[11px] text-[#64748B]">{t("Σάρωση: Παπαδοπούλου Μ.", "Scanning: Papadopoulou M.")}</p>
+                        <p className="text-body-sm font-semibold text-[#0F172A]">{t("AI Σαρωτής Κενών", "AI Gap Scanner")}</p>
+                        <p className="text-micro text-[#64748B]">{t("Σάρωση: Παπαδοπούλου Μ.", "Scanning: Papadopoulou M.")}</p>
                     </div>
                     <div
                         className={`flex items-center gap-1.5 transition-all duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
@@ -211,7 +211,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                                 scanProgress < 100 ? "animate-pulse bg-[#29685B]" : "bg-[#22C55E]"
                             }`}
                         />
-                        <span className="text-[11px] font-semibold text-[#29685B]">
+                        <span className="text-micro font-semibold text-[#29685B]">
                             {scanProgress < 100 ? t("Σάρωση…", "Scanning…") : t("Ολοκληρώθη", "Complete")}
                         </span>
                     </div>
@@ -225,8 +225,8 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                     style={{ transitionDelay: "400ms" }}
                 >
                     <div className="mb-2 flex items-center justify-between">
-                        <span className="text-[11px] font-medium text-[#475569]">{t("Ανάλυση συμβολαίων", "Analyzing policies")}</span>
-                        <span className="text-[11px] font-bold text-[#0F172A]">{scanProgress}%</span>
+                        <span className="text-micro font-medium text-[#475569]">{t("Ανάλυση συμβολαίων", "Analyzing policies")}</span>
+                        <span className="text-micro font-bold text-[#0F172A]">{scanProgress}%</span>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-[#F1F5F9]">
                         <div
@@ -248,10 +248,10 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                         >
                             <AlertTriangle className={`mt-0.5 h-3.5 w-3.5 flex-shrink-0 ${g.textColor}`} />
                             <div className="min-w-0 flex-1">
-                                <span className={`mr-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold ${g.textColor} ${g.bg}`}>
+                                <span className={`mr-1.5 rounded-full px-1.5 py-0.5 text-kicker font-bold ${g.textColor} ${g.bg}`}>
                                     {g.severity}
                                 </span>
-                                <span className="text-[11px] text-[#374151]">{g.label}</span>
+                                <span className="text-micro text-[#374151]">{g.label}</span>
                             </div>
                         </div>
                     ))}
@@ -264,7 +264,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                     }`}
                     style={{ transitionDelay: "2400ms" }}
                 >
-                    <p className="text-[11px] font-semibold text-[#166534]">
+                    <p className="text-micro font-semibold text-[#166534]">
                         {t("3 κενά εντοπίστηκαν σε 47 πελάτες", "3 gaps detected across 47 clients")}
                     </p>
                 </div>
@@ -303,12 +303,12 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
             <div className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                     <div>
-                        <p className="text-[13px] font-semibold text-[#0F172A]">{t("Pipeline Ανανεώσεων", "Renewal Pipeline")}</p>
-                        <p className="text-[11px] text-[#64748B]">{t("Επόμενες 60 μέρες", "Next 60 days")}</p>
+                        <p className="text-body-sm font-semibold text-[#0F172A]">{t("Pipeline Ανανεώσεων", "Renewal Pipeline")}</p>
+                        <p className="text-micro text-[#64748B]">{t("Επόμενες 60 μέρες", "Next 60 days")}</p>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full border border-[#FECACA] bg-[#FEF2F2] px-2.5 py-1">
                         <Clock className="h-3 w-3 text-[#B91C1C]" />
-                        <span className="text-[11px] font-semibold text-[#B91C1C]">1 {t("επείγον", "urgent")}</span>
+                        <span className="text-micro font-semibold text-[#B91C1C]">1 {t("επείγον", "urgent")}</span>
                     </div>
                 </div>
 
@@ -326,16 +326,16 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
                             >
                                 {/* Days chip */}
                                 <div className={`flex-shrink-0 rounded-lg px-2 py-1 text-center ${chip}`}>
-                                    <p className="text-[14px] font-bold leading-none">{r.days}</p>
-                                    <p className="text-[9px] leading-tight">{t("μέρες", "days")}</p>
+                                    <p className="text-body font-bold leading-none">{r.days}</p>
+                                    <p className="text-kicker leading-tight">{t("μέρες", "days")}</p>
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate text-[12px] font-semibold text-[#0F172A]">{r.name}</p>
-                                    <p className="text-[11px] text-[#64748B]">{r.policy}</p>
+                                    <p className="truncate text-caption font-semibold text-[#0F172A]">{r.name}</p>
+                                    <p className="text-micro text-[#64748B]">{r.policy}</p>
                                 </div>
                                 <button
                                     onClick={() => setSent((prev) => ({ ...prev, [i]: true }))}
-                                    className={`flex flex-shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold transition-all ${
+                                    className={`flex flex-shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-kicker font-semibold transition-all ${
                                         isSent
                                             ? "bg-[#F0FDF4] text-[#166534]"
                                             : "bg-[#29685B] text-white hover:bg-[#1C4E44]"
@@ -395,11 +395,11 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white/20">
                                 <FileText className="h-4 w-4 text-white" />
                             </div>
-                            <span className="text-[12px] font-bold uppercase tracking-wider text-white">
+                            <span className="text-caption font-bold uppercase tracking-wider text-white">
                                 {t("Ασφαλιστική Αναφορά", "Insurance Report")}
                             </span>
                         </div>
-                        <div className="rounded bg-white/15 px-2 py-0.5 text-[10px] font-medium text-white/90">
+                        <div className="rounded bg-white/15 px-2 py-0.5 text-kicker font-medium text-white/90">
                             01/04/2026
                         </div>
                     </div>
@@ -411,8 +411,8 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                         }`}
                         style={{ transitionDelay: "600ms" }}
                     >
-                        <p className="text-[10px] uppercase tracking-wider text-[#64748B]">{t("Πελάτης", "Client")}</p>
-                        <p className="text-[14px] font-semibold text-[#0F172A]">Νικολαΐδης Γεώργιος</p>
+                        <p className="text-kicker uppercase tracking-wider text-[#64748B]">{t("Πελάτης", "Client")}</p>
+                        <p className="text-body font-semibold text-[#0F172A]">Νικολαΐδης Γεώργιος</p>
                     </div>
 
                     {/* Policy rows */}
@@ -426,12 +426,12 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                                 style={{ transitionDelay: `${i * 150 + 800}ms` }}
                             >
                                 <div>
-                                    <p className="text-[12px] font-semibold text-[#0F172A]">{r.type}</p>
-                                    <p className="text-[11px] text-[#64748B]">{r.insurer}</p>
+                                    <p className="text-caption font-semibold text-[#0F172A]">{r.type}</p>
+                                    <p className="text-micro text-[#64748B]">{r.insurer}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[11px] font-semibold text-[#29685B]">{r.premium}</p>
-                                    <span className="rounded-full bg-[#F0FDF4] px-1.5 py-0.5 text-[9px] font-semibold text-[#166534]">
+                                    <p className="text-micro font-semibold text-[#29685B]">{r.premium}</p>
+                                    <span className="rounded-full bg-[#F0FDF4] px-1.5 py-0.5 text-kicker font-semibold text-[#166534]">
                                         {t("Ενεργό", "Active")}
                                     </span>
                                 </div>
@@ -448,10 +448,10 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                     >
                         <div className="flex items-center gap-1.5">
                             <Shield className="h-3.5 w-3.5 text-[#29685B]" />
-                            <span className="text-[11px] font-semibold text-[#0F172A]">{t("Σκορ κάλυψης", "Protection Score")}</span>
-                            <span className="text-[11px] font-bold text-[#29685B]">87/100</span>
+                            <span className="text-micro font-semibold text-[#0F172A]">{t("Σκορ κάλυψης", "Protection Score")}</span>
+                            <span className="text-micro font-bold text-[#29685B]">87/100</span>
                         </div>
-                        <button className="rounded-full bg-[#29685B] px-3 py-1.5 text-[10px] font-bold text-white transition-colors hover:bg-[#1C4E44]">
+                        <button className="rounded-full bg-[#29685B] px-3 py-1.5 text-kicker font-bold text-white transition-colors hover:bg-[#1C4E44]">
                             {t("Αποστολή →", "Send →")}
                         </button>
                     </div>
@@ -465,7 +465,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                     style={{ transitionDelay: "1450ms" }}
                 >
                     <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-[#29685B]" />
-                    <p className="text-[11px] font-semibold text-[#166534]">
+                    <p className="text-micro font-semibold text-[#166534]">
                         {t("Έτοιμο για αποστολή — PDF + email με ένα κλικ", "Ready to send — PDF + email in one click")}
                     </p>
                 </div>

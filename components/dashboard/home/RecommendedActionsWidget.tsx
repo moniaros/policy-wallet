@@ -31,7 +31,7 @@ export function RecommendedActionsWidget({
     labels: { kicker: string; noActions: string; viewAll: string }
 }) {
     return (
-        <div className="pw-card p-5 lg:col-span-2">
+        <div className="pw-card pw-pad lg:col-span-2">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 {items.length > 0 && (

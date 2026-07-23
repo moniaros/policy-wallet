@@ -39,7 +39,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         {agent.verificationStatus === "verified" && (
                             <ShieldCheck className="h-3 w-3 text-[#22C55E]" />
                         )}
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-kicker text-muted-foreground">
                             {t.agentUi.licensedAgent}
                         </span>
                     </div>
@@ -73,7 +73,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                             {agent.name}
                         </h3>
                         {agent.verificationStatus === "verified" && (
-                            <span className="flex items-center gap-1 rounded-full bg-primary-soft dark:bg-primary/15 px-2 py-0.5 text-[10px] font-medium text-[#166534] dark:text-mint">
+                            <span className="flex items-center gap-1 rounded-full bg-primary-soft dark:bg-primary/15 px-2 py-0.5 text-kicker font-medium text-[#166534] dark:text-mint">
                                 <ShieldCheck className="h-3 w-3" />
                                 {t.agentUi.verified}
                             </span>
@@ -120,7 +120,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
             {/* License footer */}
             {agent.licenseNumber && (
                 <div className="mt-4 pt-3 border-t border-neutral-200/60 dark:border-neutral-700/60">
-                    <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                    <p className="text-kicker text-neutral-400 dark:text-neutral-500">
                         {t.agentUi.eaeeLicenseNo}: {agent.licenseNumber}
                     </p>
                 </div>

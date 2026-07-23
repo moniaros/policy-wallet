@@ -42,7 +42,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                 className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 hover:bg-black/10 dark:hover:bg-white/15 transition-all group"
             >
                 <div className="flex flex-col items-start min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-black/45 dark:text-white/50 group-hover:text-black/65 dark:group-hover:text-white/75 transition-colors">
+                    <span className="text-kicker font-bold uppercase tracking-widest text-black/45 dark:text-white/50 group-hover:text-black/65 dark:group-hover:text-white/75 transition-colors">
                         {roleCopy.shell.roleViewingAsLabel}
                     </span>
                     <span className="text-xs font-semibold text-black dark:text-white truncate tracking-tight">
@@ -72,7 +72,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                                     setIsOpen(false)
                                 }}
                                 className={`
-                                    w-full px-5 py-3 text-left text-[11px] font-bold uppercase tracking-widest transition-all
+                                    w-full px-5 py-3 text-left text-micro font-bold uppercase tracking-widest transition-all
                                     ${role.role === currentRole.role
                                         ? 'bg-primary text-white dark:text-[#1A2420]'
                                         : 'text-black/60 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10'

@@ -13,7 +13,7 @@ export default async function NotificationsPage() {
     if (!data) {
         return (
             <div className="pw-page-shell px-4 py-8">
-                <div className="mx-auto max-w-2xl pw-card p-6 text-sm text-muted-foreground">
+                <div className="mx-auto max-w-2xl pw-card pw-pad text-sm text-muted-foreground">
                     {t.errors.somethingWentWrong}
                 </div>
             </div>

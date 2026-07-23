@@ -101,7 +101,7 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
 
     return (
         <div className="pw-page-shell min-h-screen">
-            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 <header className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
                         <span className="pw-kicker inline-block mb-2">{cust_t.kicker}</span>

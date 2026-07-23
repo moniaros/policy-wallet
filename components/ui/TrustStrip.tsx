@@ -35,7 +35,7 @@ export function TrustStrip({ items, className }: { items: TrustStripItem[]; clas
                            dark surface this rendered as a white chip with dark text —
                            the one component whose whole job is to look trustworthy.
                            Now on tokens, which flip. */
-                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-[12px] font-medium text-muted-foreground"
+                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-caption font-medium text-muted-foreground"
                     >
                         <Icon className="h-3.5 w-3.5 text-primary dark:text-mint" aria-hidden />
                         {item.label}

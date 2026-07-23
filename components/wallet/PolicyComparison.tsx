@@ -162,7 +162,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">{c.kicker}</span>
+                            <span className="text-kicker font-black uppercase tracking-[0.2em]">{c.kicker}</span>
                         </div>
                         <button
                             onClick={handleClearAndClose}
@@ -365,14 +365,14 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                 <div className="p-8 pt-0 border-t border-border flex gap-4">
                     <button
                         onClick={handleClearAndClose}
-                        className="flex-1 px-8 py-4 bg-muted text-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="flex-1 px-8 py-4 bg-muted text-foreground rounded-2xl text-kicker font-black uppercase tracking-widest hover:bg-muted/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                         {t.common.close}
                     </button>
                     {selectedIds.length >= 2 && (
                         <button
                             onClick={() => setSelectedIds([])}
-                            className="flex-1 px-8 py-4 bg-primary text-primary-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-hover transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                            className="flex-1 px-8 py-4 bg-primary text-primary-foreground rounded-2xl text-kicker font-black uppercase tracking-widest hover:bg-primary-hover transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                         >
                             {c.compareDifferent}
                         </button>

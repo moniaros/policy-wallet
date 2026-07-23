@@ -23,7 +23,7 @@ function OfferCard({
 }) {
     const offerTypeLabel = t.offerTypes[offer.offerType]
     return (
-        <div className="pw-card p-5 flex flex-col gap-3 h-full">
+        <div className="pw-card pw-pad flex flex-col gap-3 h-full">
             <div className="flex items-start justify-between gap-3">
                 <div>
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -102,7 +102,7 @@ export default async function BenefitsPage() {
             </div>
 
             {unlocked.length === 0 && locked.length === 0 && (
-                <div className="pw-card p-10 text-center">
+                <div className="pw-card pw-pad-roomy text-center">
                     <p className="text-lg font-semibold text-foreground">{t.emptyTitle}</p>
                     <p className="text-sm text-muted-foreground mt-2">{t.emptyBody}</p>
                 </div>

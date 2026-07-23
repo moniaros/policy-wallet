@@ -26,7 +26,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
             {navigation.map((group, groupIndex) => (
                 <div key={groupIndex}>
                     {group.title && (
-                        <div className="px-3 mb-2 text-[10px] font-semibold text-black/45 dark:text-white/45 uppercase tracking-[0.22em]">
+                        <div className="px-3 mb-2 text-kicker font-semibold text-black/45 dark:text-white/45 uppercase tracking-[0.22em]">
                             {group.title}
                         </div>
                     )}
@@ -63,19 +63,19 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
 
                                     {/* Badges */}
                                     {item.variant === 'pro' && !item.isLocked && (
-                                        <span className="px-1.5 py-0.5 rounded-md bg-black text-white text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                        <span className="px-1.5 py-0.5 rounded-md bg-black text-white text-kicker font-bold uppercase tracking-widest shadow-sm">
                                             Plus
                                         </span>
                                     )}
 
                                     {item.variant === 'plus' && !item.isLocked && (
-                                        <span className="px-1.5 py-0.5 rounded-md bg-primary/15 text-primary dark:text-mint text-[10px] font-bold uppercase tracking-widest border border-primary/30">
+                                        <span className="px-1.5 py-0.5 rounded-md bg-primary/15 text-primary dark:text-mint text-kicker font-bold uppercase tracking-widest border border-primary/30">
                                             Starter
                                         </span>
                                     )}
 
                                     {item.isLocked && (
-                                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-bold text-black/60 dark:text-white/60 uppercase tracking-wider border border-black/10 dark:border-white/15">
+                                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-kicker font-bold text-black/60 dark:text-white/60 uppercase tracking-wider border border-black/10 dark:border-white/15">
                                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                             </svg>

@@ -88,7 +88,7 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card title="Token balance" action={<GrantTokensButton userId={user.id} label={user.email} />}>
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
                         <Field label="Available" value={<span className="text-lg font-bold">{available.toLocaleString()}</span>} />
                         <Field label="Purchased" value={purchased.toLocaleString()} />
                         <Field label="Used" value={used.toLocaleString()} />

@@ -136,13 +136,13 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
     return (
         <LoBPageShell activeNav="none" locale={locale}>
             <section className="px-6 pb-20 md:px-12">
-                <div className="mx-auto max-w-[1200px]">
+                <div className="mx-auto max-w-page">
                     <div className="mb-10">
-                        <p className="mb-3 text-[13px] font-semibold uppercase tracking-wider text-[#29685B]">Επικοινωνία</p>
-                        <h1 className="mb-4 text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-[56px]">
+                        <p className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-[#29685B]">Επικοινωνία</p>
+                        <h1 className="mb-4 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-display">
                             Πείτε μας πώς μπορούμε να βοηθήσουμε.
                         </h1>
-                        <p className="max-w-[720px] text-[18px] text-[#475569]">
+                        <p className="max-w-[720px] text-lead text-[#475569]">
                             Συμπληρώστε τη φόρμα και η ομάδα μας θα επικοινωνήσει μαζί σας με τα επόμενα βήματα.
                         </p>
                     </div>
@@ -172,7 +172,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                         autoComplete="name"
                                         value={form.name}
                                         onChange={(event) => setField("name", event.target.value)}
-                                        className={`w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
+                                        className={`w-full rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
                                             errors.name ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.name)}
@@ -192,7 +192,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                         autoComplete="email"
                                         value={form.email}
                                         onChange={(event) => setField("email", event.target.value)}
-                                        className={`w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
+                                        className={`w-full rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
                                             errors.email ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.email)}
@@ -214,7 +214,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                         autoComplete="tel"
                                         value={form.phone}
                                         onChange={(event) => setField("phone", event.target.value)}
-                                        className={`w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
+                                        className={`w-full rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
                                             errors.phone ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.phone)}
@@ -232,7 +232,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                     <select
                                         value={form.subject}
                                         onChange={(event) => setField("subject", event.target.value as SubjectOption | "")}
-                                        className={`w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
+                                        className={`w-full rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
                                             errors.subject ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.subject)}
@@ -259,7 +259,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                     value={form.message}
                                     onChange={(event) => setField("message", event.target.value)}
                                     rows={7}
-                                    className={`w-full resize-y rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
+                                    className={`w-full resize-y rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
                                         errors.message ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                     }`}
                                     aria-invalid={Boolean(errors.message)}
@@ -289,9 +289,9 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                         </form>
 
                         <aside className="rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] p-6 shadow-sm md:p-8">
-                            <h2 className="mb-6 text-[24px] font-semibold text-[#0F172A]">Στοιχεία εταιρείας</h2>
+                            <h2 className="mb-6 text-h3 font-semibold text-[#0F172A]">Στοιχεία εταιρείας</h2>
 
-                            <div className="space-y-5 text-[14px] text-[#334155]">
+                            <div className="space-y-5 text-body text-[#334155]">
                                 <div className="flex items-start gap-3">
                                     <Mail className="mt-0.5 h-5 w-5 text-[#29685B]" />
                                     <div>

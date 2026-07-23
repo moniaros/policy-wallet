@@ -336,7 +336,7 @@ export function ProposalView({
                 <div>
                     <div className="flex items-center gap-2 mb-1">
                         <VerifiedInsurerBadge insurerName={proposal.insurerName} />
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusBadge.style}`}>
+                        <span className={`rounded-full px-2 py-0.5 text-kicker font-medium ${statusBadge.style}`}>
                             {language === "el" ? statusBadge.label.el : statusBadge.label.en}
                         </span>
                     </div>
@@ -350,7 +350,7 @@ export function ProposalView({
                     <p className="text-2xl font-black text-foreground">
                         {formatCurrencyFull(proposal.premiumAmount, language)}
                     </p>
-                    <p className="text-[10px] text-neutral-400">
+                    <p className="text-kicker text-neutral-400">
                         {t.collaboration.proposals.perYear}
                     </p>
                 </div>

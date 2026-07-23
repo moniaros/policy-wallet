@@ -154,7 +154,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             }`}
                     >
                         {copy.billing.annual[language]}
-                        <span className="absolute -top-3 -right-3 bg-primary text-primary-foreground text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
+                        <span className="absolute -top-3 -right-3 bg-primary text-primary-foreground text-kicker font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
                             -20%
                         </span>
                     </button>
@@ -197,7 +197,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                 }`}
                         >
                             {tier.id === 'ph-pro' && (
-                                <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
+                                <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-kicker font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
                                     {copy.trial.badge[language]}
                                 </div>
                             )}

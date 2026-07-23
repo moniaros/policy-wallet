@@ -11,7 +11,7 @@ interface InsuredPeopleCardProps {
 /** Everyone the policy covers, deduplicated from the extracted data. */
 export function InsuredPeopleCard({ names, copy }: InsuredPeopleCardProps) {
     return (
-        <div className="pw-card p-6">
+        <div className="pw-card pw-pad">
             <h3 className="mb-3 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                 {copy.insuredPeople}
             </h3>

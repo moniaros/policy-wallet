@@ -47,17 +47,17 @@ function KpiCard({
     sub?: string
 }) {
     return (
-        <div className="pw-card p-4">
+        <div className="pw-card pw-pad-tight">
             <div className="flex items-start gap-3">
                 <span className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl ${ACCENTS[accent] || ACCENTS.slate}`}>
                     <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+                    <p className="text-kicker font-black uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
                         {label}
                     </p>
                     <p className="mt-0.5 truncate text-xl font-black text-foreground">{value}</p>
-                    {sub && <p className="text-[10px] text-neutral-400 dark:text-neutral-500">{sub}</p>}
+                    {sub && <p className="text-kicker text-neutral-400 dark:text-neutral-500">{sub}</p>}
                 </div>
             </div>
         </div>

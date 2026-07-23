@@ -14,13 +14,20 @@ import { cn } from '@/lib/utils'
  * only the ceiling changes.
  */
 
+/**
+ * Widths resolve to the container tokens in globals.css, so the primitive and
+ * the raw `max-w-*` utilities cannot drift apart — changing a ceiling is one
+ * edit in the theme, not a hunt through components.
+ */
 const WIDTHS = {
-    /** Standard app pages — dashboards, lists, admin tables. */
-    default: 'max-w-7xl',
-    /** Reading-width surfaces — forms, settings, single-column detail. */
-    narrow: 'max-w-4xl',
-    /** Dense data views that genuinely need the room. */
-    wide: 'max-w-[1400px]',
+    /** Prose: legal text, articles — a comfortable measure, not full width. */
+    reading: 'max-w-reading',
+    /** Single-column forms and narrow flows. */
+    narrow: 'max-w-form',
+    /** Standard content/marketing page. */
+    default: 'max-w-page',
+    /** Dense dashboards that genuinely need the room. */
+    wide: 'max-w-page-wide',
     /** Opt out of the ceiling but keep the gutter. */
     full: 'max-w-none',
 } as const

@@ -63,7 +63,7 @@ export function CommissionsClient({ data }: Props) {
 
     return (
         <div className="pw-page-shell min-h-screen">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div className="max-w-page-wide mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 {/* Header */}
                 <div className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
@@ -77,22 +77,22 @@ export function CommissionsClient({ data }: Props) {
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <div className="pw-card p-6 border-t-4 border-t-primary">
+                    <div className="pw-card pw-pad border-t-4 border-t-primary">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                 <Euro className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
-                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.wonCommission}</span>
+                            <span className="text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.wonCommission}</span>
                         </div>
                         <p className="text-3xl font-black text-primary dark:text-mint">{fmt(data.totalWon)}</p>
                     </div>
 
-                    <div className="pw-card p-6 border-t-4 border-t-mint">
+                    <div className="pw-card pw-pad border-t-4 border-t-mint">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-mint/20 dark:bg-primary/15 flex items-center justify-center">
                                 <TrendingUp className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
-                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.estimatedPipeline}</span>
+                            <span className="text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.estimatedPipeline}</span>
                         </div>
                         <p className="text-3xl font-black text-primary/70 dark:text-mint/80">{fmt(data.totalEstimated)}</p>
                     </div>
@@ -100,7 +100,7 @@ export function CommissionsClient({ data }: Props) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* By LoB */}
-                    <div className="pw-card p-6">
+                    <div className="pw-card pw-pad">
                         <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                             <Briefcase className="w-4 h-4 text-primary dark:text-mint" />
                             {t.byLine}
@@ -118,10 +118,10 @@ export function CommissionsClient({ data }: Props) {
                                 <table className="pw-stacked-table w-full text-sm">
                                     <thead>
                                         <tr className="border-b border-neutral-100 dark:border-neutral-800">
-                                            <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
-                                            <th className="text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.premium}</th>
-                                            <th className="text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.commission}</th>
-                                            <th className="text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.opportunities}</th>
+                                            <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
+                                            <th className="text-right text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.premium}</th>
+                                            <th className="text-right text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.commission}</th>
+                                            <th className="text-right text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.opportunities}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -150,7 +150,7 @@ export function CommissionsClient({ data }: Props) {
                     </div>
 
                     {/* Monthly Trend */}
-                    <div className="pw-card p-6">
+                    <div className="pw-card pw-pad">
                         <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                             <BarChart3 className="w-4 h-4 text-primary dark:text-mint" />
                             {t.monthlyTrend}

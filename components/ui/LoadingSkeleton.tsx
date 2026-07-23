@@ -13,7 +13,7 @@ export function Skeleton({ className }: { className?: string }) {
  */
 export function AgentListSkeleton() {
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto animate-in fade-in duration-500">
+        <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-page-wide mx-auto animate-in fade-in duration-500">
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="space-y-2">
                     <Skeleton className="h-8 w-56" />
@@ -49,7 +49,7 @@ export function AgentListSkeleton() {
 
 export function DashboardSkeleton() {
     return (
-        <div className="p-4 md:p-6 space-y-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
+        <div className="p-4 md:p-6 space-y-8 max-w-page-wide mx-auto animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex justify-between items-end mb-12">
                 <div className="space-y-2">

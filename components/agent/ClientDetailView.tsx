@@ -105,7 +105,7 @@ export function ClientDetailView({
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950">
             {/* Header */}
             <div className="bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
-                <div className="max-w-[1200px] mx-auto px-6 py-5">
+                <div className="max-w-page mx-auto px-6 py-5">
                     <div className="flex items-center gap-4">
                         {onBack && (
                             <button
@@ -164,7 +164,7 @@ export function ClientDetailView({
             </div>
 
             {/* Tab Content */}
-            <div className="max-w-[1200px] mx-auto px-6 py-6">
+            <div className="max-w-page mx-auto px-6 py-6">
                 {activeTab === "overview" && (
                     <ClientOverviewTab
                         customer={customer}
@@ -205,7 +205,7 @@ export function ClientDetailViewSkeleton() {
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950">
             <div className="bg-white/70 dark:bg-neutral-900/70 border-b border-neutral-200/60 dark:border-neutral-800/60">
-                <div className="max-w-[1200px] mx-auto px-6 py-5">
+                <div className="max-w-page mx-auto px-6 py-5">
                     <div className="flex items-center gap-4">
                         <Skeleton className="h-12 w-12 rounded-full" />
                         <div>
@@ -220,7 +220,7 @@ export function ClientDetailViewSkeleton() {
                     </div>
                 </div>
             </div>
-            <div className="max-w-[1200px] mx-auto px-6 py-6">
+            <div className="max-w-page mx-auto px-6 py-6">
                 <Skeleton className="h-96 w-full rounded-2xl" />
             </div>
         </div>

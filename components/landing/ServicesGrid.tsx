@@ -71,13 +71,13 @@ function ServiceCard({
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#ECFDF5]">
                 <s.Icon className="h-5 w-5 text-[#29685B]" />
             </div>
-            <h3 className="mb-2 text-[16px] font-semibold tracking-tight text-[#0F172A]">
+            <h3 className="mb-2 text-body-lg font-semibold tracking-tight text-[#0F172A]">
                 {t(s.titleEl, s.titleEn)}
             </h3>
-            <p className="mb-5 flex-1 text-[14px] leading-relaxed text-[#475569]">
+            <p className="mb-5 flex-1 text-body leading-relaxed text-[#475569]">
                 {t(s.descEl, s.descEn)}
             </p>
-            <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0FDF4] px-3 py-1 text-[12px] font-semibold text-[#29685B]">
+            <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0FDF4] px-3 py-1 text-caption font-semibold text-[#29685B]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#29685B]" />
                 {t(s.benefitEl, s.benefitEn)}
             </div>

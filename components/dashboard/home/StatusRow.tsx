@@ -23,7 +23,7 @@ export function StatusRow({
 }) {
     return (
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <Link href="/agent" className="pw-card p-5">
+            <Link href="/agent" className="pw-card pw-pad">
                 <p className="pw-kicker">{labels.agentStatus}</p>
                 <div className="mt-3 flex items-center gap-3">
                     <span
@@ -35,7 +35,7 @@ export function StatusRow({
                 </div>
             </Link>
 
-            <div className="pw-card p-5">
+            <div className="pw-card pw-pad">
                 <p className="pw-kicker">{labels.checkupKicker}</p>
                 <div className="mt-3 flex items-start gap-3">
                     <HeartPulse className="mt-0.5 h-5 w-5 text-primary dark:text-mint" />
@@ -43,7 +43,7 @@ export function StatusRow({
                 </div>
             </div>
 
-            <Link href="/coverage-insights" className="pw-card p-5">
+            <Link href="/coverage-insights" className="pw-card pw-pad">
                 <p className="pw-kicker">{labels.savingsKicker}</p>
                 <div className="mt-3">
                     <p className="text-sm text-black/80 dark:text-white/80">{labels.savingsLine}</p>

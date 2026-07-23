@@ -36,7 +36,7 @@ export function BranchCoverageMap({
     className?: string
 }) {
     return (
-        <div className={cn("pw-card p-5", className)}>
+        <div className={cn("pw-card pw-pad", className)}>
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 <Link
