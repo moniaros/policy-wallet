@@ -10,6 +10,7 @@ import {
     Car,
     Heart,
     Home,
+    Info,
     PawPrint,
     Plane,
     Plus,
@@ -253,6 +254,21 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                     <p className="text-xs font-semibold text-black/50 dark:text-white/50 uppercase tracking-widest mb-3">
                         {t("Υγεία & Τρόπος Ζωής", "Health & Lifestyle")}
                     </p>
+
+                    {/* Special-category (health) data — GDPR Art. 9. The wizard
+                        collected chronic conditions and family history with no
+                        purpose statement or optionality at the point of
+                        collection. This states why we ask, that it is optional,
+                        and that it is used only to tailor coverage suggestions. */}
+                    <div className="mb-4 flex items-start gap-2 rounded-xl border border-primary/20 bg-primary/[0.04] p-3 dark:border-primary/25 dark:bg-primary/10">
+                        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary dark:text-mint" aria-hidden="true" />
+                        <p className="text-caption leading-relaxed text-black/70 dark:text-white/70">
+                            {t(
+                                "Τα στοιχεία υγείας είναι προαιρετικά. Τα χρησιμοποιούμε μόνο για να προσαρμόσουμε τις προτάσεις κάλυψης υγείας και ζωής στις ανάγκες σας — δεν κοινοποιούνται σε ασφαλιστές χωρίς τη ρητή συγκατάθεσή σας. Μπορείτε να τα αφήσετε κενά ή να τα διαγράψετε αργότερα.",
+                                "Health details are optional. We use them only to tailor health and life coverage suggestions to your needs — they are not shared with insurers without your explicit consent. You can leave them blank or remove them later."
+                            )}
+                        </p>
+                    </div>
 
                     {/* Gender + Activity level */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
