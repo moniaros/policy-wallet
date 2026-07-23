@@ -58,16 +58,29 @@ The single most important rule: **primary flips to mint in dark mode.**
 - Surfaces go near-black (see `.dark` block in `app/globals.css`); cards keep their 16px radius and pick up dark surface variables via `.pw-card`.
 - Never hardcode white text on a primary fill — use `text-primary-foreground` (or the `.pw-primary-button` utility) so the flip stays correct.
 
-### Typography
+### Typography — the ladder
 
-- **Font:** Inter, weights 400–700, `latin` + `greek` subsets, loaded via `next/font/google` in `app/layout.tsx` and exposed as `--font-inter`.
-- **Heading Font:** Inter (600–700)
-- **Body Font:** Inter (400–500)
-- **Mood:** financial, trustworthy, professional, modern, calm
-- Do **not** add a CSS `@import` for fonts — `next/font` handles loading, subsetting, and `display: swap`.
-- Micro-scale type for widgets (11–13px labels, 18px KPI values) has no token table — use Tailwind's scale (`text-[11px]`, `text-xs`, `text-lg`) directly.
-- `font-black` (900) is **not** in the ladder — the heaviest sanctioned weight is `font-bold` (700). Use `font-semibold` (600) for headings inside cards, overlays, and modals.
-- The uppercase micro-label is the **`.pw-kicker`** utility — use it instead of re-rolling `text-[10px] uppercase tracking-widest`.
+Type is a **named ladder** in `app/globals.css` (`@theme` → `--text-*`), so every step is a Tailwind utility. Never use `text-[Npx]`; a unit test fails the build on any arbitrary pixel size.
+
+| Utility | Size | Use for |
+|---------|------|---------|
+| `text-kicker` | 10px | Uppercase eyebrow/pill labels. **Decorative only.** |
+| `text-micro` | 11px | Dense table meta. **Decorative only.** |
+| `text-caption` | 12px | Smallest **functional** size — the accessibility floor. |
+| `text-body-sm` | 13px | Dense rows, secondary body. |
+| `text-body` | 14px | Default UI body. |
+| `text-body-lg` | 16px | Long-form / marketing body. |
+| `text-lead` | 18px | Card titles, section leads. |
+| `text-title` | 20px | Sub-headings. |
+| `text-h3` / `text-h2` / `text-h1` | 24 / 32 / 44px | Headings. |
+| `text-display` | 56px | Hero only. |
+
+Each step carries a paired line-height, so vertical rhythm is consistent without every component picking its own `leading-*`. Override with `leading-*` only for a deliberate exception.
+
+- **Never below 12px for functional text.** `kicker`/`micro` exist for decorative uppercase labels and pills; if a user must read it to make a decision, it is `caption` or larger.
+- **Font:** Inter, weights 400–700, `latin` + `greek` subsets via `next/font/google`. Do not add a CSS `@import`.
+- `font-black` (900) is **not** in the ladder — `font-bold` is the ceiling; prefer `font-semibold` inside cards and overlays.
+- The uppercase micro-label is the **`.pw-kicker`** utility — do not re-roll it.
 
 ### Radii
 
@@ -79,17 +92,36 @@ The single most important rule: **primary flips to mint in dark mode.**
 | Badges, chips, pill buttons | full | `--pw-radius-button` = `9999px` / `rounded-full` |
 | shadcn base radius | `0.75rem` | `--radius` (drives `rounded-sm/md/lg` passthroughs) |
 
-### Spacing
+### Containers and spacing
 
-There are **no `--space-*` CSS variables** — spacing is Tailwind's default scale, used directly. The rhythm to follow:
+**Page width is a token, not a guess.** `@theme` → `--container-*`, available as `max-w-*`:
 
-| Context | Value |
-|---------|-------|
-| Card / widget padding | `p-5` (widgets) to `p-6` (standard cards) |
-| Row / list-item padding | `p-2.5` – `p-4` |
-| Page gutter | `px-4 sm:px-6 lg:px-8` |
-| Section vertical rhythm (marketing) | `pt-28/36 · py-20/28`, band `py-16` |
-| Icon / inline gaps | `gap-2` – `gap-3` |
+| Utility | Width | Use for |
+|---------|-------|---------|
+| `max-w-reading` | 680px | Prose — legal text, articles. |
+| `max-w-form` | 900px | Single-column forms and narrow flows. |
+| `max-w-page` | 1240px | Standard content/marketing page. |
+| `max-w-page-wide` | 1400px | Dense dashboards that need the room. |
+
+Prefer the **`<PageContainer>`** primitive (`components/ui/PageContainer.tsx`), which applies a width token *and* the standard gutter. It resolves to the same tokens, so the primitive and the raw utilities cannot drift.
+
+**The one page gutter:** `px-4 sm:px-6 lg:px-8`. It does not change with the width.
+
+**Density — cards tighten on small screens.** `.pw-card` carries no padding; pick a step so a card comfortable on desktop does not eat a 375px viewport:
+
+| Utility | Padding | Use for |
+|---------|---------|---------|
+| `pw-pad-tight` | `p-3 sm:p-4` | List rows, compact tiles. |
+| `pw-pad` | `p-4 sm:p-6` | The default card. |
+| `pw-pad-roomy` | `p-6 sm:p-8` | Feature cards, empty states. |
+
+Other spacing is Tailwind's default scale: row/list padding `p-2.5`–`p-4`, icon/inline gaps `gap-2`–`gap-3`, marketing section rhythm `pt-28/36 · py-20/28`, band `py-16`.
+
+### Responsive rules
+
+- **Mobile-first.** A bare `grid-cols-3` renders three columns at 375px (~105px each). Start at 1 or 2 columns and step up: `grid-cols-2 sm:grid-cols-3`. Enforced by test — the only exemption is decorative, `aria-hidden` content such as a bar meter.
+- **One breakpoint boundary.** The "mobile experience" cut is **1024px** (`lg`), matching where the app shell swaps its chrome. It is exported as `MOBILE_BREAKPOINT_PX`. Do not introduce a second boundary.
+- **Presentation switches in CSS, not JS.** Render both presentations and toggle with `lg:hidden` / `hidden lg:block`; a JS breakpoint fork causes a hydration flash and drifts from the shell.
 
 ### Shadow Depths
 
