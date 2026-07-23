@@ -1,4 +1,4 @@
-﻿export { BrandCard } from "./BrandCard"
+export { BrandCard } from "./BrandCard"
 export type { BrandCardProps } from "./BrandCard"
 
 export { BrandStat } from "./BrandStat"

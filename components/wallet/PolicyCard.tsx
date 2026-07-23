@@ -5,7 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { resolvePolicyLifecycle, type PolicyLifecycle } from '@/lib/policy-status'
 import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
 import { StatusPill } from '@/components/ui/StatusPill'
-import { BadgeCheck, Sparkles } from 'lucide-react'
+import { BadgeCheck, Sparkles, Search, FileText, Share2, Trash2 } from 'lucide-react'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { getBranchIcon } from '@/lib/insurance/branch-icons'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -37,7 +37,35 @@ function formatRelativeExpiry(lifecycle: PolicyLifecycle, locale: 'el' | 'en'): 
 
 // ── Component ────────────────────────────────────────────────────────────────
 
-export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
+/** One touch-target-sized icon action in the card footer. */
+function CardAction({
+    icon: Icon,
+    label,
+    onClick,
+    destructive = false,
+}: {
+    icon: React.ComponentType<{ className?: string }>
+    label: string
+    onClick: () => void
+    destructive?: boolean
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            aria-label={label}
+            title={label}
+            className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${destructive
+                ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+        >
+            <Icon className="h-4 w-4" />
+        </button>
+    )
+}
+
+export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnalysis, onDelete, id }: PolicyCardProps) {
     const { t, language } = useLanguage()
     const locale = language as 'el' | 'en'
 
@@ -57,15 +85,25 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
     const view = getPolicyStatusView(policy, t)
     const expiryInline = isAnalyzing ? '' : formatRelativeExpiry(lifecycle, locale)
 
+    // The card used to be ONE <button> that accepted onShare/onViewDocuments/
+    // onRunAnalysis/onDelete as props and silently ignored all four. Those actions
+    // existed only in PolicyTable's context menu — which is desktop-only — so in
+    // the card presentation (the entire mobile experience) a policy could not be
+    // shared, analyzed or deleted at all. The card is now a container: the content
+    // stays one big "view" target, and the actions sit beside it as real buttons
+    // (they cannot nest inside the view button — interactive elements can't nest).
+    const hasActions = Boolean(onRunAnalysis || onViewDocuments || onShare || onDelete)
+
     return (
-        <button
-            type="button"
-            id={id}
-            onClick={onView}
-            className="group w-full text-left pw-card p-4 transition-all active:scale-[0.98]"
-            aria-label={`${displayInsurer} — ${localizedLob}`}
-        >
-            <div className="flex items-center gap-3">
+        <div className="group pw-card p-4 transition-all">
+            <button
+                type="button"
+                id={id}
+                onClick={onView}
+                className="w-full text-left transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
+                aria-label={`${displayInsurer} — ${localizedLob}`}
+            >
+                <div className="flex items-center gap-3">
                 {/* LOB icon — status-semantic chip from the shared status pipeline */}
                 <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${view.chipClass}`}>
                     {isAnalyzing ? (
@@ -97,8 +135,26 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
                     </p>
 
                 </div>
-            </div>
-        </button>
+                </div>
+            </button>
+
+            {hasActions && (
+                <div className="mt-3 flex items-center justify-end gap-0.5 border-t border-border pt-2">
+                    {onRunAnalysis && (
+                        <CardAction icon={Search} label={t.dashboard.runAnalysis} onClick={onRunAnalysis} />
+                    )}
+                    {onViewDocuments && (
+                        <CardAction icon={FileText} label={t.wallet.documents} onClick={onViewDocuments} />
+                    )}
+                    {onShare && (
+                        <CardAction icon={Share2} label={t.wallet.shareWithAgent} onClick={onShare} />
+                    )}
+                    {onDelete && (
+                        <CardAction icon={Trash2} label={t.dashboard.delete} onClick={onDelete} destructive />
+                    )}
+                </div>
+            )}
+        </div>
     )
 }
 

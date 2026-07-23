@@ -1,4 +1,4 @@
-﻿export interface BrandThemeTokens {
+export interface BrandThemeTokens {
     bg: {
         canvas: string
         soft: string

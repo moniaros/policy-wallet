@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { PolicyWallet } from "@/components/wallet/PolicyWallet"
 import React, { useRef } from "react"
@@ -11,14 +11,13 @@ import { toast } from "sonner"
 import { runPolicyAnalysis } from "@/app/(protected)/wallet/actions"
 import DashboardTour from '@/components/onboarding/DashboardTour'
 import { dismissTour } from '@/app/onboarding/actions'
-import { useIsMobile } from "@/hooks/useResponsive"
-import { MobileAppShell } from "@/components/layout/MobileAppShell"
 import { BatchUploadModal } from "@/components/wallet/BatchUploadModal"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { DeletePolicyDialog } from "@/components/wallet/DeletePolicy"
 import { PolicyComparison } from "@/components/wallet/PolicyComparison"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -29,23 +28,13 @@ interface PolicyWalletClientProps {
         photoUrl?: string
         isOnline?: boolean
     }
-    agent?: {
-        id: string
-        name: string
-        phone: string
-        email: string
-        company?: string
-        photoUrl?: string
-        isOnline?: boolean
-    }
     showTour?: boolean
     tier?: 'free' | 'plus' | 'pro'
 }
 
-export function PolicyWalletClient({ policies, user, agent, showTour = false, tier = 'free' }: PolicyWalletClientProps) {
+export function PolicyWalletClient({ policies, user, showTour = false, tier = 'free' }: PolicyWalletClientProps) {
     const router = useRouter()
     const { t } = useLanguage()
-    const isMobile = useIsMobile()
     const previousStatusesRef = useRef<Map<string, string>>(new Map())
     const announcedRef = useRef<Set<string>>(new Set())
     const [isBatchUploadOpen, setIsBatchUploadOpen] = React.useState(false)
@@ -248,17 +237,6 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
         previousStatusesRef.current = currentStatuses
     }, [policies, router, copy.completed, copy.failed, copy.failedDesc, copy.view])
 
-    if (isMobile) {
-        return (
-            <MobileAppShell
-                policies={policies}
-                user={user as any}
-                agent={agent}
-                tier={tier}
-            />
-        )
-    }
-
     return (
         <div className="pw-page-shell relative isolate">
             <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none pw-app-canvas" />
@@ -291,6 +269,19 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                 onRunAnalysis={runAnalysis}
                 onDeletePolicy={(policyId) => setDeletePolicyId(policyId)}
             />
+
+            {/* The wallet's upgrade trigger. It used to live ONLY in the mobile tree
+                (MyPoliciesScreen), so free users on desktop never saw one on /wallet
+                at all. With one responsive tree it renders at every width. */}
+            {tier === 'free' && policies.length > 0 && (
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
+                    <UpgradeTriggerCard
+                        featureKey="full_ai_policy_analysis"
+                        triggerSource="wallet_tile"
+                        returnTo="/wallet"
+                    />
+                </div>
+            )}
 
             <DeletePolicyDialog
                 policyId={deletePolicyId ?? ''}

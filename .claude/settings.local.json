@@ -29,7 +29,8 @@
       "Bash(git checkout *)",
       "Bash(xargs -I{} sh -c 'rg -n \"export \\(async \\)?function findSupabaseUserIdByEmail\" {} ')",
       "Bash(grep -rn \"\\\\\"/agent\\\\\"\\\\|'/agent'\\\\|href=\\\\\"/agent\\\\|push\\('/agent'\\)\\\\|href={\\\\`/agent\" --include=\"*.ts\" --include=\"*.tsx\" .)",
-      "Bash(grep -rn \"invite?token\\\\|/invite\\\\|acceptInvite\\\\|invite/accept\\\\|token=\\\\${\" --include=\"*.ts\" --include=\"*.tsx\" app lib)"
+      "Bash(grep -rn \"invite?token\\\\|/invite\\\\|acceptInvite\\\\|invite/accept\\\\|token=\\\\${\" --include=\"*.ts\" --include=\"*.tsx\" app lib)",
+      "Bash(cd *)"
     ]
   },
   "enabledMcpjsonServers": [

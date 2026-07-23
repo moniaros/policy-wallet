@@ -20,7 +20,6 @@ import {
 } from "./actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { useIsMobile } from "@/hooks/useResponsive"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import type { Policy } from "@/components/wallet/types"
@@ -50,7 +49,6 @@ interface Props {
 }
 
 export function AccountClientPage({ initialData, mobileProps }: Props) {
-    const isMobile = useIsMobile()
     const router = useRouter()
     const { t } = useLanguage()
     // NOTE: the Referrals tab is intentionally not rendered — the referral

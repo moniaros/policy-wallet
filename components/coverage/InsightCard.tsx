@@ -1,4 +1,4 @@
-﻿import { CheckCircle2, ChevronRight, Info, Shield, Car, HeartPulse, Home, Briefcase, Lock } from 'lucide-react'
+import { CheckCircle2, ChevronRight, Info, Shield, Car, HeartPulse, Home, Briefcase, Lock } from 'lucide-react'
 
 export type InsightSeverity = 'low' | 'medium' | 'high' | 'critical'
 
@@ -67,6 +67,14 @@ const SEVERITY_CONFIG = {
     }
 }
 
+/** Section labels, in the same `{en, el}[language]` shape as SEVERITY_CONFIG above
+ *  (this component takes `language` as a prop rather than reading the context). */
+const COPY = {
+    whyItMatters: { en: 'Why this matters', el: 'Γιατί έχει σημασία' },
+    whatWeChecked: { en: 'What we checked', el: 'Τι ελέγξαμε' },
+    plusFeature: { en: 'Full analysis available on Plus/Pro', el: 'Πλήρης ανάλυση διαθέσιμη σε Plus/Pro' },
+} as const
+
 export function InsightCard({ insight, onAction, language = 'el', collapsed = false }: InsightCardProps) {
     void collapsed
     const config = SEVERITY_CONFIG[insight.severity] || SEVERITY_CONFIG.medium
@@ -116,7 +124,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                                 <Info className="w-4 h-4 text-black/45 dark:text-white/55 mt-0.5 flex-shrink-0" />
                                 <div>
                                     <span className="text-[10px] font-semibold text-black/45 dark:text-white/55 uppercase tracking-widest block mb-1">
-                                        {language === 'el' ? 'Γιατί έχει σημασία' : 'Why this matters'}
+                                        {COPY.whyItMatters[language]}
                                     </span>
                                     <p className="text-black/80 dark:text-white/80 text-sm leading-relaxed">{insight.whyItMatters}</p>
                                 </div>
@@ -125,7 +133,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
 
                         <div>
                             <span className="text-[10px] font-semibold text-black/45 dark:text-white/55 uppercase tracking-widest block mb-2">
-                                {language === 'el' ? 'Τι ελέγξαμε' : 'What we checked'}
+                                {COPY.whatWeChecked[language]}
                             </span>
                             <div className="space-y-2">
                                 {insight.checkedItems.slice(0, 3).map((item, idx) => (
@@ -179,7 +187,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
             {insight.isPlusFeature && (
                 <div className="bg-black/5 dark:bg-white/10 px-5 py-2 border-t border-black/10 dark:border-white/15 flex justify-center">
                     <span className="text-[10px] font-semibold text-black/45 dark:text-white/55">
-                        {language === 'el' ? 'Πλήρης ανάλυση διαθέσιμη σε Plus/Pro' : 'Full analysis available on Plus/Pro'}
+                        {COPY.plusFeature[language]}
                     </span>
                 </div>
             )}

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { useIsMobile } from "@/hooks/useResponsive"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { Policy } from "@/components/wallet/types"
 import { Mail, Phone, Globe, ShieldCheck, ShieldOff, Building2, MessageSquare, FileText, Send, Inbox, Handshake } from "lucide-react"
@@ -315,7 +314,6 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
 }
 
 export function AgentClient({ policies, user, agent, relationshipId, sharedPolicies = [] }: AgentClientProps) {
-    const isMobile = useIsMobile()
     const { language } = useLanguage()
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<Tab>("overview")
@@ -509,7 +507,7 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
     }
 
     return (
-        <div className={`mx-auto ${isMobile ? 'px-4 py-6' : 'max-w-3xl px-4 py-10'}`}>
+        <div className="mx-auto w-full px-4 py-6 lg:max-w-3xl lg:py-10">
             <div className="pw-card rounded-3xl p-6 sm:p-8">
                 <p className="pw-kicker mb-4">{pick(PAGE_COPY.kicker, language)}</p>
 

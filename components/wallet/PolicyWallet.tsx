@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PolicyWalletProps, Policy } from './types'
@@ -195,7 +195,9 @@ export function PolicyWallet({
                             ))}
                         </div>
 
-                        <div className="hidden sm:flex bg-black/5 dark:bg-black p-1 rounded-lg border border-black/10 dark:border-white/15">
+                        {/* lg:flex — below the desktop breakpoint the list is always
+                            cards, so offering a toggle there would be a no-op control. */}
+                        <div className="hidden lg:flex bg-black/5 dark:bg-black p-1 rounded-lg border border-black/10 dark:border-white/15">
                             <button
                                 onClick={() => {
                                     setViewMode('grid')
@@ -234,32 +236,39 @@ export function PolicyWallet({
                     {t.dashboard.myPolicies}
                 </h2>
 
-                {viewMode === 'list' ? (
-                    <PolicyTable
-                        policies={filteredPolicies}
-                        onViewPolicy={onViewPolicy}
-                        onRenewPolicy={onRunAnalysis}
-                        onViewHistory={onViewHistory}
-                        onRunAnalysis={onRunAnalysis}
-                        onDelete={onDeletePolicy}
-                        onShare={onShareWithAgent}
-                        onViewDocuments={onViewDocuments}
-                    />
-                ) : (
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {filteredPolicies.map((policy, index) => (
-                            <PolicyCard
-                                key={policy.id}
-                                policy={policy}
-                                onView={() => onViewPolicy?.(policy.id)}
-                                onShare={() => onShareWithAgent?.(policy.id)}
-                                onViewDocuments={() => onViewDocuments?.(policy.id)}
-                                onRunAnalysis={() => onRunAnalysis?.(policy.id)}
-                                onDelete={() => onDeletePolicy?.(policy.id)}
-                                onViewHistory={() => onViewHistory?.(policy.id)}
-                                id={index === 0 ? 'tour-policy-card-0' : undefined}
-                            />
-                        ))}
+                {/* Presentation is CSS-first, not JS-branched: cards are ALWAYS the
+                    presentation below `lg`, because a dense table is unusable on a
+                    phone and the view toggle is itself desktop-only. `viewMode` only
+                    decides what desktop shows. Doing this with a JS breakpoint would
+                    reintroduce the hydration fork this change exists to remove. */}
+                <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 ${viewMode === 'list' ? 'lg:hidden' : ''}`}>
+                    {filteredPolicies.map((policy, index) => (
+                        <PolicyCard
+                            key={policy.id}
+                            policy={policy}
+                            onView={() => onViewPolicy?.(policy.id)}
+                            onShare={() => onShareWithAgent?.(policy.id)}
+                            onViewDocuments={() => onViewDocuments?.(policy.id)}
+                            onRunAnalysis={() => onRunAnalysis?.(policy.id)}
+                            onDelete={() => onDeletePolicy?.(policy.id)}
+                            onViewHistory={() => onViewHistory?.(policy.id)}
+                            id={index === 0 ? 'tour-policy-card-0' : undefined}
+                        />
+                    ))}
+                </div>
+
+                {viewMode === 'list' && (
+                    <div className="hidden lg:block">
+                        <PolicyTable
+                            policies={filteredPolicies}
+                            onViewPolicy={onViewPolicy}
+                            onRenewPolicy={onRunAnalysis}
+                            onViewHistory={onViewHistory}
+                            onRunAnalysis={onRunAnalysis}
+                            onDelete={onDeletePolicy}
+                            onShare={onShareWithAgent}
+                            onViewDocuments={onViewDocuments}
+                        />
                     </div>
                 )}
             </section>

@@ -73,26 +73,10 @@ export default async function WalletPage() {
         }
     }
 
-    // Fetch agent relationship for mobile view
-    const customerRelationship = await db.customerRelationship.findFirst({
-        where: {
-            policyholderUserId: dbUser.id,
-            status: 'active'
-        },
-        include: {
-            agent: true
-        }
-    })
-
-    const agent = customerRelationship?.agent ? {
-        id: customerRelationship.agent.id,
-        name: customerRelationship.agent.name || roleCopy.defaults.agentName,
-        phone: customerRelationship.agent.phoneNumber || '',
-        email: customerRelationship.agent.email,
-        company: roleCopy.defaults.agentCompany,
-        photoUrl: customerRelationship.agent.image || undefined,
-        isOnline: true
-    } : undefined
+    // (The agent-relationship query that used to live here existed only to feed
+    // MobileAppShell's profile card. With the mobile fork gone it was a dead
+    // per-request join on every wallet load, so it was removed. `/agent` is the
+    // surface that actually shows the advisor.)
 
     const user = {
         id: dbUser.id,
@@ -189,7 +173,7 @@ export default async function WalletPage() {
 
     return (
         <div className="pw-page-shell">
-            <PolicyWalletClient policies={mappedPolicies} user={user} agent={agent} showTour={showTour} tier={tier} />
+            <PolicyWalletClient policies={mappedPolicies} user={user} showTour={showTour} tier={tier} />
         </div>
     )
 }

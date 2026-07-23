@@ -1,4 +1,4 @@
-﻿import type { LandingContentModel } from "@/types/landing-content"
+import type { LandingContentModel } from "@/types/landing-content"
 import { siteConfig } from "@/lib/seo/site"
 
 export const landingContent: LandingContentModel = {
