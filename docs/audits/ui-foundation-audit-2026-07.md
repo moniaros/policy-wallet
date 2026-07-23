@@ -100,6 +100,14 @@ npx playwright test --project=chromium --project=agent-chromium --workers=3
 RUN_UX_AUDIT=1 npx playwright test --project=chromium --workers=3
 ```
 
+### E2E status (money-path spec, chromium)
+
+Run through the IPv4 pooler with `--workers=1`: **7 passed, 2 flaky, 3 failed**.
+
+The three failures — `AI Q&A … live meter` (:143), `locked card opens the dual-CTA modal` (:251), `cancel from the Billing tab` (:397) — were **re-run on the pre-change base commit `502145e` and fail there identically**, so they pre-date this work and are not regressions. They look data/environment dependent (plan prices from the dev catalog, Stripe billing state).
+
+The test that this work *could* have broken — `Mobile trigger surfaces › mobile wallet upgrade trigger opens the upgrade modal` (:337), which exercised the trigger that used to live only in the deleted mobile tree — **passes**.
+
 Priority checks, given what changed: the admin section renders with a single sidebar and no empty bottom bar; nav links still navigate and close the mobile drawer; `/wallet` on a phone does not flash the desktop layout; the mobile profile screen's actions land on `/account` and sign-out works.
 
 ### Verified directly against a running dev server
