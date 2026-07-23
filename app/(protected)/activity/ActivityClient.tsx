@@ -190,7 +190,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                             <div className="flex-1">
                                                 <Link 
                                                     href={getEntityLink(event)}
-                                                    className="block arc-card hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 group-hover:border-neutral-300 dark:group-hover:border-neutral-700"
+                                                    className="block pw-card hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 group-hover:border-neutral-300 dark:group-hover:border-neutral-700"
                                                 >
                                                     <div className="p-4 sm:p-5">
                                                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">

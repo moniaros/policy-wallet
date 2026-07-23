@@ -125,7 +125,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         ) : undefined}
                     />
                 ) : (
-                <div className="arc-card overflow-hidden border-t-4 border-t-primary">
+                <div className="pw-card overflow-hidden border-t-4 border-t-primary">
                     <TableShell label={opp_t.title}>
                         <table className="w-full text-left border-collapse">
                             <thead>

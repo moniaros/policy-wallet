@@ -217,7 +217,7 @@ function StatCard({ icon, label, value, color }: {
         amber: "bg-amber-50 dark:bg-amber-900/20",
     }
     return (
-        <div className="arc-card p-5">
+        <div className="pw-card p-5">
             <div className="flex items-center gap-3 mb-2">
                 <div className={`w-9 h-9 rounded-xl ${bgMap[color] ?? bgMap.slate} flex items-center justify-center`}>
                     {icon}
@@ -270,7 +270,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
     }
 
     return (
-        <div className="arc-card p-6">
+        <div className="pw-card p-6">
             <div className="flex items-center justify-between mb-5">
                 <h3 className="text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
                     <Users className="w-4 h-4 text-primary dark:text-mint" />
@@ -409,7 +409,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
     }
 
     return (
-        <div className="arc-card p-6">
+        <div className="pw-card p-6">
             <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-primary dark:text-mint" />
                 {t.sharedPipeline}
@@ -490,7 +490,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
     return (
         <div className="pw-page-shell min-h-screen">
             <div className="max-w-lg mx-auto px-4 py-16">
-                <div className="arc-card p-8 text-center">
+                <div className="pw-card p-8 text-center">
                     <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-6">
                         <Building2 className="w-8 h-8 text-primary dark:text-mint" />
                     </div>

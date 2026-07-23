@@ -124,7 +124,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         </div>
 
                         {/* Agency Profile */}
-                        <div className="arc-card p-8 space-y-8 border-t-4 border-t-primary">
+                        <div className="pw-card p-8 space-y-8 border-t-4 border-t-primary">
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.agencyName}</label>
@@ -162,7 +162,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         </div>
 
                         {/* Commission Rates */}
-                        <div className="arc-card p-8 space-y-6 border-t-4 border-t-primary">
+                        <div className="pw-card p-8 space-y-6 border-t-4 border-t-primary">
                             <div>
                                 <h3 className="text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
                                     <Percent className="w-4 h-4 text-primary dark:text-mint" />
@@ -214,7 +214,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
                         {/* Subscription */}
                         {subscription && (
-                            <div className="arc-card p-8 space-y-4 border-t-4 border-t-primary">
+                            <div className="pw-card p-8 space-y-4 border-t-4 border-t-primary">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xs font-black text-foreground uppercase tracking-widest">
                                         {pick(SETTINGS_COPY.subscription, language)}
@@ -264,7 +264,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                             real GDPR deletion flow on the account page; the button
                             here had no handler, so it links there instead of
                             being a dead (destructive) control. */}
-                        <div className="arc-card p-8 border border-rose-100 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">
+                        <div className="pw-card p-8 border border-rose-100 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">
                             <h3 className="text-xs font-black text-rose-900 dark:text-rose-400 uppercase tracking-widest mb-2">{roleCopy.agentSettings.dangerZone}</h3>
                             <p className="text-sm text-rose-700/70 dark:text-rose-400/70 mb-6 font-medium">{roleCopy.agentSettings.dangerDescription}</p>
                             <Link href="/account" className="arc-btn bg-rose-600 hover:bg-rose-700 text-white transition-all inline-flex">

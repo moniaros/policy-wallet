@@ -77,7 +77,7 @@ export function CommissionsClient({ data }: Props) {
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <div className="arc-card p-6 border-t-4 border-t-primary">
+                    <div className="pw-card p-6 border-t-4 border-t-primary">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                 <Euro className="w-5 h-5 text-primary dark:text-mint" />
@@ -87,7 +87,7 @@ export function CommissionsClient({ data }: Props) {
                         <p className="text-3xl font-black text-primary dark:text-mint">{fmt(data.totalWon)}</p>
                     </div>
 
-                    <div className="arc-card p-6 border-t-4 border-t-mint">
+                    <div className="pw-card p-6 border-t-4 border-t-mint">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-mint/20 dark:bg-primary/15 flex items-center justify-center">
                                 <TrendingUp className="w-5 h-5 text-primary dark:text-mint" />
@@ -100,7 +100,7 @@ export function CommissionsClient({ data }: Props) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* By LoB */}
-                    <div className="arc-card p-6">
+                    <div className="pw-card p-6">
                         <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                             <Briefcase className="w-4 h-4 text-primary dark:text-mint" />
                             {t.byLine}
@@ -150,7 +150,7 @@ export function CommissionsClient({ data }: Props) {
                     </div>
 
                     {/* Monthly Trend */}
-                    <div className="arc-card p-6">
+                    <div className="pw-card p-6">
                         <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                             <BarChart3 className="w-4 h-4 text-primary dark:text-mint" />
                             {t.monthlyTrend}

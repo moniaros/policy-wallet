@@ -46,7 +46,7 @@ export function EmptyState({
     className = "",
 }: EmptyStateProps) {
     const ctaClasses =
-        "inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover active:scale-95 dark:text-[#1A2420]"
+        "inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover active:scale-95"
 
     return (
         <div
@@ -56,7 +56,7 @@ export function EmptyState({
                 <Icon className="h-7 w-7 text-primary dark:text-mint" />
             </div>
 
-            <h3 className="mt-5 text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
+            <h3 className="mt-5 text-xl font-semibold tracking-tight text-foreground">
                 {headline}
             </h3>
             <p className="mt-2 max-w-md text-[15px] leading-relaxed text-[#475569] dark:text-white/65">
@@ -123,7 +123,7 @@ export function PolicyPreviewRow({
                 <Icon className={`h-4 w-4 ${warn ? "text-[#B45309]" : "text-primary dark:text-mint"}`} />
             </div>
             <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">{name}</p>
+                <p className="truncate text-[13px] font-semibold text-foreground">{name}</p>
                 <p className="text-[11px] text-[#64748B] dark:text-white/55">{meta}</p>
             </div>
             <span
@@ -152,11 +152,11 @@ export function CustomerPreviewRow({
 }) {
     return (
         <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm dark:bg-black">
-            <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-primary text-[13px] font-bold text-white dark:text-[#1A2420]">
+            <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-primary text-[13px] font-bold text-primary-foreground">
                 {initial}
             </div>
             <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">{name}</p>
+                <p className="truncate text-[13px] font-semibold text-foreground">{name}</p>
                 <p className="text-[11px] text-[#64748B] dark:text-white/55">{meta}</p>
             </div>
             <span
@@ -181,7 +181,7 @@ export function RenewalPreviewRow({
                 <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
             </div>
             <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">{name}</p>
+                <p className="truncate text-[13px] font-semibold text-foreground">{name}</p>
                 <p className="text-[11px] text-[#64748B] dark:text-white/55">{meta}</p>
             </div>
             <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#B45309]">
@@ -204,7 +204,7 @@ export function RecommendationPreviewCard({
         <div className="rounded-xl bg-white p-3 text-left shadow-sm dark:bg-black">
             <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
-                <p className="flex-1 truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">{title}</p>
+                <p className="flex-1 truncate text-[13px] font-semibold text-foreground">{title}</p>
                 <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#B45309]">
                     {urgencyLabel}
                 </span>

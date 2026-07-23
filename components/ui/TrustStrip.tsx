@@ -31,9 +31,13 @@ export function TrustStrip({ items, className }: { items: TrustStripItem[]; clas
                 return (
                     <div
                         key={item.label}
-                        className="flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#475569]"
+                        /* Was three raw hexes with NO dark: variants at all, so on a
+                           dark surface this rendered as a white chip with dark text —
+                           the one component whose whole job is to look trustworthy.
+                           Now on tokens, which flip. */
+                        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-[12px] font-medium text-muted-foreground"
                     >
-                        <Icon className="h-3.5 w-3.5 text-[#29685B]" aria-hidden />
+                        <Icon className="h-3.5 w-3.5 text-primary dark:text-mint" aria-hidden />
                         {item.label}
                     </div>
                 )

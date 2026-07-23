@@ -47,7 +47,7 @@ function KpiCard({
     sub?: string
 }) {
     return (
-        <div className="arc-card p-4">
+        <div className="pw-card p-4">
             <div className="flex items-start gap-3">
                 <span className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl ${ACCENTS[accent] || ACCENTS.slate}`}>
                     <Icon className="h-4 w-4" />

@@ -356,7 +356,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                         />
                     )
                 ) : (
-                    <div className="arc-card overflow-hidden">
+                    <div className="pw-card overflow-hidden">
                         <TableShell label={t.title}>
                             <table className="w-full text-sm">
                                 <thead>
@@ -537,7 +537,7 @@ function StatCard({
     }
 
     return (
-        <div className="arc-card p-4">
+        <div className="pw-card p-4">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${accentMap[accent] ?? accentMap.slate}`}>
                 <Icon className="w-4 h-4" />
             </div>

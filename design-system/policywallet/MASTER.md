@@ -10,7 +10,7 @@
 **Updated:** 2026-07-23
 **Category:** Insurance Platform
 
-> **Canonical value table:** [app/globals.css](../../app/globals.css) — every hex, radius, shadow, and utility below is defined there, as CSS custom properties (`--primary`, `--pw-*`) and `@layer components` utilities (`.pw-card`, `.pw-pill`, `.pw-primary-button`, `.pw-kicker`, `.arc-*`). If this document and `globals.css` ever disagree, **`globals.css` wins** — it is what actually ships.
+> **Canonical value table:** [app/globals.css](../../app/globals.css) — every hex, radius, shadow, and utility below is defined there, as CSS custom properties (`--primary`, `--pw-*`) and `@layer components` utilities (`.pw-card`, `.pw-pill`, `.pw-primary-button`, `.pw-kicker`). If this document and `globals.css` ever disagree, **`globals.css` wins** — it is what actually ships.
 >
 > There is **no `components/ui/design-tokens.ts`**; it was deleted in `834957c`. Do not import from it, and do not add a parallel TS token table — extend `globals.css` instead.
 >
@@ -55,8 +55,8 @@ The single most important rule: **primary flips to mint in dark mode.**
 
 - `bg-primary` resolves to `#29685B` (white foreground) in light mode and `#89D9B2` in dark mode with near-black text `#1A2420` on the fill.
 - Hover in dark mode lightens to `#7de8ba` (via `--primary-hover`).
-- Surfaces go near-black (see `.dark` block in `app/globals.css`); cards keep their 16px radius and pick up dark surface variables via `.pw-card` / `.arc-card`.
-- Never hardcode white text on a primary fill — use `text-primary-foreground` (or the `.pw-primary-button` / `.arc-btn-primary` utilities) so the flip stays correct.
+- Surfaces go near-black (see `.dark` block in `app/globals.css`); cards keep their 16px radius and pick up dark surface variables via `.pw-card`.
+- Never hardcode white text on a primary fill — use `text-primary-foreground` (or the `.pw-primary-button` utility) so the flip stays correct.
 
 ### Typography
 
@@ -114,7 +114,7 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 - **`bg-primary-soft`** (`#DCEBDA`) and **`bg-primary-tint`** (`#F0FDF4`) — green-tinted surfaces for success chips and highlighted rows.
 - **`text-mint`** (`#89D9B2`) — mint accents on dark surfaces.
 - **`ring-primary`** — focus rings.
-- **`.pw-card`** — the standard card: white surface, `rounded-2xl`, `--pw-shadow-card`, dark-mode-aware. **`.pw-pill`** for pill badges, **`.pw-primary-button`** for the primary CTA, and the **`.arc-*`** utilities (`.arc-card`, `.arc-btn-primary`, `.arc-btn-secondary`, `.arc-btn-neutral`) for the dashboard shell.
+- **`.pw-card`** — the standard card: white surface, 16px radius, border-first and flat at rest (see Shadow Depths), dark-mode-aware. **`.pw-pill`** for pill badges, **`.pw-primary-button`** for the primary CTA. (`.arc-card` was a byte-for-byte duplicate of `.pw-card` and has been deleted; the remaining `.arc-btn*` utilities are `rounded-xl` and still contradict the pill rule — retiring them is tracked in the UI-foundation backlog.)
 - **`border-border`** (resolves to `#E2E8F0` light / `rgba(255,255,255,0.14)` dark) — the sanctioned hairline. Prefer it over the literal `border-[#E2E8F0]`, which does not flip in dark mode.
 - In TS/TSX, a raw hex literal has **no sanctioned escape hatch** — there is no token module to import from. If you need a value the utilities don't cover, add it to `globals.css` as a variable and reference it, rather than inlining a hex.
 
@@ -125,7 +125,7 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 ### Buttons
 
 ```css
-/* Primary Button — or just use .pw-primary-button / .arc-btn-primary */
+/* Primary Button — or just use .pw-primary-button */
 .btn-primary {
   background: #29685B;            /* dark mode: #89D9B2 with #1A2420 text */
   color: white;
@@ -177,7 +177,7 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 }
 ```
 
-`.pw-card` carries **no padding** — add your own (`p-5`/`p-6`). `.arc-card` is a verbatim alias kept for the dashboard shell; prefer `.pw-card` in new code.
+`.pw-card` carries **no padding** — add your own (`p-5`/`p-6`).
 
 ### Badges / Pills
 

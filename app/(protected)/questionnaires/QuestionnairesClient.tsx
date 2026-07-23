@@ -232,7 +232,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {templates.map((tpl) => (
-                <div key={tpl.id} className="arc-card p-5 group">
+                <div key={tpl.id} className="pw-card p-5 group">
                     <div className="flex items-start justify-between mb-3">
                         <div>
                             <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${tpl.isSystem
@@ -551,7 +551,7 @@ function SentList({ instances, t, language }: {
 
     return (
         <>
-            <div className="arc-card overflow-x-auto">
+            <div className="pw-card overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-100 dark:border-slate-800">

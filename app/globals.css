@@ -253,7 +253,10 @@ pre {
     background: linear-gradient(140deg, #000000 0%, #111111 60%, #171717 100%);
   }
 
-  /* Card recipe mirrors the public marketing site (e.g. ServicesGrid): flat and
+  /* `.arc-card` was a byte-for-byte duplicate of this and has been retired —
+     its 28 call sites now use .pw-card directly (no visual change).
+
+     Card recipe mirrors the public marketing site (e.g. ServicesGrid): flat and
      border-first — no resting shadow, with a mint-border + soft-green-shadow lift
      on hover. The old heavy resting shadow read as a different, boxier product. */
   .pw-card {
@@ -372,32 +375,6 @@ pre {
   }
 
   /* Dashboard-shell alias of .pw-card — same flat, border-first public recipe. */
-  .arc-card {
-    border-radius: var(--pw-radius-card);
-    border: 1px solid var(--pw-border);
-    background: var(--pw-bg-light);
-    box-shadow: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-
-  .dark .arc-card {
-    /* Kept identical to .dark .pw-card — this used to drift (border .14, no
-       ring) so agent pages looked subtly different in dark mode. */
-    border-color: rgba(255, 255, 255, 0.10);
-    background: var(--pw-surface-dark);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
-  }
-
-  .arc-card:hover {
-    transform: translateY(-2px);
-    border-color: #A7F3D0;
-    box-shadow: 0 8px 24px rgba(41, 104, 91, 0.08);
-  }
-
-  .dark .arc-card:hover {
-    border-color: rgba(137, 217, 178, 0.5);
-  }
-
   .arc-btn {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;

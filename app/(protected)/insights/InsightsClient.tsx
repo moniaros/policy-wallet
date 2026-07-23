@@ -243,7 +243,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     {kpis.map((kpi, i) => {
                         const Icon = kpi.icon
                         return (
-                            <FadeIn key={kpi.label} delay={i * 0.08} className="arc-card p-6">
+                            <FadeIn key={kpi.label} delay={i * 0.08} className="pw-card p-6">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className={`p-3 rounded-xl ${kpi.bgAccent}`}>
                                         <Icon className="w-5 h-5 text-neutral-700 dark:text-neutral-200" />
@@ -263,7 +263,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 {/* ── Row: Portfolio Health + Premium Breakdown ── */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Portfolio Health Ring */}
-                    <FadeIn delay={0.35} className="arc-card p-6">
+                    <FadeIn delay={0.35} className="pw-card p-6">
                         <h2 className="text-lg font-extrabold text-foreground mb-6 flex items-center gap-2">
                             <Users className="w-5 h-5 text-primary dark:text-mint" />
                             {p.portfolioHealth}
@@ -302,7 +302,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     </FadeIn>
 
                     {/* Premium Breakdown */}
-                    <FadeIn delay={0.45} className="arc-card p-6">
+                    <FadeIn delay={0.45} className="pw-card p-6">
                         <h2 className="text-lg font-extrabold text-foreground mb-6 flex items-center gap-2">
                             <BarChart3 className="w-5 h-5 text-primary dark:text-mint" />
                             {p.premiumBreakdown}
@@ -350,7 +350,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 {/* ── Row: Opportunity Funnel + Renewal Timeline ── */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Opportunity Funnel */}
-                    <FadeIn delay={0.55} className="arc-card p-6">
+                    <FadeIn delay={0.55} className="pw-card p-6">
                         <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                             <Target className="w-5 h-5 text-primary dark:text-mint" />
                             {p.opportunityFunnel}
@@ -397,7 +397,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     </FadeIn>
 
                     {/* Renewal Timeline */}
-                    <FadeIn delay={0.65} className="arc-card p-6">
+                    <FadeIn delay={0.65} className="pw-card p-6">
                         <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                             <CalendarClock className="w-5 h-5 text-amber-500" />
                             {p.renewalTimeline}
@@ -450,7 +450,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                 {/* ── Renewal Metrics ── */}
                 {data.renewalMetrics && (
-                    <FadeIn delay={0.7} className="arc-card p-6 mb-6">
+                    <FadeIn delay={0.7} className="pw-card p-6 mb-6">
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-lg font-extrabold text-foreground flex items-center gap-2">
                                 <RefreshCw className="w-5 h-5 text-primary dark:text-mint" />
@@ -491,7 +491,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 )}
 
                 {/* ── Coverage Gaps Summary ── */}
-                <FadeIn delay={0.75} className="arc-card p-6">
+                <FadeIn delay={0.75} className="pw-card p-6">
                     <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                         <ShieldAlert className="w-5 h-5 text-red-500" />
                         {p.coverageGaps}
