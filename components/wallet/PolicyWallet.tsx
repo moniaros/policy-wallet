@@ -293,7 +293,11 @@ export function PolicyWallet({
                 </div>
             )}
 
-            <div className="fixed bottom-8 right-8 z-40">
+            {/* Sits ABOVE the mobile bottom nav (77px + safe-area, also z-40) — at
+                bottom-8 the two overlapped by ~45px at 375px, burying half the
+                add-policy button behind the nav. Desktop has no bottom nav, so it
+                keeps the original position from lg up. */}
+            <div className="fixed bottom-28 right-6 z-40 lg:bottom-8 lg:right-8">
                 {policies.length > 0 ? (
                     <div ref={addMenuRef} className="relative">
                         <div
