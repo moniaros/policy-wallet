@@ -64,14 +64,13 @@
 
 ### Still open
 
-The **shared layers are done** — Clusters A(partial)/B/C/D/E/F/G/H/I all have their primitive built and at least a first adopter. What remains is **adoption breadth and two large, separable pieces**:
+Every cluster now has its primitive built **and** its adopters migrated. What is left is genuinely narrow:
 
-- **Table card fallbacks (Cluster E remainder).** `TableShell` makes the six agent tables keyboard-reachable, but which columns survive on a phone is a per-table product decision — deliberately not invented here.
-- **Form-kit adoption breadth (Cluster D remainder).** The kit exists and `AddPolicyClient` uses it; the 17× agent-modal recipe, `EditPolicyForm`, the auth pages and onboarding are still hand-rolled.
-- **`PolicyTable`'s context menu** — needs menu semantics + arrow-key nav (the dropdowns got theirs; this one is positioned with `window.innerWidth` maths and wants its own pass).
-- **Palette/hex sweep (Cluster A remainder)** — ~60 hex-bearing files, the `.arc-*`→`.pw-*` retirement, and the shadcn `button`/`card` decision.
-- **Landing Server-Components refactor (Stage B)** — the ~448 KB first-load lever; a perf project, not a UI-foundation one.
-- **The `/en` duplicate route tree** — noted as out of scope by both audits.
+- **Form-kit adoption breadth (Cluster D remainder).** The kit exists (`components/ui/form/`), `AddPolicyClient` uses it, and the **74 orphaned labels** across the agent modals, admin pages and collaboration components are fixed — so those forms are no longer announcing unlabelled inputs. Still hand-rolled, though functional and labelled: `EditPolicyForm`, the auth pages, onboarding steps. These rely on native `required` validation rather than inline errors; converting them is polish, not a defect fix.
+- **Landing Server-Components refactor (Stage B).** Owner decision 23 Jul: **not executed, planned instead** → `docs/design/LANDING_RSC_PROPOSAL.md`. Blocked on how a marketing page learns its locale (currently a React context), which is the `/en` question in disguise. The proposal's first step is to MEASURE — the ~448 KB figure is unverifiable in this build.
+- **Remaining hex literals**, almost all in `components/landing/*` and the public marketing pages. These are entangled with the Stage-B refactor above; sweeping them separately means touching the same files twice. The shared components that mattered (EmptyState, TrustStrip) are done, and the sanctioned status pairs stay literal per MASTER.
+- **shadcn `button.tsx` / `card.tsx`** — 2 importers each. Fold in or delete; a small, self-contained call.
+- **The `/en` duplicate route tree** — out of scope by both audits; gates the item above.
 
 ---
 
