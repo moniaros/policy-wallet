@@ -2,6 +2,49 @@
 
 **Date:** 2026-07-23 · **Scope:** full codebase (app shell, routing, design system, B2C, B2B/agent, admin, forms, modals, states, performance, trust UX, architecture) · **Type:** mapping & planning — no code changed in this pass.
 
+---
+
+## 0. Status reconciliation (added 2026-07-23, after implementation)
+
+> This map was authored off `NEW-UI` **before** the UI-foundation batches landed on `claude/ui-foundation-audit-gtm05i`. Read this section first — a number of rows below are already fixed, and **two are factually wrong**. The findings text is left intact for traceability; this section is the current truth.
+
+### Resolved
+
+| Finding (row below) | Resolved by |
+|---|---|
+| `globals.css` stale `design-tokens.ts` pointer; `--secondary` mislabelled "Amber"; MASTER.md stale | `1f2a630` (also corrected MASTER's fabricated `--space-*` table and its shadow spec — `.pw-card` is flat/border-first, and `--pw-shadow-card` is referenced by nothing) |
+| `Modal.tsx` dead backdrop classes + no mobile gutter | `211872b` — panel is `w-[calc(100%-2rem)]`; the `p-4` had sat on a **childless** backdrop, so every modal was edge-to-edge under 512px |
+| `ProcessingHUD` no `aria-live`, English-only | `211872b` — `role="status"`/`aria-live`/`aria-busy` + `t.common.*` |
+| No skip link, unlabelled nav landmarks | `d0377d6` — skip link + `id="main-content"`, both nav landmarks labelled |
+| Admin double shell (two sidebars, nested `<main>`, 10-vs-14 item disagreement) | `d0377d6` — one translated nav (all 14), `AdminSidebar` deleted, `admin/layout.tsx` is now only the auth gate |
+| `AgentMobileNav` dead code | `d0377d6` |
+| `useIsMobile` initialised `false`; 768-vs-1024 disagreement | `d0377d6` (matchMedia + `useSyncExternalStore` at 1024) → hook **removed entirely** in `6fa6074` once its last consumer went |
+| **Wallet JS fork loses features on mobile** (R1, the map's top finding) | `6fa6074` — see "corrections" below; the fix needed a second layer the map did not identify |
+| `MobileAppShell` dead routes / placebo tabs | `6fa6074` — component deleted |
+| `AppShell` dead language toggle + lying role switcher; badge that can never render; undefined `safe-area-inset-bottom`; drawer without focus trap | `399892e` |
+| `roles[0]` navigation; `.includes('admin')` substring check | `399892e` — `parseRoles`/`getPrimaryRole`/`hasAnyRole` + `pw_active_role` cookie |
+| `/home` vs `/dashboard` dual URL | `399892e` — 307 in `proxy.ts` |
+| `proxy.ts` hand-maintained allowlist foot-gun | `399892e` — `tests/unit/public-route-allowlist.test.ts` (65 routes; verified it fails on an unlisted route) |
+
+### Corrections — rows that are wrong as written
+
+1. **`MobileAppShell`'s dead routes and placebo tabs were unreachable, not live.** The map rates them **C** ("logout is broken", "fake 'no alerts' hides real renewal warnings — a direct trust hit"). In fact `MobileAppShell` mounted only from `PolicyWalletClient`, which mounts only at `/wallet`; its `activeTab` derived from `pathname` and it rendered **no tab bar**, so `activeTab` was *always* `'home'`. Only `MyPoliciesScreen` ever rendered — `MyProfileScreen` and the tasks/coverage/alerts tabs were dead code. Real severity: **L (dead code)**, not C.
+
+2. **`components/wallet/EmptyState.tsx` is NOT dead.** The map lists it as "zero importers — delete". `components/wallet/PolicyWallet.tsx:8` imports it. It was **not** deleted. (`SwipeableCard`, `PullToRefresh`, `UserDashboard`, `AddPolicyForCustomerModal` were genuinely 0-importer and are gone.)
+
+3. **The wallet fork had a second layer the map missed.** Removing `if (isMobile) return <MobileAppShell/>` mounts the five modals, but `PolicyCard` **accepted `onShare`/`onViewDocuments`/`onRunAnalysis`/`onDelete` and silently ignored all four** — it destructured only `{ policy, onView, id }`. Those actions existed solely in `PolicyTable`'s desktop-only context menu, so un-forking alone would have left the modals mounted with nothing able to open them. Both layers are fixed in `6fa6074`.
+
+### Decisions taken
+
+- **Admin gets no mobile bottom nav.** The map asks for one (Dashboard/Users/Policies/Billing/More). Instead the empty `<nav>` and its `pb-24` gutter are simply not rendered when there are no items. Admin stays desktop-first; making 14 query-heavy admin tables genuinely phone-usable is not currently worth the cost.
+- **Wallet presentation is CSS-first**, not a JS breakpoint: cards below `lg` always, `viewMode` decides desktop only, toggle hidden below `lg`. This deliberately keeps a hidden copy of the card grid in the DOM for desktop list users — the alternative reintroduces the hydration branch this work exists to remove.
+
+### Still open
+
+Everything in §3 not listed above — most substantially: Cluster D (form kit / toast-only validation), Cluster E (`ResponsiveTable` + the 6 table clients), Cluster F (the ~21 focus-trap-less overlays and the 4 native `confirm()`s), Cluster G (route-state files, incl. all 14 admin routes), Cluster H (the three separate pollers), the signin fake-biometric block, `lib/i18n/format.ts`, and the landing Server-Components refactor.
+
+---
+
 **How this doc separates concerns (per CLAUDE.md):** every finding is tagged either **[BROKEN]** (functionally wrong / dead / misleading — gates launch-quality) or **[UX]** (quality/consistency debt — does not gate, but compounds). Security-correctness auditing was recently done elsewhere (`docs/audits/b2c-b2b-full-review-2026-07.md`); this doc only carries **security-adjacent UX** and the auth-pattern drift found incidentally.
 
 ---

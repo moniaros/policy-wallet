@@ -54,6 +54,20 @@ B1, B2, B3, B4, B11, and B10's tab-trap. New `t.common.pleaseWait` / `processing
 ### ✅ Batch 2 — Shell & container (`d0377d6`)
 B5, B6, B7, B8, B9. `AdminSidebar` + `AgentMobileNav` deleted; `PageContainer` added and adopted by `PageHeader`; new `t.nav.submissions`/`aiTokens`/`skipToContent`/`primaryNavigation`/`bottomNavigation`.
 
+### ✅ Wallet un-fork + shell completion (`6fa6074`, `399892e`)
+
+A second audit — `docs/ui-responsive-audit-map.md`, produced independently and merged onto this branch — caught a **critical defect this audit missed**, and verifying it exposed a regression introduced by Batch 2.
+
+**The mobile wallet silently lost five features.** `PolicyWalletClient` did `if (isMobile) return <MobileAppShell/>`, an early return sitting before `DeletePolicyDialog`, `BatchUploadModal`, `AiConsentModal`, `PolicyComparison` and `UpgradeModal`. On a phone the core screen could not delete, batch-upload, consent, compare or upgrade. **Batch 2's breakpoint change (768 → 1024) widened this from phones to tablets** — correct for the shell, wrong here.
+
+The fix needed two layers; only the first is obvious:
+1. Delete the fork. `PolicyWallet.tsx` already rendered both a table and a responsive card grid behind a user `viewMode`, so presentation just became CSS-first (cards always below `lg`; the toggle is `lg:`-only since below it, it was a no-op).
+2. **`PolicyCard` accepted `onShare`/`onViewDocuments`/`onRunAnalysis`/`onDelete` and ignored all four** — those actions lived only in the desktop table's context menu. Un-forking alone would have mounted the modals with nothing able to open them. The card now carries the actions.
+
+Also: the wallet's `UpgradeTriggerCard` existed **only** in the mobile tree, so `/wallet` on desktop had no upgrade trigger at all — it now renders at every width.
+
+Shell completion (`399892e`): the mobile language toggle and the role switcher both called props the layout never passed (the switcher showed a "Viewing as X" toast for a switch that never happened); the mobile unread badge was keyed to an id no nav item has; `safe-area-inset-bottom` was applied but defined in no stylesheet; the drawer had no focus trap. Navigation was built from `roles[0]`, stranding dual-role users — now `parseRoles`/`getPrimaryRole` plus a validated `pw_active_role` cookie. `/home` and `/dashboard` were the same screen on two URLs; `/home` now 307s. New guardrail: `tests/unit/public-route-allowlist.test.ts` (65 routes, proven to fail on an unlisted one).
+
 ### ⬜ Batch 3 — Form + table primitives
 Shared `Input`/`Textarea`/`Select`/`Label`/`Field` (token-driven, per the corrected MASTER spec) + `TableShell` (`overflow-x-auto` + consistent header styling). First adopters: the 17× agent-modal recipe, `BulkImportModal`'s unwrapped table, admin `UsersClient`.
 
