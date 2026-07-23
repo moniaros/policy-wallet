@@ -7,10 +7,12 @@
 ---
 
 **Project:** PolicyWallet
-**Updated:** 2026-07-10
+**Updated:** 2026-07-23
 **Category:** Insurance Platform
 
-> **Canonical value table:** [components/ui/design-tokens.ts](../../components/ui/design-tokens.ts) — every hex, radius, shadow, and animation value below is defined there (or in `app/globals.css` for runtime CSS variables). If this document and `design-tokens.ts` ever disagree, `design-tokens.ts` wins.
+> **Canonical value table:** [app/globals.css](../../app/globals.css) — every hex, radius, shadow, and utility below is defined there, as CSS custom properties (`--primary`, `--pw-*`) and `@layer components` utilities (`.pw-card`, `.pw-pill`, `.pw-primary-button`, `.pw-kicker`, `.arc-*`). If this document and `globals.css` ever disagree, **`globals.css` wins** — it is what actually ships.
+>
+> There is **no `components/ui/design-tokens.ts`**; it was deleted in `834957c`. Do not import from it, and do not add a parallel TS token table — extend `globals.css` instead.
 >
 > **Reference implementations:** [components/landing/AgentWidgets.tsx](../../components/landing/AgentWidgets.tsx) (widget cards, severity styling, pill badges) and [app/auth/signin/page.tsx](../../app/auth/signin/page.tsx) (forms, primary buttons, canvas layout).
 
@@ -27,11 +29,13 @@
 | Mint accent (dark-mode primary) | `#89D9B2` | `text-mint` / `--color-mint` |
 | Primary soft tint | `#DCEBDA` | `bg-primary-soft` |
 | Primary pale tint | `#F0FDF4` | `bg-primary-tint` |
-| Canvas / page background | `#F8FAFC` | `colors.neutral[50]` |
-| Card border | `#E2E8F0` | `border-[#E2E8F0]` / `colors.neutral[200]` |
-| Text — headings | `#0F172A` | `colors.neutral[900]` |
-| Text — body | `#475569` | `colors.neutral[600]` |
-| Text — muted | `#64748B` | `colors.neutral[500]` |
+| Canvas / page background | `#F8FAFC` | `bg-neutral-50` / `.pw-page-shell` |
+| Card border | `#E2E8F0` | `border-border` / `--pw-border` / `bg-neutral-200` |
+| Text — headings | `#0F172A` | `text-foreground` / `neutral-900` |
+| Text — body | `#475569` | `neutral-600` |
+| Text — muted | `#64748B` | `text-muted-foreground` / `--pw-text-muted` / `neutral-500` |
+
+The `neutral-*` scale is remapped to slate in the `@theme` block (`--color-neutral-50 … --color-neutral-950`), so `neutral-N` **is** slate-N. Prefer the semantic role tokens (`text-foreground`, `text-muted-foreground`, `border-border`, `bg-muted`) over the numeric scale where a role exists — only they flip correctly in dark mode.
 
 **Status colors** (semantic — never repaint these with brand green):
 
@@ -60,41 +64,45 @@ The single most important rule: **primary flips to mint in dark mode.**
 - **Heading Font:** Inter (600–700)
 - **Body Font:** Inter (400–500)
 - **Mood:** financial, trustworthy, professional, modern, calm
-- Do **not** add a CSS `@import` for fonts — `next/font` handles loading, subsetting, and `display: swap`. Micro-scale type for widgets (11–13px labels, 18px KPI values) lives in `typography` in `design-tokens.ts`.
+- Do **not** add a CSS `@import` for fonts — `next/font` handles loading, subsetting, and `display: swap`.
+- Micro-scale type for widgets (11–13px labels, 18px KPI values) has no token table — use Tailwind's scale (`text-[11px]`, `text-xs`, `text-lg`) directly.
+- `font-black` (900) is **not** in the ladder — the heaviest sanctioned weight is `font-bold` (700). Use `font-semibold` (600) for headings inside cards, overlays, and modals.
+- The uppercase micro-label is the **`.pw-kicker`** utility — use it instead of re-rolling `text-[10px] uppercase tracking-widest`.
 
 ### Radii
 
 | Element | Value | Utility |
 |---------|-------|---------|
-| Cards / widgets | `16px` | `rounded-2xl` (`radius.card`) |
-| Row tiles, banners | `12px` | `rounded-xl` (`radius.row`) |
-| Icon avatars | `8px` | `rounded-lg` (`radius.avatar`) |
-| Badges, chips, pill buttons | full | `rounded-full` (`radius.badge`) |
+| Cards / widgets | `16px` | `--pw-radius-card` (baked into `.pw-card`) / `rounded-2xl` |
+| Row tiles, banners | `12px` | `rounded-xl` |
+| Icon avatars | `8px` | `rounded-lg` |
+| Badges, chips, pill buttons | full | `--pw-radius-button` = `9999px` / `rounded-full` |
 | shadcn base radius | `0.75rem` | `--radius` (drives `rounded-sm/md/lg` passthroughs) |
 
-### Spacing Variables
+### Spacing
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
+There are **no `--space-*` CSS variables** — spacing is Tailwind's default scale, used directly. The rhythm to follow:
 
-Component-level spacing (widget padding `p-5`, row padding `p-2.5`, etc.) is tabulated in `spacing` in `design-tokens.ts`.
+| Context | Value |
+|---------|-------|
+| Card / widget padding | `p-5` (widgets) to `p-6` (standard cards) |
+| Row / list-item padding | `p-2.5` – `p-4` |
+| Page gutter | `px-4 sm:px-6 lg:px-8` |
+| Section vertical rhythm (marketing) | `pt-28/36 · py-20/28`, band `py-16` |
+| Icon / inline gaps | `gap-2` – `gap-3` |
 
 ### Shadow Depths
 
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--pw-shadow-card` | `0 16px 48px rgba(0,0,0,0.08), 0 0 0 1px rgba(15,23,42,0.04)` | Cards, widgets (`shadow.widget`) |
-| `--pw-shadow-card-hover` | `0 24px 64px rgba(0,0,0,0.09), 0 0 0 1px rgba(15,23,42,0.04)` | Card hover, hero widgets (`shadow.widgetHero`) |
-| `shadow-md` | Tailwind default | Floating badges (`shadow.badge`) |
+`.pw-card` is **border-first and flat at rest** — no resting shadow. This is deliberate: it mirrors the public marketing site, and the old heavy resting shadow read as a boxier, different product.
 
-The soft 1px slate ring baked into the card shadow replaces heavy borders — pair with `border-[#E2E8F0]` only where a hairline is explicitly wanted.
+| State | Value |
+|-------|-------|
+| Card at rest (light) | `box-shadow: none` + `1px solid var(--pw-border)` |
+| Card at rest (dark) | inner ring `0 0 0 1px rgba(255,255,255,0.08)` (shadows are invisible on dark) |
+| Card hover | `translateY(-2px)`, border → `#A7F3D0` (dark: `rgba(137,217,178,0.5)`), `0 8px 24px rgba(41,104,91,0.08)` |
+| Floating badges / overlays | `shadow-md` / `shadow-2xl` (Tailwind defaults) |
+
+> ⚠️ `--pw-shadow-card` and `--pw-shadow-card-hover` are still **declared** in `globals.css` but are **referenced by nothing**. Do not build on them; they are slated for removal.
 
 ---
 
@@ -107,8 +115,8 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 - **`text-mint`** (`#89D9B2`) — mint accents on dark surfaces.
 - **`ring-primary`** — focus rings.
 - **`.pw-card`** — the standard card: white surface, `rounded-2xl`, `--pw-shadow-card`, dark-mode-aware. **`.pw-pill`** for pill badges, **`.pw-primary-button`** for the primary CTA, and the **`.arc-*`** utilities (`.arc-card`, `.arc-btn-primary`, `.arc-btn-secondary`, `.arc-btn-neutral`) for the dashboard shell.
-- **`border-[#E2E8F0]`** — the one sanctioned hairline border color on light surfaces.
-- In TS/TSX where a literal is unavoidable, import from `components/ui/design-tokens.ts` (`colors`, `severityStyles`, `gapSeverityStyles`, `radius`, `shadow`).
+- **`border-border`** (resolves to `#E2E8F0` light / `rgba(255,255,255,0.14)` dark) — the sanctioned hairline. Prefer it over the literal `border-[#E2E8F0]`, which does not flip in dark mode.
+- In TS/TSX, a raw hex literal has **no sanctioned escape hatch** — there is no token module to import from. If you need a value the utilities don't cover, add it to `globals.css` as a variable and reference it, rather than inlining a hex.
 
 ---
 
@@ -151,21 +159,25 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 
 ### Cards
 
+**Use the `.pw-card` utility.** It is border-first and flat at rest — this is what it actually resolves to:
+
 ```css
-/* Prefer the .pw-card utility — this is what it resolves to */
-.card {
-  background: #ffffff;            /* near-black surface in dark mode */
-  border-radius: 16px;            /* rounded-2xl */
-  padding: 24px;
-  box-shadow: var(--pw-shadow-card);
-  transition: all 200ms ease;
+.pw-card {
+  border-radius: var(--pw-radius-card);   /* 16px */
+  border: 1px solid var(--pw-border);     /* #E2E8F0 light */
+  background: var(--pw-bg-light);         /* #ffffff — #111111 in dark */
+  box-shadow: none;                       /* dark: inset ring, see above */
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
-.card:hover {
-  box-shadow: var(--pw-shadow-card-hover);
+.pw-card:hover {
   transform: translateY(-2px);
+  border-color: #A7F3D0;
+  box-shadow: 0 8px 24px rgba(41, 104, 91, 0.08);
 }
 ```
+
+`.pw-card` carries **no padding** — add your own (`p-5`/`p-6`). `.arc-card` is a verbatim alias kept for the dashboard shell; prefer `.pw-card` in new code.
 
 ### Badges / Pills
 
@@ -187,39 +199,47 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 
 ### Inputs
 
-```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
-}
+> ⚠️ **There is no shared Input/Select/Textarea/Label primitive yet** — ~111 raw `<input>` elements across 33 files hand-roll their styling. Building one is tracked in the UI-foundation backlog (see `docs/audits/ui-foundation-audit-2026-07.md`). Until it lands, match the dominant shipped recipe rather than the older 12px-radius spec that used to live here:
 
-.input:focus {
-  border-color: #29685B;          /* or use ring-primary */
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(41, 104, 91, 0.15);
-}
 ```
+w-full h-14 px-6
+bg-neutral-50 dark:bg-neutral-800
+border-none rounded-2xl
+outline-none focus:ring-4 focus:ring-primary/10
+transition-all text-sm font-bold
+```
+
+Every input needs a real `<label>` (or `aria-label`) and a visible focus ring — the `focus:ring-4 focus:ring-primary/10` above is the sanctioned one.
 
 ### Modals
 
+**Use the shared `components/ui/Modal.tsx`**, which wraps `hooks/useDialog.ts` (focus trap, Escape, scroll-lock, focus restore). Do **not** hand-roll a `fixed inset-0` overlay — ~25 already exist and none of them are accessible.
+
+What the shared modal resolves to:
+
 ```css
+/* Backdrop */
 .modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0,0,0,0.4);            /* dark: rgba(0,0,0,0.6) */
   backdrop-filter: blur(4px);
 }
 
+/* Panel — centred, gutter-safe on mobile */
 .modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--pw-shadow-card-hover);
-  max-width: 500px;
-  width: 90%;
+  position: fixed; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  width: calc(100% - 2rem);                /* 1rem gutter each side */
+  max-width: 32rem;                        /* max-w-lg */
+  max-height: 90vh; overflow-y: auto;
+  background: var(--card);
+  border-radius: 32px;
+  box-shadow: var(--tw-shadow-2xl);
 }
 ```
+
+Every modal MUST have an accessible name — pass `ariaLabel`, or `ariaLabelledBy` pointing at an `id` that exists in **every** view the modal can render.
 
 ---
 
@@ -231,7 +251,7 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 
 **Best For:** Healthcare/medical landing pages, financial services, enterprise software, premium/luxury products, legal services
 
-**Key Effects:** Badge hover effects, metric pulse animations, staggered entry transitions (`animation.stagger` in `design-tokens.ts`), smooth stat reveal
+**Key Effects:** Badge hover effects, metric pulse animations, staggered entry transitions (framer-motion, per-component `delay` — there is no shared stagger token), smooth stat reveal
 
 ### Page Pattern
 
@@ -250,6 +270,9 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 - ❌ **Blue as a brand accent** — blue is only for info (`#EFF6FF`/`#1E40AF`) and AI (`#EEF2FF`/`#4F46E5`) surfaces.
 - ❌ **Repainting status colors** — amber warning and red critical pairs are semantic; never swap them for brand green, and never use amber `#F59E0B` as anything other than warning status.
 - ❌ **Hardcoded white/dark text on primary fills** — breaks the dark-mode mint flip; use `text-primary-foreground` or the button utilities.
+- ❌ **`font-black` (900)** — off the ladder. `font-bold` is the ceiling; prefer `font-semibold` inside cards and overlays.
+- ❌ **Hand-rolled `fixed inset-0` modals/overlays** — use `components/ui/Modal.tsx`. Hand-rolled ones ship without focus trap, Escape, scroll-lock, or an accessible name.
+- ❌ **Importing from `components/ui/design-tokens.ts`** — the file does not exist (deleted in `834957c`).
 - ❌ Confusing pricing
 - ❌ No trust signals
 

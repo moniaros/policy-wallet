@@ -2,10 +2,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Brand palette source of truth: components/ui/design-tokens.ts (the
- * language advertised by the public marketing widgets). Light mode uses
- * deep green fills with white text; dark mode flips primary to mint with
- * dark (#1A2420) text on fills.
+ * Brand palette source of truth: THIS FILE. The former
+ * components/ui/design-tokens.ts was deleted in 834957c — the runtime
+ * tokens and .pw-* utilities below are the only canonical values.
+ * Light mode uses deep green fills with white text; dark mode flips
+ * primary to mint with dark (#1A2420) text on fills.
+ * Prose reference: design-system/policywallet/MASTER.md (this file wins).
  */
 @theme {
   /* Routed through :root/.dark runtime vars so bg-primary etc. flip to
@@ -157,7 +159,7 @@
   --primary-foreground: #1A2420;
   --primary-hover: #7de8ba;
 
-  /* Secondary - Amber */
+  /* Secondary - dark brand green (dark surfaces) */
   --secondary: #173330;
   --secondary-foreground: #ffffff;
 
