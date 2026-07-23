@@ -25,6 +25,10 @@
 | `roles[0]` navigation; `.includes('admin')` substring check | `399892e` — `parseRoles`/`getPrimaryRole`/`hasAnyRole` + `pw_active_role` cookie |
 | `/home` vs `/dashboard` dual URL | `399892e` — 307 in `proxy.ts` |
 | `proxy.ts` hand-maintained allowlist foot-gun | `399892e` — `tests/unit/public-route-allowlist.test.ts` (65 routes; verified it fails on an unlisted route) |
+| Fake "Biometric / PIN" unlock on sign-in (Cluster I, rated **C** trust) | `6274954` — removed; it was gated on localStorage keys nothing writes, and the "Biometric" button only pre-filled the saved email |
+| All 4 native `confirm()`s (Cluster F destructive half) | `6274954` — new shared `components/ui/ConfirmDialog.tsx` on top of `Modal`; zero `window.confirm` remain |
+| Sign-in bilingual literals ("worst file in repo") | `6274954` — 30 strings → `t.auth.signInPage` (el+en); 0 ternaries left |
+| Admin route states (Cluster G) | `915d82d` — see correction 3; scoped admin boundary + table-shaped skeleton |
 
 ### Corrections — rows that are wrong as written
 
@@ -43,7 +47,7 @@
 
 ### Still open
 
-Everything in §3 not listed above — most substantially: Cluster D (form kit / toast-only validation), Cluster E (`ResponsiveTable` + the 6 table clients), Cluster F (the ~21 focus-trap-less overlays and the 4 native `confirm()`s), Cluster G (route-state files, incl. all 14 admin routes), Cluster H (the three separate pollers), the signin fake-biometric block, `lib/i18n/format.ts`, and the landing Server-Components refactor.
+Everything in §3 not listed above — most substantially: **Cluster D** (form kit / toast-only validation), **Cluster E** (`ResponsiveTable` + the 6 table clients), the **remainder of Cluster F** (the ~21 focus-trap-less overlays that are not `confirm()`s — admin modal trio, `UsersClient`, `PoliciesClient`, `QuestionnaireSender`, `PolicyTable`'s menu, `DashboardTour`, `PublicHeader`'s menu), **Cluster H** (the three separate pollers), `lib/i18n/format.ts` (the `en-US`/`en-GB` drift), the remaining palette/hex sweep, and the landing Server-Components refactor.
 
 ---
 
