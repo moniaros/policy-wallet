@@ -190,7 +190,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setSelectedOpp(opp)}
-                                                        className="arc-btn bg-neutral-100 hover:bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-300 px-4 py-2 text-body-sm"
+                                                        className="pw-secondary-button pw-btn-sm"
                                                     >
                                                         {opp_t.update}
                                                     </button>
@@ -198,7 +198,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                     {opp.policyId && (
                                                         <a
                                                             href={`/wallet/${opp.policyId}`}
-                                                            className="arc-btn arc-btn-primary px-4 py-2 text-body-sm"
+                                                            className="pw-primary-button pw-btn-sm"
                                                         >
                                                             {opp_t.view}
                                                         </a>

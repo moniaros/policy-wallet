@@ -25,7 +25,7 @@ export function RefreshAnalysisButton({
         <button
             onClick={handleClick}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-bold text-black/70 transition-colors hover:border-primary/40 hover:text-primary disabled:opacity-60 dark:border-white/15 dark:bg-black dark:text-white/75 dark:hover:border-mint/40 dark:hover:text-mint cursor-pointer disabled:cursor-default"
+            className="pw-secondary-button text-black/70"
         >
             <RefreshCw className={`h-3.5 w-3.5 ${isPending ? "animate-spin" : ""}`} aria-hidden />
             {isPending ? labels.refreshing : labels.refresh}

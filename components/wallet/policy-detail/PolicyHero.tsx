@@ -193,7 +193,7 @@ export function PolicyHero({
 
                         <button
                             onClick={onShare}
-                            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
+                            className="pw-secondary-button min-h-12 bg-white/5"
                         >
                             <Share2 className="h-4 w-4" />
                             {copy.sharePolicy}
@@ -201,7 +201,7 @@ export function PolicyHero({
 
                         <button
                             onClick={onDownload}
-                            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
+                            className="pw-secondary-button min-h-12 bg-white/5"
                         >
                             <Download className="h-4 w-4" />
                             {copy.downloadContract}
@@ -209,7 +209,7 @@ export function PolicyHero({
 
                         <button
                             onClick={onCallInsurer}
-                            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
+                            className="pw-secondary-button min-h-12 bg-white/5"
                         >
                             <Phone className="h-4 w-4" />
                             {copy.contactInsurer}

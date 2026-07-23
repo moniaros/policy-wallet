@@ -174,7 +174,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                             required={q.required}
                                             value={answers[q.id] ?? ''}
                                             onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                                            className="w-full rounded-xl border border-border bg-muted px-4 py-3 text-foreground outline-none transition-colors focus:border-primary focus:bg-background placeholder:text-muted-foreground/60"
+                                            className="pw-input"
                                             placeholder={t.tasks.typeAnswer}
                                         />
                                     )}
@@ -185,7 +185,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                             required={q.required}
                                             value={answers[q.id] ?? ''}
                                             onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value === '' ? '' : Number(e.target.value) })}
-                                            className="w-full max-w-xs rounded-xl border border-border bg-muted px-4 py-3 text-foreground outline-none transition-colors focus:border-primary focus:bg-background placeholder:text-muted-foreground/60"
+                                            className="pw-input max-w-xs"
                                             placeholder="0"
                                         />
                                     )}
@@ -230,7 +230,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     <button
                         type="submit"
                         disabled={isSubmitting || progress < 50}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:text-[#1A2420] md:w-auto"
+                        className="pw-primary-button w-full md:w-auto"
                     >
                         {isSubmitting ? (
                             <>

@@ -172,7 +172,7 @@ export function PolicyWallet({
                             placeholder={t.wallet.searchPlaceholder}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/30 w-full placeholder:text-black/45 dark:placeholder:text-white/45"
+                            className="pw-input pw-input-sm pl-10 pr-4 border-black/10"
                         />
                         <svg className="w-4 h-4 text-black/45 dark:text-white/55 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -359,7 +359,7 @@ export function PolicyWallet({
                     <button
                         onClick={onAddManually}
                         id="tour-fab"
-                        className="group relative flex items-center justify-center w-16 h-16 bg-primary text-white dark:text-[#1A2420] rounded-2xl shadow-xl hover:-translate-y-1 hover:bg-primary-hover transition-all duration-300 border border-primary/40 cursor-pointer"
+                        className="pw-primary-button group relative w-16 h-16"
                         aria-label={roleCopy.walletDashboard.addPolicyAria}
                     >
                         <svg className="w-8 h-8 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">

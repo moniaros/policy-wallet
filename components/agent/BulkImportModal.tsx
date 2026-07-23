@@ -260,7 +260,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                 <button
                                     onClick={handleImport}
                                     disabled={validCount === 0 || isProcessing}
-                                    className="flex-1 px-6 py-3 rounded-xl font-bold text-white dark:text-[#1A2420] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/25"
+                                    className="pw-primary-button flex-1 shadow-primary/25"
                                 >
                                     {tt.importBtn} {validCount} {validCount !== 1 ? tt.custBtnPlural : tt.custBtnSingular}
                                 </button>

@@ -204,7 +204,7 @@ function ResetPasswordContent() {
                             {errors.confirmPassword ? <p className="mt-1 text-xs text-rose-600">{errors.confirmPassword.message}</p> : null}
                         </div>
 
-                        <button type="submit" disabled={submitting} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-4 text-body-lg font-bold text-white transition-transform active:scale-[0.98] hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-70 dark:bg-primary dark:text-[#1A2420] dark:hover:bg-primary-hover">
+                        <button type="submit" disabled={submitting} className="pw-primary-button w-full">
                             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                             {submitting ? copy.submitting : copy.submit}
                         </button>

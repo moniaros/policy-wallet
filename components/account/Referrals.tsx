@@ -80,7 +80,7 @@ export function Referrals({
                                 </div>
                                 <button
                                     onClick={handleCopyLink}
-                                    className="px-6 py-3 border border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white rounded-2xl text-kicker font-black uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
+                                    className="pw-secondary-button text-kicker uppercase tracking-wider"
                                 >
                                     {copied ? t.referrals.copied : t.referrals.copyLink}
                                 </button>

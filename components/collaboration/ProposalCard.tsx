@@ -148,7 +148,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         <select id="proposalcard-f1"
                             value={proposalType}
                             onChange={(e) => setProposalType(e.target.value as ProposalType)}
-                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
+                            className="pw-input pw-input-sm"
                         >
                             {Object.entries(PROPOSAL_TYPE_LABELS).map(([key, labels]) => (
                                 <option key={key} value={key}>
@@ -164,7 +164,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         <select id="proposalcard-f2"
                             value={lineOfBusiness}
                             onChange={(e) => setLineOfBusiness(e.target.value)}
-                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
+                            className="pw-input pw-input-sm"
                         >
                             {LOB_OPTIONS.map((lob) => (
                                 <option key={lob.value} value={lob.value}>
@@ -186,7 +186,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                             onChange={(e) => setInsurerName(e.target.value)}
                             required
                             placeholder={t.collaboration.proposals.insurerPlaceholder}
-                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm placeholder:text-neutral-400"
+                            className="pw-input pw-input-sm"
                         />
                     </div>
                     <div>
@@ -200,7 +200,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                             onChange={(e) => setPremiumAmount(e.target.value)}
                             required
                             placeholder="0.00"
-                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm placeholder:text-neutral-400"
+                            className="pw-input pw-input-sm"
                         />
                     </div>
                 </div>
@@ -214,7 +214,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         onChange={(e) => setCoverageSummary(e.target.value)}
                         required
                         rows={3}
-                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
+                        className="pw-input pw-input-sm resize-none"
                     />
                 </div>
 
@@ -227,7 +227,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         onChange={(e) => setPlainLanguageSummary(e.target.value)}
                         rows={2}
                         placeholder={t.collaboration.proposals.plainLanguagePlaceholder}
-                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
+                        className="pw-input pw-input-sm resize-none"
                     />
                 </div>
 
@@ -454,7 +454,7 @@ export function ProposalView({
                         onChange={(e) => setDeclineComment(e.target.value)}
                         rows={2}
                         placeholder={t.collaboration.proposals.declineCommentPlaceholder}
-                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
+                        className="pw-input pw-input-sm resize-none"
                     />
                     <div>
                         <label htmlFor="proposalcard-f7" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
@@ -465,7 +465,7 @@ export function ProposalView({
                             onChange={(e) => setCounterOffer(e.target.value)}
                             rows={2}
                             placeholder={t.collaboration.proposals.counterOfferPlaceholder}
-                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
+                            className="pw-input pw-input-sm resize-none"
                         />
                     </div>
                     <div className="flex items-center justify-end gap-3">

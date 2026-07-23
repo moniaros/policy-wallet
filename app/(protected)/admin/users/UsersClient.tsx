@@ -135,7 +135,7 @@ export default function UsersClient({
                                 placeholder="Search by name or email..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="pw-input pw-input-sm pl-10 pr-4"
                             />
                         </div>
                     </form>
@@ -357,7 +357,7 @@ export default function UsersClient({
                             Are you sure you want to approve {selectedUser.name || selectedUser.email}? They will gain full agent access.
                         </p>
                         <textarea
-                            className="w-full p-2 border rounded mb-4 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            className="pw-input mb-4"
                             placeholder="Optional notes..."
                             value={verificationReason}
                             onChange={e => setVerificationReason(e.target.value)}
@@ -396,7 +396,7 @@ export default function UsersClient({
                             Please provide a reason for rejecting {selectedUser.name || selectedUser.email}.
                         </p>
                         <textarea
-                            className="w-full p-2 border rounded mb-4 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            className="pw-input mb-4"
                             placeholder="Rejection reason (required)..."
                             value={verificationReason}
                             onChange={e => setVerificationReason(e.target.value)}
@@ -440,7 +440,7 @@ export default function UsersClient({
                             New role
                         </label>
                         <select id="usersclient-f1"
-                            className="w-full p-2 border rounded mb-2 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            className="pw-input mb-2"
                             value={roleSelection}
                             onChange={e => setRoleSelection(e.target.value)}
                         >
@@ -494,7 +494,7 @@ export default function UsersClient({
                             type="number"
                             min="1"
                             step="1"
-                            className="w-full p-2 border rounded mb-3 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            className="pw-input mb-3"
                             value={tokenAmount}
                             onChange={e => setTokenAmount(e.target.value)}
                         />
@@ -502,7 +502,7 @@ export default function UsersClient({
                             Reason
                         </label>
                         <input id="usersclient-f3"
-                            className="w-full p-2 border rounded mb-6 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            className="pw-input mb-6"
                             placeholder="e.g. goodwill / support comp"
                             value={tokenReason}
                             onChange={e => setTokenReason(e.target.value)}

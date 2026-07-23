@@ -258,13 +258,13 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                         onChange={(e) => setEmail(e.target.value)}
                                         onKeyDown={(e) => e.key === "Enter" && sendInvite()}
                                         placeholder={NO_AGENT_COPY.emailPlaceholder[lang]}
-                                        className="min-w-0 flex-1 rounded-full border border-border bg-card px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary dark:focus:border-mint"
+                                        className="pw-input pw-input-sm min-w-0 flex-1 dark:focus:border-mint"
                                     />
                                     <button
                                         type="button"
                                         onClick={sendInvite}
                                         disabled={sending || !email.trim()}
-                                        className="flex-shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                        className="pw-primary-button flex-shrink-0"
                                     >
                                         {sending ? NO_AGENT_COPY.sending[lang] : NO_AGENT_COPY.sendInvite[lang]}
                                     </button>
@@ -291,7 +291,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                                 onChange={(e) => setCode(e.target.value)}
                                                 onKeyDown={(e) => e.key === "Enter" && redeem()}
                                                 placeholder={NO_AGENT_COPY.inputPlaceholder[lang]}
-                                                className="min-w-0 flex-1 rounded-full border border-border bg-card px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary dark:focus:border-mint"
+                                                className="pw-input pw-input-sm min-w-0 flex-1 dark:focus:border-mint"
                                             />
                                             <button
                                                 type="button"

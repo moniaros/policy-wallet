@@ -109,7 +109,7 @@ export function ClaimsGuidanceCard({
                         {insurerPhone && (
                             <button
                                 onClick={onCallInsurer}
-                                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420] cursor-pointer"
+                                className="pw-primary-button text-micro"
                             >
                                 <Phone className="h-3 w-3" />
                                 {copy.contactInsurer} — {insurerName}

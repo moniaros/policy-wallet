@@ -61,7 +61,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       {pet.microchipNumber && (
         <button
           onClick={handleCopyMicrochip}
-          className="w-full flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+          className="pw-secondary-button w-full justify-between bg-black/[0.02]"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">

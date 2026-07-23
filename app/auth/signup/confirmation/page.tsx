@@ -412,7 +412,7 @@ function SignupConfirmationContent() {
                                     type="button"
                                     onClick={handleSkip}
                                     disabled={busy}
-                                    className="inline-flex w-full items-center justify-center rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-70 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
+                                    className="pw-secondary-button w-full"
                                 >
                                     {copy.skip}
                                 </button>

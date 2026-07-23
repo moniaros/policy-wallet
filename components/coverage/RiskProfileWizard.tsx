@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { ChipToggle } from "@/components/ui/form/ChipToggle"
 import {
     Baby,
     Briefcase,
@@ -327,19 +328,15 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                             ].map((c) => {
                                 const checked = chronicConditions.includes(c.value)
                                 return (
-                                    <label key={c.value} className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${checked ? "border-primary bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60"}`}>
-                                        <input
-                                            type="checkbox"
-                                            checked={checked}
-                                            onChange={(e) => setChronicConditions(
-                                                e.target.checked
-                                                    ? [...chronicConditions, c.value]
-                                                    : chronicConditions.filter((x) => x !== c.value)
-                                            )}
-                                            className="sr-only"
-                                        />
-                                        {lang === "el" ? c.el : c.en}
-                                    </label>
+                                    <ChipToggle
+                                        key={c.value}
+                                        label={lang === "el" ? c.el : c.en}
+                                        checked={checked}
+                                        accent="primary"
+                                        onChange={(next) => setChronicConditions(
+                                            next ? [...chronicConditions, c.value] : chronicConditions.filter((x) => x !== c.value)
+                                        )}
+                                    />
                                 )
                             })}
                         </div>
@@ -364,19 +361,15 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                             ].map((c) => {
                                 const checked = familyMedicalHistory.includes(c.value)
                                 return (
-                                    <label key={c.value} className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${checked ? "border-amber-400 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60"}`}>
-                                        <input
-                                            type="checkbox"
-                                            checked={checked}
-                                            onChange={(e) => setFamilyMedicalHistory(
-                                                e.target.checked
-                                                    ? [...familyMedicalHistory, c.value]
-                                                    : familyMedicalHistory.filter((x) => x !== c.value)
-                                            )}
-                                            className="sr-only"
-                                        />
-                                        {lang === "el" ? c.el : c.en}
-                                    </label>
+                                    <ChipToggle
+                                        key={c.value}
+                                        label={lang === "el" ? c.el : c.en}
+                                        checked={checked}
+                                        accent="warning"
+                                        onChange={(next) => setFamilyMedicalHistory(
+                                            next ? [...familyMedicalHistory, c.value] : familyMedicalHistory.filter((x) => x !== c.value)
+                                        )}
+                                    />
                                 )
                             })}
                         </div>
@@ -534,7 +527,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                                     </select>
                                 </div>
                             </div>
-                            <button type="button" onClick={addLifeEvent} className="px-3 py-2.5 rounded-xl bg-primary text-white dark:text-[#1A2420] text-sm font-semibold hover:bg-primary-hover cursor-pointer">
+                            <button type="button" onClick={addLifeEvent} className="pw-primary-button">
                                 {t("OK", "OK")}
                             </button>
                             <button type="button" onClick={() => setShowAddEvent(false)} aria-label={t("Ακύρωση", "Cancel")} className="p-2.5 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white cursor-pointer">
@@ -558,7 +551,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3.5 bg-primary text-white dark:text-[#1A2420] rounded-xl font-semibold transition-colors hover:bg-primary-hover disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                        className="pw-primary-button w-full"
                     >
                         <ShieldCheck className="h-4 w-4" />
                         {loading

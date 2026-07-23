@@ -59,7 +59,7 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
                             placeholder={t("π.χ. Ασφαλιστικό Γραφείο Παπαδόπουλος", "e.g. Papadopoulos Insurance Agency")}
                             value={agencyName}
                             onChange={(e) => setAgencyName(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                            className="pw-input"
                         />
                     </div>
                 </div>

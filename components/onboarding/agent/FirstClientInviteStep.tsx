@@ -71,13 +71,13 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={t("pelatis@example.com", "client@example.com")}
-                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                                className="pw-input"
                             />
                         </div>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                            className="pw-primary-button w-full"
                         >
                             <Send className="w-4 h-4" /> {isLoading ? t("Αποστολή...", "Sending...") : t("Αποστολή Πρόσκλησης", "Send Invite")}
                         </button>

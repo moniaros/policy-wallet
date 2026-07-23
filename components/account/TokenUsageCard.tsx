@@ -243,7 +243,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
                     {isPaid ? (
                         <button
                             onClick={() => setShowPackages(true)}
-                            className="arc-btn arc-btn-primary w-full text-sm"
+                            className="pw-primary-button w-full"
                         >
                             {i18n.buyExtra}
                         </button>

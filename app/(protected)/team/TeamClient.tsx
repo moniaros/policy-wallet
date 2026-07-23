@@ -293,12 +293,12 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         placeholder={t.email}
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
+                        className="pw-input pw-input-sm"
                     />
                     <select
                         value={inviteRole}
                         onChange={(e) => setInviteRole(e.target.value as "member" | "manager")}
-                        className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
+                        className="pw-input pw-input-sm"
                     >
                         <option value="member">{t.member}</option>
                         <option value="manager">{t.manager}</option>
@@ -318,7 +318,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         <button
                             onClick={handleInvite}
                             disabled={inviteLoading || !inviteEmail}
-                            className="flex-1 px-3 py-2 bg-primary text-white dark:text-[#1A2420] rounded-xl text-xs font-black hover:bg-primary-hover disabled:opacity-50"
+                            className="pw-primary-button flex-1"
                         >
                             {inviteLoading ? "..." : t.invite}
                         </button>
@@ -508,7 +508,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
+                                className="pw-input"
                                 placeholder="Ασφαλιστικό Πρακτορείο..."
                             />
                         </div>
@@ -519,7 +519,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                     type="tel"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
+                                    className="pw-input"
                                 />
                             </div>
                             <div>
@@ -528,7 +528,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                     type="text"
                                     value={taxId}
                                     onChange={(e) => setTaxId(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
+                                    className="pw-input"
                                 />
                             </div>
                         </div>
@@ -538,7 +538,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                 type="url"
                                 value={website}
                                 onChange={(e) => setWebsite(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
+                                className="pw-input"
                             />
                         </div>
                         <div>
@@ -547,7 +547,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                 type="text"
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
+                                className="pw-input"
                             />
                         </div>
                     </div>

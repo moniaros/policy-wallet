@@ -391,6 +391,39 @@ pre {
     color: var(--pw-text-muted);
   }
 
+  /* The canonical text control — input, select and textarea.
+     107 controls with a static className used 48 distinct appearance
+     signatures, so no two forms agreed on radius, fill or padding. MASTER.md
+     documented the gap ("There is no shared Input/Select/Textarea/Label
+     primitive yet") and specified the dominant shipped recipe to match until
+     one landed; this IS that recipe, promoted to a utility so it is stated in
+     one place instead of retyped per form.
+
+     No `h-14` here: a fixed height fights the base-layer 44px mobile floor and
+     stops a textarea growing. Padding sets the height and the floor guarantees
+     the minimum. */
+  .pw-input {
+    @apply w-full rounded-2xl border-none bg-neutral-50 px-6 py-4 text-sm outline-none transition-all;
+    @apply focus:ring-4 focus:ring-primary/10;
+    @apply disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .dark .pw-input {
+    @apply bg-neutral-800;
+  }
+
+  /* Compact variant for dense toolbars and table filters, where the roomy
+     default would push a row out of its container. Still clears 44px on
+     mobile via the base layer. */
+  .pw-input-sm {
+    @apply rounded-xl px-4 py-2.5;
+  }
+
+  /* Invalid state, paired with aria-invalid on the control itself. */
+  .pw-input[aria-invalid="true"] {
+    @apply ring-2 ring-red-500/40 focus:ring-4 focus:ring-red-500/20;
+  }
+
   .pw-primary-button {
     @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none;
     border-radius: var(--pw-radius-button);
@@ -527,35 +560,10 @@ pre {
   }
 
   /* Dashboard-shell alias of .pw-card — same flat, border-first public recipe. */
-  .arc-btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
-    @apply disabled:cursor-not-allowed disabled:opacity-50;
-  }
-
-  .arc-btn-primary {
-    @apply border border-primary/40 bg-primary text-white shadow-sm hover:bg-primary-hover;
-  }
-
-  .dark .arc-btn-primary {
-    @apply text-[#1A2420] hover:bg-mint;
-  }
-
-  .arc-btn-secondary {
-    @apply border border-black/15 bg-white text-black hover:bg-black/5;
-  }
-
-  .dark .arc-btn-secondary {
-    @apply border-white/20 bg-black text-white hover:bg-white/10;
-  }
-
-  .arc-btn-neutral {
-    @apply border border-black/10 bg-black/5 text-black/80 hover:bg-black/10;
-  }
-
-  .dark .arc-btn-neutral {
-    @apply border-white/15 bg-white/10 text-white/80 hover:bg-white/15;
-  }
+  /* .arc-btn* deleted. It was a second button system at rounded-xl, which
+     contradicted the pill rule the design system states
+     (--pw-radius-button: 9999px); MASTER.md flagged retiring it as backlog.
+     Its 9 call sites now use .pw-primary-button / .pw-secondary-button. */
 
   .animate-blob {
     animation: blob 7s infinite;

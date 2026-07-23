@@ -24,7 +24,7 @@ export default async function AdminTypesPage() {
                                 type="text"
                                 required
                                 placeholder="e.g. Health (Υγεία)"
-                                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary"
+                                className="pw-input pw-input-sm"
                             />
                         </div>
                         <div>
@@ -34,10 +34,10 @@ export default async function AdminTypesPage() {
                                 type="text"
                                 required
                                 placeholder="e.g. health"
-                                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary"
+                                className="pw-input pw-input-sm"
                             />
                         </div>
-                        <button type="submit" className="w-full bg-primary text-white dark:text-[#1A2420] py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors">
+                        <button type="submit" className="pw-primary-button w-full">
                             Add Type
                         </button>
                     </form>

@@ -54,7 +54,7 @@ export function InviteModal({
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="customer@example.com"
-                                className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-800 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all text-foreground font-black placeholder-neutral-400 tracking-tight"
+                                className="pw-input tracking-tight"
                             />
                         </div>
 
@@ -95,7 +95,7 @@ export function InviteModal({
                             <button
                                 onClick={handleSend}
                                 disabled={sending || !email}
-                                className="flex-[2] px-8 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-kicker font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all active:scale-95 disabled:opacity-50"
+                                className="pw-primary-button flex-[2] bg-neutral-900 dark:text-neutral-900 text-kicker uppercase tracking-widest shadow-neutral-900/10"
                             >
                                 {sending ? t.invite.dispatching : t.invite.dispatch}
                             </button>

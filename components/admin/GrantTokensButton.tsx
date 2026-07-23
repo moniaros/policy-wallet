@@ -31,12 +31,12 @@ export default function GrantTokensButton({ userId, label }: { userId: string; l
                         <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Amount (tokens)</label>
                         <input
                             type="number" min="1" step="1"
-                            className="w-full p-2 border rounded mb-3 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            className="pw-input mb-3"
                             value={amount} onChange={e => setAmount(e.target.value)}
                         />
                         <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Reason</label>
                         <input
-                            className="w-full p-2 border rounded mb-6 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            className="pw-input mb-6"
                             placeholder="e.g. goodwill / support comp"
                             value={reason} onChange={e => setReason(e.target.value)}
                         />

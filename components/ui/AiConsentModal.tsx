@@ -85,7 +85,7 @@ export function AiConsentModal({ isOpen, onClose, onConsented, source = "ai_cons
                         type="button"
                         onClick={accept}
                         disabled={saving}
-                        className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary-hover disabled:opacity-50 dark:text-[#1A2420]"
+                        className="pw-primary-button"
                     >
                         {t.common.aiConsentAccept}
                     </button>

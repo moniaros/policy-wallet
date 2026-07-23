@@ -195,7 +195,7 @@ export default function ForgotPasswordPage() {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-body font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-70 dark:text-[#1A2420]"
+                                className="pw-primary-button w-full"
                             >
                                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                                 {submitting ? copy.sending : copy.send}

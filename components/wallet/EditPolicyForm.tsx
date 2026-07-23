@@ -208,7 +208,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
                 <button
                     type="submit"
                     disabled={isPending}
-                    className="flex-1 h-10 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary-hover disabled:opacity-50 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="pw-primary-button flex-1 h-10"
                 >
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isPending ? copy.saving : copy.save}

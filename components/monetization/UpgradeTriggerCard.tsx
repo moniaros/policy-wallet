@@ -132,7 +132,7 @@ export function UpgradeTriggerCard({
                     <button
                         type="button"
                         onClick={openModal}
-                        className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-primary px-4 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                        className="pw-primary-button min-h-9"
                     >
                         <Crown className="h-3.5 w-3.5" />
                         {copy.primaryCta}

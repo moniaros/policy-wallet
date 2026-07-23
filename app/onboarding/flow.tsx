@@ -336,7 +336,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 type="button"
                                 disabled={!canContinueStep1 || busy}
                                 onClick={continueFromStep1}
-                                className="w-full rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-hover disabled:opacity-60"
+                                className="pw-primary-button w-full"
                             >
                                 {busy ? t("Αποθήκευση...", "Saving...") : t("Συνέχεια", "Continue")}
                             </button>
@@ -454,7 +454,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 type="button"
                                 onClick={continueFromStep3}
                                 disabled={busy || simulatingAi}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-hover disabled:opacity-60"
+                                className="pw-primary-button w-full"
                             >
                                 {busy ? t("Αποθήκευση...", "Saving...") : t("Συνέχεια", "Continue")}
                             </button>
@@ -486,7 +486,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 type="button"
                                 onClick={continueFromReminders}
                                 disabled={busy}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-hover disabled:opacity-60"
+                                className="pw-primary-button w-full"
                             >
                                 {busy ? t("Αποθήκευση...", "Saving...") : t("Συνέχεια", "Continue")}
                             </button>
@@ -565,13 +565,13 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                             onChange={(e) => { setAdvisorEmail(e.target.value); setAdvisorEmailError(null) }}
                                             onKeyDown={(e) => e.key === "Enter" && handleInviteAdvisor()}
                                             placeholder={t("Το email του συμβούλου σας", "Your advisor's email")}
-                                            className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm placeholder:text-stone-400"
+                                            className="pw-input flex-1"
                                         />
                                         <button
                                             type="button"
                                             onClick={handleInviteAdvisor}
                                             disabled={sendingInvite || !advisorEmail.trim()}
-                                            className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-hover disabled:opacity-60"
+                                            className="pw-primary-button"
                                         >
                                             {sendingInvite ? t("Αποστολή…", "Sending…") : t("Αποστολή", "Send")}
                                         </button>
@@ -597,14 +597,14 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                                     onChange={(e) => { setInviteCode(e.target.value); setInviteError(null) }}
                                                     onKeyDown={(e) => e.key === "Enter" && handleRedeemInvite()}
                                                     placeholder={t("Εισάγετε κωδικό πρόσκλησης...", "Enter invite code...")}
-                                                    className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm placeholder:text-stone-400"
+                                                    className="pw-input flex-1"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={handleRedeemInvite}
                                                     disabled={busy || !inviteCode.trim()}
                                                     aria-label={t("Σύνδεση", "Connect")}
-                                                    className="rounded-xl border border-stone-300 bg-white px-5 py-3 text-sm font-bold text-stone-700 transition hover:bg-stone-50 disabled:opacity-60"
+                                                    className="pw-secondary-button border-stone-300 text-stone-700"
                                                 >
                                                     <Users className="h-4 w-4" />
                                                 </button>
@@ -621,7 +621,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 type="button"
                                 onClick={finishOnboarding}
                                 disabled={busy}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-hover disabled:opacity-60"
+                                className="pw-primary-button w-full"
                             >
                                 <Wallet className="h-4 w-4" />
                                 {busy ? t("Ολοκλήρωση...", "Finishing...") : t("Μετάβαση στην Αρχική", "Go to Home Dashboard")}

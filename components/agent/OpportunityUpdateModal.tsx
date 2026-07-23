@@ -119,7 +119,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             rows={4}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-foreground focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
+                            className="pw-input dark:focus:border-mint"
                             placeholder={tt.notesPlaceholder}
                         />
                     </div>
@@ -134,7 +134,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             id="nextActionDate"
                             value={nextActionDate}
                             onChange={(e) => setNextActionDate(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-foreground focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
+                            className="pw-input dark:focus:border-mint"
                         />
                     </div>
 
@@ -150,7 +150,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="flex-1 px-6 py-3 rounded-xl font-bold text-white dark:text-[#1A2420] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/25"
+                            className="pw-primary-button flex-1 shadow-primary/25"
                         >
                             {isSubmitting ? tt.updating : tt.updateBtn}
                         </button>

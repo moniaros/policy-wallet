@@ -94,7 +94,7 @@ export default function InviteCustomerPage() {
                                     name="email"
                                     required
                                     placeholder="customer@example.com"
-                                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all dark:text-white"
+                                    className="pw-input"
                                 />
                                 <p className="mt-2 text-xs text-neutral-500">{inv_t.emailHelper}</p>
                             </div>
@@ -114,7 +114,7 @@ export default function InviteCustomerPage() {
                                 <button
                                     type="submit"
                                     disabled={isPending}
-                                    className="flex-1 px-6 py-3 bg-primary text-white dark:text-[#1A2420] rounded-xl font-bold hover:bg-primary-hover transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="pw-primary-button flex-1"
                                 >
                                     {isPending ? (
                                         <>

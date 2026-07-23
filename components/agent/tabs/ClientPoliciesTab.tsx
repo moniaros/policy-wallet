@@ -112,7 +112,7 @@ export function ClientPoliciesTab({
                     <select
                         value={filterLob || ""}
                         onChange={(e) => setFilterLob(e.target.value || null)}
-                        className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-1.5 text-xs text-neutral-700 dark:text-neutral-300"
+                        className="pw-input pw-input-sm"
                     >
                         <option value="">{TAB_COPY.allTypes[language]}</option>
                         {uniqueLobs.map((lob) => (
@@ -124,7 +124,7 @@ export function ClientPoliciesTab({
                     <select
                         value={filterStatus || ""}
                         onChange={(e) => setFilterStatus(e.target.value || null)}
-                        className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-1.5 text-xs text-neutral-700 dark:text-neutral-300"
+                        className="pw-input pw-input-sm"
                     >
                         <option value="">{TAB_COPY.allStatuses[language]}</option>
                         {uniqueStatuses.map((status) => (

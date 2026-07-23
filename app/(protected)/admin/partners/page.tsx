@@ -72,7 +72,7 @@ export default async function AdminPartnersPage() {
                             <input name="isActive" type="checkbox" className="h-4 w-4" />
                             Active immediately (only for a signed, live partner)
                         </label>
-                        <button type="submit" className="w-full bg-primary text-white dark:text-[#1A2420] py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors">
+                        <button type="submit" className="pw-primary-button w-full">
                             Create Vendor
                         </button>
                     </form>

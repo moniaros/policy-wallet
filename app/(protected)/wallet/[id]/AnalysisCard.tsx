@@ -552,7 +552,7 @@ export function AnalysisCard({
                 <button
                     onClick={handleAnalyze}
                     disabled={analysisInProgress}
-                    className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold transition-all disabled:opacity-50 backdrop-blur-sm border border-white/30 hover:shadow-lg"
+                    className="pw-secondary-button bg-white/20 backdrop-blur-sm"
                 >
                     {analysisInProgress ? statusCopy.inProgress : t.analysis.runAnalysis}
                 </button>
@@ -659,7 +659,7 @@ export function AnalysisCard({
                                     <button
                                         onClick={handleRetryMissing}
                                         disabled={retryingMissing}
-                                        className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 disabled:opacity-60 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                        className="pw-secondary-button border-amber-400/60 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100"
                                     >
                                         <RefreshCw className="h-3 w-3" />
                                         {retryingMissing
@@ -669,7 +669,7 @@ export function AnalysisCard({
                                 )}
                                 <button
                                     onClick={handleAnalyze}
-                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                    className="pw-secondary-button border-amber-400/60 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100"
                                 >
                                     <RefreshCw className="h-3 w-3" />
                                     {statusCopy.retryFull || statusCopy.retry}
@@ -736,7 +736,7 @@ export function AnalysisCard({
                             ) : (
                                 <button
                                     onClick={handleAnalyze}
-                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                    className="pw-secondary-button border-amber-400/60 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100"
                                 >
                                     <RefreshCw className="h-3 w-3" />
                                     {statusCopy.retry}

@@ -363,7 +363,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                                                     aria-label={copy.policyNumberLabel}
                                                                     value={policy.data.policyNumber}
                                                                     onChange={(e) => handleUpdatePolicy(policy.id, "policyNumber", e.target.value)}
-                                                                    className="bg-transparent border-b border-border focus:border-primary outline-none text-foreground w-32"
+                                                                    className="pw-input border-b w-32"
                                                                 />
                                                             </div>
                                                             <div>
@@ -415,7 +415,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                             onClick={handleSaveAll}
                             disabled={isSaving || isProcessing}
                             data-testid="batch-upload-save-all"
-                            className="flex-[2] px-8 py-5 bg-primary text-primary-foreground rounded-[24px] text-kicker font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                            className="pw-primary-button flex-[2] text-kicker uppercase tracking-widest shadow-primary/20"
                         >
                             {isSaving ? copy.saving : withVars(copy.savePolicies, { count: successCount })}
                         </button>

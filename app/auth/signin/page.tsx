@@ -218,7 +218,7 @@ export default function SignInPage() {
                         </div>
                     )}
                     {showResend && (
-                        <button type="button" onClick={resendVerification} className="mb-4 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] py-2.5 text-body-sm font-semibold text-[#0F172A] transition hover:bg-[#F1F5F9] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10">
+                        <button type="button" onClick={resendVerification} className="pw-secondary-button mb-4 w-full">
                             {resending ? (copy.sending) : (copy.resendVerification)}
                         </button>
                     )}
@@ -271,7 +271,7 @@ export default function SignInPage() {
                         </div>
 
                         {/* Submit */}
-                        <button type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-body font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
+                        <button type="submit" disabled={loading} className="pw-primary-button w-full">
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                             {loading ? (copy.signingIn) : t.auth.signIn}
                         </button>
@@ -327,7 +327,7 @@ export default function SignInPage() {
                         {resetStep === "request" && (
                             <div className="space-y-3">
                                 <input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="name@example.com" className={inputBase} />
-                                <button type="button" onClick={requestOtp} disabled={resetLoading} className="w-full rounded-full bg-primary px-4 py-3 text-body font-bold text-white transition hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
+                                <button type="button" onClick={requestOtp} disabled={resetLoading} className="pw-primary-button w-full">
                                     {resetLoading ? (copy.sending) : (copy.sendOtp)}
                                 </button>
                             </div>
@@ -338,7 +338,7 @@ export default function SignInPage() {
                                 <input type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className={inputBase} />
                                 <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={copy.newPassword} className={inputBase} />
                                 <input type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={copy.confirmPassword} className={inputBase} />
-                                <button type="button" onClick={submitReset} disabled={resetLoading} className="w-full rounded-full bg-primary px-4 py-3 text-body font-bold text-white transition hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
+                                <button type="button" onClick={submitReset} disabled={resetLoading} className="pw-primary-button w-full">
                                     {resetLoading ? (copy.processing) : (copy.verifyAndReset)}
                                 </button>
                             </div>

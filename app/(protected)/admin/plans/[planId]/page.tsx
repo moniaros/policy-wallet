@@ -155,7 +155,7 @@ export default async function AdminPlanEditPage({
                                             step="1"
                                             min="0"
                                             defaultValue={effective[key] == null ? "" : Number(effective[key])}
-                                            className="w-28 px-2 py-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm text-right"
+                                            className="pw-input pw-input-sm w-28 text-right"
                                         />
                                         <label className="flex items-center gap-1 text-xs text-stone-500 dark:text-stone-400">
                                             <input
@@ -175,7 +175,7 @@ export default async function AdminPlanEditPage({
 
                 <button
                     type="submit"
-                    className="bg-primary text-white dark:text-[#1A2420] px-6 py-2.5 rounded-lg font-medium hover:bg-primary-hover transition-colors"
+                    className="pw-primary-button"
                 >
                     Save changes
                 </button>

@@ -90,7 +90,7 @@ export function WelcomeScreen({ userName, onNext }: WelcomeScreenProps) {
                         >
                             <button
                                 onClick={onNext}
-                                className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold text-lg py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden group"
+                                className="pw-primary-button w-full text-lg transform relative overflow-hidden group"
                             >
                                 {/* Shimmer Effect */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />

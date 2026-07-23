@@ -170,7 +170,7 @@ export function NotificationHistory({
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Αναζήτηση στις ειδοποιήσεις..."
-                        className="block w-full pl-16 pr-6 py-5 border border-border rounded-[24px] bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all shadow-sm"
+                        className="pw-input block pl-16 pr-6"
                     />
                 </div>
 

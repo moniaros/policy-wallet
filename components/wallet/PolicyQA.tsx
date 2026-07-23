@@ -207,12 +207,12 @@ export function PolicyQA({
                             onChange={(e) => setQuestion(e.target.value)}
                             placeholder={t.wallet.askAiPlaceholder}
                             disabled={isAsking}
-                            className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-black/10 dark:border-white/15 bg-white dark:bg-black text-black dark:text-white placeholder:text-black/45 dark:placeholder:text-white/45 focus:border-primary dark:focus:border-mint focus:outline-none transition-colors disabled:opacity-50"
+                            className="pw-input pr-12 border-black/10 text-black dark:focus:border-mint"
                         />
                         <button
                             type="submit"
                             disabled={!question.trim() || isAsking}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-primary text-white dark:text-[#1A2420] flex items-center justify-center hover:bg-primary-hover transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 cursor-pointer"
+                            className="pw-primary-button absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 shadow-primary/25"
                         >
                             {isAsking ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                         </button>

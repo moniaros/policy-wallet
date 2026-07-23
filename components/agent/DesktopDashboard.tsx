@@ -120,7 +120,7 @@ export function DesktopDashboard({
                             <button
                                 type="button"
                                 onClick={onInviteCustomer}
-                                className="group inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all cursor-pointer text-sm"
+                                className="pw-primary-button group shadow-primary/25"
                             >
                                 <UserPlus className="w-4 h-4" />
                                 {pick(DASH_COPY.newClient, language)}

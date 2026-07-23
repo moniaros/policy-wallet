@@ -241,9 +241,9 @@ export function Settings({
                                             value={nameDraft}
                                             onChange={(e) => setNameDraft(e.target.value)}
                                             autoFocus
-                                            className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary transition-all outline-none"
+                                            className="pw-input pw-input-sm flex-1 bg-black/5 border-black/10"
                                         />
-                                        <button onClick={handleSaveName} aria-label={t.common.save} className="p-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl shadow-lg shadow-primary/25 active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                                        <button onClick={handleSaveName} aria-label={t.common.save} className="pw-primary-button shadow-primary/25">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
                                         <button onClick={() => { setIsEditingName(false); setNameDraft(currentUser.name || '') }} aria-label={t.common.cancel} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
@@ -268,9 +268,9 @@ export function Settings({
                                             type="email"
                                             value={emailDraft}
                                             onChange={(e) => setEmailDraft(e.target.value)}
-                                            className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary transition-all outline-none"
+                                            className="pw-input pw-input-sm flex-1 bg-black/5 border-black/10"
                                         />
-                                        <button onClick={handleSaveEmail} aria-label={t.common.save} className="p-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl shadow-lg shadow-primary/25 active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                                        <button onClick={handleSaveEmail} aria-label={t.common.save} className="pw-primary-button shadow-primary/25">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
                                         <button onClick={() => { setIsEditingEmail(false); setEmailDraft(currentUser.email) }} aria-label={t.common.cancel} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
@@ -508,7 +508,7 @@ export function Settings({
                             <button
                                 onClick={handleCancelDeletion}
                                 disabled={isCancellingDeletion}
-                                className="bg-white dark:bg-black text-black dark:text-white border-2 border-black/15 dark:border-white/20 px-8 py-4 rounded-2xl text-kicker font-black uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                                className="pw-secondary-button border-2 text-kicker uppercase tracking-widest"
                             >
                                 {isCancellingDeletion ? t.settings.processing : t.settings.cancelDeletion}
                             </button>

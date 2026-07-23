@@ -69,7 +69,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                     <select id="documentrequestflow-f1"
                         value={documentType}
                         onChange={(e) => setDocumentType(e.target.value as DocumentTypeKey)}
-                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm text-foreground"
+                        className="pw-input pw-input-sm"
                     >
                         {Object.entries(DOCUMENT_TYPE_TAXONOMY).map(([key, labels]) => (
                             <option key={key} value={key}>
@@ -89,7 +89,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                         onChange={(e) => setInstruction(e.target.value)}
                         rows={2}
                         placeholder={t.collaboration.documentRequests.instructionsPlaceholder}
-                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm text-foreground resize-none placeholder:text-neutral-400"
+                        className="pw-input pw-input-sm resize-none"
                     />
                 </div>
 
@@ -102,7 +102,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                         <select id="documentrequestflow-f3"
                             value={urgency}
                             onChange={(e) => setUrgency(e.target.value as DocumentUrgency)}
-                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
+                            className="pw-input pw-input-sm"
                         >
                             <option value="low">{t.collaboration.documentRequests.urgencyLow}</option>
                             <option value="normal">{t.collaboration.documentRequests.urgencyNormal}</option>
@@ -117,7 +117,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                             type="date"
                             value={dueDate}
                             onChange={(e) => setDueDate(e.target.value)}
-                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
+                            className="pw-input pw-input-sm"
                         />
                     </div>
                 </div>

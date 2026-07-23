@@ -72,7 +72,7 @@ export function LockedInsightPreview({
                 <button
                     type="button"
                     onClick={openModal}
-                    className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-primary-hover active:scale-95 dark:text-[#1A2420]"
+                    className="pw-primary-button"
                 >
                     {copy.primaryCta}
                 </button>

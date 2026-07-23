@@ -133,7 +133,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                         value={agencyName}
                                         onChange={(e) => setAgencyName(e.target.value)}
                                         placeholder={roleCopy.agentSettings.agencyNamePlaceholder}
-                                        className="w-full bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl px-5 py-4 text-sm font-bold text-foreground placeholder:text-neutral-400 focus:ring-2 focus:ring-primary transition-all outline-none"
+                                        className="pw-input"
                                     />
                                 </div>
 
@@ -144,7 +144,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                         value={licenseNumber}
                                         onChange={(e) => setLicenseNumber(e.target.value)}
                                         placeholder={roleCopy.agentSettings.licenseNumberPlaceholder}
-                                        className="w-full bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl px-5 py-4 text-sm font-bold text-foreground placeholder:text-neutral-400 focus:ring-2 focus:ring-primary transition-all outline-none"
+                                        className="pw-input"
                                     />
                                 </div>
                             </div>
@@ -153,7 +153,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                 <button
                                     onClick={handleSave}
                                     disabled={isSaving}
-                                    className="arc-btn bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-neutral-100 dark:hover:bg-white dark:text-neutral-900 w-full md:w-auto px-8 flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="pw-primary-button w-full md:w-auto px-8"
                                 >
                                     <Save className="w-4 h-4" />
                                     {isSaving ? roleCopy.agentSettings.saving : roleCopy.agentSettings.saveChanges}
@@ -190,7 +190,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                                 value={commissionRates[lob.key] ?? ""}
                                                 onChange={(e) => handleCommissionChange(lob.key, e.target.value)}
                                                 placeholder="—"
-                                                className="w-16 bg-white dark:bg-neutral-700 border-none rounded-lg px-2 py-1.5 text-sm font-bold text-center text-foreground placeholder:text-neutral-300 dark:placeholder:text-neutral-500 focus:ring-2 focus:ring-primary outline-none"
+                                                className="pw-input pw-input-sm w-16 text-center"
                                             />
                                             <span className="text-xs font-bold text-neutral-400">%</span>
                                         </div>
@@ -202,7 +202,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                 <button
                                     onClick={handleSave}
                                     disabled={isSaving}
-                                    className="arc-btn bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] w-full md:w-auto px-8 flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="pw-primary-button w-full md:w-auto px-8"
                                 >
                                     <Save className="w-4 h-4" />
                                     {isSaving
@@ -267,7 +267,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         <div className="pw-card pw-pad-roomy border border-rose-100 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">
                             <h3 className="text-xs font-black text-rose-900 dark:text-rose-400 uppercase tracking-widest mb-2">{roleCopy.agentSettings.dangerZone}</h3>
                             <p className="text-sm text-rose-700/70 dark:text-rose-400/70 mb-6 font-medium">{roleCopy.agentSettings.dangerDescription}</p>
-                            <Link href="/account" className="arc-btn bg-rose-600 hover:bg-rose-700 text-white transition-all inline-flex">
+                            <Link href="/account" className="pw-primary-button bg-rose-600 hover:bg-rose-700">
                                 {roleCopy.agentSettings.deactivateAccount}
                             </Link>
                         </div>

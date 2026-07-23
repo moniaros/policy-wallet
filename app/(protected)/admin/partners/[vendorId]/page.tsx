@@ -262,7 +262,7 @@ export default async function AdminPartnerVendorPage({
                         <input name="isActive" type="checkbox" defaultChecked={vendor.isActive} className="h-4 w-4" />
                         Active
                     </label>
-                    <button type="submit" className="bg-primary text-white dark:text-[#1A2420] px-5 py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors">
+                    <button type="submit" className="pw-primary-button">
                         Save vendor
                     </button>
                 </form>
@@ -290,7 +290,7 @@ export default async function AdminPartnerVendorPage({
                                     <form action={updateOffer} className="px-4 pb-4 pt-1 border-t border-stone-100 dark:border-stone-700">
                                         <input type="hidden" name="offerId" value={offer.id} />
                                         <OfferFields offer={offer as unknown as OfferRow} />
-                                        <button type="submit" className="mt-4 bg-primary text-white dark:text-[#1A2420] px-5 py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors">
+                                        <button type="submit" className="pw-primary-button mt-4">
                                             Save offer
                                         </button>
                                     </form>
@@ -306,7 +306,7 @@ export default async function AdminPartnerVendorPage({
                 <form action={createOffer}>
                     <input type="hidden" name="vendorId" value={vendor.id} />
                     <OfferFields />
-                    <button type="submit" className="mt-4 bg-primary text-white dark:text-[#1A2420] px-5 py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors">
+                    <button type="submit" className="pw-primary-button mt-4">
                         Create offer
                     </button>
                 </form>

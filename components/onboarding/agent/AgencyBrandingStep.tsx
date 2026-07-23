@@ -132,7 +132,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                                 placeholder="+30 690 000 0000"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none"
+                                className="pw-input pl-10 pr-4"
                             />
                         </div>
                     </div>
@@ -147,7 +147,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                                 placeholder="https://myagency.com"
                                 value={website}
                                 onChange={(e) => setWebsite(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none"
+                                className="pw-input pl-10 pr-4"
                             />
                         </div>
                     </div>

@@ -607,7 +607,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                     type="button"
                     onClick={handleConfirm}
                     disabled={isPending}
-                    className="w-full rounded-2xl bg-primary py-4 text-sm font-bold uppercase tracking-widest text-white shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
+                    className="pw-primary-button w-full uppercase tracking-widest shadow-primary/25"
                 >
                     <span className="flex items-center justify-center gap-2">
                         <Check className="h-5 w-5" />

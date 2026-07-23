@@ -174,13 +174,13 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder={t.collaboration.inbox.searchThreads}
-                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 pl-9 pr-4 py-2 text-sm placeholder:text-neutral-400"
+                        className="pw-input pw-input-sm pl-9 pr-4"
                     />
                 </div>
                 <select
                     value={filterType || ""}
                     onChange={(e) => setFilterType(e.target.value || null)}
-                    className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-xs"
+                    className="pw-input pw-input-sm"
                 >
                     <option value="">{t.collaboration.inbox.allTypes}</option>
                     {Object.entries(THREAD_TYPE_LABELS).map(([key, labels]) => (
@@ -192,7 +192,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                 <select
                     value={filterStatus || ""}
                     onChange={(e) => setFilterStatus(e.target.value || null)}
-                    className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-xs"
+                    className="pw-input pw-input-sm"
                 >
                     <option value="">{t.collaboration.inbox.statusFilterAll}</option>
                     <option value="open">{t.collaboration.inbox.open}</option>

@@ -199,7 +199,7 @@ export default function HelpPage() {
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder={t.help.searchPlaceholder}
-                            className="w-full pl-12 pr-12 py-3.5 bg-muted border border-border rounded-2xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                            className="pw-input pl-12 pr-12"
                         />
                         {query && (
                             <button

@@ -275,12 +275,12 @@ export function CollaborationTimeline({
                         value={threadSubject}
                         onChange={(e) => setThreadSubject(e.target.value)}
                         placeholder={t.collaboration.timeline.newThreadPlaceholder}
-                        className="md:col-span-2 rounded-lg border border-neutral-300 dark:border-neutral-600 px-3 py-2 text-sm bg-white dark:bg-neutral-950"
+                        className="pw-input pw-input-sm md:col-span-2"
                     />
                     <select
                         value={threadCategory}
                         onChange={(e) => setThreadCategory(e.target.value)}
-                        className="rounded-lg border border-neutral-300 dark:border-neutral-600 px-3 py-2 text-sm bg-white dark:bg-neutral-950"
+                        className="pw-input pw-input-sm"
                     >
                         <option value="general">{t.collaboration.timeline.category.general}</option>
                         <option value="coverage_gap">{t.collaboration.timeline.category.coverage_gap}</option>
@@ -290,7 +290,7 @@ export function CollaborationTimeline({
                     </select>
                     <button
                         onClick={createThread}
-                        className="rounded-lg bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-sm font-semibold px-3 py-2"
+                        className="pw-primary-button"
                     >
                         {t.collaboration.timeline.create}
                     </button>
@@ -476,7 +476,7 @@ export function CollaborationTimeline({
                                             <select
                                                 value={item.status}
                                                 onChange={(e) => patchActionStatus(item.id, e.target.value as any)}
-                                                className="text-xs rounded border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-950 px-2 py-1"
+                                                className="pw-input pw-input-sm"
                                             >
                                                 <option value="pending">pending</option>
                                                 <option value="in_progress">in_progress</option>
@@ -492,12 +492,12 @@ export function CollaborationTimeline({
                                         value={actionTitle}
                                         onChange={(e) => setActionTitle(e.target.value)}
                                         placeholder={t.collaboration.timeline.actionTitlePlaceholder}
-                                        className="rounded border border-neutral-300 dark:border-neutral-600 px-2 py-1.5 text-sm bg-white dark:bg-neutral-950"
+                                        className="pw-input pw-input-sm"
                                     />
                                     <select
                                         value={actionAssigneeId}
                                         onChange={(e) => setActionAssigneeId(e.target.value)}
-                                        className="rounded border border-neutral-300 dark:border-neutral-600 px-2 py-1.5 text-sm bg-white dark:bg-neutral-950"
+                                        className="pw-input pw-input-sm"
                                     >
                                         {selected.participants.map((p) => (
                                             <option key={p.user.id} value={p.user.id}>
@@ -509,10 +509,10 @@ export function CollaborationTimeline({
                                         type="date"
                                         value={actionDueDate}
                                         onChange={(e) => setActionDueDate(e.target.value)}
-                                        className="rounded border border-neutral-300 dark:border-neutral-600 px-2 py-1.5 text-sm bg-white dark:bg-neutral-950"
+                                        className="pw-input pw-input-sm"
                                     />
                                 </div>
-                                <button onClick={addAction} className="mt-2 rounded bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-sm px-3 py-2">
+                                <button onClick={addAction} className="pw-primary-button mt-2">
                                     {t.collaboration.timeline.addAction}
                                 </button>
                             </div>

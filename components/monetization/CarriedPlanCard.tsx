@@ -137,7 +137,7 @@ export function CarriedPlanCard({ planId, billingPeriod, className = "" }: Carri
                         type="button"
                         onClick={startCheckout}
                         disabled={starting}
-                        className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-primary px-4 text-xs font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
+                        className="pw-primary-button min-h-9"
                     >
                         <Crown className="h-3.5 w-3.5" />
                         {pick(COPY.cta, language).replace("{plan}", planLabel)}

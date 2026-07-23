@@ -115,21 +115,21 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                     <div className="flex gap-3">
                         <button
                             onClick={() => setIsBulkImportOpen(true)}
-                            className="arc-btn bg-white hover:bg-neutral-50 text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 flex items-center gap-2"
+                            className="pw-secondary-button"
                         >
                             <Upload className="w-4 h-4" />
                             <span>{cust_t.import}</span>
                         </button>
                         <button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="arc-btn bg-white hover:bg-neutral-50 text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 flex items-center gap-2"
+                            className="pw-secondary-button"
                         >
                             <User className="w-4 h-4" />
                             <span>{cust_t.addClient}</span>
                         </button>
                         <button
                             onClick={() => setIsUploadModalOpen(true)}
-                            className="arc-btn arc-btn-primary shadow-sm flex items-center gap-2"
+                            className="pw-primary-button"
                         >
                             <FileText className="w-4 h-4" />
                             <span>{cust_t.uploadPolicy}</span>

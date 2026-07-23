@@ -79,7 +79,7 @@ export function UserMenu({
                 />
 
                 {/* Avatar */}
-                <button className="w-8 h-8 rounded-full bg-primary text-white dark:text-[#1A2420] text-sm font-medium flex items-center justify-center">
+                <button className="pw-primary-button w-8 h-8">
                     {initials}
                 </button>
             </div>

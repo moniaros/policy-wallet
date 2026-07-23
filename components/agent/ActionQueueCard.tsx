@@ -233,7 +233,7 @@ function ActionQueueEmpty({ t, hasClients, onInviteClient }: { t: any; hasClient
                     <button
                         type="button"
                         onClick={onInviteClient}
-                        className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white dark:text-[#1A2420] shadow-sm transition hover:bg-primary-hover"
+                        className="pw-primary-button mt-4"
                     >
                         <UserPlus className="h-3.5 w-3.5" />
                         {t.agentUi.inviteClient}

@@ -67,7 +67,7 @@ export function ReportUnlockCta({ policyId, lockedCount, copy }: ReportUnlockCta
                 type="button"
                 onClick={handleUnlock}
                 disabled={starting}
-                className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420] sm:w-auto"
+                className="pw-primary-button mt-3 min-h-10 w-full sm:w-auto"
             >
                 {starting ? <Loader2 className="h-4 w-4 animate-spin" /> : <LockOpen className="h-4 w-4" />}
                 {copy.unlockCtaPrefix} {lockedCount} {copy.unlockCtaSuffix}

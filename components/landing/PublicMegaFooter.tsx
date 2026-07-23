@@ -264,7 +264,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                     value={email}
                                     onChange={(event) => setEmail(event.target.value)}
                                     placeholder={t("Το email σας", "Your email")}
-                                    className="w-full rounded-[12px] border border-[#CBD5E1] px-3.5 py-2.5 text-body text-[#0F172A] outline-none transition-colors placeholder:text-[#94A3B8] focus:border-[#29685B]"
+                                    className="pw-input pw-input-sm text-[#0F172A]"
                                     autoComplete="email"
                                 />
                                 <button

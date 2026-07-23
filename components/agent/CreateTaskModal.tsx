@@ -124,7 +124,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder={tt.titlePlaceholder}
-                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all"
+                            className="pw-input dark:focus:ring-white"
                         />
                     </div>
 
@@ -138,7 +138,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
                             placeholder={tt.descriptionPlaceholder}
-                            className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all resize-none"
+                            className="pw-input dark:focus:ring-white resize-none"
                         />
                     </div>
 
@@ -151,7 +151,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                             <select id="createtaskmodal-f3"
                                 value={priority}
                                 onChange={(e) => setPriority(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all appearance-none"
+                                className="pw-input dark:focus:ring-white appearance-none"
                             >
                                 {PRIORITIES.map(p => (
                                     <option key={p.value} value={p.value}>{p.label}</option>
@@ -166,7 +166,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                                 type="date"
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all"
+                                className="pw-input dark:focus:ring-white"
                             />
                         </div>
                     </div>

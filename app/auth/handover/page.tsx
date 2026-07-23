@@ -75,7 +75,7 @@ function HandoverContent() {
                     {isMobile && (
                         <button
                             onClick={handleOpenApp}
-                            className="w-full rounded-full bg-primary px-4 py-3.5 font-bold text-white dark:text-[#1A2420] transition-all hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+                            className="pw-primary-button w-full"
                         >
                             {t("Άνοιγμα εφαρμογής PolicyWallet", "Open PolicyWallet App")}
                         </button>

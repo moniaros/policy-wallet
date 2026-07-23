@@ -139,7 +139,7 @@ export function CustomerList({
                         placeholder={roleCopy.customerList.searchPlaceholder}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-neutral-50/80 dark:bg-neutral-800/80 border border-neutral-200/60 dark:border-neutral-700/60 rounded-xl text-sm"
+                        className="pw-input pw-input-sm pl-10 pr-4"
                     />
                 </div>
 

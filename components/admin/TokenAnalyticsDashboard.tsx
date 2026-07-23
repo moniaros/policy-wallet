@@ -99,7 +99,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 <select
                     value={dateRange}
                     onChange={(e) => setDateRange(parseInt(e.target.value))}
-                    className="px-4 py-2 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-semibold"
+                    className="pw-input pw-input-sm"
                 >
                     <option value={7}>Last 7 days</option>
                     <option value={30}>Last 30 days</option>

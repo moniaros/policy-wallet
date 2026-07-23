@@ -514,7 +514,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         <select
                                             id="add-insurerName"
                                             name="insurerName"
-                                            className="w-full appearance-none bg-muted border-none rounded-xl px-4 py-3.5 text-sm font-medium text-foreground focus:ring-2 focus:ring-primary/30"
+                                            className="pw-input appearance-none"
                                         >
                                             <option value="">{t.wallet.selectOrEmpty}</option>
                                             {insurers.map(i => (
@@ -543,7 +543,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         type="text"
                                         name="policyNumber"
                                         placeholder={formCopy.policyNumberPlaceholder}
-                                        className="w-full bg-muted border-none rounded-xl pl-10 pr-4 py-3.5 text-sm font-medium text-foreground focus:ring-2 focus:ring-primary/30 pointer-events-auto"
+                                        className="pw-input pl-10 pr-4 pointer-events-auto"
                                     />
                                 </div>
                             </div>
@@ -556,7 +556,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         id="add-startDate"
                                         type="date"
                                         name="startDate"
-                                        className="w-full bg-muted border-none rounded-xl px-4 py-3.5 text-sm font-medium text-muted-foreground focus:ring-2 focus:ring-primary/30"
+                                        className="pw-input"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -565,7 +565,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         id="add-endDate"
                                         type="date"
                                         name="endDate"
-                                        className="w-full bg-muted border-none rounded-xl px-4 py-3.5 text-sm font-medium text-muted-foreground focus:ring-2 focus:ring-primary/30"
+                                        className="pw-input"
                                     />
                                 </div>
                             </div>
@@ -576,7 +576,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="w-full group relative overflow-hidden bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl hover:shadow-2xl shadow-primary/25 disabled:opacity-70 disabled:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                        className="pw-primary-button w-full group relative overflow-hidden uppercase tracking-widest shadow-primary/25"
                     >
                         <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                         <span className="relative z-10 flex items-center justify-center gap-2">

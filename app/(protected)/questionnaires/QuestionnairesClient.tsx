@@ -378,7 +378,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-medium"
+                                className="pw-input"
                                 placeholder="My Custom Template"
                             />
                         </div>
@@ -387,7 +387,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                             <select
                                 value={lob}
                                 onChange={(e) => setLob(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-medium"
+                                className="pw-input"
                             >
                                 {LOB_OPTIONS.map((o) => (
                                     <option key={o.value} value={o.value}>
@@ -411,7 +411,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     <select
                                         value={q.type}
                                         onChange={(e) => updateQuestion(i, "type", e.target.value)}
-                                        className="px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs font-bold"
+                                        className="pw-input pw-input-sm"
                                     >
                                         <option value="text">{t.text}</option>
                                         <option value="number">{t.number}</option>
@@ -441,14 +441,14 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                         value={q.label}
                                         onChange={(e) => updateQuestion(i, "label", e.target.value)}
                                         placeholder={t.questionLabel}
-                                        className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm"
+                                        className="pw-input pw-input-sm"
                                     />
                                     <input
                                         type="text"
                                         value={q.labelEl || ""}
                                         onChange={(e) => updateQuestion(i, "labelEl", e.target.value)}
                                         placeholder={t.questionLabelEl}
-                                        className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm"
+                                        className="pw-input pw-input-sm"
                                     />
                                 </div>
 
@@ -466,7 +466,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                                 })))
                                             }}
                                             placeholder={t.options}
-                                            className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm"
+                                            className="pw-input pw-input-sm"
                                         />
                                         <input
                                             type="text"
@@ -479,7 +479,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                                 })))
                                             }}
                                             placeholder={t.optionsEl}
-                                            className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm"
+                                            className="pw-input pw-input-sm"
                                         />
                                     </div>
                                 )}

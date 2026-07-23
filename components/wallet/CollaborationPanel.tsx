@@ -231,11 +231,11 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                 <input
                                     readOnly
                                     value={inviteLink}
-                                    className="flex-1 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-mono rounded-lg border border-primary-soft dark:border-primary/30 text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
+                                    className="pw-input pw-input-sm flex-1 font-mono border-primary-soft"
                                 />
                                 <button
                                     onClick={copyLink}
-                                    className="flex items-center gap-1.5 px-3 py-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-lg font-bold text-xs transition-colors"
+                                    className="pw-primary-button"
                                 >
                                     <Copy className="w-3.5 h-3.5" />
                                     {t.common.copy}
@@ -260,7 +260,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                 placeholder={copy.collaboratorEmailPlaceholder}
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                className="pw-input"
                             />
                         </div>
 
@@ -324,7 +324,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                             <button
                                 onClick={handleShare}
                                 disabled={loading || !email}
-                                className="flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-white dark:text-[#1A2420] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 transition-all duration-200 active:scale-95"
+                                className="pw-primary-button flex-1 shadow-primary/25"
                             >
                                 {loading ? copy.sending : copy.sendInvite}
                             </button>

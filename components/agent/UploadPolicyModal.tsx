@@ -325,10 +325,10 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             {/* Editable identity fields when creating a new customer */}
                             {isCreateNew && (
                                 <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2 duration-200">
-                                    <input required value={customer.name} onChange={e => setCustomer({ ...customer, name: e.target.value })} placeholder={ac.phFirstName} className="h-12 px-5 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none text-sm font-bold" />
-                                    <input value={customer.surname} onChange={e => setCustomer({ ...customer, surname: e.target.value })} placeholder={ac.phLastName} className="h-12 px-5 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none text-sm font-bold" />
-                                    <input required type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} placeholder="john@example.com" className="h-12 px-5 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none text-sm font-bold" />
-                                    <input value={customer.taxId} onChange={e => setCustomer({ ...customer, taxId: e.target.value })} placeholder={ac.phTaxId} className="h-12 px-5 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none text-sm font-bold" />
+                                    <input required value={customer.name} onChange={e => setCustomer({ ...customer, name: e.target.value })} placeholder={ac.phFirstName} className="pw-input" />
+                                    <input value={customer.surname} onChange={e => setCustomer({ ...customer, surname: e.target.value })} placeholder={ac.phLastName} className="pw-input" />
+                                    <input required type="email" value={customer.email} onChange={e => setCustomer({ ...customer, email: e.target.value })} placeholder="john@example.com" className="pw-input" />
+                                    <input value={customer.taxId} onChange={e => setCustomer({ ...customer, taxId: e.target.value })} placeholder={ac.phTaxId} className="pw-input" />
                                 </div>
                             )}
 
@@ -435,7 +435,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 <div className="space-y-3">
                                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400">{up.analysisConsentRequired}</p>
                                     {!consentSent && (
-                                        <button disabled={loading} onClick={handleRequestConsent} className="px-6 py-3 bg-primary text-white dark:text-[#1A2420] rounded-[18px] text-kicker font-black uppercase tracking-widest disabled:opacity-50">{up.requestConsentCta}</button>
+                                        <button disabled={loading} onClick={handleRequestConsent} className="pw-primary-button text-kicker uppercase tracking-widest">{up.requestConsentCta}</button>
                                     )}
                                 </div>
                             )}
@@ -444,7 +444,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 {result.customerId && (
                                     <button onClick={() => { const id = result.customerId; closeAll(); router.push(`/customers/${id}`) }} className="flex-1 px-6 py-4 bg-muted text-foreground rounded-[20px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all">{up.viewCustomer}</button>
                                 )}
-                                <button onClick={closeAll} className="flex-1 px-6 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[20px] text-kicker font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all">{up.done}</button>
+                                <button onClick={closeAll} className="pw-primary-button flex-1 bg-neutral-900 dark:text-neutral-900 text-kicker uppercase tracking-widest">{up.done}</button>
                             </div>
                         </div>
                     )}

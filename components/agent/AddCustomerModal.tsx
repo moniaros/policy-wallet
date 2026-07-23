@@ -208,7 +208,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         required
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="pw-input"
                                         placeholder={t.agentModals.addCustomer.phFirstName}
                                     />
                                 </div>
@@ -218,7 +218,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         required
                                         value={formData.surname}
                                         onChange={e => setFormData({ ...formData, surname: e.target.value })}
-                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="pw-input"
                                         placeholder={t.agentModals.addCustomer.phLastName}
                                     />
                                 </div>
@@ -229,7 +229,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         type="email"
                                         value={formData.email}
                                         onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="pw-input"
                                         placeholder="john@example.com"
                                     />
                                 </div>
@@ -238,7 +238,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <input id="addcustomermodal-f4"
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="pw-input"
                                         placeholder="+30 690 000 0000"
                                     />
                                 </div>
@@ -247,7 +247,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <input id="addcustomermodal-f5"
                                         value={formData.taxId}
                                         onChange={e => setFormData({ ...formData, taxId: e.target.value })}
-                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="pw-input"
                                         placeholder={t.agentModals.addCustomer.phTaxId}
                                     />
                                 </div>
@@ -272,7 +272,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 required={formData.addPolicy}
                                                 value={formData.policy.insurerName}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, insurerName: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="pw-input"
                                                 placeholder={t.agentModals.addCustomer.phInsurer}
                                             />
                                         </div>
@@ -282,7 +282,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 required={formData.addPolicy}
                                                 value={formData.policy.policyNumber}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, policyNumber: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="pw-input"
                                                 placeholder="POL-123456"
                                             />
                                         </div>
@@ -292,7 +292,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 required={formData.addPolicy}
                                                 value={formData.policy.lineOfBusiness}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, lineOfBusiness: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold appearance-none"
+                                                className="pw-input appearance-none"
                                             >
                                                 <option value="motor">{t.agentModals.addCustomer.lobMotor}</option>
                                                 <option value="health">{t.agentModals.addCustomer.lobHealth}</option>
@@ -308,7 +308,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 type="number"
                                                 value={formData.policy.premiumAmount}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, premiumAmount: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="pw-input"
                                                 placeholder="0.00"
                                             />
                                         </div>
@@ -319,7 +319,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 type="date"
                                                 value={formData.policy.startDate}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, startDate: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="pw-input"
                                             />
                                         </div>
                                         <div className="space-y-1.5">
@@ -329,7 +329,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 type="date"
                                                 value={formData.policy.endDate}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, endDate: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="pw-input"
                                             />
                                         </div>
                                     </div>
@@ -349,7 +349,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="flex-[2] px-8 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-kicker font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50"
+                                    className="pw-primary-button flex-[2] bg-neutral-900 dark:text-neutral-900 text-kicker uppercase tracking-widest shadow-neutral-900/10"
                                 >
                                     {loading ? t.agentModals.addCustomer.processing : t.agentModals.addCustomer.addToPipeline}
                                 </button>

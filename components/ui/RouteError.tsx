@@ -48,7 +48,7 @@ export function RouteError({
                     <button
                         type="button"
                         onClick={reset}
-                        className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                        className="pw-primary-button"
                     >
                         <RotateCw className="h-4 w-4" />
                         {t.errors.tryAgain}

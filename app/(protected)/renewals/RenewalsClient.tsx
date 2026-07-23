@@ -305,7 +305,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                         <select
                             value={timeframe}
                             onChange={(e) => handleFilterChange(statusFilter, e.target.value as typeof timeframe)}
-                            className="text-xs font-bold bg-muted border-none rounded-lg px-3 py-2 text-neutral-700 dark:text-neutral-300"
+                            className="pw-input pw-input-sm"
                         >
                             <option value="all">{t.all}</option>
                             <option value="7">7 {t.days}</option>
@@ -319,7 +319,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             <button
                                 onClick={handleBatchReminder}
                                 disabled={isSending}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-white dark:text-[#1A2420] text-xs font-bold rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50"
+                                className="pw-primary-button"
                             >
                                 <Send className="w-3.5 h-3.5" />
                                 {t.sendBatchReminder} ({selectedIds.size})
@@ -484,7 +484,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                     value={outcomeNotes}
                                     onChange={(e) => setOutcomeNotes(e.target.value)}
                                     rows={2}
-                                    className="w-full mt-1 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-neutral-400 focus:ring-2 focus:ring-primary outline-none resize-none"
+                                    className="pw-input mt-1 resize-none"
                                 />
                             </div>
 
@@ -498,7 +498,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                 <button
                                     onClick={handleOutcomeSave}
                                     disabled={isSaving}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover transition-colors disabled:opacity-50"
+                                    className="pw-primary-button flex-1"
                                 >
                                     {isSaving ? "..." : t.save}
                                 </button>
