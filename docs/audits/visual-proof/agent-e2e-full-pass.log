@@ -1,0 +1,4 @@
+Running 43 tests using 3 workers
+[1A[2K[2m[WebServer] [22mUpstash Redis ratelimit failed, falling back to local memory: [TypeError: fetch failed] {
+[1A[2K  43 passed (7.3m)
+DONE exit=0 21:32:05

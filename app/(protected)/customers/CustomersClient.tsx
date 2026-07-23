@@ -103,7 +103,10 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
         <div className="pw-page-shell min-h-screen">
             <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 <header className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div>
+                    {/* min-w-0 lets the title column shrink (subtitle rewraps)
+                        so the action group always has room — without it the
+                        max-w-xl subtitle + the buttons overflowed at 768/1024. */}
+                    <div className="min-w-0">
                         <span className="pw-kicker inline-block mb-2">{cust_t.kicker}</span>
                         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                             {cust_t.title}
@@ -112,32 +115,32 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                             {cust_t.subtitle}
                         </p>
                     </div>
-                    {/* Three icon+label actions overflowed a 375px phone in a
-                        non-wrapping row (caught by the authenticated 375px E2E).
-                        On mobile they go full-width and stack; from sm they sit
-                        inline. `min-w-0` lets them shrink rather than push the
-                        page wide. */}
-                    <div className="grid grid-cols-1 gap-2 sm:flex sm:gap-3">
+                    {/* Three icon+label actions. `flex-wrap` so they wrap among
+                        themselves rather than push the page wide (both the 375px
+                        phone overflow and the 768/1024 tablet overflow were this
+                        row); `shrink-0` keeps the buttons full-size; full-width
+                        and centred on mobile, right-aligned inline from sm. */}
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center sm:justify-end gap-2 sm:gap-3 shrink-0">
                         <button
                             onClick={() => setIsBulkImportOpen(true)}
-                            className="pw-secondary-button min-w-0 justify-center"
+                            className="pw-secondary-button justify-center"
                         >
                             <Upload className="w-4 h-4 shrink-0" />
-                            <span className="truncate">{cust_t.import}</span>
+                            <span>{cust_t.import}</span>
                         </button>
                         <button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="pw-secondary-button min-w-0 justify-center"
+                            className="pw-secondary-button justify-center"
                         >
                             <User className="w-4 h-4 shrink-0" />
-                            <span className="truncate">{cust_t.addClient}</span>
+                            <span>{cust_t.addClient}</span>
                         </button>
                         <button
                             onClick={() => setIsUploadModalOpen(true)}
-                            className="pw-primary-button min-w-0 justify-center"
+                            className="pw-primary-button justify-center"
                         >
                             <FileText className="w-4 h-4 shrink-0" />
-                            <span className="truncate">{cust_t.uploadPolicy}</span>
+                            <span>{cust_t.uploadPolicy}</span>
                         </button>
                     </div>
                 </header>

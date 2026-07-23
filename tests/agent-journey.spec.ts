@@ -21,7 +21,7 @@ test.describe('Agent Journey', () => {
 
         await expect(page).toHaveURL(/\/customers/);
         await expect(
-            page.getByRole('heading', { name: /client directory|πελατολόγιο|πελάτες|clients/i }).first()
+            page.getByRole('heading', { name: /client directory|πελατολόγιο|πελάτες|πελατών|clients/i }).first()
         ).toBeVisible({ timeout: 20000 });
     });
 
