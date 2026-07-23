@@ -72,3 +72,30 @@ describe('mobile form-control floor (globals.css)', () => {
         expect(block).toContain(':not([type="radio"])')
     })
 })
+
+/**
+ * 57 of 151 buttons sat under 44px on a phone, spread across 47 distinct
+ * styling signatures for what is nominally one primary button — so there was no
+ * single component in which to fix them.
+ */
+describe('mobile button floor (globals.css)', () => {
+    const css = readFileSync('app/globals.css', 'utf-8')
+    const block = css.match(/@media \(max-width: 767px\) \{[\s\S]*?\n {2}\}/)?.[0] || ''
+
+    it('gives every button a 44px tap target on small screens only', () => {
+        expect(block).toMatch(/button:not\(\[hidden\]\)/)
+        expect(block).toMatch(/\[role="button"\]/)
+    })
+
+    it('leaves an opt-out for buttons used inline in a sentence', () => {
+        expect(block).toContain('pw-inline-action')
+        expect(block).toMatch(/pw-inline-action[\s\S]*?min-height: 0/)
+    })
+
+    it('does not apply the floor at desktop widths', () => {
+        // Everything above lives inside the max-width query; a bare rule would
+        // change every desktop toolbar in the product.
+        const outside = css.replace(block, '')
+        expect(outside).not.toMatch(/^\s*button:not\(\[hidden\]\)/m)
+    })
+})

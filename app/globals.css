@@ -313,6 +313,23 @@ pre {
       /* min-height above would otherwise fight an author's `rows`. */
       min-height: 5rem;
     }
+
+    /* Same argument for buttons: 57 of 151 sit under 44px on a phone, mostly
+       at py-2 or p-2, and they are spread over 47 distinct styling signatures
+       — so there is no single component to fix them in. A button already
+       taller than 44px is unaffected, and a <button> centres its own content
+       vertically, so growing one does not misalign its label. */
+    button:not([hidden]),
+    [role="button"]:not([hidden]) {
+      min-height: 44px;
+    }
+
+    /* Opt-out for the genuinely inline cases — a button used as a link inside
+       a sentence, where 44px would break the line box. */
+    button.pw-inline-action,
+    .pw-inline-action button {
+      min-height: 0;
+    }
   }
 }
 
