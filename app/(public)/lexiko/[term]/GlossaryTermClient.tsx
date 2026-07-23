@@ -15,7 +15,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
     const l = (href: string) => localizeHref(href, language)
 
     return (
-        <LoBPageShell activeNav="none">
+        <LoBPageShell activeNav="none" locale={language}>
             <article className="mx-auto max-w-[760px] px-6 pb-16 md:px-12">
                 {/* Breadcrumb */}
                 <nav className="mb-8 flex flex-wrap items-center gap-1.5 text-[13px] text-[#64748B]">

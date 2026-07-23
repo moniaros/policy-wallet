@@ -8,7 +8,7 @@ export const metadata: Metadata = buildMarketingMetadata("contact")
 export default function ContactPage() {
     return (
         <>
-            <ContactPageClient />
+            <ContactPageClient locale="el" />
             <JsonLd data={[breadcrumbJsonLd(["contact"]), organizationJsonLd()]} />
         </>
     )

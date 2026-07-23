@@ -1,19 +1,15 @@
-"use client"
-
 import React from "react"
 import Link from "next/link"
 import { CheckCircle2, TrendingUp, PieChart } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
-export default function GroupPensionProductPage() {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
+export default function GroupPensionProductPage({ locale }: { locale: "el" | "en" }) {
+    const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
     return (
-        <LoBPageShell activeNav="product">
+        <LoBPageShell activeNav="product" locale={locale}>
 
             {/* HERO */}
             <section className="px-6 lg:px-12">
@@ -89,7 +85,7 @@ export default function GroupPensionProductPage() {
                 </div>
             </section>
 
-            <ProductCategoryExplorer currentCategoryId="group-pension" />
+            <ProductCategoryExplorer currentCategoryId="group-pension" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">

@@ -1,15 +1,11 @@
-"use client"
-
 import React from "react"
 import Link from "next/link"
 import { Umbrella, Users, TrendingUp, ArrowRight } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
-export default function GroupLifeProductPage() {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
+export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }) {
+    const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
     const triad = [
@@ -42,7 +38,7 @@ export default function GroupLifeProductPage() {
     ]
 
     return (
-        <LoBPageShell activeNav="product">
+        <LoBPageShell activeNav="product" locale={locale}>
 
             {/* HERO */}
             <section className="px-6 lg:px-12">
@@ -134,7 +130,7 @@ export default function GroupLifeProductPage() {
                 </div>
             </section>
 
-            <ProductCategoryExplorer currentCategoryId="group-life" />
+            <ProductCategoryExplorer currentCategoryId="group-life" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">

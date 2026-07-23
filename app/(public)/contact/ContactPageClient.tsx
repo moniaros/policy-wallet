@@ -67,7 +67,7 @@ function validateContactForm(form: ContactFormState): ContactErrors {
     return errors
 }
 
-export default function ContactPage() {
+export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" }) {
     const [form, setForm] = useState<ContactFormState>(INITIAL_FORM)
     const [errors, setErrors] = useState<ContactErrors>({})
     // Honeypot — hidden from humans, irresistible to bots. Filled = silently dropped server-side.
@@ -134,7 +134,7 @@ export default function ContactPage() {
     }
 
     return (
-        <LoBPageShell activeNav="none">
+        <LoBPageShell activeNav="none" locale={locale}>
             <section className="px-6 pb-20 md:px-12">
                 <div className="mx-auto max-w-[1200px]">
                     <div className="mb-10">

@@ -14,7 +14,7 @@ export default function CompanyPage() {
     const lang = isGreek ? "el" : "en"
 
     return (
-        <LoBPageShell activeNav="company">
+        <LoBPageShell activeNav="company" locale={language}>
             <main className="pb-24">
                 <section className="mx-auto mb-16 max-w-4xl px-6 text-center lg:px-12">
                     <h1 className="mb-6 text-[44px] font-semibold leading-[1.05] tracking-tight md:text-[56px]">

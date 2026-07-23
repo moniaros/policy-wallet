@@ -18,7 +18,7 @@ export default function AgentSolutionsPage() {
     const t = (el: string, en: string) => (isGreek ? el : en)
 
     return (
-        <LoBPageShell activeNav="none">
+        <LoBPageShell activeNav="none" locale={language}>
             <section className="px-6 pb-20 lg:px-12">
                 <div className="mx-auto max-w-[1240px]">
                     <div className="mb-14 text-center">

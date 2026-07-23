@@ -1,19 +1,15 @@
-"use client"
-
 import React from "react"
 import Link from "next/link"
 import { Plane, Stethoscope, CalendarX2, Luggage } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
-export default function TravelProductPage() {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
+export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
+    const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
     return (
-        <LoBPageShell activeNav="product">
+        <LoBPageShell activeNav="product" locale={locale}>
 
             {/* HERO */}
             <section className="px-6 lg:px-12">
@@ -79,7 +75,7 @@ export default function TravelProductPage() {
                 </div>
             </section>
 
-            <ProductCategoryExplorer currentCategoryId="travel" />
+            <ProductCategoryExplorer currentCategoryId="travel" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">

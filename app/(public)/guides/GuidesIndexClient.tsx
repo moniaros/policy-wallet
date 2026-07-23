@@ -21,7 +21,7 @@ export default function GuidesIndexClient() {
     const lang = isGreek ? "el" : "en"
 
     return (
-        <LoBPageShell activeNav="none">
+        <LoBPageShell activeNav="none" locale={language}>
             <section className="mx-auto max-w-[860px] px-6 pb-16 text-center md:px-12">
                 <p className="mb-4 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
                     {t("Οδηγοί", "Guides")}

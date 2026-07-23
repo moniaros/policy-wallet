@@ -21,7 +21,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
     const lang = isGreek ? "el" : "en"
 
     return (
-        <LoBPageShell activeNav="none">
+        <LoBPageShell activeNav="none" locale={language}>
             <article className="mx-auto max-w-[760px] px-6 pb-24 md:px-0">
                 <nav className="mb-8">
                     <Link

@@ -9,7 +9,7 @@ export const metadata: Metadata = buildMarketingMetadata("product-business", "en
 export default function Page() {
     return (
         <StaticLanguageProvider language="en" counterpartPath="/product/business">
-            <PageClient />
+            <PageClient locale="en" />
             <JsonLd data={breadcrumbEnJsonLd(["product", "product-business"])} />
         </StaticLanguageProvider>
     )

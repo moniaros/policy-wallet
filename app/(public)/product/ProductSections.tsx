@@ -51,7 +51,7 @@ export function ProductSections({ language }: { language: Language }) {
     const t = (el: string, en: string) => (isGreek ? el : en)
 
     return (
-        <LoBPageShell activeNav="product">
+        <LoBPageShell activeNav="product" locale={language}>
             <ProductPageView language={language} />
 
             <section className="px-6 text-center md:px-12">

@@ -1,15 +1,11 @@
-"use client"
-
 import React from "react"
 import Link from "next/link"
 import { Check, X } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
-export default function LegalExpensesProductPage() {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
+export default function LegalExpensesProductPage({ locale }: { locale: "el" | "en" }) {
+    const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
     const typicallyCovered = [
@@ -55,7 +51,7 @@ export default function LegalExpensesProductPage() {
     ]
 
     return (
-        <LoBPageShell activeNav="product">
+        <LoBPageShell activeNav="product" locale={locale}>
 
             {/* HERO */}
             <section className="px-6 lg:px-12">
@@ -135,7 +131,7 @@ export default function LegalExpensesProductPage() {
                 </div>
             </section>
 
-            <ProductCategoryExplorer currentCategoryId="legal-expenses" />
+            <ProductCategoryExplorer currentCategoryId="legal-expenses" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">

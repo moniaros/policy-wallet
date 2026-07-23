@@ -1,8 +1,5 @@
-"use client"
-
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref } from "@/lib/seo/locale-links"
 import {
     getProductCategory,
@@ -12,13 +9,15 @@ import {
 
 interface ProductCategoryExplorerProps {
     currentCategoryId: ProductCategoryId
+    /** Locale as a prop, not context — keeps this a Server Component. */
+    locale: "el" | "en"
 }
 
 export function ProductCategoryExplorer({
     currentCategoryId,
+    locale,
 }: ProductCategoryExplorerProps) {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
+    const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
     const currentCategory = getProductCategory(currentCategoryId)
 
@@ -50,7 +49,7 @@ export function ProductCategoryExplorer({
                     </div>
 
                     <Link
-                        href={localizeHref("/product", language)}
+                        href={localizeHref("/product", locale)}
                         className="inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
                     >
                         {t("Όλες οι κατηγορίες", "All categories")}
@@ -101,7 +100,7 @@ export function ProductCategoryExplorer({
                         return (
                             <Link
                                 key={category.id}
-                                href={localizeHref(category.href, language)}
+                                href={localizeHref(category.href, locale)}
                                 className={`group flex min-h-[220px] flex-col rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] ${category.surface} ${category.border}`}
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">

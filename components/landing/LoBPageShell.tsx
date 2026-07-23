@@ -1,10 +1,7 @@
-"use client"
-
 import React from "react"
 import Link from "next/link"
 import { Inter } from "next/font/google"
 import { ArrowRight } from "lucide-react"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { PublicHeader } from "@/components/public/PublicHeader"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
@@ -14,6 +11,12 @@ const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600",
 
 interface LoBPageShellProps {
     children: React.ReactNode
+    /**
+     * Locale comes in as a prop rather than from the language CONTEXT, which is
+     * what lets this be a Server Component: a server component cannot read React
+     * context. PublicHeader/PublicMegaFooter already worked this way.
+     */
+    locale: "el" | "en"
     /**
      * Retained for call-site compatibility; active-state is now derived from
      * the pathname inside PublicHeader, so this is no longer read.
@@ -27,15 +30,14 @@ interface LoBPageShellProps {
  * footer. The header/nav/mobile-menu now live in PublicHeader so every public
  * page renders identical chrome.
  */
-export function LoBPageShell({ children }: LoBPageShellProps) {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
+export function LoBPageShell({ children, locale }: LoBPageShellProps) {
+    const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
-    const l = (href: string) => localizeHref(href, language)
+    const l = (href: string) => localizeHref(href, locale)
 
     return (
         <div className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:bg-slate-950 dark:text-white`}>
-            <PublicHeader locale={language} />
+            <PublicHeader locale={locale} />
 
             <main id={SKIP_LINK_TARGET_ID} tabIndex={-1} className="pt-28 lg:pt-36">
                 {children}
@@ -63,7 +65,7 @@ export function LoBPageShell({ children }: LoBPageShellProps) {
                 </section>
             </main>
 
-            <PublicMegaFooter locale={language} />
+            <PublicMegaFooter locale={locale} />
         </div>
     )
 }

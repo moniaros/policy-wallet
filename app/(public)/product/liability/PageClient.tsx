@@ -1,15 +1,11 @@
-"use client"
-
 import React from "react"
 import Link from "next/link"
 import { Copy, Dog, Droplets, Bike, ShieldCheck } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
-export default function LiabilityProductPage() {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
+export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }) {
+    const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
     const scenarios = [
@@ -37,7 +33,7 @@ export default function LiabilityProductPage() {
     ]
 
     return (
-        <LoBPageShell activeNav="product">
+        <LoBPageShell activeNav="product" locale={locale}>
 
             {/* HERO */}
             <section className="px-6 lg:px-12">
@@ -141,7 +137,7 @@ export default function LiabilityProductPage() {
                 </div>
             </section>
 
-            <ProductCategoryExplorer currentCategoryId="liability" />
+            <ProductCategoryExplorer currentCategoryId="liability" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">

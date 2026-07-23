@@ -9,7 +9,7 @@ export const metadata: Metadata = buildMarketingMetadata("contact", "en")
 export default function ContactPageEnglish() {
     return (
         <StaticLanguageProvider language="en" counterpartPath="/contact">
-            <ContactPageClient />
+            <ContactPageClient locale="en" />
             <JsonLd data={[breadcrumbEnJsonLd(["contact"]), organizationJsonLd()]} />
         </StaticLanguageProvider>
     )

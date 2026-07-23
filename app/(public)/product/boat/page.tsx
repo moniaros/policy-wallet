@@ -8,7 +8,7 @@ export const metadata: Metadata = buildMarketingMetadata("product-boat")
 export default function Page() {
     return (
         <>
-            <PageClient />
+            <PageClient locale="el" />
             <JsonLd data={breadcrumbJsonLd(["product", "product-boat"])} />
         </>
     )
