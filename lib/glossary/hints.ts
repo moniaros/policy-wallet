@@ -20,3 +20,28 @@ export function resolveGlossaryHint(
         moreLabel: lang === "en" ? "Read more" : "Περισσότερα",
     }
 }
+
+/**
+ * The in-product hint set, resolved once on the server.
+ *
+ * The dictionary defines 14 terms and backs a full public /lexiko section, but
+ * only `exairesi` was ever wired into the product — so a policyholder met
+ * «Απαλλαγή» and «Χρόνος αναμονής» on their own policy with no explanation,
+ * while the definition sat one route away. These are the terms that decide what
+ * someone is actually paid after a claim, which makes them the ones worth
+ * explaining at the point of reading.
+ *
+ * Resolved server-side deliberately: lib/glossary/content.ts is ~62KB and must
+ * not ship to the policy detail page.
+ */
+export function resolvePolicyGlossaryHints(lang: "el" | "en", labels: {
+    deductible: string
+    waitingPeriod: string
+}) {
+    return {
+        deductible: resolveGlossaryHint("apallagi", lang, labels.deductible),
+        waitingPeriod: resolveGlossaryHint("chronos-anamonis", lang, labels.waitingPeriod),
+    }
+}
+
+export type PolicyGlossaryHints = ReturnType<typeof resolvePolicyGlossaryHints>

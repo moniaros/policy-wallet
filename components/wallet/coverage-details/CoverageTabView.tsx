@@ -1,5 +1,6 @@
 "use client"
 
+import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import { useState } from "react"
 import { ShieldCheck, ShieldOff, CheckCircle2, XCircle, AlertTriangle } from "lucide-react"
 import type { AcordData } from "@/types/domain"
@@ -13,12 +14,13 @@ import { LifeCoverageDetails } from "./LifeCoverageDetails"
 import { PetCoverageDetails } from "./PetCoverageDetails"
 
 interface CoverageTabViewProps {
+  hints?: PolicyGlossaryHints | null
   acordData: AcordData
   lineOfBusiness: LineOfBusiness
   language: "el" | "en"
 }
 
-export function CoverageTabView({ acordData, lineOfBusiness, language }: CoverageTabViewProps) {
+export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: CoverageTabViewProps) {
   const [activeTab, setActiveTab] = useState<"covered" | "not_covered">("covered")
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
@@ -26,7 +28,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
   const renderTypeSpecificDetails = () => {
     switch (lineOfBusiness) {
       case "health":
-        return <HealthCoverageDetails acordData={acordData} language={language} />
+        return <HealthCoverageDetails acordData={acordData} language={language} hints={hints} />
       case "motor":
         return <MotorCoverageDetails acordData={acordData} language={language} />
       case "home":

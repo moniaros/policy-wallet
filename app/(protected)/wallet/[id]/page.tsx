@@ -13,7 +13,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
-import { resolveGlossaryHint } from "@/lib/glossary/hints"
+import { resolveGlossaryHint, resolvePolicyGlossaryHints } from "@/lib/glossary/hints"
 import {
     computeReportUnlocked,
     dedupeGaps,
@@ -275,6 +275,10 @@ export default async function PolicyDetailPage({
             relationshipId={relationshipId}
             t={t}
             exclusionHint={resolveGlossaryHint('exairesi', language, t.wallet.policyDetailsPage.exclusionsTitle)}
+            glossaryHints={resolvePolicyGlossaryHints(language, {
+                deductible: t.coverageDetails.health.deductiblePerClaim,
+                waitingPeriod: t.coverageDetails.health.waitingPeriods,
+            })}
             tier={entitlements.tier}
             tierLimits={entitlements.limits}
             relatedRecommendations={relatedRecommendations}

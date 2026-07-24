@@ -1,5 +1,7 @@
 "use client"
 
+import { GlossaryHint } from "@/components/insurance/GlossaryHint"
+import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import {
   Building2,
   Phone,
@@ -14,11 +16,13 @@ import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 
 interface HealthCoverageDetailsProps {
+  /** Resolved server-side — the 62KB glossary must not ship to this page. */
+  hints?: PolicyGlossaryHints | null
   acordData: AcordData
   language: "el" | "en"
 }
 
-export function HealthCoverageDetails({ acordData, language }: HealthCoverageDetailsProps) {
+export function HealthCoverageDetails({ acordData, language, hints }: HealthCoverageDetailsProps) {
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
   const healthCopy = copy.health
@@ -122,7 +126,9 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
               <Clock className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
             </div>
-            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.waitingPeriods}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">
+              {hints?.waitingPeriod ? <GlossaryHint hint={hints.waitingPeriod} /> : healthCopy.waitingPeriods}
+            </span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {health.waitingPeriods.map((wp, i) => (
@@ -164,7 +170,9 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
               <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
                 <CreditCard className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               </div>
-              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.deductiblePerClaim}</span>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">
+                {hints?.deductible ? <GlossaryHint hint={hints.deductible} /> : healthCopy.deductiblePerClaim}
+              </span>
             </div>
             <span className="text-sm font-bold text-black dark:text-white">
               {health.deductiblePerClaim.toLocaleString(language === "el" ? "el-GR" : "en-GB", { style: "currency", currency: "EUR" })}
