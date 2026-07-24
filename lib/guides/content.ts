@@ -168,7 +168,7 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ανοίξτε τον πίνακα καλύψεων του ασφαλιστηρίου και αναζητήστε ρητά τις λέξεις «σεισμός», «πυρκαγιά» και «πλημμύρα» στις καλυπτόμενες ζημιές — όχι στις προαιρετικές ή στις εξαιρέσεις. Ελέγξτε επίσης το ασφαλιζόμενο κεφάλαιο κτίσματος σε σχέση με τα τετραγωνικά μέτρα. Εναλλακτικά, ανεβάστε το PDF του συμβολαίου στο PolicyWallet: η ανάλυση AI επισημαίνει αυτόματα αν λείπει κάποιος από τους τρεις κινδύνους της έκπτωσης ΕΝΦΙΑ και αν το κεφάλαιο ανακατασκευής φαίνεται ανεπαρκές.",
+                        el: "Ανοίξτε τον πίνακα καλύψεων του ασφαλιστηρίου και αναζητήστε ρητά τις λέξεις «σεισμός», «πυρκαγιά» και «πλημμύρα» στις καλυπτόμενες ζημιές — όχι στις προαιρετικές ή στις εξαιρέσεις. Ελέγξτε επίσης το ασφαλιζόμενο κεφάλαιο κτίσματος σε σχέση με τα τετραγωνικά μέτρα. Εναλλακτικά, ανεβάστε το PDF του συμβολαίου στο PolicyWallet: η ανάλυση AI επισημαίνει αν λείπει κάποιος από τους τρεις κινδύνους της έκπτωσης ΕΝΦΙΑ, και — εφόσον το έγγραφο αναφέρει και τα δύο ποσά — αν το ασφαλισμένο κεφάλαιο υπολείπεται του κόστους ανακατασκευής.",
                         en: "Open your policy's coverage table and look for earthquake, fire, and flood explicitly listed among the covered perils — not in the optional add-ons or the exclusions. Also check the insured building sum against your square metres. Alternatively, upload the policy PDF to PolicyWallet: the AI analysis automatically flags a missing ENFIA-discount peril and an insufficient reconstruction sum.",
                     },
                 ],

@@ -247,8 +247,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, το ασφαλισμένο κεφάλαιο είναι το κύριο ποσό δίπλα σε κάθε κάλυψη. Συγκρίνετέ το με μια ρεαλιστική εκτίμηση: για την κατοικία, το κόστος ανακατασκευής ανά τετραγωνικό. Το PolicyWallet εντοπίζει το ασφαλισμένο κεφάλαιο και σας βοηθά να δείτε αν φαίνεται υπο- ή υπερεκτιμημένο.",
-            en: "In your own policy, the sum insured is the main amount next to each cover. Compare it to a realistic estimate: for a home, the rebuild cost per square metre. PolicyWallet surfaces the sum insured and helps you see if it looks under- or over-estimated.",
+            el: "Στο δικό σας ασφαλιστήριο, το ασφαλισμένο κεφάλαιο είναι το κύριο ποσό δίπλα σε κάθε κάλυψη. Συγκρίνετέ το με μια ρεαλιστική εκτίμηση: για την κατοικία, το κόστος ανακατασκευής ανά τετραγωνικό. Το PolicyWallet εντοπίζει το ασφαλισμένο κεφάλαιο και, αν το ασφαλιστήριο αναφέρει και κόστος ανακατασκευής, σας ειδοποιεί όταν το κεφάλαιο υπολείπεται.",
+            en: "In your own policy, the sum insured is the main amount next to each cover. Compare it to a realistic estimate: for a home, the rebuild cost per square metre. PolicyWallet surfaces the sum insured and, if the policy also states a rebuild cost, tells you when the sum falls short.",
         },
         faq: [
             {
@@ -343,8 +343,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, συγκρίνετε το ασφαλισμένο κεφάλαιο με μια σημερινή εκτίμηση αξίας. Για την κατοικία, χρησιμοποιήστε κόστος ανακατασκευής ανά τετραγωνικό, όχι την τιμή αγοράς. Το PolicyWallet επισημαίνει όταν το ασφαλισμένο κεφάλαιο φαίνεται χαμηλό σε σχέση με το ακίνητο.",
-            en: "In your own policy, compare the sum insured to a current value estimate. For a home, use rebuild cost per square metre, not the purchase price. PolicyWallet flags when the sum insured looks low relative to the property.",
+            el: "Στο δικό σας ασφαλιστήριο, συγκρίνετε το ασφαλισμένο κεφάλαιο με μια σημερινή εκτίμηση αξίας. Για την κατοικία, χρησιμοποιήστε κόστος ανακατασκευής ανά τετραγωνικό, όχι την τιμή αγοράς. Αν το ασφαλιστήριο αναφέρει κόστος ανακατασκευής, το PolicyWallet συγκρίνει τα δύο ποσά και επισημαίνει την υπασφάλιση.",
+            en: "In your own policy, compare the sum insured to a current value estimate. For a home, use rebuild cost per square metre, not the purchase price. If the policy states a rebuild cost, PolicyWallet compares the two figures and flags the shortfall.",
         },
         faq: [
             {

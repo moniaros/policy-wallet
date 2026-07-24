@@ -77,6 +77,19 @@ function formatDate(date: Date, locale: string): string {
     return date.toLocaleDateString(locale)
 }
 
+/**
+ * The branch FAMILY a policy belongs to — motorbike and truck are motor,
+ * renters is home. The rules below asked `normalizeBranch(...).id === "home"`,
+ * which is the child's own id, so a rented home was invisible to the earthquake
+ * rule and a motorbike to the roadside rule. Same assumption that had already
+ * produced four defects elsewhere on this branch; these two were still standing
+ * because the earlier sweep looked at the profile rules and the score, not here.
+ */
+function branchFamily(lineOfBusiness: string): string {
+    const branch = normalizeBranch(lineOfBusiness)
+    return (branch.parentId ?? branch.id).toLowerCase()
+}
+
 function isActive(p: PortfolioPolicyFacts): boolean {
     return p.status === "active"
 }
@@ -314,7 +327,7 @@ function homeNoEarthquakeRule(policies: PortfolioPolicyFacts[]): PortfolioGap | 
     const candidate = policies.find(
         (p) =>
             isActive(p) &&
-            normalizeBranch(p.lineOfBusiness).id === "home" &&
+            branchFamily(p.lineOfBusiness) === "home" &&
             p.acordData?.property &&
             p.acordData.property.earthquakeCoverageIncluded === false
     )
@@ -346,6 +359,74 @@ function homeNoEarthquakeRule(policies: PortfolioPolicyFacts[]): PortfolioGap | 
 }
 
 /**
+ * A home policy whose own document names a rebuild cost ABOVE the sum insured.
+ *
+ * Four surfaces promised this check and nothing performed it: the home branch
+ * page said "we compare the insured amount with the square metres and the
+ * details in your profile", a guide said the AI "automatically flags whether the
+ * reconstruction sum appears inadequate", and the glossary said PolicyWallet
+ * "flags when the sum insured appears low relative to the property". The
+ * product's own education calls underinsurance "the most important — and most
+ * neglected — step of every renewal", and explains the average clause correctly:
+ * insure a €200,000 rebuild for €100,000 and a €20,000 loss pays €10,000,
+ * because every claim is reduced by the underinsurance ratio.
+ *
+ * This compares only figures the DOCUMENT states — insuredValue against
+ * estimatedRebuildCost. No €/m² rate is applied: the guides deliberately decline
+ * to hardcode one, pointing readers at the AADE minimum per square metre
+ * instead, and inventing a rate here would be exactly the kind of fabricated
+ * benchmark the rest of the engine avoids. Where the document gives a size but
+ * no rebuild cost, the product cannot conclude, and now says so instead of
+ * claiming otherwise.
+ */
+function homeUnderinsuredRule(policies: PortfolioPolicyFacts[]): PortfolioGap | null {
+    const candidate = policies.find((p) => {
+        if (!isActive(p) || branchFamily(p.lineOfBusiness) !== "home") return false
+        const property = p.acordData?.property
+        const insured = Number(property?.insuredValue)
+        const rebuild = Number(property?.estimatedRebuildCost)
+        if (!Number.isFinite(insured) || !Number.isFinite(rebuild)) return false
+        if (insured <= 0 || rebuild <= 0) return false
+        // A rounding difference is not underinsurance; a material shortfall is.
+        return insured < rebuild * 0.95
+    })
+    if (!candidate) return null
+
+    const property = candidate.acordData.property
+    const insured = Number(property.insuredValue)
+    const rebuild = Number(property.estimatedRebuildCost)
+    const shortfallPct = Math.round((1 - insured / rebuild) * 100)
+    const ref = policyRef(candidate)
+    const insuredFmtEl = new Intl.NumberFormat("el-GR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(insured)
+    const insuredFmtEn = new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(insured)
+    const rebuildFmtEl = new Intl.NumberFormat("el-GR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(rebuild)
+    const rebuildFmtEn = new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(rebuild)
+
+    return {
+        ruleId: "home_underinsured",
+        lineOfBusiness: candidate.lineOfBusiness,
+        severity: "high",
+        name: {
+            en: "Sum insured is below the rebuild cost stated in the policy",
+            el: "Το ασφαλισμένο κεφάλαιο είναι κάτω από το κόστος ανακατασκευής που αναφέρει το ασφαλιστήριο",
+        },
+        reason: {
+            en: "Greek home policies apply an average clause: if the sum insured is below the rebuild cost, EVERY claim — not only a total loss — is reduced by the same proportion.",
+            el: "Τα ελληνικά ασφαλιστήρια κατοικίας εφαρμόζουν αναλογικό όρο: αν το ασφαλισμένο κεφάλαιο υπολείπεται του κόστους ανακατασκευής, ΚΑΘΕ αποζημίωση — όχι μόνο η ολική ζημιά — μειώνεται στην ίδια αναλογία.",
+        },
+        evidence: {
+            en: `Your policy ${ref} states a sum insured of ${insuredFmtEn} against a rebuild cost of ${rebuildFmtEn} — about ${shortfallPct}% short. On those figures a €10,000 loss would be settled at roughly ${new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(10000 * (insured / rebuild))}.`,
+            el: `Το ασφαλιστήριό σας ${ref} αναφέρει ασφαλισμένο κεφάλαιο ${insuredFmtEl} έναντι κόστους ανακατασκευής ${rebuildFmtEl} — υπολείπεται περίπου ${shortfallPct}%. Με αυτά τα νούμερα, ζημιά 10.000 € θα αποζημιωνόταν περίπου με ${new Intl.NumberFormat("el-GR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(10000 * (insured / rebuild))}.`,
+        },
+        nextAction: {
+            en: "Ask your insurer or advisor to reassess the sum insured against today's rebuild cost before the next renewal.",
+            el: "Ζητήστε από τον ασφαλιστή ή τον σύμβουλό σας να επανεκτιμήσει το ασφαλισμένο κεφάλαιο με βάση το σημερινό κόστος ανακατασκευής πριν την επόμενη ανανέωση.",
+        },
+        reviewHref: `/wallet/${candidate.id}`,
+    }
+}
+
+/**
  * Analyzed motor policy whose extraction explicitly shows no roadside
  * assistance. Same analysis-ran guard as the earthquake rule.
  */
@@ -353,7 +434,7 @@ function motorNoRoadsideRule(policies: PortfolioPolicyFacts[]): PortfolioGap | n
     const candidate = policies.find(
         (p) =>
             isActive(p) &&
-            normalizeBranch(p.lineOfBusiness).id === "motor" &&
+            branchFamily(p.lineOfBusiness) === "motor" &&
             p.acordData?.vehicle &&
             p.acordData.vehicle.hasRoadsideAssistance === false
     )
@@ -399,6 +480,9 @@ export function evaluatePortfolioRules(
 
     const noEarthquake = homeNoEarthquakeRule(policies)
     if (noEarthquake) gaps.push(noEarthquake)
+
+    const underinsured = homeUnderinsuredRule(policies)
+    if (underinsured) gaps.push(underinsured)
 
     const noRoadside = motorNoRoadsideRule(policies)
     if (noRoadside) gaps.push(noRoadside)

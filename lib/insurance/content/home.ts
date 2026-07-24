@@ -38,8 +38,12 @@ export const homeContent: BranchContent = {
             en: 'Third-party liability (e.g. a leak into the flat below) and loss of rent, where they appear.',
         },
         {
-            el: 'Ενδείξεις υπασφάλισης: συγκρίνουμε το ασφαλισμένο κεφάλαιο με τα τετραγωνικά και τα στοιχεία που δίνεις στο προφίλ σου.',
-            en: 'Signs of underinsurance: we compare the insured amount with the square metres and the details in your profile.',
+            // Was "we compare the insured amount with the square metres and the
+            // details in your profile" — the profile holds nothing about the
+            // property's size or value, and no such comparison existed. What the
+            // engine does now is compare the two figures the DOCUMENT states.
+            el: 'Ενδείξεις υπασφάλισης: όταν το ασφαλιστήριο αναφέρει και ασφαλισμένο κεφάλαιο και κόστος ανακατασκευής, τα συγκρίνουμε και σε ειδοποιούμε αν το κεφάλαιο υπολείπεται.',
+            en: 'Signs of underinsurance: when the policy states both a sum insured and a rebuild cost, we compare them and tell you if the sum falls short.',
         },
     ],
     howToUseBetter: [
