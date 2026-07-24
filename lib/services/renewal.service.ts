@@ -1,4 +1,5 @@
 import { calendarDaysUntil } from "@/lib/policy-status"
+import { formatDate } from "@/lib/i18n/format"
 import { db } from "../db"
 import { sendNotification } from "../notifications"
 import { logger } from "../logger"
@@ -170,14 +171,23 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     m => daysUntilExpiry <= m && !sentMilestones.has(m)
                 )
 
-                if (milestonesToSend.length === 0) continue
+                if (milestonesToSend.length === 0) {
+                    // No reminder due today, but the agent's open renewal task
+                    // still ages: keep its countdown and priority current on every
+                    // run, not only on the ~5 days a milestone happens to fire.
+                    if (visibleAgentUserId) {
+                        await refreshAgentRenewalTask(visibleAgentUserId, policy, daysUntilExpiry)
+                    }
+                    continue
+                }
 
-                // Send the most relevant (closest) milestone
+                // Send the most relevant (closest) milestone. This is the ledger
+                // entry — what the reader is TOLD is daysUntilExpiry.
                 const milestone = milestonesToSend[milestonesToSend.length - 1] as Milestone
                 const isEl = policy.owner.preferredLanguage === "el"
 
                 // 4. Notify policyholder
-                await sendPolicyholderReminder(policy, milestone, isEl)
+                await sendPolicyholderReminder(policy, daysUntilExpiry, isEl)
                 summary.policyholderNotificationsSent++
 
                 // 5. Notify and create task for agent — only when the agent may
@@ -186,7 +196,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     await sendAgentRenewalNotification(
                         visibleAgentUserId,
                         policy,
-                        milestone,
+                        daysUntilExpiry,
                         renewalRecord?.id ?? ""
                     )
                     summary.agentNotificationsSent++
@@ -258,6 +268,24 @@ function parseSentMilestones(raw: unknown): Map<number, string> {
     return map
 }
 
+/**
+ * How long is left, in words. `milestone` is a LEDGER bucket — which rung of the
+ * ladder we have already sent — and is not the answer to "when does my policy
+ * expire". The two only coincide for a policy that has sat in the product since
+ * before the 90-day mark and a cron that has not missed a day.
+ *
+ * They diverge for every policy uploaded inside the window, which is most of
+ * them: people upload the policy they just received, or the one they are worried
+ * about. On the free plan the ladder is the single 30-day rung, so a policy
+ * uploaded three days before expiry produced one email titled "Your policy
+ * expires in 30 days" over a body naming a date three days out.
+ */
+export function daysLeftPhrase(days: number, isEl: boolean): string {
+    if (days <= 0) return isEl ? "λήγει σήμερα" : "expires today"
+    if (days === 1) return isEl ? "λήγει αύριο" : "expires tomorrow"
+    return isEl ? `λήγει σε ${days} ημέρες` : `expires in ${days} days`
+}
+
 async function sendPolicyholderReminder(
     policy: {
         id: string
@@ -267,13 +295,17 @@ async function sendPolicyholderReminder(
         endDate: Date
         owner: { id: string; name: string | null; preferredLanguage: string }
     },
-    milestone: Milestone,
+    daysUntilExpiry: number,
     isEl: boolean
 ) {
-    const expiryDate = policy.endDate.toLocaleDateString(isEl ? "el-GR" : "en-GB")
+    // Athens, like every date the app itself renders (lib/i18n/format.ts). A bare
+    // toLocaleDateString resolves against the RUNTIME zone — UTC on Vercel — so a
+    // policy ending at Athens midnight was emailed as the previous day while the
+    // wallet showed the correct one.
+    const expiryDate = formatDate(policy.endDate, isEl ? "el" : "en")
     const title = isEl
-        ? `Η ασφάλισή σας λήγει σε ${milestone} ημέρες`
-        : `Your policy expires in ${milestone} days`
+        ? `Η ασφάλισή σας ${daysLeftPhrase(daysUntilExpiry, true)}`
+        : `Your policy ${daysLeftPhrase(daysUntilExpiry, false)}`
     const message = isEl
         ? `Το ασφαλιστήριο ${policy.insurerName} (${policy.policyNumber}) λήγει στις ${expiryDate}. Ελέγξτε τις επιλογές ανανέωσής σας.`
         : `Your ${policy.insurerName} policy (${policy.policyNumber}) expires on ${expiryDate}. Review your renewal options.`
@@ -299,13 +331,18 @@ async function sendAgentRenewalNotification(
         endDate: Date
         owner: { id: string; name: string | null }
     },
-    milestone: Milestone,
+    daysUntilExpiry: number,
     renewalId: string
 ) {
     const customerName = policy.owner.name || "Customer"
-    const expiryDate = policy.endDate.toLocaleDateString("en-GB")
+    const expiryDate = formatDate(policy.endDate, "en")
     const title = `Renewal alert: ${customerName}'s ${policy.lineOfBusiness} policy`
-    const message = `${customerName}'s ${policy.insurerName} policy (${policy.policyNumber}) expires on ${expiryDate} — ${milestone} days away. Take action now.`
+    // Real days remaining, not the milestone rung — the agent TASK created in the
+    // same iteration already quotes daysUntilExpiry, so the two disagreed about
+    // the same policy in the same run.
+    const away =
+        daysUntilExpiry <= 0 ? "today" : daysUntilExpiry === 1 ? "tomorrow" : `${daysUntilExpiry} days away`
+    const message = `${customerName}'s ${policy.insurerName} policy (${policy.policyNumber}) expires on ${expiryDate} — ${away}. Take action now.`
 
     await sendNotification({
         userId: agentUserId,
@@ -318,41 +355,92 @@ async function sendAgentRenewalNotification(
     })
 }
 
-async function createAgentRenewalTask(
-    agentUserId: string,
-    policy: {
-        id: string
-        policyNumber: string
-        insurerName: string
-        lineOfBusiness: string
-        endDate: Date
-        owner: { name: string | null }
-    },
-    daysUntilExpiry: number,
-    renewalId: string
-): Promise<boolean> {
-    // Don't create duplicate tasks for the same policy
-    const existingTask = await db.userTask.findFirst({
+type RenewalTaskPolicy = {
+    id: string
+    policyNumber: string
+    insurerName: string
+    lineOfBusiness: string
+    endDate: Date
+    owner: { name: string | null }
+}
+
+/** The task's countdown and priority — recomputed from days left, never frozen. */
+export function renewalTaskState(policy: { policyNumber: string }, daysUntilExpiry: number) {
+    const expiresIn =
+        daysUntilExpiry <= 0
+            ? "expires today"
+            : daysUntilExpiry === 1
+              ? "expires tomorrow"
+              : `expires in ${daysUntilExpiry} days`
+    return {
+        description: `Policy ${policy.policyNumber} ${expiresIn}. Contact the customer to discuss renewal options.`,
+        priority: daysUntilExpiry <= 15 ? "high" : daysUntilExpiry <= 30 ? "medium" : "low",
+    }
+}
+
+function findPendingRenewalTask(agentUserId: string, policyId: string) {
+    return db.userTask.findFirst({
         where: {
             userId: agentUserId,
             type: "renewal",
-            actionUrl: { contains: policy.id },
+            actionUrl: { contains: policyId },
             status: "pending",
         },
     })
-    if (existingTask) return false
+}
 
+/**
+ * Keep an already-open renewal task honest.
+ *
+ * The countdown and the priority were both written once, at first detection, and
+ * never revisited — so a task opened at 88 days out still read "expires in 88
+ * days · low" on the day the cover lapsed. The one task on the agent's list that
+ * most needed to rise to the top was the one guaranteed to stay at the bottom.
+ */
+async function refreshAgentRenewalTask(
+    agentUserId: string,
+    policy: RenewalTaskPolicy,
+    daysUntilExpiry: number
+): Promise<void> {
+    const existingTask = await findPendingRenewalTask(agentUserId, policy.id)
+    if (!existingTask) return
+    const { description, priority } = renewalTaskState(policy, daysUntilExpiry)
+    if (existingTask.description === description && existingTask.priority === priority) return
+    await db.userTask.update({
+        where: { id: existingTask.id },
+        data: {
+            description,
+            priority,
+            dueDate: new Date(policy.endDate.getTime() - 7 * 24 * 60 * 60 * 1000),
+        },
+    })
+}
+
+async function createAgentRenewalTask(
+    agentUserId: string,
+    policy: RenewalTaskPolicy,
+    daysUntilExpiry: number,
+    renewalId: string
+): Promise<boolean> {
     const customerName = policy.owner.name || "Customer"
     const taskDueDate = new Date(policy.endDate.getTime() - 7 * 24 * 60 * 60 * 1000) // 7 days before expiry
+    const { description, priority } = renewalTaskState(policy, daysUntilExpiry)
+
+    // Don't create duplicate tasks for the same policy — refresh the open one.
+    const existingTask = await findPendingRenewalTask(agentUserId, policy.id)
+    if (existingTask) {
+        await refreshAgentRenewalTask(agentUserId, policy, daysUntilExpiry)
+        return false
+    }
 
     await db.userTask.create({
         data: {
             userId: agentUserId,
             type: "renewal",
             title: `Renew: ${customerName} — ${policy.insurerName} ${policy.lineOfBusiness}`,
-            description: `Policy ${policy.policyNumber} expires in ${daysUntilExpiry} days. Contact the customer to discuss renewal options.`,
+            description,
             status: "pending",
-            priority: daysUntilExpiry <= 15 ? "high" : daysUntilExpiry <= 30 ? "medium" : "low",
+            priority,
             dueDate: taskDueDate,
             actionUrl: `/customers?policy=${policy.id}&renewal=${renewalId}`,
             actionLabel: "Manage Renewal",
