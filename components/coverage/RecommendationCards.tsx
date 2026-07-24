@@ -1,5 +1,6 @@
 "use client"
 
+import { getTranslations } from "@/lib/i18n"
 import { useState } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -112,12 +113,21 @@ const URGENCY_STYLES: Record<
     },
 }
 
-const URGENCY_LABELS: Record<string, { en: string; el: string }> = {
-    critical: { en: "Critical", el: "Κρίσιμο" },
-    high: { en: "High priority", el: "Υψηλή προτεραιότητα" },
-    medium: { en: "Recommended", el: "Συνιστάται" },
-    low: { en: "Nice to have", el: "Προαιρετικό" },
-}
+/**
+ * One consistent priority scale.
+ *
+ * This read "Critical / High priority / Recommended / Nice to have" — two
+ * priority tiers and two value judgements in the same set. "Nice to have" is
+ * the product deciding a coverage gap does not really matter for this person,
+ * which is exactly the personalised judgement its own methodology disclaimer
+ * says it does not make. All four are priority tiers now.
+ */
+const URGENCY_KEYS = {
+    critical: "recPriorityCritical",
+    high: "recPriorityHigh",
+    medium: "recPriorityMedium",
+    low: "recPriorityLow",
+} as const
 
 // ── Component ────────────────────────────────────────────────────────
 
@@ -136,6 +146,7 @@ export function RecommendationCards({
 
     const lang = language
     const t = (el: string, en: string) => (lang === "el" ? el : en)
+    const home = getTranslations(lang).dashboard.home
 
     const visible = recommendations.filter((r) => !dismissedIds.has(r.id))
     const displayed = showAll ? visible : visible.slice(0, 3)
@@ -204,7 +215,7 @@ export function RecommendationCards({
                                 "Η κάλυψη περιεχομένου φαίνεται χαμηλή για το προφίλ σας.",
                                 "Your contents coverage looks low for your profile."
                             )}
-                            urgencyLabel={t("Συνιστάται", "Recommended")}
+                            urgencyLabel={home.recPriorityMedium}
                         />
                     )
                 }
@@ -236,12 +247,22 @@ export function RecommendationCards({
                 </div>
             </div>
 
+            {/* The dashboard's gaps widget already qualified these priorities as
+                profile-based rather than a risk grade; this screen — the deeper
+                one, where the user comes to act — showed the same badges bare, so
+                "Κρίσιμη προτεραιότητα" read as a verdict on their risk. Same
+                sentence, same meaning, on both surfaces. */}
+            <p className="mb-3 text-micro leading-snug text-black/55 dark:text-white/45">
+                {home.recPriorityNote}
+            </p>
+
             {/* Cards */}
             <div className="space-y-3">
                 {displayed.map((rec) => {
                     const styles = URGENCY_STYLES[rec.urgency] || URGENCY_STYLES.low
                     const Icon = LOB_ICON[rec.lineOfBusiness.toLowerCase()] || Shield
-                    const urgLabel = URGENCY_LABELS[rec.urgency] || URGENCY_LABELS.low
+                    const urgKey = URGENCY_KEYS[rec.urgency as keyof typeof URGENCY_KEYS] ?? URGENCY_KEYS.low
+                    const urgLabel = home[urgKey]
                     const isExpanded = expandedId === rec.id
                     const smart = rec.ruleId ? smartContent[rec.ruleId] : undefined
                     const reviewHref = smart?.reviewHref ?? null
@@ -274,7 +295,7 @@ export function RecommendationCards({
                                             {rec.urgency === "critical" && (
                                                 <AlertTriangle className="h-2.5 w-2.5" />
                                             )}
-                                            {urgLabel[lang]}
+                                            {urgLabel}
                                         </span>
                                     </div>
 

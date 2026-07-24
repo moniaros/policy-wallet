@@ -1,5 +1,6 @@
 "use client"
 
+import { getTranslations } from "@/lib/i18n"
 import React, { useMemo, useState } from 'react'
 import {
     Shield,
@@ -324,6 +325,17 @@ export function CoverageInsightsClient({
                         <AlertCircle className="w-5 h-5" />
                         {copy.reviewSectionTitle}
                     </h2>
+
+                    {/* InsightCard badges read "Κρίσιμο κενό". Without this line
+                        that is a risk verdict; with it, it is what the engine
+                        actually produced — a profile-based priority. The same
+                        sentence already qualifies the dashboard widget and the
+                        recommendations list. */}
+                    {insights.length > 0 && (
+                        <p className="mb-3 text-micro leading-snug text-black/55 dark:text-white/45">
+                            {getTranslations(lang).dashboard.home.recPriorityNote}
+                        </p>
+                    )}
 
                     <div className="space-y-4">
                         {insights.length > 0 ? (
