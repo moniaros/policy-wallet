@@ -136,6 +136,14 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                     />
                 ) : (
                 <div className="pw-card overflow-hidden border-t-4 border-t-primary">
+                    {/* An agent allocates their day by this column. The score is a
+                        heuristic over gap severity, profile completeness, engagement
+                        and detection recency — it has never been calibrated against
+                        the won/lost outcomes the product already records, so it is a
+                        prioritisation aid, not a forecast. Say which. */}
+                    <p className="px-6 pt-4 text-micro leading-snug text-black/55 dark:text-white/45">
+                        {opp_t.likelihoodNote}
+                    </p>
                     <TableShell label={opp_t.title}>
                         <MobileSortControl sort={sort} onSort={toggle} onClear={() => setSort(null)} columns={[{ key: "customer", label: opp_t.colCustomer }, { key: "status", label: opp_t.colStatus }, { key: "likelihood", label: opp_t.colLikelihood }, { key: "nextAction", label: opp_t.colNextAction }]} label={opp_t.sortLabel} defaultLabel={opp_t.defaultOrder} className="mb-3" />
                         <table className="pw-stacked-table w-full text-left border-collapse">

@@ -2431,6 +2431,7 @@ export const en: TranslationKeys = {
                 won: 'Won',
                 lost: 'Lost',
             },
+            likelihoodNote: 'Likelihood is derived from gap severity, profile completeness, client activity and how recently the gap was detected — not from your past conversion history.',
             likelihood: {
                 high: 'High',
                 medium: 'Medium',
