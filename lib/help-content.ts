@@ -146,7 +146,15 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Customizing Channels',
-                    text: 'You can choose to receive these via Email, Push Notifications (if using the mobile app), or SMS (Premium only). Go to "Account" -> "Notifications" to toggle these preferences.',
+                    // Three things here were untrue. SMS is not implemented at all —
+                    // the preferences route says so in as many words ("not currently
+                    // exposed in UI ... preserved for backward compatibility") — and
+                    // it was presented as a Premium benefit, i.e. a paid feature that
+                    // does not exist. Push is FCM WEB push: there is no mobile app, so
+                    // telling people they need one makes them dismiss a channel that
+                    // works in their browser. And "Account -> Notifications" is not a
+                    // tab; the switches live under Account -> Settings.
+                    text: 'Notifications arrive by email. If you allow them in your browser, you can also receive them as push notifications — no app required. Go to Account -> Settings to choose which kinds you want.',
                 }
             ]
         },
@@ -330,8 +338,8 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     ]
                 },
                 {
-                    heading: 'Προσαρμογή Καναλιών',
-                    text: 'Μπορείτε να επιλέξετε να τις λαμβάνετε μέσω Email, Push Notifications (εάν χρησιμοποιείτε την εφαρμογή για κινητά), ή SMS (μόνο Premium). Μεταβείτε στο "Λογαριασμός" -> "Ειδοποιήσεις" για να αλλάξετε αυτές τις προτιμήσεις.',
+                    heading: 'Προσαρμογή καναλιών',
+                    text: 'Οι ειδοποιήσεις έρχονται με email. Αν τις επιτρέψετε στον browser σας, μπορείτε να τις λαμβάνετε και ως push — δεν χρειάζεται εφαρμογή. Μεταβείτε στον Λογαριασμό -> Ρυθμίσεις για να επιλέξετε ποιες θέλετε.',
                 }
             ]
         },
