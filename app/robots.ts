@@ -23,7 +23,6 @@ const DISALLOWED_PATHS = [
     "/agent",
     "/api-docs",
     "/monitoring",
-    "/sentry-example-page",
     "/invite/",
 ]
 

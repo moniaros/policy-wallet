@@ -1517,23 +1517,6 @@
       }
     },
     {
-      "route": "sentry-example-api/route.ts",
-      "methods": [],
-      "policy": {
-        "auth": {
-          "mode": "public"
-        },
-        "rateLimit": {
-          "required": false,
-          "profile": "none"
-        },
-        "validation": {
-          "required": false,
-          "profile": "optional"
-        }
-      }
-    },
-    {
       "route": "v1/agent/playbooks/route.ts",
       "methods": [
         "GET"
