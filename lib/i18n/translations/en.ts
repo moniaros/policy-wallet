@@ -319,6 +319,7 @@ export const en: TranslationKeys = {
             headingEmphasis: 'Policies.',
             subtitle: 'Select up to 3 policies of the same type to compare side-by-side.',
             selectFirst: 'Select the first policy to compare:',
+            needSameTypeToCompare: 'You need at least two policies of the same type to compare. Add another of the same branch, or pick a different type.',
             selectedPrefix: 'Selected',
             selectMore: 'Select more:',
             viewDetails: 'View details',

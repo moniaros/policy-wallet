@@ -166,3 +166,33 @@ describe('the comparison table is accessible', () => {
         expect(star?.textContent).toContain(el.bestHighest)
     })
 })
+
+/**
+ * A user who selects one policy but has no other of the same type hits a dead end:
+ * "select more" pointing at a grid with a single, already-selected card. Say why.
+ */
+describe('the comparison explains when there is nothing to compare against', () => {
+    it('shows the "need two of the same type" message', () => {
+        // One motor policy selected; the only other policy is health → nothing
+        // comparable remains.
+        const policies = [
+            policy('car', { lineOfBusiness: 'motor' }),
+            policy('plan', { lineOfBusiness: 'health' }),
+        ]
+        const { container } = render(
+            <PolicyComparison policies={policies} isOpen onClose={() => {}} selectedPolicyIds={['car']} />
+        )
+        expect(container.textContent).toContain(el.needSameTypeToCompare)
+    })
+
+    it('does NOT show it when another same-type policy exists', () => {
+        const policies = [
+            policy('a', { lineOfBusiness: 'motor' }),
+            policy('b', { lineOfBusiness: 'motorbike' }),
+        ]
+        const { container } = render(
+            <PolicyComparison policies={policies} isOpen onClose={() => {}} selectedPolicyIds={['a']} />
+        )
+        expect(container.textContent).not.toContain(el.needSameTypeToCompare)
+    })
+})

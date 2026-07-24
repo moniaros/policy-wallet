@@ -232,12 +232,22 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                     {selectedIds.length < 2 ? (
                         /* Policy Selection */
                         <div className="space-y-4">
-                            <p className="text-sm font-medium text-muted-foreground mb-4">
-                                {selectedIds.length === 0
-                                    ? c.selectFirst
-                                    : `${c.selectedPrefix}: ${selectedPolicies[0]?.insurerName} (${selectedPolicies[0]?.lineOfBusiness}). ${c.selectMore}`
-                                }
-                            </p>
+                            {/* One selected but nothing else of its type to pair with:
+                                say so, rather than leave "select more" pointing at a
+                                grid with a single, already-selected card. */}
+                            {selectedIds.length === 1 &&
+                            comparablePolicies.filter(p => !selectedIds.includes(p.id)).length === 0 ? (
+                                <p className="text-sm font-medium text-muted-foreground mb-4">
+                                    {c.needSameTypeToCompare}
+                                </p>
+                            ) : (
+                                <p className="text-sm font-medium text-muted-foreground mb-4">
+                                    {selectedIds.length === 0
+                                        ? c.selectFirst
+                                        : `${c.selectedPrefix}: ${selectedPolicies[0]?.insurerName} (${selectedPolicies[0]?.lineOfBusiness}). ${c.selectMore}`
+                                    }
+                                </p>
+                            )}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {comparablePolicies.map(policy => {
                                     const isSelected = selectedIds.includes(policy.id)
