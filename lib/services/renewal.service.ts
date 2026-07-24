@@ -76,10 +76,18 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
     }
 
     try {
-        // 1. Find active policies expiring within 90 days
+        // 1. Find every real policy expiring within 90 days.
+        //
+        // NOT status === 'active'. Policy.status is an ingestion state nothing
+        // recomputes: 'expiring_soon' and 'action_needed' are in-force, and
+        // 'incomplete' is a real uploaded policy pending review. Requiring exactly
+        // 'active' meant a policy literally marked "expiring_soon" got NO renewal
+        // reminder at all — the lapse-prevention ladder never fired for the very
+        // policies most likely to lapse. The endDate window already excludes
+        // lapsed and far-future policies; only the non-policy states are dropped.
         const expiringPolicies = await db.policy.findMany({
             where: {
-                status: "active",
+                status: { notIn: ["deleted", "analyzing", "cancelled"] },
                 endDate: {
                     gte: startOfToday,
                     lte: cutoff,

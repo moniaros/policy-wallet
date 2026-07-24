@@ -89,7 +89,16 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             const renewals = await db.policy.findMany({
                 where: {
                     ownerUserId: user.id,
-                    status: "active",
+                    // A renewal digest must include EVERY real policy expiring
+                    // soon, not only those stored as exactly 'active'.
+                    // Policy.status is an ingestion state: 'expiring_soon' and
+                    // 'action_needed' are in-force (IN_FORCE_KEYS), and
+                    // 'incomplete' is a real uploaded policy pending review — so
+                    // status==='active' dropped a policy literally marked
+                    // "expiring_soon" from the expiring-soon email. The endDate
+                    // window already excludes lapsed and far-future policies;
+                    // only the non-policy states are filtered out here.
+                    status: { notIn: ["deleted", "analyzing", "cancelled"] },
                     // From the start of TODAY in Athens. End dates are stored at
                     // midnight, so `gt: now` dropped a policy expiring today from
                     // the digest that lands in the owner's inbox — the one item

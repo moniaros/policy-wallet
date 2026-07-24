@@ -94,3 +94,37 @@ describe("runRenewalCheck — agent notifications respect policy visibility (A1)
         expect(summary.agentNotificationsSent).toBe(1)
     })
 })
+
+/**
+ * The renewal cron must find every REAL policy expiring within 90 days, not only
+ * those stored as exactly 'active'. Policy.status is an ingestion state nothing
+ * recomputes — 'expiring_soon' and 'action_needed' are in-force, 'incomplete' is
+ * a real policy pending review — so status==='active' meant a policy literally
+ * marked "expiring_soon" got NO renewal reminder, the lapse-prevention ladder
+ * skipping the very policies most likely to lapse.
+ */
+describe("runRenewalCheck — the query finds every real policy, not only status='active'", () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+        vi.mocked(db.policyRenewal.findUnique).mockResolvedValue(null as any)
+        vi.mocked(db.accessGrant.findMany).mockResolvedValue([] as any)
+        vi.mocked(db.customerRelationship.findFirst).mockResolvedValue(null as any)
+        vi.mocked(db.policy.findMany).mockResolvedValue([] as any)
+    })
+
+    it("does not restrict the expiring-policies query to status === 'active'", async () => {
+        await runRenewalCheck()
+        const where = (vi.mocked(db.policy.findMany).mock.calls[0][0] as any).where
+        expect(where.status).not.toBe("active")
+        expect(where.status).toEqual({ notIn: ["deleted", "analyzing", "cancelled"] })
+    })
+
+    it("admits in-force and pending statuses into the reminder ladder", async () => {
+        await runRenewalCheck()
+        const where = (vi.mocked(db.policy.findMany).mock.calls[0][0] as any).where
+        const excluded = new Set((where.status as any).notIn as string[])
+        for (const inForce of ["active", "expiring_soon", "action_needed", "incomplete"]) {
+            expect(excluded.has(inForce)).toBe(false)
+        }
+    })
+})
