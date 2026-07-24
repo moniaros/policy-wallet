@@ -2,13 +2,13 @@
 
 _Living dashboard — not a log. Updated at the end of each session with meaningful work. Keep it under one screen._
 
-**Last updated:** 2026-07-25 — insurance-correctness audit continues on `claude/ui-foundation-audit-gtm05i` (226 commits, **NOT merged, NOT deployed**). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
+**Last updated:** 2026-07-25 — insurance-correctness audit continues on `claude/ui-foundation-audit-gtm05i` (228 commits, **NOT merged, NOT deployed**). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
 
 ## Current phase
 
 **Production is live** at policywallet.gr. `NEW-UI` is at `65183b7`; the last deploy this doc recorded was `97f908b`, so **`65183b7` may not be deployed — verify before assuming prod matches `NEW-UI`.**
 
-Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuous insurance-correctness audit, 226 commits, unmerged and undeployed pending review. All guardrails + 2192 unit tests (246 files) + prod build green at every commit; Playwright not yet re-run against the branch.
+Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuous insurance-correctness audit, 228 commits, unmerged and undeployed pending review. All guardrails + 2199 unit tests (247 files) + prod build green at every commit; Playwright not yet re-run against the branch.
 
 ⚠️ **Branch-name correction.** `fix/coverage-insights-verdict` is a **stale pointer** at `65183b7` (= `NEW-UI`); commit messages on this branch that name it are misattributed — all work is on `claude/ui-foundation-audit-gtm05i`. Delete the stale pointer.
 
@@ -20,6 +20,7 @@ Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuou
 - **Gap/score recompute wired on every policy-data mutation** — the derived gaps + protection score are now rebuilt (for the OWNER, not the editor) after: extraction-review confirm, direct edit, delete, admin edit/delete, merge, batch upload, and onboarding basic extraction. Before, a correction, delete, merge or bulk upload left the customer's gaps and score computed from stale data — most starkly, a new free user's FIRST policy computed no score at all.
 - **Renewal-path correctness** — a policy uploaded near expiry emailed the customer five days running (backlog drained one milestone/day); a policy stored `expiring_soon`/`action_needed`/`incomplete` got NO reminder at all because three queries filtered `status: "active"` (now one shared `NON_LIVE_POLICY_STATUSES`); the churn win-back under-counted the same way.
 - **Free-tier gap paywall hid the most critical gap** — the €3 lock boundary fell on coverage-area/alphabetical order, not severity, so an uninsured compulsory line could be the one behind the paywall while trivia showed free. Now severity-ranked on both surfaces.
+- **A GATED analysis run was reported as a failed one** — a `blocked` run (deep AI analysis is a Plus feature, or the owner has not granted AI-processing consent; persisted with `status: "blocked"` + a `blockedReason`) folded into the coverage-absence "failed" state on reload, telling the reader the analysis broke and to re-analyse or upload a clearer copy — wrong three ways (it did not fail, retrying reproduces the block, the document is fine). `blocked` now has its own state, split on `blockedReason` (consent → grant consent; else → upgrade to Plus), pointing at the real unlock. The whole state+copy decision is extracted into pure `resolveCoverageAbsence` / `resolveCoverageAbsenceCopy` and pinned by a mutation-tested guard.
 - **Also:** the "call your insurer" claims button never rendered on any policy (read a schema-less field); beneficiaries listed as people the policy covers; the dashboard premium total added foreign currencies and hid excluded policies; the root 404 was English-only; notable conditions rendered in raw order (a claim deadline below a no-claims bonus). Plus the earlier gap-engine, GDPR-export, Q&A-prompt, upload-format and outbound-email work — see archive.
 - **A near-miss worth keeping:** I misread `premiumAmount` (it is the TERM total, not per-period) and nearly shipped a 12× "annualiser"; caught by the lateral sweep, reverted, and pinned with a contract test.
 
