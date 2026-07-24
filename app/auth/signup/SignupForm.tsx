@@ -31,7 +31,7 @@ const zodErrors: Record<string, { el: string; en: string }> = {
     mobile_invalid: { el: "Εισάγετε ένα έγκυρο ελληνικό κινητό", en: "Enter a valid Greek mobile" },
     email_invalid: { el: "Μη έγκυρο email", en: "Invalid email" },
     password_short: { el: "Χρησιμοποιήστε τουλάχιστον 8 χαρακτήρες", en: "Use at least 8 characters" },
-    terms_required: { el: "Πρέπει να αποδεχτείτε τους Όρους και το Απόρρητο", en: "You must accept Terms & Privacy" },
+    terms_required: { el: "Πρέπει να αποδεχτείτε τους όρους και το απόρρητο", en: "You must accept Terms & Privacy" },
 }
 
 function getZodError(message: string | undefined, language: "el" | "en"): string {

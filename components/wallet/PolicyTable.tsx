@@ -1,6 +1,6 @@
 "use client"
 
-import { AlertCircle, CalendarDays, FileText, MoreVertical, RefreshCw, Search, Share2, Trash2 } from 'lucide-react'
+import { AlertCircle, CalendarDays, FileText, MoreVertical, Search, Share2, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Policy } from './types'
@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils'
 interface PolicyTableProps {
     policies: Policy[]
     onViewPolicy?: (policyId: string) => void
-    onRenewPolicy?: (policyId: string) => void
     onViewHistory?: (policyId: string) => void
     onRunAnalysis?: (policyId: string) => void
     onDelete?: (policyId: string) => void
@@ -28,7 +27,6 @@ const POLICIES_PER_PAGE = 10
 export function PolicyTable({
     policies,
     onViewPolicy,
-    onRenewPolicy,
     onRunAnalysis,
     onDelete,
     onShare,
@@ -256,16 +254,13 @@ export function PolicyTable({
                                                                     closeMenu()
                                                                 }}
                                                             />
-                                                            {(view.key === 'expiring_soon' || view.key === 'expired') && (
-                                                                <MenuItem
-                                                                    icon={RefreshCw}
-                                                                    label={t.dashboard.renewPolicy}
-                                                                    onClick={() => {
-                                                                        onRenewPolicy?.(policy.id)
-                                                                        closeMenu()
-                                                                    }}
-                                                                />
-                                                            )}
+                                                            {/* A "Renew policy" item used to appear here on expiring and
+                                                                expired policies. PolicyWallet wired it to onRunAnalysis,
+                                                                so it was a duplicate of the Run-analysis item above wearing
+                                                                a different label: it promised renewal — which this product
+                                                                cannot do, having no insurer integration — at the one moment
+                                                                the user most needs it to be true, and spent their analysis
+                                                                quota instead. The card view never offered it either. */}
                                                             <MenuItem
                                                                 icon={Trash2}
                                                                 label={t.dashboard.delete}

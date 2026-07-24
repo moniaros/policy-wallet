@@ -47,7 +47,7 @@ const LOB_OPTIONS = [
 ]
 
 const PROPOSAL_TYPE_LABELS: Record<ProposalType, { en: string; el: string }> = {
-    new_policy: { en: "New Policy", el: "Νέο Ασφαλιστήριο" },
+    new_policy: { en: "New Policy", el: "Νέο ασφαλιστήριο" },
     renewal: { en: "Renewal", el: "Ανανέωση" },
     upgrade: { en: "Upgrade", el: "Αναβάθμιση" },
     bundle: { en: "Bundle", el: "Πακέτο" },

@@ -20,13 +20,13 @@ interface TourStep {
 const steps: TourStep[] = [
     {
         targetId: "tour-policy-card-0",
-        title: { el: "Το Πρώτο σας Συμβόλαιο!", en: "Your First Policy!" },
+        title: { el: "Το πρώτο σας συμβόλαιο!", en: "Your First Policy!" },
         content: { el: "Εδώ βρίσκεται το νέο σας συμβόλαιο. Πατήστε για πλήρη στοιχεία, έγγραφα και AI ανάλυση.", en: "Here lies your newly added policy. Tap it to see full details, documents, and AI insights." },
         position: "bottom"
     },
     {
         targetId: "tour-fab",
-        title: { el: "Προσθήκη Συμβολαίων", en: "Add More Policies" },
+        title: { el: "Προσθήκη συμβολαίων", en: "Add More Policies" },
         content: { el: "Χρησιμοποιήστε αυτό το κουμπί για να προσθέσετε συμβόλαια — υποστηρίζει PDF, φωτογραφίες ή χειροκίνητη εισαγωγή.", en: "Use this button to add more policies anytime—supports PDF, photos, or manual entry." },
         position: "top-left"
     },

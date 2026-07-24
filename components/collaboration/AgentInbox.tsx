@@ -51,7 +51,7 @@ const THREAD_TYPE_ICONS: Record<string, React.ElementType> = {
 
 const THREAD_TYPE_LABELS: Record<string, { en: string; el: string }> = {
     message: { en: "Message", el: "Μήνυμα" },
-    document_request: { en: "Document Request", el: "Αίτημα Εγγράφου" },
+    document_request: { en: "Document Request", el: "Αίτημα εγγράφου" },
     proposal: { en: "Proposal", el: "Πρόταση" },
 }
 

@@ -263,7 +263,6 @@ export function PolicyWallet({
                         <PolicyTable
                             policies={filteredPolicies}
                             onViewPolicy={onViewPolicy}
-                            onRenewPolicy={onRunAnalysis}
                             onViewHistory={onViewHistory}
                             onRunAnalysis={onRunAnalysis}
                             onDelete={onDeletePolicy}

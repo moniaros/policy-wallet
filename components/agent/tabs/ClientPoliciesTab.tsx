@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useState } from "react"
-import { Shield, Calendar, RefreshCw, TrendingUp, Eye, EyeOff, Filter, Plus, FileText } from "lucide-react"
+import Link from "next/link"
+import { Shield, Calendar, TrendingUp, Eye, EyeOff, Filter, Plus, FileText } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { EmptyState, PolicyPreviewRow } from "@/components/ui/EmptyState"
@@ -12,11 +13,12 @@ import type { ViewerRole } from "@/components/collaboration/types"
 
 interface ClientPoliciesTabProps {
     policies: Policy[]
+    /** Owner of these policies — needed to build the agent policy-detail URL. */
+    customerId?: string
     viewerRole: ViewerRole
     commissionRates?: Record<string, number>
     /** True when the viewing agent's plan includes branded reports (Pro+). */
     canBrandedReport?: boolean
-    onRenewPolicy?: (policyId: string) => void
     onUploadPolicy?: () => void
 }
 
@@ -34,7 +36,6 @@ const TAB_COPY = {
     commission: { el: "Προμήθειες", en: "Commission" },
     add: { el: "Προσθήκη", en: "Add" },
     commissionUnit: { el: "προμήθεια", en: "commission" },
-    renew: { el: "Ανανέωση", en: "Renew" },
     managedByYou: { el: "Διαχειριζόμενο από εσάς", en: "Managed by you" },
 } as const
 
@@ -64,10 +65,10 @@ const STATUS_LABELS: Record<string, { el: string; en: string }> = {
 
 export function ClientPoliciesTab({
     policies,
+    customerId,
     viewerRole,
     commissionRates,
     canBrandedReport = false,
-    onRenewPolicy,
     onUploadPolicy,
 }: ClientPoliciesTabProps) {
     const { language, t } = useLanguage()
@@ -163,12 +164,17 @@ export function ClientPoliciesTab({
             <div className="space-y-2">
                 {filteredPolicies.map((policy) => {
                     const commissionRate = commissionRates?.[policy.lineOfBusiness] || 0
-                    const daysToExpiry = Math.floor(
-                        (new Date(policy.endDate).getTime() - Date.now()) / 86_400_000
-                    )
+                    const lobLabel = LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness
+                    // The detail page re-checks getPolicyAccess server-side, so a
+                    // link here can never widen access — it only stops hiding a
+                    // page the agent is already entitled to open.
+                    const canOpen = viewerRole === "agent" && !!customerId
 
                     return (
-                        <BrandCard key={policy.policyId} className="p-4">
+                        <BrandCard
+                            key={policy.policyId}
+                            className={`p-4 relative ${canOpen ? "transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03] focus-within:ring-2 focus-within:ring-primary" : ""}`}
+                        >
                             <div className="flex items-center gap-4">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
                                     <Shield className="h-5 w-5 text-primary dark:text-mint" />
@@ -176,7 +182,20 @@ export function ClientPoliciesTab({
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-semibold text-foreground">
-                                            {LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness}
+                                            {canOpen ? (
+                                                // Stretched link: the whole card is the hit target, but the
+                                                // anchor stays a real <a> (middle-click / open-in-new-tab
+                                                // work) and is not nested inside the branded-report anchor.
+                                                <Link
+                                                    href={`/customers/${customerId}/policy/${policy.policyId}`}
+                                                    aria-label={`${lobLabel} · ${policy.insurerName} · ${policy.policyNumber}`}
+                                                    className="after:absolute after:inset-0 after:rounded-2xl focus:outline-none"
+                                                >
+                                                    {lobLabel}
+                                                </Link>
+                                            ) : (
+                                                lobLabel
+                                            )}
                                         </p>
                                         <span className={`rounded-full px-2 py-0.5 text-kicker font-medium ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`}>
                                             {(STATUS_LABELS[policy.status] || STATUS_LABELS.incomplete)[language]}
@@ -205,8 +224,9 @@ export function ClientPoliciesTab({
                                     )}
                                 </div>
 
-                                {/* Inline actions */}
-                                <div className="flex items-center gap-1.5">
+                                {/* Inline actions — z-10 keeps them clickable above the
+                                    card-wide stretched link. */}
+                                <div className="relative z-10 flex items-center gap-1.5">
                                     {/* Branded report — agent-only, needs a completed
                                         analysis and a Pro+ plan. Opens the print-ready
                                         HTML in a new tab (agent saves / shares as PDF). */}
@@ -221,16 +241,13 @@ export function ClientPoliciesTab({
                                             {t.agentUi.brandedReport}
                                         </a>
                                     )}
-                                    {daysToExpiry <= 30 && daysToExpiry >= 0 && onRenewPolicy && (
-                                        <button
-                                            type="button"
-                                            onClick={() => onRenewPolicy(policy.policyId)}
-                                            className="rounded-lg bg-primary-soft dark:bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary dark:text-mint hover:bg-primary/20 dark:hover:bg-primary/25 transition cursor-pointer flex items-center gap-1"
-                                        >
-                                            <RefreshCw className="h-3 w-3" />
-                                            {TAB_COPY.renew[language]}
-                                        </button>
-                                    )}
+                                    {/* A button labelled "Renew" used to be the ONLY route into
+                                        the policy detail page, and it rendered only within 30 days
+                                        of expiry — so an agent could not open a policy expiring in
+                                        60 days, or an expired one, at all. It also navigated to a
+                                        page that offers no renewal action, only review and edit.
+                                        The card itself is now the link; the expiry state is already
+                                        carried honestly by the status badge above. */}
                                 </div>
                             </div>
                         </BrandCard>

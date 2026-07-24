@@ -15,16 +15,16 @@ const LOB_OPTIONS = [
     { key: "life", en: "Life", el: "Ζωή" },
     { key: "travel", en: "Travel", el: "Ταξίδι" },
     { key: "pet", en: "Pet", el: "Κατοικίδιο" },
-    { key: "liability", en: "Liability", el: "Αστική Ευθύνη" },
-    { key: "legal_expenses", en: "Legal Expenses", el: "Νομική Προστασία" },
+    { key: "liability", en: "Liability", el: "Αστική ευθύνη" },
+    { key: "legal_expenses", en: "Legal Expenses", el: "Νομική προστασία" },
 ] as const
 
 const SETTINGS_COPY = {
-    commissionRatesTitle: { el: "Ποσοστά Προμήθειας", en: "Commission Rates" },
-    saveCommissions: { el: "Αποθήκευση Προμηθειών", en: "Save Commission Rates" },
+    commissionRatesTitle: { el: "Ποσοστά προμήθειας", en: "Commission Rates" },
+    saveCommissions: { el: "Αποθήκευση προμηθειών", en: "Save Commission Rates" },
     subscription: { el: "Συνδρομή", en: "Subscription" },
     customers: { el: "Πελάτες", en: "Customers" },
-    aiAnalysesPerMo: { el: "AI Αναλύσεις/μήνα", en: "AI Analyses/mo" },
+    aiAnalysesPerMo: { el: "AI αναλύσεις/μήνα", en: "AI Analyses/mo" },
     upgradePlan: { el: "Αναβάθμιση πλάνου", en: "Upgrade plan" },
 } as const
 

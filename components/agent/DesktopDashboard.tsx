@@ -34,11 +34,11 @@ import type {
 import type { AgentTier } from "@/types/subscription-entitlements"
 
 const DASH_COPY = {
-    newClient: { el: "Νέος Πελάτης", en: "New Client" },
-    revenuePulse: { el: "Παλμός Εσόδων", en: "Revenue Pulse" },
+    newClient: { el: "Νέος πελάτης", en: "New Client" },
+    revenuePulse: { el: "Παλμός εσόδων", en: "Revenue Pulse" },
     clients: { el: "Πελάτες", en: "Clients" },
-    recentActivity: { el: "Πρόσφατη Δραστηριότητα", en: "Recent Activity" },
-    quickAdd: { el: "Γρήγορη Προσθήκη", en: "Quick Add" },
+    recentActivity: { el: "Πρόσφατη δραστηριότητα", en: "Recent Activity" },
+    quickAdd: { el: "Γρήγορη προσθήκη", en: "Quick Add" },
     quickClient: { el: "Πελάτης", en: "Client" },
     quickPolicy: { el: "Ασφαλιστήριο", en: "Policy" },
     quickRequest: { el: "Αίτημα", en: "Request" },

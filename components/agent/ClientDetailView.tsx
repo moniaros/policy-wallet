@@ -46,7 +46,6 @@ interface ClientDetailViewProps {
     }
     onBack?: () => void
     onCreateProposal?: (gapId: string) => void
-    onRenewPolicy?: (policyId: string) => void
     onUploadPolicy?: () => void
     onSendQuestionnaire?: () => void
 }
@@ -64,7 +63,6 @@ export function ClientDetailView({
     financials,
     onBack,
     onCreateProposal,
-    onRenewPolicy,
     onUploadPolicy,
     onSendQuestionnaire,
 }: ClientDetailViewProps) {
@@ -199,7 +197,7 @@ export function ClientDetailView({
                         viewerRole={viewerRole}
                         commissionRates={commissionRates}
                         canBrandedReport={canBrandedReport}
-                        onRenewPolicy={onRenewPolicy}
+                        customerId={customer.id}
                         onUploadPolicy={onUploadPolicy}
                     />
                 )}

@@ -91,7 +91,7 @@ export default function PricingPage({
         viewAccount: { el: "Διαχείριση λογαριασμού", en: "Manage account" },
         choosePlan: { el: "Επιλογή πλάνου", en: "Choose plan" },
         contactSales: { el: "Επικοινωνία πωλήσεων", en: "Contact sales" },
-        dashboard: { el: "Πίνακας Ελέγχου", en: "Dashboard" },
+        dashboard: { el: "Πίνακας ελέγχου", en: "Dashboard" },
         pricing: { el: "Τιμολόγηση", en: "Pricing" },
         products: { el: "Προϊόντα", en: "Products" },
         company: { el: "Εταιρεία", en: "Company" },

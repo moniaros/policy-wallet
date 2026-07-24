@@ -63,7 +63,7 @@ type Tab = "overview" | "messages" | "documents" | "proposals"
 
 const PAGE_COPY = {
     tablistLabel: { el: "Ενότητες", en: "Sections" },
-    kicker: { el: "Ο Σύμβουλός μου", en: "My Agent" },
+    kicker: { el: "Ο σύμβουλός μου", en: "My Agent" },
     disconnect: { el: "Αποσύνδεση από τον σύμβουλο", en: "Disconnect from advisor" },
     disconnectDesc: { el: "Η σύνδεση τερματίζεται και η πρόσβαση του συμβούλου στα συμβόλαιά σας ανακαλείται.", en: "The connection ends and your advisor's access to your policies is revoked." },
     disconnectConfirm: { el: "Να αποσυνδεθείτε από τον σύμβουλό σας; Η πρόσβασή του στα συμβόλαιά σας θα ανακληθεί.", en: "Disconnect from your advisor? Their access to your policies will be revoked." },
@@ -107,7 +107,7 @@ const NO_AGENT_COPY = {
         en: "Share only what you choose and get a professional eye on your coverage gaps.",
     },
     previewLabel: { el: "Παράδειγμα", en: "Example" },
-    exampleName: { el: "Γιώργος Π. — Ασφαλιστικός Σύμβουλος", en: "George P. — Insurance Advisor" },
+    exampleName: { el: "Γιώργος Π. — Ασφαλιστικός σύμβουλος", en: "George P. — Insurance Advisor" },
     exampleMeta: { el: "Πιστοποιημένος συνεργάτης", en: "Verified partner" },
     exampleBadge: { el: "Συνδεδεμένος", en: "Connected" },
     inputLabel: { el: "Κωδικός πρόσκλησης", en: "Invite code" },

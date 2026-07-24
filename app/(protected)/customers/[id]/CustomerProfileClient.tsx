@@ -32,12 +32,12 @@ interface Props {
 
 const PROFILE_COPY = {
     actionsMenu: { el: "Ενέργειες", en: "Actions" },
-    requestDocument: { el: "Αίτημα Εγγράφου", en: "Request Document" },
-    createProposal: { el: "Δημιουργία Πρότασης", en: "Create Proposal" },
-    addPolicy: { el: "Προσθήκη Ασφαλιστηρίου", en: "Add Policy" },
+    requestDocument: { el: "Αίτημα εγγράφου", en: "Request Document" },
+    createProposal: { el: "Δημιουργία πρότασης", en: "Create Proposal" },
+    addPolicy: { el: "Προσθήκη ασφαλιστηρίου", en: "Add Policy" },
     createTask: { el: "Δημιουργία Task", en: "Create Task" },
     questionnaire: { el: "Ερωτηματολόγιο", en: "Questionnaire" },
-    documentRequests: { el: "Αιτήματα Εγγράφων", en: "Document Requests" },
+    documentRequests: { el: "Αιτήματα εγγράφων", en: "Document Requests" },
     newRequest: { el: "Νέο", en: "New" },
     noDocumentRequests: { el: "Δεν υπάρχουν αιτήματα", en: "No document requests" },
     proposals: { el: "Προτάσεις", en: "Proposals" },
@@ -48,7 +48,7 @@ const PROFILE_COPY = {
     sendFailed: { el: "Η αποστολή απέτυχε. Δοκιμάστε ξανά.", en: "Send failed. Please try again." },
     proposalUpgrade: { el: "Οι προτάσεις απαιτούν το πρόγραμμα Starter ή ανώτερο.", en: "Proposals require the Starter plan or higher." },
     docRequestUpgrade: { el: "Τα αιτήματα εγγράφων απαιτούν το πρόγραμμα Starter ή ανώτερο.", en: "Document requests require the Starter plan or higher." },
-    removeCustomer: { el: "Αφαίρεση Πελάτη", en: "Remove Customer" },
+    removeCustomer: { el: "Αφαίρεση πελάτη", en: "Remove Customer" },
     removeCustomerDesc: { el: "Ο πελάτης αφαιρείται από το χαρτοφυλάκιό σας και η πρόσβαση στα συμβόλαιά του ανακαλείται. Δεν διαγράφονται δεδομένα.", en: "The customer is removed from your book and access to their policies is revoked. No data is deleted." },
     removeCustomerConfirm: { el: "Να αφαιρεθεί ο πελάτης από το χαρτοφυλάκιό σας;", en: "Remove this customer from your book?" },
     removeCustomerFailed: { el: "Η αφαίρεση απέτυχε. Δοκιμάστε ξανά.", en: "Removal failed. Please try again." },
@@ -316,9 +316,6 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 opportunities={initialCustomer.opportunities || []}
                 interactions={initialCustomer.interactions || []}
                 onBack={() => router.push("/customers")}
-                onRenewPolicy={(policyId) => {
-                    router.push(`/customers/${initialCustomer.id}/policy/${policyId}`)
-                }}
                 onUploadPolicy={() => setIsPolicyModalOpen(true)}
             />
 

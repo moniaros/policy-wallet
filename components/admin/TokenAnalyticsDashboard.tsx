@@ -76,15 +76,15 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
     }
 
     const copy = {
-        title: { el: 'Ανάλυση Χρήσης Tokens', en: 'Token Usage Analytics' },
-        totalUsage: { el: 'Συνολική Χρήση', en: 'Total Usage' },
-        totalCost: { el: 'Συνολικό Κόστος', en: 'Total Cost' },
+        title: { el: 'Ανάλυση χρήσης Tokens', en: 'Token Usage Analytics' },
+        totalUsage: { el: 'Συνολική χρήση', en: 'Total Usage' },
+        totalCost: { el: 'Συνολικό κόστος', en: 'Total Cost' },
         operations: { el: 'Λειτουργίες', en: 'Operations' },
-        activeUsers: { el: 'Ενεργοί Χρήστες', en: 'Active Users' },
-        byOperation: { el: 'Ανά Λειτουργία', en: 'By Operation' },
-        byTier: { el: 'Ανά Πλάνο', en: 'By Tier' },
-        topUsers: { el: 'Κορυφαίοι Χρήστες', en: 'Top Users' },
-        trends: { el: 'Τάσεις Χρήσης', en: 'Usage Trends' },
+        activeUsers: { el: 'Ενεργοί χρήστες', en: 'Active Users' },
+        byOperation: { el: 'Ανά λειτουργία', en: 'By Operation' },
+        byTier: { el: 'Ανά πλάνο', en: 'By Tier' },
+        topUsers: { el: 'Κορυφαίοι χρήστες', en: 'Top Users' },
+        trends: { el: 'Τάσεις χρήσης', en: 'Usage Trends' },
     }
 
     return (

@@ -42,7 +42,7 @@ const GOALS: { key: GoalType; el: string; en: string }[] = [
     { key: "review_policy", el: "Έλεγχος υπάρχοντος συμβολαίου", en: "Review an Existing Policy" },
     { key: "save_money", el: "Εξοικονόμηση", en: "Save Money" },
     { key: "health_family", el: "Υγεία & Οικογένεια", en: "Health & Family" },
-    { key: "my_car", el: "Το Αυτοκίνητό μου", en: "My Car" },
+    { key: "my_car", el: "Το αυτοκίνητό μου", en: "My Car" },
     { key: "investments_reminders", el: "Επενδύσεις & Υπενθυμίσεις", en: "Investments & Reminders" },
 ]
 
