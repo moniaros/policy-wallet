@@ -39,10 +39,13 @@ export async function POST(req: Request) {
         const agentEntitlements = await resolveAgentEntitlements(authResult.dbUser.id)
         const bulkLimit = agentEntitlements.limits.bulkImportLimit
         if (bulkLimit !== null && customers.length > bulkLimit) {
+            // Distinct code, and the numbers in `details` — the client cannot
+            // localize "limited to 25 rows" from a prose string.
             return createApiError(
-                "FORBIDDEN",
-                `Bulk import limited to ${bulkLimit} rows on your plan. Upgrade for higher limits.`,
-                403
+                "BULK_IMPORT_ROW_LIMIT",
+                `Bulk import limited to ${bulkLimit} rows on your plan.`,
+                403,
+                { limit: bulkLimit, submitted: customers.length }
             )
         }
 
@@ -53,9 +56,10 @@ export async function POST(req: Request) {
         const customerCheck = await canAgentAddCustomer(authResult.dbUser.id)
         if (!customerCheck.allowed) {
             return createApiError(
-                "FORBIDDEN",
-                `Customer limit reached (${customerCheck.current}/${customerCheck.limit}). Upgrade your plan.`,
-                403
+                "CUSTOMER_LIMIT_REACHED",
+                `Customer limit reached (${customerCheck.current}/${customerCheck.limit}).`,
+                403,
+                { current: customerCheck.current, limit: customerCheck.limit }
             )
         }
         if (customerCheck.limit != null && customerCheck.current != null) {
@@ -68,9 +72,10 @@ export async function POST(req: Request) {
             const headroom = customerCheck.limit - customerCheck.current
             if (newCount > headroom) {
                 return createApiError(
-                    "FORBIDDEN",
-                    `This import adds ${newCount} new customers but only ${Math.max(0, headroom)} slots remain on your plan (${customerCheck.current}/${customerCheck.limit}). Upgrade your plan.`,
-                    403
+                    "CUSTOMER_HEADROOM_EXCEEDED",
+                    `This import adds ${newCount} new customers but only ${Math.max(0, headroom)} slots remain on your plan.`,
+                    403,
+                    { adding: newCount, headroom: Math.max(0, headroom), current: customerCheck.current, limit: customerCheck.limit }
                 )
             }
         }

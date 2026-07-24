@@ -69,6 +69,9 @@ export const en: TranslationKeys = {
         validation: 'Some details are not valid. Check them and try again.',
         unavailable: 'The service is temporarily unavailable. Try again shortly.',
         generic: 'Something went wrong. Please try again.',
+        bulkImportRowLimit: 'Your plan allows up to {limit} rows per import — you sent {submitted}. Split the file or upgrade.',
+        customerLimitReached: 'You have reached your plan’s customer limit ({current}/{limit}). Upgrade to add more.',
+        customerHeadroomExceeded: 'This import adds {adding} customers but only {headroom} slots remain ({current}/{limit}).',
     },
     nav: {
         navigation: 'Navigation',

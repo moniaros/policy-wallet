@@ -22,10 +22,38 @@ interface CustomerRow {
     error?: string
 }
 
+/**
+ * Localised reason for a rejected import. The API returns a distinct code and
+ * the numbers in `details`, so the message can be built in the reader's language
+ * rather than shipped as English prose from the server.
+ */
+function useLimitMessage(t: any) {
+    return (err: { code?: string; message?: string; details?: Record<string, unknown> } | null | undefined) => {
+        const d = (err?.details ?? {}) as Record<string, unknown>
+        const fill = (template: string) =>
+            template.replace(/\{(\w+)\}/g, (_, key) => String(d[key] ?? ''))
+        switch (err?.code) {
+            case 'BULK_IMPORT_ROW_LIMIT':
+                return fill(t.apiErrors.bulkImportRowLimit)
+            case 'CUSTOMER_LIMIT_REACHED':
+                return fill(t.apiErrors.customerLimitReached)
+            case 'CUSTOMER_HEADROOM_EXCEEDED':
+                return fill(t.apiErrors.customerHeadroomExceeded)
+            case 'FORBIDDEN':
+                return t.apiErrors.forbidden
+            case 'UNAUTHORIZED':
+                return t.apiErrors.unauthorized
+            default:
+                return t.apiErrors.generic
+        }
+    }
+}
+
 export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalProps) {
     const { t } = useLanguage()
     const dialogRef = useDialog<HTMLDivElement>(() => handleClose(), isOpen)
     const tt = t.agentModals.bulkImport
+    const limitMessage = useLimitMessage(t)
     const [step, setStep] = useState<'upload' | 'preview' | 'importing' | 'complete'>('upload')
     const [customers, setCustomers] = useState<CustomerRow[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
@@ -88,7 +116,16 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                 body: JSON.stringify({ customers: validCustomers })
             })
 
-            if (!response.ok) throw new Error('Import failed')
+            if (!response.ok) {
+                // The server knows exactly why — plan row limit, customer limit,
+                // remaining headroom, with the numbers. Throwing a bare Error
+                // discarded all of it and left the agent with "import failed" and
+                // no idea that splitting the file or upgrading would fix it.
+                const body = await response.json().catch(() => null)
+                toast.error(limitMessage(body?.error))
+                setStep('preview')
+                return
+            }
 
             const result = await response.json()
             setImportedCount(result.imported || validCustomers.length)
