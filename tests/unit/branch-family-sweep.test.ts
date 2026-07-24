@@ -121,3 +121,53 @@ describe('there is one gap engine', () => {
         expect(src).toMatch(/export async function detectGapsForUser/)
     })
 })
+
+/**
+ * The durable form of the fix. `normalizeBranch(x).id` gives the branch's OWN
+ * id — `normalizeBranch('motorbike').id === 'motor'` is false — and that one
+ * confusion produced five separate defects before it was worth naming. Anything
+ * asking "is this a motor policy?" must go through branchFamilyId.
+ */
+describe('one resolver answers "which family is this policy in"', () => {
+    it('resolves children to their parent and everything else to itself', async () => {
+        const { branchFamilyId } = await import('@/lib/insurance/taxonomy')
+        expect(branchFamilyId('motorbike')).toBe('motor')
+        expect(branchFamilyId('truck')).toBe('motor')
+        expect(branchFamilyId('renters')).toBe('home')
+        expect(branchFamilyId('income_protection')).toBe('life')
+        expect(branchFamilyId('personal_accident')).toBe('life')
+        expect(branchFamilyId('motor')).toBe('motor')
+        expect(branchFamilyId('health')).toBe('health')
+    })
+
+    it('is tolerant of casing, aliases and nothing at all', async () => {
+        const { branchFamilyId } = await import('@/lib/insurance/taxonomy')
+        expect(branchFamilyId('MotorBike')).toBe('motor')
+        expect(branchFamilyId(null)).toBeTruthy()
+        expect(branchFamilyId('')).toBeTruthy()
+    })
+
+    it('no code compares a line of business to a branch literal', () => {
+        // Enumerated across the whole tree rather than the neighbourhood of the
+        // last bug — twice on this branch a sweep scoped to where the defect was
+        // found missed instances elsewhere.
+        const BRANCHES =
+            '(motor|motorbike|truck|home|renters|health|life|income_protection|disability|personal_accident|travel|pet|liability|legal_expenses|business|boat|cyber|roadside|pension)'
+        const direct = new RegExp(`(lineOfBusiness|\\blob\\b|branchId)[^\n]{0,60}?(===|!==)\\s*['"]${BRANCHES}['"]`)
+        const viaList = new RegExp(`\\[\\s*['"]${BRANCHES}['"][^\\]]{0,80}\\]\\s*\\.includes\\([^)]*?(lineOfBusiness|\\blob\\b)`)
+        const offenders: string[] = []
+        for (const f of [
+            ...globSync('lib/**/*.ts'),
+            ...globSync('app/**/*.ts'),
+            ...globSync('app/**/*.tsx'),
+            ...globSync('components/**/*.tsx'),
+        ]) {
+            if (f.endsWith('lib/insurance/taxonomy.ts')) continue
+            for (const line of read(f).split('\n')) {
+                if (line.includes('branchFamilyId') || line.includes('normalizeBranch')) continue
+                if (direct.test(line) || viaList.test(line)) offenders.push(`${f}: ${line.trim().slice(0, 90)}`)
+            }
+        }
+        expect(offenders, `raw branch comparisons — use branchFamilyId:\n${offenders.join('\n')}`).toEqual([])
+    })
+})

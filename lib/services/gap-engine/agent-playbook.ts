@@ -12,6 +12,7 @@ import { db } from "@/lib/db"
 import type { ConversionLikelihood } from "./opportunity-scoring"
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility"
 import { isConsentedRelationship, isPhantomCustomer } from "@/lib/agent-consent"
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -238,19 +239,21 @@ function generateKeyInsight(
     severity: string,
     clientProfile: { dependentsCount?: number; ownsHome?: boolean; hasLoans?: boolean }
 ): { en: string; el: string } {
-    if (severity === "critical" && lob === "life" && (clientProfile.dependentsCount ?? 0) > 0) {
+    // Family: a client whose gap is in income protection, disability or
+    // personal accident is still a LIFE conversation for the agent.
+    if (severity === "critical" && branchFamilyId(lob) === "life" && (clientProfile.dependentsCount ?? 0) > 0) {
         return {
             en: `Client has ${clientProfile.dependentsCount} dependent(s) with no life cover — high emotional urgency.`,
             el: `Ο πελάτης έχει ${clientProfile.dependentsCount} εξαρτώμενο(α) μέλος(η) χωρίς ασφάλεια ζωής — υψηλή συναισθηματική επείγουσα ανάγκη.`,
         }
     }
-    if (lob === "home" && clientProfile.ownsHome) {
+    if (branchFamilyId(lob) === "home" && clientProfile.ownsHome) {
         return {
             en: "Homeowner without property insurance — significant asset at risk.",
             el: "Ιδιοκτήτης χωρίς ασφάλεια ακινήτου — σημαντικό περιουσιακό στοιχείο σε κίνδυνο.",
         }
     }
-    if (lob === "life" && clientProfile.hasLoans) {
+    if (branchFamilyId(lob) === "life" && clientProfile.hasLoans) {
         return {
             en: "Client has outstanding loans — life insurance would protect against debt transfer to family.",
             el: "Ο πελάτης έχει ανεξόφλητα δάνεια — η ασφάλεια ζωής θα προστάτευε από μεταφορά χρέους στην οικογένεια.",
@@ -332,7 +335,10 @@ export async function generatePlaybook(
     const baseSteps = STEP_TEMPLATES[templateKey] || STEP_TEMPLATES.low
 
     const steps: PlaybookStep[] = baseSteps.map((tmpl, i) => {
-        const lobPoints = LOB_TALKING_POINTS[lineOfBusiness.toLowerCase()] || []
+        const lobPoints =
+        LOB_TALKING_POINTS[lineOfBusiness.toLowerCase()] ||
+        LOB_TALKING_POINTS[branchFamilyId(lineOfBusiness)] ||
+        []
         const allPoints = i === 0 ? [...tmpl.talkingPoints, ...lobPoints] : tmpl.talkingPoints
 
         return {

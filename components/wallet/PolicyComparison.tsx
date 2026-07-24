@@ -9,6 +9,7 @@ import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
 import { StatusPill } from "@/components/ui/StatusPill"
 import { useDialog } from "@/hooks/useDialog"
 import { calendarDaysUntil } from "@/lib/policy-status"
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
 interface PolicyForComparison {
     id: string
@@ -140,7 +141,9 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
             { key: 'endDate', label: c.rowEndDate, getValue: (p: PolicyForComparison) => formatDate(p.endDate) },
         ]
 
-        if (lob === 'motor') {
+        // A motorbike or truck comparison used to fall through to the generic
+        // rows, losing the vehicle-specific ones.
+        if (branchFamilyId(lob || '') === 'motor') {
             return [
                 ...commonRows,
                 {

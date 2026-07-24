@@ -11,6 +11,7 @@ import * as Sentry from '@sentry/nextjs'
 
 import { isSameDocumentDate, parseDocumentDate } from '@/lib/dates/document-date'
 import { resolveInsurerDisplay } from '@/lib/wallet/insurer-registry'
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
 export type ReviewState = 'unconfirmed' | 'confirmed' | 'flagged'
 
@@ -123,11 +124,14 @@ function asArray<T>(value: unknown): T[] {
  */
 export function sumInsuredTargetPath(lineOfBusiness: string): [section: string, key: string] {
     const lob = (lineOfBusiness || '').toLowerCase()
-    if (lob === 'home' || lob === 'renters' || lob === 'property') return ['property', 'insuredValue']
-    if (lob === 'health') return ['health', 'annualLimit']
-    if (lob === 'life' || lob === 'income_protection' || lob === 'disability') return ['lifeAndInvestment', 'deathBenefit']
-    if (lob === 'motor' || lob === 'motorbike') return ['vehicle', 'estimatedMarketValue']
-    if (lob === 'pet') return ['pet', 'annualLimit']
+    // Family, not id: the hand-kept lists here already covered renters and
+    // motorbike but not truck or personal accident, so those two lost their
+    // section entirely.
+    if (branchFamilyId(lob) === 'home') return ['property', 'insuredValue']
+    if (branchFamilyId(lob) === 'health') return ['health', 'annualLimit']
+    if (branchFamilyId(lob) === 'life') return ['lifeAndInvestment', 'deathBenefit']
+    if (branchFamilyId(lob) === 'motor') return ['vehicle', 'estimatedMarketValue']
+    if (branchFamilyId(lob) === 'pet') return ['pet', 'annualLimit']
     return ['policy', 'sumInsured']
 }
 
@@ -144,10 +148,10 @@ export function deriveSumInsured(
 
     const candidates: Array<[string, string]> = [[section, key]]
     const lob = (lineOfBusiness || '').toLowerCase()
-    if (lob === 'home' || lob === 'renters' || lob === 'property') {
+    if (branchFamilyId(lob) === 'home') {
         candidates.push(['property', 'replacementValue'], ['home', 'insuredValue'], ['home', 'replacementValue'])
     }
-    if (lob === 'pet') {
+    if (branchFamilyId(lob) === 'pet') {
         candidates.push(['pet', 'annualLimitTotal'])
     }
 

@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { isAgentRole } from "@/lib/auth/require-agent"
 import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
 // ── Types ──
 
@@ -262,14 +263,14 @@ export async function analyzeQuestionnaireResponse(instanceId: string) {
     }
 
     // Add LoB-specific recommendations
-    if (lob === "motor") {
+    if (branchFamilyId(lob) === "motor") {
         const coverageQ = answerSummary.find((a) => a.question.toLowerCase().includes("coverage type"))
         if (coverageQ && (coverageQ.answer === "third_party" || coverageQ.answer === "none")) {
             recommendations.push("Currently on basic/no coverage — strong upgrade opportunity")
         }
     }
 
-    if (lob === "health") {
+    if (branchFamilyId(lob) === "health") {
         const budgetQ = answerSummary.find((a) => a.question.toLowerCase().includes("budget"))
         if (budgetQ && budgetQ.answer === "high") {
             recommendations.push("High budget preference — present premium plan options")

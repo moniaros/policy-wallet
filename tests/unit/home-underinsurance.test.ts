@@ -156,6 +156,10 @@ describe('the neighbouring portfolio rules see child branches too', () => {
     it('no portfolio rule compares a raw line-of-business id any more', () => {
         const src = strip(readFileSync('lib/services/gap-engine/portfolio-rules.ts', 'utf-8'))
         expect(src).not.toMatch(/normalizeBranch\(p\.lineOfBusiness\)\.id [!=]==/)
-        expect(src).toMatch(/function branchFamily/)
+        // The local helper moved to lib/insurance/taxonomy as branchFamilyId —
+        // the module that owns the parent relationship — once the same question
+        // turned out to be asked in six other files.
+        expect(src).toMatch(/branchFamilyId\(p\.lineOfBusiness\)/)
+        expect(src).toMatch(/from "@\/lib\/insurance\/taxonomy"/)
     })
 })

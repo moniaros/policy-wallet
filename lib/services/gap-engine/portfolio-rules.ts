@@ -13,7 +13,7 @@
  */
 
 import type { GapSeverity } from "./profile-gap-rules"
-import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { normalizeBranch, branchFamilyId } from "@/lib/insurance/taxonomy"
 
 export interface SmartCardContent {
     /** What we saw in the user's own data — always cites concrete facts. */
@@ -77,19 +77,6 @@ function formatDate(date: Date, locale: string): string {
     return date.toLocaleDateString(locale)
 }
 
-/**
- * The branch FAMILY a policy belongs to — motorbike and truck are motor,
- * renters is home. The rules below asked `normalizeBranch(...).id === "home"`,
- * which is the child's own id, so a rented home was invisible to the earthquake
- * rule and a motorbike to the roadside rule. Same assumption that had already
- * produced four defects elsewhere on this branch; these two were still standing
- * because the earlier sweep looked at the profile rules and the score, not here.
- */
-function branchFamily(lineOfBusiness: string): string {
-    const branch = normalizeBranch(lineOfBusiness)
-    return (branch.parentId ?? branch.id).toLowerCase()
-}
-
 function isActive(p: PortfolioPolicyFacts): boolean {
     return p.status === "active"
 }
@@ -104,7 +91,7 @@ function expiringMotorRule(
         .filter(
             (p) =>
                 isActive(p) &&
-                ["motor", "motorbike"].includes(p.lineOfBusiness.toLowerCase()) &&
+                branchFamilyId(p.lineOfBusiness) === "motor" &&
                 p.endDate &&
                 p.endDate.getTime() > now.getTime() &&
                 p.endDate.getTime() - now.getTime() <= 30 * DAY_MS
@@ -148,7 +135,7 @@ function lowHealthCoverageRule(
 ): PortfolioGap | null {
     const candidate = policies
         .filter((p) => {
-            if (!isActive(p) || p.lineOfBusiness.toLowerCase() !== "health") return false
+            if (!isActive(p) || branchFamilyId(p.lineOfBusiness) !== "health") return false
             const limit = Number(p.acordData?.health?.annualLimit)
             return Number.isFinite(limit) && limit > 0 && limit < LOW_HEALTH_LIMIT_MEDIUM
         })
@@ -327,7 +314,7 @@ function homeNoEarthquakeRule(policies: PortfolioPolicyFacts[]): PortfolioGap | 
     const candidate = policies.find(
         (p) =>
             isActive(p) &&
-            branchFamily(p.lineOfBusiness) === "home" &&
+            branchFamilyId(p.lineOfBusiness) === "home" &&
             p.acordData?.property &&
             p.acordData.property.earthquakeCoverageIncluded === false
     )
@@ -381,7 +368,7 @@ function homeNoEarthquakeRule(policies: PortfolioPolicyFacts[]): PortfolioGap | 
  */
 function homeUnderinsuredRule(policies: PortfolioPolicyFacts[]): PortfolioGap | null {
     const candidate = policies.find((p) => {
-        if (!isActive(p) || branchFamily(p.lineOfBusiness) !== "home") return false
+        if (!isActive(p) || branchFamilyId(p.lineOfBusiness) !== "home") return false
         const property = p.acordData?.property
         const insured = Number(property?.insuredValue)
         const rebuild = Number(property?.estimatedRebuildCost)
@@ -434,7 +421,7 @@ function motorNoRoadsideRule(policies: PortfolioPolicyFacts[]): PortfolioGap | n
     const candidate = policies.find(
         (p) =>
             isActive(p) &&
-            branchFamily(p.lineOfBusiness) === "motor" &&
+            branchFamilyId(p.lineOfBusiness) === "motor" &&
             p.acordData?.vehicle &&
             p.acordData.vehicle.hasRoadsideAssistance === false
     )

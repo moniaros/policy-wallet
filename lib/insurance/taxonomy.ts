@@ -350,6 +350,26 @@ export function normalizeBranch(raw: string | null | undefined): InsuranceBranch
 }
 
 /** A branch id plus all of its descendants — for aggregating policies. */
+/**
+ * The branch FAMILY id for any line of business — a child resolves to its
+ * parent, everything else to itself.
+ *
+ * `normalizeBranch(x).id` gives the branch's OWN id, which is what code reaching
+ * for it usually does not want: `normalizeBranch('motorbike').id === 'motor'` is
+ * false. That one confusion produced five separate defects — an insured
+ * motorbike accused of being uninsured at critical severity, a motorbike scoring
+ * as no property cover, a motorbike commissioned at the default rate, a
+ * motorbike with no plate on the wallet list, and a rented home invisible to the
+ * earthquake rule — before it was worth naming.
+ *
+ * Reach for this whenever the question is "is this a motor policy?" rather than
+ * "which exact branch is this?".
+ */
+export function branchFamilyId(raw: string | null | undefined): string {
+    const branch = normalizeBranch(raw)
+    return (branch.parentId ?? branch.id).toLowerCase()
+}
+
 export function getBranchFamily(id: string): string[] {
     const family = [id]
     for (const branch of INSURANCE_BRANCHES) {
