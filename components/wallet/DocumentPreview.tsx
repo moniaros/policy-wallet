@@ -2,6 +2,7 @@
 
 import { Modal } from "@/components/ui/Modal"
 import { Eye, Download, Crown } from "lucide-react"
+import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
 
 interface DocumentPreviewProps {
     isOpen: boolean
@@ -17,10 +18,15 @@ interface DocumentPreviewProps {
     }
 }
 
+/**
+ * Derived from the upload allowlist. The hand-written regex here listed gif, bmp
+ * and svg — none of which the server accepts — and omitted heic, which it does.
+ * A phone photo of a policy therefore reached the preview as "other" and was met
+ * with "preview unavailable", even where the card offered a preview button.
+ */
 function getFileType(fileName: string): "pdf" | "image" | "other" {
-    const lower = fileName.toLowerCase()
-    if (lower.endsWith(".pdf")) return "pdf"
-    if (/\.(jpe?g|png|gif|webp|bmp|svg)$/.test(lower)) return "image"
+    if (isPdfFile(fileName)) return "pdf"
+    if (isAcceptedImageFile(fileName)) return "image"
     return "other"
 }
 

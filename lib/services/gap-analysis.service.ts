@@ -14,6 +14,7 @@ import fs from 'fs/promises'
 import type { Policy, GapInstance } from '@prisma/client'
 import type { GapSeverity, GapStatus } from '@/types'
 import { enrichExtractionPayload } from '@/lib/services/ai/extraction-enrichment'
+import { documentMimeType } from '@/lib/security/file-upload'
 
 // Type Definitions
 export interface GapAnalysisResult {
@@ -207,16 +208,9 @@ export class GapAnalysisService extends BaseService {
                         buffer = await fs.readFile(filePath)
                     }
 
-                    // Determine MIME type
-                    let mimeType = 'application/pdf'
-                    const lowerName = doc.fileName.toLowerCase()
-                    if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg')) {
-                        mimeType = 'image/jpeg'
-                    } else if (lowerName.endsWith('.png')) {
-                        mimeType = 'image/png'
-                    } else if (lowerName.endsWith('.webp')) {
-                        mimeType = 'image/webp'
-                    }
+                    // From the upload allowlist. The if-chain here omitted HEIC,
+                    // so an iPhone photo was sent to the model declared as a PDF.
+                    const mimeType = documentMimeType(doc.fileName)
 
                     aiDocument = {
                         data: buffer.toString('base64'),

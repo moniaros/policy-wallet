@@ -101,6 +101,49 @@ const CATEGORY_EXTENSIONS: Record<UploadCategory, string[]> = {
 
 
 /**
+ * Is this filename an image the product accepts?
+ *
+ * The documents card hand-wrote `/\.(jpe?g|png|gif|webp|bmp|svg)$/` — which
+ * listed three formats the allowlist rejects (gif, bmp, svg) and omitted the one
+ * it accepts and iPhones produce by default (heic). So a photo of a policy taken
+ * on a phone was labelled "other file" instead of an image, and lost its inline
+ * preview. Derived here so the display can never disagree with what the upload
+ * takes.
+ */
+export function isAcceptedImageFile(fileName: string | null | undefined): boolean {
+    const name = String(fileName || "").toLowerCase()
+    return CATEGORY_EXTENSIONS.policy
+        .filter((ext) => ext !== ".pdf")
+        .some((ext) => name.endsWith(ext))
+}
+
+/** Is this filename a PDF? Same source, same reason. */
+export function isPdfFile(fileName: string | null | undefined): boolean {
+    return String(fileName || "").toLowerCase().endsWith(".pdf")
+}
+
+/**
+ * The MIME type to declare for a stored document, from its filename.
+ *
+ * Two AI paths resolved this with their own if-chains covering pdf/jpg/png/webp
+ * and defaulting to `application/pdf`. Neither knew about HEIC — which storage
+ * accepts and iPhones produce by default — so a phone photo of a policy was sent
+ * to the model labelled as a PDF. The bytes did not match the declared type, so
+ * the extraction had nothing to read and the policyholder was left with an
+ * analysis that "did not finish cleanly" and no way to know why.
+ *
+ * Defaults to PDF for an unknown extension, matching the previous behaviour for
+ * genuinely unrecognised files.
+ */
+export function documentMimeType(fileName: string | null | undefined): string {
+    const name = String(fileName || "").toLowerCase()
+    for (const [ext, spec] of Object.entries(FILE_TYPES)) {
+        if (name.endsWith(ext)) return spec.canonicalMime
+    }
+    return "application/pdf"
+}
+
+/**
  * The `accept` attribute for a file input, derived from the same allowlist the
  * server enforces.
  *

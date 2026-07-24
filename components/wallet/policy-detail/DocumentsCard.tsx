@@ -6,6 +6,7 @@ import { Download, FileText } from "lucide-react"
 
 import { DocumentPreview, DocumentPreviewButton } from "@/components/wallet/DocumentPreview"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
 
 interface PolicyDocumentItem {
     id: string
@@ -66,8 +67,13 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
             ) : (
                 <ul className="space-y-3">
                     {documents.map((doc) => {
-                        const isPdf = doc.fileName?.toLowerCase().endsWith('.pdf')
-                        const isImage = /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(doc.fileName || '')
+                        // Derived from the upload allowlist, not hand-written: the
+                        // old regex listed gif/bmp/svg (which the server rejects) and
+                        // omitted heic (which it accepts, and which iPhones produce
+                        // by default), so a phone photo of a policy showed as "other
+                        // file" and lost its inline preview.
+                        const isPdf = isPdfFile(doc.fileName)
+                        const isImage = isAcceptedImageFile(doc.fileName)
                         const canPreview = isPdf || isImage
                         const isPreviewLocked = isPdf && isFreeTier
 

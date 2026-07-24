@@ -32,6 +32,7 @@ import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/polic
 import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
 import { buildPolicyReviewData, sumInsuredTargetPath } from "@/lib/wallet/policy-review"
 import { startOfAthensDay, startOfAthensMonth } from "@/lib/policy-status"
+import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -116,13 +117,16 @@ export async function createPolicy(formData: FormData) {
             continue
         }
 
-        // Security: validate extension on the (original) display name.
-        const lowerName = fileName.toLowerCase()
-        const hasValidExt = lowerName.endsWith('.pdf') ||
-            lowerName.endsWith('.jpg') ||
-            lowerName.endsWith('.jpeg') ||
-            lowerName.endsWith('.png') ||
-            lowerName.endsWith('.webp')
+        // Security: validate extension on the (original) display name, against the
+        // SAME allowlist the upload validator enforces.
+        //
+        // This list omitted .heic, which storage accepts and which iPhones
+        // produce by default — so a phone photo of a policy was uploaded
+        // successfully and then silently dropped here, with only a server-side
+        // warning. Per the comment above, status derives from the documents that
+        // survive: if the HEIC was the only one, the policy committed with zero
+        // documents.
+        const hasValidExt = isPdfFile(fileName) || isAcceptedImageFile(fileName)
 
         if (!hasValidExt) {
             logger('warn', 'Skipping policy document with invalid extension')

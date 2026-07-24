@@ -57,6 +57,7 @@ import {
     emitAnalysisRunTelemetry,
     emitAnalysisStepTelemetry,
 } from "./step-telemetry"
+import { documentMimeType } from "@/lib/security/file-upload"
 
 const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
     document_load_and_validation: 1,
@@ -2286,11 +2287,10 @@ export class PolicyAnalysisOrchestratorService {
             )
         }
 
-        const lowerFileName = document.fileName.toLowerCase()
-        let mimeType = "application/pdf"
-        if (lowerFileName.endsWith(".png")) mimeType = "image/png"
-        if (lowerFileName.endsWith(".jpg") || lowerFileName.endsWith(".jpeg")) mimeType = "image/jpeg"
-        if (lowerFileName.endsWith(".webp")) mimeType = "image/webp"
+        // From the upload allowlist — see documentMimeType. This chain omitted
+        // HEIC, so a phone photo reached the model labelled as a PDF and the
+        // extraction had nothing it could read.
+        const mimeType = documentMimeType(document.fileName)
 
         // Compute document hash for extraction caching
         const docHash = await hashDocumentBuffer(buffer)
