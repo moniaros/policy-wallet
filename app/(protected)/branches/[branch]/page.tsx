@@ -191,7 +191,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                             <span className="rounded-full bg-black/5 px-2.5 py-1 text-kicker font-bold text-black/60 dark:bg-white/10 dark:text-white/65">
                                                 {statusLabel}
                                             </span>
-                                            <ArrowRight className="h-4 w-4 text-black/55 dark:text-white/45" aria-hidden />
+                                            <ArrowRight className="h-4 w-4 text-black/55 dark:text-white/60" aria-hidden />
                                         </div>
                                     </Link>
                                 )

@@ -88,7 +88,7 @@ export function CommissionsClient({ data }: Props) {
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {t.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-500">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {t.subtitle}
                     </p>
                 </div>
@@ -100,7 +100,7 @@ export function CommissionsClient({ data }: Props) {
                             <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                 <Euro className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
-                            <span className="text-kicker font-black text-neutral-500 uppercase tracking-widest">{t.wonCommission}</span>
+                            <span className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.wonCommission}</span>
                         </div>
                         <p className="text-3xl font-black text-primary dark:text-mint">{fmt(data.totalWon)}</p>
                     </div>
@@ -110,7 +110,7 @@ export function CommissionsClient({ data }: Props) {
                             <div className="w-10 h-10 rounded-xl bg-mint/20 dark:bg-primary/15 flex items-center justify-center">
                                 <TrendingUp className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
-                            <span className="text-kicker font-black text-neutral-500 uppercase tracking-widest">{t.estimatedPipeline}</span>
+                            <span className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.estimatedPipeline}</span>
                         </div>
                         <p className="text-3xl font-black text-primary/70 dark:text-mint/80">{fmt(data.totalEstimated)}</p>
                     </div>
@@ -148,10 +148,10 @@ export function CommissionsClient({ data }: Props) {
                                         {sortedByLob.map((row) => (
                                             <tr key={row.lob} className="border-b border-neutral-50 dark:border-neutral-800/50">
                                                 <td data-label={t.lob} className="py-3 font-bold text-foreground capitalize">{row.lob.replace(/_/g, " ")}</td>
-                                                <td data-label={t.premium} className="py-3 text-right text-neutral-600 dark:text-neutral-500">
+                                                <td data-label={t.premium} className="py-3 text-right text-neutral-600 dark:text-neutral-400">
                                                     <div>{fmt(row.wonPremium)}</div>
                                                     {row.estimatedPremium > 0 && (
-                                                        <div className="text-xs text-neutral-500">+{fmt(row.estimatedPremium)}</div>
+                                                        <div className="text-xs text-neutral-500 dark:text-neutral-400">+{fmt(row.estimatedPremium)}</div>
                                                     )}
                                                 </td>
                                                 <td data-label={t.commission} className="py-3 text-right">
@@ -160,7 +160,7 @@ export function CommissionsClient({ data }: Props) {
                                                         <div className="text-xs text-primary/60 dark:text-mint/70">+{fmt(row.estimatedCommission)}</div>
                                                     )}
                                                 </td>
-                                                <td data-label={t.opportunities} className="py-3 text-right text-neutral-500">{row.opportunityCount}</td>
+                                                <td data-label={t.opportunities} className="py-3 text-right text-neutral-500 dark:text-neutral-400">{row.opportunityCount}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -192,7 +192,7 @@ export function CommissionsClient({ data }: Props) {
                                 return (
                                     <div key={m.month}>
                                         <div className="flex items-center justify-between mb-1.5">
-                                            <span className="text-xs font-bold text-neutral-500">{m.month}</span>
+                                            <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">{m.month}</span>
                                             <div className="flex items-center gap-3 text-xs">
                                                 <span className="font-bold text-primary dark:text-mint">{fmt(m.won)}</span>
                                                 {m.estimated > 0 && (
@@ -223,11 +223,11 @@ export function CommissionsClient({ data }: Props) {
                         <div className="flex items-center gap-6 mt-5 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                             <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 rounded-full bg-primary" />
-                                <span className="text-xs font-bold text-neutral-500">{t.won}</span>
+                                <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t.won}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 rounded-full bg-mint" />
-                                <span className="text-xs font-bold text-neutral-500">{t.projected}</span>
+                                <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t.projected}</span>
                             </div>
                         </div>
                     </div>

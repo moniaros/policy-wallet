@@ -25,8 +25,8 @@ export function BillingHistory({ invoices, language, className = '' }: BillingHi
     if (invoices.length === 0) {
         return (
             <div className={`bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-200 dark:border-slate-700 p-8 text-center ${className}`}>
-                <FileText className="w-12 h-12 text-slate-500 dark:text-slate-600 mx-auto mb-4" />
-                <p className="text-slate-600 dark:text-slate-500">
+                <FileText className="w-12 h-12 text-slate-500 dark:text-slate-400 mx-auto mb-4" />
+                <p className="text-slate-600 dark:text-slate-400">
                     {language === 'el'
                         ? 'Δεν υπάρχουν τιμολόγια ακόμα'
                         : 'No invoices yet'}
@@ -55,7 +55,7 @@ export function BillingHistory({ invoices, language, className = '' }: BillingHi
                             {/* Date & Amount */}
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-1">
-                                    <FileText className="w-5 h-5 text-slate-500 dark:text-slate-600" />
+                                    <FileText className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                                     <span className="font-semibold text-slate-900 dark:text-white">
                                         {invoice.date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB', {
                                             year: 'numeric',

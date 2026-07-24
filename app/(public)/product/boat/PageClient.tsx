@@ -78,7 +78,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] uppercase tracking-wider">Sailing Yacht 9.8m</h3>
-                                <p className="text-body-sm text-gray-500">Alimos Marina · In Force</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">Alimos Marina · In Force</p>
                             </div>
                             <Sailboat className="w-6 h-6 text-[#29685B]" />
                         </div>

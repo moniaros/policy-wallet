@@ -35,7 +35,7 @@ export function CoverageGapsWidget({
         <Link href="/coverage-insights" className="pw-card pw-pad">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
-                <ShieldAlert className="h-4 w-4 text-black/55 dark:text-white/45" aria-hidden />
+                <ShieldAlert className="h-4 w-4 text-black/55 dark:text-white/60" aria-hidden />
             </div>
             <div className="mt-3">
                 {total === 0 ? (
@@ -56,7 +56,7 @@ export function CoverageGapsWidget({
                         {/* "Critical/high" read as a risk verdict; the gap engine treats
                             them as a profile-based priority (the report itself omits
                             severity as "unvalidated"). This says so plainly. */}
-                        <p className="mt-2 text-caption leading-snug text-black/55 dark:text-white/45">
+                        <p className="mt-2 text-caption leading-snug text-black/55 dark:text-white/60">
                             {labels.note}
                         </p>
                     </>

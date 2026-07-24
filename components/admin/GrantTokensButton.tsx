@@ -41,7 +41,7 @@ export default function GrantTokensButton({ userId, label }: { userId: string; l
                             value={reason} onChange={e => setReason(e.target.value)}
                         />
                         <div className="flex justify-end gap-2">
-                            <button onClick={() => setOpen(false)} disabled={busy} className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
+                            <button onClick={() => setOpen(false)} disabled={busy} className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
                             <button
                                 disabled={busy || !amount.trim() || !reason.trim()}
                                 onClick={async () => {

@@ -305,7 +305,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                 <input id="signup-email" type="email" placeholder="name@example.com" {...register("email")} className={`${inputBase} ${errors.email ? "border-rose-300" : ""}`} />
                                 {isEmailValid && <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-primary" />}
                             </div>
-                            <p className="mt-1 text-micro text-[#94A3B8] dark:text-white/40">
+                            <p className="mt-1 text-micro text-[#94A3B8] dark:text-white/60">
                                 {t("Για ανάκτηση λογαριασμού και ειδοποιήσεις.", "For account recovery and alerts.")}
                             </p>
                             {errors.email && <p className="mt-1 text-caption text-rose-600">{getZodError(errors.email.message, language)}</p>}
@@ -377,7 +377,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                             {signupSuccess ? t("Πορτοφόλι δημιουργήθηκε", "Wallet Created") : t("Δημιουργία Πορτοφολιού", "Create My Wallet")}
                         </motion.button>
 
-                        <p className="text-center text-caption text-[#94A3B8] dark:text-white/40">
+                        <p className="text-center text-caption text-[#94A3B8] dark:text-white/60">
                             {t("Χρειάζονται 90 δευτερόλεπτα. Ακυρώστε οποτεδήποτε.", "Takes 90 seconds. Cancel anytime.")}
                         </p>
                     </form>

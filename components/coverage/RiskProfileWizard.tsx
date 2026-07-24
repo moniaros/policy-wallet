@@ -161,7 +161,11 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
         }
     }
 
-    const inputClass = "pw-input pw-input-sm mt-1 block border-black/10 bg-black/[0.03] text-black"
+    // Every field in the wizard shares this. It carried no dark variant, so in
+    // dark mode the surface flipped to near-black while the text stayed black —
+    // 1.1:1, i.e. the user could not see what they were typing, on the flow that
+    // feeds the whole gap engine.
+    const inputClass = "pw-input pw-input-sm mt-1 block border-black/10 bg-black/[0.03] text-black dark:border-white/15 dark:bg-white/5 dark:text-white"
     const checkboxClass =
         "rounded border-black/20 dark:border-white/25 text-primary focus:ring-primary"
     const labelClass = "block text-sm font-medium text-black/75 dark:text-white/75"
@@ -319,7 +323,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                                 placeholder="75"
                             />
                             {heightCm !== "" && weightKg !== "" && (
-                                <p className="text-xs text-black/55 dark:text-white/45 mt-1">
+                                <p className="text-xs text-black/55 dark:text-white/60 mt-1">
                                     {t("ΔΜΣ", "BMI")}: {(Number(weightKg) / ((Number(heightCm) / 100) ** 2)).toFixed(1)}
                                 </p>
                             )}
@@ -355,7 +359,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                                 )
                             })}
                         </div>
-                        <p className="text-xs text-black/55 dark:text-white/40 mt-1.5">
+                        <p className="text-xs text-black/55 dark:text-white/60 mt-1.5">
                             {t("Επιλέξτε όλα όσα ισχύουν. Αφήστε κενό εάν δεν υπάρχουν.", "Select all that apply. Leave blank if none.")}
                         </p>
                     </div>
@@ -388,7 +392,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                                 )
                             })}
                         </div>
-                        <p className="text-xs text-black/55 dark:text-white/40 mt-1.5">
+                        <p className="text-xs text-black/55 dark:text-white/60 mt-1.5">
                             {t("Κληρονομικές παθήσεις σε γονείς ή αδέλφια.", "Hereditary conditions in parents or siblings.")}
                         </p>
                     </div>
@@ -545,14 +549,14 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                             <button type="button" onClick={addLifeEvent} className="pw-primary-button">
                                 {t("OK", "OK")}
                             </button>
-                            <button type="button" onClick={() => setShowAddEvent(false)} aria-label={t("Ακύρωση", "Cancel")} className="p-2.5 text-black/55 dark:text-white/40 hover:text-black dark:hover:text-white cursor-pointer">
+                            <button type="button" onClick={() => setShowAddEvent(false)} aria-label={t("Ακύρωση", "Cancel")} className="p-2.5 text-black/55 dark:text-white/60 hover:text-black dark:hover:text-white cursor-pointer">
                                 <X className="h-4 w-4" />
                             </button>
                         </div>
                     )}
 
                     {lifeEvents.length === 0 && !showAddEvent && (
-                        <p className="text-xs text-black/55 dark:text-white/40">
+                        <p className="text-xs text-black/55 dark:text-white/60">
                             {t(
                                 "Προσθέστε σημαντικά γεγονότα ζωής για ακριβέστερη ανίχνευση κενών.",
                                 "Add major life events for more accurate gap detection."

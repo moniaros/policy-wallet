@@ -19,7 +19,7 @@ export function ConfidenceBadge({
     if (level === "unknown") {
         if (!missing) return null
         return (
-            <span className="inline-flex flex-shrink-0 items-center rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-600">
+            <span className="inline-flex flex-shrink-0 items-center rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                 {labels.notFound}
             </span>
         )

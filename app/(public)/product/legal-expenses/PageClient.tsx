@@ -106,14 +106,14 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                         </div>
 
                         <div className="rounded-[16px] border border-[#E2E8F0] bg-white p-8">
-                            <h3 className="text-body font-bold text-slate-500 uppercase tracking-wider mb-6">
+                            <h3 className="text-body font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-6">
                                 {t("Συχνές εξαιρέσεις", "Common exclusions")}
                             </h3>
                             <ul className="space-y-6">
                                 {typicallyExcluded.map((item) => (
                                     <li key={item.titleEn} className="flex gap-4">
                                         <div className="flex-shrink-0 mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100">
-                                            <X className="w-4 h-4 text-slate-500" />
+                                            <X className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                                         </div>
                                         <div>
                                             <h4 className="text-lead font-semibold text-[#0F172A]">{t(item.titleEl, item.titleEn)}</h4>

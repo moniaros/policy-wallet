@@ -146,12 +146,12 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                                 </div>
                             </div>
                             <div className="mt-2 flex items-center gap-1">
-                                <Icon className="h-3.5 w-3.5 text-neutral-500" />
+                                <Icon className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
                                 <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
                                     {metric.label}
                                 </span>
                             </div>
-                            <p className="mt-0.5 text-kicker text-neutral-500 dark:text-neutral-500">
+                            <p className="mt-0.5 text-kicker text-neutral-500 dark:text-neutral-400">
                                 {metric.description}
                             </p>
                         </div>

@@ -84,7 +84,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {roleCopy.agentSettings.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-500">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {roleCopy.agentSettings.subtitle}
                     </p>
                 </div>
@@ -127,7 +127,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         <div className="pw-card pw-pad-roomy space-y-8 border-t-4 border-t-primary">
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-kicker font-black text-neutral-500 uppercase tracking-widest ml-1">{roleCopy.agentSettings.agencyName}</label>
+                                    <label className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.agencyName}</label>
                                     <input
                                         type="text"
                                         value={agencyName}
@@ -138,7 +138,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-kicker font-black text-neutral-500 uppercase tracking-widest ml-1">{roleCopy.agentSettings.licenseNumber}</label>
+                                    <label className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.licenseNumber}</label>
                                     <input
                                         type="text"
                                         value={licenseNumber}
@@ -192,7 +192,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                                 placeholder="—"
                                                 className="pw-input pw-input-sm w-16 text-center"
                                             />
-                                            <span className="text-xs font-bold text-neutral-500">%</span>
+                                            <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">%</span>
                                         </div>
                                     </div>
                                 ))}
@@ -222,7 +222,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                     <span className={`text-kicker font-black uppercase tracking-widest px-3 py-1 rounded-full ${
                                         subscription.isPaid
                                             ? "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
-                                            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500"
+                                            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
                                     }`}>
                                         {subscription.tier.replace(/_/g, " ")}
                                     </span>
@@ -230,18 +230,18 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-4">
-                                        <p className="text-kicker font-black text-neutral-500 uppercase tracking-widest mb-1">
+                                        <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">
                                             {pick(SETTINGS_COPY.customers, language)}
                                         </p>
                                         <p className="text-lg font-black text-foreground">
                                             {subscription.currentCustomers}
-                                            <span className="text-sm font-medium text-neutral-500">
+                                            <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                                                 /{subscription.maxCustomers ?? "∞"}
                                             </span>
                                         </p>
                                     </div>
                                     <div className="bg-neutral-50 dark:bg-neutral-800 rounded-xl p-4">
-                                        <p className="text-kicker font-black text-neutral-500 uppercase tracking-widest mb-1">
+                                        <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">
                                             {pick(SETTINGS_COPY.aiAnalysesPerMo, language)}
                                         </p>
                                         <p className="text-lg font-black text-foreground">

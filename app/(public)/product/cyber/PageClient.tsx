@@ -68,7 +68,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A]">€2.5M</div>
-                                <p className="text-body-sm text-gray-500">Aggregate Limit</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">Aggregate Limit</p>
                             </div>
                         </div>
                         <div className="space-y-6">
@@ -77,7 +77,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <div className="p-4 bg-slate-50 text-slate-800 rounded-lg text-sm border border-slate-200">
                                 <p className="font-bold flex items-center gap-2 mb-2"><Shield className="w-4 h-4" /> Incident Team: Deloitte Sec</p>
-                                <p className="text-xs text-slate-500">Waiting period: 12 Hours</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Waiting period: 12 Hours</p>
                             </div>
                         </div>
                     </div>

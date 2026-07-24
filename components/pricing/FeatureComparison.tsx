@@ -113,7 +113,7 @@ function renderCell(value: boolean | string | undefined) {
     return (
         <div className="flex items-center justify-center">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-500">—</span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">—</span>
             </span>
         </div>
     )

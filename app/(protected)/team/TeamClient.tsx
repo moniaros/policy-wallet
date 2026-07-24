@@ -162,7 +162,7 @@ export function TeamClient({ team, pipeline }: Props) {
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {t.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-500">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {t.subtitle}
                     </p>
                 </div>
@@ -232,7 +232,7 @@ function StatCard({ icon, label, value, color }: {
                 </div>
             </div>
             <p className="text-2xl font-black text-foreground">{value}</p>
-            <p className="text-kicker font-black text-neutral-500 uppercase tracking-widest mt-1">{label}</p>
+            <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-1">{label}</p>
         </div>
     )
 }
@@ -262,7 +262,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
     const roleIcon = (role: string) => {
         if (role === "owner") return <Crown className="w-3.5 h-3.5 text-amber-500" />
         if (role === "manager") return <Shield className="w-3.5 h-3.5 text-primary dark:text-mint" />
-        return <User className="w-3.5 h-3.5 text-neutral-500" />
+        return <User className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
     }
 
     const roleLabel = (role: string) => {
@@ -319,7 +319,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                     <div className="flex gap-2">
                         <button
                             onClick={() => setShowInvite(false)}
-                            className="flex-1 px-3 py-2 text-xs font-bold text-neutral-500 hover:text-neutral-700"
+                            className="flex-1 px-3 py-2 text-xs font-bold text-neutral-500 dark:text-neutral-400 hover:text-neutral-700"
                         >
                             {t.cancel}
                         </button>
@@ -341,7 +341,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         {m.photoUrl ? (
                             <img src={m.photoUrl} alt={m.name} className="w-10 h-10 rounded-xl object-cover" />
                         ) : (
-                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-sm font-black text-neutral-500">
+                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-sm font-black text-neutral-500 dark:text-neutral-400">
                                 {m.name.charAt(0)}
                             </div>
                         )}
@@ -352,7 +352,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                                 {statusBadge(m.status)}
                             </div>
                             <div className="flex items-center gap-3 mt-0.5">
-                                <span className="text-kicker font-bold text-neutral-500">
+                                <span className="text-kicker font-bold text-neutral-500 dark:text-neutral-400">
                                     {m.customerCount} {t.customers}
                                 </span>
                                 <span className="text-kicker font-bold text-primary dark:text-mint">
@@ -363,7 +363,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         {m.role !== "owner" && (
                             <button
                                 onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)}
-                                className="p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600"
+                                className="p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400"
                             >
                                 <MoreVertical className="w-4 h-4" />
                             </button>
@@ -421,7 +421,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
         [pipeline, sort]
     )
     const statusColor: Record<string, string> = {
-        open: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500",
+        open: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
         contacted: "bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint",
         quoted: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
         won: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
@@ -475,14 +475,14 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                                             {item.agentPhoto ? (
                                                 <img src={item.agentPhoto} alt="" className="w-6 h-6 rounded-lg object-cover" />
                                             ) : (
-                                                <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-kicker font-black text-neutral-500">
+                                                <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-kicker font-black text-neutral-500 dark:text-neutral-400">
                                                     {item.agentName.charAt(0)}
                                                 </div>
                                             )}
-                                            <span className="text-sm text-neutral-600 dark:text-neutral-500">{item.agentName}</span>
+                                            <span className="text-sm text-neutral-600 dark:text-neutral-400">{item.agentName}</span>
                                         </div>
                                     </td>
-                                    <td data-label={t.lob} className="py-3 text-neutral-500 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
+                                    <td data-label={t.lob} className="py-3 text-neutral-500 dark:text-neutral-400 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
                                     <td data-label={t.status} className="py-3">
                                         <span className={`text-kicker font-black uppercase tracking-widest px-2 py-1 rounded-full ${statusColor[item.status] || statusColor.open}`}>
                                             {item.status}
@@ -536,7 +536,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
 
                     <div className="space-y-3 text-left">
                         <div>
-                            <label className="block text-kicker font-black text-neutral-500 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
+                            <label className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
                             <input
                                 type="text"
                                 value={name}
@@ -547,7 +547,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label htmlFor="team-phone" className="block text-kicker font-black text-neutral-500 uppercase tracking-widest mb-1.5">{t.phone}</label>
+                                <label htmlFor="team-phone" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.phone}</label>
                                 <input
                                     id="team-phone"
                                     type="tel"
@@ -557,7 +557,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                                 />
                             </div>
                             <div>
-                                <label htmlFor="team-taxId" className="block text-kicker font-black text-neutral-500 uppercase tracking-widest mb-1.5">{t.taxId}</label>
+                                <label htmlFor="team-taxId" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.taxId}</label>
                                 <input
                                     id="team-taxId"
                                     type="text"
@@ -568,7 +568,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="team-website" className="block text-kicker font-black text-neutral-500 uppercase tracking-widest mb-1.5">{t.website}</label>
+                            <label htmlFor="team-website" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.website}</label>
                             <input
                                     id="team-website"
                                 type="url"
@@ -578,7 +578,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                             />
                         </div>
                         <div>
-                            <label htmlFor="team-address" className="block text-kicker font-black text-neutral-500 uppercase tracking-widest mb-1.5">{t.address}</label>
+                            <label htmlFor="team-address" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.address}</label>
                             <input
                                     id="team-address"
                                 type="text"

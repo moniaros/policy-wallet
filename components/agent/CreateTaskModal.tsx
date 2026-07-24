@@ -88,7 +88,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                     <button
                         onClick={onClose}
                         aria-label={t.common.close}
-                        className="p-2 -mr-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 transition-colors"
+                        className="p-2 -mr-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 transition-colors"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>

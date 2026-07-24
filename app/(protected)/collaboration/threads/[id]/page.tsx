@@ -82,7 +82,7 @@ export default async function CollaborationThreadPage({
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                         Collaboration
                     </p>
                     <h1 className="text-xl font-bold text-slate-900 dark:text-white">

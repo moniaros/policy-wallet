@@ -25,7 +25,7 @@ export default function GlossaryIndexClient() {
                         "Insurance terms in plain language"
                     )}
                 </h1>
-                <p className="mx-auto max-w-[620px] text-lead leading-relaxed text-[#475569] dark:text-slate-500">
+                <p className="mx-auto max-w-[620px] text-lead leading-relaxed text-[#475569] dark:text-slate-400">
                     {t(
                         "Απαλλαγή, εξαίρεση, ασφαλισμένο κεφάλαιο: σύντομες, ξεκάθαρες εξηγήσεις για τους όρους που καθορίζουν τι πληρώνετε και τι λαμβάνετε — με οδηγό για το πού να τους βρείτε στο δικό σας συμβόλαιο.",
                         "Deductible, exclusion, sum insured: short, clear explanations of the terms that decide what you pay and what you receive — with a guide to finding each one in your own policy."
@@ -48,7 +48,7 @@ export default function GlossaryIndexClient() {
                             <h2 className="mb-2 text-title font-semibold leading-snug tracking-tight text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B] dark:text-white">
                                 {entry.term[lang]}
                             </h2>
-                            <p className="mb-4 line-clamp-3 text-body leading-relaxed text-[#475569] dark:text-slate-500">
+                            <p className="mb-4 line-clamp-3 text-body leading-relaxed text-[#475569] dark:text-slate-400">
                                 {entry.shortDefinition[lang]}
                             </p>
                             <span className="inline-flex items-center gap-1.5 text-body font-semibold text-[#29685B] transition-all duration-150 group-hover:gap-2.5">

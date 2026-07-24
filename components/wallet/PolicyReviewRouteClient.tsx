@@ -31,7 +31,7 @@ export function PolicyReviewRouteClient({ data, insurers, types, returnTo }: Pol
                         type="button"
                         onClick={() => router.back()}
                         aria-label={t.common.back}
-                        className="rounded-lg p-1.5 text-slate-600 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+                        className="rounded-lg p-1.5 text-slate-600 dark:text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </button>

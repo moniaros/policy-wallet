@@ -83,7 +83,7 @@ function VerifyEmailContent() {
                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
                             {t("Το email επαληθεύτηκε!", "Email Verified!")}
                         </h2>
-                        <p className="text-slate-600 dark:text-slate-500 mb-8">
+                        <p className="text-slate-600 dark:text-slate-400 mb-8">
                             {t(
                                 "Το email σας επαληθεύτηκε επιτυχώς. Μπορείτε πλέον να χρησιμοποιήσετε όλες τις λειτουργίες.",
                                 "Your email has been successfully verified. You can now access all features."
@@ -105,7 +105,7 @@ function VerifyEmailContent() {
                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
                             {t("Η επαλήθευση απέτυχε", "Verification Failed")}
                         </h2>
-                        <p className="text-slate-600 dark:text-slate-500 mb-8">
+                        <p className="text-slate-600 dark:text-slate-400 mb-8">
                             {message}. {t("Ο σύνδεσμος μπορεί να μην είναι έγκυρος ή να έχει λήξει.", "The link may be invalid or expired.")}
                         </p>
                         <Link href="/auth/signin" className="font-bold text-primary hover:underline transition-colors">

@@ -84,7 +84,7 @@ export function ClientActivityTab({ interactions, customer }: ClientActivityTabP
                                     <p className="text-sm text-foreground">
                                         {interaction.message}
                                     </p>
-                                    <p className="text-xs text-neutral-500 mt-0.5">
+                                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                                         {formatRelativeDate(interaction.timestamp, language)}
                                     </p>
                                 </div>

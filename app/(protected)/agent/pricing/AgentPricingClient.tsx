@@ -203,7 +203,7 @@ export function AgentPricingClient({
             <div className="max-w-7xl mx-auto px-4 py-12">
                 <button
                     onClick={() => router.push("/dashboard/agent")}
-                    className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-200 mb-8 transition-colors"
+                    className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 mb-8 transition-colors"
                 >
                     <ChevronLeft className="w-4 h-4" />
                     {t.backToDashboard}
@@ -268,7 +268,7 @@ export function AgentPricingClient({
                                     </span>
                                     {priceFor(plan) > 0 && (
                                         <span className="text-muted-foreground text-sm">
-                                            {t.month} <span className="text-neutral-500 dark:text-neutral-500">{t.vatIncluded}</span>
+                                            {t.month} <span className="text-neutral-500 dark:text-neutral-400">{t.vatIncluded}</span>
                                         </span>
                                     )}
                                 </div>
@@ -312,10 +312,10 @@ export function AgentPricingClient({
                     })}
                 </div>
 
-                <p className="text-center text-xs text-neutral-500 dark:text-neutral-500 mt-8">
+                <p className="text-center text-xs text-neutral-500 dark:text-neutral-400 mt-8">
                     {t.vatNote}
                 </p>
-                <p className="text-center text-xs text-neutral-500 dark:text-neutral-500 mt-1.5">
+                <p className="text-center text-xs text-neutral-500 dark:text-neutral-400 mt-1.5">
                     {t.recurringNote}
                 </p>
             </div>

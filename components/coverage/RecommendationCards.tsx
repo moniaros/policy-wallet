@@ -87,7 +87,7 @@ const URGENCY_STYLES: Record<
         bg: "bg-orange-50/50 dark:bg-orange-950/20",
         badge: "text-orange-700 dark:text-orange-300",
         badgeBg: "bg-orange-100 dark:bg-orange-900/30",
-        icon: "text-orange-700",
+        icon: "text-orange-700 dark:text-orange-400",
     },
     medium: {
         border: "border-amber-200 dark:border-amber-800",
@@ -244,7 +244,7 @@ export function RecommendationCards({
                 one, where the user comes to act — showed the same badges bare, so
                 "Κρίσιμη προτεραιότητα" read as a verdict on their risk. Same
                 sentence, same meaning, on both surfaces. */}
-            <p className="mb-3 text-caption leading-snug text-black/55 dark:text-white/45">
+            <p className="mb-3 text-caption leading-snug text-black/55 dark:text-white/60">
                 {home.recPriorityNote}
             </p>
 
@@ -349,7 +349,7 @@ export function RecommendationCards({
                                             </p>
                                             {rec.matchedProduct && (
                                                 <div className="rounded-lg bg-black/[0.03] dark:bg-white/[0.04] p-2.5 space-y-1.5">
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/45">
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/60">
                                                         {t("Ενδεικτική επιλογή στην αγορά", "One option on the market")}
                                                     </p>
                                                     <p className="text-xs font-semibold text-black/80 dark:text-white/80">
@@ -422,7 +422,7 @@ export function RecommendationCards({
                                         <button
                                             type="button"
                                             onClick={() => handleDismiss(rec.id, "not_relevant")}
-                                            className="text-xs text-black/55 hover:text-black/70 hover:underline cursor-pointer dark:text-white/45 dark:hover:text-white/70"
+                                            className="text-xs text-black/55 hover:text-black/70 hover:underline cursor-pointer dark:text-white/60 dark:hover:text-white/70"
                                         >
                                             {t("Μη σχετικό για εμένα", "Mark as not relevant")}
                                         </button>

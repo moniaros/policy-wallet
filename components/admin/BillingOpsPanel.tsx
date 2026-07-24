@@ -166,7 +166,7 @@ export default function BillingOpsPanel() {
                             <button
                                 onClick={() => setConfirm(null)}
                                 disabled={busy}
-                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50"
+                                className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded disabled:opacity-50"
                             >
                                 Cancel
                             </button>

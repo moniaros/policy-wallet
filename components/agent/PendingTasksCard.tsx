@@ -25,7 +25,7 @@ export function PendingTasksCard({ items }: PendingTasksCardProps) {
                 <ListChecks className="h-5 w-5 text-primary dark:text-mint" />
                 <h2 className="text-base font-bold text-foreground">{tb.pendingTasks}</h2>
                 {items.length > 0 && (
-                    <span className="ml-1 text-xs text-neutral-500">({items.length})</span>
+                    <span className="ml-1 text-xs text-neutral-500 dark:text-neutral-400">({items.length})</span>
                 )}
             </div>
 

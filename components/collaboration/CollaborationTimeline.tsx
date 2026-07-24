@@ -334,11 +334,11 @@ export function CollaborationTimeline({
                                                 <TypeIcon className={`w-4 h-4 flex-shrink-0 ${typeConfig.color}`} />
                                                 <p className="text-sm font-semibold text-foreground truncate">{thread.subject}</p>
                                             </div>
-                                            <span className="text-kicker uppercase font-bold text-neutral-500">{thread.priority}</span>
+                                            <span className="text-kicker uppercase font-bold text-neutral-500 dark:text-neutral-400">{thread.priority}</span>
                                         </div>
                                         <div className="mt-1 flex gap-2 items-center flex-wrap">
                                             <span className={`text-kicker px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-muted`}>{t.collaboration.timeline.threadType[threadTypeKey]}</span>
-                                            <span className="text-xs text-neutral-500">{thread.status}</span>
+                                            <span className="text-xs text-neutral-500 dark:text-neutral-400">{thread.status}</span>
                                             {waitingOnYou ? (
                                                 <span className="text-kicker px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">{t.collaboration.timeline.waitingOnYou}</span>
                                             ) : null}
@@ -398,7 +398,7 @@ export function CollaborationTimeline({
                                 className="rounded-lg border border-neutral-200 dark:border-neutral-700 p-3 max-h-[220px] overflow-auto space-y-2"
                             >
                                 {visibleMessages.length === 0 ? (
-                                    <p className="text-xs text-neutral-500">{t.collaboration.timeline.noMessages}</p>
+                                    <p className="text-xs text-neutral-500 dark:text-neutral-400">{t.collaboration.timeline.noMessages}</p>
                                 ) : (
                                     visibleMessages.map((item) => (
                                         <div
@@ -414,7 +414,7 @@ export function CollaborationTimeline({
                                                     </span>
                                                 )}
                                                 {item.messageType === "system" && (
-                                                    <span className="text-kicker font-bold text-neutral-500 uppercase">{t.collaboration.timeline.system}</span>
+                                                    <span className="text-kicker font-bold text-neutral-500 dark:text-neutral-400 uppercase">{t.collaboration.timeline.system}</span>
                                                 )}
                                             </div>
                                             <p className="text-neutral-600 dark:text-neutral-300">{item.body}</p>
@@ -488,13 +488,13 @@ export function CollaborationTimeline({
                             </div>
 
                             <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 p-3">
-                                <p className="text-xs font-bold uppercase tracking-wide text-neutral-500 mb-2">{t.collaboration.timeline.actions}</p>
+                                <p className="text-xs font-bold uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-2">{t.collaboration.timeline.actions}</p>
                                 <div className="space-y-2 mb-3">
                                     {selected.actions.map((item) => (
                                         <div key={item.id} className="flex items-center justify-between gap-2 border border-neutral-200 dark:border-neutral-700 rounded p-2">
                                             <div>
                                                 <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                                                <p className="text-xs text-neutral-500">{t.collaboration.timeline.assignee}: {item.assignee.name || item.assignee.email}</p>
+                                                <p className="text-xs text-neutral-500 dark:text-neutral-400">{t.collaboration.timeline.assignee}: {item.assignee.name || item.assignee.email}</p>
                                             </div>
                                             <select
                                                 value={item.status}

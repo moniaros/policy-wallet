@@ -48,7 +48,7 @@ export function LockedGapCard({ item, lang, copy }: LockedGapCardProps) {
                     </div>
                     <p className="sr-only">{copy.lockedHint}</p>
                 </div>
-                <Lock className="mt-0.5 h-4 w-4 shrink-0 text-black/35 dark:text-white/40" />
+                <Lock className="mt-0.5 h-4 w-4 shrink-0 text-black/35 dark:text-white/60" />
             </div>
         </div>
     )

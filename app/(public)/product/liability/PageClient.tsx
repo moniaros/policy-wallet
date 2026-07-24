@@ -104,7 +104,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] uppercase tracking-wider">Liability Check</h3>
-                                <p className="text-body-sm text-gray-500">2 policies scanned</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">2 policies scanned</p>
                             </div>
                         </div>
                         <div className="space-y-5">

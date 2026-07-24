@@ -89,7 +89,7 @@ export function ProtectionScoreCard({
             : tier.color === "amber"
                 ? "text-amber-500"
                 : tier.color === "orange"
-                    ? "text-orange-700"
+                    ? "text-orange-700 dark:text-orange-400"
                     : "text-red-500"
 
     // SVG donut ring

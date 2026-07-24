@@ -64,7 +64,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] uppercase tracking-wider">Tesla Model 3</h3>
-                                <p className="text-body-sm text-gray-500">Exp. 14 Days</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">Exp. 14 Days</p>
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A]">€35,000</div>

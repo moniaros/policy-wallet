@@ -534,7 +534,7 @@ export function PolicyDetailsClient({
                     >
                         {t.wallet.title}
                     </Link>
-                    <span className="text-black/35 dark:text-white/40">/</span>
+                    <span className="text-black/35 dark:text-white/60">/</span>
                     <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
                 </nav>
 

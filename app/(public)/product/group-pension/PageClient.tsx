@@ -68,7 +68,7 @@ export default function GroupPensionProductPage({ locale }: { locale: "el" | "en
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A]">€64,210</div>
-                                <p className="text-body-sm text-gray-500">Total Vested</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">Total Vested</p>
                             </div>
                         </div>
                         <div className="space-y-6">
@@ -78,7 +78,7 @@ export default function GroupPensionProductPage({ locale }: { locale: "el" | "en
                             </div>
                             <div className="p-4 bg-slate-50 text-slate-800 rounded-lg text-sm border border-slate-200">
                                 <p className="font-bold flex items-center gap-2 mb-2"><PieChart className="w-4 h-4" /> Tax Deductible (2025)</p>
-                                <p className="text-xs text-slate-500">€3,600 Eligible for submission</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">€3,600 Eligible for submission</p>
                             </div>
                         </div>
                     </div>

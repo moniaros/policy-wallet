@@ -39,7 +39,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] uppercase tracking-wider">Savings Plan</h3>
-                                <p className="text-body-sm text-gray-500">Monthly Contributions · Year 8 of 25</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">Monthly Contributions · Year 8 of 25</p>
                             </div>
                             <PiggyBank className="w-6 h-6 text-[#29685B]" />
                         </div>

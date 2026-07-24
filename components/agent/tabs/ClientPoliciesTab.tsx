@@ -47,9 +47,9 @@ const STATUS_STYLES: Record<string, string> = {
     expired: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
     unknown_duration: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300",
     action_needed: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-    cancelled: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500",
+    cancelled: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
     analyzing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-    incomplete: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500",
+    incomplete: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
 }
 
 const STATUS_LABELS: Record<string, { el: string; en: string }> = {
@@ -109,7 +109,7 @@ export function ClientPoliciesTab({
             {/* Filters and actions */}
             <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-neutral-500" />
+                    <Filter className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
                     <select
                         value={filterLob || ""}
                         onChange={(e) => setFilterLob(e.target.value || null)}
@@ -141,7 +141,7 @@ export function ClientPoliciesTab({
                         <button
                             type="button"
                             onClick={() => setShowCommission(!showCommission)}
-                            className="flex items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition cursor-pointer"
+                            className="flex items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition cursor-pointer"
                         >
                             {showCommission ? (
                                 <EyeOff className="h-3.5 w-3.5" />
@@ -231,7 +231,7 @@ export function ClientPoliciesTab({
                                 </div>
 
                                 <div className="text-right">
-                                    <div className="flex items-center gap-1 text-xs text-neutral-500">
+                                    <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                                         <Calendar className="h-3 w-3" />
                                         {formatDateGreek(policy.endDate)}
                                     </div>

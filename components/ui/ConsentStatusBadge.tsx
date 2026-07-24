@@ -8,7 +8,7 @@ export type ConsentStatus = 'granted' | 'attested' | 'none'
 const CONSENT_TONES: Record<ConsentStatus, string> = {
     granted: 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint',
     attested: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-    none: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-500',
+    none: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
 }
 
 export function ConsentStatusBadge({ status, label }: { status: ConsentStatus; label: string }) {

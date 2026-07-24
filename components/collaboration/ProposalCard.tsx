@@ -86,7 +86,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                     <button
                         type="button"
                         onClick={() => setShowPreview(false)}
-                        className="text-neutral-500 hover:text-neutral-600 transition cursor-pointer"
+                        className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-600 transition cursor-pointer"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -115,7 +115,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                     <button
                         type="button"
                         onClick={() => setShowPreview(false)}
-                        className="px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 transition cursor-pointer"
+                        className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 transition cursor-pointer"
                     >
                         {t.collaboration.proposals.edit}
                     </button>
@@ -135,7 +135,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
             <h3 className="text-base font-bold text-foreground mb-1">
                 {t.collaboration.proposals.createProposal}
             </h3>
-            <p className="text-sm text-neutral-500 mb-4">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
                 {t.collaboration.proposals.forClient.replace("{name}", clientName)}
             </p>
 
@@ -236,7 +236,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 transition cursor-pointer"
+                            className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 transition cursor-pointer"
                         >
                             {t.collaboration.proposals.cancel}
                         </button>
@@ -323,7 +323,7 @@ export function ProposalView({
         },
         expired: {
             label: { en: "Expired", el: "Έληξε" },
-            style: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500",
+            style: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
         },
     }
 
@@ -340,7 +340,7 @@ export function ProposalView({
                             {language === "el" ? statusBadge.label.el : statusBadge.label.en}
                         </span>
                     </div>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         {PROPOSAL_TYPE_LABELS[proposal.proposalType]?.[language] || proposal.proposalType}
                         {" · "}
                         {LOB_OPTIONS.find((l) => l.value === proposal.lineOfBusiness)?.[language] || proposal.lineOfBusiness}
@@ -350,7 +350,7 @@ export function ProposalView({
                     <p className="text-2xl font-black text-foreground">
                         {formatCurrencyFull(proposal.premiumAmount, language)}
                     </p>
-                    <p className="text-kicker text-neutral-500">
+                    <p className="text-kicker text-neutral-500 dark:text-neutral-400">
                         {t.collaboration.proposals.perYear}
                     </p>
                 </div>
@@ -367,7 +367,7 @@ export function ProposalView({
 
             {/* Coverage summary */}
             <div className="mb-4">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-2">
                     {t.collaboration.proposals.coverage}
                 </h4>
                 <p className="text-sm text-neutral-700 dark:text-neutral-300">
@@ -378,13 +378,13 @@ export function ProposalView({
             {/* Comparison data */}
             {proposal.comparisonData && (
                 <div className="rounded-xl border border-neutral-200/60 dark:border-neutral-700/60 p-4 mb-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-2">
                         {t.collaboration.proposals.comparison}
                     </h4>
                     <div className="space-y-2">
                         {Object.entries(proposal.comparisonData).map(([key, value]) => (
                             <div key={key} className="flex items-center justify-between text-sm">
-                                <span className="text-neutral-600 dark:text-neutral-500">{key}</span>
+                                <span className="text-neutral-600 dark:text-neutral-400">{key}</span>
                                 <span className="font-medium text-foreground">{String(value)}</span>
                             </div>
                         ))}
@@ -430,7 +430,7 @@ export function ProposalView({
             {/* Decline / counter-offer form */}
             {viewerRole === "policyholder" && proposal.status === "pending" && !isPreview && isDeclining && onDecline && (
                 <div className="mt-4 rounded-xl border border-neutral-200/70 dark:border-neutral-700/70 p-4 space-y-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                         {t.collaboration.proposals.declineHeading}
                     </h4>
                     <div className="flex flex-wrap gap-2">
@@ -472,7 +472,7 @@ export function ProposalView({
                         <button
                             type="button"
                             onClick={() => setIsDeclining(false)}
-                            className="px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 dark:hover:text-neutral-200 transition cursor-pointer"
+                            className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 transition cursor-pointer"
                         >
                             {t.collaboration.proposals.back}
                         </button>

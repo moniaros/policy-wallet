@@ -134,7 +134,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                         key={i}
                                         className="flex items-start gap-2.5 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2.5 dark:border-white/15 dark:bg-white/5"
                                     >
-                                        <MinusCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-black/55 dark:text-white/45" />
+                                        <MinusCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-black/55 dark:text-white/60" />
                                         <p className="text-sm font-medium text-black/80 dark:text-white/85">{exclusion}</p>
                                     </li>
                                 ))}

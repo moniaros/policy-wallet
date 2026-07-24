@@ -54,7 +54,7 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
                     {t("Επαληθεύστε την άδειά σας.", "Verify your license.")}
                 </h1>
-                <p className="text-slate-600 dark:text-slate-500 text-lg">
+                <p className="text-slate-600 dark:text-slate-400 text-lg">
                     {t(
                         "Ανεβάστε την επαγγελματική σας άδεια για να ενεργοποιήσετε την κατάσταση Πιστοποιημένου Συνεργάτη και premium λειτουργίες.",
                         "Upload your professional license to unlock Verified Agent status and premium features."
@@ -69,7 +69,7 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                             <CheckCircle2 className="w-6 h-6 text-primary dark:text-mint" />
                         </div>
                         <p className="font-bold text-slate-900 dark:text-white">{file.name}</p>
-                        <p className="text-sm text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                         <button
                             type="button"
                             onClick={(e) => { e.preventDefault(); setFile(null) }}
@@ -81,12 +81,12 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                 ) : (
                     <>
                         <div className="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary-soft dark:group-hover:bg-primary/15 transition-colors">
-                            <FileText className="w-6 h-6 text-slate-500 group-hover:text-primary dark:group-hover:text-mint" />
+                            <FileText className="w-6 h-6 text-slate-500 dark:text-slate-400 group-hover:text-primary dark:group-hover:text-mint" />
                         </div>
                         <p className="font-bold text-slate-700 dark:text-slate-200">
                             {t("Κάντε κλικ για να ανεβάσετε το έγγραφο άδειας", "Click to upload license document")}
                         </p>
-                        <p className="text-sm text-slate-500 mt-1">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                             {t("PDF, JPG ή PNG (Μέγ. 5MB)", "PDF, JPG, or PNG (Max 5MB)")}
                         </p>
                     </>
@@ -103,7 +103,7 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-600 dark:hover:bg-slate-800 transition-all"
+                    className="px-6 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-all"
                 >
                     {t("Πίσω", "Back")}
                 </button>
@@ -119,7 +119,7 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
             <button
                 type="button"
                 onClick={onNext}
-                className="w-full text-center text-sm text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+                className="w-full text-center text-sm text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
             >
                 {t("Παράλειψη προς το παρόν", "Skip for now")}
             </button>

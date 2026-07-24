@@ -42,7 +42,7 @@ export function PricingFAQ({ language, items, className = "" }: PricingFAQProps)
                                     className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-all duration-200 ${
                                         isOpen
                                             ? "bg-[#29685B] text-white"
-                                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-500"
+                                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                                     }`}
                                 >
                                     <ChevronDown

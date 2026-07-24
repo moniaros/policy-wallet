@@ -286,7 +286,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
             <div className="mx-auto max-w-3xl">
                 <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-xl sm:p-8">
                     <div className="mb-6">
-                        <p className="text-xs font-black uppercase tracking-widest text-stone-500">{stepLabel}</p>
+                        <p className="text-xs font-black uppercase tracking-widest text-stone-500 dark:text-stone-400">{stepLabel}</p>
                         <h1 className="mt-2 text-3xl font-black tracking-tight text-stone-900">
                             {displayName ? t(`Καλώς ήρθατε, ${displayName}`, `Welcome, ${displayName}`) : t("Καλώς ήρθατε", "Welcome")}
                         </h1>
@@ -304,7 +304,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 <h2 className="text-xl font-black text-stone-900">
                                     {t("Τι έχει μεγαλύτερη σημασία για εσάς;", "What matters most to you?")}
                                 </h2>
-                                <p className="mt-2 text-sm text-stone-600">
+                                <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
                                     {t("Η επιλογή αυτή προσαρμόζει το dashboard και τα πρώτα AI insights.", "This choice personalizes your dashboard and first AI insights.")}
                                 </p>
                             </div>
@@ -349,7 +349,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 <h2 className="text-xl font-black text-stone-900">
                                     {t("Ανεβάστε το πρώτο σας συμβόλαιο", "Upload your first policy")}
                                 </h2>
-                                <p className="mt-2 text-sm text-stone-600">
+                                <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
                                     {t("Το έγγραφο κρυπτογραφείται και παραμένει ιδιωτικό.", "Your document is encrypted and stays private.")}
                                 </p>
                             </div>
@@ -395,7 +395,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 <h2 className="text-xl font-black text-stone-900">
                                     {t("AI Σύνοψη", "AI Summary")}
                                 </h2>
-                                <p className="mt-2 text-sm text-stone-600">
+                                <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
                                     {t("Η πρώτη σας ανάλυση ετοιμάστηκε.", "Your first analysis is ready.")}
                                 </p>
                             </div>
@@ -467,7 +467,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 <h2 className="text-xl font-black text-stone-900">
                                     {t("Έξυπνες Υπενθυμίσεις", "Smart Reminders")}
                                 </h2>
-                                <p className="mt-2 text-sm text-stone-600">
+                                <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
                                     {t(
                                         "Θα σας ειδοποιούμε πριν από κάθε λήξη ή ανανέωση συμβολαίου — με βάση τις ημερομηνίες των συμβολαίων σας. Δωρεάν, πάντα.",
                                         "We will remind you before every policy expiry or renewal — based on your policies' dates. Free, always."
@@ -499,7 +499,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 <h2 className="text-xl font-black text-stone-900">
                                     {t("Σύνδεση με Σύμβουλο", "Connect with Your Advisor")}
                                 </h2>
-                                <p className="mt-2 text-sm text-stone-600">
+                                <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
                                     {t(
                                         "Προσκαλέστε τον ασφαλιστικό σας σύμβουλο με το email του — θα συνδεθείτε αυτόματα μόλις αποδεχτεί.",
                                         "Invite your insurance advisor by their email — you'll be connected automatically once they accept."
@@ -517,7 +517,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                             <p className="text-sm font-black text-stone-900">
                                                 {t("Συνδεθήκατε!", "Connected!")}
                                             </p>
-                                            <p className="text-xs text-stone-600">
+                                            <p className="text-xs text-stone-600 dark:text-stone-400">
                                                 {t(`Σύμβουλος: ${connectedAgentName}`, `Advisor: ${connectedAgentName}`)}
                                             </p>
                                         </div>
@@ -528,7 +528,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                     <p className="text-sm font-black text-stone-900">
                                         {t("Η πρόσκληση στάλθηκε", "Invitation sent")}
                                     </p>
-                                    <p className="mt-1 text-xs text-stone-600">
+                                    <p className="mt-1 text-xs text-stone-600 dark:text-stone-400">
                                         {t(
                                             "Θα συνδεθείτε αυτόματα μόλις ο σύμβουλός σας αποδεχτεί την πρόσκληση.",
                                             "You'll be connected automatically once your advisor accepts the invitation."
@@ -536,7 +536,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                     </p>
                                     {inviteSent.link && (
                                         <div className="mt-3">
-                                            <p className="text-xs text-stone-600">
+                                            <p className="text-xs text-stone-600 dark:text-stone-400">
                                                 {t(
                                                     "Δεν στάλθηκε το email. Αντιγράψτε τον σύνδεσμο και στείλτε τον στον σύμβουλό σας:",
                                                     "Couldn't send the email. Copy this link and send it to your advisor:"
@@ -632,7 +632,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                     type="button"
                                     onClick={finishOnboarding}
                                     disabled={busy}
-                                    className="w-full text-center text-sm font-semibold text-stone-500 hover:text-stone-700 transition"
+                                    className="w-full text-center text-sm font-semibold text-stone-500 dark:text-stone-400 hover:text-stone-700 transition"
                                 >
                                     {t("Παράλειψη", "Skip for now")}
                                 </button>

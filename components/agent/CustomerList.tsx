@@ -115,7 +115,7 @@ export function CustomerList({
         raw === 'granted' || raw === 'attested' ? raw : 'none'
 
     const healthTone = (score: number | null | undefined) => {
-        if (score === null || score === undefined) return "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500"
+        if (score === null || score === undefined) return "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
         if (score >= 70) return "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
         if (score >= 40) return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
         return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
@@ -135,7 +135,7 @@ export function CustomerList({
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm p-4 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 shadow-sm">
                 <div className="relative flex-1 w-full sm:max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 dark:text-neutral-400" />
                     <input
                         type="search"
                         placeholder={roleCopy.customerList.searchPlaceholder}
@@ -256,19 +256,19 @@ export function CustomerList({
                 <div className="hidden xl:block bg-white/80 dark:bg-neutral-900/80 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 overflow-hidden shadow-sm">
                     <TableShell label={t.nav.customers}>
                         <table className="w-full text-sm text-left">
-                            <thead className="bg-neutral-50/80 dark:bg-neutral-950/50 text-micro font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-500 border-b border-neutral-200/60 dark:border-neutral-800/60">
+                            <thead className="bg-neutral-50/80 dark:bg-neutral-950/50 text-micro font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200/60 dark:border-neutral-800/60">
                                 <tr>
                                     <th className="px-4 py-3.5 w-10">
                                         <RowCheckbox label={t.common.all} checked={selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0} onChange={toggleAll} />
                                     </th>
                                     <th aria-sort={sortBy === "name" ? "ascending" : "none"} className="px-4 py-3.5">
-                                        <button type="button" onClick={() => setSortBy("name")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
+                                        <button type="button" onClick={() => setSortBy("name")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 dark:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
                                             {roleCopy.customerList.tableClient}
                                             {sortBy === "name" && <ArrowDownUp className="h-3 w-3 shrink-0" aria-hidden="true" />}
                                         </button>
                                     </th>
                                     <th aria-sort={sortBy === "policyCount" ? "descending" : "none"} className="px-4 py-3.5 text-center">
-                                        <button type="button" onClick={() => setSortBy("policyCount")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
+                                        <button type="button" onClick={() => setSortBy("policyCount")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 dark:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
                                             {roleCopy.customerList.tablePolicies}
                                             {sortBy === "policyCount" && <ArrowDownUp className="h-3 w-3 shrink-0" aria-hidden="true" />}
                                         </button>
@@ -278,7 +278,7 @@ export function CustomerList({
                                     <th className="px-4 py-3.5 text-center">{roleCopy.customerList.tableGaps}</th>
                                     <th className="px-4 py-3.5">{roleCopy.customerList.tableConsent}</th>
                                     <th aria-sort={sortBy === "lastInteractionDate" ? "descending" : "none"} className="px-4 py-3.5 text-right">
-                                        <button type="button" onClick={() => setSortBy("lastInteractionDate")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
+                                        <button type="button" onClick={() => setSortBy("lastInteractionDate")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 dark:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
                                             {roleCopy.customerList.tableLastActivity}
                                             {sortBy === "lastInteractionDate" && <ArrowDownUp className="h-3 w-3 shrink-0" aria-hidden="true" />}
                                         </button>
@@ -298,11 +298,11 @@ export function CustomerList({
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-1.5">
                                                 <span className="font-semibold text-foreground text-body-sm">{customer.name} {customer.surname}</span>
-                                                <span className="inline-flex items-center rounded-md bg-neutral-100 px-1.5 py-0.5 text-kicker font-bold uppercase tracking-wider text-neutral-600 dark:bg-neutral-800 dark:text-neutral-600">
+                                                <span className="inline-flex items-center rounded-md bg-neutral-100 px-1.5 py-0.5 text-kicker font-bold uppercase tracking-wider text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
                                                     {roleCopy.customerList[customer.activationStatus]}
                                                 </span>
                                             </div>
-                                            <div className="mt-0.5 truncate max-w-[200px] text-micro text-neutral-500 dark:text-neutral-500">{customer.email}</div>
+                                            <div className="mt-0.5 truncate max-w-[200px] text-micro text-neutral-500 dark:text-neutral-400">{customer.email}</div>
                                         </td>
                                         <td className="px-4 py-3.5 text-center">
                                             <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-neutral-50 dark:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-300">{customer.policyCount}</span>
@@ -324,7 +324,7 @@ export function CustomerList({
                                                     {intel.gapCount}
                                                 </span>
                                             ) : (
-                                                <span className="text-caption text-neutral-300 dark:text-neutral-600">0</span>
+                                                <span className="text-caption text-neutral-300 dark:text-neutral-400">0</span>
                                             )}
                                         </td>
                                         <td className="px-4 py-3.5">
@@ -333,7 +333,7 @@ export function CustomerList({
                                                 label={CONSENT_LABELS[consentStatusOf(intel?.consentStatus)]}
                                             />
                                         </td>
-                                        <td className="px-4 py-3.5 text-right text-caption text-neutral-500 whitespace-nowrap">{formatLastContact(customer.lastInteractionDate)}</td>
+                                        <td className="px-4 py-3.5 text-right text-caption text-neutral-500 dark:text-neutral-400 whitespace-nowrap">{formatLastContact(customer.lastInteractionDate)}</td>
                                         <td className="px-4 py-3.5">
                                             {intel && (
                                                 <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-kicker font-semibold ${ACTION_TONES[intel.recommendedAction]}`}>
@@ -343,9 +343,9 @@ export function CustomerList({
                                         </td>
                                         <td className="px-4 py-3.5 text-right">
                                             <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {customer.phone && <button aria-label={t.a11yLabels.callClient} onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-600 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Phone className="w-3.5 h-3.5" /></button>}
-                                                <button aria-label={t.a11yLabels.emailClient} onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-600 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Mail className="w-3.5 h-3.5" /></button>
-                                                <ChevronRight className="w-4 h-4 text-neutral-300 dark:text-neutral-600 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                {customer.phone && <button aria-label={t.a11yLabels.callClient} onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Phone className="w-3.5 h-3.5" /></button>}
+                                                <button aria-label={t.a11yLabels.emailClient} onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Mail className="w-3.5 h-3.5" /></button>
+                                                <ChevronRight className="w-4 h-4 text-neutral-300 dark:text-neutral-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                                             </div>
                                         </td>
                                     </tr>
@@ -394,8 +394,8 @@ export function CustomerList({
                                     {roleCopy.customerList.profile}
                                     <ChevronRight className="w-3 h-3 opacity-50" />
                                 </button>
-                                {customer.phone && <button onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-2 text-neutral-500 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Phone className="w-4 h-4" /></button>}
-                                <button onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-2 text-neutral-500 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Mail className="w-4 h-4" /></button>
+                                {customer.phone && <button onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Phone className="w-4 h-4" /></button>}
+                                <button onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Mail className="w-4 h-4" /></button>
                             </div>
                         </div>
                     ))}

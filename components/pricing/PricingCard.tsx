@@ -50,13 +50,13 @@ export function PricingCard({
 
             <div className="mb-6 text-center">
                 <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">{plan.name[language]}</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-500">{plan.description[language]}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{plan.description[language]}</p>
             </div>
 
             <div className="mb-8 text-center">
                 <div className="flex items-baseline justify-center gap-1">
                     <span className="text-5xl font-bold text-slate-900 dark:text-white">{pricing.amount}</span>
-                    <span className="text-lg text-slate-600 dark:text-slate-500">{pricing.period[language]}</span>
+                    <span className="text-lg text-slate-600 dark:text-slate-400">{pricing.period[language]}</span>
                 </div>
                 {displayAnnual && plan.pricing.annual?.savings && (
                     <p className="mt-2 text-xs font-semibold text-[#29685B] dark:text-[#89D9B2]">
@@ -84,7 +84,7 @@ export function PricingCard({
                                 }`}
                             />
                         ) : (
-                            <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-slate-500 dark:text-slate-600" />
+                            <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-slate-500 dark:text-slate-400" />
                         )}
                         <span className="text-sm leading-tight">{feature.label[language]}</span>
                     </li>

@@ -270,7 +270,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
             </span>
         )
         return (
-            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-neutral-600 bg-neutral-100 dark:text-neutral-600 dark:bg-neutral-800 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-neutral-600 bg-neutral-100 dark:text-neutral-400 dark:bg-neutral-800 px-2.5 py-1 rounded-full">
                 <Clock className="w-3 h-3" /> {daysLeft}d
             </span>
         )
@@ -288,7 +288,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {t.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-500">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {t.subtitle}
                     </p>
                 </div>
@@ -306,8 +306,8 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                 {/* Filters + Batch Actions */}
                 <div className="flex flex-wrap items-center gap-3 mb-6">
                     <div className="flex items-center gap-1.5">
-                        <Filter className="w-4 h-4 text-neutral-500" />
-                        <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">{t.filterBy}:</span>
+                        <Filter className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
+                        <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.filterBy}:</span>
                     </div>
                     {["all", "pending", "overdue", "completed", "lapsed"].map((s) => (
                         <button
@@ -316,7 +316,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
                                 statusFilter === s
                                     ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
-                                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-700"
+                                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
                             }`}
                         >
                             {s === "all" ? t.all : s === "pending" ? t.pending : s === "overdue" ? t.overdue : s === "completed" ? t.completed : t.lapsed}
@@ -408,8 +408,8 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                         <SortableColumn columnKey="lob" sort={sort} onSort={toggle} label={t.lob} align="left" />
                                         <SortableColumn columnKey="premium" sort={sort} onSort={toggle} label={t.premium} align="right" />
                                         <SortableColumn columnKey="expires" sort={sort} onSort={toggle} label={t.expires} align="center" />
-                                        <th className="px-4 py-3 text-center text-kicker font-black text-neutral-500 uppercase tracking-widest">{t.status}</th>
-                                        <th className="px-4 py-3 text-right text-kicker font-black text-neutral-500 uppercase tracking-widest">{t.actions}</th>
+                                        <th className="px-4 py-3 text-center text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.status}</th>
+                                        <th className="px-4 py-3 text-right text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.actions}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -429,18 +429,18 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                 <td data-label={t.customer} className="px-4 py-3">
                                                     <span className="font-bold text-foreground">{r.customerName}</span>
                                                     <br />
-                                                    <span className="text-xs text-neutral-500">{r.policyNumber}</span>
+                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400">{r.policyNumber}</span>
                                                 </td>
                                                 <td data-label={t.insurer} className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{r.insurerName}</td>
                                                 <td data-label={t.lob} className="px-4 py-3">
-                                                    <span className="text-xs font-bold text-neutral-500 bg-muted dark:text-neutral-500 px-2 py-0.5 rounded">
+                                                    <span className="text-xs font-bold text-neutral-500 bg-muted dark:text-neutral-400 px-2 py-0.5 rounded">
                                                         {r.lineOfBusiness}
                                                     </span>
                                                 </td>
                                                 <td data-label={t.premium} className="px-4 py-3 text-right font-bold text-foreground">
                                                     {r.premiumAmount ? formatCurrencyFull(r.premiumAmount, language === "el" ? "el" : "en") : "—"}
                                                 </td>
-                                                <td data-label={t.expires} className="px-4 py-3 text-center text-neutral-600 dark:text-neutral-500">
+                                                <td data-label={t.expires} className="px-4 py-3 text-center text-neutral-600 dark:text-neutral-400">
                                                     {formatDate(r.policyEndDate)}
                                                 </td>
                                                 <td data-label={t.status} className="px-4 py-3 text-center">
@@ -461,7 +461,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                         </button>
                                                     )}
                                                     {r.outcome && (
-                                                        <span className="text-xs text-neutral-500">
+                                                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
                                                             {r.outcome.replace(/_/g, " ")}
                                                         </span>
                                                     )}
@@ -482,7 +482,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             <h3 id={renewTitleId} className="text-lg font-black text-foreground">
                                 {t.markOutcome}
                             </h3>
-                            <p className="text-sm text-neutral-500">{outcomeModal.customerName}</p>
+                            <p className="text-sm text-neutral-500 dark:text-neutral-400">{outcomeModal.customerName}</p>
 
                             <div className="space-y-2">
                                 {([
@@ -513,7 +513,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             </div>
 
                             <div>
-                                <label className="text-kicker font-black text-neutral-500 uppercase tracking-widest">{t.notes}</label>
+                                <label className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.notes}</label>
                                 <textarea
                                     value={outcomeNotes}
                                     onChange={(e) => setOutcomeNotes(e.target.value)}
@@ -566,7 +566,7 @@ function StatCard({
         rose: "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-900/20",
         emerald: "text-primary bg-primary-soft dark:text-mint dark:bg-primary/15",
         orange: "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20",
-        slate: "text-neutral-600 bg-neutral-50 dark:text-neutral-500 dark:bg-neutral-800",
+        slate: "text-neutral-600 bg-neutral-50 dark:text-neutral-400 dark:bg-neutral-800",
     }
 
     return (
@@ -575,7 +575,7 @@ function StatCard({
                 <Icon className="w-4 h-4" />
             </div>
             <p className="text-xl font-black text-foreground">{value}</p>
-            <p className="text-kicker font-bold text-neutral-500 uppercase tracking-widest mt-0.5">{label}</p>
+            <p className="text-kicker font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-0.5">{label}</p>
         </div>
     )
 }

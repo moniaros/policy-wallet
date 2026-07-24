@@ -139,7 +139,7 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                                             <td className="max-w-[280px] px-4 py-3 text-xs leading-relaxed text-black/70 dark:text-white/75">
                                                 {item.reason}
                                                 {item.provider && (
-                                                    <span className="mt-0.5 block text-kicker uppercase tracking-wider text-black/55 dark:text-white/45">
+                                                    <span className="mt-0.5 block text-kicker uppercase tracking-wider text-black/55 dark:text-white/60">
                                                         via {item.provider}
                                                     </span>
                                                 )}

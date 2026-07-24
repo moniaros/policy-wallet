@@ -68,7 +68,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A]">€1M</div>
-                                <p className="text-body-sm text-gray-500">Annual Limit</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">Annual Limit</p>
                             </div>
                         </div>
                         <div className="space-y-6">
@@ -77,7 +77,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <div className="p-4 bg-slate-50 text-slate-800 rounded-lg text-sm border border-slate-200">
                                 <p className="font-bold flex items-center gap-2 mb-2"><Activity className="w-4 h-4" /> Authorized Networks</p>
-                                <p className="text-xs text-slate-500">Direct Billing Enabled (MedNetwork Systems)</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Direct Billing Enabled (MedNetwork Systems)</p>
                             </div>
                         </div>
                     </div>

@@ -34,10 +34,10 @@ export default function Error({
             <h1 className="mb-3 text-center text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
                 Κάτι πήγε στραβά
             </h1>
-            <p className="mb-2 max-w-md text-center text-lg text-neutral-600 dark:text-neutral-500">
+            <p className="mb-2 max-w-md text-center text-lg text-neutral-600 dark:text-neutral-400">
                 Παρουσιάστηκε ένα απροσδόκητο σφάλμα. Η ομάδα μας ειδοποιήθηκε.
             </p>
-            <p className="mb-10 max-w-md text-center text-sm text-neutral-500 dark:text-neutral-500">
+            <p className="mb-10 max-w-md text-center text-sm text-neutral-500 dark:text-neutral-400">
                 Something went wrong. Our team has been notified.
             </p>
 
@@ -53,7 +53,7 @@ export default function Error({
             </div>
 
             {error.digest && (
-                <div className="mt-12 font-mono text-xs text-neutral-500 dark:text-neutral-600">
+                <div className="mt-12 font-mono text-xs text-neutral-500 dark:text-neutral-400">
                     Κωδικός συμβάντος · Incident ID: {error.digest}
                 </div>
             )}

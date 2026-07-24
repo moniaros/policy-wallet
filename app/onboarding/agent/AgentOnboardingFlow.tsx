@@ -36,7 +36,7 @@ export default function AgentOnboardingFlow() {
                         />
                     ))}
                 </div>
-                <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                     {t(`Βήμα ${step} από 4`, `Step ${step} of 4`)}
                 </span>
             </div>

@@ -242,7 +242,7 @@ export function DesktopDashboard({
                                                 <p className="text-micro text-muted-foreground truncate">
                                                     {activity.details}
                                                 </p>
-                                                <p className="text-kicker text-neutral-500 mt-0.5">
+                                                <p className="text-kicker text-neutral-500 dark:text-neutral-400 mt-0.5">
                                                     {formatRelativeDate(activity.timestamp, language)}
                                                 </p>
                                             </div>
@@ -255,7 +255,7 @@ export function DesktopDashboard({
                         {/* Quick Add */}
                         {onQuickAdd && (
                             <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-4">
-                                <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-3">
+                                <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">
                                     {pick(DASH_COPY.quickAdd, language)}
                                 </h3>
                                 {/* "Request" (document_request) was removed — there is

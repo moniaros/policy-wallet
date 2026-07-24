@@ -80,7 +80,7 @@ export function UploadDropzone({
                     <FileText className="w-8 h-8" />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{title}</h3>
-                <p className="text-slate-500 text-sm">{hint}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm">{hint}</p>
             </label>
         </div>
     )

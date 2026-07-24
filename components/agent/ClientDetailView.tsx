@@ -119,7 +119,7 @@ export function ClientDetailView({
                                 onClick={onBack}
                                 className="p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition cursor-pointer"
                             >
-                                <ArrowLeft className="h-5 w-5 text-neutral-600 dark:text-neutral-500" />
+                                <ArrowLeft className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
                             </button>
                         )}
                         {customer.avatar ? (

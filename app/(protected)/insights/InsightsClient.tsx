@@ -275,7 +275,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                     <span className="text-3xl font-black text-foreground">
                                         {data.portfolioHealth.totalCustomers}
                                     </span>
-                                    <span className="text-micro font-semibold uppercase tracking-wider text-neutral-500">
+                                    <span className="text-micro font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                         {p.customers}
                                     </span>
                                 </div>
@@ -289,7 +289,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className="text-lg font-black text-foreground">{seg.value}</span>
-                                            <span className="text-xs font-bold text-neutral-500">
+                                            <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
                                                 {data.portfolioHealth.totalCustomers > 0
                                                     ? `${Math.round((seg.value / data.portfolioHealth.totalCustomers) * 100)}%`
                                                     : "0%"}
@@ -326,7 +326,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                     {getLobLabel(item.lineOfBusiness, lang, t)}
                                                 </span>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs font-bold text-neutral-500">{item.count} {p.policiesAbbr}</span>
+                                                    <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">{item.count} {p.policiesAbbr}</span>
                                                     <span className="text-sm font-black text-foreground">{fmt(item.totalPremium, lang)}</span>
                                                 </div>
                                             </div>
@@ -355,7 +355,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <Target className="w-5 h-5 text-primary dark:text-mint" />
                             {p.opportunityFunnel}
                         </h2>
-                        <p className="text-xs text-neutral-500 mb-6">
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6">
                             {p.conversionRate}:{" "}
                             <span className="font-black text-primary dark:text-mint">{data.opportunityMetrics.conversionRate}%</span>
                             {" · "}
@@ -402,7 +402,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <CalendarClock className="w-5 h-5 text-amber-500" />
                             {p.renewalTimeline}
                         </h2>
-                        <p className="text-xs text-neutral-500 mb-5">
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-5">
                             {p.expiringWithin90}
                         </p>
 
@@ -435,7 +435,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                     <span className={`inline-block text-kicker font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${uc.badge}`}>
                                                         {item.daysUntilExpiry}{p.daysAbbr}
                                                     </span>
-                                                    <p className="text-xs font-bold text-neutral-500 mt-1">
+                                                    <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400 mt-1">
                                                         {fmt(item.premiumAmount, lang)}
                                                     </p>
                                                 </div>
@@ -475,7 +475,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             ].map((metric) => (
                                 <div key={metric.label} className="text-center">
                                     <p className={`text-2xl font-black ${metric.color}`}>{metric.value}</p>
-                                    <p className="text-kicker font-bold text-neutral-500 uppercase tracking-widest mt-1">{metric.label}</p>
+                                    <p className="text-kicker font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mt-1">{metric.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -496,7 +496,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         <ShieldAlert className="w-5 h-5 text-red-500" />
                         {p.coverageGaps}
                     </h2>
-                    <p className="text-xs text-neutral-500 mb-5">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-5">
                         {p.recentGapsDesc}
                     </p>
 

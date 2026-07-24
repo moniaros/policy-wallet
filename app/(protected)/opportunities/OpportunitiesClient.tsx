@@ -88,7 +88,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {opp_t.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-500">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {opp_t.subtitle}
                     </p>
                 </header>
@@ -108,7 +108,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                             onClick={() => setFilter(key)}
                             className={`px-5 py-2.5 rounded-full font-bold text-sm tracking-wide whitespace-nowrap transition-all duration-300 ${filter === key
                                 ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-xl shadow-neutral-900/10'
-                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900/50 dark:border-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white shadow-sm'
+                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900/50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white shadow-sm'
                                 }`}
                         >
                             {statusLabel(key)} {count > 0 && <span className="ml-1.5 opacity-60 text-xs">({count})</span>}
@@ -141,7 +141,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         and detection recency — it has never been calibrated against
                         the won/lost outcomes the product already records, so it is a
                         prioritisation aid, not a forecast. Say which. */}
-                    <p className="px-6 pt-4 text-caption leading-snug text-black/55 dark:text-white/45">
+                    <p className="px-6 pt-4 text-caption leading-snug text-black/55 dark:text-white/60">
                         {opp_t.likelihoodNote}
                     </p>
                     <TableShell label={opp_t.title}>
@@ -150,11 +150,11 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                             <thead>
                                 <tr className="bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-800/60">
                                     <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={opp_t.colCustomer} align="left" className="px-6 py-5 pl-8" />
-                                    <th className="px-6 py-5 text-micro font-black text-neutral-500 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colOpportunity}</th>
+                                    <th className="px-6 py-5 text-micro font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{opp_t.colOpportunity}</th>
                                     <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={opp_t.colStatus} align="left" className="px-6 py-5" />
                                     <SortableColumn columnKey="likelihood" sort={sort} onSort={toggle} label={opp_t.colLikelihood} align="left" className="px-6 py-5" />
                                     <SortableColumn columnKey="nextAction" sort={sort} onSort={toggle} label={opp_t.colNextAction} align="left" className="px-6 py-5" />
-                                    <th className="px-6 py-5 text-micro font-black text-neutral-500 dark:text-neutral-500 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
+                                    <th className="px-6 py-5 text-micro font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
@@ -175,7 +175,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                             <td data-label={opp_t.colStatus} className="px-6 py-6">
                                                 <span className={`pw-pill uppercase tracking-widest ${opp.status === 'won' ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' :
                                                     opp.status === 'lost' ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400' :
-                                                        opp.status === 'quoted' ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-500' :
+                                                        opp.status === 'quoted' ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400' :
                                                             opp.status === 'contacted' ? 'bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint' :
                                                                 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
                                                     }`}>
@@ -189,17 +189,17 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                             opp.conversionLikelihood === "high" ? "bg-primary" :
                                                             opp.conversionLikelihood === "medium" ? "bg-amber-500" : "bg-neutral-400"
                                                         }`} />
-                                                        <span className="text-xs font-bold text-neutral-600 dark:text-neutral-500">
+                                                        <span className="text-xs font-bold text-neutral-600 dark:text-neutral-400">
                                                             {opp_t.likelihood[opp.conversionLikelihood]}
                                                         </span>
                                                         {opp.conversionScore != null && (
-                                                            <span className="text-kicker text-neutral-500 dark:text-neutral-500 font-mono">
+                                                            <span className="text-kicker text-neutral-500 dark:text-neutral-400 font-mono">
                                                                 {opp.conversionScore}%
                                                             </span>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs text-neutral-500">—</span>
+                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400">—</span>
                                                 )}
                                             </td>
                                             <td data-label={opp_t.colNextAction} className="px-6 py-6 text-sm font-bold text-muted-foreground">

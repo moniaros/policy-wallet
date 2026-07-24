@@ -14,7 +14,7 @@ export default function NotFound() {
                 Page Not Found
             </h1>
 
-            <p className="text-lg text-neutral-600 dark:text-neutral-500 text-center max-w-md mb-10">
+            <p className="text-lg text-neutral-600 dark:text-neutral-400 text-center max-w-md mb-10">
                 The policy or page you are looking for doesn't exist or has been moved.
             </p>
 
@@ -25,7 +25,7 @@ export default function NotFound() {
                 Return to Safety
             </Link>
 
-            <div className="mt-16 text-neutral-500 dark:text-neutral-600 text-sm">
+            <div className="mt-16 text-neutral-500 dark:text-neutral-400 text-sm">
                 Error Code: 404_POLICY_MISSING
             </div>
         </div>

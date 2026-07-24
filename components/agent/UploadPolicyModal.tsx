@@ -222,7 +222,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             <header>
                                 <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.kicker}</span>
                                 <h2 id="upload-policy-title" className="text-3xl font-black text-foreground tracking-tighter mt-3 mb-2">
-                                    {up.title} <span className="text-neutral-500 dark:text-neutral-500 italic">{up.titleAccent}</span>
+                                    {up.title} <span className="text-neutral-500 dark:text-neutral-400 italic">{up.titleAccent}</span>
                                 </h2>
                                 <p className="text-base text-muted-foreground font-medium">{up.desc}</p>
                             </header>
@@ -236,15 +236,15 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 </div>
                                 <div className="text-center">
                                     <p className="text-base font-black text-foreground">{up.uploadCta}</p>
-                                    <p className="text-xs text-neutral-500 font-medium mt-1">{up.dropHint}</p>
-                                    <p className="text-kicker text-neutral-500 font-medium mt-2 uppercase tracking-widest">{up.uploadHint}</p>
+                                    <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-1">{up.dropHint}</p>
+                                    <p className="text-kicker text-neutral-500 dark:text-neutral-400 font-medium mt-2 uppercase tracking-widest">{up.uploadHint}</p>
                                 </div>
                                 <input type="file" ref={fileInputRef} onChange={handleFile} accept={ACCEPTED} className="hidden" />
                             </button>
 
                             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
 
-                            <button onClick={closeAll} className="w-full py-4 text-kicker font-black uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors">
+                            <button onClick={closeAll} className="w-full py-4 text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 transition-colors">
                                 {up.cancel}
                             </button>
                         </div>
@@ -260,7 +260,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 </div>
                             </div>
                             <h2 className="text-2xl font-black text-foreground tracking-tighter mb-2">{up.analyzingTitle}</h2>
-                            <p className="text-neutral-500 font-medium">{up.analyzingDesc}</p>
+                            <p className="text-neutral-500 dark:text-neutral-400 font-medium">{up.analyzingDesc}</p>
                         </div>
                     )}
 
@@ -270,18 +270,18 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             <header>
                                 <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.resolveKicker}</span>
                                 <h2 className="text-2xl font-black text-foreground tracking-tighter mt-2">
-                                    {up.resolveTitle} <span className="text-neutral-500 italic">{up.resolveAccent}</span>
+                                    {up.resolveTitle} <span className="text-neutral-500 dark:text-neutral-400 italic">{up.resolveAccent}</span>
                                 </h2>
                             </header>
 
                             {/* Extracted identity card */}
                             <div className="p-6 rounded-[28px] bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-                                <p className="text-kicker font-black uppercase tracking-widest text-neutral-500 mb-3">{up.extractedTitle}</p>
+                                <p className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3">{up.extractedTitle}</p>
                                 <div className="grid grid-cols-2 gap-3 text-sm">
-                                    <div><span className="text-neutral-500 font-medium">{up.nameLabel}: </span><span className="font-bold text-foreground">{[customer.name, customer.surname].filter(Boolean).join(' ') || '—'}</span></div>
-                                    <div><span className="text-neutral-500 font-medium">{up.afmLabel}: </span><span className="font-bold text-foreground">{customer.taxId || '—'}</span></div>
-                                    <div><span className="text-neutral-500 font-medium">{up.emailLabel}: </span><span className="font-bold text-foreground">{customer.email || '—'}</span></div>
-                                    <div><span className="text-neutral-500 font-medium">{up.phoneLabel}: </span><span className="font-bold text-foreground">{customer.phone || '—'}</span></div>
+                                    <div><span className="text-neutral-500 dark:text-neutral-400 font-medium">{up.nameLabel}: </span><span className="font-bold text-foreground">{[customer.name, customer.surname].filter(Boolean).join(' ') || '—'}</span></div>
+                                    <div><span className="text-neutral-500 dark:text-neutral-400 font-medium">{up.afmLabel}: </span><span className="font-bold text-foreground">{customer.taxId || '—'}</span></div>
+                                    <div><span className="text-neutral-500 dark:text-neutral-400 font-medium">{up.emailLabel}: </span><span className="font-bold text-foreground">{customer.email || '—'}</span></div>
+                                    <div><span className="text-neutral-500 dark:text-neutral-400 font-medium">{up.phoneLabel}: </span><span className="font-bold text-foreground">{customer.phone || '—'}</span></div>
                                 </div>
                             </div>
 
@@ -291,14 +291,14 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
                             {resolution.candidates.length === 0 ? (
                                 <p className="text-sm font-bold text-foreground">
-                                    {up.newCustomerTitle}. <span className="font-medium text-neutral-500">{up.newCustomerDesc}</span>
+                                    {up.newCustomerTitle}. <span className="font-medium text-neutral-500 dark:text-neutral-400">{up.newCustomerDesc}</span>
                                 </p>
                             ) : (
                                 <div className="space-y-3">
                                     <p className="text-sm font-bold text-foreground">
                                         {resolution.exactMatch && !resolution.conflict ? up.matchedTitle : up.multipleTitle}
                                     </p>
-                                    <p className="text-xs text-neutral-500 font-medium -mt-2">
+                                    <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium -mt-2">
                                         {resolution.exactMatch && !resolution.conflict ? up.matchedDesc : up.multipleDesc}
                                     </p>
                                     {resolution.candidates.map((c: CustomerCandidate) => (
@@ -306,7 +306,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                             <input type="radio" name="candidate" checked={selected === c.id} onChange={() => setSelected(c.id)} className="w-4 h-4 text-primary focus:ring-primary/30" />
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-sm font-bold text-foreground truncate">{c.name || c.email}</p>
-                                                <p className="text-xs text-neutral-500 font-medium truncate">
+                                                <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium truncate">
                                                     {c.email}{c.taxIdMasked ? ` · ${up.afmLabel} ${c.taxIdMasked}` : ''} · {c.policyCount} {up.policiesLabel}
                                                 </p>
                                             </div>
@@ -346,9 +346,9 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             <header>
                                 <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.confirmKicker}</span>
                                 <h2 className="text-2xl font-black text-foreground tracking-tighter mt-2">
-                                    {up.confirmTitle} <span className="text-neutral-500 italic">{up.confirmAccent}</span>
+                                    {up.confirmTitle} <span className="text-neutral-500 dark:text-neutral-400 italic">{up.confirmAccent}</span>
                                 </h2>
-                                {presetCustomerName && <p className="text-xs text-neutral-500 font-medium mt-1">{presetCustomerName}</p>}
+                                {presetCustomerName && <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-1">{presetCustomerName}</p>}
                             </header>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -373,7 +373,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 <input type="checkbox" checked={attestedAiConsent} onChange={e => setAttestedAiConsent(e.target.checked)} className="w-5 h-5 mt-0.5 rounded-lg border-neutral-300 text-primary focus:ring-primary/30" />
                                 <span>
                                     <span className="block text-sm font-black text-foreground">{up.consentLabel}</span>
-                                    <span className="block text-xs text-neutral-500 font-medium mt-0.5">{up.consentDesc}</span>
+                                    <span className="block text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-0.5">{up.consentDesc}</span>
                                 </span>
                             </label>
 
@@ -400,8 +400,8 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                             </header>
 
                             <div className="p-6 rounded-[28px] bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-                                <p className="text-kicker font-black uppercase tracking-widest text-neutral-500 mb-3">{up.duplicateExistingLabel}</p>
-                                <p className="text-base font-black text-foreground">{duplicate.policyNumber} <span className="text-neutral-500 font-medium">· {duplicate.insurerName}</span></p>
+                                <p className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3">{up.duplicateExistingLabel}</p>
+                                <p className="text-base font-black text-foreground">{duplicate.policyNumber} <span className="text-neutral-500 dark:text-neutral-400 font-medium">· {duplicate.insurerName}</span></p>
                             </div>
 
                             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
@@ -422,7 +422,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 <svg className="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-foreground tracking-tighter mb-3">{up.successTitle} <span className="text-neutral-500 italic">{up.successAccent}</span></h2>
+                                <h2 className="text-3xl font-black text-foreground tracking-tighter mb-3">{up.successTitle} <span className="text-neutral-500 dark:text-neutral-400 italic">{up.successAccent}</span></h2>
                                 <p className="text-muted-foreground font-medium max-w-sm mx-auto">{result.created ? up.successCreatedDesc : up.successAttachedDesc}</p>
                             </div>
 
@@ -454,7 +454,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-kicker font-black uppercase tracking-widest text-neutral-500 ml-1">{label}</label>
+            <label className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 ml-1">{label}</label>
             {children}
         </div>
     )

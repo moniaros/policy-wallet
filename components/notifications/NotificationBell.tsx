@@ -192,7 +192,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                                             <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 mt-0.5">
                                                 {notification.message}
                                             </p>
-                                            <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
+                                            <p className="text-xs text-stone-400 dark:text-stone-400 mt-1">
                                                 {formatRelativeDate(notification.createdAt, language === 'el' ? 'el' : 'en')}
                                             </p>
                                         </div>

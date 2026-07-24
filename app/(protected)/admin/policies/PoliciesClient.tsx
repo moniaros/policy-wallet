@@ -263,7 +263,7 @@ export default function PoliciesClient({
                             </div>
                         </div>
                         <div className="flex justify-end gap-2 mt-6">
-                            <button onClick={() => setEditRow(null)} disabled={modalBusy} className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
+                            <button onClick={() => setEditRow(null)} disabled={modalBusy} className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
                             <button onClick={saveEdit} disabled={modalBusy} className={primaryBtn}>{modalBusy ? "Saving…" : "Save"}</button>
                         </div>
                 </AdminDialog>
@@ -276,7 +276,7 @@ export default function PoliciesClient({
                             Permanently delete <span className="font-medium">{deleteRow.policyNumber}</span> ({deleteRow.insurerName}) and all its analysis, gaps, documents and renewals? This cannot be undone.
                         </p>
                         <div className="flex justify-end gap-2">
-                            <button onClick={() => setDeleteRow(null)} disabled={modalBusy} className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
+                            <button onClick={() => setDeleteRow(null)} disabled={modalBusy} className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
                             <button onClick={confirmDelete} disabled={modalBusy} className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50">{modalBusy ? "Deleting…" : "Delete"}</button>
                         </div>
                 </AdminDialog>
@@ -289,7 +289,7 @@ export default function PoliciesClient({
                             Merge source <span className="font-mono text-xs">{mergeSource.trim()}</span> into target <span className="font-mono text-xs">{mergeTarget.trim()}</span>? The source policy will be deleted.
                         </p>
                         <div className="flex justify-end gap-2">
-                            <button onClick={() => setMergeConfirm(false)} disabled={modalBusy} className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
+                            <button onClick={() => setMergeConfirm(false)} disabled={modalBusy} className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
                             <button onClick={confirmMerge} disabled={modalBusy} className={primaryBtn}>{modalBusy ? "Merging…" : "Merge"}</button>
                         </div>
                 </AdminDialog>

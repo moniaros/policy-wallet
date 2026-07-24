@@ -25,7 +25,7 @@ export default function AgentOnboardingPage() {
                     <LeftColumnContent />
                 </div>
 
-                <div className="relative z-10 text-sm text-neutral-500">
+                <div className="relative z-10 text-sm text-neutral-500 dark:text-neutral-400">
                     © 2026 PolicyWallet Pro
                 </div>
             </div>

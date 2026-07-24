@@ -100,7 +100,7 @@ export function DocumentPreviewButton({ onClick, isLocked, label, lockedLabel, o
                     e.stopPropagation()
                     onLockedClick?.()
                 }}
-                className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/55 transition-colors hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white/70"
+                className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/55 transition-colors hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white/70"
                 title={lockedLabel}
                 aria-label={lockedLabel}
             >

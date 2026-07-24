@@ -35,7 +35,7 @@ export default function CancelSubscriptionButton({ subscriptionId }: { subscript
                             <button
                                 onClick={() => setOpen(false)}
                                 disabled={busy}
-                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50"
+                                className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded disabled:opacity-50"
                             >
                                 Close
                             </button>

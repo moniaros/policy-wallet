@@ -81,7 +81,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                     >
                         {client.protectionScore}
                     </span>
-                    <span className="text-kicker text-neutral-500">/100</span>
+                    <span className="text-kicker text-neutral-500 dark:text-neutral-400">/100</span>
                     {(client.gapCount ?? 0) > 0 && (
                         <span className="flex items-center gap-0.5 text-kicker text-red-500">
                             <AlertTriangle className="h-2.5 w-2.5" />
@@ -92,7 +92,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
             )}
 
             {/* Arrow */}
-            <ChevronRight className="h-4 w-4 shrink-0 text-neutral-500" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
         </button>
     )
 }
@@ -150,7 +150,7 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
                             <h3 className={`text-xs font-semibold uppercase tracking-wider ${display.color}`}>
                                 {display.label}
                             </h3>
-                            <span className="text-xs text-neutral-500">
+                            <span className="text-xs text-neutral-500 dark:text-neutral-400">
                                 ({tierClients.length})
                             </span>
                         </div>

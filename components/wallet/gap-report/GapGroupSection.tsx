@@ -30,9 +30,9 @@ export function GapGroupSection({ area, count, copy, children }: GapGroupSection
                     {label} ({count})
                 </span>
                 {open ? (
-                    <ChevronUp className="h-3.5 w-3.5 text-black/55 dark:text-white/45" />
+                    <ChevronUp className="h-3.5 w-3.5 text-black/55 dark:text-white/60" />
                 ) : (
-                    <ChevronDown className="h-3.5 w-3.5 text-black/55 dark:text-white/45" />
+                    <ChevronDown className="h-3.5 w-3.5 text-black/55 dark:text-white/60" />
                 )}
             </button>
             {open && <div className="space-y-2.5">{children}</div>}

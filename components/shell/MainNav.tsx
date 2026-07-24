@@ -27,7 +27,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
             {navigation.map((group, groupIndex) => (
                 <div key={groupIndex}>
                     {group.title && (
-                        <div className="px-3 mb-2 text-kicker font-semibold text-black/55 dark:text-white/45 uppercase tracking-[0.22em]">
+                        <div className="px-3 mb-2 text-kicker font-semibold text-black/55 dark:text-white/60 uppercase tracking-[0.22em]">
                             {group.title}
                         </div>
                     )}

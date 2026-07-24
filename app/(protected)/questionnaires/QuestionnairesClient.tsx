@@ -153,7 +153,7 @@ export function QuestionnairesClient({ templates, instances }: Props) {
                         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
                             {t.title}
                         </h1>
-                        <p className="max-w-xl text-lg text-slate-600 dark:text-slate-500">
+                        <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
                             {t.subtitle}
                         </p>
                     </div>
@@ -170,14 +170,14 @@ export function QuestionnairesClient({ templates, instances }: Props) {
                 <div className="flex gap-1 mb-8 bg-slate-100 dark:bg-slate-800 rounded-xl p-1 w-fit">
                     <button
                         onClick={() => setTab("templates")}
-                        className={`px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === "templates" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-600 hover:text-slate-800"}`}
+                        className={`px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === "templates" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"}`}
                     >
                         <ClipboardList className="w-3.5 h-3.5 inline mr-1.5" />
                         {t.templates} ({templates.length})
                     </button>
                     <button
                         onClick={() => setTab("sent")}
-                        className={`px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === "sent" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-600 hover:text-slate-800"}`}
+                        className={`px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === "sent" ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"}`}
                     >
                         <Send className="w-3.5 h-3.5 inline mr-1.5" />
                         {t.sent} ({instances.length})
@@ -245,7 +245,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                     <div className="flex items-start justify-between mb-3">
                         <div>
                             <span className={`text-kicker font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${tpl.isSystem
-                                ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-500"
+                                ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                                 : "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
                                 }`}>
                                 {tpl.isSystem ? t.system : t.custom}
@@ -255,13 +255,13 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={() => onEdit(tpl.id)}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-600"
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-600 dark:text-slate-400"
                                 >
                                     <Eye className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                     onClick={() => handleDelete(tpl.id)}
-                                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-500 hover:text-red-700"
+                                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-500 dark:text-slate-400 hover:text-red-700"
                                 >
                                     <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -270,14 +270,14 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                     </div>
 
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{tpl.name}</h4>
-                    <p className="text-kicker font-bold text-slate-500 uppercase tracking-widest mb-3">
+                    <p className="text-kicker font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
                         {tpl.lineOfBusiness} · {tpl.questions.length} {t.questions} · {tpl.instanceCount} {t.sentCount}
                     </p>
 
                     {/* Question preview */}
                     <div className="space-y-1.5">
                         {tpl.questions.slice(0, 3).map((q, i) => (
-                            <div key={i} className="flex items-center gap-2 text-xs text-slate-500">
+                            <div key={i} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                                 <span className="w-4 h-4 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-kicker font-bold flex-shrink-0">
                                     {i + 1}
                                 </span>
@@ -285,7 +285,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                             </div>
                         ))}
                         {tpl.questions.length > 3 && (
-                            <p className="text-kicker text-slate-500 pl-6">+{tpl.questions.length - 3} more...</p>
+                            <p className="text-kicker text-slate-500 dark:text-slate-400 pl-6">+{tpl.questions.length - 3} more...</p>
                         )}
                     </div>
                 </div>
@@ -373,7 +373,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                         <h3 className="text-2xl font-black text-slate-900 dark:text-white">
                             {editingTemplate ? t.editTemplate : t.createNew}
                         </h3>
-                        <button onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600">
+                        <button onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
@@ -381,7 +381,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                     {/* Meta */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label className="block text-kicker font-black text-slate-500 uppercase tracking-widest mb-1.5">{t.templateName}</label>
+                            <label className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.templateName}</label>
                             <input
                                 type="text"
                                 value={name}
@@ -391,7 +391,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                             />
                         </div>
                         <div>
-                            <label className="block text-kicker font-black text-slate-500 uppercase tracking-widest mb-1.5">{t.lob}</label>
+                            <label className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.lob}</label>
                             <select
                                 value={lob}
                                 onChange={(e) => setLob(e.target.value)}
@@ -412,7 +412,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                             <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                                 <div className="flex items-center gap-2 mb-3">
                                     <GripVertical className="w-4 h-4 text-slate-300" />
-                                    <span className="text-kicker font-black text-slate-500 uppercase tracking-widest">
+                                    <span className="text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
                                         Q{i + 1}
                                     </span>
                                     <div className="flex-1" />
@@ -437,7 +437,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     </button>
                                     <button
                                         onClick={() => removeQuestion(i)}
-                                        className="p-1 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-500"
+                                        className="p-1 rounded-lg hover:bg-red-50 text-slate-500 dark:text-slate-400 hover:text-red-500"
                                     >
                                         <Trash2 className="w-3.5 h-3.5" />
                                     </button>
@@ -497,7 +497,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
 
                     <button
                         onClick={addQuestion}
-                        className="w-full py-3 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500 hover:text-slate-600 hover:border-slate-300 transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-all flex items-center justify-center gap-2"
                     >
                         <Plus className="w-4 h-4" />
                         {t.addQuestion}
@@ -511,7 +511,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                 </div>
 
                 <div className="p-6 bg-slate-50 dark:bg-slate-800/50 flex gap-3 border-t border-slate-100 dark:border-slate-700 rounded-b-3xl">
-                    <button onClick={onClose} className="flex-1 px-4 py-3 text-sm font-bold text-slate-500">
+                    <button onClick={onClose} className="flex-1 px-4 py-3 text-sm font-bold text-slate-500 dark:text-slate-400">
                         {t.cancel}
                     </button>
                     <button
@@ -590,14 +590,14 @@ function SentList({ instances, t, language }: {
                             <SortableColumn columnKey="template" sort={sort} onSort={toggle} label={t.template} align="left" className="pb-3" />
                             <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={t.status} align="left" className="pb-3" />
                             <SortableColumn columnKey="sentAt" sort={sort} onSort={toggle} label={t.sentAt} align="left" className="pb-3" />
-                            <th className="text-right text-kicker font-black text-slate-500 uppercase tracking-widest p-4"></th>
+                            <th className="text-right text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest p-4"></th>
                         </tr>
                     </thead>
                     <tbody>
                         {sortedInstances.map((inst) => (
                             <tr key={inst.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                                 <td data-label={t.customer} className="p-4 font-bold text-slate-900 dark:text-white">{inst.customerName}</td>
-                                <td data-label={t.template} className="p-4 text-slate-600 dark:text-slate-500">{inst.templateName}</td>
+                                <td data-label={t.template} className="p-4 text-slate-600 dark:text-slate-400">{inst.templateName}</td>
                                 <td data-label={t.status} className="p-4">
                                     {inst.status === "completed" ? (
                                         <span className="inline-flex items-center gap-1 text-kicker font-black text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint px-2.5 py-1 rounded-full uppercase tracking-widest">
@@ -609,7 +609,7 @@ function SentList({ instances, t, language }: {
                                         </span>
                                     )}
                                 </td>
-                                <td data-label={t.sentAt} className="p-4 text-xs text-slate-500">
+                                <td data-label={t.sentAt} className="p-4 text-xs text-slate-500 dark:text-slate-400">
                                     {new Date(inst.sentAt).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
                                 </td>
                                 <td className="p-4 text-right">
@@ -650,21 +650,21 @@ function SentList({ instances, t, language }: {
                                     </div>
                                     <div>
                                         <h3 className="text-lg font-black text-slate-900 dark:text-white">{t.analysisTitle}</h3>
-                                        <p className="text-xs text-slate-500">{analysisData.customerName} · {analysisData.templateName}</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">{analysisData.customerName} · {analysisData.templateName}</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setAnalysisData(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600">
+                                <button onClick={() => setAnalysisData(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
 
                             {/* Answer summary */}
                             <div className="mb-6">
-                                <h4 className="text-kicker font-black text-slate-500 uppercase tracking-widest mb-3">{t.answers}</h4>
+                                <h4 className="text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">{t.answers}</h4>
                                 <div className="space-y-2">
                                     {analysisData.answerSummary.map((a: any, i: number) => (
                                         <div key={i} className="flex items-start justify-between gap-4 py-2 border-b border-slate-50 dark:border-slate-800">
-                                            <span className="text-xs text-slate-600 dark:text-slate-500">{a.question}</span>
+                                            <span className="text-xs text-slate-600 dark:text-slate-400">{a.question}</span>
                                             <span className="text-xs font-bold text-slate-900 dark:text-white text-right flex-shrink-0">{String(a.answer)}</span>
                                         </div>
                                     ))}
@@ -705,7 +705,7 @@ function SentList({ instances, t, language }: {
                                         {analysisData.missingCoverage.map((mc: any, i: number) => (
                                             <span key={i} className={`px-3 py-1.5 rounded-full text-xs font-bold ${mc.essential
                                                 ? "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                                                : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-500"
+                                                : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                                                 }`}>
                                                 {mc.label}
                                                 {mc.essential && <span className="ml-1 text-kicker">({t.essential})</span>}

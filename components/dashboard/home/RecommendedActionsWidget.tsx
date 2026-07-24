@@ -57,7 +57,7 @@ export function RecommendedActionsWidget({
                             >
                                 <span className={`h-2 w-2 flex-shrink-0 rounded-full ${URGENCY_DOTS[item.urgency]}`} aria-hidden />
                                 <p className="min-w-0 flex-1 truncate text-xs font-semibold text-black dark:text-white">{item.title}</p>
-                                <ArrowRight className="h-3.5 w-3.5 flex-shrink-0 text-black/55 dark:text-white/45" aria-hidden />
+                                <ArrowRight className="h-3.5 w-3.5 flex-shrink-0 text-black/55 dark:text-white/60" aria-hidden />
                             </Link>
                         ))}
                     </div>

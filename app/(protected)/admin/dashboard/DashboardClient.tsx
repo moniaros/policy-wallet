@@ -356,7 +356,7 @@ function MetricsCard({ title, value, change, changeLabel, icon, color }: Metrics
     const colorClasses = {
         blue: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint",
         green: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint",
-        purple: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-500",
+        purple: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
         emerald: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint"
     }
 
@@ -379,7 +379,7 @@ function MetricsCard({ title, value, change, changeLabel, icon, color }: Metrics
                 <span className="text-stone-600 dark:text-stone-400">
                     {change > 0 && "+"}{change}
                 </span>
-                <span className="text-stone-500 dark:text-stone-500">
+                <span className="text-stone-500 dark:text-stone-400">
                     {changeLabel}
                 </span>
             </div>

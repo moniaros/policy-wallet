@@ -14,7 +14,7 @@ export default function AdminTokensPage() {
                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                         {language === 'el' ? 'Διαχείριση Tokens' : 'Token Management'} {/* i18n-hardcoded-ignore — admin-only internal tooling, already bilingual inline */}
                     </h1>
-                    <p className="text-slate-600 dark:text-slate-500">
+                    <p className="text-slate-600 dark:text-slate-400">
                         {language === 'el'
                             ? 'Παρακολουθήστε τη χρήση, το κόστος και τα περιθώρια κέρδους των AI υπηρεσιών'
                             : 'Monitor usage, costs, and profit margins of AI services'} {/* i18n-hardcoded-ignore — admin-only internal tooling */}

@@ -365,7 +365,7 @@ export default function UsersClient({
                         <div className="flex justify-end gap-2">
                             <button
                                 onClick={() => setShowApproveModal(false)}
-                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded"
+                                className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded"
                             >
                                 Cancel
                             </button>
@@ -404,7 +404,7 @@ export default function UsersClient({
                         <div className="flex justify-end gap-2">
                             <button
                                 onClick={() => setShowRejectModal(false)}
-                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded"
+                                className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded"
                             >
                                 Cancel
                             </button>
@@ -454,7 +454,7 @@ export default function UsersClient({
                         <div className="flex justify-end gap-2">
                             <button
                                 onClick={() => setShowRoleModal(false)}
-                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded"
+                                className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded"
                             >
                                 Cancel
                             </button>
@@ -511,7 +511,7 @@ export default function UsersClient({
                             <button
                                 onClick={() => setShowTokenModal(false)}
                                 disabled={tokenBusy}
-                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50"
+                                className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded disabled:opacity-50"
                             >
                                 Cancel
                             </button>

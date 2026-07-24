@@ -133,7 +133,7 @@ export function AgentGettingStartedChecklist({
                     <button
                         type="button"
                         onClick={() => setCollapsed(!collapsed)}
-                        className="rounded-lg p-1.5 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/5 dark:hover:text-white/70"
+                        className="rounded-lg p-1.5 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white/70"
                         aria-label={collapsed ? "Expand" : "Collapse"}
                     >
                         {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
@@ -146,7 +146,7 @@ export function AgentGettingStartedChecklist({
                                 localStorage.setItem("pw-agent-checklist-dismissed", "true")
                             }
                         }}
-                        className="rounded-lg p-1.5 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/5 dark:hover:text-white/70"
+                        className="rounded-lg p-1.5 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white/70"
                         aria-label="Dismiss"
                     >
                         <X className="h-4 w-4" />

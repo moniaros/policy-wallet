@@ -56,7 +56,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
             <h3 className="text-base font-bold text-foreground mb-1">
                 {t.collaboration.documentRequests.requestDocument}
             </h3>
-            <p className="text-sm text-neutral-500 mb-4">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
                 {t.collaboration.documentRequests.sendRequestTo.replace("{name}", clientName)}
             </p>
 
@@ -128,7 +128,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition cursor-pointer"
+                            className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition cursor-pointer"
                         >
                             {t.collaboration.documentRequests.cancel}
                         </button>
@@ -199,7 +199,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
                     <p className="text-sm font-medium text-foreground">
                         {t.collaboration.documentRequests.documentUploaded}
                     </p>
-                    <p className="text-xs text-neutral-500 mt-1">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                         {language === "el"
                             ? `${agentName} θα λάβει ειδοποίηση`
                             : `${agentName} will be notified`}
@@ -331,7 +331,7 @@ export function DocumentRequestCard({ request, viewerRole, agentName, onRespond 
                 <p className="text-sm font-medium text-foreground truncate">
                     {docName}
                 </p>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                     {request.status === "pending"
                         ? t.collaboration.documentRequests.pending
                         : request.status === "uploaded"

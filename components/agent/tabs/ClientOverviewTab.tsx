@@ -44,7 +44,7 @@ export function ClientOverviewTab({
             {/* Coverage Health Score */}
             <div className="col-span-4">
                 <BrandCard className="p-6 flex flex-col items-center text-center">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
                         {t.clientOverview.healthScore}
                     </h3>
                     <div className="relative mb-4">
@@ -81,7 +81,7 @@ export function ClientOverviewTab({
                         <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                             <Shield className="h-5 w-5 text-primary dark:text-mint" />
                             {t.clientOverview.activePolicies}
-                            <span className="text-xs text-neutral-500 font-normal">({activePolicies.length})</span>
+                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-normal">({activePolicies.length})</span>
                         </h3>
                     </div>
                     {activePolicies.length === 0 ? (
@@ -105,12 +105,12 @@ export function ClientOverviewTab({
                                         <p className="text-sm font-medium text-foreground">
                                             {LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness}
                                         </p>
-                                        <p className="text-xs text-neutral-500">
+                                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
                                             {policy.insurerName}
                                         </p>
                                     </div>
                                     <div className="text-right">
-                                        <div className="flex items-center gap-1 text-xs text-neutral-500">
+                                        <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                                             <Calendar className="h-3 w-3" />
                                             {formatDateGreek(policy.endDate)}
                                         </div>
@@ -134,7 +134,7 @@ export function ClientOverviewTab({
                         <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
                             <AlertTriangle className="h-5 w-5 text-amber-500" />
                             {t.clientOverview.identifiedGaps}
-                            <span className="text-xs text-neutral-500 font-normal">({openOpportunities.length})</span>
+                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-normal">({openOpportunities.length})</span>
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
                             {openOpportunities.map((opp) => {
@@ -159,14 +159,14 @@ export function ClientOverviewTab({
                                                         ? "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
                                                         : opp.conversionLikelihood === "medium"
                                                             ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                                                            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500"
+                                                            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
                                                 }`}>
                                                     <ArrowUpRight className="w-2.5 h-2.5" />
                                                     {opp.conversionScore != null ? `${opp.conversionScore}%` : opp.conversionLikelihood}
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-xs text-neutral-500 mt-1 line-clamp-2">
+                                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 line-clamp-2">
                                             {opp.notes}
                                         </p>
                                         {onCreateProposal && (
@@ -200,7 +200,7 @@ export function ClientOverviewTab({
                                 <div className="text-3xl font-black text-foreground">
                                     {customer.crossSell.coverageScore}%
                                 </div>
-                                <p className="text-xs text-neutral-500">
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                                     {t.clientOverview.coverage}
                                 </p>
                             </div>

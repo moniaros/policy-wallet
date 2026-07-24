@@ -347,7 +347,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                                 {[1, 2].map(i => <Skeleton key={i} className="h-14 w-full rounded-xl" />)}
                             </div>
                         ) : documentRequests.length === 0 ? (
-                            <p className="text-sm text-neutral-500 text-center py-4">
+                            <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center py-4">
                                 {PROFILE_COPY.noDocumentRequests[language]}
                             </p>
                         ) : (
@@ -388,7 +388,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                                 {[1, 2].map(i => <Skeleton key={i} className="h-32 w-full rounded-xl" />)}
                             </div>
                         ) : proposals.length === 0 ? (
-                            <p className="text-sm text-neutral-500 text-center py-4">
+                            <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center py-4">
                                 {PROFILE_COPY.noProposals[language]}
                             </p>
                         ) : (

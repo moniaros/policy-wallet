@@ -39,7 +39,7 @@ export function PartnerPerksSection({
                     <h2 className="text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white sm:text-4xl">
                         {t("Περισσότερα από ένα πορτοφόλι", "More than a wallet")}
                     </h2>
-                    <p className="mx-auto mt-3 max-w-2xl text-[#475569] dark:text-slate-500">
+                    <p className="mx-auto mt-3 max-w-2xl text-[#475569] dark:text-slate-400">
                         {t(
                             "Τα πληρωμένα πλάνα περιλαμβάνουν υπηρεσίες πρόληψης και προνόμια από επιλεγμένους συνεργάτες.",
                             "Paid plans include prevention services and privileges from selected partners."
@@ -50,7 +50,7 @@ export function PartnerPerksSection({
                     {offers.map((offer) => (
                         <div key={offer.id} className="pw-card pw-pad">
                             <div className="mb-2 flex items-center justify-between gap-3">
-                                <span className="text-xs font-semibold uppercase tracking-wide text-[#64748B] dark:text-slate-500">
+                                <span className="text-xs font-semibold uppercase tracking-wide text-[#64748B] dark:text-slate-400">
                                     {offer.vendorName}
                                 </span>
                                 <span className="whitespace-nowrap rounded-full bg-[#ECFDF5] px-2 py-0.5 text-xs font-medium text-[#166534] dark:bg-[#29685B]/15 dark:text-[#A7F3D0]">
@@ -60,13 +60,13 @@ export function PartnerPerksSection({
                             <h3 className="text-base font-semibold text-[#0F172A] dark:text-white">
                                 {offer.title[lang]}
                             </h3>
-                            <p className="mt-1.5 text-sm leading-relaxed text-[#475569] dark:text-slate-500">
+                            <p className="mt-1.5 text-sm leading-relaxed text-[#475569] dark:text-slate-400">
                                 {offer.description[lang]}
                             </p>
                         </div>
                     ))}
                 </div>
-                <p className="mt-6 text-center text-xs text-[#64748B] dark:text-slate-500">
+                <p className="mt-6 text-center text-xs text-[#64748B] dark:text-slate-400">
                     {t(
                         "Οι παροχές προσφέρονται από τρίτους συνεργάτες και ενδέχεται να αλλάξουν.",
                         "Benefits are provided by third-party partners and may change."

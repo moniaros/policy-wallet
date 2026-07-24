@@ -39,7 +39,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] uppercase tracking-wider">Golden Retriever</h3>
-                                <p className="text-body-sm text-gray-500">Age: 4 · Active Cover</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">Age: 4 · Active Cover</p>
                             </div>
                         </div>
                         <div className="space-y-4">
