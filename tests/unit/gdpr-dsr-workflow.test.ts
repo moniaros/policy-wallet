@@ -49,7 +49,15 @@ const mockSendEmail = vi.fn(async (..._a: any[]) => ({ success: true }))
 vi.mock('@/lib/email/email-service', () => ({
     sendEmail: (...a: unknown[]) => (mockSendEmail as any)(...a),
 }))
-vi.mock('@/lib/seo/site', () => ({ getSiteOrigin: () => 'https://www.policywallet.gr' }))
+// Spread the real module rather than replacing it: a bare `{ getSiteOrigin }`
+// made every OTHER export undefined, so when the email templates started reading
+// siteConfig.contactEmail the template threw, sendDsrLifecycleEmail's catch
+// swallowed it, and three Art. 12(4) assertions failed for a reason that had
+// nothing to do with GDPR.
+vi.mock('@/lib/seo/site', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@/lib/seo/site')>()),
+    getSiteOrigin: () => 'https://www.policywallet.gr',
+}))
 
 vi.mock('@/lib/auth-helpers', () => ({ getAuthenticatedUserOrNull: vi.fn() }))
 vi.mock('@/lib/services/compliance.service', () => ({ buildUserDataExportPayload: vi.fn() }))

@@ -8,6 +8,7 @@ import { helpArticles } from '@/lib/help-content'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Clock, Share2, Printer, ThumbsUp, ThumbsDown, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { siteConfig } from '@/lib/seo/site'
 
 export default function ArticlePage() {
     const params = useParams()
@@ -173,7 +174,7 @@ export default function ArticlePage() {
                                 <h3 className="text-base font-bold text-foreground mb-2">{copy.personalizedHelp}</h3>
                                 <p className="text-sm text-muted-foreground mb-4">{copy.supportDescription}</p>
                                 <a
-                                    href="mailto:support@policywallet.com"
+                                    href={`mailto:${siteConfig.contactEmail}`}
                                     className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-sm px-4 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                                 >
                                     {copy.contactSupport}

@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { helpArticles } from '@/lib/help-content'
+// The published contact route: Terms and the privacy policy both name this
+// address, and /contact renders it. The Help page offered a .com address on a
+// domain the company does not own — so the one CTA a stuck policyholder reaches
+// for sent their mail nowhere.
+import { siteConfig } from '@/lib/seo/site'
 import {
     Search,
     Upload,
@@ -183,7 +188,7 @@ export default function HelpPage() {
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                             <a
-                                href="mailto:support@policywallet.com"
+                                href={`mailto:${siteConfig.contactEmail}`}
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             >
                                 {t.help.sendEmail}
@@ -324,7 +329,7 @@ export default function HelpPage() {
                         </div>
                         <p className="text-sm text-muted-foreground mb-5">{t.help.emailDesc}</p>
                         <a
-                            href="mailto:support@policywallet.com"
+                            href={`mailto:${siteConfig.contactEmail}`}
                             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                         >
                             {t.help.sendEmail}

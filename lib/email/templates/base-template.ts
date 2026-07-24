@@ -1,10 +1,50 @@
+import { siteConfig, getSiteOrigin } from '@/lib/seo/site'
+
 /**
- * Base email template with PolicyWallet branding
+ * The origin every email links back to.
+ *
+ * The fallback was `https://policywallet.com` — a domain the company does not
+ * own. lib/seo/site.ts already carries the note that a .com address "is not a
+ * mailbox we control"; that correction was applied to the public site and never
+ * reached the emails, so with NEXT_PUBLIC_APP_URL unset every link in every
+ * footer pointed off-property.
  */
-export function getBaseEmailTemplate(content: string): string {
+function emailOrigin(): string {
+    return (process.env.NEXT_PUBLIC_APP_URL || getSiteOrigin()).replace(/\/$/, '')
+}
+
+const FOOTER_COPY = {
+    el: {
+        rights: 'Με επιφύλαξη παντός δικαιώματος.',
+        dashboard: 'Πίνακας ελέγχου',
+        support: 'Υποστήριξη',
+        privacy: 'Απόρρητο',
+    },
+    en: {
+        rights: 'All rights reserved.',
+        dashboard: 'Dashboard',
+        support: 'Support',
+        privacy: 'Privacy',
+    },
+} as const
+
+/**
+ * Base email template with PolicyWallet branding.
+ *
+ * Footer links: "Visit Dashboard" pointed at the bare origin (the marketing
+ * landing page) and "Support" at `/support`, a route that has never existed —
+ * both shipped in the footer of every email the product sends.
+ *
+ * `language` drives both the footer copy and the document's `lang` attribute —
+ * every email declared `lang="en"`, so a Greek renewal notice was announced to
+ * screen readers, and hinted to translation prompts, as English.
+ */
+export function getBaseEmailTemplate(content: string, language: 'el' | 'en' = 'el'): string {
+    const f = FOOTER_COPY[language]
+    const origin = emailOrigin()
     return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${language}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,12 +155,15 @@ export function getBaseEmailTemplate(content: string): string {
     </div>
     <div class="footer">
       <p>
-        © ${new Date().getFullYear()} PolicyWallet. All rights reserved.
+        © ${new Date().getFullYear()} PolicyWallet. ${f.rights}
       </p>
       <p>
-        <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.com'}">Visit Dashboard</a> •
-        <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.com'}/support">Support</a> •
-        <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.com'}/privacy">Privacy</a>
+        <a href="${origin}/dashboard">${f.dashboard}</a> •
+        <a href="${origin}/help">${f.support}</a> •
+        <a href="${origin}/privacy">${f.privacy}</a>
+      </p>
+      <p>
+        <a href="mailto:${siteConfig.contactEmail}">${siteConfig.contactEmail}</a>
       </p>
     </div>
   </div>

@@ -1,3 +1,17 @@
+import { siteConfig, getSiteOrigin } from '@/lib/seo/site'
+
+/**
+ * `support@policywallet.com` and `https://policywallet.com` are not addresses
+ * this company controls — the product is policywallet.gr, and lib/seo/site.ts
+ * already records that a .com contact "is not a mailbox we control". That
+ * correction reached the public site and stopped there. Here it meant a
+ * REJECTED agent applicant — the reader most likely to need a reply — was given
+ * a dead mailbox as their only route back.
+ */
+function agentEmailOrigin(): string {
+    return (process.env.NEXT_PUBLIC_APP_URL || getSiteOrigin()).replace(/\/$/, '')
+}
+
 import { getBaseEmailTemplate } from './base-template'
 
 export interface AgentApprovalEmailData {
@@ -51,7 +65,7 @@ export function getAgentApprovalEmail(data: AgentApprovalEmailData) {
       <li>Explore the gap analysis tools</li>
     </ol>
     
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.com'}/agent/dashboard" class="button">
+    <a href="${agentEmailOrigin()}/agent/dashboard" class="button">
       Go to Agent Dashboard →
     </a>
     
@@ -59,14 +73,14 @@ export function getAgentApprovalEmail(data: AgentApprovalEmailData) {
     
     <p style="font-size: 14px; color: #6B7280;">
       If you have any questions or need assistance, our support team is here to help at 
-      <a href="mailto:support@policywallet.com">support@policywallet.com</a>
+      <a href="mailto:${siteConfig.contactEmail}">${siteConfig.contactEmail}</a>
     </p>
   `
 
     return {
         subject: '🎉 Your PolicyWallet Agent Application Has Been Approved!',
         html: getBaseEmailTemplate(content),
-        text: `Welcome to PolicyWallet, ${agentName}! Your agent application has been approved. You can now access your agent dashboard at ${process.env.NEXT_PUBLIC_APP_URL}/agent/dashboard`
+        text: `Welcome to PolicyWallet, ${agentName}! Your agent application has been approved. You can now access your agent dashboard at ${agentEmailOrigin()}/agent/dashboard`
     }
 }
 
@@ -111,7 +125,7 @@ export function getAgentRejectionEmail(data: AgentRejectionEmailData) {
       <li><strong>Use as Policyholder</strong> - Continue using PolicyWallet for personal insurance management</li>
     </ul>
     
-    <a href="mailto:support@policywallet.com?subject=Agent Application - ${agentName}" class="button">
+    <a href="mailto:${siteConfig.contactEmail}?subject=Agent Application - ${agentName}" class="button">
       Contact Support
     </a>
     
@@ -125,7 +139,7 @@ export function getAgentRejectionEmail(data: AgentRejectionEmailData) {
     return {
         subject: 'Update on Your PolicyWallet Agent Application',
         html: getBaseEmailTemplate(content),
-        text: `Dear ${agentName}, thank you for your interest in becoming a PolicyWallet agent. Unfortunately, we are unable to approve your application at this time. Reason: ${reason}. Please contact support@policywallet.com if you have questions.`
+        text: `Dear ${agentName}, thank you for your interest in becoming a PolicyWallet agent. Unfortunately, we are unable to approve your application at this time. Reason: ${reason}. Please contact ${siteConfig.contactEmail} if you have questions.`
     }
 }
 
@@ -161,7 +175,7 @@ export function getAgentWelcomeEmail(agentName: string) {
       </p>
     </div>
     
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.com'}/agent/onboarding" class="button">
+    <a href="${agentEmailOrigin()}/agent/onboarding" class="button">
       Start Onboarding →
     </a>
     
@@ -173,6 +187,6 @@ export function getAgentWelcomeEmail(agentName: string) {
     return {
         subject: 'Welcome to PolicyWallet - Let\'s Get Started!',
         html: getBaseEmailTemplate(content),
-        text: `Welcome to PolicyWallet, ${agentName}! We're excited to have you join our network. Get started at ${process.env.NEXT_PUBLIC_APP_URL}/agent/onboarding`
+        text: `Welcome to PolicyWallet, ${agentName}! We're excited to have you join our network. Get started at ${agentEmailOrigin()}/agent/onboarding`
     }
 }
