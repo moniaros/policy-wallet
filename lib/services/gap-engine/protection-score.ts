@@ -13,6 +13,7 @@
 
 import type { ProfileFields, ProfileGap } from "./profile-gap-rules"
 import type { GapSeverity } from "./profile-gap-rules"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 
 // ── Category definitions ─────────────────────────────────────────────
 
@@ -168,7 +169,17 @@ export function calculateProtectionScore(
     profileGaps: ProfileGap[],
     policyGapCount: number = 0
 ): ProtectionScoreResult {
-    const normalizedLobs = new Set(activeLobs.map((l) => l.toLowerCase()))
+    // Child branches count as their parent. The taxonomy models motorbike and
+    // truck under motor, renters under home, personal accident under life — and
+    // SCORE_CATEGORIES lists only the parents. So a correctly-insured motorbike,
+    // truck or rented home contributed NOTHING to the Property category: the
+    // owner's real cover scored as if it did not exist, and the category read 0.
+    const normalizedLobs = new Set(
+        activeLobs.map((l) => {
+            const branch = normalizeBranch(l)
+            return (branch.parentId ?? branch.id).toLowerCase()
+        })
+    )
     const gapLobs = new Set(profileGaps.map((g) => g.lineOfBusiness.toLowerCase()))
 
     const categoryResults: Record<string, CategoryScore> = {}

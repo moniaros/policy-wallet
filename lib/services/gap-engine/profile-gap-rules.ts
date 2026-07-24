@@ -9,6 +9,7 @@
  */
 
 import type { PolicyholderProfile, Policy } from "@prisma/client"
+import { getBranchFamily, normalizeBranch } from "@/lib/insurance/taxonomy"
 
 export type GapSeverity = "critical" | "high" | "medium" | "low"
 
@@ -65,11 +66,25 @@ export interface PolicyFields {
 
 // ── Helper ───────────────────────────────────────────────────────────
 
+/**
+ * Does the user hold live cover in this line — INCLUDING its child branches?
+ *
+ * The taxonomy models motorbike as a child of motor ("child branches aggregate
+ * under their parent"), and portfolio-rules already treats them as one family.
+ * This matched the id exactly, so a correctly-insured motorbike did not satisfy
+ * `hasActiveLine(policies, "motor")` — and `vehicles_no_motor` then told its
+ * owner, at CRITICAL severity, that they had a vehicle without insurance and
+ * that insurance is legally mandatory in Greece. Being wrongly accused of
+ * driving uninsured is the most alarming thing this product can say to someone,
+ * and it was saying it to people who had done everything right.
+ *
+ * `status` here is already the DERIVED coverage status (see coverageEngineStatus
+ * at the call site), not the stale stored column.
+ */
 function hasActiveLine(policies: PolicyFields[], lob: string): boolean {
+    const family = new Set(getBranchFamily(lob.toLowerCase()))
     return policies.some(
-        (p) =>
-            p.lineOfBusiness.toLowerCase() === lob.toLowerCase() &&
-            p.status === "active"
+        (p) => family.has(normalizeBranch(p.lineOfBusiness).id) && p.status === "active"
     )
 }
 
@@ -141,8 +156,11 @@ export const PROFILE_GAP_RULES: ProfileGapRule[] = [
         condition: (p, policies) =>
             p.vehiclesCount > 0 && !hasActiveLine(policies, "motor"),
         reason: (p) => ({
-            en: `You have ${p.vehiclesCount} vehicle(s) without motor insurance. Motor insurance is legally mandatory in Greece.`,
-            el: `Έχετε ${p.vehiclesCount} όχημα/τα χωρίς ασφάλιση. Η ασφάλιση αυτοκινήτου είναι υποχρεωτική στην Ελλάδα.`,
+            // What is compulsory in Greece is third-party liability (αστική
+            // ευθύνη), not motor cover in general — "motor insurance is
+            // mandatory" invites the reader to think comprehensive is required.
+            en: `You have ${p.vehiclesCount} vehicle(s) with no motor policy recorded here. Third-party liability cover is compulsory for any vehicle in circulation in Greece.`,
+            el: `Έχετε ${p.vehiclesCount} όχημα/τα χωρίς καταγεγραμμένο ασφαλιστήριο. Η ασφάλιση αστικής ευθύνης είναι υποχρεωτική για κάθε όχημα σε κυκλοφορία στην Ελλάδα.`,
         }),
     },
 
@@ -159,8 +177,13 @@ export const PROFILE_GAP_RULES: ProfileGapRule[] = [
         condition: (p, policies) =>
             p.ownsHome && !hasActiveLine(policies, "home"),
         reason: () => ({
-            en: "You own property but have no home insurance. Greece is seismically active — fire, earthquake, and natural disaster coverage is strongly recommended.",
-            el: "Έχετε ιδιόκτητο ακίνητο χωρίς ασφάλιση. Η Ελλάδα είναι σεισμογενής — η κάλυψη πυρκαγιάς, σεισμού και φυσικών καταστροφών συνιστάται ιδιαίτερα.",
+            // ai/prompts.ts forbids the model from telling anyone what they
+            // "should" buy, because insurance advice is regulated in Greece
+            // (IDD, Law 4583/2018). The deterministic rules were not held to the
+            // same line: this one said cover was "strongly recommended".
+            // Stated as the fact it rests on instead.
+            en: "You own property with no home policy recorded here. Greece is one of the most seismically active countries in Europe, and fire, earthquake and flood are each usually a separate cover.",
+            el: "Έχετε ιδιόκτητο ακίνητο χωρίς καταγεγραμμένο ασφαλιστήριο κατοικίας. Η Ελλάδα είναι από τις πιο σεισμογενείς χώρες της Ευρώπης, και η πυρκαγιά, ο σεισμός και η πλημμύρα καλύπτονται συνήθως ξεχωριστά.",
         }),
     },
     {
