@@ -7,6 +7,7 @@ import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRelationshipScoreColor } from "@/lib/agent/health-score"
+import { branchLabel } from "@/lib/insurance/taxonomy"
 import { formatDateShort } from "@/lib/agent/format"
 import type { Customer, Policy, Opportunity } from "../types"
 
@@ -30,14 +31,6 @@ export function ClientOverviewTab({
 
     const activePolicies = policies.filter((p) => p.status === "active" || p.status === "expiring_soon")
     const openOpportunities = opportunities.filter((o) => o.status === "open" || o.status === "contacted")
-
-    const LOB_LABELS: Record<string, { en: string; el: string }> = {
-        motor: { en: "Motor", el: "Αυτοκίνητο" },
-        health: { en: "Health", el: "Υγεία" },
-        home: { en: "Home", el: "Κατοικία" },
-        life: { en: "Life", el: "Ζωή" },
-        travel: { en: "Travel", el: "Ταξίδι" },
-    }
 
     return (
         <div className="grid grid-cols-12 gap-5">
@@ -113,7 +106,13 @@ export function ClientOverviewTab({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-foreground">
-                                            {LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness}
+                                            {/* Was a hand-kept map of five lines, so anything outside it —
+                                            motorbike, truck, renters, pet, liability, legal
+                                            expenses, every business line — rendered its raw id
+                                            ("motorbike") to the agent. The taxonomy already owns
+                                            these labels, in both languages, for the whole
+                                            vocabulary. */}
+                                            {branchLabel(policy.lineOfBusiness, language === 'el' ? 'el' : 'en')}
                                         </p>
                                         <p className="text-xs text-neutral-500 dark:text-neutral-400">
                                             {policy.insurerName}
@@ -220,7 +219,7 @@ export function ClientOverviewTab({
                                         key={line}
                                         className="rounded-full bg-primary-soft dark:bg-primary/15 px-3 py-1 text-xs font-medium text-[#166534] dark:text-mint"
                                     >
-                                        {LOB_LABELS[line]?.[language] || line}
+                                        {branchLabel(line, language === 'el' ? 'el' : 'en')}
                                     </span>
                                 ))}
                                 {customer.crossSell.missingLines.map((line) => (

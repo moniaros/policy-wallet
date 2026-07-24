@@ -10,6 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { formatCurrencyCompact, formatCurrencyFull, formatDateShort } from "@/lib/agent/format"
 import type { Policy } from "../types"
 import type { ViewerRole } from "@/components/collaboration/types"
+import { branchLabel } from '@/lib/insurance/taxonomy'
 
 interface ClientPoliciesTabProps {
     policies: Policy[]
@@ -22,13 +23,10 @@ interface ClientPoliciesTabProps {
     onUploadPolicy?: () => void
 }
 
-const LOB_LABELS: Record<string, { en: string; el: string }> = {
-    motor: { en: "Motor", el: "Αυτοκίνητο" },
-    health: { en: "Health", el: "Υγεία" },
-    home: { en: "Home", el: "Κατοικία" },
-    life: { en: "Life", el: "Ζωή" },
-    travel: { en: "Travel", el: "Ταξίδι" },
-}
+// Was a hand-kept map of five lines, so anything outside it — motorbike, truck,
+// renters, pet, liability, legal expenses, every business line — rendered its raw
+// id ("motorbike") to the agent. lib/insurance/taxonomy already owns these
+// labels, in both languages, for the whole vocabulary.
 
 const TAB_COPY = {
     allTypes: { el: "Όλοι οι τύποι", en: "All types" },
@@ -118,7 +116,7 @@ export function ClientPoliciesTab({
                         <option value="">{TAB_COPY.allTypes[language]}</option>
                         {uniqueLobs.map((lob) => (
                             <option key={lob} value={lob}>
-                                {LOB_LABELS[lob]?.[language] || lob}
+                                {branchLabel(lob, language === 'el' ? 'el' : 'en')}
                             </option>
                         ))}
                     </select>
@@ -182,7 +180,7 @@ export function ClientPoliciesTab({
             <div className="space-y-2">
                 {filteredPolicies.map((policy) => {
                     const commissionRate = commissionRates?.[policy.lineOfBusiness] || 0
-                    const lobLabel = LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness
+                    const lobLabel = branchLabel(policy.lineOfBusiness, language === 'el' ? 'el' : 'en')
                     // The detail page re-checks getPolicyAccess server-side, so a
                     // link here can never widen access — it only stops hiding a
                     // page the agent is already entitled to open.

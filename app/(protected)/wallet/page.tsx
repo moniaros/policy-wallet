@@ -7,6 +7,7 @@ import type { Policy } from "@/components/wallet/types"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
+import { normalizeBranch } from '@/lib/insurance/taxonomy'
 
 export default async function WalletPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -104,7 +105,13 @@ export default async function WalletPage() {
         const policyGrants = allGrants.filter(g => g.scope === `policy:${p.id}`)
 
         const insuredItem = (() => {
-            if (p.lineOfBusiness === 'motor' && (p.acordData as any)?.vehicle) {
+            // Child branches count as their parent: motorbike and truck are motor,
+            // renters is home. Matching the id exactly meant a motorbike showed no
+            // plate and a rented home no address on the wallet list — the two
+            // details that tell you which policy you are looking at.
+            const branch = normalizeBranch(p.lineOfBusiness)
+            const family = (branch.parentId ?? branch.id).toLowerCase()
+            if (family === 'motor' && (p.acordData as any)?.vehicle) {
                 const v = (p.acordData as any).vehicle
                 return {
                     type: 'vehicle' as const,
@@ -112,7 +119,7 @@ export default async function WalletPage() {
                     subtitle: v.plateNumber || undefined
                 }
             }
-            if (p.lineOfBusiness === 'home' && (p.acordData as any)?.property) {
+            if (family === 'home' && (p.acordData as any)?.property) {
                 const prop = (p.acordData as any).property
                 return {
                     type: 'property' as const,

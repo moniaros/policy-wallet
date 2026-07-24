@@ -317,6 +317,24 @@ export function getSeverityColor(severity: GapSeverity): {
 }
 
 /**
+ * A second, parallel gap engine used to live here — `detectGaps(policies)`, with
+ * its own `SimpleGap` shape and rules for missing health cover, expiring
+ * policies and "low coverage amount".
+ *
+ * It was referenced by nothing but its own test file. Its doc comment said
+ * "used by Unit Tests and potentially frontend", one of its rules was commented
+ * "Mock Logic matching test", and every title and description it emitted was
+ * hardcoded English — so had it ever been wired to a screen it would have shown
+ * "Missing Health Insurance" to a Greek policyholder, alongside verdicts that
+ * disagreed with the real engine's (different severities, no line-of-business
+ * awareness, `=== 'home'` matching that skipped renters).
+ *
+ * The engine that runs is `detectGapsForPolicy` above, plus
+ * lib/services/gap-engine. A ninety-line duplicate with a passing test suite
+ * reads as maintained; it was a prototype, and it is gone.
+ */
+
+/**
  * Get severity label
  */
 export function getSeverityLabel(severity: GapSeverity, language: 'el' | 'en' = 'el'): string {
@@ -336,69 +354,4 @@ export function getSeverityLabel(severity: GapSeverity, language: 'el' | 'en' = 
     }
 
     return labels[language]?.[severity] || severity
-}
-
-// --- Pure Logic for Unit Tests & Client-Side Checks ---
-
-export interface SimpleGap {
-    gapType: string
-    severity: GapSeverity
-    title: string
-    description: string
-    policyId?: string
-}
-
-/**
- * Pure logic gap detection (used by Unit Tests and potentially frontend)
- * Does not require DB access.
- */
-export function detectGaps(policies: any[]): SimpleGap[] {
-    const gaps: SimpleGap[] = []
-    const now = new Date()
-
-    // 1. Check for Missing Health Insurance (Portfolio Level)
-    const hasHealth = policies.some(p =>
-        p.lineOfBusiness?.toLowerCase() === 'health' &&
-        isPolicyCoverageActive(p)
-    )
-    if (!hasHealth && policies.length > 0) {
-        gaps.push({
-            gapType: 'missing_health_insurance',
-            severity: 'high',
-            title: 'Missing Health Insurance',
-            description: 'You do not have an active health insurance policy.'
-        })
-    }
-
-    // Iterate policies for policy-level gaps
-    for (const policy of policies) {
-        // 2. Check for Expiring Soon
-        if (policy.endDate && policy.status === 'active') {
-            const endDate = new Date(policy.endDate)
-            const daysUntilExpiry = calendarDaysUntil(endDate, now)
-
-            if (daysUntilExpiry > 0 && daysUntilExpiry <= 30) {
-                gaps.push({
-                    gapType: 'expiring_soon',
-                    severity: 'medium',
-                    title: 'Policy Expiring Soon',
-                    description: `Policy ending in ${Math.ceil(daysUntilExpiry)} days.`,
-                    policyId: policy.id
-                })
-            }
-        }
-
-        // 3. Check for Low Coverage (Mock Logic matching test)
-        if (policy.lineOfBusiness === 'home' && policy.acordData?.coverageAmount < 100000) {
-            gaps.push({
-                gapType: 'low_coverage_amount',
-                severity: 'medium',
-                title: 'Low Coverage Amount',
-                description: 'Your home coverage appears low.',
-                policyId: policy.id
-            })
-        }
-    }
-
-    return gaps
 }

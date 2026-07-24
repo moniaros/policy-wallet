@@ -9,6 +9,7 @@ import { AgentPlanGate } from "../AgentPlanGate"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatCurrencyCompact, formatCurrencyFull } from "@/lib/agent/format"
 import type { AgentTier } from "@/types/subscription-entitlements"
+import { branchLabel } from '@/lib/insurance/taxonomy'
 
 interface ClientFinancialsTabProps {
     financials: {
@@ -21,13 +22,6 @@ interface ClientFinancialsTabProps {
     agentTier: AgentTier
 }
 
-const LOB_LABELS: Record<string, { en: string; el: string }> = {
-    motor: { en: "Motor", el: "Αυτοκίνητο" },
-    health: { en: "Health", el: "Υγεία" },
-    home: { en: "Home", el: "Κατοικία" },
-    life: { en: "Life", el: "Ζωή" },
-    travel: { en: "Travel", el: "Ταξίδι" },
-}
 
 export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsTabProps) {
     const { language, t } = useLanguage()
@@ -78,7 +72,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                                 <div key={lob}>
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                                            {LOB_LABELS[lob]?.[language] || lob}
+                                            {branchLabel(lob, language === 'el' ? 'el' : 'en')}
                                         </span>
                                         <span className="text-sm font-bold text-foreground">
                                             {formatCurrencyFull(amount, language)}
