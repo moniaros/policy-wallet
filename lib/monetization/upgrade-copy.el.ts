@@ -66,8 +66,13 @@ export const UPGRADE_COPY_EL: Record<FeatureKey, UpgradeTriggerCopy> = {
         successCta: "Δες τα ευρήματα",
     },
     unlimited_ai_questions: {
-        headline: "Συνέχισε να ρωτάς το AI",
-        body: "Έκανες τις δωρεάν ερωτήσεις σου για αυτόν τον μήνα. Αναβάθμισε για να συνεχίσεις να ρωτάς το AI για τα συμβόλαιά σου.",
+        headline: "Ρώτησε το AI για τα συμβόλαιά σου",
+        // FREE_LIFETIME_QUESTIONS is 0 — deep AI Q&A has no free allowance at all.
+        // This said «Έκανες τις δωρεάν ερωτήσεις σου για αυτόν τον μήνα», which
+        // claims the reader had questions and used them, and that more arrive next
+        // month. Neither is true: they never had any and none are coming. Someone
+        // waiting for a reset would wait forever.
+        body: "Οι ερωτήσεις AI για τα συμβόλαιά σου περιλαμβάνονται στα επί πληρωμή πλάνα. Αναβάθμισε για να ρωτάς ελεύθερα για καλύψεις, όρια και εξαιρέσεις.",
         primaryCta: "Συνέχεια με απεριόριστες ερωτήσεις",
         secondaryCta: "Όχι τώρα",
         benefits: [
