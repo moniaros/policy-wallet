@@ -17,6 +17,7 @@ import { getAgentPortalData } from "@/lib/services/agent-portal.service"
 import { getAgentPolicyVisibilityWhere, getVisiblePolicyCountsByOwner } from "@/lib/agent-visibility"
 import { presentCustomerIdentity } from "@/lib/agent-consent"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary, CrossSellOpportunityItem, AgentTaskItem } from "@/components/agent/types"
+import { calendarDaysUntil } from "@/lib/policy-status"
 
 export default async function DashboardPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -272,7 +273,7 @@ export default async function DashboardPage() {
                 // only a fallback (see ActionQueueItem).
                 lineOfBusiness: policy.lineOfBusiness,
                 dueDate: endDate.toISOString(),
-                urgency: (endDate.getTime() - now.getTime()) < 7 * 86_400_000 ? "high" : "medium",
+                urgency: calendarDaysUntil(endDate, now) <= 7 ? "high" : "medium",
                 oneTapAction: "renew",
                 policyId: policy.id,
                 revenueAtRisk,

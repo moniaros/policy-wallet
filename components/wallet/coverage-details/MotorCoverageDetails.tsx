@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
+import { calendarDaysUntil } from "@/lib/policy-status"
 
 interface MotorCoverageDetailsProps {
   /** Resolved server-side — the 62KB glossary must not ship here. */
@@ -44,8 +45,10 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
   const greenCardStatus = (() => {
     if (!motor.greenCardExpiry) return null
     const expiry = new Date(motor.greenCardExpiry)
-    const now = new Date()
-    const daysUntil = Math.floor((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    // Athens calendar days. Math.floor on a fractional negative made a Green Card
+    // valid until tonight come out at -1 and read "expired" — on a document a
+    // driver may be about to rely on at a border.
+    const daysUntil = calendarDaysUntil(expiry, new Date())
     if (daysUntil < 0) return "expired"
     if (daysUntil <= 30) return "expiring"
     return "valid"

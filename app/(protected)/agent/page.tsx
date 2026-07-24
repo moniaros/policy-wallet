@@ -7,6 +7,7 @@ import type { Policy } from "@/components/wallet/types"
 import { redirect } from "next/navigation"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
+import { mapPolicyCardStatus } from '@/lib/wallet/map-policy-card-status'
 
 export default async function AgentPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -126,7 +127,7 @@ export default async function AgentPage() {
         insurerName: p.insurerName,
         insurerLogo: null,
         lineOfBusiness: p.lineOfBusiness as any,
-        status: mapStatus(p.status, p.endDate),
+        status: mapPolicyCardStatus(p.status, p.endDate),
         startDate: p.startDate.toISOString(),
         endDate: p.endDate.toISOString(),
         lastUpdated: p.updatedAt.toISOString(),
@@ -152,13 +153,3 @@ export default async function AgentPage() {
     )
 }
 
-function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' {
-    const now = new Date()
-    const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-
-    if (dbStatus === 'cancelled') return 'action_needed'
-    if (daysUntilExpiry < 0) return 'action_needed'
-    if (daysUntilExpiry < 30) return 'expiring_soon'
-
-    return 'active'
-}

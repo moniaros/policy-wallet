@@ -67,7 +67,15 @@ describe('one clock answers "how many days until this date"', () => {
     it('is the only implementation left', async () => {
         const { readFileSync, globSync } = await import('node:fs')
         const offenders: string[] = []
-        for (const file of globSync('lib/**/*.ts')) {
+        // components/** was outside the original sweep, and the policy-comparison
+        // dialog was still dividing milliseconds — so a policy expiring TODAY
+        // read "σε 0 ημέρες" beside the insurer it belonged to.
+        const files = [
+            ...globSync('lib/**/*.ts'),
+            ...globSync('components/**/*.tsx'),
+            ...globSync('app/**/*.tsx'),
+        ]
+        for (const file of files) {
             if (file.endsWith('policy-status.ts')) continue          // the implementation
             const src = readFileSync(file, 'utf-8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')
             // day arithmetic applied to an END DATE is a calendar question

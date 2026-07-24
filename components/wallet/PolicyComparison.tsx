@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
 import { StatusPill } from "@/components/ui/StatusPill"
 import { useDialog } from "@/hooks/useDialog"
+import { calendarDaysUntil } from "@/lib/policy-status"
 
 interface PolicyForComparison {
     id: string
@@ -343,24 +344,54 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                             .sort((a, b) => new Date(a.endDate!).getTime() - new Date(b.endDate!).getTime())
                                         const soonest = sorted[0]
                                         if (!soonest) return null
-                                        const daysUntil = Math.ceil((new Date(soonest.endDate!).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                                        // Athens calendar days, like every other expiry
+                                        // count in the product. The raw UTC division here
+                                        // could put a policy expiring TODAY at "σε 0
+                                        // ημέρες" — or below zero once the clock passed
+                                        // midnight UTC on its last day of cover.
+                                        const daysUntil = calendarDaysUntil(new Date(soonest.endDate!), new Date())
+                                        const whenLabel =
+                                            daysUntil <= 0
+                                                ? c.expiresToday
+                                                : daysUntil === 1
+                                                  ? c.expiresTomorrow
+                                                  : `${c.inPrefix} ${daysUntil} ${c.daysSuffix}`
                                         return (
                                             <div className="bg-card p-4 rounded-xl">
                                                 <p className="text-xs text-muted-foreground font-bold uppercase mb-1">{c.expiresSoonest}</p>
                                                 <p className="text-lg font-bold text-amber-700 dark:text-amber-400">{soonest.insurerName}</p>
-                                                <p className="text-sm text-muted-foreground">{c.inPrefix} {daysUntil} {c.daysSuffix}</p>
+                                                <p className="text-sm text-muted-foreground">{whenLabel}</p>
                                             </div>
                                         )
                                     })()}
 
                                     {/* Total Coverage */}
-                                    <div className="bg-card p-4 rounded-xl">
-                                        <p className="text-xs text-muted-foreground font-bold uppercase mb-1">{c.totalAnnualCost}</p>
-                                        <p className="text-lg font-bold text-foreground">
-                                            {formatCurrency(selectedPolicies.reduce((sum, p) => sum + (p.premiumAmount || 0), 0))}
-                                        </p>
-                                        <p className="text-sm text-muted-foreground">{selectedPolicies.length} {c.policiesCompared}</p>
-                                    </div>
+                                    {(() => {
+                                        // Premiums in different currencies cannot be added.
+                                        // This summed them all and formatted the result as
+                                        // euros, so a sterling policy compared against euro
+                                        // ones produced a "total" that was not the total of
+                                        // anything. Same defect the wallet footprint had.
+                                        const currencies = new Set(
+                                            selectedPolicies.map((p) => (p.premiumCurrency || 'EUR').trim().toUpperCase())
+                                        )
+                                        const comparable = currencies.size === 1
+                                        const currency = [...currencies][0] || 'EUR'
+                                        return (
+                                            <div className="bg-card p-4 rounded-xl">
+                                                <p className="text-xs text-muted-foreground font-bold uppercase mb-1">{c.totalAnnualCost}</p>
+                                                <p className="text-lg font-bold text-foreground">
+                                                    {comparable
+                                                        ? formatCurrency(
+                                                              selectedPolicies.reduce((sum, p) => sum + (p.premiumAmount || 0), 0),
+                                                              currency
+                                                          )
+                                                        : c.totalMixedCurrency}
+                                                </p>
+                                                <p className="text-sm text-muted-foreground">{selectedPolicies.length} {c.policiesCompared}</p>
+                                            </div>
+                                        )
+                                    })()}
                                 </div>
 
                                 {/* Underwriting-accurate framing: "Lowest premium" is

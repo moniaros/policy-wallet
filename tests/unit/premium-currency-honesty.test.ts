@@ -96,3 +96,31 @@ describe('the wallet shows the currency it actually summed', () => {
         }
     })
 })
+
+/**
+ * The same defect, in a second place. The policy-comparison dialog summed every
+ * selected premium and formatted the result as euros, so comparing a sterling
+ * policy against euro ones produced a "Total annual cost" that was not the total
+ * of anything — with the figure sitting directly beneath a table that marks one
+ * policy as the cheapest.
+ */
+describe('the comparison total refuses to add across currencies', () => {
+    const COMPARE = strip(readFileSync('components/wallet/PolicyComparison.tsx', 'utf-8'))
+
+    it('decides comparability from the selected policies', () => {
+        expect(COMPARE).toMatch(/const currencies = new Set\(/)
+        expect(COMPARE).toMatch(/p\.premiumCurrency \|\| 'EUR'/)
+        expect(COMPARE).toMatch(/const comparable = currencies\.size === 1/)
+    })
+
+    it('only sums when they agree, and formats in the currency it summed', () => {
+        expect(COMPARE).toMatch(/comparable[\s\S]{0,200}selectedPolicies\.reduce/)
+        expect(COMPARE).toMatch(/currency\s*\n?\s*\)/)
+    })
+
+    it('says why there is no total otherwise, in both languages', () => {
+        expect(COMPARE).toMatch(/c\.totalMixedCurrency/)
+        expect(el.wallet.comparison.totalMixedCurrency).toMatch(/διαφορετικά νομίσματα/)
+        expect(en.wallet.comparison.totalMixedCurrency).toMatch(/different currencies/)
+    })
+})
