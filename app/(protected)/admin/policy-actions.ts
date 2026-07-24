@@ -14,7 +14,22 @@ import { db } from "@/lib/db"
 import { logAdminAction, verifyAdminRole } from "@/lib/admin/admin-guard"
 import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { mergePolicyRecords } from "@/lib/services/policy-merge.service"
+import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { deleteFile } from "@/lib/storage"
+
+/**
+ * Recompute the OWNER's gaps + protection score after an admin changes their
+ * policy data. Deterministic (no AI tokens), fire-and-forget, best-effort — the
+ * write already committed and must not be undone by a recompute failure. Without
+ * this an admin edit/delete leaves the customer's insights derived from data
+ * that no longer exists.
+ */
+function recomputeOwnerGaps(ownerUserId: string | null | undefined, policyId: string) {
+    if (!ownerUserId) return
+    refreshProtectionScore(ownerUserId).catch((error) => {
+        Sentry.captureException(error, { extra: { policyId, ownerUserId } })
+    })
+}
 
 export type PolicyActionResult<T = unknown> =
     | ({ ok: true } & T)
@@ -174,6 +189,7 @@ export async function deletePolicy(policyId: string): Promise<PolicyActionResult
             `Deleted policy ${policyId} (${policy.policyNumber})`,
             { policyId, policyNumber: policy.policyNumber, ownerUserId: policy.ownerUserId, documents: policy.documents.length }
         )
+        recomputeOwnerGaps(policy.ownerUserId, policyId)
         return { ok: true }
     } catch (error) {
         Sentry.captureException(error)
@@ -214,7 +230,7 @@ export async function updatePolicyFields(
     }
     if (Object.keys(data).length === 0) return { ok: false, error: "No fields to update." }
 
-    const existing = await db.policy.findUnique({ where: { id: policyId }, select: { id: true } })
+    const existing = await db.policy.findUnique({ where: { id: policyId }, select: { id: true, ownerUserId: true } })
     if (!existing) return { ok: false, error: "Policy not found." }
 
     try {
@@ -226,6 +242,7 @@ export async function updatePolicyFields(
             `Edited policy ${policyId} fields: ${Object.keys(data).join(", ")}`,
             { policyId, fields: Object.keys(data) }
         )
+        recomputeOwnerGaps(existing.ownerUserId, policyId)
         return { ok: true }
     } catch (error) {
         Sentry.captureException(error)

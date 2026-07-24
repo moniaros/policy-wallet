@@ -1057,7 +1057,20 @@ export async function deletePolicy(policyId: string) {
             })
         } catch (e) { /* ignore */ }
 
+        // A deleted policy's own gaps cascade away, but the OWNER's portfolio
+        // gaps and score do not: delete one of two motor policies and the
+        // `duplicate_coverage` gap on the survivor should clear, and the score
+        // reflects one fewer line of cover. Recompute for the owner (best-effort;
+        // the delete already committed).
+        refreshProtectionScore(policy.ownerUserId).catch((err) => {
+            logger('warn', 'Failed to refresh protection score after policy delete', {
+                policyId, error: err instanceof Error ? err.message : String(err),
+            })
+        })
+
         revalidatePath("/wallet")
+        revalidatePath("/coverage-insights")
+        revalidatePath("/dashboard")
         return { success: true }
     }
 

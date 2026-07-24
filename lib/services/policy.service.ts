@@ -264,8 +264,16 @@ export class PolicyService extends BaseService {
         )
 
         // M6: Re-sync gap recommendations after policy data changes.
+        //
+        // For the OWNER, not the editor. `userId` is whoever made the edit, and
+        // an agent with an edit grant can change a customer's policy — recomputing
+        // the agent's own portfolio then rebuilds gaps that did not change and
+        // leaves the customer's (the gaps that DID change, and the ones the
+        // customer actually sees) stale. The gap engine is per-user; it must run
+        // for the user whose coverage this policy is.
+        //
         // Fire-and-forget so the update response isn't held waiting for gap engine.
-        refreshProtectionScore(userId).catch((err) => {
+        refreshProtectionScore(policy.ownerUserId).catch((err) => {
             logger('warn', 'Failed to refresh protection score after policy update', {
                 policyId,
                 error: err instanceof Error ? err.message : String(err),
