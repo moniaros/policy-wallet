@@ -506,8 +506,8 @@ export const en: TranslationKeys = {
             // Claims guidance
             claimsTitle: 'If you need to make a claim',
             claimsSubtitle: 'A calm, step-by-step guide — no insurance jargon needed.',
-            claimStep1Title: 'Document what happened',
-            claimStep1Desc: 'Take photos, keep receipts and note the time and place. For motor incidents call the police if anyone is hurt or the parties disagree.',
+            claimStep1Title: 'Safety first, then document',
+            claimStep1Desc: 'See to people first and, if it is safe, limit the damage — for example shut off the main water valve. Most policies require this explicitly, and failing to do it can reduce your settlement. Then photograph, keep receipts and note the time and place — do not start repairs before the damage is recorded. For motor incidents call the police if anyone is hurt or the parties disagree.',
             claimStep2Title: 'Call your insurer as soon as possible',
             claimStep2Desc: 'Early notice makes claims smoother — many policies set strict notification windows.',
             claimStep3Title: 'Have your details ready',
