@@ -2,13 +2,13 @@
 
 _Living dashboard — not a log. Updated at the end of each session with meaningful work. Keep it under one screen._
 
-**Last updated:** 2026-07-25 — insurance-correctness audit continues on `claude/ui-foundation-audit-gtm05i` (216 commits, **NOT merged, NOT deployed**). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
+**Last updated:** 2026-07-25 — insurance-correctness audit continues on `claude/ui-foundation-audit-gtm05i` (226 commits, **NOT merged, NOT deployed**). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
 
 ## Current phase
 
 **Production is live** at policywallet.gr. `NEW-UI` is at `65183b7`; the last deploy this doc recorded was `97f908b`, so **`65183b7` may not be deployed — verify before assuming prod matches `NEW-UI`.**
 
-Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuous insurance-correctness audit, 216 commits, unmerged and undeployed pending review. All guardrails + 2160 unit tests (242 files) + prod build green at every commit; Playwright not yet re-run against the branch.
+Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuous insurance-correctness audit, 226 commits, unmerged and undeployed pending review. All guardrails + 2192 unit tests (246 files) + prod build green at every commit; Playwright not yet re-run against the branch.
 
 ⚠️ **Branch-name correction.** `fix/coverage-insights-verdict` is a **stale pointer** at `65183b7` (= `NEW-UI`); commit messages on this branch that name it are misattributed — all work is on `claude/ui-foundation-audit-gtm05i`. Delete the stale pointer.
 
@@ -29,14 +29,14 @@ Continuous audit, priority order **insurance correctness → customer trust → 
 
 ## Blocked / user-gated
 
-- **Merge + deploy of `claude/ui-foundation-audit-gtm05i`** — needs owner authorisation. 216 commits is a large review surface; consider splitting by theme.
+- **Merge + deploy of `claude/ui-foundation-audit-gtm05i`** — needs owner authorisation. 226 commits is a large review surface; consider splitting by theme.
 - **Owner decisions, deferred:** Plus at €7.99 vs €9.99 (`lib/subscription-copy.ts` and `tests/money-path.spec.ts:251` still assert €7.99); whether `FREE_LIFETIME_QUESTIONS` stays 0; whether extraction review stays agent-only (self-serve users' `reviewState` never leaves `unconfirmed`); whether `duplicate_coverage_detection` should be gated.
 - **Brevo IP allowlist (POLICYWALLET-3):** Brevo rejects sends with 401 "unrecognised IP" — Vercel egress IPs rotate. Disable authorised-IPs at https://app.brevo.com/security/authorised_ips. Not fixable in code.
 - **Housekeeping:** rotate Brevo API key, both Supabase DB passwords and the `sk_test` key (all transited chat); Supabase outstanding-invoices banner; old dev project `lzqvtvjggylcujenlelh` idle — keep or pause.
 
 ## Top risks (ranked)
 
-1. **High — 216 unmerged commits.** The longer this branch runs, the larger the divergence from `NEW-UI` and the harder the review. Prod has none of these insurance-correctness fixes. This is now the single highest-value action, above any further finding.
+1. **High — 226 unmerged commits.** The longer this branch runs, the larger the divergence from `NEW-UI` and the harder the review. Prod has none of these insurance-correctness fixes. This is now the single highest-value action, above any further finding.
 2. **Medium — Playwright not re-run on this branch.** E2E is not in CI. Use the IPv4 pooler (`aws-1-eu-west-3.pooler.supabase.com:5432`, `connection_limit=2`) and `--workers=3`; the dev `db.*` host is IPv6-only and this machine has no global IPv6.
 3. **Medium — governance HOLD:** legal/DPO/product + UAT + SRE-restore sign-offs pending; `ENFORCE_EMAIL_VERIFICATION=1` still off.
 4. **Medium — scale:** QStash queue active in prod since 22 Jul; still needs a real-upload round-trip proof and a k6 run. Pooler `pool_size 15` is the next ceiling.
@@ -48,4 +48,4 @@ Continuous audit, priority order **insurance correctness → customer trust → 
 
 1. **Get this branch reviewed and merged.** Propose splitting into themed PRs (gap engine / compliance & GDPR / policy presentation / uploads & documents) so the diff is reviewable, then deploy and re-verify against prod data.
 2. **Run Playwright against the branch** — `npx playwright test --project=chromium --project=agent-chromium` plus `RUN_UX_AUDIT=1`, using the pooler connection above. The coverage panels changed shape for five branches; the policy page is the highest-traffic authenticated screen.
-3. **Continue the audit** on surfaces not yet opened — claims workflows, batch operations, billing beyond cancellation, permissions matrices, error boundaries — same priority order.
+3. **Continue the audit** on surfaces not yet opened. Covered since the last STATUS and found SOUND (guards added where missing): team/tenant permissions matrix (no escalation, tenant-isolated), notification-preference UI (registry-driven), risk-profile wizard (Art. 9 notice + bounds), agent commission (child-branch-aware), claims guidance content. Still unopened: billing beyond cancellation, customer-acquisition/signup, full mobile-viewport responsiveness, portfolio analytics. Newly-opened surfaces now yield mostly polish or confirm-sound — the high-severity correctness defects are behind us and the three recurring root causes (Policy.status, child-branch matching, schema/label/render drift) are guarded.
