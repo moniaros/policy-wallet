@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { FileText, MessageSquare, FileUp, Lock } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { apiErrorMessage } from "@/lib/api-error-copy"
 import type { ViewerRole, ThreadType } from "./types"
 
 type Thread = {
@@ -112,7 +113,14 @@ export function CollaborationTimeline({
                 setSelectedId(list[0].id)
             }
         } catch (error: any) {
-            toast.error(error.message || t.collaboration.timelineToasts.loadTimelineFailed)
+            // The translated message wins. This read `error.message || t...`,
+            // which preferred the RAW string — so a Greek user whose network
+            // dropped got the browser's English "Failed to fetch", and the
+            // English literals thrown below (invisible to lint:i18n-changed,
+            // since they live in `new Error(...)` rather than JSX) surfaced as
+            // UI copy. The technical detail goes to the console for support.
+            console.error("[CollaborationTimeline] loadThreads failed", error)
+            toast.error(t.collaboration.timelineToasts.loadTimelineFailed)
         } finally {
             setLoading(false)
         }
@@ -130,7 +138,8 @@ export function CollaborationTimeline({
                 setActionAssigneeId((preferred || detail.participants[0]).user.id)
             }
         } catch (error: any) {
-            toast.error(error.message || t.collaboration.timelineToasts.loadThreadDetailFailed)
+            console.error("[CollaborationTimeline] loadThreadDetail failed", error)
+            toast.error(t.collaboration.timelineToasts.loadThreadDetailFailed)
         }
     }
 
@@ -154,7 +163,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || t.collaboration.timelineToasts.createThreadFailed)
+            toast.error(apiErrorMessage(json, t.apiErrors, t.collaboration.timelineToasts.createThreadFailed))
             return
         }
 
@@ -175,7 +184,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || t.collaboration.timelineToasts.sendMessageFailed)
+            toast.error(apiErrorMessage(json, t.apiErrors, t.collaboration.timelineToasts.sendMessageFailed))
             return
         }
         setMessage("")
@@ -205,7 +214,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || t.collaboration.timelineToasts.addActionFailed)
+            toast.error(apiErrorMessage(json, t.apiErrors, t.collaboration.timelineToasts.addActionFailed))
             return
         }
         setActionTitle("")
@@ -223,7 +232,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || t.collaboration.timelineToasts.updateStatusFailed)
+            toast.error(apiErrorMessage(json, t.apiErrors, t.collaboration.timelineToasts.updateStatusFailed))
             return
         }
         await loadThreadDetail(selectedId)
@@ -239,7 +248,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || t.collaboration.timelineToasts.updateActionFailed)
+            toast.error(apiErrorMessage(json, t.apiErrors, t.collaboration.timelineToasts.updateActionFailed))
             return
         }
         await loadThreadDetail(selectedId)

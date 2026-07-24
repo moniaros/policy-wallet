@@ -54,6 +54,14 @@ export const en: TranslationKeys = {
     },
 
     // Navigation
+    apiErrors: {
+        unauthorized: 'Please sign in again to continue.',
+        forbidden: 'You do not have access to this item.',
+        notFound: 'Not found. It may have been deleted or moved.',
+        validation: 'Some details are not valid. Check them and try again.',
+        unavailable: 'The service is temporarily unavailable. Try again shortly.',
+        generic: 'Something went wrong. Please try again.',
+    },
     nav: {
         navigation: 'Navigation',
         home: 'Home',
