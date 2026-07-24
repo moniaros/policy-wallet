@@ -2,6 +2,21 @@ import type { Policy } from '@prisma/client'
 import { parseDocumentDate } from '@/lib/dates/document-date'
 
 /**
+ * Policy.status values that are NOT a live policy the owner actually holds:
+ * soft-deleted, still extracting, or cancelled. Everything else — 'active',
+ * 'expiring_soon', 'action_needed', 'incomplete' — is a real policy in force.
+ *
+ * Use in a Prisma where as `status: { notIn: [...NON_LIVE_POLICY_STATUSES] }`
+ * anywhere the question is "does this owner have this policy". Requiring exactly
+ * `status: "active"` instead is a recurring bug: the stored status is an
+ * ingestion state nothing recomputes, so 'active' silently excludes in-force
+ * policies stored under the other live states — a policy marked "expiring_soon"
+ * was dropped from the renewal reminders, the weekly digest, and the churn
+ * win-back count until this single list replaced three hand-copied ones.
+ */
+export const NON_LIVE_POLICY_STATUSES = ['deleted', 'analyzing', 'cancelled'] as const
+
+/**
  * The product operates in Greece and lib/i18n/format.ts already settled that
  * "dates are meaningful in Athens time" — but only for DISPLAY. The lifecycle
  * verdict was computed from raw UTC instants, so between 21:00 and midnight UTC

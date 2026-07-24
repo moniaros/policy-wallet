@@ -1,4 +1,4 @@
-import { calendarDaysUntil, startOfAthensDay } from "@/lib/policy-status"
+import { calendarDaysUntil, startOfAthensDay, NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
 import { formatDate } from "@/lib/i18n/format"
 import { db } from "../db"
 import { sendNotification } from "../notifications"
@@ -87,7 +87,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
         // lapsed and far-future policies; only the non-policy states are dropped.
         const expiringPolicies = await db.policy.findMany({
             where: {
-                status: { notIn: ["deleted", "analyzing", "cancelled"] },
+                status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
                 endDate: {
                     gte: startOfToday,
                     lte: cutoff,

@@ -1,5 +1,5 @@
 import { db } from "../db"
-import { startOfAthensDay } from "@/lib/policy-status"
+import { startOfAthensDay , NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
 import { sendEmail } from "../email/email-service"
 import { calculateEngagementScore } from "./engagement-scoring"
 import {
@@ -129,11 +129,15 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 // isPremiumBearing), so this counted policies that lapsed years
                 // ago and told the reader they expire in the next 30 days — a
                 // false statement, in an outbound email, to a user the product is
-                // trying to win back.
+                // trying to win back. The gte bound fixed the lapsed count; the
+                // status filter is the mirror — 'expiring_soon'/'action_needed'/
+                // 'incomplete' are all in-force, so requiring exactly 'active'
+                // UNDER-counted the very "expiring soon" figure this email quotes.
+                // Same real-policy filter the renewal cron and weekly digest use.
                 const expiringPolicies = await db.policy.count({
                     where: {
                         ownerUserId: user.id,
-                        status: "active",
+                        status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
                         endDate: { gte: startOfAthensDay(now), lte: thirtyDaysOut },
                     },
                 })

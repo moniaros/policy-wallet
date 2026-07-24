@@ -1,4 +1,4 @@
-import { calendarDaysUntil, startOfAthensDay, athensWeekday } from "@/lib/policy-status"
+import { calendarDaysUntil, startOfAthensDay, athensWeekday, NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
 import { provisionalProtectionScore } from "./gap-engine/protection-score"
 import { db } from "../db"
 import { sendEmail } from "../email/email-service"
@@ -98,7 +98,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     // "expiring_soon" from the expiring-soon email. The endDate
                     // window already excludes lapsed and far-future policies;
                     // only the non-policy states are filtered out here.
-                    status: { notIn: ["deleted", "analyzing", "cancelled"] },
+                    status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
                     // From the start of TODAY in Athens. End dates are stored at
                     // midnight, so `gt: now` dropped a policy expiring today from
                     // the digest that lands in the owner's inbox — the one item
