@@ -53,9 +53,11 @@ const DEFAULT_WALLET_COPY = {
         collaboratorEmailPlaceholder: "agent@example.com",
         permissions: "Permissions",
         viewOnly: "View Only",
-        readOnlyAccess: "Read-only access",
+        readOnlyAccess: "Sees the policy and its documents",
         canEdit: "Can Edit",
-        fullManagement: "Full management",
+        fullManagement: "Corrects details, adds documents",
+        permissionsDeleteNote:
+            "Neither option allows deleting the policy — only you can do that, and you can revoke access at any time.",
         cancel: "Cancel",
         sending: "Sending...",
         sendInvite: "Send Invite",
@@ -308,6 +310,15 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                     </p>
                                 </button>
                             </div>
+                            {/* The owner is consenting to something specific, so it has to
+                                be described specifically. "Επεξεργασία" previously read
+                                «Πλήρης διαχείριση» / "Full management" — the name of the
+                                MANAGE level, which this button does not grant and which is
+                                the only one that permits deletion (lib/policy-access:
+                                canDelete requires grantLevel === "manage"). */}
+                            <p className="mt-2 text-kicker leading-snug text-slate-500 dark:text-slate-400">
+                                {copy.permissionsDeleteNote}
+                            </p>
                         </div>
 
                         <div className="flex gap-3 pt-2">
