@@ -874,12 +874,12 @@ export const en: TranslationKeys = {
             exampleMeta: '3 policies · Motor, Home',
         },
         overviewPolicies: {
-            headline: 'No active policies yet',
-            description: 'Once this client has active cover, their policies show up here at a glance.',
+            headline: 'No policies you can see',
+            description: "This shows only the policies you uploaded or that the client granted you access to. They may hold others — ask them for access to see those.",
         },
         clientPolicies: {
-            headline: 'No policies linked yet',
-            description: "Upload this client's policies to track coverage, renewals, and commissions in one place.",
+            headline: 'No policies you can see',
+            description: "You see the policies you uploaded and the ones this client shared with you — not their whole portfolio. Upload a policy, or ask for access.",
             cta: 'Add policy',
             exampleName: 'Motor',
             exampleMeta: 'Interamerican',
@@ -897,7 +897,7 @@ export const en: TranslationKeys = {
         insights: {
             premiumBreakdownDesc: 'Premiums by line of business appear here as customer policies are added.',
             opportunitiesDesc: 'Detected cross-sell and coverage opportunities will show up here.',
-            renewalsDesc: "Nothing is expiring in the next 90 days — you're all caught up.",
+            renewalsDesc: 'None of the policies you can see expires in the next 90 days. Policies you have no access to, or with no readable end date, are not counted here.',
         },
         opportunities: {
             headline: 'No opportunities yet',

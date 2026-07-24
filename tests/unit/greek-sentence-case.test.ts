@@ -24,10 +24,18 @@ describe('Greek UI labels use sentence case', () => {
         // Coverage names ("Οδική Βοήθεια", "Νομική Προστασία") are market-standard
         // Title Case in Greek policy wordings — product names, not UI chrome.
         const coverageTaxonomy = src.slice(src.indexOf('policyTypes:'), src.indexOf('policyTypes:') + 2200)
+        // Keys whose value is a PROPER NOUN, where capitalising every word is
+        // correct Greek. Without this the guard reported «Μαρία Παπαδοπούλου» —
+        // and an earlier casing sweep had "fixed" it to «Μαρία παπαδοπούλου»,
+        // shipping a lowercased surname on the first screen an agent sees.
+        // A casing rule that cannot tell a person from a label will keep
+        // producing that, so the exemption is by key, not by guessing.
+        const PROPER_NOUN_KEYS = new Set(['exampleName', 'exampleCustomer', 'sampleName'])
         for (const m of src.matchAll(/(\w+):\s*(['"])([^'"]{3,60})\2/g)) {
             const [full, key, , val] = m
             if (/[.;!?,·:0-9A-Za-z/()→]/.test(val)) continue
             if (coverageTaxonomy.includes(full)) continue
+            if (PROPER_NOUN_KEYS.has(key)) continue
             const words = val.split(' ')
             if (words.length < 2 || words.length > 4) continue
             if (!isTitleCase(words[0])) continue
