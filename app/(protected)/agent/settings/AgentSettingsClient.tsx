@@ -115,7 +115,13 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                 <p className="text-xs font-black uppercase tracking-widest">
                                     {roleCopy.agentSettings.status}: {verificationStatus || roleCopy.agentSettings.pending}
                                 </p>
-                                <p className="text-xs opacity-80 font-medium mt-0.5">
+                                {/* This states whether a licensed intermediary's professional
+                                    credentials are verified or still under review. opacity-80
+                                    multiplied it below the AA floor — the one sentence on the
+                                    page a regulator or a cautious agent reads most carefully,
+                                    rendered the least legibly. Hierarchy is already carried by
+                                    the uppercase status line above. */}
+                                <p className="text-xs font-medium mt-0.5">
                                     {verificationStatus === 'verified'
                                         ? roleCopy.agentSettings.verifiedDescription
                                         : roleCopy.agentSettings.underReviewDescription}
@@ -266,7 +272,10 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                             being a dead (destructive) control. */}
                         <div className="pw-card pw-pad-roomy border border-rose-100 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">
                             <h3 className="text-xs font-black text-rose-900 dark:text-rose-400 uppercase tracking-widest mb-2">{roleCopy.agentSettings.dangerZone}</h3>
-                            <p className="text-sm text-rose-700/70 dark:text-rose-400/70 mb-6 font-medium">{roleCopy.agentSettings.dangerDescription}</p>
+                            {/* The sentence explaining what a destructive action actually does.
+                                At /70 it measured 3.86:1 — the warning was the least
+                                legible text in its own danger zone. Full strength: 6.29. */}
+                            <p className="text-sm text-rose-700 dark:text-rose-400 mb-6 font-medium">{roleCopy.agentSettings.dangerDescription}</p>
                             <Link href="/account" className="pw-primary-button bg-rose-600 hover:bg-rose-700">
                                 {roleCopy.agentSettings.deactivateAccount}
                             </Link>
