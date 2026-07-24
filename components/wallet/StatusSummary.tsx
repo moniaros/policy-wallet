@@ -15,6 +15,8 @@ interface StatusSummaryProps {
     totalPremium?: number
     /** Policies left out of totalPremium because they have no readable end date. */
     unknownDurationCount?: number
+    /** In-force policies with no premium recorded — they add 0 to the total. */
+    unknownPremiumCount?: number
 }
 
 const RADIUS = 16
@@ -58,6 +60,7 @@ export function StatusSummary({
     totalPolicies,
     totalPremium = 0,
     unknownDurationCount = 0,
+    unknownPremiumCount = 0,
 }: StatusSummaryProps) {
     const { t, language } = useLanguage()
 
@@ -73,6 +76,18 @@ export function StatusSummary({
                 ? t.status.premiumExcludesUnknown
                 : t.status.premiumExcludesUnknownPlural
             ).replace('{count}', String(unknownDurationCount))
+            : undefined
+
+    // A policy can be missing from the total for two different reasons: no
+    // readable end date (excluded from "in force" entirely) or no premium
+    // recorded (counted as cover, contributes 0). Both mean the figure understates
+    // reality, so both are said out loud.
+    const noAmountNote =
+        unknownPremiumCount > 0
+            ? (unknownPremiumCount === 1
+                ? t.status.premiumExcludesNoAmount
+                : t.status.premiumExcludesNoAmountPlural
+            ).replace('{count}', String(unknownPremiumCount))
             : undefined
 
     // 4-up only from xl. At lg the sidebar takes ~240px, leaving ~170px per tile,
@@ -112,7 +127,7 @@ export function StatusSummary({
             <StatTile
                 label={t.status.totalPremium}
                 value={premiumLabel}
-                hint={excludedNote}
+                hint={[excludedNote, noAmountNote].filter(Boolean).join(' · ') || undefined}
                 icon={Euro}
                 accent="brand"
             />

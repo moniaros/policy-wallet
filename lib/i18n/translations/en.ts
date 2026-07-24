@@ -1897,6 +1897,8 @@ export const en: TranslationKeys = {
 
     status: {
         totalPremium: 'Insurance Footprint',
+        premiumExcludesNoAmount: '{count} policy with no recorded premium is not included in the total',
+        premiumExcludesNoAmountPlural: '{count} policies with no recorded premium are not included in the total',
         premiumExcludesUnknown: '{count} policy with no readable end date is not counted',
         premiumExcludesUnknownPlural: '{count} policies with no readable end date are not counted',
         activePolicies: 'Active Protection',

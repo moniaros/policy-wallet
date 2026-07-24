@@ -159,6 +159,7 @@ export function PolicyWallet({
                 totalPolicies={policies.length}
                 totalPremium={premiumFootprint.total}
                 unknownDurationCount={premiumFootprint.unknownDurationCount}
+                unknownPremiumCount={premiumFootprint.unknownPremiumCount}
             />
 
             <ImportantNotices notices={notices} onSelect={onViewPolicy} />

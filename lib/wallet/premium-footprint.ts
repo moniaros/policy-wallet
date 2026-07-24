@@ -48,6 +48,13 @@ export interface PremiumFootprint {
     /** How many policies contributed to `total`. */
     countedPolicies: number
     /**
+     * In-force policies whose premium was never extracted. They are counted as
+     * cover but contribute 0 to `total`, so without this the footprint silently
+     * understates what the household actually spends — the same honesty the
+     * unknown-duration count already provides, for the other missing field.
+     */
+    unknownPremiumCount: number
+    /**
      * Policies left out because no trustworthy end date exists. Surfaced so the
      * UI can say so — a total that silently drops them is a lie by omission.
      */
@@ -116,10 +123,16 @@ export function calculatePremiumFootprintDetailed(
 ): PremiumFootprint {
     const { policies: inForce, unknownDurationCount } = selectPremiumBearingPolicies(policies, now)
 
+    const unknownPremiumCount = inForce.filter((policy) => {
+        const raw = policy.premiumAmount
+        return raw === null || raw === undefined || !Number.isFinite(Number(raw))
+    }).length
+
     return {
         total: inForce.reduce((sum, policy) => sum + premiumOf(policy), 0),
         countedPolicies: inForce.length,
         unknownDurationCount,
+        unknownPremiumCount,
     }
 }
 
