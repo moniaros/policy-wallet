@@ -38,6 +38,18 @@ export default async function PolicyDetailPage({
                 documents: {
                     orderBy: { uploadedAt: 'desc' }
                 },
+                // The coverage section's fallback used to fire on "no coverage
+                // details" alone and always said "re-analyse". That conflates a
+                // policy never analysed, one whose run FAILED, and one analysed
+                // fine whose document simply had no extractable detail — and in
+                // the last case re-running spends metered analysis to produce
+                // the same nothing. Load the latest run so each state can speak
+                // for itself.
+                analysisRuns: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
+                    select: { status: true, createdAt: true },
+                },
                 gapInstances: {
                     // Match home / coverage-insights: 'open' alone under-counted,
                     // dropping rule-detected and acknowledged gaps from the report.

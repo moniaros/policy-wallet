@@ -273,6 +273,26 @@ export function PolicyDetailsClient({
         return Object.prototype.hasOwnProperty.call(TYPE_SECTION_KEYS, line) && !hasCoverageDetails
     })()
 
+    /**
+     * Why there are no coverage details. All three used to render "re-analyse",
+     * which is right for one of them, hides a problem in the second, and in the
+     * third tells the reader to spend metered analysis on a run that will
+     * produce the same nothing.
+     */
+    const coverageAbsence: "never" | "failed" | "empty" = (() => {
+        const last = policy.analysisRuns?.[0]?.status
+        if (!last) return "never"
+        if (last === "failed" || last === "blocked") return "failed"
+        if (last === "completed" || last === "completed_with_warnings") return "empty"
+        return "never"   // queued / running — nothing has produced a verdict yet
+    })()
+
+    const absenceCopy = {
+        never: { title: detailsCopy.analysisNeverRun, hint: detailsCopy.analysisNeverRunHint },
+        failed: { title: detailsCopy.analysisFailedTitle, hint: detailsCopy.analysisFailedHint },
+        empty: { title: detailsCopy.analysisFoundNothingTitle, hint: detailsCopy.analysisFoundNothingHint },
+    }[coverageAbsence]
+
     const gapsForAnalysis = (policy.gapInstances || []).map((gap: any) => ({
         id: gap.id,
         aiExplanation: gap.aiExplanation || null,
@@ -748,8 +768,8 @@ export function PolicyDetailsClient({
                                     <div className="flex items-start gap-3 rounded-2xl border border-amber-300/45 bg-amber-50 px-4 py-4 dark:bg-amber-950/20">
                                         <RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-300" />
                                         <div>
-                                            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">{detailsCopy.reanalyzeToSeeCoverage}</p>
-                                            <p className="mt-1 text-xs text-amber-700/90 dark:text-amber-300/90">{detailsCopy.reanalyzeToSeeCoverageHint}</p>
+                                            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">{absenceCopy.title}</p>
+                                            <p className="mt-1 text-xs text-amber-700/90 dark:text-amber-300/90">{absenceCopy.hint}</p>
                                         </div>
                                     </div>
                                 </div>
