@@ -844,11 +844,17 @@ export const el = {
             edit: 'Επεξεργασία',
             noCoverage: 'Δεν υπάρχουν λεπτομέρειες κάλυψης',
         },
+        // The per-policy donut on the detail page. NOT the portfolio-wide
+        // «Βαθμολογία προστασίας» and not the agent's «Δείκτης σχέσης» — three
+        // different numbers, so this one has to be distinguishable at a glance.
+        // «Υγεία κάλυψης» also collided with «υγεία», the health-insurance
+        // branch, on a screen that may be showing a health policy.
+        // `exclusions` went with the score's old inputs: it no longer counts
+        // them (see calculatePolicyHealthScore).
         healthScore: {
-            title: 'Υγεία κάλυψης',
-            exclusions: 'Εξαιρέσεις',
+            title: 'Έλεγχος ασφαλιστηρίου',
             gaps: 'Κενά κάλυψης',
-            recommendations: 'AI Συστάσεις',
+            recommendations: 'Προτάσεις AI',
         },
     },
 

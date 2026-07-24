@@ -848,10 +848,9 @@ export const en: TranslationKeys = {
             noCoverage: 'No coverage details available yet',
         },
         healthScore: {
-            title: 'Coverage Health',
-            exclusions: 'Exclusions',
-            gaps: 'Coverage Gaps',
-            recommendations: 'AI Recommendations',
+            title: 'Policy check',
+            gaps: 'Coverage gaps',
+            recommendations: 'AI suggestions',
         },
     },
 
