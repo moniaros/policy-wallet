@@ -141,7 +141,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         and detection recency — it has never been calibrated against
                         the won/lost outcomes the product already records, so it is a
                         prioritisation aid, not a forecast. Say which. */}
-                    <p className="px-6 pt-4 text-micro leading-snug text-black/55 dark:text-white/45">
+                    <p className="px-6 pt-4 text-caption leading-snug text-black/55 dark:text-white/45">
                         {opp_t.likelihoodNote}
                     </p>
                     <TableShell label={opp_t.title}>

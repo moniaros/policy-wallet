@@ -56,7 +56,7 @@ export function CoverageGapsWidget({
                         {/* "Critical/high" read as a risk verdict; the gap engine treats
                             them as a profile-based priority (the report itself omits
                             severity as "unvalidated"). This says so plainly. */}
-                        <p className="mt-2 text-micro leading-snug text-black/55 dark:text-white/45">
+                        <p className="mt-2 text-caption leading-snug text-black/55 dark:text-white/45">
                             {labels.note}
                         </p>
                     </>

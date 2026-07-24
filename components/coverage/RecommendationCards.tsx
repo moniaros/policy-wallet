@@ -244,7 +244,7 @@ export function RecommendationCards({
                 one, where the user comes to act — showed the same badges bare, so
                 "Κρίσιμη προτεραιότητα" read as a verdict on their risk. Same
                 sentence, same meaning, on both surfaces. */}
-            <p className="mb-3 text-micro leading-snug text-black/55 dark:text-white/45">
+            <p className="mb-3 text-caption leading-snug text-black/55 dark:text-white/45">
                 {home.recPriorityNote}
             </p>
 

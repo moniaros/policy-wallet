@@ -219,7 +219,7 @@ export function GettingStartedChecklist({
                                                     {language === "el" ? item.titleEl : item.titleEn}
                                                 </p>
                                                 {!item.completed && (
-                                                    <p className="mt-0.5 text-micro text-black/60 dark:text-white/55">
+                                                    <p className="mt-0.5 text-caption text-black/60 dark:text-white/55">
                                                         {language === "el" ? item.descEl : item.descEn}
                                                     </p>
                                                 )}

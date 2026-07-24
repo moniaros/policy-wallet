@@ -332,7 +332,7 @@ export function CoverageInsightsClient({
                         sentence already qualifies the dashboard widget and the
                         recommendations list. */}
                     {insights.length > 0 && (
-                        <p className="mb-3 text-micro leading-snug text-black/55 dark:text-white/45">
+                        <p className="mb-3 text-caption leading-snug text-black/55 dark:text-white/45">
                             {getTranslations(lang).dashboard.home.recPriorityNote}
                         </p>
                     )}
