@@ -51,6 +51,7 @@ import type { GlossaryHintData } from "@/components/insurance/GlossaryHint"
 import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import { coverageSectionKeys } from "@/lib/wallet/coverage-sections"
 import { resolveClaimsContact } from "@/lib/wallet/claims-contact"
+import { deriveInsuredNames } from "@/lib/wallet/insured-people"
 // Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
 // so the changed-file i18n lint stays clean.
 const EXPORT_COPY = {
@@ -198,30 +199,7 @@ export function PolicyDetailsClient({
     })()
     const isExpiredPolicy = computedDaysLeft !== null && computedDaysLeft < 0
 
-    const insuredNames = useMemo(
-        () =>
-            Array.from(
-                new Set(
-                    [
-                        policy?.acordData?.insured?.name,
-                        policy?.acordData?.policyholder?.name,
-                        policy?.acordData?.policy?.insuredName,
-                        policy?.acordData?.customerName && policy?.acordData?.customerSurname
-                            ? `${policy.acordData.customerName} ${policy.acordData.customerSurname}`
-                            : null,
-                        ...(Array.isArray(policy?.acordData?.insureds)
-                            ? policy.acordData.insureds.map((i: any) => i?.name || `${i?.firstName || ""} ${i?.lastName || ""}`)
-                            : []),
-                        ...(Array.isArray(policy?.acordData?.beneficiaries)
-                            ? policy.acordData.beneficiaries.map((i: any) => i?.name)
-                            : []),
-                    ]
-                        .map((v) => String(v || "").trim())
-                        .filter(Boolean)
-                )
-            ),
-        [policy]
-    )
+    const insuredNames = useMemo(() => deriveInsuredNames(policy?.acordData), [policy])
 
     // `acordData.policy.insurerContact` was in no schema — always undefined, so
     // this button never rendered and the claims card always said "no number
