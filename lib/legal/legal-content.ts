@@ -116,7 +116,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "subscriptions",
                     title: "4. Συνδρομές, χρεώσεις, ανανέωση και ακύρωση",
                     paragraphs: [
-                        "Η βασική χρήση είναι δωρεάν για ένα συμβόλαιο. Τα επί πληρωμή πλάνα για ιδιώτες (Starter 2,99 €/μήνα, PolicyWallet Plus 7,99 €/μήνα) και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
+                        "Η βασική χρήση είναι δωρεάν για ένα συμβόλαιο. Τα επί πληρωμή πλάνα για ιδιώτες και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται στη σελίδα τιμολόγησης και επιβεβαιώνεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
                         "Οι συνδρομές ανανεώνονται αυτόματα στο τέλος κάθε περιόδου χρέωσης (μηνιαίας ή ετήσιας) μέχρι να τις ακυρώσετε.",
                         "Μπορείτε να ακυρώσετε οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας. Η ακύρωση ισχύει από το τέλος της τρέχουσας περιόδου χρέωσης — μέχρι τότε διατηρείτε πλήρη πρόσβαση στο πλάνο σας. Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.",
                         "Αν αλλάξουν οι τιμές των πλάνων, θα ενημερωθείτε εκ των προτέρων και η νέα τιμή θα ισχύσει από την επόμενη περίοδο χρέωσης.",
@@ -578,7 +578,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "subscriptions",
                     title: "4. Subscriptions, billing, renewal and cancellation",
                     paragraphs: [
-                        "Basic use is free for one policy. Paid plans for individuals (Starter €2.99/month, PolicyWallet Plus €7.99/month) and intermediary plans are billed through the payment provider Stripe, at the price displayed before you complete the purchase, including VAT where applicable.",
+                        "Basic use is free for one policy. Paid plans for individuals and intermediary plans are billed through the payment provider Stripe, at the price shown on the pricing page and confirmed before you complete the purchase, including VAT where applicable.",
                         "Subscriptions renew automatically at the end of each billing period (monthly or annual) until you cancel.",
                         "You can cancel at any time from your account settings. Cancellation takes effect at the end of the current billing period — until then you keep full access to your plan. You will not be charged for subsequent periods after cancelling.",
                         "If plan prices change, you will be notified in advance and the new price will apply from your next billing period.",
