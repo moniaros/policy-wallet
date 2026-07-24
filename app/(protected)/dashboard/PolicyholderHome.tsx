@@ -12,7 +12,8 @@ import { provisionalProtectionScore } from "@/lib/services/gap-engine/protection
 import { CircleHelp, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
-import { selectPremiumBearingPolicies } from "@/lib/wallet/premium-footprint"
+import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
+import { premiumExclusionNote } from "@/lib/wallet/premium-exclusion-note"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrapper"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
@@ -172,15 +173,30 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     }
     const overlapBranchCount = [...branchPolicyCounts.values()].filter((count) => count > 1).length
 
-    // Portfolio summary: total premium + LOB breakdown, both off the in-force list.
-    const totalAnnualPremium = activePolicies
-        .reduce((sum, p) => sum + Number(p.premiumAmount ?? 0), 0)
-    const lobBreakdown = activePolicies.reduce((acc, p) => {
-        const lob = p.lineOfBusiness || 'other'
-        if (!acc[lob]) acc[lob] = 0
-        acc[lob] += Number(p.premiumAmount ?? 0)
-        return acc
-    }, {} as Record<string, number>)
+    // Portfolio summary: total premium + LOB breakdown.
+    //
+    // The total is the audited footprint, not a raw sum. This card used to
+    // `reduce` premiumAmount over every in-force policy and format the result as
+    // euros — so a policy written in sterling was added to the euro figures and
+    // the sum labelled «€», and a policy with no extracted premium silently
+    // counted as 0, both with nothing on screen saying so. `calculatePremium-
+    // FootprintDetailed` exists precisely to prevent that (it is what the wallet
+    // uses); the dashboard headline had drifted onto its own arithmetic.
+    const premiumFootprint = calculatePremiumFootprintDetailed(policies, now)
+    const totalAnnualPremium = premiumFootprint.total
+    const premiumCurrency = premiumFootprint.currency
+    // Chips must sum to the headline, so the per-branch breakdown counts the same
+    // policies the total does — the majority currency only.
+    const currencyOf = (p: { premiumCurrency?: string | null }) =>
+        String(p.premiumCurrency ?? '').trim().toUpperCase() || 'EUR'
+    const lobBreakdown = activePolicies
+        .filter((p) => currencyOf(p) === premiumCurrency)
+        .reduce((acc, p) => {
+            const lob = p.lineOfBusiness || 'other'
+            if (!acc[lob]) acc[lob] = 0
+            acc[lob] += Number(p.premiumAmount ?? 0)
+            return acc
+        }, {} as Record<string, number>)
 
     const openGapCount = openGaps.length
 
@@ -215,9 +231,21 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             return {
                 id: lob,
                 icon: getBranchIcon(branch.id),
-                amountLabel: formatCurrencyValue(amount, lang) || '€0',
+                amountLabel: formatCurrencyValue(amount, lang, premiumCurrency) || '€0',
             }
         })
+
+    // Everything the total leaves out, said plainly — matching the wallet's
+    // StatusSummary. A figure that silently drops a foreign-currency or
+    // premium-less policy understates what the household spends.
+    const premiumExcludedNote = premiumExclusionNote(
+        {
+            otherCurrencyCount: premiumFootprint.otherCurrencyCount,
+            unknownPremiumCount: premiumFootprint.unknownPremiumCount,
+            unknownDurationCount,
+        },
+        t.status
+    )
 
     const renewalItems = upcomingRenewals.slice(0, 6).map(({ policy, endDate }) => {
         const branch = normalizeBranch(policy.lineOfBusiness)
@@ -361,20 +389,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     {totalAnnualPremium > 0 && (
                         <PortfolioSummaryCard
-                            totalLabel={formatCurrencyValue(totalAnnualPremium, lang) || '€0'}
+                            totalLabel={formatCurrencyValue(totalAnnualPremium, lang, premiumCurrency) || '€0'}
                             chips={portfolioChips}
                             labels={{
                                 kicker: home.portfolioKicker,
                                 totalAnnualPremium: home.totalAnnualPremium,
                             }}
-                            excludedNote={
-                                unknownDurationCount > 0
-                                    ? (unknownDurationCount === 1
-                                        ? t.status.premiumExcludesUnknown
-                                        : t.status.premiumExcludesUnknownPlural
-                                    ).replace('{count}', String(unknownDurationCount))
-                                    : undefined
-                            }
+                            excludedNote={premiumExcludedNote}
                         />
                     )}
 
