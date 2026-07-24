@@ -20,6 +20,7 @@ import {
     resolveGapContent,
     type GapReportItem,
 } from "@/lib/wallet/gap-report"
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
 export default async function PolicyDetailPage({
     params
@@ -192,7 +193,10 @@ export default async function PolicyDetailPage({
                 if (concept === null) return true // profile/portfolio rule — always shown
                 return !reportConcepts.has(concept)
             })
-            const sameLob = recommendations.filter(r => r.lineOfBusiness === policy.lineOfBusiness)
+            // Match by branch FAMILY: a motorbike policy's related recommendations are the
+            // MOTOR ones. Raw equality missed them and fell back to generic recs.
+            const policyFamily = branchFamilyId(policy.lineOfBusiness)
+            const sameLob = recommendations.filter(r => branchFamilyId(r.lineOfBusiness) === policyFamily)
             relatedRecommendations = (sameLob.length > 0 ? sameLob : recommendations)
                 .slice(0, 4)
                 .map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))
