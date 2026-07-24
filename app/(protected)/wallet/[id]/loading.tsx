@@ -5,7 +5,18 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function Loading() {
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
+            {/* Every Skeleton block is aria-hidden by design, and this composite
+                never declared the status region the primitive's contract asks
+                for — so the whole route was silent to a screen reader, with no
+                way to tell loading from empty from broken. Bilingual for the
+                same reason app/error.tsx is: loading.tsx renders above the
+                LanguageProvider and has no data access. */}
+            <div
+                role="status"
+                aria-busy="true"
+                className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8"
+            >
+                <span className="sr-only">Φόρτωση ασφαλιστηρίου… · Loading policy…</span>
                 {/* Breadcrumb */}
                 <div className="mb-5 flex items-center gap-2">
                     <Skeleton className="h-4 w-24" />

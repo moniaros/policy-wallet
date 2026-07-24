@@ -6,13 +6,31 @@ import { Skeleton } from '@/components/ui/skeleton'
 export { Skeleton }
 
 /**
+ * The text a screen reader actually announces while a route loads.
+ *
+ * Every skeleton here was correctly marked `role="status" aria-busy="true"` — but
+ * each contained only decorative, empty divs. A live region with no content
+ * announces nothing, so a screen-reader user arriving on any route heard silence
+ * and could not tell loading from empty from broken.
+ *
+ * Bilingual for the same reason app/error.tsx is: route-level `loading.tsx`
+ * renders above the LanguageProvider and has no data access by design, so it
+ * cannot know the reader's language. Greek leads — it is the product default —
+ * and English follows.
+ */
+function LoadingAnnouncement() {
+    return <span className="sr-only">Φόρτωση… · Loading…</span>
+}
+
+/**
  * Generic skeleton for the agent's data-heavy list/insight routes (customers,
  * opportunities, commissions, insights) — header + stat row + a list of rows.
- * Intentionally text-free so it needs no translations.
+ * Visually text-free; the only text is the sr-only announcement.
  */
 export function AgentListSkeleton() {
     return (
         <div role="status" aria-busy="true" className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-page-wide mx-auto animate-in fade-in duration-500">
+            <LoadingAnnouncement />
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="space-y-2">
                     <Skeleton className="h-8 w-56" />
@@ -49,6 +67,7 @@ export function AgentListSkeleton() {
 export function DashboardSkeleton() {
     return (
         <div role="status" aria-busy="true" className="p-4 md:p-6 space-y-8 max-w-page-wide mx-auto animate-in fade-in duration-500">
+            <LoadingAnnouncement />
             {/* Header */}
             <div className="flex justify-between items-end mb-12">
                 <div className="space-y-2">
@@ -115,6 +134,7 @@ export function DashboardSkeleton() {
 export function WalletSkeleton() {
     return (
         <div role="status" aria-busy="true" className="p-4 md:p-6 space-y-8 max-w-7xl mx-auto py-12 animate-in fade-in duration-500">
+            <LoadingAnnouncement />
             {/* Page Header Skeleton */}
             <div className="mb-12 space-y-3">
                 <Skeleton className="h-10 w-72 mx-auto" />
@@ -166,6 +186,7 @@ export function WalletSkeleton() {
 export function TasksSkeleton() {
     return (
         <div role="status" aria-busy="true" className="p-4 md:p-6 space-y-8 max-w-7xl mx-auto py-12 animate-in fade-in duration-500">
+            <LoadingAnnouncement />
             {/* Header */}
             <div className="mb-12 space-y-4">
                 <Skeleton className="h-6 w-32" />
@@ -210,6 +231,7 @@ export function TasksSkeleton() {
 export function QuestionnaireSkeleton() {
     return (
         <div role="status" aria-busy="true" className="max-w-4xl mx-auto px-4 py-16 md:py-24 space-y-12 animate-in fade-in duration-500">
+            <LoadingAnnouncement />
             <div className="space-y-6">
                 <div className="flex items-center gap-3">
                     <Skeleton className="h-6 w-32 rounded-full" />
