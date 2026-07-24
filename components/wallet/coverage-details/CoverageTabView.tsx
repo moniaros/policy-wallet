@@ -63,14 +63,14 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           onClick={() => setActiveTab("not_covered")}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
             activeTab === "not_covered"
-              ? "bg-white dark:bg-white/10 text-red-600 dark:text-red-400 shadow-sm"
+              ? "bg-white dark:bg-white/10 text-red-700 dark:text-red-400 shadow-sm"
               : "text-black/55 dark:text-white/60 hover:text-black/75 dark:hover:text-white/80"
           }`}
         >
           <ShieldOff className="w-4 h-4" />
           {copy.whatsNotCovered}
           {hasExclusions && (
-            <span className="ml-1 px-1.5 py-0.5 rounded-full text-kicker font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+            <span className="ml-1 px-1.5 py-0.5 rounded-full text-kicker font-bold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
               {acordData.exclusions!.length}
             </span>
           )}
@@ -115,7 +115,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
                             </span>
                           )}
                           {coverage.deductible && (
-                            <span className="px-2 py-0.5 rounded-full text-micro font-semibold bg-[#FEF3C7]/60 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
+                            <span className="px-2 py-0.5 rounded-full text-micro font-semibold bg-[#FEF3C7]/60 dark:bg-amber-900/30 text-[#92400E] dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
                               {copy.deductible}: {formatExtractedAmount(coverage.deductible, language)}
                             </span>
                           )}
@@ -157,7 +157,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
               ))}
               <div className="flex items-start gap-2 p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/10 border border-amber-200/40 dark:border-amber-800/30">
                 <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-[#B45309] dark:text-amber-400">{copy.exclusionsDisclaimer}</p>
+                <p className="text-xs text-[#92400E] dark:text-amber-400">{copy.exclusionsDisclaimer}</p>
               </div>
             </>
           ) : (

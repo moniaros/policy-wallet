@@ -35,9 +35,13 @@ export function UsageMeter({ label, used, limit, hint, className = "" }: UsageMe
                     {limit === null ? `${used} · ∞` : `${used} / ${limit}`}
                 </p>
             </div>
+            {/* A progressbar with no accessible name is announced as a bare
+                "2 of 5". The visible label above already says WHAT is being
+                metered, so reuse it rather than invent a second string. */}
             {limit !== null && (
                 <div
                     role="progressbar"
+                    aria-label={label}
                     aria-valuenow={used}
                     aria-valuemin={0}
                     aria-valuemax={limit}

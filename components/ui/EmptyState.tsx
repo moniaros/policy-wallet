@@ -70,7 +70,13 @@ export function EmptyState({
                             {previewLabel}
                         </span>
                     )}
-                    <div className="pointer-events-none select-none space-y-2 opacity-80">
+                    {/* No opacity here: this preview teaches the user what the feature will
+                        show, so it is informational content and must meet AA. The
+                        opacity-80 that used to be here multiplied against every
+                        colour inside and pushed the sample rows to ~3.6:1. The
+                        "example" framing is already carried by previewLabel and the
+                        dashed container. */}
+                    <div className="pointer-events-none select-none space-y-2">
                         {preview}
                     </div>
                 </div>
@@ -120,7 +126,7 @@ export function PolicyPreviewRow({
             <div
                 className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] ${warn ? "bg-[#FEF3C7]" : "bg-primary-soft dark:bg-primary/15"}`}
             >
-                <Icon className={`h-4 w-4 ${warn ? "text-[#B45309]" : "text-primary dark:text-mint"}`} />
+                <Icon className={`h-4 w-4 ${warn ? "text-[#92400E]" : "text-primary dark:text-mint"}`} />
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
@@ -129,7 +135,7 @@ export function PolicyPreviewRow({
             <span
                 className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-widest ${
                     warn
-                        ? "bg-[#FEF3C7] text-[#B45309]"
+                        ? "bg-[#FEF3C7] text-[#92400E]"
                         : "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
                 }`}
             >
@@ -184,7 +190,7 @@ export function RenewalPreviewRow({
                 <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
                 <p className="text-micro text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
             </div>
-            <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#B45309]">
+            <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#92400E]">
                 {daysLabel}
             </span>
         </div>
@@ -205,7 +211,7 @@ export function RecommendationPreviewCard({
             <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
                 <p className="flex-1 truncate text-body-sm font-semibold text-foreground">{title}</p>
-                <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#B45309]">
+                <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#92400E]">
                     {urgencyLabel}
                 </span>
             </div>

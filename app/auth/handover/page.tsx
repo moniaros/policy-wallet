@@ -65,7 +65,7 @@ function HandoverContent() {
                         ? t("Άνοιγμα στην εφαρμογή PolicyWallet;", "Open in PolicyWallet App?")
                         : t("Καλώς ήρθατε στο PolicyWallet", "Welcome to PolicyWallet")}
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-500 mb-8 leading-relaxed">
                     {isMobile
                         ? t("Εντοπίσαμε ότι χρησιμοποιείτε κινητό. Για καλύτερη εμπειρία, χρησιμοποιήστε την εφαρμογή μας.", "We detected you are on mobile. For the best experience, use our native app.")
                         : t("Πατήστε παρακάτω για να συνεχίσετε στο ασφαλές ψηφιακό πορτοφόλι ασφάλισής σας.", "Click below to continue to your secure insurance wallet.")}

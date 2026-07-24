@@ -55,7 +55,7 @@ function ChoiceRow({ type, label, hint, error, className = "", id, ...props }: B
                 </span>
             </label>
             {error && (
-                <p id={errorId} role="alert" className="ml-7 text-caption font-semibold text-red-600 dark:text-red-400">
+                <p id={errorId} role="alert" className="ml-7 text-caption font-semibold text-red-700 dark:text-red-400">
                     {error}
                 </p>
             )}

@@ -129,14 +129,14 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                             <h2 id="bulk-import-title" className="text-2xl font-bold text-foreground">
                                 {tt.title}
                             </h2>
-                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-500 mt-1">
                                 {tt.subtitle}
                             </p>
                         </div>
                         <button
                             onClick={handleClose}
                             aria-label={t.common.close}
-                            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
+                            className="text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -177,7 +177,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                     htmlFor="csv-upload"
                                     className="cursor-pointer inline-flex flex-col items-center"
                                 >
-                                    <svg className="w-16 h-16 text-neutral-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-16 h-16 text-neutral-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                     </svg>
                                     <span className="text-lg font-bold text-neutral-700 dark:text-neutral-300">
@@ -201,11 +201,11 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                 </div>
                                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
                                     <div className="text-3xl font-bold text-red-700 dark:text-red-400">{invalidCount}</div>
-                                    <div className="text-sm font-medium text-red-600 dark:text-red-500">{tt.invalid}</div>
+                                    <div className="text-sm font-medium text-red-700 dark:text-red-500">{tt.invalid}</div>
                                 </div>
                                 <div className="bg-neutral-50 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-xl p-4">
                                     <div className="text-3xl font-bold text-neutral-700 dark:text-neutral-300">{customers.length}</div>
-                                    <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400">{tt.total}</div>
+                                    <div className="text-sm font-medium text-neutral-600 dark:text-neutral-500">{tt.total}</div>
                                 </div>
                             </div>
 
@@ -217,10 +217,10 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                 <table className="w-full text-sm">
                                     <thead className="bg-neutral-50 dark:bg-neutral-900/50 sticky top-0">
                                         <tr>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colName}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colEmail}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colPhone}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colStatus}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-500">{tt.colName}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-500">{tt.colEmail}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-500">{tt.colPhone}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-500">{tt.colStatus}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-neutral-100 dark:divide-neutral-700">
@@ -229,8 +229,8 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                                 <td className="px-4 py-3 text-foreground">
                                                     {customer.name} {customer.surname}
                                                 </td>
-                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{customer.email}</td>
-                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{customer.phone}</td>
+                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-500">{customer.email}</td>
+                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-500">{customer.phone}</td>
                                                 <td className="px-4 py-3">
                                                     {customer.status === 'valid' ? (
                                                         <span className="px-2 py-1 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-full text-xs font-bold">
@@ -272,7 +272,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                         <div className="py-12 text-center">
                             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mb-4"></div>
                             <h3 className="text-xl font-bold text-foreground">{tt.importingTitle}</h3>
-                            <p className="text-neutral-600 dark:text-neutral-400 mt-2">{tt.importingDesc}</p>
+                            <p className="text-neutral-600 dark:text-neutral-500 mt-2">{tt.importingDesc}</p>
                         </div>
                     )}
 
@@ -284,7 +284,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                 </svg>
                             </div>
                             <h3 className="text-xl font-bold text-foreground">{tt.completeTitle}</h3>
-                            <p className="text-neutral-600 dark:text-neutral-400 mt-2">
+                            <p className="text-neutral-600 dark:text-neutral-500 mt-2">
                                 {tt.successfullyImported} {importedCount} {importedCount !== 1 ? tt.custPlural : tt.custSingular}
                             </p>
                         </div>

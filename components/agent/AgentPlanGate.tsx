@@ -40,7 +40,7 @@ export function AgentPlanGate({ currentTier, requiredTier, featureLabel, childre
             <div className="absolute inset-0 flex items-center justify-center z-10">
                 <div className="flex flex-col items-center gap-3 rounded-2xl border border-black/10 bg-white/90 px-6 py-5 text-center shadow-lg backdrop-blur-sm dark:border-white/15 dark:bg-black/80">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                        <Crown className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        <Crown className="h-5 w-5 text-amber-700 dark:text-amber-400" />
                     </div>
 
                     {featureLabel && (

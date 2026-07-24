@@ -347,7 +347,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                         return (
                                             <div className="bg-card p-4 rounded-xl">
                                                 <p className="text-xs text-muted-foreground font-bold uppercase mb-1">{c.expiresSoonest}</p>
-                                                <p className="text-lg font-bold text-amber-600 dark:text-amber-400">{soonest.insurerName}</p>
+                                                <p className="text-lg font-bold text-amber-700 dark:text-amber-400">{soonest.insurerName}</p>
                                                 <p className="text-sm text-muted-foreground">{c.inPrefix} {daysUntil} {c.daysSuffix}</p>
                                             </div>
                                         )

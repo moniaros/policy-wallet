@@ -17,12 +17,12 @@ export function TrustSignalsFooter({ licenseNumber, lastUpdated }: TrustSignalsF
     return (
         <div className="flex items-center justify-between border-t border-neutral-200/60 dark:border-neutral-700/60 pt-3 mt-4">
             {licenseNumber && (
-                <p className="text-kicker text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
+                <p className="text-kicker text-neutral-500 dark:text-neutral-500 flex items-center gap-1">
                     <ShieldCheck className="h-3 w-3" />
                     {t.agentUi.eaeeNo}: {licenseNumber}
                 </p>
             )}
-            <p className="text-kicker text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
+            <p className="text-kicker text-neutral-500 dark:text-neutral-500 flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 {t.agentUi.lastUpdated}: {formatRelativeDate(lastUpdated, language)}
             </p>
@@ -51,7 +51,7 @@ export function DataConfidenceBadge({ confidence, className }: DataConfidenceBad
         pending: {
             icon: Hourglass,
             label: { en: "Pending verification", el: "Εκκρεμεί επαλήθευση" },
-            style: "text-neutral-500 italic dark:text-neutral-400",
+            style: "text-neutral-500 italic dark:text-neutral-500",
         },
         agent_suggested: {
             icon: Lightbulb,

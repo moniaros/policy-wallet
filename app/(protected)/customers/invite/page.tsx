@@ -57,7 +57,7 @@ export default function InviteCustomerPage() {
                                 </svg>
                             </div>
                             <h2 className="text-2xl font-bold text-foreground mb-2">{fallbackLink ? inv_t.emailFailedTitle : inv_t.successTitle}</h2>
-                            <p className="text-neutral-600 dark:text-neutral-400 mb-6">{fallbackLink ? inv_t.emailFailedBody : inv_t.successBody}</p>
+                            <p className="text-neutral-600 dark:text-neutral-500 mb-6">{fallbackLink ? inv_t.emailFailedBody : inv_t.successBody}</p>
 
                             {fallbackLink && (
                                 <div className="mb-6 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10 p-3">
@@ -107,7 +107,7 @@ export default function InviteCustomerPage() {
                                 <button
                                     type="button"
                                     onClick={() => router.back()}
-                                    className="flex-1 px-6 py-3 border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 rounded-xl font-bold hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                                    className="flex-1 px-6 py-3 border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-500 rounded-xl font-bold hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                                 >
                                     {inv_t.cancel}
                                 </button>

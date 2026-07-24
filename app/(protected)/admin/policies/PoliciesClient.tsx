@@ -222,7 +222,7 @@ export default function PoliciesClient({
                                             <button className={iconBtn} title="Edit" onClick={() => openEdit(row)}>
                                                 <Pencil className="w-4 h-4" />
                                             </button>
-                                            <button className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete" onClick={() => setDeleteRow(row)}>
+                                            <button className="p-2 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete" onClick={() => setDeleteRow(row)}>
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>

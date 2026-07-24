@@ -426,7 +426,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             />
 
                             {fieldErrors.files && (
-                                <p id="add-policy-files-error" role="alert" className="mt-2 ml-1 text-xs font-semibold text-red-600 dark:text-red-400">
+                                <p id="add-policy-files-error" role="alert" className="mt-2 ml-1 text-xs font-semibold text-red-700 dark:text-red-400">
                                     {fieldErrors.files}
                                 </p>
                             )}
@@ -436,7 +436,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     {selectedFiles.map((file, idx) => (
                                         <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-xl border border-border animate-in fade-in slide-in-from-bottom-2">
                                             <div className="flex items-center gap-3 overflow-hidden">
-                                                <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 text-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 text-red-700 rounded-lg flex items-center justify-center flex-shrink-0">
                                                     <FileText className="w-4 h-4" />
                                                 </div>
                                                 <div className="truncate">
@@ -496,7 +496,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         ))}
                                     </select>
                                     {fieldErrors.lineOfBusiness && (
-                                        <p id="add-lineOfBusiness-error" role="alert" className="ml-1 text-xs font-semibold text-red-600 dark:text-red-400">
+                                        <p id="add-lineOfBusiness-error" role="alert" className="ml-1 text-xs font-semibold text-red-700 dark:text-red-400">
                                             {fieldErrors.lineOfBusiness}
                                         </p>
                                     )}

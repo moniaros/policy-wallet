@@ -120,7 +120,7 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Clock className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
+              <Clock className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.waitingPeriods}</span>
           </div>

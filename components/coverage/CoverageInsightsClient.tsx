@@ -162,7 +162,7 @@ export function CoverageInsightsClient({
                         el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα συμβόλαιά σας.`,
                         en: `${visibleGaps.length} points to review across your policies.`,
                     },
-                    color: 'text-red-600',
+                    color: 'text-red-700',
                     bg: 'bg-red-100 dark:bg-red-900/30',
                 }
                 : {
@@ -175,7 +175,7 @@ export function CoverageInsightsClient({
                         el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα συμβόλαιά σας.`,
                         en: `${visibleGaps.length} points to review across your policies.`,
                     },
-                    color: 'text-amber-600',
+                    color: 'text-amber-700',
                     bg: 'bg-amber-100 dark:bg-amber-900/30',
                 }
 

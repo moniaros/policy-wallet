@@ -36,7 +36,7 @@ const INTERACTION_COLORS: Record<string, string> = {
     policy_uploaded: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
     questionnaire_sent: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
     opportunity_contacted: "text-amber-500 bg-amber-50 dark:bg-amber-900/30",
-    reminder_sent: "text-orange-500 bg-orange-50 dark:bg-orange-900/30",
+    reminder_sent: "text-orange-700 bg-orange-50 dark:bg-orange-900/30",
     message_sent: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
     note_added: "text-neutral-500 bg-neutral-50 dark:bg-neutral-800",
     relationship_created: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
@@ -84,7 +84,7 @@ export function ClientActivityTab({ interactions, customer }: ClientActivityTabP
                                     <p className="text-sm text-foreground">
                                         {interaction.message}
                                     </p>
-                                    <p className="text-xs text-neutral-400 mt-0.5">
+                                    <p className="text-xs text-neutral-500 mt-0.5">
                                         {formatRelativeDate(interaction.timestamp, language)}
                                     </p>
                                 </div>

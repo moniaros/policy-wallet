@@ -151,7 +151,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                                     {metric.label}
                                 </span>
                             </div>
-                            <p className="mt-0.5 text-kicker text-neutral-400 dark:text-neutral-500">
+                            <p className="mt-0.5 text-kicker text-neutral-500 dark:text-neutral-500">
                                 {metric.description}
                             </p>
                         </div>

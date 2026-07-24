@@ -43,7 +43,7 @@ export function PolicyWalletLogo({
             : 'text-slate-900 dark:text-white'
 
     const walletTextColor = variant === 'light'
-        ? 'text-slate-400'
+        ? 'text-slate-500'
         : 'text-slate-500'
 
     return (

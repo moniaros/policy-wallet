@@ -161,7 +161,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
         if (permission === "edit") {
             return (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-full">
-                    <Edit3 className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                    <Edit3 className="w-3 h-3 text-amber-700 dark:text-amber-400" />
                     <span className="text-kicker font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">{copy.canEdit}</span>
                 </div>
             )
@@ -200,7 +200,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                         </div>
                         <div>
                             <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{copy.title}</h3>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-500">
                                 {shares.length === 0
                                     ? copy.notSharedYet
                                     : `${shares.length} ${shares.length === 1 ? copy.collaboratorSingular : copy.collaboratorPlural}`}
@@ -279,8 +279,8 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                         }`}
                                 >
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Eye className={`w-4 h-4 ${permissions === "view" ? "text-primary dark:text-mint" : "text-slate-400"}`} />
-                                        <span className={`text-sm font-bold ${permissions === "view" ? "text-primary dark:text-mint" : "text-slate-600 dark:text-slate-400"}`}>
+                                        <Eye className={`w-4 h-4 ${permissions === "view" ? "text-primary dark:text-mint" : "text-slate-500"}`} />
+                                        <span className={`text-sm font-bold ${permissions === "view" ? "text-primary dark:text-mint" : "text-slate-600 dark:text-slate-500"}`}>
                                             {copy.viewOnly}
                                         </span>
                                     </div>
@@ -298,8 +298,8 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                         }`}
                                 >
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Edit3 className={`w-4 h-4 ${permissions === "edit" ? "text-amber-600 dark:text-amber-400" : "text-slate-400"}`} />
-                                        <span className={`text-sm font-bold ${permissions === "edit" ? "text-amber-900 dark:text-amber-100" : "text-slate-600 dark:text-slate-400"}`}>
+                                        <Edit3 className={`w-4 h-4 ${permissions === "edit" ? "text-amber-700 dark:text-amber-400" : "text-slate-500"}`} />
+                                        <span className={`text-sm font-bold ${permissions === "edit" ? "text-amber-900 dark:text-amber-100" : "text-slate-600 dark:text-slate-500"}`}>
                                             {copy.canEdit}
                                         </span>
                                     </div>
@@ -317,7 +317,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                     setShowInviteForm(false)
                                     setEmail("")
                                 }}
-                                className="flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                className="flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                             >
                                 {copy.cancel}
                             </button>
@@ -337,10 +337,10 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                 {shares.length === 0 ? (
                     <div className="text-center py-12">
                         <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                            <Users className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                            <Users className="w-8 h-8 text-slate-500 dark:text-slate-500" />
                         </div>
                         <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{copy.notSharedYet}</h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">{copy.emptyDescription}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-500 max-w-xs mx-auto leading-relaxed">{copy.emptyDescription}</p>
                         {isOwner && !showInviteForm && (
                             <button
                                 onClick={() => setShowInviteForm(true)}
@@ -354,8 +354,8 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                 ) : (
                     <div className="space-y-3">
                         <div className="flex items-center gap-2 mb-4">
-                            <Clock className="w-4 h-4 text-slate-400" />
-                            <p className="text-kicker font-black text-slate-400 uppercase tracking-widest">{walletCopy.accessGrantedTo}</p>
+                            <Clock className="w-4 h-4 text-slate-500" />
+                            <p className="text-kicker font-black text-slate-500 uppercase tracking-widest">{walletCopy.accessGrantedTo}</p>
                         </div>
                         {shares.map((share, index) => (
                             <div
@@ -387,8 +387,8 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                                 <p className="font-bold text-sm text-slate-900 dark:text-white truncate">{share.name || copy.agent}</p>
                                                 {getPermissionBadge(share.permissions)}
                                             </div>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mb-1">{share.email}</p>
-                                            <div className="flex items-center gap-1.5 text-kicker text-slate-400">
+                                            <p className="text-xs text-slate-500 dark:text-slate-500 truncate mb-1">{share.email}</p>
+                                            <div className="flex items-center gap-1.5 text-kicker text-slate-500">
                                                 <Clock className="w-3 h-3" />
                                                 <span>{getTimeAgo(share.grantedAt)}</span>
                                             </div>

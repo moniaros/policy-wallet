@@ -51,6 +51,14 @@ export const el = {
         aiConsentRequestAction: 'Ζητήστε συγκατάθεση πελάτη',
     },
     // Navigation
+    a11yLabels: {
+        tableView: 'Προβολή λίστας',
+        gridView: 'Προβολή καρτών',
+        timeframeFilter: 'Φίλτρο χρονικού διαστήματος',
+        callClient: 'Κλήση πελάτη',
+        emailClient: 'Αποστολή email στον πελάτη',
+    },
+
     apiErrors: {
         unauthorized: 'Πρέπει να συνδεθείτε ξανά για να συνεχίσετε.',
         forbidden: 'Δεν έχετε πρόσβαση σε αυτό το στοιχείο.',

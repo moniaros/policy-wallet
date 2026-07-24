@@ -73,7 +73,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
                     {t("Δώστε ταυτότητα στην επιχείρησή σας.", "Brand your business.")}
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 text-lg">
+                <p className="text-slate-600 dark:text-slate-500 text-lg">
                     {t(
                         "Προσαρμόστε τον τρόπο που εμφανίζεστε στους πελάτες σας στην εφαρμογή PolicyWallet.",
                         "Customize how you appear to your clients in the PolicyWallet app."
@@ -92,7 +92,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                             {logoPreview ? (
                                 <img src={logoPreview} alt={t("Προεπισκόπηση Λογοτύπου", "Logo Preview")} className="w-full h-full object-cover" />
                             ) : (
-                                <Building className="w-8 h-8 text-slate-400" />
+                                <Building className="w-8 h-8 text-slate-500" />
                             )}
                             <input
                                 type="file"
@@ -126,7 +126,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                             {t("Τηλέφωνο Επιχείρησης", "Business Phone")}
                         </label>
                         <div className="relative">
-                            <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+                            <Phone className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
                             <input id="agencybrandingstep-f1"
                                 type="tel"
                                 placeholder="+30 690 000 0000"
@@ -141,7 +141,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                             {t("Ιστοσελίδα (Προαιρετικό)", "Website (Optional)")}
                         </label>
                         <div className="relative">
-                            <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+                            <Globe className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
                             <input id="agencybrandingstep-f2"
                                 type="url"
                                 placeholder="https://myagency.com"
@@ -158,7 +158,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-all"
+                    className="px-6 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-600 dark:hover:bg-slate-800 transition-all"
                 >
                     {t("Πίσω", "Back")}
                 </button>
@@ -175,7 +175,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
             <button
                 type="button"
                 onClick={onNext}
-                className="w-full text-center text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                className="w-full text-center text-sm text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
             >
                 {t("Παράλειψη προς το παρόν", "Skip for now")}
             </button>

@@ -114,7 +114,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                     <div className="flex items-center justify-between mb-2">
                         <Coins className="w-8 h-8 text-primary dark:text-mint" />
                     </div>
-                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-500 mb-1">
                         {copy.totalUsage[language]}
                     </h3>
                     <p className="text-3xl font-black text-slate-900 dark:text-white">
@@ -127,7 +127,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                     <div className="flex items-center justify-between mb-2">
                         <DollarSign className="w-8 h-8 text-primary dark:text-mint" />
                     </div>
-                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-500 mb-1">
                         {copy.totalCost[language]}
                     </h3>
                     <p className="text-3xl font-black text-slate-900 dark:text-white">
@@ -138,9 +138,9 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 {/* Operations */}
                 <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
                     <div className="flex items-center justify-between mb-2">
-                        <Activity className="w-8 h-8 text-slate-500 dark:text-slate-400" />
+                        <Activity className="w-8 h-8 text-slate-500 dark:text-slate-500" />
                     </div>
-                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-500 mb-1">
                         {copy.operations[language]}
                     </h3>
                     <p className="text-3xl font-black text-slate-900 dark:text-white">
@@ -153,7 +153,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                     <div className="flex items-center justify-between mb-2">
                         <Users className="w-8 h-8 text-[#D97706] dark:text-amber-400" />
                     </div>
-                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-500 mb-1">
                         {copy.activeUsers[language]}
                     </h3>
                     <p className="text-3xl font-black text-slate-900 dark:text-white">
@@ -190,7 +190,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                                         />
                                     </div>
                                 </div>
-                                <span className="ml-4 text-xs text-slate-500 dark:text-slate-400">
+                                <span className="ml-4 text-xs text-slate-500 dark:text-slate-500">
                                     {formatCost(op.cost)}
                                 </span>
                             </div>
@@ -218,7 +218,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                                         <span className={`text-sm font-black ${color} uppercase`}>
                                             {tier.tier}
                                         </span>
-                                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                                        <span className="text-xs text-slate-500 dark:text-slate-500">
                                             {tier.users} users
                                         </span>
                                     </div>
@@ -226,7 +226,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                                         <span className="text-2xl font-black text-slate-900 dark:text-white">
                                             {formatTokens(tier.tokens)}
                                         </span>
-                                        <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+                                        <span className="text-sm font-semibold text-slate-600 dark:text-slate-500">
                                             {formatCost(tier.cost)}
                                         </span>
                                     </div>
@@ -246,16 +246,16 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                     <table className="w-full">
                         <thead>
                             <tr className="border-b-2 border-slate-200 dark:border-slate-700">
-                                <th className="text-left py-3 px-4 text-sm font-bold text-slate-600 dark:text-slate-400">
+                                <th className="text-left py-3 px-4 text-sm font-bold text-slate-600 dark:text-slate-500">
                                     User ID
                                 </th>
-                                <th className="text-right py-3 px-4 text-sm font-bold text-slate-600 dark:text-slate-400">
+                                <th className="text-right py-3 px-4 text-sm font-bold text-slate-600 dark:text-slate-500">
                                     Tokens
                                 </th>
-                                <th className="text-right py-3 px-4 text-sm font-bold text-slate-600 dark:text-slate-400">
+                                <th className="text-right py-3 px-4 text-sm font-bold text-slate-600 dark:text-slate-500">
                                     Cost
                                 </th>
-                                <th className="text-right py-3 px-4 text-sm font-bold text-slate-600 dark:text-slate-400">
+                                <th className="text-right py-3 px-4 text-sm font-bold text-slate-600 dark:text-slate-500">
                                     Operations
                                 </th>
                             </tr>
@@ -275,7 +275,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                                     <td className="py-3 px-4 text-sm font-semibold text-right text-slate-700 dark:text-slate-300">
                                         {formatCost(user.cost)}
                                     </td>
-                                    <td className="py-3 px-4 text-sm text-right text-slate-600 dark:text-slate-400">
+                                    <td className="py-3 px-4 text-sm text-right text-slate-600 dark:text-slate-500">
                                         {user.operations}
                                     </td>
                                 </tr>

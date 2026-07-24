@@ -563,12 +563,12 @@ export function AnalysisCard({
                 <div className="px-6 pt-5">
                     <div className="rounded-xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
                         <div className="flex items-start gap-3">
-                            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
+                            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-bold text-[#B45309] dark:text-amber-400">
+                                <p className="text-sm font-bold text-[#92400E] dark:text-amber-400">
                                     {t.analysis.errors.agentUpgradeRequired}
                                 </p>
-                                <p className="mt-1 text-xs text-[#B45309]/80 dark:text-amber-400/80">
+                                <p className="mt-1 text-xs text-[#92400E]/80 dark:text-amber-400/80">
                                     {t.analysis.errors.agentUpgradeRequiredHint}
                                 </p>
                                 <Link
@@ -682,7 +682,7 @@ export function AnalysisCard({
             {translationWarning && !analysisInProgress && (
                 <div className="px-6 pt-3">
                     <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 dark:border-slate-700/60 dark:bg-slate-800/40">
-                        <p className="text-xs text-slate-600 dark:text-slate-400">
+                        <p className="text-xs text-slate-600 dark:text-slate-500">
                             <span className="font-semibold">{t.analysis.translationIncomplete}:</span>{" "}
                             {t.analysis.translationIncompleteHint}
                         </p>
@@ -772,12 +772,12 @@ export function AnalysisCard({
                     missingArtifacts.includes("gap_results") ? (
                         <div className="text-center py-8">
                             <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
-                                <HelpCircle className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                                <HelpCircle className="w-8 h-8 text-slate-500 dark:text-slate-500" />
                             </div>
                             <p className="text-sm text-slate-700 dark:text-slate-300 font-semibold mb-2">
                                 {t.analysis.gapCheckIncomplete}
                             </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                            <p className="text-xs text-slate-500 dark:text-slate-500">
                                 {t.analysis.gapCheckIncompleteHint}
                             </p>
                         </div>
@@ -786,7 +786,7 @@ export function AnalysisCard({
                         <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-4">
                             <Sparkles className="w-8 h-8 text-primary dark:text-mint" />
                         </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 font-semibold mb-2">
+                        <p className="text-sm text-slate-600 dark:text-slate-500 font-semibold mb-2">
                             {t.analysis.noGaps}
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-500">
@@ -819,7 +819,7 @@ export function AnalysisCard({
                                                     <button
                                                         onClick={() => handleIgnore(gap.id)}
                                                         disabled={ignoring === gap.id}
-                                                        className="p-1.5 rounded-lg text-slate-400 hover:bg-white/50 hover:text-slate-600 dark:hover:bg-slate-800/50 dark:hover:text-slate-300 transition-colors"
+                                                        className="p-1.5 rounded-lg text-slate-500 hover:bg-white/50 hover:text-slate-600 dark:hover:bg-slate-800/50 dark:hover:text-slate-300 transition-colors"
                                                         title={actionCopy.hide}
                                                     >
                                                         <EyeOff className="w-4 h-4" />
@@ -833,7 +833,7 @@ export function AnalysisCard({
 
                                             <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 rounded-lg mb-4">
                                                 <div className="flex items-start gap-2">
-                                                    <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                                    <Lightbulb className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
                                                     <div>
                                                         <p className="text-xs font-bold text-amber-900 dark:text-amber-100 mb-1">
                                                             {t.analysis.recommendation}

@@ -58,7 +58,7 @@ const THREAD_TYPE_LABELS: Record<string, { en: string; el: string }> = {
 const STATUS_STYLES: Record<string, string> = {
     open: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
     resolved: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
-    closed: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
+    closed: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500",
     waiting_agent: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
     waiting_policyholder: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 }
@@ -160,7 +160,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                     <Inbox className="h-5 w-5 text-primary dark:text-mint" />
                     {t.collaboration.inbox.title}
                     {threads.length > 0 && (
-                        <span className="text-xs text-neutral-400 font-normal">({threads.length})</span>
+                        <span className="text-xs text-neutral-500 font-normal">({threads.length})</span>
                     )}
                 </h2>
             </div>
@@ -168,7 +168,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
             {/* Search & Filters */}
             <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
                     <input
                         type="text"
                         value={searchQuery}
@@ -214,7 +214,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
             {/* Waiting on you */}
             {waitingOnYou.length > 0 && (
                 <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-1.5">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-2 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5" />
                         {t.collaboration.inbox.waitingOnYou} ({waitingOnYou.length})
                     </h3>
@@ -264,7 +264,7 @@ function ThreadRow({
         >
             <div className="relative shrink-0">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
-                    <Icon className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
+                    <Icon className="h-4 w-4 text-neutral-600 dark:text-neutral-500" />
                 </div>
                 {thread.unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-kicker font-bold text-white">
@@ -287,18 +287,18 @@ function ThreadRow({
                         {thread.clientName}
                     </span>
                     {thread.lastMessage && (
-                        <span className="text-xs text-neutral-400 truncate">
+                        <span className="text-xs text-neutral-500 truncate">
                             — {thread.lastMessage}
                         </span>
                     )}
                 </div>
             </div>
             <div className="text-right shrink-0">
-                <p className="text-kicker text-neutral-400">
+                <p className="text-kicker text-neutral-500">
                     {formatRelativeDate(thread.lastActivityAt, language as "en" | "el")}
                 </p>
             </div>
-            <ChevronRight className="h-4 w-4 text-neutral-400 shrink-0" />
+            <ChevronRight className="h-4 w-4 text-neutral-500 shrink-0" />
         </button>
     )
 }

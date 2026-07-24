@@ -86,7 +86,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                     <button
                         type="button"
                         onClick={() => setShowPreview(false)}
-                        className="text-neutral-400 hover:text-neutral-600 transition cursor-pointer"
+                        className="text-neutral-500 hover:text-neutral-600 transition cursor-pointer"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -323,7 +323,7 @@ export function ProposalView({
         },
         expired: {
             label: { en: "Expired", el: "Έληξε" },
-            style: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
+            style: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500",
         },
     }
 
@@ -350,7 +350,7 @@ export function ProposalView({
                     <p className="text-2xl font-black text-foreground">
                         {formatCurrencyFull(proposal.premiumAmount, language)}
                     </p>
-                    <p className="text-kicker text-neutral-400">
+                    <p className="text-kicker text-neutral-500">
                         {t.collaboration.proposals.perYear}
                     </p>
                 </div>
@@ -384,7 +384,7 @@ export function ProposalView({
                     <div className="space-y-2">
                         {Object.entries(proposal.comparisonData).map(([key, value]) => (
                             <div key={key} className="flex items-center justify-between text-sm">
-                                <span className="text-neutral-600 dark:text-neutral-400">{key}</span>
+                                <span className="text-neutral-600 dark:text-neutral-500">{key}</span>
                                 <span className="font-medium text-foreground">{String(value)}</span>
                             </div>
                         ))}

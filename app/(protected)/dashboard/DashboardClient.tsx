@@ -113,7 +113,7 @@ export function DashboardClient({
                     <div className="max-w-7xl mx-auto rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm dark:border-amber-800 dark:bg-amber-900/20">
                         <div className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3">
-                                <AlertCircle className="mt-0.5 w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0" />
+                                <AlertCircle className="mt-0.5 w-5 h-5 text-amber-700 dark:text-amber-500 flex-shrink-0" />
                                 <div className="space-y-1">
                                     <p className="text-sm text-amber-900 dark:text-amber-100">
                                         <span className="font-bold">{tb.verifyBannerTitle}</span> {tb.verifyBannerCheckInbox} ({userEmail}) {tb.verifyBannerUnlock}

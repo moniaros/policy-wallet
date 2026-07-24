@@ -94,7 +94,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
             {/* Pending Agents Alert */}
             {pendingAgentsCount > 0 && (
                 <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-center gap-3">
-                    <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    <AlertCircle className="w-5 h-5 text-amber-700 dark:text-amber-400" />
                     <div>
                         <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
                             {pendingAgentsCount} agent{pendingAgentsCount !== 1 ? 's' : ''} pending verification
@@ -279,7 +279,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                     <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                             <span className="text-stone-600 dark:text-stone-400">Open</span>
-                            <span className="font-medium text-amber-600 dark:text-amber-400">
+                            <span className="font-medium text-amber-700 dark:text-amber-400">
                                 {metrics.gaps.open}
                             </span>
                         </div>
@@ -356,7 +356,7 @@ function MetricsCard({ title, value, change, changeLabel, icon, color }: Metrics
     const colorClasses = {
         blue: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint",
         green: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint",
-        purple: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
+        purple: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-500",
         emerald: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint"
     }
 

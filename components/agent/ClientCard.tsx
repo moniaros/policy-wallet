@@ -59,7 +59,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                         {client.policyCount} {t.agentUi.policiesAbbr}
                     </span>
                     {client.nextActionDue && (
-                        <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                        <span className="flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400">
                             <Clock className="h-3 w-3" />
                             {client.nextActionLabel || formatRelativeDate(client.nextActionDue, language)}
                         </span>
@@ -75,13 +75,13 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                             client.protectionScore >= 70
                                 ? "text-[#166534] dark:text-mint"
                                 : client.protectionScore >= 40
-                                    ? "text-amber-600 dark:text-amber-400"
-                                    : "text-red-600 dark:text-red-400"
+                                    ? "text-amber-700 dark:text-amber-400"
+                                    : "text-red-700 dark:text-red-400"
                         }`}
                     >
                         {client.protectionScore}
                     </span>
-                    <span className="text-kicker text-neutral-400">/100</span>
+                    <span className="text-kicker text-neutral-500">/100</span>
                     {(client.gapCount ?? 0) > 0 && (
                         <span className="flex items-center gap-0.5 text-kicker text-red-500">
                             <AlertTriangle className="h-2.5 w-2.5" />
@@ -92,7 +92,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
             )}
 
             {/* Arrow */}
-            <ChevronRight className="h-4 w-4 shrink-0 text-neutral-400" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-neutral-500" />
         </button>
     )
 }
@@ -150,7 +150,7 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
                             <h3 className={`text-xs font-semibold uppercase tracking-wider ${display.color}`}>
                                 {display.label}
                             </h3>
-                            <span className="text-xs text-neutral-400">
+                            <span className="text-xs text-neutral-500">
                                 ({tierClients.length})
                             </span>
                         </div>

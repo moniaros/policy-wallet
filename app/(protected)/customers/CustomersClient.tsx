@@ -111,7 +111,7 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                             {cust_t.title}
                         </h1>
-                        <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
+                        <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-500">
                             {cust_t.subtitle}
                         </p>
                     </div>

@@ -22,7 +22,7 @@ export type StatAccent = "brand" | "positive" | "warning" | "critical" | "neutra
 const CHIP: Record<StatAccent, string> = {
     brand: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
     positive: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
-    warning: "bg-[#FEF3C7] text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300",
+    warning: "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300",
     critical: "bg-[#FEF2F2] text-[#B91C1C] dark:bg-red-900/30 dark:text-red-300",
     neutral: "bg-black/5 text-black/70 dark:bg-white/10 dark:text-white/70",
 }
@@ -30,7 +30,7 @@ const CHIP: Record<StatAccent, string> = {
 const VALUE: Record<StatAccent, string> = {
     brand: "text-foreground",
     positive: "text-primary dark:text-mint",
-    warning: "text-[#B45309] dark:text-amber-300",
+    warning: "text-[#92400E] dark:text-amber-300",
     critical: "text-[#B91C1C] dark:text-red-300",
     neutral: "text-foreground",
 }

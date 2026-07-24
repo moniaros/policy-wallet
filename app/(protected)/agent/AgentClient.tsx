@@ -271,7 +271,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                         {sending ? NO_AGENT_COPY.sending[lang] : NO_AGENT_COPY.sendInvite[lang]}
                                     </button>
                                 </div>
-                                {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
+                                {emailError && <p className="mt-2 text-xs text-red-700">{emailError}</p>}
 
                                 <button
                                     type="button"
@@ -304,7 +304,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                                 {redeeming ? NO_AGENT_COPY.submitting[lang] : NO_AGENT_COPY.submit[lang]}
                                             </button>
                                         </div>
-                                        {codeError && <p className="mt-2 text-xs text-red-600">{codeError}</p>}
+                                        {codeError && <p className="mt-2 text-xs text-red-700">{codeError}</p>}
                                     </div>
                                 )}
                             </>
@@ -565,14 +565,14 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                         {relationshipId && (
                             <div className="mt-6 rounded-2xl border border-dashed border-red-500/25 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div>
-                                    <h3 className="text-sm font-bold text-red-600 dark:text-red-400">{pick(PAGE_COPY.disconnect, language)}</h3>
+                                    <h3 className="text-sm font-bold text-red-700 dark:text-red-400">{pick(PAGE_COPY.disconnect, language)}</h3>
                                     <p className="text-xs text-muted-foreground mt-1 max-w-md">{pick(PAGE_COPY.disconnectDesc, language)}</p>
                                 </div>
                                 <button
                                     type="button"
                                     disabled={isDisconnecting}
                                     onClick={() => setDisconnectConfirmOpen(true)}
-                                    className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
+                                    className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
                                 >
                                     {isDisconnecting ? pick(PAGE_COPY.disconnecting, language) : pick(PAGE_COPY.disconnect, language)}
                                 </button>
@@ -667,13 +667,13 @@ function OverviewTab({
                             {agent.branding?.verified && <ShieldCheck className="w-5 h-5 text-primary dark:text-mint flex-shrink-0" />}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                            <Building2 className="w-3.5 h-3.5 text-neutral-400" />
+                            <Building2 className="w-3.5 h-3.5 text-neutral-500" />
                             <p className="text-sm font-medium text-muted-foreground">
                                 {agent.branding?.agencyName || agent.company || pick(PAGE_COPY.advisorFallback, language)}
                             </p>
                         </div>
                         {agent.branding?.licenseNumber && (
-                            <p className="text-kicker font-bold text-neutral-400 uppercase tracking-widest mt-1">
+                            <p className="text-kicker font-bold text-neutral-500 uppercase tracking-widest mt-1">
                                 License: {agent.branding.licenseNumber}
                             </p>
                         )}
@@ -740,7 +740,7 @@ function OverviewTab({
                                     type="button"
                                     onClick={() => onRevoke(sp.grantId)}
                                     disabled={revokingGrantId === sp.grantId}
-                                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-bold text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 min-h-[36px]"
+                                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 min-h-[36px]"
                                 >
                                     <ShieldOff className="h-3.5 w-3.5" />
                                     {revokingGrantId === sp.grantId

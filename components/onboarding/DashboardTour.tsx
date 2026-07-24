@@ -182,7 +182,7 @@ export default function DashboardTour({ onComplete }: DashboardTourProps) {
                     type="button"
                     onClick={onComplete}
                     aria-label={lang === "el" ? "Κλείσιμο" : "Close"}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    className="absolute top-4 right-4 text-slate-500 hover:text-slate-600 dark:hover:text-slate-200"
                 >
                     <X className="w-4 h-4" />
                 </button>

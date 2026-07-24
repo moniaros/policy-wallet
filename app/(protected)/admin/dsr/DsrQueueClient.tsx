@@ -239,7 +239,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                     {request.status}
                                                 </span>
                                                 {request.errorMessage && (
-                                                    <div className="mt-1 text-xs text-red-600 dark:text-red-400">{request.errorMessage}</div>
+                                                    <div className="mt-1 text-xs text-red-700 dark:text-red-400">{request.errorMessage}</div>
                                                 )}
                                             </td>
                                             <td className="px-4 py-4 text-xs text-stone-600 dark:text-stone-400">{formatDate(request.requestedAt)}</td>
@@ -277,7 +277,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
 
             <section className="bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
                 <div className="p-6 border-b border-stone-200 dark:border-stone-700 flex items-center gap-2">
-                    <ShieldAlert className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    <ShieldAlert className="w-5 h-5 text-amber-700 dark:text-amber-400" />
                     <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Deletion Requests</h2>
                 </div>
 
@@ -319,7 +319,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                     {request.status}
                                                 </span>
                                                 {request.errorMessage && (
-                                                    <div className="mt-1 text-xs text-red-600 dark:text-red-400">{request.errorMessage}</div>
+                                                    <div className="mt-1 text-xs text-red-700 dark:text-red-400">{request.errorMessage}</div>
                                                 )}
                                             </td>
                                             <td className="px-4 py-4 text-xs text-stone-600 dark:text-stone-400">

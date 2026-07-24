@@ -42,7 +42,7 @@ export function Referrals({
             case "pending":
                 return {
                     label: t.referrals.status.pending,
-                    color: "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/50",
+                    color: "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-900/50",
                 }
             default:
                 return {

@@ -154,7 +154,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-kicker font-black text-neutral-400 uppercase tracking-widest mb-3">
+                                    <label className="block text-kicker font-black text-neutral-500 uppercase tracking-widest mb-3">
                                         {t.selectTemplate}
                                     </label>
                                     <div className="grid grid-cols-1 gap-3">

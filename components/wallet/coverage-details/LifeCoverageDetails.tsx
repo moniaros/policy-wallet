@@ -84,7 +84,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
               <CheckCircle2 className="w-3.5 h-3.5" /> {copy.taxFree}
             </span>
           ) : (
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-[#92400E] dark:text-amber-300 border border-amber-200 dark:border-amber-800">
               {copy.taxable}
             </span>
           )}
@@ -159,14 +159,14 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                <AlertTriangle className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
+                <AlertTriangle className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
               </div>
               <div>
-                <span className="text-sm font-semibold text-[#B45309] dark:text-amber-300">{lifeCopy.surrenderValue}</span>
-                <p className="text-xs text-[#B45309]/80 dark:text-amber-400/80">{lifeCopy.surrenderWarning}</p>
+                <span className="text-sm font-semibold text-[#92400E] dark:text-amber-300">{lifeCopy.surrenderValue}</span>
+                <p className="text-xs text-[#92400E]/80 dark:text-amber-400/80">{lifeCopy.surrenderWarning}</p>
               </div>
             </div>
-            <span className="text-sm font-bold text-[#B45309] dark:text-amber-300">{fmt(life.surrenderValue)}</span>
+            <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{fmt(life.surrenderValue)}</span>
           </div>
         </div>
       )}

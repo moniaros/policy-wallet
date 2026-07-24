@@ -89,7 +89,7 @@ export function ProtectionScoreCard({
             : tier.color === "amber"
                 ? "text-amber-500"
                 : tier.color === "orange"
-                    ? "text-orange-500"
+                    ? "text-orange-700"
                     : "text-red-500"
 
     // SVG donut ring
@@ -229,7 +229,7 @@ export function ProtectionScoreCard({
             {profileCompleteness < 80 && (
                 <div className="mt-5 pt-4 border-t border-black/8 dark:border-white/10">
                     <div className="flex items-start gap-3 bg-amber-50/60 dark:bg-amber-900/15 rounded-xl p-3.5">
-                        <Info className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                        <Info className="w-4 h-4 text-amber-700 dark:text-amber-400 mt-0.5 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                             <p className="text-sm text-black/75 dark:text-white/75">
                                 {copy.completeProfile}

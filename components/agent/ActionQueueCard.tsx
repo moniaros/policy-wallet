@@ -88,7 +88,7 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onGapClientCli
             <div className="mb-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        <AlertTriangle className="h-5 w-5 text-amber-700 dark:text-amber-400" />
                         <h2 className="text-base font-bold text-foreground">
                             {t.agentUi.actionQueue}
                         </h2>
@@ -99,7 +99,7 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onGapClientCli
                         )}
                     </div>
                     {urgentCount > 0 && (
-                        <span className="text-xs font-medium text-red-600 dark:text-red-400">
+                        <span className="text-xs font-medium text-red-700 dark:text-red-400">
                             {urgentCount} {t.agentUi.urgent}
                         </span>
                     )}
@@ -196,13 +196,13 @@ function GapsSummaryBanner({
     return (
         <div className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900/40 dark:bg-red-950/20">
             <div className="flex items-center gap-2 mb-2">
-                <Eye className="h-4 w-4 text-red-600 dark:text-red-400" />
+                <Eye className="h-4 w-4 text-red-700 dark:text-red-400" />
                 <p className="text-sm font-semibold text-red-800 dark:text-red-300">
                     {language === "el"
                         ? `${criticalClientsCount} πελάτ${criticalClientsCount === 1 ? "ης" : "ες"} με κρίσιμα κενά`
                         : `${criticalClientsCount} client${criticalClientsCount === 1 ? "" : "s"} with critical gaps`}
                     {highClientsCount > 0 && (
-                        <span className="font-normal text-red-600/70 dark:text-red-400/70">
+                        <span className="font-normal text-red-700/70 dark:text-red-400/70">
                             {" "}
                             {language === "el"
                                 ? `+ ${highClientsCount} υψηλής`
@@ -223,7 +223,7 @@ function GapsSummaryBanner({
                             <span className="font-medium text-red-900 dark:text-red-200 truncate">
                                 {client.clientName}
                             </span>
-                            <span className="shrink-0 ml-2 text-red-600 dark:text-red-400">
+                            <span className="shrink-0 ml-2 text-red-700 dark:text-red-400">
                                 {client.criticalGaps > 0 && (
                                     <span className="inline-flex items-center gap-0.5">
                                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />

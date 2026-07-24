@@ -418,14 +418,14 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 {/* Relationship danger zone */}
                 <div className="mt-6 rounded-2xl border border-dashed border-red-500/25 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <h3 className="text-sm font-bold text-red-600 dark:text-red-400">{PROFILE_COPY.removeCustomer[language]}</h3>
+                        <h3 className="text-sm font-bold text-red-700 dark:text-red-400">{PROFILE_COPY.removeCustomer[language]}</h3>
                         <p className="text-xs text-muted-foreground mt-1 max-w-md">{PROFILE_COPY.removeCustomerDesc[language]}</p>
                     </div>
                     <button
                         type="button"
                         disabled={isRemovingCustomer}
                         onClick={() => setRemoveConfirmOpen(true)}
-                        className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
+                        className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
                     >
                         {isRemovingCustomer ? PROFILE_COPY.removing[language] : PROFILE_COPY.removeCustomer[language]}
                     </button>

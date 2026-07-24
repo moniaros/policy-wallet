@@ -54,6 +54,14 @@ export const en: TranslationKeys = {
     },
 
     // Navigation
+    a11yLabels: {
+        tableView: 'List view',
+        gridView: 'Card view',
+        timeframeFilter: 'Timeframe filter',
+        callClient: 'Call client',
+        emailClient: 'Email client',
+    },
+
     apiErrors: {
         unauthorized: 'Please sign in again to continue.',
         forbidden: 'You do not have access to this item.',

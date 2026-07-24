@@ -40,7 +40,7 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
                     {t("Ας ρυθμίσουμε το γραφείο σας.", "Let's set up your office.")}
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 text-lg">
+                <p className="text-slate-600 dark:text-slate-500 text-lg">
                     {t(
                         "Ορίστε το επαγγελματικό σας προφίλ για να χτίσετε εμπιστοσύνη με τους πελάτες σας και να ενεργοποιήσετε επώνυμες αναφορές.",
                         "Define your professional profile to build trust with clients and enable branded reports."

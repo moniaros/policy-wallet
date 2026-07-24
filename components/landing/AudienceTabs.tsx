@@ -166,7 +166,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     <p className="text-body-sm font-semibold text-[#0F172A]">
                         {t("Τα συμβόλαιά μου", "My Policies")}
                     </p>
-                    <span className="rounded-full bg-[#FEF3C7] px-2.5 py-1 text-micro font-semibold text-[#B45309]">
+                    <span className="rounded-full bg-[#FEF3C7] px-2.5 py-1 text-micro font-semibold text-[#92400E]">
                         1 {t("κενό", "gap")}
                     </span>
                 </div>
@@ -312,7 +312,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                                 {c.name}
                             </span>
                             {c.alert ? (
-                                <span className="flex items-center gap-1 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-semibold text-[#B45309]">
+                                <span className="flex items-center gap-1 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-semibold text-[#92400E]">
                                     <AlertTriangle className="h-2.5 w-2.5" />
                                     {c.renewal}d
                                 </span>

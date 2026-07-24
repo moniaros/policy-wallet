@@ -18,7 +18,7 @@ interface RenewalRemindersListProps {
 // Status pipeline: pending → contacted → renewed / lapsed / cancelled.
 const STATUS_CHIP: Record<string, string> = {
     pending: "bg-[#EFF6FF] text-[#1E40AF] dark:bg-blue-900/30 dark:text-blue-300",
-    contacted: "bg-[#FEF3C7] text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300",
+    contacted: "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300",
     renewed: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
     lapsed: "bg-[#FEF2F2] text-[#B91C1C] dark:bg-red-900/30 dark:text-red-300",
     cancelled: "bg-[#FEF2F2] text-[#B91C1C] dark:bg-red-900/30 dark:text-red-300",

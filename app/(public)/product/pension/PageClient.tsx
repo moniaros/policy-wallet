@@ -57,7 +57,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                                 <p className="font-medium text-[#166534] text-sm">Maturity Options: Lump Sum / Annuity</p>
                             </div>
                             <div className="p-4 bg-amber-50 rounded-lg border border-amber-100 flex gap-3">
-                                <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                                <AlertTriangle className="w-5 h-5 text-amber-700 flex-shrink-0" />
                                 <div>
                                     <p className="font-medium text-amber-900 text-sm">Early Surrender Penalty</p>
                                     <p className="text-xs text-amber-700 mt-1">Applies before year 10 — see terms</p>

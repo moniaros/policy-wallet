@@ -81,7 +81,7 @@ export function ClientOverviewTab({
                         <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                             <Shield className="h-5 w-5 text-primary dark:text-mint" />
                             {t.clientOverview.activePolicies}
-                            <span className="text-xs text-neutral-400 font-normal">({activePolicies.length})</span>
+                            <span className="text-xs text-neutral-500 font-normal">({activePolicies.length})</span>
                         </h3>
                     </div>
                     {activePolicies.length === 0 ? (
@@ -110,12 +110,12 @@ export function ClientOverviewTab({
                                         </p>
                                     </div>
                                     <div className="text-right">
-                                        <div className="flex items-center gap-1 text-xs text-neutral-400">
+                                        <div className="flex items-center gap-1 text-xs text-neutral-500">
                                             <Calendar className="h-3 w-3" />
                                             {formatDateGreek(policy.endDate)}
                                         </div>
                                         {policy.status === "expiring_soon" && (
-                                            <span className="text-kicker font-medium text-amber-600 dark:text-amber-400">
+                                            <span className="text-kicker font-medium text-amber-700 dark:text-amber-400">
                                                 {t.clientOverview.expiringSoon}
                                             </span>
                                         )}
@@ -134,7 +134,7 @@ export function ClientOverviewTab({
                         <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
                             <AlertTriangle className="h-5 w-5 text-amber-500" />
                             {t.clientOverview.identifiedGaps}
-                            <span className="text-xs text-neutral-400 font-normal">({openOpportunities.length})</span>
+                            <span className="text-xs text-neutral-500 font-normal">({openOpportunities.length})</span>
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
                             {openOpportunities.map((opp) => {
@@ -159,7 +159,7 @@ export function ClientOverviewTab({
                                                         ? "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
                                                         : opp.conversionLikelihood === "medium"
                                                             ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                                                            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+                                                            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-500"
                                                 }`}>
                                                     <ArrowUpRight className="w-2.5 h-2.5" />
                                                     {opp.conversionScore != null ? `${opp.conversionScore}%` : opp.conversionLikelihood}

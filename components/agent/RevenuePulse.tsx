@@ -80,7 +80,7 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
                                 <div className={`mt-1 flex items-center gap-0.5 text-xs font-medium ${
                                     stat.change >= 0
                                         ? "text-[#166534] dark:text-mint"
-                                        : "text-red-600 dark:text-red-400"
+                                        : "text-red-700 dark:text-red-400"
                                 }`}>
                                     {stat.change >= 0 ? (
                                         <ArrowUp className="h-3 w-3" />

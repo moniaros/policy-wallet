@@ -65,7 +65,7 @@ export function Field({ label, error, hint, required = false, children, classNam
                 {/* role="alert" so the message is announced when it appears, not
                     only when the field is next focused. */}
                 {error ? (
-                    <p id={errorId} role="alert" className="ml-1 text-xs font-semibold text-red-600 dark:text-red-400">
+                    <p id={errorId} role="alert" className="ml-1 text-xs font-semibold text-red-700 dark:text-red-400">
                         {error}
                     </p>
                 ) : hint ? (

@@ -94,7 +94,7 @@ const URGENCY_STYLES: Record<
         bg: "bg-orange-50/50 dark:bg-orange-950/20",
         badge: "text-orange-700 dark:text-orange-300",
         badgeBg: "bg-orange-100 dark:bg-orange-900/30",
-        icon: "text-orange-500",
+        icon: "text-orange-700",
     },
     medium: {
         border: "border-amber-200 dark:border-amber-800",
@@ -108,7 +108,7 @@ const URGENCY_STYLES: Record<
         bg: "bg-black/[0.02] dark:bg-white/[0.02]",
         badge: "text-slate-600 dark:text-slate-300",
         badgeBg: "bg-slate-100 dark:bg-slate-800",
-        icon: "text-slate-400",
+        icon: "text-slate-500",
     },
 }
 
@@ -221,7 +221,7 @@ export function RecommendationCards({
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100/80 dark:bg-amber-900/25">
-                    <Lightbulb className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                    <Lightbulb className="h-5 w-5 text-amber-700 dark:text-amber-400" />
                 </div>
                 <div className="flex-1">
                     <h2 className="text-lg font-semibold text-black dark:text-white">

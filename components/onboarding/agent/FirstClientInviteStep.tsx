@@ -50,7 +50,7 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
                     {t("Ενεργοποιήστε τον πρώτο σας πελάτη.", "Activate your first client.")}
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 text-lg">
+                <p className="text-slate-600 dark:text-slate-500 text-lg">
                     {t(
                         "Στείλτε πρόσκληση σε έναν πελάτη για να τον εντάξετε άμεσα στο ψηφιακό σας γραφείο.",
                         "Send an invite to a client to onboard them to your digital office immediately."
@@ -107,7 +107,7 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
             <div className="flex gap-3 pt-4">
                 <button
                     onClick={onBack}
-                    className="px-6 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-all"
+                    className="px-6 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-600 dark:hover:bg-slate-800 transition-all"
                 >
                     {t("Πίσω", "Back")}
                 </button>

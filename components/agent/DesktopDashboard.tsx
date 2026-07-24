@@ -242,7 +242,7 @@ export function DesktopDashboard({
                                                 <p className="text-micro text-muted-foreground truncate">
                                                     {activity.details}
                                                 </p>
-                                                <p className="text-kicker text-neutral-400 mt-0.5">
+                                                <p className="text-kicker text-neutral-500 mt-0.5">
                                                     {formatRelativeDate(activity.timestamp, language)}
                                                 </p>
                                             </div>

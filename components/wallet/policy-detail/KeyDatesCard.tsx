@@ -134,7 +134,7 @@ export function KeyDatesCard({
                         <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">{copy.expiresIn}</p>
                         <p
                             className={`text-sm font-bold ${
-                                isExpiringSoon ? "text-[#B45309] dark:text-amber-400" : "text-black dark:text-white"
+                                isExpiringSoon ? "text-[#92400E] dark:text-amber-400" : "text-black dark:text-white"
                             }`}
                         >
                             {daysLeft} {copy.days}
@@ -165,8 +165,8 @@ export function KeyDatesCard({
 
             {hasAutoRenewal && (
                 <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 px-4 py-3 dark:border-amber-900/40 dark:bg-amber-950/20">
-                    <RefreshCw className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
-                    <p className="text-xs font-medium leading-relaxed text-[#B45309] dark:text-amber-300">{copy.autoRenewalNote}</p>
+                    <RefreshCw className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
+                    <p className="text-xs font-medium leading-relaxed text-[#92400E] dark:text-amber-300">{copy.autoRenewalNote}</p>
                 </div>
             )}
 

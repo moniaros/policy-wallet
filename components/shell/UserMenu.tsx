@@ -137,7 +137,7 @@ export function UserMenu({
                         >
                             <span>{t.userMenu.notifications}</span>
                             {notificationCount > 0 && (
-                                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
                                     {notificationCount}
                                 </span>
                             )}
@@ -198,7 +198,7 @@ export function UserMenu({
                         <button
                             onClick={handleLogout}
                             disabled={isPending}
-                            className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700 disabled:opacity-50"
+                            className="w-full px-4 py-2 text-left text-sm text-red-700 dark:text-red-400 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700 disabled:opacity-50"
                         >
                             {isPending ? t.common.loading : t.userMenu.logout}
                         </button>

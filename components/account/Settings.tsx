@@ -270,7 +270,7 @@ export function Settings({
                                         </button>
                                     </div>
                                     {emailError && (
-                                        <p id="settings-email-error" role="alert" className="mt-2 text-caption font-semibold text-red-600 dark:text-red-400">
+                                        <p id="settings-email-error" role="alert" className="mt-2 text-caption font-semibold text-red-700 dark:text-red-400">
                                             {t.invite.emailInvalid}
                                         </p>
                                     )}
@@ -514,7 +514,7 @@ export function Settings({
                     ) : (
                         <div className="p-6 border-2 border-dashed border-red-500/10 bg-red-50/20 dark:bg-red-900/5 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6 group">
                             <div className="max-w-md text-center md:text-left">
-                                <h4 className="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-3">{t.settings.nuclearDeletion}</h4>
+                                <h4 className="text-xs font-black text-red-700 uppercase tracking-[0.2em] mb-3">{t.settings.nuclearDeletion}</h4>
                                 <p className="text-micro text-black/60 dark:text-white/60 font-bold leading-relaxed">
                                     {t.settings.nuclearDesc}
                                 </p>

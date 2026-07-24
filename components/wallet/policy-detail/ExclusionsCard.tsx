@@ -71,7 +71,7 @@ const RISK_STYLES: Record<string, { border: string; bg: string; badge: string; t
     warning: {
         border: "border-amber-200 dark:border-amber-900/40",
         bg: "bg-[#FEF3C7]/50 dark:bg-amber-950/15",
-        badge: "bg-amber-100 text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300",
+        badge: "bg-amber-100 text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300",
         text: "text-black/75 dark:text-white/80",
     },
     critical: {
@@ -178,7 +178,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                                         </span>
                                                     )}
                                                     {condition.userActionRequired && (
-                                                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300">
+                                                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300">
                                                             {copy.actionRequiredChip}
                                                         </span>
                                                     )}
@@ -229,7 +229,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
 
                     <div className="flex items-start gap-2 rounded-xl border border-amber-200/50 bg-[#FEF3C7]/40 px-3 py-2.5 dark:border-amber-900/30 dark:bg-amber-950/10">
                         <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-500 dark:text-amber-400" />
-                        <p className="text-xs leading-relaxed text-[#B45309] dark:text-amber-400">{disclaimer}</p>
+                        <p className="text-xs leading-relaxed text-[#92400E] dark:text-amber-400">{disclaimer}</p>
                     </div>
                 </div>
             )}

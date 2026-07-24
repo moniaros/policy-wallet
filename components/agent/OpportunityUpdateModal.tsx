@@ -69,14 +69,14 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             <h2 id="opportunity-update-title" className="text-2xl font-bold text-foreground">
                                 {tt.title}
                             </h2>
-                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-500 mt-1">
                                 {opportunity.customerName} • {opportunity.title}
                             </p>
                         </div>
                         <button
                             onClick={onClose}
                             aria-label={t.common.close}
-                            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
+                            className="text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -100,7 +100,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                     onClick={() => setStatus(s.value)}
                                     className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${status === s.value
                                             ? s.color
-                                            : 'bg-neutral-50 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400 border-2 border-transparent hover:border-neutral-300 dark:hover:border-neutral-600'
+                                            : 'bg-neutral-50 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-500 border-2 border-transparent hover:border-neutral-300 dark:hover:border-neutral-600'
                                         }`}
                                 >
                                     {s.label}

@@ -139,7 +139,7 @@ export default async function UpgradeSuccessPage({
         <div className="flex min-h-[70vh] items-center justify-center px-4">
             <div className="pw-card w-full max-w-md p-8 text-center">
                 <div className={`mx-auto grid h-16 w-16 place-items-center rounded-full ${activated ? "bg-primary-soft dark:bg-primary/15" : "bg-amber-100 dark:bg-amber-900/30"}`}>
-                    <CheckCircle2 className={`h-8 w-8 ${activated ? "text-primary dark:text-mint" : "text-amber-600 dark:text-amber-400"}`} />
+                    <CheckCircle2 className={`h-8 w-8 ${activated ? "text-primary dark:text-mint" : "text-amber-700 dark:text-amber-400"}`} />
                 </div>
                 <h1 className="mt-5 text-2xl font-black text-foreground">
                     {reportUnlock

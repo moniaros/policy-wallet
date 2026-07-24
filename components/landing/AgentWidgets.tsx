@@ -111,7 +111,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                                             c.type === "critical"
                                                 ? "bg-[#FEF2F2] text-[#B91C1C]"
                                                 : c.type === "warn"
-                                                  ? "bg-[#FEF3C7] text-[#B45309]"
+                                                  ? "bg-[#FEF3C7] text-[#92400E]"
                                                   : "bg-[#F0FDF4] text-[#166534]"
                                         }`}
                                     >
@@ -179,7 +179,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
         },
         {
             severity: "HIGH",
-            textColor: "text-[#B45309]",
+            textColor: "text-[#92400E]",
             bg: "bg-[#FFFBEB]",
             border: "border-[#FDE68A]",
             label: t("Κατοικία — λείπει σεισμική κάλυψη", "Home — missing earthquake coverage"),
@@ -294,7 +294,7 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
 
     const cfg = {
         critical: { border: "border-[#FECACA]", chip: "bg-[#FEF2F2] text-[#B91C1C]" },
-        warn: { border: "border-[#FDE68A]", chip: "bg-[#FEF3C7] text-[#B45309]" },
+        warn: { border: "border-[#FDE68A]", chip: "bg-[#FEF3C7] text-[#92400E]" },
         ok: { border: "border-[#E2E8F0]", chip: "bg-[#F0FDF4] text-[#166534]" },
     }
 

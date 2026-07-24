@@ -131,7 +131,9 @@
   --pw-surface-light: #f9fafb;
   --pw-text-primary-dark: #ffffff;
   --pw-text-primary-light: #0F172A;
-  --pw-text-muted: #64748b;
+  /* Same correction as --muted-foreground: slate-500 measured 3.25:1 on the
+     product's off-white surfaces, well under the 4.5:1 AA floor. */
+  --pw-text-muted: #5b6a7a;
   --pw-border: #E2E8F0;
   --pw-radius-button: 9999px;
   --pw-radius-card: 16px;
@@ -162,7 +164,11 @@
   /* Muted */
   --muted: #f1f5f9;
   /* slate-100 */
-  --muted-foreground: #64748b;
+  /* Darkened from slate-500 #64748b, which axe measured at 4.37–4.48:1 on the
+     product's tinted card surfaces — under the 4.5:1 AA floor for normal text.
+     Pure white arithmetic said 4.76 and looked fine; the real backgrounds are
+     not pure white. This keeps headroom on both (5.54 on white, 5.31 tinted). */
+  --muted-foreground: #5b6a7a;
   /* slate-500 */
 
   /* Accent */

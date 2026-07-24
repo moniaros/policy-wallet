@@ -55,7 +55,17 @@ export function BranchCoverageMap({
                         title={entry.stateLabel}
                         className={cn(
                             "flex min-w-[128px] snap-start items-center gap-2 rounded-xl border border-black/10 bg-white px-3 py-2.5 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40 sm:min-w-0",
-                            entry.state === "neutral" && "opacity-70 hover:opacity-100"
+                            // "neutral" means the user holds NO cover in this branch.
+                            // This used to be `opacity-70`, which multiplied against the
+                            // label's own text-black/75 and pushed it to 4.35:1 — under
+                            // the AA floor — and did so on precisely the tiles a
+                            // policyholder most needs to read: their uncovered branches.
+                            // Container opacity is invisible to a class-level contrast
+                            // audit, because text-black/75 is fine on its own.
+                            // The state is already carried by the dot, which has its own
+                            // aria-label, so de-emphasise the SURFACE and leave the text
+                            // at full strength.
+                            entry.state === "neutral" && "border-dashed bg-black/[0.02] dark:bg-white/[0.03]"
                         )}
                     >
                         <entry.icon className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" aria-hidden />

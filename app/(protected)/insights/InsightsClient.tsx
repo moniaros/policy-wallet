@@ -275,7 +275,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                     <span className="text-3xl font-black text-foreground">
                                         {data.portfolioHealth.totalCustomers}
                                     </span>
-                                    <span className="text-micro font-semibold uppercase tracking-wider text-neutral-400">
+                                    <span className="text-micro font-semibold uppercase tracking-wider text-neutral-500">
                                         {p.customers}
                                     </span>
                                 </div>
@@ -289,7 +289,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span className="text-lg font-black text-foreground">{seg.value}</span>
-                                            <span className="text-xs font-bold text-neutral-400">
+                                            <span className="text-xs font-bold text-neutral-500">
                                                 {data.portfolioHealth.totalCustomers > 0
                                                     ? `${Math.round((seg.value / data.portfolioHealth.totalCustomers) * 100)}%`
                                                     : "0%"}
@@ -326,7 +326,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                     {getLobLabel(item.lineOfBusiness, lang, t)}
                                                 </span>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs font-bold text-neutral-400">{item.count} {p.policiesAbbr}</span>
+                                                    <span className="text-xs font-bold text-neutral-500">{item.count} {p.policiesAbbr}</span>
                                                     <span className="text-sm font-black text-foreground">{fmt(item.totalPremium, lang)}</span>
                                                 </div>
                                             </div>
@@ -355,7 +355,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <Target className="w-5 h-5 text-primary dark:text-mint" />
                             {p.opportunityFunnel}
                         </h2>
-                        <p className="text-xs text-neutral-400 mb-6">
+                        <p className="text-xs text-neutral-500 mb-6">
                             {p.conversionRate}:{" "}
                             <span className="font-black text-primary dark:text-mint">{data.opportunityMetrics.conversionRate}%</span>
                             {" · "}
@@ -402,7 +402,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <CalendarClock className="w-5 h-5 text-amber-500" />
                             {p.renewalTimeline}
                         </h2>
-                        <p className="text-xs text-neutral-400 mb-5">
+                        <p className="text-xs text-neutral-500 mb-5">
                             {p.expiringWithin90}
                         </p>
 
@@ -466,7 +466,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                             {[
                                 { label: p.tracked, value: data.renewalMetrics.totalTracked, color: "text-foreground" },
-                                { label: p.pending, value: data.renewalMetrics.pendingRenewals, color: "text-amber-600 dark:text-amber-400" },
+                                { label: p.pending, value: data.renewalMetrics.pendingRenewals, color: "text-amber-700 dark:text-amber-400" },
                                 { label: p.overdue, value: data.renewalMetrics.overdueRenewals, color: "text-rose-600 dark:text-rose-400" },
                                 { label: p.renewed, value: data.renewalMetrics.renewedThisMonth, color: "text-[#166534] dark:text-mint" },
                                 { label: p.lapsed, value: data.renewalMetrics.lapsedThisMonth, color: "text-rose-600 dark:text-rose-400" },
@@ -475,7 +475,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             ].map((metric) => (
                                 <div key={metric.label} className="text-center">
                                     <p className={`text-2xl font-black ${metric.color}`}>{metric.value}</p>
-                                    <p className="text-kicker font-bold text-neutral-400 uppercase tracking-widest mt-1">{metric.label}</p>
+                                    <p className="text-kicker font-bold text-neutral-500 uppercase tracking-widest mt-1">{metric.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -496,7 +496,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         <ShieldAlert className="w-5 h-5 text-red-500" />
                         {p.coverageGaps}
                     </h2>
-                    <p className="text-xs text-neutral-400 mb-5">
+                    <p className="text-xs text-neutral-500 mb-5">
                         {p.recentGapsDesc}
                     </p>
 
@@ -523,7 +523,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                             {gap.title}
                                         </p>
                                         <p className="text-xs text-muted-foreground truncate">{gap.customerName}</p>
-                                        <p className="text-micro text-neutral-400 mt-2">
+                                        <p className="text-micro text-neutral-600 dark:text-neutral-400 mt-2">
                                             {gap.policyNumber} · {new Date(gap.detectedAt).toLocaleDateString(locale)}
                                         </p>
                                     </div>

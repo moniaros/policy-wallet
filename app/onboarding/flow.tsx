@@ -577,7 +577,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                         </button>
                                     </div>
                                     {advisorEmailError && (
-                                        <p className="text-xs text-red-600">{advisorEmailError}</p>
+                                        <p className="text-xs text-red-700">{advisorEmailError}</p>
                                     )}
 
                                     {/* Secondary — invite code */}
@@ -610,7 +610,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                                 </button>
                                             </div>
                                             {inviteError && (
-                                                <p className="text-xs text-red-600">{inviteError}</p>
+                                                <p className="text-xs text-red-700">{inviteError}</p>
                                             )}
                                         </div>
                                     )}

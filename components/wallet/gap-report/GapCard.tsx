@@ -80,7 +80,7 @@ export function GapCard({ item, lang, copy, onIgnore, onNotify, ignoring, notify
                     {suggestion && (
                         <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-900/30">
                             <div className="flex items-start gap-2">
-                                <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                                <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-400" />
                                 <div>
                                     <p className="mb-1 text-xs font-bold text-amber-900 dark:text-amber-100">
                                         {copy.recommendation}

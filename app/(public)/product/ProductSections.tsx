@@ -184,14 +184,14 @@ export function ProductSections({ language }: { language: Language }) {
                                             className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] ${status === "warn" ? "bg-amber-100" : "bg-[#DCEBDA]"}`}
                                         >
                                             <Icon
-                                                className={`h-4.5 w-4.5 ${status === "warn" ? "text-amber-600" : "text-[#29685B]"}`}
+                                                className={`h-4.5 w-4.5 ${status === "warn" ? "text-amber-700" : "text-[#29685B]"}`}
                                             />
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <p className="truncate text-body font-medium text-[#0F172A]">
                                                 {t(nameEl, nameEn)}
                                             </p>
-                                            <p className={`text-caption ${status === "warn" ? "text-amber-600" : "text-[#64748B]"}`}>
+                                            <p className={`text-caption ${status === "warn" ? "text-amber-700" : "text-[#64748B]"}`}>
                                                 {t(expEl, expEn)}
                                             </p>
                                         </div>

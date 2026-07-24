@@ -36,7 +36,7 @@ export function RouteError({
         <div className="pw-page-shell">
             <div className="mx-auto flex max-w-md flex-col items-center px-4 py-24 text-center">
                 <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100/80 dark:bg-amber-900/25">
-                    <AlertTriangle className="h-7 w-7 text-amber-600 dark:text-amber-400" />
+                    <AlertTriangle className="h-7 w-7 text-amber-700 dark:text-amber-400" />
                 </div>
                 <h1 className="text-xl font-semibold text-black dark:text-white">
                     {t.errors.somethingWentWrong}

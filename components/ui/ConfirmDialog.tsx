@@ -73,7 +73,7 @@ export function ConfirmDialog({
             <div className="p-6 md:p-8">
                 <div className="flex items-start gap-4">
                     {destructive && (
-                        <div className="rounded-2xl bg-red-50 p-3 text-red-600 dark:bg-red-950/40 dark:text-red-400">
+                        <div className="rounded-2xl bg-red-50 p-3 text-red-700 dark:bg-red-950/40 dark:text-red-400">
                             <AlertTriangle aria-hidden="true" className="h-6 w-6" />
                         </div>
                     )}

@@ -69,7 +69,7 @@ export function AiConsentModal({ isOpen, onClose, onConsented, source = "ai_cons
                 </div>
 
                 {failed && (
-                    <p role="alert" className="mt-4 text-sm font-semibold text-red-600 dark:text-red-400">{t.common.aiConsentSaveFailed}</p>
+                    <p role="alert" className="mt-4 text-sm font-semibold text-red-700 dark:text-red-400">{t.common.aiConsentSaveFailed}</p>
                 )}
 
                 <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

@@ -61,9 +61,9 @@ export function MergeRequestBanner({
     return (
         <div className="mb-5 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
             <div className="flex items-start gap-3">
-                <GitMerge className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
+                <GitMerge className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
                 <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-[#B45309] dark:text-amber-300">{copy.title}</p>
+                    <p className="text-sm font-bold text-[#92400E] dark:text-amber-300">{copy.title}</p>
                     <p className="mt-1 text-xs leading-relaxed text-amber-900/90 dark:text-amber-200/90">
                         {copy.body} {requestedByLabel} · {policyLabel}
                     </p>

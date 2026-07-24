@@ -485,7 +485,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                                         <span className="text-xs text-black/60 dark:text-white/50">
                                             {event.date}
                                         </span>
-                                        <button type="button" onClick={() => removeLifeEvent(i)} aria-label={t("Αφαίρεση γεγονότος", "Remove event")} className="text-red-400 hover:text-red-600 cursor-pointer">
+                                        <button type="button" onClick={() => removeLifeEvent(i)} aria-label={t("Αφαίρεση γεγονότος", "Remove event")} className="text-red-400 hover:text-red-700 cursor-pointer">
                                             <Trash2 className="h-3.5 w-3.5" />
                                         </button>
                                     </div>

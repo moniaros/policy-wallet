@@ -74,7 +74,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-100 dark:bg-amber-900/30">
-                        <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        <Trophy className="h-5 w-5 text-amber-700 dark:text-amber-400" />
                     </div>
                     <div>
                         <h3 className="text-sm font-bold text-black dark:text-white">
@@ -86,7 +86,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
                     </div>
                 </div>
                 <div className="text-right">
-                    <span className="text-lg font-black text-amber-600 dark:text-amber-400">
+                    <span className="text-lg font-black text-amber-700 dark:text-amber-400">
                         {progressPct}%
                     </span>
                 </div>
@@ -147,7 +147,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
                                         {language === "el" ? ach.descriptionEl : ach.descriptionEn}
                                     </p>
                                     {ach.unlocked && ach.unlockedAt && (
-                                        <p className="mt-1 text-kicker text-amber-600 dark:text-amber-400">
+                                        <p className="mt-1 text-kicker text-amber-700 dark:text-amber-400">
                                             {formatDate(ach.unlockedAt)}
                                         </p>
                                     )}

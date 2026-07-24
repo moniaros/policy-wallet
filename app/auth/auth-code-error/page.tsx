@@ -29,7 +29,7 @@ export default function AuthCodeErrorPage() {
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
                     {t("Η ταυτοποίηση απέτυχε", "Authentication Failed")}
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 mb-2">
+                <p className="text-slate-600 dark:text-slate-500 mb-2">
                     {t("Παρουσιάστηκε πρόβλημα κατά τη σύνδεσή σας.", "There was a problem signing you in.")}
                 </p>
                 <p className="text-sm text-slate-500 mb-8">

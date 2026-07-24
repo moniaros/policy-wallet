@@ -408,13 +408,13 @@ export function CollaborationTimeline({
                                             <div className="flex items-center gap-1.5">
                                                 <p className="font-semibold text-neutral-800 dark:text-neutral-200">{item.sender.name || item.sender.email}</p>
                                                 {item.isPrivate && (
-                                                    <span className="inline-flex items-center gap-0.5 text-kicker font-bold text-amber-600 dark:text-amber-400">
+                                                    <span className="inline-flex items-center gap-0.5 text-kicker font-bold text-amber-700 dark:text-amber-400">
                                                         <Lock className="w-3 h-3" />
                                                         {t.collaboration.timeline.privateLabel}
                                                     </span>
                                                 )}
                                                 {item.messageType === "system" && (
-                                                    <span className="text-kicker font-bold text-neutral-400 uppercase">{t.collaboration.timeline.system}</span>
+                                                    <span className="text-kicker font-bold text-neutral-500 uppercase">{t.collaboration.timeline.system}</span>
                                                 )}
                                             </div>
                                             <p className="text-neutral-600 dark:text-neutral-300">{item.body}</p>
@@ -475,7 +475,7 @@ export function CollaborationTimeline({
                                                         onChange={(e) => setIsPrivateMessage(e.target.checked)}
                                                         className="h-4 w-4 rounded border-neutral-300 accent-amber-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                                                     />
-                                                    <span className="text-kicker font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
+                                                    <span className="text-kicker font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
                                                         <Lock className="w-3 h-3" />
                                                         {t.collaboration.timeline.privateNote}
                                                     </span>

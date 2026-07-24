@@ -109,7 +109,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                         <span
                                             className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
                                                 p.type === "expiring"
-                                                    ? "bg-[#FEF3C7] text-[#B45309]"
+                                                    ? "bg-[#FEF3C7] text-[#92400E]"
                                                     : "bg-[#F0FDF4] text-[#166534]"
                                             }`}
                                         >
@@ -150,7 +150,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                             <p className="text-caption font-semibold text-[#92400E]">
                                 {t("Κενό κάλυψης εντοπίστηκε", "Coverage gap detected")}
                             </p>
-                            <p className="text-micro text-[#B45309]">
+                            <p className="text-micro text-[#92400E]">
                                 {t(
                                     "Κατοικία — λείπει κάλυψη πλημμύρας",
                                     "Home — missing flood coverage"

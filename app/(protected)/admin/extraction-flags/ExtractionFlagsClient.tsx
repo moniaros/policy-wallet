@@ -62,7 +62,7 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
             {/* Header */}
             <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/30">
-                    <Flag className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                    <Flag className="h-5 w-5 text-amber-700 dark:text-amber-400" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-black text-black dark:text-white">Extraction Flags</h1>

@@ -274,7 +274,7 @@ export default function PricingPage({
                         </div>
                     </div>
 
-                    <div className="mb-12 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 dark:text-slate-400">
+                    <div className="mb-12 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 dark:text-slate-500">
                         <div className="flex items-center gap-2">
                             <Shield className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             <span>{labels.secure[language]}</span>

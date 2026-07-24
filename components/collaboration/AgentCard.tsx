@@ -88,7 +88,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         {agent.phone && (
                             <a
                                 href={`tel:${agent.phone}`}
-                                className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition"
+                                className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-500 hover:text-primary dark:hover:text-mint transition"
                             >
                                 <Phone className="h-3.5 w-3.5" />
                                 {agent.phone}
@@ -96,7 +96,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         )}
                         <a
                             href={`mailto:${agent.email}`}
-                            className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition"
+                            className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-500 hover:text-primary dark:hover:text-mint transition"
                         >
                             <Mail className="h-3.5 w-3.5" />
                             {agent.email}
@@ -106,7 +106,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                                 href={agent.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition"
+                                className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-500 hover:text-primary dark:hover:text-mint transition"
                             >
                                 <Globe className="h-3.5 w-3.5" />
                                 {t.agentUi.website}
@@ -120,7 +120,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
             {/* License footer */}
             {agent.licenseNumber && (
                 <div className="mt-4 pt-3 border-t border-neutral-200/60 dark:border-neutral-700/60">
-                    <p className="text-kicker text-neutral-400 dark:text-neutral-500">
+                    <p className="text-kicker text-neutral-500 dark:text-neutral-500">
                         {t.agentUi.eaeeLicenseNo}: {agent.licenseNumber}
                     </p>
                 </div>

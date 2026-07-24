@@ -77,7 +77,7 @@ const getCategoryDetails = (category: ActivityCategory, type: string) => {
             return {
                 icon: Bell,
                 bgClass: "bg-muted",
-                textClass: "text-neutral-600 dark:text-neutral-400"
+                textClass: "text-neutral-600 dark:text-neutral-500"
             }
     }
 }
@@ -139,7 +139,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                     className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
                                         filter === tab.id
                                             ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-sm"
-                                            : "bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                                            : "bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white"
                                     }`}
                                 >
                                     {tab.label}
@@ -207,7 +207,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                                                     {event.description[isEl ? "el" : "en"]}
                                                                 </p>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 text-neutral-400 dark:text-neutral-500 text-micro font-semibold tracking-wider uppercase flex-shrink-0 whitespace-nowrap">
+                                                            <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-500 text-micro font-semibold tracking-wider uppercase flex-shrink-0 whitespace-nowrap">
                                                                 <Clock className="w-3.5 h-3.5" />
                                                                 {formatRelativeTime(event.timestamp, t, language || "en")}
                                                             </div>
@@ -217,7 +217,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                                         {event.customerName && (
                                                             <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800/60 flex items-center justify-between">
                                                                 <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-                                                                    <Users className="w-3.5 h-3.5 text-neutral-400" />
+                                                                    <Users className="w-3.5 h-3.5 text-neutral-500" />
                                                                     {event.customerName}
                                                                 </div>
                                                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">

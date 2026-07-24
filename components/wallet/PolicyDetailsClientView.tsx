@@ -518,8 +518,8 @@ export function PolicyDetailsClient({
                     shown until a reviewing agent confirms the AI-extracted data */}
                 {canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
                     <div className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
-                        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
-                        <p className="min-w-0 flex-1 text-sm font-medium text-[#B45309] dark:text-amber-400">
+                        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
+                        <p className="min-w-0 flex-1 text-sm font-medium text-[#92400E] dark:text-amber-400">
                             {t.wallet.review.agentBannerCta}
                         </p>
                         <Link

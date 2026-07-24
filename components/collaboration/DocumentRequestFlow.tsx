@@ -128,7 +128,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition cursor-pointer"
+                            className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition cursor-pointer"
                         >
                             {t.collaboration.documentRequests.cancel}
                         </button>
@@ -214,7 +214,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             {/* Urgency badge */}
             {request.urgency === "urgent" && (
                 <div className="flex items-center gap-1.5 mb-3">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                    <AlertTriangle className="h-4 w-4 text-red-700" />
                     <span className="text-xs font-bold text-red-700 dark:text-red-400 uppercase">
                         {t.collaboration.documentRequests.urgent}
                     </span>
@@ -235,7 +235,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             )}
 
             {request.dueDate && (
-                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center gap-1">
+                <p className="text-xs text-amber-700 dark:text-amber-400 mt-2 flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {t.collaboration.documentRequests.due}: {formatDateGreek(request.dueDate)}
                 </p>
@@ -244,12 +244,12 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             {/* Error feedback */}
             {error && (
                 <div className="flex items-center gap-2 mt-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 px-3 py-2">
-                    <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
+                    <AlertTriangle className="h-4 w-4 text-red-700 dark:text-red-400 shrink-0" />
                     <p className="text-xs text-red-700 dark:text-red-400">{error}</p>
                     <button
                         type="button"
                         onClick={() => setError(null)}
-                        className="ml-auto text-red-400 hover:text-red-600 dark:hover:text-red-300"
+                        className="ml-auto text-red-400 hover:text-red-700 dark:hover:text-red-300"
                     >
                         <X className="h-3 w-3" />
                     </button>
@@ -315,9 +315,9 @@ export function DocumentRequestCard({ request, viewerRole, agentName, onRespond 
         expired: AlertTriangle,
     }
     const statusColors: Record<string, string> = {
-        pending: "text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400",
+        pending: "text-amber-700 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400",
         uploaded: "text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint",
-        expired: "text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400",
+        expired: "text-red-700 bg-red-50 dark:bg-red-900/30 dark:text-red-400",
     }
 
     const StatusIcon = statusIcons[request.status] || Clock

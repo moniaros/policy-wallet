@@ -336,7 +336,7 @@ function MenuItem({
             className={cn(
                 'flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-body-sm font-medium transition-colors',
                 destructive
-                    ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/15'
+                    ? 'text-red-700 hover:bg-red-50 dark:hover:bg-red-900/15'
                     : 'text-black/80 hover:bg-black/5 dark:text-white/85 dark:hover:bg-white/10'
             )}
         >

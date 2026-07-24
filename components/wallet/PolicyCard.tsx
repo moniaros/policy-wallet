@@ -56,7 +56,7 @@ function CardAction({
             aria-label={label}
             title={label}
             className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${destructive
-                ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
+                ? 'text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
         >

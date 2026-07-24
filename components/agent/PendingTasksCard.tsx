@@ -25,7 +25,7 @@ export function PendingTasksCard({ items }: PendingTasksCardProps) {
                 <ListChecks className="h-5 w-5 text-primary dark:text-mint" />
                 <h2 className="text-base font-bold text-foreground">{tb.pendingTasks}</h2>
                 {items.length > 0 && (
-                    <span className="ml-1 text-xs text-neutral-400">({items.length})</span>
+                    <span className="ml-1 text-xs text-neutral-500">({items.length})</span>
                 )}
             </div>
 
@@ -47,7 +47,7 @@ export function PendingTasksCard({ items }: PendingTasksCardProps) {
                                 className="flex items-center gap-3 rounded-xl border border-neutral-200/60 bg-neutral-50/50 p-3 transition hover:bg-neutral-100 dark:border-neutral-700/60 dark:bg-neutral-800/50 dark:hover:bg-neutral-800"
                             >
                                 {task.overdue ? (
-                                    <AlertTriangle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
+                                    <AlertTriangle className="h-4 w-4 shrink-0 text-red-700 dark:text-red-400" />
                                 ) : (
                                     <Clock className="h-4 w-4 shrink-0 text-primary dark:text-mint" />
                                 )}

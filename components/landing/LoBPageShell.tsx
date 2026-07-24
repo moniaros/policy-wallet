@@ -51,7 +51,7 @@ export function LoBPageShell({ children, locale }: LoBPageShellProps) {
                         <h2 className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white">
                             {t("Δωρεάν για 1 συμβόλαιο. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 1 policy. Upgrade whenever you need it.")}
                         </h2>
-                        <p className="mb-8 text-body-lg leading-relaxed text-[#475569] dark:text-slate-400">
+                        <p className="mb-8 text-body-lg leading-relaxed text-[#475569] dark:text-slate-500">
                             {t(
                                 "Starter 2,99€/μήνα για οργάνωση, Plus 7,99€/μήνα με πλήρη ανάλυση AI. Ακύρωση όποτε θέλετε.",
                                 "Starter at €2.99/month for organization, Plus at €7.99/month with full AI analysis. Cancel anytime."

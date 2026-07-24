@@ -99,11 +99,11 @@ export default function UsersClient({
                     <CheckCircle className="w-3 h-3" /> Verified
                 </span>
             case "pending":
-                return <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                return <span className="flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400">
                     <Filter className="w-3 h-3" /> Pending
                 </span>
             case "rejected":
-                return <span className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
+                return <span className="flex items-center gap-1 text-xs text-red-700 dark:text-red-400">
                     <XCircle className="w-3 h-3" /> Rejected
                 </span>
             default:
@@ -221,7 +221,7 @@ export default function UsersClient({
                                                         <CheckCircle className="w-3 h-3" /> Email Verified
                                                     </span>
                                                 ) : (
-                                                    <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                                                    <span className="flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400">
                                                         <XCircle className="w-3 h-3" /> Email Unverified
                                                     </span>
                                                 )}
@@ -283,7 +283,7 @@ export default function UsersClient({
                                                             setSelectedUser(user)
                                                             setShowDeleteModal(true)
                                                         }}
-                                                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                        className="p-2 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                                         title="Delete User"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
@@ -308,7 +308,7 @@ export default function UsersClient({
                                                                 setVerificationReason("")
                                                                 setShowRejectModal(true)
                                                             }}
-                                                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                            className="p-2 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                                             title="Reject Agent"
                                                         >
                                                             <XCircle className="w-4 h-4" />

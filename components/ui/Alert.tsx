@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
  * There were 31 hand-rolled alert containers across 25 files and almost no two
  * agreed: the most common styling signature appeared 3 times. Padding ranged
  * over p-1 / p-1.5 / p-2 / p-4, radius over rounded-lg / -xl / -full, some had
- * a border and some did not, and the text was text-red-600 or text-red-700
+ * a border and some did not, and the text was text-red-700 or text-red-700
  * depending on the file. Success had no shared treatment at all, so a
  * confirmation looked different on every screen that showed one.
  *
@@ -22,7 +22,7 @@ export type AlertVariant = "error" | "success" | "warning" | "info"
 const STYLES: Record<AlertVariant, { box: string; icon: string; Icon: typeof Info }> = {
     error: {
         box: "border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200",
-        icon: "text-red-600 dark:text-red-400",
+        icon: "text-red-700 dark:text-red-400",
         Icon: XCircle,
     },
     success: {
@@ -32,7 +32,7 @@ const STYLES: Record<AlertVariant, { box: string; icon: string; Icon: typeof Inf
     },
     warning: {
         box: "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100",
-        icon: "text-amber-600 dark:text-amber-400",
+        icon: "text-amber-700 dark:text-amber-400",
         Icon: AlertTriangle,
     },
     info: {

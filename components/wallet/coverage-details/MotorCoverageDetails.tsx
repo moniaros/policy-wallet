@@ -70,15 +70,15 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
+              <AlertTriangle className="w-4 h-4 text-red-700 dark:text-red-400" />
             </div>
             <div>
               <span className="text-sm font-bold text-red-700 dark:text-red-300">{motorCopy.accidentDeclaration}</span>
-              <p className="text-xs text-red-600/80 dark:text-red-400/80">{copy.call}</p>
+              <p className="text-xs text-red-700/80 dark:text-red-400/80">{copy.call}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <Phone className="w-4 h-4 text-red-600 dark:text-red-400" />
+            <Phone className="w-4 h-4 text-red-700 dark:text-red-400" />
             <span className="text-sm font-bold text-red-700 dark:text-red-300">{motor.accidentDeclarationPhone}</span>
           </div>
         </a>
@@ -91,16 +91,16 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Car className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
+              <Car className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
             </div>
             <div>
-              <span className="text-sm font-bold text-[#B45309] dark:text-amber-300">{motorCopy.roadsideAssistance}</span>
-              <p className="text-xs text-[#B45309]/80 dark:text-amber-400/80">{copy.call}</p>
+              <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{motorCopy.roadsideAssistance}</span>
+              <p className="text-xs text-[#92400E]/80 dark:text-amber-400/80">{copy.call}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <Phone className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
-            <span className="text-sm font-bold text-[#B45309] dark:text-amber-300">{motor.roadsideAssistancePhone}</span>
+            <Phone className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+            <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{motor.roadsideAssistancePhone}</span>
           </div>
         </a>
       )}
@@ -145,7 +145,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
             greenCardStatus === "expired"
               ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
               : greenCardStatus === "expiring"
-                ? "bg-amber-100 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                ? "bg-amber-100 dark:bg-amber-900/30 text-[#92400E] dark:text-amber-300 border-amber-200 dark:border-amber-800"
                 : "bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-primary/20 dark:border-primary/30"
           }`}>
             {greenCardStatus === "expired" ? copy.expired : greenCardStatus === "expiring" ? copy.expiringSoon : copy.valid}

@@ -75,7 +75,7 @@ export function SummaryCard({
                   icon: AlertTriangle,
                   label: `${conditionsCount} ${copy.glanceConditions}`,
                   classes:
-                      "border-amber-200 bg-[#FEF3C7]/60 text-[#B45309] dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300",
+                      "border-amber-200 bg-[#FEF3C7]/60 text-[#92400E] dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300",
               }
             : null,
         perkCount > 0
@@ -94,7 +94,7 @@ export function SummaryCard({
                   label: `${daysLeft} ${copy.days}`,
                   classes:
                       daysLeft <= 30
-                          ? "border-amber-200 bg-[#FEF3C7]/60 text-[#B45309] dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300"
+                          ? "border-amber-200 bg-[#FEF3C7]/60 text-[#92400E] dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300"
                           : "border-black/10 bg-black/[0.03] text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75",
               }
             : null,

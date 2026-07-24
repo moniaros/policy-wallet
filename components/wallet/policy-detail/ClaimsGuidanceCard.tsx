@@ -131,7 +131,7 @@ export function ClaimsGuidanceCard({
                 the editorial steps above; this is data, not guidance. */}
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
                 <h3 className="mb-2.5 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
-                    <CalendarClock className="h-3.5 w-3.5 text-[#B45309] dark:text-amber-400" />
+                    <CalendarClock className="h-3.5 w-3.5 text-[#92400E] dark:text-amber-400" />
                     {copy.claimDeadlinesTitle}
                 </h3>
                 {deadlines.length > 0 ? (
@@ -141,8 +141,8 @@ export function ClaimsGuidanceCard({
                                 key={j}
                                 className="flex items-start gap-2 rounded-xl border border-amber-200 bg-[#FEF3C7]/50 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/15"
                             >
-                                <CalendarClock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
-                                <p className="text-xs leading-relaxed text-[#B45309] dark:text-amber-300">
+                                <CalendarClock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
+                                <p className="text-xs leading-relaxed text-[#92400E] dark:text-amber-300">
                                     {deadline.value && <span className="font-mono font-bold">{deadline.value} · </span>}
                                     {pickLang(deadline.summary, lang)}
                                 </p>

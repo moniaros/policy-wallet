@@ -123,7 +123,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                             </div>
                         </div>
                         <div>
-                            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-500">
                                 {financials.renewalProbability >= 70
                                     ? t.clientFinancials.highRenewal
                                     : financials.renewalProbability >= 40
