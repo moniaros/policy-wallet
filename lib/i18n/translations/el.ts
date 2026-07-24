@@ -2133,6 +2133,9 @@ export const el = {
             roadsideAssistancePhone: 'Τηλέφωνο οδικής βοήθειας',
             ownVehicleDamage: 'Ζημιές ιδίου οχήματος',
             glassBreakage: 'Θραύση κρυστάλλων',
+            deductible: 'Απαλλαγή',
+            deductibleHint: 'Το ποσό που επιβαρύνεστε εσείς σε κάθε ζημιά πριν πληρώσει ο ασφαλιστής.',
+            marketValue: 'Εκτιμώμενη αξία οχήματος',
             license: 'Δίπλωμα'
         },
 
@@ -2151,6 +2154,7 @@ export const el = {
             theftCoverageLimit: 'Όριο κάλυψης κλοπής',
             insuredValue: 'Ασφαλισμένη αξία',
             replacementValue: 'Αξία αντικατάστασης',
+            rebuildCost: 'Κόστος ανακατασκευής',
             valueComparison: 'Σύγκριση αξιών',
             contentsVsStructure: 'Περιεχόμενα έναντι κτιρίου',
             contents: 'Περιεχόμενα',

@@ -2117,6 +2117,9 @@ export const en: TranslationKeys = {
             roadsideAssistancePhone: 'Roadside Assistance Phone',
             ownVehicleDamage: 'Own Vehicle Damage',
             glassBreakage: 'Glass Breakage',
+            deductible: 'Excess',
+            deductibleHint: 'The amount you pay towards each claim before the insurer pays.',
+            marketValue: 'Estimated Vehicle Value',
             license: 'License'
         },
 
@@ -2135,6 +2138,7 @@ export const en: TranslationKeys = {
             theftCoverageLimit: 'Theft Coverage Limit',
             insuredValue: 'Insured Value',
             replacementValue: 'Replacement Value',
+            rebuildCost: 'Rebuild Cost',
             valueComparison: 'Value Comparison',
             contentsVsStructure: 'Contents vs Structure',
             contents: 'Contents',

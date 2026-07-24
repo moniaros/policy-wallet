@@ -44,6 +44,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
     home.theftCoverageLimit !== undefined ||
     home.insuredValue !== undefined ||
     home.replacementValue !== undefined ||
+    home.estimatedRebuildCost !== undefined ||
     home.contentsVsStructure
   )
 
@@ -163,7 +164,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
         </div>
       )}
 
-      {(home.insuredValue !== undefined || home.replacementValue !== undefined) && (
+      {(home.insuredValue !== undefined || home.replacementValue !== undefined || home.estimatedRebuildCost !== undefined) && (
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
@@ -176,6 +177,16 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
               <div className="flex items-center justify-between text-sm">
                 <span className="text-black/60 dark:text-white/65">{hints?.sumInsured ? <GlossaryHint hint={hints.sumInsured} /> : homeCopy.insuredValue}</span>
                 <span className="font-bold text-black dark:text-white">{fmt(home.insuredValue)}</span>
+              </div>
+            )}
+            {/* The rebuild cost the sum insured is measured against — the
+                underinsurance gap is computed from exactly this comparison, yet
+                the figure itself was never shown. Placed beside the sum insured
+                so the reader can see the two numbers the average clause weighs. */}
+            {home.estimatedRebuildCost !== undefined && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-black/60 dark:text-white/65">{homeCopy.rebuildCost}</span>
+                <span className="font-bold text-black dark:text-white">{fmt(home.estimatedRebuildCost)}</span>
               </div>
             )}
             {home.replacementValue !== undefined && (

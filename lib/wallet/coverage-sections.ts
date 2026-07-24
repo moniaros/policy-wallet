@@ -34,7 +34,15 @@ import { branchFamilyId } from "@/lib/insurance/taxonomy"
  */
 
 /** Field names differ between the two shapes in only one place per branch. */
-export function motorSection(acord: AcordData | null | undefined): NonNullable<AcordData["motor"]> | null {
+/** deductible (excess) and estimatedMarketValue are canonical `vehicle`-only,
+ *  with no legacy `motor` counterpart — so they fell outside this resolver's type
+ *  and never reached the panel, like life's death benefit. */
+export type MotorSection = NonNullable<AcordData["motor"]> & {
+    deductible?: number
+    estimatedMarketValue?: number
+}
+
+export function motorSection(acord: AcordData | null | undefined): MotorSection | null {
     const canonical = acord?.vehicle
     const legacy = acord?.motor
     if (!canonical && !legacy) return null
@@ -47,10 +55,21 @@ export function motorSection(acord: AcordData | null | undefined): NonNullable<A
         roadsideAssistancePhone: canonical?.roadsideAssistancePhone ?? legacy?.roadsideAssistancePhone,
         ownVehicleDamage: canonical?.ownVehicleDamage ?? legacy?.ownVehicleDamage,
         glassBreakage: canonical?.glassBreakage ?? legacy?.glassBreakage,
+        // Canonical-only: the excess the holder pays per claim, and the market
+        // value that caps a total-loss payout.
+        deductible: canonical?.deductible,
+        estimatedMarketValue: canonical?.estimatedMarketValue,
     }
 }
 
-export function homeSection(acord: AcordData | null | undefined): NonNullable<AcordData["home"]> | null {
+/** estimatedRebuildCost is canonical `property`-only. The underinsurance gap is
+ *  computed FROM it (insuredValue vs rebuild cost), yet the panel never showed
+ *  the figure itself — same extracted-but-unrendered class. */
+export type HomeSection = NonNullable<AcordData["home"]> & {
+    estimatedRebuildCost?: number
+}
+
+export function homeSection(acord: AcordData | null | undefined): HomeSection | null {
     const canonical = acord?.property
     const legacy = acord?.home
     if (!canonical && !legacy) return null
@@ -76,6 +95,8 @@ export function homeSection(acord: AcordData | null | undefined): NonNullable<Ac
         insuredValue: canonical?.insuredValue ?? legacy?.insuredValue,
         replacementValue: canonical?.replacementValue ?? legacy?.replacementValue,
         contentsVsStructure: canonical?.contentsVsStructure ?? legacy?.contentsVsStructure,
+        // Canonical-only: the rebuild cost the sum insured is measured against.
+        estimatedRebuildCost: canonical?.estimatedRebuildCost,
     }
 }
 

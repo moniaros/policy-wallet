@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
+import { formatCurrency } from "@/lib/i18n/format"
 import { calendarDaysUntil } from "@/lib/policy-status"
 import { motorSection } from "@/lib/wallet/coverage-sections"
 import { parsePolicyDate, formatPolicyDate } from "@/lib/wallet/policy-detail"
@@ -41,10 +42,14 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
     (motor.namedDrivers && motor.namedDrivers.length > 0) ||
     motor.greenCardExpiry ||
     motor.ownVehicleDamage !== undefined ||
-    motor.glassBreakage !== undefined
+    motor.glassBreakage !== undefined ||
+    motor.deductible !== undefined ||
+    motor.estimatedMarketValue !== undefined
   )
 
   if (!hasAnyData) return null
+
+  const fmtMoney = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 0 })
 
   // The extracted string, parsed the way every other date on this page is.
   //
@@ -98,6 +103,36 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
           } ${tier ? "" : "capitalize"}`}>
             {tierLabel}
           </span>
+        </div>
+      )}
+
+      {/* The excess — what the holder pays before the insurer does — and the
+          market value that caps a total-loss payout. Both extracted, neither
+          shown until now. */}
+      {motor.deductible !== undefined && (
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                <CreditCard className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+              </div>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.deductible}</span>
+            </div>
+            <span className="text-sm font-bold text-black dark:text-white">{fmtMoney(motor.deductible)}</span>
+          </div>
+          <p className="mt-1.5 ml-10.5 text-xs leading-relaxed text-black/55 dark:text-white/60">{motorCopy.deductibleHint}</p>
+        </div>
+      )}
+
+      {motor.estimatedMarketValue !== undefined && (
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Car className="w-4 h-4 text-primary dark:text-mint" />
+            </div>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.marketValue}</span>
+          </div>
+          <span className="text-sm font-bold text-black dark:text-white">{fmtMoney(motor.estimatedMarketValue)}</span>
         </div>
       )}
 
