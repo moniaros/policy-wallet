@@ -37,6 +37,8 @@ interface ClaimsGuidanceCardProps {
         claimAskAgentCta: string
         claimsDisclaimer: string
         contactInsurer: string
+        /** Shown when no claims number was extracted — never a fabricated number. */
+        claimsPhoneUnknown: string
         policyNumberLabel: string
     }
     onCallInsurer: () => void
@@ -72,7 +74,9 @@ export function ClaimsGuidanceCard({
     const steps: { title: string; desc?: string }[] =
         branchSteps && branchSteps.length > 0 ? branchSteps.map((text) => ({ title: text })) : fallbackSteps
 
-    const hasWhatYouNeed = Boolean(insurerPhone) || Boolean(policyNumber)
+    // Always worth showing: if we have no number, saying where to find one is
+    // more use than silence on the screen someone opens after a loss.
+    const hasWhatYouNeed = true
 
     return (
         <div className="pw-card pw-pad sm:p-7">
@@ -114,6 +118,11 @@ export function ClaimsGuidanceCard({
                                 <Phone className="h-3 w-3" />
                                 {copy.contactInsurer} — {insurerName}
                             </button>
+                        )}
+                        {!insurerPhone && (
+                            <p className="w-full text-caption leading-snug text-black/70 dark:text-white/70">
+                                {copy.claimsPhoneUnknown}
+                            </p>
                         )}
                         {policyNumber && (
                             <p className="inline-flex items-center gap-2 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-1.5 dark:border-white/15 dark:bg-white/5">

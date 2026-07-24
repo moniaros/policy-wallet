@@ -391,6 +391,7 @@ export const en: TranslationKeys = {
             askStarter: 'Ask one starter question',
             sharePolicy: 'Share with agent or family',
             reviewRenewal: 'Review expiry and renewal',
+            claimsPhoneUnknown: 'We did not find a claims number in your document. It is on your policy schedule or your insurer’s website — keep it to hand.',
             contactInsurer: 'Contact insurer',
             noInsurerPhone: 'No insurer phone number available.',
             documentsArea: 'Policy documents',

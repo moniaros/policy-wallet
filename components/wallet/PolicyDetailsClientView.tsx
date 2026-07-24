@@ -942,6 +942,7 @@ export function PolicyDetailsClient({
                                     claimAskAgentCta: detailsCopy.claimAskAgentCta,
                                     claimsDisclaimer: detailsCopy.claimsDisclaimer,
                                     contactInsurer: detailsCopy.contactInsurer,
+                                    claimsPhoneUnknown: detailsCopy.claimsPhoneUnknown,
                                     policyNumberLabel: t.wallet.policyNumber,
                                 }}
                                 onCallInsurer={handleCallInsurer}

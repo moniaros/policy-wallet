@@ -27,6 +27,7 @@ const COPY = {
     claimAskAiCta: 'Ask AI about claims',
     claimAskAgentCta: 'Ask my agent',
     claimsDisclaimer: 'General guidance, not legal advice.',
+    claimsPhoneUnknown: 'No claims number found — it is on your policy schedule.',
     contactInsurer: 'Call',
     policyNumberLabel: 'Policy number',
 }

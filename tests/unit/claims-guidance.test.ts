@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
 import { el } from '@/lib/i18n/translations/el'
 import { en } from '@/lib/i18n/translations/en'
 import { getBranchContent } from '@/lib/insurance/content'
@@ -75,5 +76,37 @@ describe('branch claim steps keep their operative detail', () => {
         const steps = getBranchContent('boat')?.claimsSteps?.map((s) => s.el).join(' ') ?? ''
         expect(steps).toMatch(/ασφάλεια των επιβαινόντων/)
         expect(steps).toMatch(/ναυαγιαίρεσης/)
+    })
+})
+
+/**
+ * The insurer's claims number comes only from what the AI extracted
+ * (acordData.policy.insurerContact) — the Insurer table has no phone field, so
+ * when a document does not print one, the product does not know it.
+ *
+ * The card previously showed nothing in that case, on the screen someone opens
+ * after a loss, while step 2 tells them to call their insurer as soon as
+ * possible. Telling them where the number lives costs nothing and invents
+ * nothing; putting a plausible-looking number there would have been the
+ * fabrication this product is otherwise careful to avoid.
+ */
+describe('claims contact when no number was extracted', () => {
+    it('says where to find the claims number instead of staying silent', () => {
+        const card = readFileSync('components/wallet/policy-detail/ClaimsGuidanceCard.tsx', 'utf-8')
+        expect(card).toMatch(/\{!insurerPhone && \(/)
+        expect(card).toMatch(/copy\.claimsPhoneUnknown/)
+    })
+
+    it('points at the document and the insurer, not at a made-up number', () => {
+        expect(el.wallet.policyDetailsPage.claimsPhoneUnknown).toMatch(/ασφαλιστήριο|ιστοσελίδα/)
+        expect(en.wallet.policyDetailsPage.claimsPhoneUnknown).toMatch(/policy schedule|insurer/i)
+        // No digits — nothing here should look like a phone number.
+        expect(el.wallet.policyDetailsPage.claimsPhoneUnknown).not.toMatch(/\d{4,}/)
+    })
+
+    it('still shows the call button when a number WAS extracted', () => {
+        const card = readFileSync('components/wallet/policy-detail/ClaimsGuidanceCard.tsx', 'utf-8')
+        expect(card).toMatch(/\{insurerPhone && \(/)
+        expect(card).toMatch(/onClick=\{onCallInsurer\}/)
     })
 })
