@@ -101,7 +101,10 @@ export async function getCommissionDashboard(): Promise<CommissionSummary | null
     for (let i = 5; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
         const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59)
-        const label = d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" })
+        // The month key travels as data; the client renders it in the reader's
+        // language. It used to be baked as an "en-GB" string here, so a Greek
+        // agent's commission chart was labelled Jan/Feb/Mar.
+        const label = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
 
         let won = 0
         let estimated = 0

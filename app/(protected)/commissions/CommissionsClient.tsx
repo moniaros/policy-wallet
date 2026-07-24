@@ -8,6 +8,7 @@ import type { CommissionSummary } from "./actions"
 import { TableShell } from "@/components/ui/TableShell"
 
 import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
+import { formatDate } from "@/lib/i18n/format"
 const copy = {
     en: {
         title: "Commission Tracker",
@@ -76,6 +77,19 @@ export function CommissionsClient({ data }: Props) {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
         }).format(n)
+
+    // `month` arrives as "YYYY-MM" so the label can follow the reader. It used to
+    // be formatted server-side with a hardcoded "en-GB", which put Jan/Feb/Mar on
+    // a Greek agent's commission chart.
+    const monthLabel = (ym: string) => {
+        const [y, m] = ym.split("-").map(Number)
+        if (!y || !m) return ym
+        return formatDate(new Date(Date.UTC(y, m - 1, 1)), language === "el" ? "el" : "en", {
+            month: "short",
+            year: "2-digit",
+            day: undefined,
+        })
+    }
 
     const maxBar = Math.max(...data.monthlyTrend.map((m) => m.won + m.estimated), 1)
 
@@ -192,7 +206,7 @@ export function CommissionsClient({ data }: Props) {
                                 return (
                                     <div key={m.month}>
                                         <div className="flex items-center justify-between mb-1.5">
-                                            <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">{m.month}</span>
+                                            <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400">{monthLabel(m.month)}</span>
                                             <div className="flex items-center gap-3 text-xs">
                                                 <span className="font-bold text-primary dark:text-mint">{fmt(m.won)}</span>
                                                 {m.estimated > 0 && (
