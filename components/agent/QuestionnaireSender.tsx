@@ -1,5 +1,6 @@
 "use client"
 
+import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { useRef, useId, useState, useEffect, useCallback } from "react"
 import { getQuestionnaireTemplates, sendQuestionnaire } from "@/app/(protected)/agent/actions"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -17,13 +18,7 @@ interface QuestionnaireSenderProps {
     hideTrigger?: boolean
 }
 
-const LOB_ICONS: Record<string, typeof Car> = {
-    motor: Car,
-    home: Home,
-    health: HeartPulse,
-    life: Shield,
-    pet: PawPrint,
-}
+/* Canonical branch icons — see lib/insurance/branch-icons. */
 
 const copy = {
     en: {
@@ -159,7 +154,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
                                     </label>
                                     <div className="grid grid-cols-1 gap-3">
                                         {templates.map(t => {
-                                            const Icon = LOB_ICONS[t.lineOfBusiness] || FileQuestion
+                                            const Icon = getBranchIcon(t.lineOfBusiness)
                                             const questionCount = Array.isArray(t.questions) ? t.questions.length : 0
                                             return (
                                                 <button

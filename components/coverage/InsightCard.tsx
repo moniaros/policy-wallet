@@ -1,3 +1,4 @@
+import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { CheckCircle2, ChevronRight, Info, Shield, Car, HeartPulse, Home, Briefcase, Lock } from 'lucide-react'
 
 export type InsightSeverity = 'low' | 'medium' | 'high' | 'critical'
@@ -28,38 +29,44 @@ interface InsightCardProps {
     collapsed?: boolean
 }
 
-const TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-    motor: Car,
-    health: HeartPulse,
-    home: Home,
-    life: Shield,
-    other: Briefcase,
-}
+/* Branch icons come from lib/insurance/branch-icons — the same source the
+   wallet, policy table and branch pages use. A private map here meant a life
+   policy wore a Landmark in the wallet and a Shield on this screen, and health
+   changed between HeartPulse and Heart depending on which card you looked at. */
 
+/**
+ * The same four priority tiers the rest of the product uses.
+ *
+ * These read "Low risk" / "High risk" — literal risk grades — on the very page
+ * whose own note says the priorities "are not a definitive risk assessment".
+ * The product disclaimed risk assessment in one paragraph and graded risk in the
+ * badge beside it. The gap engine produces a profile-based priority; that is
+ * what the badge says now.
+ */
 const SEVERITY_CONFIG = {
     low: {
-        label: { en: 'Low risk', el: 'Χαμηλός κίνδυνος' },
+        label: { en: 'Low priority', el: 'Χαμηλή προτεραιότητα' },
         color: 'text-black/75 dark:text-white/80',
         bg: 'bg-black/5 dark:bg-white/10',
         border: 'border-black/10 dark:border-white/15',
         accent: 'bg-black/35'
     },
     medium: {
-        label: { en: 'Attention needed', el: 'Χρειάζεται έλεγχος' },
+        label: { en: 'Medium priority', el: 'Μεσαία προτεραιότητα' },
         color: 'text-amber-700 dark:text-amber-300',
         bg: 'bg-amber-50 dark:bg-amber-900/30',
         border: 'border-amber-100 dark:border-amber-800',
         accent: 'bg-amber-500'
     },
     high: {
-        label: { en: 'High risk', el: 'Υψηλός κίνδυνος' },
+        label: { en: 'High priority', el: 'Υψηλή προτεραιότητα' },
         color: 'text-orange-700 dark:text-orange-300',
         bg: 'bg-orange-50 dark:bg-orange-900/30',
         border: 'border-orange-100 dark:border-orange-800',
         accent: 'bg-orange-500'
     },
     critical: {
-        label: { en: 'Critical gap', el: 'Κρίσιμο κενό' },
+        label: { en: 'Critical priority', el: 'Κρίσιμη προτεραιότητα' },
         color: 'text-red-700 dark:text-red-300',
         bg: 'bg-red-50 dark:bg-red-900/30',
         border: 'border-red-100 dark:border-red-800',
@@ -78,7 +85,10 @@ const COPY = {
 export function InsightCard({ insight, onAction, language = 'el', collapsed = false }: InsightCardProps) {
     void collapsed
     const config = SEVERITY_CONFIG[insight.severity] || SEVERITY_CONFIG.medium
-    const Icon = TYPE_ICONS[insight.type] || TYPE_ICONS.other
+    // Held on an object: a bare `const Icon = getBranchIcon(...)` reads as
+    // creating a component during render to react-hooks/static-components.
+    // Same shape PolicyCard uses.
+    const glyph = { Icon: getBranchIcon(insight.type) }
 
     return (
         <div className={`relative bg-white dark:bg-black rounded-2xl border transition-all duration-200 hover:shadow-md overflow-hidden ${config.border} border-l-4 shadow-sm`}>
@@ -87,7 +97,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
             <div className="p-5">
                 <div className="flex items-start gap-3 mb-5">
                     <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center flex-shrink-0 border border-black/10 dark:border-white/15">
-                        <Icon className="w-5 h-5 text-black/65 dark:text-white/75" />
+                        <glyph.Icon className="w-5 h-5 text-black/65 dark:text-white/75" />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">

@@ -1,6 +1,7 @@
 "use client"
 
 import { getTranslations } from "@/lib/i18n"
+import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { useState } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -64,18 +65,9 @@ interface RecommendationCardsProps {
 
 // ── LOB icon map ─────────────────────────────────────────────────────
 
-const LOB_ICON: Record<string, typeof Shield> = {
-    motor: Car,
-    home: Home,
-    health: Heart,
-    life: Shield,
-    travel: Plane,
-    pet: PawPrint,
-    liability: Scale,
-    legal_expenses: Scale,
-    income_protection: Umbrella,
-    disability: ShieldAlert,
-}
+/* The branch icon comes from lib/insurance/branch-icons — the same source the
+   wallet, policy table and branch pages use. A private map here meant a life
+   policy wore a Landmark in the wallet and a Shield on this screen. */
 
 // ── Urgency styles ───────────────────────────────────────────────────
 
@@ -260,7 +252,7 @@ export function RecommendationCards({
             <div className="space-y-3">
                 {displayed.map((rec) => {
                     const styles = URGENCY_STYLES[rec.urgency] || URGENCY_STYLES.low
-                    const Icon = LOB_ICON[rec.lineOfBusiness.toLowerCase()] || Shield
+                    const Icon = getBranchIcon(rec.lineOfBusiness)
                     const urgKey = URGENCY_KEYS[rec.urgency as keyof typeof URGENCY_KEYS] ?? URGENCY_KEYS.low
                     const urgLabel = home[urgKey]
                     const isExpanded = expandedId === rec.id
