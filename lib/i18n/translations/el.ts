@@ -2163,6 +2163,10 @@ export const el = {
         life: {
             title: 'Λεπτομέρειες κάλυψης ζωής',
             fundValue: 'Αξία κεφαλαίου',
+            deathBenefit: 'Κεφάλαιο θανάτου',
+            deathBenefitHint: 'Το ποσό που καταβάλλεται στους δικαιούχους σε περίπτωση θανάτου.',
+            cashValue: 'Αξία εξαργύρωσης',
+            maturityDate: 'Ημερομηνία λήξης',
             currentFundValue: 'Τρέχουσα αξία κεφαλαίου',
             ytdGrowth: 'Ανάπτυξη έτους',
             taxFreeAtMaturity: 'Αφορολόγητο στη λήξη',

@@ -35,6 +35,9 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
   if (!life) return null
 
   const hasAnyData = Boolean(
+    life.deathBenefit !== undefined ||
+    life.cashValue !== undefined ||
+    life.maturityDate ||
     life.currentFundValue !== undefined ||
     life.ytdGrowth !== undefined ||
     life.taxFreeAtMaturity !== undefined ||
@@ -48,9 +51,53 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
 
   // Shared formatter — these three files each carried an identical private copy.
   const fmt = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 2 })
+  const fmt0 = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 0 })
 
   return (
     <div className="space-y-3">
+      {/* The protection amount: what the policy pays the beneficiaries on death.
+          The panel showed only the investment side, so a term-life policy (no
+          fund, no surrender) rendered nothing — omitting the one figure that IS
+          the policy. Leads, in the affirmative treatment fund value uses. */}
+      {life.deathBenefit !== undefined && (
+        <div className="p-4 rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-primary dark:text-mint" />
+              </div>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.deathBenefit}</span>
+            </div>
+            <span className="text-xl font-black text-primary dark:text-mint">{fmt0(life.deathBenefit)}</span>
+          </div>
+          <p className="mt-1.5 ml-12.5 text-xs leading-relaxed text-black/55 dark:text-white/60">{lifeCopy.deathBenefitHint}</p>
+        </div>
+      )}
+
+      {life.cashValue !== undefined && (
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Wallet className="w-4 h-4 text-primary dark:text-mint" />
+            </div>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.cashValue}</span>
+          </div>
+          <span className="text-sm font-bold text-black dark:text-white">{fmt(life.cashValue)}</span>
+        </div>
+      )}
+
+      {life.maturityDate && (
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Calendar className="w-4 h-4 text-primary dark:text-mint" />
+            </div>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.maturityDate}</span>
+          </div>
+          <span className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(life.maturityDate, language === "el" ? "el-GR" : "en-GB")}</span>
+        </div>
+      )}
+
       {life.currentFundValue !== undefined && (
         <div className="p-4 rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30">
           <div className="flex items-center justify-between">

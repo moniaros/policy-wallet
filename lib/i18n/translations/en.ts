@@ -2147,6 +2147,10 @@ export const en: TranslationKeys = {
         life: {
             title: 'Life Coverage Details',
             fundValue: 'Fund Value',
+            deathBenefit: 'Death Benefit',
+            deathBenefitHint: 'The amount paid to your beneficiaries if you die.',
+            cashValue: 'Cash Value',
+            maturityDate: 'Maturity Date',
             currentFundValue: 'Current Fund Value',
             ytdGrowth: 'YTD Growth',
             taxFreeAtMaturity: 'Tax-Free at Maturity',

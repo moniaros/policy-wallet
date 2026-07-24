@@ -79,12 +79,30 @@ export function homeSection(acord: AcordData | null | undefined): NonNullable<Ac
     }
 }
 
-export function lifeSection(acord: AcordData | null | undefined): NonNullable<AcordData["life"]> | null {
+/**
+ * The panel long showed only the INVESTMENT side of a life contract (fund value,
+ * growth, surrender) and never the PROTECTION side. deathBenefit — the sum paid
+ * to the beneficiaries on death, the entire point of a life policy — is a
+ * canonical `lifeAndInvestment` field with no counterpart in the legacy `life`
+ * alias, so it fell outside this resolver's type and never reached the panel. A
+ * term-life policy (protection only, no fund) therefore rendered nothing.
+ */
+export type LifeSection = NonNullable<AcordData["life"]> & {
+    deathBenefit?: number
+    cashValue?: number
+    maturityDate?: string
+}
+
+export function lifeSection(acord: AcordData | null | undefined): LifeSection | null {
     const canonical = acord?.lifeAndInvestment
     const legacy = acord?.life
     if (!canonical && !legacy) return null
-    // Every field this panel shows exists under both names, spelled the same.
     return {
+        // Protection side — canonical-only (the legacy alias never modelled these).
+        deathBenefit: canonical?.deathBenefit,
+        cashValue: canonical?.cashValue,
+        maturityDate: canonical?.maturityDate,
+        // Investment side — present under both names, spelled the same.
         currentFundValue: canonical?.currentFundValue ?? legacy?.currentFundValue,
         ytdGrowth: canonical?.ytdGrowth ?? legacy?.ytdGrowth,
         taxFreeAtMaturity: canonical?.taxFreeAtMaturity ?? legacy?.taxFreeAtMaturity,
