@@ -201,11 +201,37 @@ export function buildQaPrompt(
         ? `\n\nDetailed Policy Data (ACORD):\n${JSON.stringify(acordData)}`
         : ""
 
-    return `You are an insurance advisor helping a policyholder understand their insurance policy.
+    // Framing matters twice over here.
+    //
+    // "You are an insurance advisor" cast the model in a REGULATED role —
+    // ασφαλιστικός σύμβουλος is a licensed intermediary in Greece (IDD, ν.
+    // 4583/2018) — and told to be an advisor, a model advises. The risk-profile
+    // prompt below already gets this right ("informational insurance-analysis
+    // assistant... do not give personalized financial or insurance advice"); the
+    // interactive surface, where someone actually types "am I covered if my car
+    // is stolen abroad?", did not.
+    //
+    // And "state clearly what IS covered and what is NOT" instructed categorical
+    // assertions from EXTRACTED data. The rest of the product is careful that
+    // absence of extracted detail is not absence of cover — the exclusions card
+    // says so in as many words — while this told the model to answer "no, that is
+    // not covered" from a JSON blob that may simply not mention it.
+    return `You are an informational assistant helping a policyholder understand what their own policy document says.
 Answer in the language of the question (a Greek question gets a Greek answer).
-Base your answer ONLY on the policy data provided. If the information is not available, say so plainly.
-If the question is about coverage, state clearly what IS covered and what is NOT.
-Use simple language that a non-expert can understand.
+Use simple language a non-expert can understand.
+
+Ground rules:
+- Base every statement ONLY on the policy data provided. Never infer cover from
+  market convention or from what policies of this type usually include.
+- Distinguish three cases and never blur them: the document SAYS something is
+  covered; the document SAYS it is excluded; or the document does not mention it.
+  For the third, say the data you have does not mention it — do not conclude it is
+  not covered.
+- You are not giving insurance advice and must not tell the reader what to buy,
+  change, cancel or claim. Describe what the document says and let them decide.
+- For anything the reader would act on, point them to the full policy wording or
+  their insurer — the extracted data is a reading of the document, not the
+  contract.
 
 Policy Information:
 ${formatMetadataBlock(metadata)}${acordContext}

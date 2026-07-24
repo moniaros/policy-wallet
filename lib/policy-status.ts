@@ -71,6 +71,31 @@ export function startOfAthensDay(now: Date): Date {
     return new Date(guess.getTime() + offsetMs)
 }
 
+/**
+ * The instant the current Athens MONTH began — the boundary a monthly usage
+ * meter has to use.
+ *
+ * `new Date(); setDate(1); setHours(0,0,0,0)` is midnight in the runtime zone,
+ * UTC on Vercel, so a monthly allowance rolled over at 03:00 Athens on the 1st.
+ * On the last evening of a month a user who had spent their quota was still
+ * blocked past midnight; on the 1st, calls made before 03:00 counted against the
+ * month that had already ended.
+ */
+export function startOfAthensMonth(now: Date): Date {
+    const [y, m] = new Intl.DateTimeFormat('en-CA', {
+        timeZone: APP_TIME_ZONE,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    })
+        .format(now)
+        .split('-')
+        .map(Number)
+    // Midday on the 1st is safely inside the month in any offset; take the day
+    // boundary from there.
+    return startOfAthensDay(new Date(Date.UTC(y, m - 1, 1, 12, 0, 0)))
+}
+
 export type PolicyStatus =
     | 'active'
     | 'expiring_soon'

@@ -33,6 +33,7 @@ import {
     AgentEntitlementLimitsSchema,
     EntitlementLimitsSchema,
 } from "@/lib/pricing/entitlement-schema"
+import { startOfAthensMonth } from "@/lib/policy-status"
 
 export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> =
     DEFAULT_ENTITLEMENT_LIMITS
@@ -300,9 +301,8 @@ export async function canAgentRunAnalysis(userId: string): Promise<{
 
     if (limit === null) return { allowed: true }
 
-    const startOfMonth = new Date()
-    startOfMonth.setDate(1)
-    startOfMonth.setHours(0, 0, 0, 0)
+    // The reader's month, not the server's — see startOfAthensMonth.
+    const startOfMonth = startOfAthensMonth(new Date())
 
     // Count runs the agent actually INITIATED this month (run.userId), not
     // runs on policies they created — grants let agents analyze customer-

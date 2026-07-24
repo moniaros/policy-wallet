@@ -15,6 +15,7 @@ import { daysFromNow, TRIAL_PERIOD_DAYS } from "@/lib/constants/time"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import { getSiteOrigin } from "@/lib/seo/site"
+import { startOfAthensMonth } from "@/lib/policy-status"
 
 export async function getAccountData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -233,9 +234,8 @@ export async function getAccountData() {
     // floor (1 trial analysis, FREE_LIFETIME_QUESTIONS questions) and of a
     // paid plan's monthly analysis allowance. entitlementUsage rows don't
     // cover these, so they're computed here.
-    const startOfMonth = new Date()
-    startOfMonth.setDate(1)
-    startOfMonth.setHours(0, 0, 0, 0)
+    // The reader's month, not the server's — see startOfAthensMonth.
+    const startOfMonth = startOfAthensMonth(new Date())
     const [entitlements, questionsAsked, analysesThisMonth] = await Promise.all([
         resolveUserEntitlements(userId),
         db.activityLog.count({

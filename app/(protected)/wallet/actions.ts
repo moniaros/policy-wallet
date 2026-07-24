@@ -31,6 +31,7 @@ import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from "@/lib/email/
 import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
 import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
 import { buildPolicyReviewData, sumInsuredTargetPath } from "@/lib/wallet/policy-review"
+import { startOfAthensDay, startOfAthensMonth } from "@/lib/policy-status"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -944,8 +945,12 @@ export async function analyzeGaps(policyId: string) {
     const dailyLimit = SUBSCRIPTION_LIMITS[tier].gapAnalysisPerDay
 
     if (dailyLimit !== null && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
+        // The reader's day, not the server's. setHours(0,0,0,0) is midnight in
+        // the RUNTIME zone — UTC on Vercel — so the daily allowance for a paid
+        // feature reset at 03:00 Athens: someone who used it up in the evening
+        // was still blocked at 1am, and a question asked at 2am counted against
+        // the previous day.
+        const today = startOfAthensDay(new Date())
 
         const count = await (db as any).activityLog.count({
             where: {
@@ -1063,9 +1068,8 @@ export async function getAIUsageStats() {
         return { count: 0, limit: 10, remaining: 10, creditBalance: 0 }
     }
 
-    const startOfMonth = new Date()
-    startOfMonth.setDate(1)
-    startOfMonth.setHours(0, 0, 0, 0)
+    // The reader's month, not the server's — see startOfAthensMonth.
+    const startOfMonth = startOfAthensMonth(new Date())
     const entitlements = await resolveUserEntitlements(authResult.dbUser.id)
 
     const [count, latestCreditTransaction] = await Promise.all([
@@ -1155,8 +1159,8 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     const dailyLimit = SUBSCRIPTION_LIMITS[tier].questionsPerDay
 
     if (dailyLimit !== null && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
+        // The reader's day, not the server's — see startOfAthensDay.
+        const today = startOfAthensDay(new Date())
 
         const count = await (db as any).activityLog.count({
             where: {
