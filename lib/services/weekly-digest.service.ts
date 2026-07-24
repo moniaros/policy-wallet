@@ -1,4 +1,4 @@
-import { calendarDaysUntil, startOfAthensDay } from "@/lib/policy-status"
+import { calendarDaysUntil, startOfAthensDay, athensWeekday } from "@/lib/policy-status"
 import { provisionalProtectionScore } from "./gap-engine/protection-score"
 import { db } from "../db"
 import { sendEmail } from "../email/email-service"
@@ -22,12 +22,17 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
     let errors = 0
 
     // Only run on Mondays (0=Sun, 1=Mon)
-    if (now.getDay() !== 1) {
+    // Monday in ATHENS. `now.getDay()` asks the runtime zone, so a cron firing
+    // late on a UTC Sunday would skip the digest on a day that is already Monday
+    // for every reader — and one firing late on a UTC Monday would send it on
+    // their Tuesday.
+    if (athensWeekday(now) !== 1) {
         return { emailsSent: 0, skipped: 0, errors: 0 }
     }
 
-    const todayStart = new Date(now)
-    todayStart.setHours(0, 0, 0, 0)
+    // Same clock for the already-sent guard: on a UTC boundary a reader could be
+    // sent two digests inside one Athens day, or none.
+    const todayStart = startOfAthensDay(now)
 
     const users = await db.user.findMany({
         where: {

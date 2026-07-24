@@ -17,7 +17,7 @@ import { getAgentPortalData } from "@/lib/services/agent-portal.service"
 import { getAgentPolicyVisibilityWhere, getVisiblePolicyCountsByOwner } from "@/lib/agent-visibility"
 import { presentCustomerIdentity } from "@/lib/agent-consent"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary, CrossSellOpportunityItem, AgentTaskItem } from "@/components/agent/types"
-import { calendarDaysUntil } from "@/lib/policy-status"
+import { calendarDaysUntil, startOfAthensDay, endOfAthensDay } from "@/lib/policy-status"
 
 export default async function DashboardPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -39,10 +39,12 @@ export default async function DashboardPage() {
 
     // Day boundaries for the agent's own pending-task widget (due today +
     // overdue). Computed here so the task query can join the parallel batch.
-    const startOfToday = new Date()
-    startOfToday.setHours(0, 0, 0, 0)
-    const endOfToday = new Date()
-    endOfToday.setHours(23, 59, 59, 999)
+    // The agent's day, not the server's. setHours is midnight in the RUNTIME
+    // zone — UTC on Vercel — so between midnight and 03:00 Athens the widget was
+    // a day behind: a task due today counted as upcoming, and yesterday's tasks
+    // still showed as due today.
+    const startOfToday = startOfAthensDay(new Date())
+    const endOfToday = endOfAthensDay(new Date())
 
     // What this agent may see: policies they uploaded PLUS policies the owner
     // explicitly granted them. This query used to filter on createdByUserId

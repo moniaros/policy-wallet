@@ -96,6 +96,25 @@ export function startOfAthensMonth(now: Date): Date {
     return startOfAthensDay(new Date(Date.UTC(y, m - 1, 1, 12, 0, 0)))
 }
 
+/** The last instant of the current Athens day — the closed end of a day range. */
+export function endOfAthensDay(now: Date): Date {
+    return new Date(startOfAthensDay(now).getTime() + 86_400_000 - 1)
+}
+
+/**
+ * The day of the week in Athens, 0 = Sunday, as `Date#getDay` would give it for
+ * the reader rather than for the server.
+ *
+ * A weekly job asking `now.getDay() !== 1` is asking whether it is Monday in the
+ * RUNTIME zone. Between 21:00 UTC Sunday and midnight it is already Monday in
+ * Athens and the answer is no; between 21:00 UTC Monday and midnight it is
+ * Tuesday in Athens and the answer is yes.
+ */
+export function athensWeekday(now: Date): number {
+    const name = new Intl.DateTimeFormat('en-US', { timeZone: APP_TIME_ZONE, weekday: 'short' }).format(now)
+    return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(name)
+}
+
 export type PolicyStatus =
     | 'active'
     | 'expiring_soon'

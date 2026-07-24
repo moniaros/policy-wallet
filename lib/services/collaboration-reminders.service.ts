@@ -1,5 +1,6 @@
 import { db } from "../db"
 import { sendNotification } from "../notifications"
+import { startOfAthensDay } from "@/lib/policy-status"
 
 type ReminderRunSummary = {
     unreadFollowupsSent: number
@@ -7,10 +8,13 @@ type ReminderRunSummary = {
     dailyDigestsSent: number
 }
 
+/**
+ * The reader's day. This was the runtime zone's midnight — UTC on Vercel — so
+ * the once-a-day guard on the collaboration digest opened at 03:00 Athens: a
+ * reader could receive two inside one of their days, or none.
+ */
 function startOfToday() {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    return d
+    return startOfAthensDay(new Date())
 }
 
 export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary> {

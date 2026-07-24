@@ -99,9 +99,38 @@ describe('metered allowances reset on the reader clock, not the server clock', (
         'lib/subscription-entitlements.ts',         // the entitlement meter itself
     ]
 
-    it('no meter opens its window at the runtime midnight', () => {
-        const offenders = METERS.filter((f) => /setHours\(0, ?0, ?0, ?0\)/.test(strip(readFileSync(f, 'utf-8'))))
-        expect(offenders, `server-midnight meters:\n${offenders.join('\n')}`).toEqual([])
+    it('NOTHING opens a day window at the runtime midnight', async () => {
+        // Scoped to the meters at first, which left three instances standing:
+        // the agent's due-today widget, the weekly digest's Monday check and
+        // already-sent guard, and the collaboration digest's once-a-day guard.
+        // policy-status owns the boundaries now, so nobody else needs setHours.
+        const { globSync } = await import('node:fs')
+        const offenders: string[] = []
+        for (const f of [...globSync('lib/**/*.ts'), ...globSync('app/**/*.ts'), ...globSync('app/**/*.tsx')]) {
+            if (f.endsWith('lib/policy-status.ts')) continue
+            if (/setHours\(\s*0, ?0, ?0, ?0\s*\)|setHours\(\s*23, ?59/.test(strip(readFileSync(f, 'utf-8')))) {
+                offenders.push(f)
+            }
+        }
+        expect(offenders, `runtime-midnight day windows:\n${offenders.join('\n')}`).toEqual([])
+    })
+
+    it('a weekly job asks which day it is for the READER', async () => {
+        const { athensWeekday } = await import('@/lib/policy-status')
+        // 21:30 UTC on Sunday 26 July 2026 is already Monday in Athens.
+        expect(athensWeekday(new Date('2026-07-26T21:30:00Z'))).toBe(1)
+        expect(new Date('2026-07-26T21:30:00Z').getUTCDay()).toBe(0)
+        // 21:30 UTC on Monday is Tuesday there.
+        expect(athensWeekday(new Date('2026-07-27T21:30:00Z'))).toBe(2)
+        expect(strip(readFileSync('lib/services/weekly-digest.service.ts', 'utf-8')))
+            .toMatch(/athensWeekday\(now\) !== 1/)
+    })
+
+    it('a closed day range ends when the reader day ends', async () => {
+        const { startOfAthensDay, endOfAthensDay } = await import('@/lib/policy-status')
+        const now = new Date('2026-07-24T09:00:00Z')
+        expect(endOfAthensDay(now).getTime() - startOfAthensDay(now).getTime()).toBe(86_400_000 - 1)
+        expect(endOfAthensDay(now).toISOString()).toBe('2026-07-24T20:59:59.999Z')
     })
 
     it('they use the shared Athens boundaries', () => {
