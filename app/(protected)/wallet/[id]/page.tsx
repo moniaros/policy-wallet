@@ -49,7 +49,10 @@ export default async function PolicyDetailPage({
                 analysisRuns: {
                     orderBy: { createdAt: 'desc' },
                     take: 1,
-                    select: { status: true, createdAt: true },
+                    // blockedReason distinguishes a GATED run (paywall / missing
+                    // consent) from a genuine failure — the coverage section must
+                    // not tell a blocked run to "re-analyse / upload a clearer copy".
+                    select: { status: true, createdAt: true, blockedReason: true },
                 },
                 gapInstances: {
                     // Match home / coverage-insights: 'open' alone under-counted,

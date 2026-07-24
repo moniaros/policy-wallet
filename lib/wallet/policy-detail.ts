@@ -222,6 +222,78 @@ export function normalizeRemindersSent(value: unknown): RenewalReminderMilestone
         .map((m) => ({ milestone: m.milestone as number, sentAt: m.sentAt as string }))
 }
 
+/**
+ * Why the coverage section has nothing to show, derived from the newest analysis
+ * run's status. These are NOT interchangeable: each points the reader at a
+ * different next step, and getting the mapping wrong misinforms them.
+ *
+ *  - never    → no run yet (queued/running included: nothing has produced a verdict)
+ *  - failed   → the run broke; retrying, or a clearer copy, is the right move
+ *  - blocked  → the run was GATED, not run: deep AI analysis is a Plus feature, or
+ *               the owner has not granted AI-processing consent. It did not fail,
+ *               the document is fine, and retrying reproduces the block — so the
+ *               copy must point at the real unlock (upgrade / consent), never "retry".
+ *  - degraded → completed_with_warnings: steps failed, sections are missing;
+ *               retrying often helps because the cause is frequently transient.
+ *  - empty    → a clean completed run that simply found no structured coverage;
+ *               re-running the same file will most likely give the same nothing.
+ */
+export type CoverageAbsence = "never" | "failed" | "blocked" | "degraded" | "empty"
+
+export function resolveCoverageAbsence(lastRunStatus: string | null | undefined): CoverageAbsence {
+    if (!lastRunStatus) return "never"
+    if (lastRunStatus === "blocked") return "blocked"
+    if (lastRunStatus === "failed") return "failed"
+    if (lastRunStatus === "completed_with_warnings") return "degraded"
+    if (lastRunStatus === "completed") return "empty"
+    return "never" // queued / running — nothing has produced a verdict yet
+}
+
+/** The 12 copy strings the coverage-absence card can render, keyed by i18n name. */
+export interface CoverageAbsenceCopy {
+    analysisNeverRun: string
+    analysisNeverRunHint: string
+    analysisFailedTitle: string
+    analysisFailedHint: string
+    analysisBlockedConsentTitle: string
+    analysisBlockedConsentHint: string
+    analysisBlockedUpgradeTitle: string
+    analysisBlockedUpgradeHint: string
+    analysisDegradedTitle: string
+    analysisDegradedHint: string
+    analysisFoundNothingTitle: string
+    analysisFoundNothingHint: string
+}
+
+/**
+ * Resolve the exact title/hint the coverage-absence card shows. Pure so the
+ * mapping — especially that a `blocked` run never shows the `failed`/retry copy,
+ * and splits consent vs upgrade on blockedReason — can be pinned without a render.
+ */
+export function resolveCoverageAbsenceCopy(
+    lastRunStatus: string | null | undefined,
+    blockedReason: string | null | undefined,
+    copy: CoverageAbsenceCopy,
+): { absence: CoverageAbsence; title: string; hint: string } {
+    const absence = resolveCoverageAbsence(lastRunStatus)
+    switch (absence) {
+        case "never":
+            return { absence, title: copy.analysisNeverRun, hint: copy.analysisNeverRunHint }
+        case "failed":
+            return { absence, title: copy.analysisFailedTitle, hint: copy.analysisFailedHint }
+        case "blocked":
+            // ai_consent_missing → the owner must consent; anything else (e.g.
+            // free_tier_ai_locked) → the feature is behind Plus.
+            return blockedReason === "ai_consent_missing"
+                ? { absence, title: copy.analysisBlockedConsentTitle, hint: copy.analysisBlockedConsentHint }
+                : { absence, title: copy.analysisBlockedUpgradeTitle, hint: copy.analysisBlockedUpgradeHint }
+        case "degraded":
+            return { absence, title: copy.analysisDegradedTitle, hint: copy.analysisDegradedHint }
+        case "empty":
+            return { absence, title: copy.analysisFoundNothingTitle, hint: copy.analysisFoundNothingHint }
+    }
+}
+
 export type PolicyHealthLevel = "good" | "moderate" | "attention"
 
 export interface PolicyHealthScore {

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { el } from '@/lib/i18n/translations/el'
 import { en } from '@/lib/i18n/translations/en'
+import { resolveCoverageAbsence } from '@/lib/wallet/policy-detail'
 
 const view = readFileSync('components/wallet/PolicyDetailsClientView.tsx', 'utf-8')
 const page = readFileSync('app/(protected)/wallet/[id]/page.tsx', 'utf-8')
@@ -9,51 +10,55 @@ const elCopy = el.wallet.policyDetailsPage
 const enCopy = en.wallet.policyDetailsPage
 
 /**
- * "No coverage details" has three causes and they need three answers:
+ * "No coverage details" has several causes and they need different answers:
  *
  *   never    nothing has been analysed yet          → run an analysis
- *   failed   the last run failed or was blocked     → retry, and if it fails
- *                                                     again the file may be
- *                                                     unreadable
- *   empty    a run completed and found no structured
- *            coverage in the document               → re-running the SAME file
+ *   failed   the last run broke                      → retry, and if it fails
+ *                                                     again the file may be unreadable
+ *   blocked  the run was GATED, not run (Plus /      → upgrade, or grant consent —
+ *            consent) — see analysis-blocked-state     NOT retry (see that spec)
+ *   degraded completed_with_warnings                 → retry; the cause is transient
+ *   empty    a clean run found no structured cover   → re-running the SAME file
  *                                                     gives the same nothing
  *
- * All three used to render one message: "re-analyse to show detailed coverage".
- * Right for the first, it hides a problem in the second, and in the third it
- * tells the reader to spend a metered analysis on a run that cannot help.
- *
- * Verified against seeded runs: no runs → «Δεν έχει γίνει ακόμη ανάλυση…»,
- * failed → «Η τελευταία ανάλυση δεν ολοκληρώθηκε», completed → «Η ανάλυση
- * ολοκληρώθηκε χωρίς αναλυτικές καλύψεις».
+ * These all used to render one message: "re-analyse to show detailed coverage".
+ * The state derivation is now a pure function (resolveCoverageAbsence) so it can
+ * be asserted directly rather than by scraping the component source.
  */
-describe('the coverage-absence message says which of the four happened', () => {
-    it('loads the latest run so the state is knowable at all', () => {
+describe('the coverage-absence message says which happened', () => {
+    it('loads the latest run — with blockedReason — so the state is knowable at all', () => {
         expect(page).toMatch(/analysisRuns: \{/)
         expect(page).toMatch(/orderBy: \{ createdAt: 'desc' \}/)
-        expect(page).toMatch(/select: \{ status: true, createdAt: true \}/)
+        // blockedReason must travel with the run, else a gated run cannot be told
+        // apart from a failure (the whole point of the blocked state).
+        expect(page).toMatch(/select: \{ status: true, createdAt: true, blockedReason: true \}/)
     })
 
     it('maps every AnalysisRunStatus to a state', () => {
         // queued/running have produced no verdict, so they read as "never".
-        expect(view).toMatch(/if \(!last\) return "never"/)
-        expect(view).toMatch(/last === "failed" \|\| last === "blocked"/)
-        // completed_with_warnings used to share the "empty" branch with a clean
-        // completion — and therefore its copy, which says retrying will not help.
-        expect(view).toMatch(/last === "completed_with_warnings"\) return "degraded"/)
-        expect(view).toMatch(/last === "completed"\) return "empty"/)
+        expect(resolveCoverageAbsence(undefined)).toBe('never')
+        expect(resolveCoverageAbsence('queued')).toBe('never')
+        expect(resolveCoverageAbsence('running')).toBe('never')
+        expect(resolveCoverageAbsence('failed')).toBe('failed')
+        expect(resolveCoverageAbsence('blocked')).toBe('blocked')
+        // completed_with_warnings must NOT share the "empty" branch with a clean
+        // completion — its copy would then say retrying will not help.
+        expect(resolveCoverageAbsence('completed_with_warnings')).toBe('degraded')
+        expect(resolveCoverageAbsence('completed')).toBe('empty')
     })
 
-    it('renders the branched copy, not the single old line', () => {
+    it('renders the resolved copy, not the single old line', () => {
+        expect(view).toMatch(/resolveCoverageAbsenceCopy\(/)
         expect(view).toMatch(/\{absenceCopy\.title\}/)
         expect(view).toMatch(/\{absenceCopy\.hint\}/)
         expect(view).not.toMatch(/\{detailsCopy\.reanalyzeToSeeCoverage\}/)
     })
 
-    it('ships all four states in both languages', () => {
+    it('ships every state in both languages', () => {
         for (const key of ['analysisNeverRun', 'analysisNeverRunHint', 'analysisFailedTitle',
-            'analysisFailedHint', 'analysisDegradedTitle', 'analysisDegradedHint',
-            'analysisFoundNothingTitle', 'analysisFoundNothingHint'] as const) {
+            'analysisFailedHint', 'analysisBlockedConsentTitle', 'analysisBlockedConsentHint',
+            'analysisBlockedUpgradeTitle', 'analysisBlockedUpgradeHint', 'analysisDegradedTitle',
+            'analysisDegradedHint', 'analysisFoundNothingTitle', 'analysisFoundNothingHint'] as const) {
             expect(elCopy[key], `el.${key}`).toBeTruthy()
             expect(enCopy[key], `en.${key}`).toBeTruthy()
             expect(elCopy[key], `el.${key} must be Greek`).toMatch(/[Ͱ-Ͽ]/)

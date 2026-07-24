@@ -37,6 +37,7 @@ import {
     hasAutoRenewal,
     normalizeRenewalHistory,
     parsePolicyDate,
+    resolveCoverageAbsenceCopy,
     type PolicyRenewalEntry,
 } from "@/lib/wallet/policy-detail"
 import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react"
@@ -261,21 +262,14 @@ export function PolicyDetailsClient({
     // because the cause is often transient. The AnalysisCard on this same route
     // already knew the run was degraded and listed the missing sections, so the
     // two halves of one page disagreed about whether retrying was worth it.
-    const coverageAbsence: "never" | "failed" | "degraded" | "empty" = (() => {
-        const last = policy.analysisRuns?.[0]?.status
-        if (!last) return "never"
-        if (last === "failed" || last === "blocked") return "failed"
-        if (last === "completed_with_warnings") return "degraded"
-        if (last === "completed") return "empty"
-        return "never"   // queued / running — nothing has produced a verdict yet
-    })()
-
-    const absenceCopy = {
-        never: { title: detailsCopy.analysisNeverRun, hint: detailsCopy.analysisNeverRunHint },
-        failed: { title: detailsCopy.analysisFailedTitle, hint: detailsCopy.analysisFailedHint },
-        degraded: { title: detailsCopy.analysisDegradedTitle, hint: detailsCopy.analysisDegradedHint },
-        empty: { title: detailsCopy.analysisFoundNothingTitle, hint: detailsCopy.analysisFoundNothingHint },
-    }[coverageAbsence]
+    // A "blocked" run is GATED, not failed — the deep AI analysis is a Plus
+    // feature, or the owner has not granted AI-processing consent. Lumping it into
+    // "failed" told the reader the analysis broke and to re-analyse or upload a
+    // clearer copy: all three wrong (it did not fail, retrying reproduces the
+    // block, the document is fine). It gets its own state, pointing at the real
+    // resolution — upgrade or consent — read from the run's blockedReason.
+    const lastRun = policy.analysisRuns?.[0]
+    const absenceCopy = resolveCoverageAbsenceCopy(lastRun?.status, lastRun?.blockedReason, detailsCopy)
 
     const gapsForAnalysis = (policy.gapInstances || []).map((gap: any) => ({
         id: gap.id,

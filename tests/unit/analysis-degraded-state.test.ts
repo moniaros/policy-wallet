@@ -1,10 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'node:fs'
 import { el } from '@/lib/i18n/translations/el'
 import { en } from '@/lib/i18n/translations/en'
-
-const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
-const VIEW = strip(readFileSync('components/wallet/PolicyDetailsClientView.tsx', 'utf-8'))
+import { resolveCoverageAbsence } from '@/lib/wallet/policy-detail'
 
 /**
  * A run that finishes `completed_with_warnings` had steps fail; sections are
@@ -21,25 +18,22 @@ const VIEW = strip(readFileSync('components/wallet/PolicyDetailsClientView.tsx',
  */
 describe('a degraded analysis is not reported as an empty one', () => {
     it('has its own state', () => {
-        expect(VIEW).toMatch(/"never" \| "failed" \| "degraded" \| "empty"/)
-        expect(VIEW).toMatch(/if \(last === "completed_with_warnings"\) return "degraded"/)
+        expect(resolveCoverageAbsence('completed_with_warnings')).toBe('degraded')
     })
 
     it('no longer folds warnings into the clean-completion branch', () => {
-        expect(VIEW).not.toMatch(/last === "completed" \|\| last === "completed_with_warnings"/)
-        expect(VIEW).toMatch(/if \(last === "completed"\) return "empty"/)
+        // A clean completion is "empty"; a degraded one must not share it.
+        expect(resolveCoverageAbsence('completed')).toBe('empty')
+        expect(resolveCoverageAbsence('completed_with_warnings')).not.toBe(
+            resolveCoverageAbsence('completed'),
+        )
     })
 
     it('a run still in flight remains "never", not "empty"', () => {
         // queued / running have produced no verdict; the fallthrough must not
         // start claiming one.
-        expect(VIEW).toMatch(/return "never"\s*$/m)
-    })
-
-    it('maps every state to copy', () => {
-        for (const state of ['never', 'failed', 'degraded', 'empty']) {
-            expect(VIEW).toMatch(new RegExp(`${state}: \\{ title: detailsCopy\\.`))
-        }
+        expect(resolveCoverageAbsence('queued')).toBe('never')
+        expect(resolveCoverageAbsence('running')).toBe('never')
     })
 })
 
