@@ -6,7 +6,7 @@ import { DashboardClient } from "../DashboardClient"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getPrimaryRole } from "@/lib/auth/role-routing"
 import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
-import { computeClientHealthScore } from "@/lib/agent/health-score"
+import { computeClientRelationshipScore } from "@/lib/agent/health-score"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
 import { computeAgentBookRevenue, MAX_PLAUSIBLE_ANNUAL_PREMIUM } from "@/lib/agent/revenue"
@@ -402,7 +402,7 @@ export default async function DashboardPage() {
         const clientPolicies = policiesByOwner.get(rel.policyholderUserId) ?? []
         const clientGaps = clientPolicies.reduce((sum, p) => sum + (gapCountByPolicy.get(p.id) ?? 0), 0)
 
-        const healthScore = computeClientHealthScore({
+        const healthScore = computeClientRelationshipScore({
             policyCount: clientPolicies.length,
             openGapsCount: clientGaps,
             lastInteractionDate: rel.lastInteractionAt?.toISOString() || null,

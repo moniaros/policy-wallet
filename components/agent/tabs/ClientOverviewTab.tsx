@@ -6,7 +6,7 @@ import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { getHealthScoreColor } from "@/lib/agent/health-score"
+import { getRelationshipScoreColor } from "@/lib/agent/health-score"
 import { formatDateShort } from "@/lib/agent/format"
 import type { Customer, Policy, Opportunity } from "../types"
 
@@ -26,7 +26,7 @@ export function ClientOverviewTab({
     onCreateProposal,
 }: ClientOverviewTabProps) {
     const { language, t } = useLanguage()
-    const scoreColor = getHealthScoreColor(healthScore)
+    const scoreColor = getRelationshipScoreColor(healthScore)
 
     const activePolicies = policies.filter((p) => p.status === "active" || p.status === "expiring_soon")
     const openOpportunities = opportunities.filter((o) => o.status === "open" || o.status === "contacted")
@@ -41,7 +41,14 @@ export function ClientOverviewTab({
 
     return (
         <div className="grid grid-cols-12 gap-5">
-            {/* Coverage Health Score */}
+            {/*
+                Not a coverage verdict. This donut renders computeClientRelationshipScore,
+                40 of whose 100 points are the agent's own contact recency and the
+                client's account state — yet it was headed «Βαθμός υγείας κάλυψης» and
+                captioned «Κρίσιμα κενά» below 40, asserting critical gaps for a client
+                whose gap SEVERITIES were never consulted. It now describes the
+                relationship, which is what it measures.
+            */}
             <div className="col-span-4">
                 <BrandCard className="p-6 flex flex-col items-center text-center">
                     <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
@@ -70,6 +77,9 @@ export function ClientOverviewTab({
                             : healthScore >= 40
                                 ? t.clientOverview.needsImprovement
                                 : t.clientOverview.criticalGaps}
+                    </p>
+                    <p className="mt-2 text-micro leading-snug text-muted-foreground">
+                        {t.clientOverview.healthScoreHint}
                     </p>
                 </BrandCard>
             </div>

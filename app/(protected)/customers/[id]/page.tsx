@@ -6,7 +6,7 @@ import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { notFound } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { canAgentUseFeature, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
-import { computeHealthScoreFromCustomer } from "@/lib/agent/health-score"
+import { computeRelationshipScoreFromCustomer } from "@/lib/agent/health-score"
 
 interface Props {
     params: { id: string }
@@ -21,7 +21,7 @@ export default async function CustomerProfilePage({ params }: Props) {
     // Compute data for ClientDetailView
     const agentEntitlements = await resolveAgentEntitlements(dbUser.id)
     const canBrandedReport = await canAgentUseFeature(dbUser.id, "brandedReport")
-    const healthScore = computeHealthScoreFromCustomer(customer)
+    const healthScore = computeRelationshipScoreFromCustomer(customer)
 
     return (
         <>
