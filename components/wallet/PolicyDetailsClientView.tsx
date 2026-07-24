@@ -538,6 +538,19 @@ export function PolicyDetailsClient({
                     <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
                 </nav>
 
+                {/* Every analysed policy is written reviewState:"unconfirmed", and only
+                    an agent can clear it (canReviewExtraction gates on isAgentRole). A
+                    self-serve policyholder therefore has every policy permanently
+                    unconfirmed and was never told — while an agent got a banner. They
+                    are given the fact, not the agent's confirm action: someone
+                    "confirming" AI output they have not checked against the document
+                    would be worse than leaving it unconfirmed. */}
+                {!canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
+                    <p className="mb-5 rounded-2xl border border-black/10 bg-black/[0.02] px-4 py-3 text-caption leading-snug text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/70">
+                        {t.wallet.review.ownerUnverifiedNote}
+                    </p>
+                )}
+
                 {/* Extraction review banner — agent-only verification step,
                     shown until a reviewing agent confirms the AI-extracted data */}
                 {canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (

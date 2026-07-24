@@ -794,6 +794,7 @@ export const en: TranslationKeys = {
             flagReasonPlaceholder: 'What looks wrong? (optional)',
             flagSubmit: 'Submit report',
             flagSubmitted: 'Thanks — we recorded the issue. You can retry the analysis or correct the fields yourself.',
+            ownerUnverifiedNote: 'These details were read from your document by AI and have not been verified. Check them against your policy before relying on them.',
             agentBannerCta: 'Review the AI-extracted details for this policy',
             reviewNow: 'Review now',
             viewPolicy: 'View policy',
