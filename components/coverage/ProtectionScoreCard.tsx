@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 import { ScoreMethodology } from "@/components/coverage/ScoreMethodology"
+import { getTranslations } from "@/lib/i18n"
 interface CategoryScoreData {
     key: string
     label: { en: string; el: string }
@@ -50,6 +51,7 @@ export function ProtectionScoreCard({
 }: ProtectionScoreCardProps) {
     const router = useRouter()
     const lang = language
+    const methodology = getTranslations(lang).dashboard.home
 
     const copy = {
         title: lang === "el" ? "Βαθμολογία Προστασίας" : "Protection Score",
@@ -68,16 +70,17 @@ export function ProtectionScoreCard({
         // A 0–100 figure with a colour verdict and no stated method is exactly
         // what a policyholder could act on without understanding. Same wording
         // as the /dashboard tile so the two surfaces agree.
-        methodTitle: lang === "el" ? "Πώς υπολογίζεται η βαθμολογία;" : "How is this score calculated?", // i18n-hardcoded-ignore
-        methodBody: lang === "el"
-            ? "Συγκρίνουμε τους κλάδους ασφάλισης που θα ήταν αναμενόμενοι για το προφίλ σας με αυτούς που πράγματι έχετε, και αφαιρούμε μονάδες για κενά που εντοπίζονται μέσα στα συμβόλαια που ήδη κατέχετε. Κάθε κατηγορία σταθμίζεται ανάλογα με τη σημασία της."
-            : "We compare the lines of insurance that would be expected for your profile against the ones you actually hold, then deduct points for gaps found inside the policies you already have. Each category is weighted by how important it is.", // i18n-hardcoded-ignore
-        methodLimits: lang === "el"
-            ? "Η βαθμολογία ΔΕΝ αξιολογεί ασφάλιστρα, ασφαλιστικές εταιρείες ούτε την ποιότητα των όρων του συμβολαίου σας."
-            : "The score does NOT assess premiums, insurers, or the quality of your policy wording.", // i18n-hardcoded-ignore
-        methodNotAdvice: lang === "el"
-            ? "Πρόκειται για ενημερωτική ένδειξη με βάση τα έγγραφα που έχετε ανεβάσει — δεν αποτελεί εξατομικευμένη ασφαλιστική συμβουλή. Για σύσταση προσαρμοσμένη στις ανάγκες σας απευθυνθείτε σε αδειοδοτημένο ασφαλιστικό διαμεσολαβητή."
-            : "This is an informational indicator based on the documents you have uploaded — it is not personalised insurance advice. For a recommendation suited to your circumstances, speak to a licensed insurance intermediary.", // i18n-hardcoded-ignore
+        // Single source of truth. These four strings — including a REGULATED
+        // not-personalised-advice disclaimer — were duplicated here as inline
+        // literals with `i18n-hardcoded-ignore`, while identical copies lived in
+        // the translation files feeding the /dashboard tile. The comment above
+        // says the two surfaces must agree; hand-copied compliance wording
+        // agrees only until someone edits one of them. Legal review has one
+        // place to change now.
+        methodTitle: methodology.scoreMethodologyTitle,
+        methodBody: methodology.scoreMethodologyBody,
+        methodLimits: methodology.scoreMethodologyLimits,
+        methodNotAdvice: methodology.scoreMethodologyNotAdvice,
     }
 
     const scoreColor =
