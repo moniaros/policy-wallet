@@ -37,6 +37,11 @@ vi.mock('@/lib/db', () => ({
 }))
 vi.mock('@/lib/logger', () => ({ logger: vi.fn() }))
 
+const mockRefresh = vi.fn((..._a: unknown[]) => Promise.resolve({} as any))
+vi.mock('@/lib/services/gap-engine', () => ({
+    refreshProtectionScore: (...a: unknown[]) => mockRefresh(...a),
+}))
+
 import { decidePolicyMerge, requestPolicyMerge } from '@/lib/services/policy-merge.service'
 
 const AGENT = 'agent_1'
@@ -131,6 +136,7 @@ describe('decidePolicyMerge', () => {
         policyFindUnique
             .mockResolvedValueOnce({
                 id: 'pol_existing',
+                ownerUserId: OWNER,
                 endDate: new Date('2025-05-22'),
                 acordData: {},
                 documents: [],
@@ -138,6 +144,7 @@ describe('decidePolicyMerge', () => {
             })
             .mockResolvedValueOnce({
                 id: 'pol_incoming',
+                ownerUserId: OWNER,
                 endDate: new Date('2027-07-11'), // newer → promoted
                 acordData: { policy: { expirationDate: '2027-07-11' } },
                 documents: [{ id: 'doc_1', fileName: 'p.pdf', uploadedAt: new Date() }],
@@ -157,6 +164,16 @@ describe('decidePolicyMerge', () => {
             expect.objectContaining({ where: { policyId: 'pol_incoming' }, data: { policyId: 'pol_existing' } })
         )
         expect(policyDelete).toHaveBeenCalledWith({ where: { id: 'pol_incoming' } })
+        // Two policies became one — the owner's duplicate-coverage gap and score
+        // must recompute, for the OWNER, not whoever approved.
+        expect(mockRefresh).toHaveBeenCalledWith(OWNER)
+    })
+
+    it('does not recompute when a merge is rejected (both records kept)', async () => {
+        mergeFindUnique.mockResolvedValue(pending)
+        const result = await decidePolicyMerge('mr_1', OWNER, 'rejected')
+        expect(result.ok).toBe(true)
+        expect(mockRefresh).not.toHaveBeenCalled()
     })
 
     it('a decided request cannot be decided twice', async () => {

@@ -183,6 +183,22 @@ export async function mergePolicyRecords(
         incomingPolicyId: incoming.id,
     })
 
+    // A merge changes the owner's portfolio — two rows become one, and the
+    // survivor may take the incoming policy's line/dates/premium. So the
+    // duplicate-coverage gap that the pair may have raised should clear, and the
+    // score reflects one policy where there were two. Recompute for the owner
+    // (both merge callers — admin and the customer's decide flow — reach here).
+    // Deterministic, best-effort: a recompute failure must not undo the merge.
+    try {
+        const { refreshProtectionScore } = await import("@/lib/services/gap-engine")
+        await refreshProtectionScore(existing.ownerUserId)
+    } catch (error) {
+        logger("warn", "Gap recompute after policy merge failed", {
+            policyId: existing.id,
+            error: error instanceof Error ? error.message : String(error),
+        })
+    }
+
     return { ok: true, mergedIntoPolicyId: existing.id, policyNumber: existing.policyNumber }
 }
 
