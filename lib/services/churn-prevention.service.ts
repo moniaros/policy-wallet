@@ -1,4 +1,5 @@
 import { db } from "../db"
+import { startOfAthensDay } from "@/lib/policy-status"
 import { sendEmail } from "../email/email-service"
 import { calculateEngagementScore } from "./engagement-scoring"
 import {
@@ -123,8 +124,18 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
             if (tier === "day7") {
                 // Get policy data for context
                 const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+                // The window had no LOWER bound, and `status: "active"` is not one:
+                // the stored status is never updated to "expired" (see
+                // isPremiumBearing), so this counted policies that lapsed years
+                // ago and told the reader they expire in the next 30 days — a
+                // false statement, in an outbound email, to a user the product is
+                // trying to win back.
                 const expiringPolicies = await db.policy.count({
-                    where: { ownerUserId: user.id, status: "active", endDate: { lte: thirtyDaysOut } },
+                    where: {
+                        ownerUserId: user.id,
+                        status: "active",
+                        endDate: { gte: startOfAthensDay(now), lte: thirtyDaysOut },
+                    },
                 })
                 const openGaps = await db.gapInstance.count({
                     where: {

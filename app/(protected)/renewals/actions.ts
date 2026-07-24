@@ -208,14 +208,14 @@ export async function getRenewalStats(): Promise<{
             where: {
                 agentUserId: dbUser.id,
                 status: "pending",
-                policyEndDate: { gte: now, lte: weekFromNow },
+                policyEndDate: { gte: startOfAthensDay(now), lte: weekFromNow },
             },
         }),
         db.policyRenewal.count({
             where: {
                 agentUserId: dbUser.id,
                 status: "pending",
-                policyEndDate: { gte: now, lte: monthFromNow },
+                policyEndDate: { gte: startOfAthensDay(now), lte: monthFromNow },
             },
         }),
         db.policyRenewal.findMany({

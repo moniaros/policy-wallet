@@ -8,6 +8,7 @@
  * Run as a daily cron job via /api/v1/jobs/perk-reminders
  */
 
+import { startOfAthensDay } from "@/lib/policy-status"
 import { db } from "@/lib/db"
 import { sendNotification } from "@/lib/notifications"
 import { logger } from "@/lib/logger"
@@ -43,7 +44,8 @@ export async function runPerkReminderScan(): Promise<{
         const activePolicies = await db.policy.findMany({
             where: {
                 status: { in: ["active", "pending_review"] },
-                endDate: { gt: new Date() },
+                // A policy in force until tonight still has its perks.
+                endDate: { gte: startOfAthensDay(new Date()) },
                 acordData: { not: undefined },
             },
             select: {

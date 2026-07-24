@@ -1,4 +1,4 @@
-import { calendarDaysUntil } from "@/lib/policy-status"
+import { calendarDaysUntil, startOfAthensDay } from "@/lib/policy-status"
 import { db } from "../db"
 import { sendEmail } from "../email/email-service"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
@@ -84,7 +84,11 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 where: {
                     ownerUserId: user.id,
                     status: "active",
-                    endDate: { gt: now, lte: thirtyDaysOut },
+                    // From the start of TODAY in Athens. End dates are stored at
+                    // midnight, so `gt: now` dropped a policy expiring today from
+                    // the digest that lands in the owner's inbox — the one item
+                    // in it they could still act on.
+                    endDate: { gte: startOfAthensDay(now), lte: thirtyDaysOut },
                 },
                 select: { insurerName: true, lineOfBusiness: true, endDate: true },
                 orderBy: { endDate: "asc" },
