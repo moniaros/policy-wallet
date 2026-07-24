@@ -553,19 +553,22 @@ export async function addPolicyForCustomer(data: {
                         startDate,
                         NOT: { status: 'cancelled' },
                     },
-                    select: { id: true, policyNumber: true, insurerName: true, lineOfBusiness: true, startDate: true },
+                    select: { policyNumber: true, insurerName: true },
                 })
                 : null
             if (existing) {
                 return {
                     success: false as const,
                     duplicate: true as const,
+                    // Data minimization: this row may be a policy the customer
+                    // uploaded themselves, which the agent holds no grant for —
+                    // the match is on keys the agent just typed. Send only what
+                    // the warning actually renders. The internal id in particular
+                    // is a capability handle for id-taking endpoints and was
+                    // never read by the client.
                     existing: {
-                        id: existing.id,
                         policyNumber: existing.policyNumber,
                         insurerName: existing.insurerName,
-                        lineOfBusiness: existing.lineOfBusiness,
-                        startDate: existing.startDate.toISOString(),
                     },
                 }
             }

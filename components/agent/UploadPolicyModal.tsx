@@ -21,11 +21,8 @@ interface Props {
 type View = 'upload' | 'parsing' | 'resolve' | 'confirm' | 'duplicate' | 'success'
 
 interface DuplicatePolicy {
-    id: string
     policyNumber: string
     insurerName: string
-    lineOfBusiness: string
-    startDate: string
 }
 
 interface Extraction {

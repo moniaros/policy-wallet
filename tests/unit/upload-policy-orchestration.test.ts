@@ -167,7 +167,16 @@ describe('commitScannedPolicy', () => {
 
         const res = await commitScannedPolicy({ mode: 'attach', customerId: 'cust-9' }, POLICY)
 
-        expect(res).toMatchObject({ success: false, duplicate: true, existing: expect.objectContaining({ id: 'pol-existing' }) })
+        expect(res).toMatchObject({
+            success: false,
+            duplicate: true,
+            existing: { policyNumber: 'P-1', insurerName: 'Allianz' },
+        })
+        // Data minimization: the matched row may be a policy the customer
+        // uploaded themselves, which this agent holds no grant for. Only the two
+        // fields the warning renders go over the wire — never the internal id,
+        // which is a capability handle for every id-taking policy endpoint.
+        expect((res as any).existing).not.toHaveProperty('id')
         expect(dbTransaction).not.toHaveBeenCalled() // no policy created
         // The duplicate query is scoped to owner + number + branch + start date.
         expect(policyFindFirst).toHaveBeenCalledWith(expect.objectContaining({
