@@ -1791,7 +1791,7 @@ export const en: TranslationKeys = {
         modifyPlan: 'Modify Plan',
         terminateCycle: 'Cancel renewal',
         cancelConfirmTitle: 'Cancel auto-renewal?',
-        cancelConfirmBody: 'Auto-renewal will stop. You keep access to your current plan until the end of the period you have already paid for — there is no partial refund for the remaining time.',
+        cancelConfirmBody: 'Auto-renewal will stop. You keep access to your current plan until the end of the period you have already paid for. Cancelling does not by itself refund the remaining time — but if you are within 14 days of starting the subscription you have a right of withdrawal with a pro-rata refund (Terms, §5). Email us at info@policywallet.gr.',
         cancelConfirmCta: 'Cancel renewal',
         invoiceRecords: 'Invoice Records',
         noInvoices: 'No financial records detected yet.',
