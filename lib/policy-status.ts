@@ -1,6 +1,39 @@
 import type { Policy } from '@prisma/client'
 import { parseDocumentDate } from '@/lib/dates/document-date'
 
+/**
+ * The product operates in Greece and lib/i18n/format.ts already settled that
+ * "dates are meaningful in Athens time" — but only for DISPLAY. The lifecycle
+ * verdict was computed from raw UTC instants, so between 21:00 and midnight UTC
+ * (the Athens offset) a policy whose cover ended yesterday in the customer's own
+ * calendar still resolved to daysUntilExpiry = 0, i.e. "expiring soon" rather
+ * than "expired". Every night, for two to three hours, the product told a
+ * policyholder they were still covered when they were not — and
+ * isPolicyCoverageActive shares this resolution, so gap detection and the
+ * protection score counted the lapsed policy as protection too.
+ *
+ * Expiry is a calendar fact, not an instant: compare Athens calendar days.
+ */
+const APP_TIME_ZONE = 'Europe/Athens'
+
+/** Whole days from `now` to `end`, counted on the Athens calendar. */
+function calendarDaysUntil(end: Date, now: Date): number {
+    const dayNumber = (d: Date) => {
+        // en-CA renders as YYYY-MM-DD, so the parts sort and parse directly.
+        const [y, m, day] = new Intl.DateTimeFormat('en-CA', {
+            timeZone: APP_TIME_ZONE,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        })
+            .format(d)
+            .split('-')
+            .map(Number)
+        return Date.UTC(y, m - 1, day) / 86_400_000
+    }
+    return dayNumber(end) - dayNumber(now)
+}
+
 export type PolicyStatus =
     | 'active'
     | 'expiring_soon'
@@ -53,9 +86,7 @@ export function resolvePolicyLifecycle(policy: {
         latestRenewalEnd ??
         (envelopeRaw ? parseDocumentDate(envelopeRaw) : parseDocumentDate(policy.endDate ?? null))
 
-    const daysUntilExpiry = endDate
-        ? Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-        : null
+    const daysUntilExpiry = endDate ? calendarDaysUntil(endDate, now) : null
 
     const stored = String(policy.status || '').toLowerCase()
     if (stored === 'cancelled') return { status: 'cancelled', endDate, daysUntilExpiry }
@@ -91,11 +122,14 @@ type CoverageInput = Parameters<typeof resolvePolicyLifecycle>[0]
  * review screen demands the date) — we refuse to invent an expiry we cannot
  * read, in either direction.
  */
-export function isPolicyCoverageActive(policy: CoverageInput): boolean {
+export function isPolicyCoverageActive(policy: CoverageInput, now: Date = new Date()): boolean {
     const stored = String(policy.status || '').toLowerCase()
     if (stored === 'analyzing' || stored === 'cancelled') return false
 
-    const { status } = resolvePolicyLifecycle(policy)
+    // `now` is injectable so the day-boundary behaviour can be asserted; without
+    // it "is this person covered right now?" could only be tested at whatever
+    // instant the suite happened to run.
+    const { status } = resolvePolicyLifecycle(policy, now)
     return status !== 'expired' && status !== 'cancelled'
 }
 
