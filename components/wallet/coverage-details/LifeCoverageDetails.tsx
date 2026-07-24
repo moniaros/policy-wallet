@@ -1,5 +1,6 @@
 "use client"
 
+import { formatCurrency } from "@/lib/i18n/format"
 import {
   TrendingUp,
   TrendingDown,
@@ -38,8 +39,8 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
 
   if (!hasAnyData) return null
 
-  const formatCurrency = (value: number) =>
-    value.toLocaleString(language === "el" ? "el-GR" : "en-GB", { style: "currency", currency: "EUR" })
+  // Shared formatter — these three files each carried an identical private copy.
+  const fmt = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 2 })
 
   return (
     <div className="space-y-3">
@@ -52,7 +53,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
               </div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.fundValue}</span>
             </div>
-            <span className="text-xl font-black text-primary dark:text-mint">{formatCurrency(life.currentFundValue)}</span>
+            <span className="text-xl font-black text-primary dark:text-mint">{fmt(life.currentFundValue)}</span>
           </div>
           {life.ytdGrowth !== undefined && (
             <div className="mt-2 ml-12.5 flex items-center gap-1.5">
@@ -165,7 +166,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
                 <p className="text-xs text-[#B45309]/80 dark:text-amber-400/80">{lifeCopy.surrenderWarning}</p>
               </div>
             </div>
-            <span className="text-sm font-bold text-[#B45309] dark:text-amber-300">{formatCurrency(life.surrenderValue)}</span>
+            <span className="text-sm font-bold text-[#B45309] dark:text-amber-300">{fmt(life.surrenderValue)}</span>
           </div>
         </div>
       )}
@@ -184,7 +185,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
             </div>
           </div>
           {life.lastPremiumAmount !== undefined && (
-            <span className="text-sm font-bold text-black dark:text-white">{formatCurrency(life.lastPremiumAmount)}</span>
+            <span className="text-sm font-bold text-black dark:text-white">{fmt(life.lastPremiumAmount)}</span>
           )}
         </div>
       )}

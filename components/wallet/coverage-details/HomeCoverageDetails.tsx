@@ -1,5 +1,6 @@
 "use client"
 
+import { formatCurrency } from "@/lib/i18n/format"
 import {
   Phone,
   CheckCircle2,
@@ -41,8 +42,8 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
 
   if (!hasAnyData) return null
 
-  const formatCurrency = (value: number) =>
-    value.toLocaleString(language === "el" ? "el-GR" : "en-GB", { style: "currency", currency: "EUR" })
+  // Shared formatter — these three files each carried an identical private copy.
+  const fmt = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 2 })
 
   return (
     <div className="space-y-3">
@@ -157,13 +158,13 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
             {home.insuredValue !== undefined && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-black/60 dark:text-white/65">{homeCopy.insuredValue}</span>
-                <span className="font-bold text-black dark:text-white">{formatCurrency(home.insuredValue)}</span>
+                <span className="font-bold text-black dark:text-white">{fmt(home.insuredValue)}</span>
               </div>
             )}
             {home.replacementValue !== undefined && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-black/60 dark:text-white/65">{homeCopy.replacementValue}</span>
-                <span className="font-bold text-black dark:text-white">{formatCurrency(home.replacementValue)}</span>
+                <span className="font-bold text-black dark:text-white">{fmt(home.replacementValue)}</span>
               </div>
             )}
           </div>
@@ -178,7 +179,7 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.theftCoverageLimit}</span>
           </div>
-          <span className="text-sm font-bold text-black dark:text-white">{formatCurrency(home.theftCoverageLimit)}</span>
+          <span className="text-sm font-bold text-black dark:text-white">{fmt(home.theftCoverageLimit)}</span>
         </div>
       )}
 

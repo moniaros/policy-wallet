@@ -1,5 +1,6 @@
 "use client"
 
+import { formatCurrency } from "@/lib/i18n/format"
 import {
   CheckCircle2,
   XCircle,
@@ -53,8 +54,8 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
     ? Math.min(((pet.annualLimitUsed ?? 0) / pet.annualLimitTotal) * 100, 100)
     : 0
 
-  const formatCurrency = (value: number) =>
-    value.toLocaleString(language === "el" ? "el-GR" : "en-GB", { style: "currency", currency: "EUR" })
+  // Shared formatter — these three files each carried an identical private copy.
+  const fmt = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 2 })
 
   return (
     <div className="space-y-3">
@@ -88,7 +89,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               </div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.annualLimit}</span>
             </div>
-            <span className="text-sm font-bold text-black dark:text-white">{formatCurrency(pet.annualLimitTotal)}</span>
+            <span className="text-sm font-bold text-black dark:text-white">{fmt(pet.annualLimitTotal)}</span>
           </div>
           <div className="ml-10.5">
             <div className="w-full h-3 rounded-full bg-black/10 dark:bg-white/15 overflow-hidden">
@@ -99,10 +100,10 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
             </div>
             <div className="flex justify-between mt-1 text-xs">
               <span className="text-black/55 dark:text-white/60">
-                {copy.used}: {formatCurrency(pet.annualLimitUsed ?? 0)}
+                {copy.used}: {fmt(pet.annualLimitUsed ?? 0)}
               </span>
               <span className="font-semibold text-[#166534] dark:text-mint">
-                {copy.remaining}: {formatCurrency(pet.annualLimitTotal - (pet.annualLimitUsed ?? 0))}
+                {copy.remaining}: {fmt(pet.annualLimitTotal - (pet.annualLimitUsed ?? 0))}
               </span>
             </div>
           </div>

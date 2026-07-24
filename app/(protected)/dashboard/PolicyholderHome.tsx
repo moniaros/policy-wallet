@@ -4,6 +4,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { formatCurrency } from "@/lib/i18n/format"
 import { getTranslations } from "@/lib/i18n"
 import type { User } from "@prisma/client"
 import { getCachedProtectionScore } from "@/lib/services/gap-engine"
@@ -31,16 +32,21 @@ function daysUntil(date: Date) {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 }
 
-function formatCurrencyValue(amount: unknown, currency: string = "EUR") {
+/**
+ * Money on the policyholder's own dashboard.
+ *
+ * This built its own Intl formatter pinned to "en-GB", so a Greek user — the
+ * default — saw "€1,105" where Greek writes "1.105 €", in the same object
+ * literal whose endDateLabel already switched locale correctly. Delegates to
+ * the shared formatter now; the null return is kept because callers rely on
+ * `|| '€0'` rather than the shared formatter's "—".
+ */
+function formatCurrencyValue(amount: unknown, lang: 'el' | 'en', currency: string = "EUR") {
     if (amount == null) return null
     const numericAmount = typeof amount === "number" ? amount : Number(amount)
     if (!Number.isFinite(numericAmount)) return null
 
-    return new Intl.NumberFormat("en-GB", {
-        style: "currency",
-        currency: currency || "EUR",
-        maximumFractionDigits: 0,
-    }).format(numericAmount)
+    return formatCurrency(numericAmount, lang, { currency: currency || "EUR" })
 }
 
 export default async function PolicyholderHomePage({ preloadedDbUser }: { preloadedDbUser?: User } = {}) {
@@ -217,7 +223,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             return {
                 id: lob,
                 icon: getBranchIcon(branch.id),
-                amountLabel: formatCurrencyValue(amount) || '€0',
+                amountLabel: formatCurrencyValue(amount, lang) || '€0',
             }
         })
 
@@ -230,7 +236,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             typeLabel: branch.label[lang],
             endDateLabel: endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB"),
             days: daysUntil(endDate),
-            premiumLabel: formatCurrencyValue(policy.premiumAmount, policy.premiumCurrency || "EUR"),
+            premiumLabel: formatCurrencyValue(policy.premiumAmount, lang, policy.premiumCurrency || "EUR"),
         }
     })
 
@@ -363,7 +369,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     {totalAnnualPremium > 0 && (
                         <PortfolioSummaryCard
-                            totalLabel={formatCurrencyValue(totalAnnualPremium) || '€0'}
+                            totalLabel={formatCurrencyValue(totalAnnualPremium, lang) || '€0'}
                             chips={portfolioChips}
                             labels={{
                                 kicker: home.portfolioKicker,

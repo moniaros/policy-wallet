@@ -73,9 +73,23 @@ function hasActiveLine(policies: PolicyFields[], lob: string): boolean {
     )
 }
 
-function formatCurrency(amount: number | null): string {
-    if (!amount) return "€0"
-    return `€${Number(amount).toLocaleString("en")}`
+/**
+ * Money inside a gap description, formatted for the language of the sentence
+ * that carries it.
+ *
+ * This hardcoded "en", so the GREEK recommendation read
+ * «Έχετε στεγαστικό δάνειο €150,000» — English grouping dropped into a Greek
+ * sentence, where "," is the DECIMAL separator. A €150.000 mortgage was being
+ * described to the policyholder as if it were €150, in the one piece of content
+ * whose whole purpose is to convey the size of an uncovered exposure.
+ */
+function formatCurrency(amount: number | null, lang: "el" | "en" = "el"): string {
+    if (!amount) return lang === "el" ? "0 €" : "€0"
+    return new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
+        style: "currency",
+        currency: "EUR",
+        maximumFractionDigits: 0,
+    }).format(Number(amount))
 }
 
 // ── Rules ────────────────────────────────────────────────────────────
@@ -97,8 +111,8 @@ export const PROFILE_GAP_RULES: ProfileGapRule[] = [
             Number(p.mortgageAmount) > 0 &&
             !hasActiveLine(policies, "life"),
         reason: (p) => ({
-            en: `You have a mortgage of ${formatCurrency(p.mortgageAmount)}. Life insurance ensures your family isn't burdened with the debt if something happens to you.`,
-            el: `Έχετε στεγαστικό δάνειο ${formatCurrency(p.mortgageAmount)}. Η ασφάλιση ζωής διασφαλίζει ότι η οικογένειά σας δεν θα επιβαρυνθεί με το χρέος.`,
+            en: `You have a mortgage of ${formatCurrency(p.mortgageAmount, "en")}. Life insurance ensures your family isn't burdened with the debt if something happens to you.`,
+            el: `Έχετε στεγαστικό δάνειο ${formatCurrency(p.mortgageAmount, "el")}. Η ασφάλιση ζωής διασφαλίζει ότι η οικογένειά σας δεν θα επιβαρυνθεί με το χρέος.`,
         }),
     },
     {
@@ -200,8 +214,8 @@ export const PROFILE_GAP_RULES: ProfileGapRule[] = [
             Number(p.loanAmount) > 0 &&
             !hasActiveLine(policies, "life"),
         reason: (p) => ({
-            en: `You have loans totaling ${formatCurrency(p.loanAmount)}. Life insurance prevents debt from passing to your family.`,
-            el: `Έχετε δάνεια συνολικού ύψους ${formatCurrency(p.loanAmount)}. Η ασφάλιση ζωής αποτρέπει τη μεταφορά χρέους στην οικογένειά σας.`,
+            en: `You have loans totaling ${formatCurrency(p.loanAmount, "en")}. Life insurance prevents debt from passing to your family.`,
+            el: `Έχετε δάνεια συνολικού ύψους ${formatCurrency(p.loanAmount, "el")}. Η ασφάλιση ζωής αποτρέπει τη μεταφορά χρέους στην οικογένειά σας.`,
         }),
     },
 

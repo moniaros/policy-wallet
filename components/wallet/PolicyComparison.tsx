@@ -111,12 +111,17 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
         })
     }
 
+    // Premiums are contractual amounts, and this table marks one of them as the
+    // lowest. Rounding to whole euros made €1,104.87 and €1,105.20 both render
+    // "1.105 €" — two visibly identical figures, one flagged cheapest — so the
+    // comparison hid the very difference it exists to show. Cents stay.
     const formatCurrency = (amount: number | null | undefined, currency = 'EUR') => {
         if (amount === null || amount === undefined) return '—'
         return new Intl.NumberFormat(locale, {
             style: 'currency',
             currency,
-            maximumFractionDigits: 0
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         }).format(amount)
     }
 
