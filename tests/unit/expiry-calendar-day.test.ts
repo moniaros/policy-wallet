@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { resolvePolicyLifecycle, isPolicyCoverageActive } from '@/lib/policy-status'
+import { resolvePolicyLifecycle, isPolicyCoverageActive, calendarDaysUntil } from '@/lib/policy-status'
 
 const policy = (endISO: string) => ({
     status: 'active',
@@ -84,5 +84,35 @@ describe('one clock answers "how many days until this date"', () => {
         // deadline, and legitimately stays in absolute milliseconds.
         const fmt = readFileSync('lib/agent/format.ts', 'utf-8')
         expect(fmt).toMatch(/diffDays = Math\.floor\(diffMs \/ 86_400_000\)/)
+    })
+})
+
+/**
+ * The renewal reminder selects a milestone (90/60/30/15/7) from the day count and
+ * persists it as the "N days before expiry" the policyholder reads. It shared the
+ * same UTC arithmetic — but the cron runs at 05:00 UTC, which is 07:00–08:00 in
+ * Athens, and at that hour the two calendars agree on every day of the year.
+ *
+ * So this one was NOT producing wrong reminders; it was one schedule change away
+ * from doing so. Recording that distinction matters: the lifecycle bug was live
+ * every night, this one was latent.
+ */
+describe('renewal milestone counting', () => {
+    const utcDays = (end: string, now: string) =>
+        Math.ceil((new Date(end).getTime() - new Date(now).getTime()) / 86_400_000)
+
+    it('agrees with the old maths at the hour the cron actually runs', () => {
+        for (let i = 0; i < 120; i++) {
+            const now = new Date(Date.UTC(2026, 0, 1 + i, 5, 0, 0))
+            const end = new Date(Date.UTC(2026, 0, 31 + i, 0, 0, 0))
+            expect(calendarDaysUntil(end, now)).toBe(utcDays(end.toISOString(), now.toISOString()))
+        }
+    })
+
+    it('diverges in the late-UTC window the cron avoids', () => {
+        // 22:00 UTC on 24 July is already the 25th in Athens.
+        const end = new Date('2026-08-24T00:00:00Z')
+        const late = new Date('2026-07-24T22:00:00Z')
+        expect(calendarDaysUntil(end, late)).not.toBe(utcDays(end.toISOString(), late.toISOString()))
     })
 })

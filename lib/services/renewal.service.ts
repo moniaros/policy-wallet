@@ -1,3 +1,4 @@
+import { calendarDaysUntil } from "@/lib/policy-status"
 import { db } from "../db"
 import { sendNotification } from "../notifications"
 import { logger } from "../logger"
@@ -76,9 +77,12 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
 
         for (const policy of expiringPolicies) {
             try {
-                const daysUntilExpiry = Math.ceil(
-                    (policy.endDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)
-                )
+                // Athens calendar days, like every other expiry count. This value
+                // both selects the milestone below AND is persisted as the
+                // "N days before expiry" the policyholder reads in the reminder,
+                // so a UTC off-by-one could skip a milestone outright or send a
+                // renewal notice quoting the wrong number of days.
+                const daysUntilExpiry = calendarDaysUntil(policy.endDate, now)
 
                 // Determine which milestone we're at (closest one at or above current days)
                 const currentMilestone = RENEWAL_MILESTONES.find(m => daysUntilExpiry <= m)
