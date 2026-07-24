@@ -411,8 +411,12 @@ async function main() {
         {
             slug: 'missing_enfia_components',
             name: 'ENFIA Coverage Components',
-            title: 'Incomplete ENFIA Coverage',
-            description: 'Greek property tax (ENFIA) insurance requires fire, earthquake, AND flood coverage. One or more components are missing.',
+            title: 'Not eligible for the ENFIA discount',
+            // ENFIA is Greece's unified property-ownership TAX; there is no such
+            // thing as "ENFIA insurance" and it requires no cover at all. What
+            // exists is a tax DISCOUNT for homes insured against all three perils
+            // — which lib/guides/content.ts has stated correctly all along.
+            description: 'Insuring a home against fire, earthquake AND flood qualifies it for a reduction in ENFIA property tax. One or more of the three is missing from this policy.',
             lineOfBusiness: 'home',
             severity: 'high',
             defaultSeverity: 'high',
@@ -437,8 +441,11 @@ async function main() {
         {
             slug: 'missing_coordination_centre',
             name: 'Coordination Centre',
-            title: 'Missing Coordination Centre',
-            description: 'Greek health policies should specify a coordination centre (κέντρο συντονισμού) with a phone number for pre-authorization of hospital admissions.',
+            title: 'No coordination centre recorded',
+            // The rule tests whether a phone number was EXTRACTED. That is not the
+            // same as the policy not having one, so the finding says what is
+            // actually known: no coordination centre is recorded.
+            description: 'No coordination centre (κέντρο συντονισμού) phone number is recorded for this policy. Greek health policies normally give one for pre-authorising hospital admissions — check your policy documents and add it, so it is to hand when you need it.',
             lineOfBusiness: 'health',
             severity: 'medium',
             defaultSeverity: 'medium',
@@ -497,19 +504,33 @@ async function main() {
             },
             isActive: true
         },
+        // Deliberately INACTIVE — this was never a coverage gap.
+        //
+        // It fires when the deductible is LOW, i.e. when the policyholder is
+        // better protected, and its remedy is to reduce that protection. Filed as
+        // a gap it counted toward gapCount, which feeds the protection score
+        // penalty — so the product docked someone's protection score for carrying
+        // less risk themselves, then advised them to carry more.
+        //
+        // It is also advice on the substance of an insurance contract: telling
+        // someone to raise their excess without knowing whether they could absorb
+        // the retained loss is a recommendation, and insurance advice is regulated
+        // in Greece (IDD, Law 4583/2018). Premium-saving observations belong in
+        // the savings surface (lib/services/analysis/deterministic-savings.ts),
+        // which frames them as options rather than as findings against the cover.
         {
             slug: 'low_deductible_premium_waste',
             name: 'Low Deductible Waste',
             title: 'Potential Premium Savings',
-            description: 'Your deductible is at the minimum level, which means you may be paying higher premiums than necessary. Consider raising the deductible to reduce costs.',
+            description: 'Your deductible is at the minimum level, which means you may be paying higher premiums than necessary.',
             lineOfBusiness: 'all',
             severity: 'low',
             defaultSeverity: 'low',
             ruleId: 'ai_check',
             detectionLogic: {
-                check: "Is the policy deductible/excess at the minimum available level for this type of coverage? If so, suggest raising it to reduce premium costs."
+                check: "Is the policy deductible/excess at the minimum available level for this type of coverage?"
             },
-            isActive: true
+            isActive: false
         }
     ]
 

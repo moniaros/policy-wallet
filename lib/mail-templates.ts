@@ -125,16 +125,19 @@ export const templates = {
     GAP_DETECTED: (data: { policyName: string, gapTitle: string, url: string, language?: Language }) => {
         const isEl = data.language === "el"
         return {
+            // "Security Alert" belongs on a breach notification. This is a finding
+            // about someone's insurance cover, and dressing it as a security
+            // incident both alarms the reader wrongly and cheapens the real thing.
             subject: isEl
-                ? `Ειδοποίηση: Κενό Κάλυψης στο ${data.policyName}`
-                : `Security Alert: Coverage Gap Detected in ${data.policyName}`,
+                ? `Πιθανό κενό κάλυψης στο ${data.policyName}`
+                : `Possible coverage gap in your ${data.policyName} policy`,
             html: getBaseTemplate({
-                title: isEl ? 'Εντοπίστηκε Κενό Κάλυψης' : 'Coverage Gap Detected',
+                title: isEl ? 'Εντοπίστηκε πιθανό κενό κάλυψης' : 'Possible coverage gap found',
                 description: isEl
                     ? `Η AI ανάλυσή μας εντόπισε πιθανό κενό κάλυψης στο ασφαλιστήριο <strong>${data.policyName}</strong>: <strong>${data.gapTitle}</strong>. Ελέγξτε τώρα για πλήρη προστασία.`
                     : `Our AI has identified a potential coverage gap in your <strong>${data.policyName}</strong> policy: <strong>${data.gapTitle}</strong>. Review this now to ensure you are fully protected.`,
                 actionUrl: data.url,
-                actionLabel: isEl ? 'Προβολή Λεπτομερειών' : 'View Details & Recommendations',
+                actionLabel: isEl ? 'Προβολή λεπτομερειών' : 'View details',
             })
         }
     },

@@ -78,14 +78,29 @@ export async function POST(req: Request) {
         const newGaps = await detectGapsForPolicy(policy)
         await createGapInstances(newGaps)
 
-        // 2. Notify User if critical gaps found
-        const criticalGaps = newGaps.filter(g => g.severity === 'critical' || g.severity === 'high')
-        if (criticalGaps.length > 0) {
+        // 2. Notify the owner about the findings that warrant it.
+        //
+        // Three things were wrong with the message this sent. It was headed
+        // "Security Alert", which belongs on a breach notice, not on a finding
+        // about someone's cover. It called the set "critical gaps" while the
+        // filter also admits `high` ones — so a policy with two high-severity
+        // findings was reported as having two critical ones. And it was English
+        // only, in a Greek-default product, with a fixed plural that read
+        // "1 critical gaps".
+        const seriousGaps = newGaps.filter(g => g.severity === 'critical' || g.severity === 'high')
+        if (seriousGaps.length > 0) {
+            const isEl = (authResult.dbUser.preferredLanguage ?? 'el') !== 'en'
+            const n = seriousGaps.length
+            const findings = isEl
+                ? `${n} ${n === 1 ? 'σημαντικό εύρημα' : 'σημαντικά ευρήματα'}`
+                : `${n} significant ${n === 1 ? 'finding' : 'findings'}`
             await sendNotification({
                 userId: authResult.dbUser.id,
                 eventType: 'GAP_DETECTED',
-                title: 'Security Alert: Coverage Gap Detected',
-                message: `We found ${criticalGaps.length} critical gaps in your ${policy.insurerName} policy.`,
+                title: isEl ? 'Εντοπίστηκε πιθανό κενό κάλυψης' : 'Possible coverage gap found',
+                message: isEl
+                    ? `Η ανάλυση εντόπισε ${findings} στο ασφαλιστήριο ${policy.insurerName}.`
+                    : `The analysis found ${findings} in your ${policy.insurerName} policy.`,
                 relatedObjectType: 'policy',
                 relatedObjectId: policy.id,
                 channels: ['email', 'push']
@@ -95,7 +110,7 @@ export async function POST(req: Request) {
         return createApiResponse({
             processed: true,
             gaps_found: newGaps.length,
-            critical_gaps: criticalGaps.length
+            critical_gaps: seriousGaps.length
         })
 
     } catch (error: any) {

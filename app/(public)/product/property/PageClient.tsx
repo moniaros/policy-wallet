@@ -21,7 +21,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                         {t("Το σπίτι σας, ασφαλισμένο στη σωστή αξία.", "Your home, insured at the right value.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] mb-10">
-                        {t("Διασφαλίστε το Rebuild Cost, αναλύστε καλύψεις φυσικών καταστροφών και ελέγξτε τη συμμόρφωση σας για μείωση ΕΝΦΙΑ σε μία πλατφόρμα.", "Ensure adequate Rebuild Costs, analyze strictly natural disaster coverages, and automate ENFIA tax deduction compliance checks.")}
+                        {t("Διασφαλίστε το Rebuild Cost, αναλύστε καλύψεις φυσικών καταστροφών και ελέγξτε αν δικαιούστε την έκπτωση ΕΝΦΙΑ, σε μία πλατφόρμα.", "Ensure adequate Rebuild Costs, analyze strictly natural disaster coverages, and automate ENFIA tax-discount eligibility checks.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -54,7 +54,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                             </div>
                             <div className="p-4 bg-purple-50 rounded-lg border border-purple-100 flex justify-between items-center">
                                 <div>
-                                    <p className="font-bold text-purple-900 text-sm">ENFIA Compliance</p>
+                                    <p className="font-bold text-purple-900 text-sm">ENFIA discount</p>
                                     <p className="text-xs text-purple-700 mt-1">Missing Flood Coverage</p>
                                 </div>
                                 <Shield className="w-6 h-6 text-purple-500" />
@@ -80,7 +80,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-lead font-semibold text-[#0F172A]">{t("Συμμόρφωση ΕΝΦΙΑ (Ελλάδα)", "ENFIA Tax Deduction (GR)")}</h4>
+                                    <h4 className="text-lead font-semibold text-[#0F172A]">{t("Έκπτωση ΕΝΦΙΑ (Ελλάδα)", "ENFIA tax discount (GR)")}</h4>
                                     <p className="text-[#475569]">{t("Οπτικός έλεγχος αν έχετε την απαραίτητη τριάδα Σεισμού-Πυρκαγιάς-Πλημμύρας για την έκπτωση ΕΝΦΙΑ έως 20%.", "Visual checks parsing for the required trio of Earthquake, Fire, and Flood for the ENFIA tax discount of up to 20%.")}</p>
                                 </div>
                             </li>

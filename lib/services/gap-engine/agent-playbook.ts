@@ -204,8 +204,11 @@ const LOB_TALKING_POINTS: Record<string, Array<{ en: string; el: string }>> = {
     ],
     home: [
         {
-            en: "With earthquake risk in Greece, home insurance is essential — especially for ENFIA compliance",
-            el: "Με τον σεισμικό κίνδυνο στην Ελλάδα, η ασφάλεια κατοικίας είναι απαραίτητη — ειδικά για συμμόρφωση ΕΝΦΙΑ",
+            // ENFIA is a tax and mandates no cover — there is nothing to "comply"
+            // with. Insuring against fire, earthquake and flood earns a DISCOUNT
+            // on it, which is the argument an agent should actually be making.
+            en: "With earthquake risk in Greece, home insurance is essential — and fire, earthquake and flood cover together earn a discount on the owner's ENFIA",
+            el: "Με τον σεισμικό κίνδυνο στην Ελλάδα, η ασφάλιση κατοικίας είναι απαραίτητη — και η κάλυψη πυρός, σεισμού και πλημμύρας μαζί δίνει έκπτωση στον ΕΝΦΙΑ",
         },
     ],
     health: [

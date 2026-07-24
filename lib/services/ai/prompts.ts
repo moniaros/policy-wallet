@@ -257,7 +257,7 @@ export function buildRiskProfilePrompt(
 ${policySummary}
 
 ## Instructions
-1. Consider the Greek insurance market context (mandatory motor, ENFIA property requirements, ESY public health)
+1. Consider the Greek insurance market context (motor third-party liability is compulsory; ENFIA is a property TAX that mandates no cover, but insuring a home against fire, earthquake and flood earns a discount on it; ESY is the public health system)
 2. Identify the most critical coverage gaps given this person's specific situation
 3. Provide factual, informational observations about coverage gaps and overlaps; do not give personalized financial or insurance advice or tell the user what they "should" buy. Phrase findings as observations (e.g. "this profile appears to lack ...", "this policy may not cover ...").
 4. Be bilingual: provide both English and Greek for all text fields

@@ -46,7 +46,7 @@ export const AcordDataSchema = z.object({
         earthquakeCoverageIncluded: z.boolean().default(false),
         floodCoverageIncluded: z.boolean().default(false),
         // Greek-market specific
-        enfiaEligible: z.boolean().optional().describe("True if fire+earthquake+flood all covered (ENFIA requirement)"),
+        enfiaEligible: z.boolean().optional().describe("True if fire, earthquake AND flood are all covered — the condition for the ENFIA property-tax discount. ENFIA is a tax, not an insurance requirement; it mandates no cover."),
         mortgageeBank: z.string().optional(),
         technicalAssistancePhone: z.string().optional(),
         theftCoverageLimit: z.number().optional(),

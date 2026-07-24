@@ -93,15 +93,35 @@ function evaluateGapLogic(policy: Policy, gapDef: GapDefinition): boolean {
 
 function evaluateSingleRule(policy: Policy, rule: any): boolean {
     if (rule.type === 'missing_coverage') {
+        // An EMPTY summary is not evidence of missing cover. `coverageSummary` is
+        // a nullable free-text column that many policies never get — and with
+        // `''.includes(x)` false for any non-empty x, an unpopulated field made
+        // every configured missing-coverage rule fire at once. The one policy
+        // least understood by the product was the one reported as riddled with
+        // gaps.
         const coverageSummary = (policy as any).coverageSummary?.toLowerCase() || ''
         const requiredCoverage = rule.requiredCoverage?.toLowerCase() || ''
+        if (!coverageSummary || !requiredCoverage) return false
         return !coverageSummary.includes(requiredCoverage)
     }
 
     if (rule.type === 'low_limit') {
-        const limit = policy.premiumAmount ? Number(policy.premiumAmount) : 0
+        // A limit is the SUM INSURED — what the policy would pay. This read
+        // `premiumAmount`, what the customer pays for it: different quantities,
+        // routinely three orders of magnitude apart. A rule set to flag cover
+        // below €500,000 matched every policy in the book, because no premium is
+        // half a million euros; a rule set at €200 flagged cheap policies while
+        // claiming their COVER was inadequate. The check could not be right at
+        // any threshold.
+        const acord = (policy as any).acordData
+        const declared =
+            getNestedField(acord, rule.field || 'coverage.sumInsured') ??
+            getNestedField(acord, 'property.insuredValue') ??
+            getNestedField(acord, 'coverage.sumInsured')
+        // Unknown sum insured is not a low one — say nothing rather than guess.
+        if (typeof declared !== 'number' || !Number.isFinite(declared)) return false
         const threshold = rule.threshold || 0
-        return limit < threshold
+        return declared < threshold
     }
 
     if (rule.type === 'insurer_match') {
@@ -140,8 +160,11 @@ function evaluateSingleRule(policy: Policy, rule: any): boolean {
         const dateStr = getNestedField(acordData, rule.field)
         if (!dateStr) return false
         const target = new Date(dateStr)
-        const now = new Date()
-        const daysUntil = (target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        if (Number.isNaN(target.getTime())) return false
+        // Athens calendar days, like every other expiry count in the product —
+        // this drives the Green Card expiry warning, and a document that expires
+        // TODAY must still be inside the window.
+        const daysUntil = calendarDaysUntil(target, new Date())
         return daysUntil >= 0 && daysUntil <= (rule.withinDays || 30)
     }
 
