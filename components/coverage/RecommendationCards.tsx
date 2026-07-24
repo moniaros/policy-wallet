@@ -375,12 +375,23 @@ export function RecommendationCards({
                                                     )}
                                                 </div>
                                             )}
+                                            {/* Was "Ενδεικτικό κόστος στην αγορά" / "Typical market cost" — a
+                                                quantified claim about the Greek market from a flat table of eleven
+                                                numbers that ignores age, vehicle, sum insured and every other
+                                                factor that actually prices a policy. It is an order of magnitude,
+                                                and now says so. */}
                                             {!rec.matchedProduct && rec.estimatedCostEur != null && (
                                                 <p className="text-xs font-medium text-black/70 dark:text-white/70">
-                                                    {t("Ενδεικτικό κόστος στην αγορά", "Typical market cost")}:{" "}
+                                                    {t("Τάξη μεγέθους ασφαλίστρου", "Rough order of magnitude")}:{" "}
                                                     <span className="text-primary dark:text-mint font-semibold">
                                                         ~€{rec.estimatedCostEur}
                                                         {t("/έτος", "/year")}
+                                                    </span>
+                                                    <span className="block text-black/55 dark:text-white/55">
+                                                        {t(
+                                                            "Το πραγματικό ασφάλιστρο εξαρτάται από τα δικά σας στοιχεία (ηλικία, ασφαλιζόμενο κεφάλαιο, ιστορικό).",
+                                                            "Your actual premium depends on your own details (age, sum insured, history)."
+                                                        )}
                                                     </span>
                                                 </p>
                                             )}

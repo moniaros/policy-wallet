@@ -107,6 +107,23 @@ export interface CategoryScore {
 }
 
 /**
+ * How much a line of business weighs in the protection model, 0 when unknown.
+ *
+ * The category weights (health 25, life 25, property 20, income 15, liability
+ * 10, other 5) are the product's one considered statement about what matters
+ * most to a household. Exported so recommendations can be ranked by that
+ * judgement instead of by what the cover costs to buy.
+ */
+export function lobProtectionWeight(lob: string): number {
+    const key = String(lob || "").toLowerCase()
+    let best = 0
+    for (const cat of SCORE_CATEGORIES) {
+        if (cat.coveredByLobs.includes(key)) best = Math.max(best, cat.weight)
+    }
+    return best
+}
+
+/**
  * The lightweight estimate used when no protection score has been cached yet.
  *
  * **This is not the same measure as `calculateProtectionScore`.** The real score

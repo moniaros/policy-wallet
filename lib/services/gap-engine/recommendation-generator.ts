@@ -9,6 +9,7 @@
 import { db } from "@/lib/db"
 import { resolveGapConcept, resolveGapContent } from "@/lib/wallet/gap-report"
 import type { ProfileGap, GapSeverity } from "./profile-gap-rules"
+import { lobProtectionWeight } from "./protection-score"
 
 // ── Rule identity ────────────────────────────────────────────────────
 
@@ -109,6 +110,19 @@ export interface RecommendationOutput {
 
 // ── Greek market premium estimates ───────────────────────────────────
 
+/**
+ * Order-of-magnitude annual premiums, so a recommendation can say roughly what
+ * the missing cover costs rather than nothing at all.
+ *
+ * They are flat per line of business, which means they ignore every factor that
+ * actually prices a policy: age for health and life, vehicle and driver history
+ * for motor, sum insured and construction for home. So they are a starting
+ * point, not a quote and not a market average — and the UI now says so rather
+ * than presenting them as the "typical market cost".
+ *
+ * They are also no longer used to RANK anything. Premium is not exposure; see
+ * prioritizeRecommendations.
+ */
 const ESTIMATED_ANNUAL_PREMIUMS: Record<string, number> = {
     motor: 400,
     home: 250,
@@ -248,7 +262,19 @@ const SEVERITY_ORDER: Record<GapSeverity, number> = {
 }
 
 /**
- * Sort recommendations by urgency (severity), then by estimated financial impact.
+ * Sort recommendations by urgency, then by how much the missing cover matters.
+ *
+ * The tiebreak used to be `estimatedCostEur` descending, under the comment
+ * "higher estimated cost = higher priority (bigger gap)". Premium is not
+ * exposure — often it runs the other way. Liability cover is cheap precisely
+ * because claims are rare, and the loss it stands between you and is the kind
+ * that ends a household; ranking by price pushed it below health every single
+ * time, for every user, because the price list is static.
+ *
+ * The protection model already states what matters (health 25, life 25,
+ * property 20, income 15, liability 10, other 5). Ranking by that at least ranks
+ * by an insurance judgement, and one the rest of the product already stands
+ * behind. Ties fall back to the rule id so the order is stable between renders.
  */
 export function prioritizeRecommendations(
     recs: RecommendationInput[]
@@ -259,8 +285,11 @@ export function prioritizeRecommendations(
             (SEVERITY_ORDER[b.urgency] ?? 3)
         if (sevDiff !== 0) return sevDiff
 
-        // Higher estimated cost = higher priority (bigger gap)
-        return (b.estimatedCostEur ?? 0) - (a.estimatedCostEur ?? 0)
+        const weightDiff =
+            lobProtectionWeight(b.lineOfBusiness) - lobProtectionWeight(a.lineOfBusiness)
+        if (weightDiff !== 0) return weightDiff
+
+        return String(a.ruleId || "").localeCompare(String(b.ruleId || ""))
     })
 }
 
@@ -572,13 +601,17 @@ export async function getActiveRecommendations(
         orderBy: [{ createdAt: "desc" }],
     })
 
-    // Sort by urgency then cost
+    // Same order as prioritizeRecommendations — urgency, then how much the
+    // missing cover matters, never what it costs to buy.
     const sorted = recs.sort((a, b) => {
         const sevDiff =
             (SEVERITY_ORDER[(a.urgency as GapSeverity)] ?? 3) -
             (SEVERITY_ORDER[(b.urgency as GapSeverity)] ?? 3)
         if (sevDiff !== 0) return sevDiff
-        return Number(b.estimatedCostEur ?? 0) - Number(a.estimatedCostEur ?? 0)
+        const weightDiff =
+            lobProtectionWeight(b.lineOfBusiness) - lobProtectionWeight(a.lineOfBusiness)
+        if (weightDiff !== 0) return weightDiff
+        return String(a.ruleId || "").localeCompare(String(b.ruleId || ""))
     })
 
     // Belt to the unique constraint's suspender: never render the same FINDING
