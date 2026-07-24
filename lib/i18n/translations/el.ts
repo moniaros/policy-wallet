@@ -863,6 +863,7 @@ export const el = {
             exampleName: 'Αυτοκίνητο',
             exampleMeta: 'Interamerican',
             exampleStatus: 'Ενεργό',
+            noFilterMatch: 'Κανένα ασφαλιστήριο δεν ταιριάζει με αυτά τα φίλτρα.',
         },
         clientActivity: {
             headline: 'Δεν υπάρχει δραστηριότητα ακόμα',

@@ -161,6 +161,24 @@ export function ClientPoliciesTab({
             </div>
 
             {/* Policy list */}
+            {filteredPolicies.length === 0 ? (
+                /* "No policies at all" is handled above. This is the other empty
+                   state: both filters offer only values present in the data, but
+                   they combine, so type=motor + status=expired can match nothing
+                   on a client who holds an active motor policy and an expired
+                   health one. That rendered a blank strip under the filters with
+                   no explanation and no way back. */
+                <div className="rounded-xl border border-dashed border-neutral-200 dark:border-neutral-700 px-4 py-8 text-center">
+                    <p className="text-sm text-muted-foreground">{t.emptyStates.clientPolicies.noFilterMatch}</p>
+                    <button
+                        type="button"
+                        onClick={() => { setFilterLob(null); setFilterStatus(null) }}
+                        className="mt-3 text-xs font-semibold text-primary dark:text-mint hover:underline"
+                    >
+                        {t.emptyStates.clearFilters}
+                    </button>
+                </div>
+            ) : (
             <div className="space-y-2">
                 {filteredPolicies.map((policy) => {
                     const commissionRate = commissionRates?.[policy.lineOfBusiness] || 0
@@ -254,6 +272,7 @@ export function ClientPoliciesTab({
                     )
                 })}
             </div>
+            )}
         </div>
     )
 }

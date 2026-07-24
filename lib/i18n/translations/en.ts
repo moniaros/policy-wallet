@@ -866,6 +866,7 @@ export const en: TranslationKeys = {
             exampleName: 'Motor',
             exampleMeta: 'Interamerican',
             exampleStatus: 'Active',
+            noFilterMatch: 'No policies match these filters.',
         },
         clientActivity: {
             headline: 'No activity yet',
