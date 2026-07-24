@@ -1,6 +1,7 @@
 "use client"
 
 import { getTranslations } from "@/lib/i18n"
+import { gapSeverityRank } from "@/lib/wallet/gap-report"
 import React, { useMemo, useState } from 'react'
 import {
     Shield,
@@ -183,7 +184,15 @@ export function CoverageInsightsClient({
     const summaryText = gapVerdict.summary[lang]
 
     const insights: InsightData[] = useMemo(() => {
-        return visibleGaps.slice(0, maxVisibleInsights).map((gap, index) => ({
+        // Most severe first, THEN cut to the visible/free limit. The gaps arrive
+        // in detectedAt order, so slicing raw showed a free owner their two most
+        // RECENT gaps and locked the rest — a critical gap detected last week
+        // could sit behind the Plus gate while two trivial recent ones showed.
+        // Stable sort keeps detectedAt order within a severity band.
+        const orderedGaps = [...visibleGaps].sort(
+            (a, b) => gapSeverityRank(a.severity) - gapSeverityRank(b.severity)
+        )
+        return orderedGaps.slice(0, maxVisibleInsights).map((gap, index) => ({
             id: gap.id,
             type: (gap.policy?.lineOfBusiness || 'other').toLowerCase() as any,
             title: gap.title || (lang === 'el' ? 'Σημείο κάλυψης προς έλεγχο' : 'Coverage point to review'),

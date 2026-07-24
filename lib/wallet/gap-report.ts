@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs"
+import type { GapSeverity } from "@/lib/gap-detection"
 
 /**
  * Render-layer presentation of AI-detected coverage gaps.
@@ -57,11 +58,40 @@ export interface GapReportItem {
     slug: string
     /** GapInstance ids of DB-level duplicates collapsed into this item */
     duplicateIds: string[]
+    /**
+     * The gap's severity, carried from GapInstance. It drives which gaps a
+     * free-tier owner sees before the paywall: without it, the lock boundary
+     * fell on coverage-area order then alphabetical Greek title, so a CRITICAL
+     * gap — an uninsured compulsory line — could be the one hidden behind the
+     * €3 unlock while three trivial gaps showed free. Optional so older callers
+     * that never set it default to the least-urgent rank rather than crash.
+     */
+    severity?: GapSeverity | null
     content: GapContent
     aiExplanation: string | null
     aiExplanationEl: string | null
     aiSuggestion: string | null
     aiSuggestionEl: string | null
+}
+
+/** critical → 0 … low → 3; unknown ranks last so it is never shown over a graded gap. */
+const GAP_SEVERITY_RANK: Record<GapSeverity, number> = { critical: 0, high: 1, medium: 2, low: 3 }
+
+export function gapSeverityRank(severity: string | null | undefined): number {
+    return GAP_SEVERITY_RANK[(severity ?? "") as GapSeverity] ?? 4
+}
+
+/**
+ * The gaps a locked free-tier owner sees in full: the `count` MOST SEVERE, by
+ * severity rank with a stable tiebreak on the caller's order. Returns their ids
+ * so the display can keep its coverage-area grouping while the paywall only ever
+ * hides the least-urgent gaps — the free preview always surfaces the worst ones.
+ */
+export function selectFreePreviewGapIds(items: GapReportItem[], count: number): Set<string> {
+    const ranked = items
+        .map((item, index) => ({ id: item.id, rank: gapSeverityRank(item.severity), index }))
+        .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    return new Set(ranked.slice(0, Math.max(0, count)).map((entry) => entry.id))
 }
 
 export function normalizeGapSlug(raw: string): string {

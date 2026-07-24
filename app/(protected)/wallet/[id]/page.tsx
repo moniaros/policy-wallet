@@ -129,6 +129,9 @@ export default async function PolicyDetailPage({
         id: gap.id,
         slug: gap.normalizedSlug,
         duplicateIds: gap.duplicateIds,
+        // Drives the free-tier preview boundary: the most severe gaps stay
+        // unlocked, so a critical gap is never the one hidden behind the paywall.
+        severity: (gap.severity as GapReportItem["severity"]) ?? null,
         content: resolveGapContent(gap.definition?.slug || "", {
             lineOfBusiness: policy.lineOfBusiness,
             aiExplanationEl: gap.aiExplanationEl,

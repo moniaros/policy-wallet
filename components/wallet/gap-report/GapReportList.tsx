@@ -3,6 +3,7 @@
 import {
     FREE_GAP_PREVIEW_COUNT,
     groupGapsByCoverageArea,
+    selectFreePreviewGapIds,
     summarizeGaps,
     type GapReportItem,
 } from "@/lib/wallet/gap-report"
@@ -65,14 +66,18 @@ export function GapReportList({
     const groups = groupGapsByCoverageArea(items)
     const lockedCount = reportUnlocked ? 0 : Math.max(items.length - FREE_GAP_PREVIEW_COUNT, 0)
 
-    // Flat display order across groups drives the lock boundary; derived
-    // up front (render must stay mutation-free for the React compiler).
-    const flatOrder = new Map(
-        groups.flatMap((group) => group.items).map((item, index) => [item.id, index])
-    )
+    // Which gaps stay free is decided by SEVERITY, not display position. The
+    // boundary used to fall on the coverage-area/alphabetical flat order, so a
+    // critical gap could sit past the free slots and be locked while trivial
+    // gaps showed — a free owner could be blind to a compulsory-cover gap unless
+    // they paid. The most severe FREE_GAP_PREVIEW_COUNT are unlocked wherever
+    // they display; the paywall only ever hides less-urgent gaps.
+    const freeIds = reportUnlocked ? null : selectFreePreviewGapIds(items, FREE_GAP_PREVIEW_COUNT)
+
+    // The CTA still sits before the first LOCKED card in display order.
     const firstLockedId =
-        lockedCount > 0
-            ? groups.flatMap((group) => group.items)[FREE_GAP_PREVIEW_COUNT]?.id ?? null
+        lockedCount > 0 && freeIds
+            ? groups.flatMap((group) => group.items).find((item) => !freeIds.has(item.id))?.id ?? null
             : null
 
     return (
@@ -82,8 +87,7 @@ export function GapReportList({
             {groups.map((group) => (
                 <GapGroupSection key={group.area} area={group.area} count={group.items.length} copy={copy}>
                     {group.items.map((item) => {
-                        const flatIndex = flatOrder.get(item.id) ?? 0
-                        const locked = lockedCount > 0 && flatIndex >= FREE_GAP_PREVIEW_COUNT
+                        const locked = Boolean(freeIds && !freeIds.has(item.id))
                         const showCta = locked && item.id === firstLockedId
 
                         return (
