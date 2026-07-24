@@ -16,6 +16,13 @@ interface UsageMeterProps {
 
 export function UsageMeter({ label, used, limit, hint, className = "" }: UsageMeterProps) {
     const pct = limit && limit > 0 ? Math.min(Math.round((used / limit) * 100), 100) : 0
+    // Being OVER the cap is a real state, not an edge case: FREE_POLICY_LIMIT is
+    // 1, so any free account that downgraded — or that had policies added before
+    // the cap changed — renders "2 / 1". The bar was already clamped, but
+    // aria-valuenow was not, so it shipped aria-valuenow="2" against
+    // aria-valuemax="1" — outside the range ARIA requires. Clamp the numeric
+    // value for the range and let aria-valuetext carry the honest reading.
+    const ariaNow = limit !== null ? Math.min(Math.max(used, 0), limit) : used
     const tone =
         limit === null
             ? "bg-primary dark:bg-mint"
@@ -42,7 +49,8 @@ export function UsageMeter({ label, used, limit, hint, className = "" }: UsageMe
                 <div
                     role="progressbar"
                     aria-label={label}
-                    aria-valuenow={used}
+                    aria-valuenow={ariaNow}
+                    aria-valuetext={`${used} / ${limit}`}
                     aria-valuemin={0}
                     aria-valuemax={limit}
                     className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/8 dark:bg-white/10"
