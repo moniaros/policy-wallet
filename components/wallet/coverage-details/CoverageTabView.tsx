@@ -30,12 +30,13 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
       case "health":
         return <HealthCoverageDetails acordData={acordData} language={language} hints={hints} />
       case "motor":
-        return <MotorCoverageDetails acordData={acordData} language={language} />
+        return <MotorCoverageDetails acordData={acordData} language={language} hints={hints} />
       case "home":
-        return <HomeCoverageDetails acordData={acordData} language={language} />
+        return <HomeCoverageDetails acordData={acordData} language={language} hints={hints} />
       case "life":
-        return <LifeCoverageDetails acordData={acordData} language={language} />
+        return <LifeCoverageDetails acordData={acordData} language={language} hints={hints} />
       case "pet":
+        /* Pet has no dictionary term of its own yet. */
         return <PetCoverageDetails acordData={acordData} language={language} />
       default:
         return null

@@ -1,5 +1,7 @@
 "use client"
 
+import { GlossaryHint } from "@/components/insurance/GlossaryHint"
+import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import { formatCurrency } from "@/lib/i18n/format"
 import {
   Phone,
@@ -18,11 +20,13 @@ import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 
 interface HomeCoverageDetailsProps {
+  /** Resolved server-side — the 62KB glossary must not ship here. */
+  hints?: PolicyGlossaryHints | null
   acordData: AcordData
   language: "el" | "en"
 }
 
-export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetailsProps) {
+export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverageDetailsProps) {
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
   const homeCopy = copy.home
@@ -152,12 +156,12 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Home className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.valueComparison}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.underinsurance ? <GlossaryHint hint={hints.underinsurance} /> : homeCopy.valueComparison}</span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {home.insuredValue !== undefined && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-black/60 dark:text-white/65">{homeCopy.insuredValue}</span>
+                <span className="text-black/60 dark:text-white/65">{hints?.sumInsured ? <GlossaryHint hint={hints.sumInsured} /> : homeCopy.insuredValue}</span>
                 <span className="font-bold text-black dark:text-white">{fmt(home.insuredValue)}</span>
               </div>
             )}

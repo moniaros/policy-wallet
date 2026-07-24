@@ -1,5 +1,7 @@
 "use client"
 
+import { GlossaryHint } from "@/components/insurance/GlossaryHint"
+import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import { formatCurrency } from "@/lib/i18n/format"
 import {
   TrendingUp,
@@ -16,11 +18,13 @@ import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 
 interface LifeCoverageDetailsProps {
+  /** Resolved server-side — the 62KB glossary must not ship here. */
+  hints?: PolicyGlossaryHints | null
   acordData: AcordData
   language: "el" | "en"
 }
 
-export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetailsProps) {
+export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverageDetailsProps) {
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
   const lifeCopy = copy.life
@@ -132,7 +136,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Users className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.beneficiaries}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.beneficiary ? <GlossaryHint hint={hints.beneficiary} /> : lifeCopy.beneficiaries}</span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {acordData.beneficiaries.map((ben, i) => (
@@ -162,7 +166,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
                 <AlertTriangle className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
               </div>
               <div>
-                <span className="text-sm font-semibold text-[#92400E] dark:text-amber-300">{lifeCopy.surrenderValue}</span>
+                <span className="text-sm font-semibold text-[#92400E] dark:text-amber-300">{hints?.surrender ? <GlossaryHint hint={hints.surrender} /> : lifeCopy.surrenderValue}</span>
                 <p className="text-xs text-[#92400E]/80 dark:text-amber-400/80">{lifeCopy.surrenderWarning}</p>
               </div>
             </div>

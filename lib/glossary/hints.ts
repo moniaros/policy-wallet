@@ -34,14 +34,30 @@ export function resolveGlossaryHint(
  * Resolved server-side deliberately: lib/glossary/content.ts is ~62KB and must
  * not ship to the policy detail page.
  */
-export function resolvePolicyGlossaryHints(lang: "el" | "en", labels: {
-    deductible: string
-    waitingPeriod: string
-}) {
-    return {
-        deductible: resolveGlossaryHint("apallagi", lang, labels.deductible),
-        waitingPeriod: resolveGlossaryHint("chronos-anamonis", lang, labels.waitingPeriod),
+/** Hint key → dictionary slug. One place to see what the product explains. */
+const POLICY_HINT_SLUGS = {
+    deductible: "apallagi",
+    waitingPeriod: "chronos-anamonis",
+    greenCard: "prasini-karta",
+    roadside: "odiki-voitheia",
+    comprehensive: "mikti-asfaleia",
+    beneficiary: "dikaiouchos",
+    surrender: "exagora",
+    sumInsured: "asfalismeno-kefalaio",
+    underinsurance: "ypasfalisi",
+} as const
+
+export type PolicyHintKey = keyof typeof POLICY_HINT_SLUGS
+
+export function resolvePolicyGlossaryHints(
+    lang: "el" | "en",
+    labels: Partial<Record<PolicyHintKey, string>>
+) {
+    const out = {} as Record<PolicyHintKey, GlossaryHintData | null>
+    for (const key of Object.keys(POLICY_HINT_SLUGS) as PolicyHintKey[]) {
+        out[key] = resolveGlossaryHint(POLICY_HINT_SLUGS[key], lang, labels[key])
     }
+    return out
 }
 
 export type PolicyGlossaryHints = ReturnType<typeof resolvePolicyGlossaryHints>

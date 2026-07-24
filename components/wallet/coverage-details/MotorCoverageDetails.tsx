@@ -1,5 +1,7 @@
 "use client"
 
+import { GlossaryHint } from "@/components/insurance/GlossaryHint"
+import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import {
   Phone,
   CheckCircle2,
@@ -14,11 +16,13 @@ import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 
 interface MotorCoverageDetailsProps {
+  /** Resolved server-side — the 62KB glossary must not ship here. */
+  hints?: PolicyGlossaryHints | null
   acordData: AcordData
   language: "el" | "en"
 }
 
-export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetailsProps) {
+export function MotorCoverageDetails({ acordData, language, hints }: MotorCoverageDetailsProps) {
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
   const motorCopy = copy.motor
@@ -55,7 +59,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.coverageTier}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.comprehensive ? <GlossaryHint hint={hints.comprehensive} /> : motorCopy.coverageTier}</span>
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/20 dark:border-primary/30 capitalize">
             {motor.coverageTier.replace(/_/g, " ")}
@@ -94,7 +98,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
               <Car className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
             </div>
             <div>
-              <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{motorCopy.roadsideAssistance}</span>
+              <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{hints?.roadside ? <GlossaryHint hint={hints.roadside} /> : motorCopy.roadsideAssistance}</span>
               <p className="text-xs text-[#92400E]/80 dark:text-amber-400/80">{copy.call}</p>
             </div>
           </div>
@@ -135,7 +139,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
               <CreditCard className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div>
-              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.greenCard}</span>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.greenCard ? <GlossaryHint hint={hints.greenCard} /> : motorCopy.greenCard}</span>
               <p className="text-xs text-black/55 dark:text-white/60">
                 {copy.expires}: {new Date(motor.greenCardExpiry).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
               </p>

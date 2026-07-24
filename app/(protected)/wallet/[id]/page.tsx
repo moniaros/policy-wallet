@@ -276,8 +276,17 @@ export default async function PolicyDetailPage({
             t={t}
             exclusionHint={resolveGlossaryHint('exairesi', language, t.wallet.policyDetailsPage.exclusionsTitle)}
             glossaryHints={resolvePolicyGlossaryHints(language, {
+                // Each hint keeps the label the policy itself uses, so the
+                // disclosure annotates the field rather than renaming it.
                 deductible: t.coverageDetails.health.deductiblePerClaim,
                 waitingPeriod: t.coverageDetails.health.waitingPeriods,
+                greenCard: t.coverageDetails.motor.greenCard,
+                roadside: t.coverageDetails.motor.roadsideAssistance,
+                comprehensive: t.coverageDetails.motor.coverageTier,
+                beneficiary: t.coverageDetails.life.beneficiaries,
+                surrender: t.coverageDetails.life.surrenderValue,
+                sumInsured: t.coverageDetails.home.insuredValue,
+                underinsurance: t.coverageDetails.home.valueComparison,
             })}
             tier={entitlements.tier}
             tierLimits={entitlements.limits}
