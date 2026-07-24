@@ -20,6 +20,47 @@ export interface NotableCondition {
     userActionRequired?: boolean
 }
 
+/**
+ * How prominently a notable condition should sit — most consequential first.
+ * The list rendered in raw extraction order, so a "you must file the claim within
+ * 8 days" deadline could appear below an informational "no-claims bonus". These
+ * are the policy's gotchas; the ones that DENY a claim if missed, then the ones
+ * that COST money, then scope limits, then the informational benefit, belong at
+ * the top where a policyholder — or a claims manager reviewing this — will see them.
+ */
+const CONDITION_PRIORITY: Record<string, number> = {
+    claim_deadline: 0,          // miss it → claim denied
+    notification_obligation: 1, // miss it → claim denied
+    cancellation_penalty: 2,    // costs money to leave
+    co_payment: 3,              // you pay part of every claim
+    sub_limit: 4,               // a cap hidden inside the cover
+    waiting_period: 5,          // cover not active yet
+    age_limit: 6,               // cover ends at an age
+    geographic_restriction: 7,  // where cover applies
+    auto_renewal: 8,            // renews unless you act
+    no_claims_bonus: 9,         // an informational benefit
+}
+
+/**
+ * Order conditions by risk to the holder: anything flagged userActionRequired
+ * first, then by the type ranking above. Stable within a tie (extraction order
+ * preserved), pure, so it can be unit-tested without a render.
+ */
+export function sortNotableConditions(conditions: NotableCondition[]): NotableCondition[] {
+    const rank = (c: NotableCondition) => CONDITION_PRIORITY[c.conditionType] ?? 50
+    return conditions
+        .map((c, i) => ({ c, i }))
+        .sort((a, b) => {
+            const actionA = a.c.userActionRequired ? 0 : 1
+            const actionB = b.c.userActionRequired ? 0 : 1
+            if (actionA !== actionB) return actionA - actionB
+            const rankDelta = rank(a.c) - rank(b.c)
+            if (rankDelta !== 0) return rankDelta
+            return a.i - b.i
+        })
+        .map((entry) => entry.c)
+}
+
 export interface FinePrintClause {
     clause: string
     section: string
@@ -97,8 +138,10 @@ export function extractPolicySections(acord: unknown): PolicySections {
         .map((e) => (typeof e === "string" ? e.trim() : ""))
         .filter(Boolean)
 
-    const notableConditions = asArray<NotableCondition>(data.notableConditions).filter(
-        (c) => c && typeof c.conditionType === "string" && c.summary && typeof c.summary === "object"
+    const notableConditions = sortNotableConditions(
+        asArray<NotableCondition>(data.notableConditions).filter(
+            (c) => c && typeof c.conditionType === "string" && c.summary && typeof c.summary === "object"
+        )
     )
 
     const finePrintClauses = asArray<FinePrintClause>(data.finePrintClauses)
