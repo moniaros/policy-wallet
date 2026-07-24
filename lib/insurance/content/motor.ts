@@ -155,7 +155,12 @@ export const motorContent: BranchContent = {
             en: 'Photograph the vehicles, the plates and the scene. If there are injuries or a dispute, also call the traffic police.',
         },
         {
-            el: 'Συμπληρώστε φιλική δήλωση μόνο αν συμφωνείτε για το τι συνέβη — επιταχύνει τη διαδικασία. Αν δεν είστε σίγουροι ποιος φταίει, μην υπογράψετε δήλωση υπαιτιότητας· καταγράψτε μόνο τα γεγονότα και αφήστε τους ασφαλιστές να κρίνουν.',
+            // Singular, like its three siblings. The operative content of this step
+            // was written in a later pass and arrived in the formal plural, so the
+            // most-read claims list in the product — motor is the compulsory line —
+            // switched register halfway down, at the step someone reads standing at
+            // the roadside. Every point it makes is unchanged.
+            el: 'Συμπλήρωσε φιλική δήλωση μόνο αν συμφωνείτε για το τι συνέβη — επιταχύνει τη διαδικασία. Αν δεν είσαι σίγουρος ποιος φταίει, μην υπογράψεις δήλωση υπαιτιότητας· κατάγραψε μόνο τα γεγονότα και άσε τους ασφαλιστές να κρίνουν.',
             en: 'Fill in the amicable accident statement only if you agree on what happened — it speeds things up. If you are unsure who is at fault, do not sign an admission of fault; record only the facts and let the insurers assess.',
         },
         {

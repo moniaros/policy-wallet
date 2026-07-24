@@ -64,7 +64,7 @@ describe('branch claim steps keep their operative detail', () => {
 
     it('motor tells them not to sign an admission of fault when unsure', () => {
         const steps = getBranchContent('motor')?.claimsSteps?.map((s) => s.el).join(' ') ?? ''
-        expect(steps).toMatch(/μην υπογράψετε δήλωση υπαιτιότητας/)
+        expect(steps).toMatch(/μην υπογράψεις δήλωση υπαιτιότητας/)
     })
 
     it('business keeps the turnover evidence that business interruption is paid on', () => {
