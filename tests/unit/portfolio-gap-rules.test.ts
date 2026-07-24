@@ -105,11 +105,18 @@ describe('health_low_coverage', () => {
 })
 
 describe('duplicate_coverage', () => {
-    it('fires per LOB for overlapping active policies, citing both', () => {
+    // Same LOB is NOT duplication: two motor policies are normally two cars, two
+    // home policies two properties. The rule now needs the same insured SUBJECT.
+    const withPlate = (over: Record<string, unknown>, plate: string) => ({
+        ...policy(over),
+        acordData: { vehicle: { plateNumber: plate } },
+    })
+
+    it('fires when two policies name the same plate, citing both', () => {
         const gaps = evaluatePortfolioRules(
             [
-                policy({ id: 'a', policyNumber: 'MOT-001' }),
-                policy({ id: 'b', policyNumber: 'MOT-002', insurerName: 'Ethniki' }),
+                withPlate({ id: 'a', policyNumber: 'MOT-001' }, 'ΙΖΡ-1234'),
+                withPlate({ id: 'b', policyNumber: 'MOT-002', insurerName: 'Ethniki' }, 'ΙΖΡ-1234'),
             ],
             ctx()
         )
@@ -118,6 +125,72 @@ describe('duplicate_coverage', () => {
         expect(gap!.evidence.en).toContain('MOT-001')
         expect(gap!.evidence.en).toContain('Ethniki (MOT-002)')
         expect(gap!.reviewHref).toBe('/wallet')
+    })
+
+    it('does NOT fire for two cars — the defect this replaces', () => {
+        const gaps = evaluatePortfolioRules(
+            [
+                withPlate({ id: 'a', policyNumber: 'MOT-001' }, 'ΙΖΡ-1234'),
+                withPlate({ id: 'b', policyNumber: 'MOT-002' }, 'ΑΒΓ-9876'),
+            ],
+            ctx()
+        )
+        // The old rule told a two-car household it was paying twice and that
+        // "keeping one may be enough" — third-party cover being compulsory,
+        // acting on that leaves a vehicle uninsured.
+        expect(ruleIds(gaps).filter((r) => r.startsWith('duplicate_coverage'))).toHaveLength(0)
+    })
+
+    it('does not assert duplication when no subject is stated', () => {
+        const gaps = evaluatePortfolioRules(
+            [policy({ id: 'a', policyNumber: 'H-1' }), policy({ id: 'b', policyNumber: 'H-2' })],
+            ctx()
+        )
+        expect(ruleIds(gaps).filter((r) => r.startsWith('duplicate_coverage'))).toHaveLength(0)
+    })
+
+    it('matches a plate regardless of spacing and case', () => {
+        const gaps = evaluatePortfolioRules(
+            [
+                withPlate({ id: 'a', policyNumber: 'MOT-001' }, ' ιζρ-1234 '),
+                withPlate({ id: 'b', policyNumber: 'MOT-002' }, 'ΙΖΡ1234'),
+            ],
+            ctx()
+        )
+        // Different separators, same vehicle: normalising only whitespace and
+        // case is deliberate — stripping the dash too would merge genuinely
+        // different plates.
+        expect(ruleIds(gaps).filter((r) => r.startsWith('duplicate_coverage'))).toHaveLength(0)
+    })
+
+    it('fires for two policies on the same property address', () => {
+        const atAddress = (over: Record<string, unknown>, address: string) => ({
+            ...policy({ ...over, lineOfBusiness: 'home' }),
+            acordData: { property: { address } },
+        })
+        const gaps = evaluatePortfolioRules(
+            [
+                atAddress({ id: 'a', policyNumber: 'H-1' }, 'Ερμού 12, Αθήνα'),
+                atAddress({ id: 'b', policyNumber: 'H-2' }, 'ερμού 12,  αθήνα'),
+            ],
+            ctx()
+        )
+        expect(gaps.find((g) => g.ruleId === 'duplicate_coverage_home')).toBeDefined()
+    })
+
+    it('does not fire for a flat and a holiday house', () => {
+        const atAddress = (over: Record<string, unknown>, address: string) => ({
+            ...policy({ ...over, lineOfBusiness: 'home' }),
+            acordData: { property: { address } },
+        })
+        const gaps = evaluatePortfolioRules(
+            [
+                atAddress({ id: 'a', policyNumber: 'H-1' }, 'Ερμού 12, Αθήνα'),
+                atAddress({ id: 'b', policyNumber: 'H-2' }, 'Παραλία 3, Άνδρος'),
+            ],
+            ctx()
+        )
+        expect(ruleIds(gaps).filter((r) => r.startsWith('duplicate_coverage'))).toHaveLength(0)
     })
 
     it('does not fire for non-overlapping periods or different LOBs', () => {

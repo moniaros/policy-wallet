@@ -176,18 +176,60 @@ function lowHealthCoverageRule(
     }
 }
 
+/**
+ * What a policy actually insures, when the document says so: the plate for a
+ * vehicle, the address for a property. `null` means the subject is unknown.
+ */
+function insuredSubject(p: PortfolioPolicyFacts): string | null {
+    const family = branchFamilyId(p.lineOfBusiness)
+    if (family === "motor") {
+        const plate = clean(p.acordData?.vehicle?.plateNumber)
+        return plate ? `plate:${plate.replace(/\s+/g, "").toUpperCase()}` : null
+    }
+    if (family === "home") {
+        const address = clean(p.acordData?.property?.address)
+        return address ? `address:${address.replace(/\s+/g, " ").trim().toLowerCase()}` : null
+    }
+    return null
+}
+
+/**
+ * Two policies on the SAME insured subject, overlapping in time.
+ *
+ * This used to group by line of business alone and call any two overlapping
+ * policies in a line "possible duplicate coverage", with the advice that "if
+ * they overlap fully, keeping one may be enough". Two motor policies are
+ * normally two cars. Two home policies are normally two properties — a flat and
+ * a place in the village is an ordinary Greek household. Two health policies are
+ * often two family members, or a group scheme plus a private top-up, which are
+ * complementary by design.
+ *
+ * So the rule told a two-car household it was paying twice and suggested
+ * dropping one, which would leave a vehicle uninsured — third-party liability
+ * being compulsory, that is the most damaging thing this engine could suggest.
+ * The asymmetry is the point: missing a real duplicate costs someone a premium,
+ * while inventing one can cost them their cover.
+ *
+ * It now fires only where the documents name the SAME subject — the same plate,
+ * the same address — which is a genuine and useful finding (one car insured
+ * twice). Where the subject is not stated, or the line has no subject the
+ * extraction captures, the product does not assert duplication.
+ */
 function duplicateCoverageRules(
     policies: PortfolioPolicyFacts[]
 ): PortfolioGap[] {
     const active = policies.filter(isActive)
     const byLob = new Map<string, PortfolioPolicyFacts[]>()
     for (const p of active) {
-        const lob = p.lineOfBusiness.toLowerCase()
-        byLob.set(lob, [...(byLob.get(lob) || []), p])
+        const subject = insuredSubject(p)
+        if (!subject) continue
+        const key = `${branchFamilyId(p.lineOfBusiness)}|${subject}`
+        byLob.set(key, [...(byLob.get(key) || []), p])
     }
 
     const gaps: PortfolioGap[] = []
-    for (const [lob, group] of byLob) {
+    for (const [groupKey, group] of byLob) {
+        const lob = groupKey.split("|")[0]
         if (group.length < 2) continue
 
         // Overlapping validity periods (unknown dates count as overlapping)
@@ -213,12 +255,12 @@ function duplicateCoverageRules(
                 el: `Πιθανή διπλή κάλυψη ${label.el}`,
             },
             reason: {
-                en: "Two policies covering the same risk over the same period usually means paying twice — insurers rarely pay out twice for the same loss.",
-                el: "Δύο συμβόλαια για τον ίδιο κίνδυνο την ίδια περίοδο συνήθως σημαίνει διπλή πληρωμή — οι ασφαλιστές σπάνια αποζημιώνουν δύο φορές για την ίδια ζημιά.",
+                en: "Two policies on the same insured item over the same period usually means paying twice — insurers rarely pay out twice for the same loss.",
+                el: "Δύο ασφαλιστήρια για το ίδιο ασφαλισμένο αντικείμενο την ίδια περίοδο συνήθως σημαίνει διπλή πληρωμή — οι ασφαλιστές σπάνια αποζημιώνουν δύο φορές για την ίδια ζημιά.",
             },
             evidence: {
-                en: `You have ${overlapping.length} active ${label.en} policies with overlapping periods: ${policyRef(first)} and ${policyRef(second)}.`,
-                el: `Έχετε ${overlapping.length} ενεργά συμβόλαια ${label.el} με επικαλυπτόμενες περιόδους: ${policyRef(first)} και ${policyRef(second)}.`,
+                en: `${policyRef(first)} and ${policyRef(second)} both cover the same ${label.en.toLowerCase()} item over overlapping periods, based on the documents you uploaded.`,
+                el: `Τα ${policyRef(first)} και ${policyRef(second)} καλύπτουν το ίδιο αντικείμενο με επικαλυπτόμενες περιόδους, σύμφωνα με τα έγγραφα που ανεβάσατε.`,
             },
             nextAction: {
                 en: "Compare what each policy actually covers — if they overlap fully, keeping one may be enough.",
