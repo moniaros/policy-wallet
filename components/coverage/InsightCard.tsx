@@ -91,7 +91,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                            <span className="text-kicker font-semibold uppercase tracking-widest text-black/50 dark:text-white/60">
+                            <span className="text-kicker font-semibold uppercase tracking-widest text-black/60 dark:text-white/60">
                                 {insight.type.toUpperCase()}
                             </span>
                             <span className={`text-kicker font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full ${config.bg} ${config.color} border ${config.border}`}>
@@ -121,9 +121,9 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                     <div className="space-y-4">
                         <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/10 dark:border-white/15">
                             <div className="flex gap-2.5">
-                                <Info className="w-4 h-4 text-black/45 dark:text-white/55 mt-0.5 flex-shrink-0" />
+                                <Info className="w-4 h-4 text-black/55 dark:text-white/55 mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <span className="text-kicker font-semibold text-black/45 dark:text-white/55 uppercase tracking-widest block mb-1">
+                                    <span className="text-kicker font-semibold text-black/55 dark:text-white/55 uppercase tracking-widest block mb-1">
                                         {COPY.whyItMatters[language]}
                                     </span>
                                     <p className="text-black/80 dark:text-white/80 text-sm leading-relaxed">{insight.whyItMatters}</p>
@@ -132,7 +132,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                         </div>
 
                         <div>
-                            <span className="text-kicker font-semibold text-black/45 dark:text-white/55 uppercase tracking-widest block mb-2">
+                            <span className="text-kicker font-semibold text-black/55 dark:text-white/55 uppercase tracking-widest block mb-2">
                                 {COPY.whatWeChecked[language]}
                             </span>
                             <div className="space-y-2">
@@ -174,7 +174,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
 
                         {insight.microcopy && (
                             <div className="flex justify-center">
-                                <span className="text-kicker font-medium text-black/45 dark:text-white/55 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
+                                <span className="text-kicker font-medium text-black/55 dark:text-white/55 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
                                     <Shield className="w-3 h-3" />
                                     {insight.microcopy}
                                 </span>
@@ -186,7 +186,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
 
             {insight.isPlusFeature && (
                 <div className="bg-black/5 dark:bg-white/10 px-5 py-2 border-t border-black/10 dark:border-white/15 flex justify-center">
-                    <span className="text-kicker font-semibold text-black/45 dark:text-white/55">
+                    <span className="text-kicker font-semibold text-black/55 dark:text-white/55">
                         {COPY.plusFeature[language]}
                     </span>
                 </div>

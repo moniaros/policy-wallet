@@ -155,7 +155,7 @@ export function InlineMessagesTab({
         <div className="flex flex-col rounded-2xl border border-black/8 bg-white dark:border-white/10 dark:bg-[#111]">
             {/* Header */}
             <div className="flex items-center gap-2.5 border-b border-black/8 px-4 py-3 dark:border-white/10">
-                <MessageSquare className="h-4 w-4 text-black/50 dark:text-white/50" />
+                <MessageSquare className="h-4 w-4 text-black/60 dark:text-white/50" />
                 <span className="text-xs font-bold text-black dark:text-white">
                     {t("Μηνύματα", "Messages")}
                 </span>
@@ -174,17 +174,17 @@ export function InlineMessagesTab({
             >
                 {loading && (
                     <div className="flex items-center justify-center py-6">
-                        <Loader2 className="h-4 w-4 animate-spin text-black/40 dark:text-white/40" />
+                        <Loader2 className="h-4 w-4 animate-spin text-black/55 dark:text-white/40" />
                     </div>
                 )}
 
                 {!loading && messages.length === 0 && (
                     <div className="flex flex-col items-center gap-2 py-8 text-center">
                         <MessageSquare className="h-6 w-6 text-black/20 dark:text-white/20" />
-                        <p className="text-xs text-black/40 dark:text-white/40">
+                        <p className="text-xs text-black/55 dark:text-white/40">
                             {t("Δεν υπάρχουν μηνύματα ακόμα.", "No messages yet.")}
                         </p>
-                        <p className="text-micro text-black/30 dark:text-white/30">
+                        <p className="text-micro text-black/55 dark:text-white/60">
                             {t("Στείλτε ένα μήνυμα για να ξεκινήσετε.", "Send a message to get started.")}
                         </p>
                     </div>
@@ -203,7 +203,7 @@ export function InlineMessagesTab({
                                     animate={{ opacity: 1 }}
                                     className="flex justify-center px-4 py-1"
                                 >
-                                    <span className="rounded-full bg-black/5 px-3 py-1 text-kicker text-black/50 dark:bg-white/5 dark:text-white/50">
+                                    <span className="rounded-full bg-black/5 px-3 py-1 text-kicker text-black/60 dark:bg-white/5 dark:text-white/50">
                                         {msg.body}
                                     </span>
                                 </motion.div>

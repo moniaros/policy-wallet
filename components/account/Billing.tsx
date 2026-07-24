@@ -99,7 +99,7 @@ export function Billing({
                                 <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeWidth="2" /></svg>
                                 </div>
-                                <span className="text-kicker font-black uppercase tracking-widest text-black/45 dark:text-white/60">{t.billing.subscriptionStatus}</span>
+                                <span className="text-kicker font-black uppercase tracking-widest text-black/55 dark:text-white/60">{t.billing.subscriptionStatus}</span>
                             </div>
 
                             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
@@ -115,7 +115,7 @@ export function Billing({
                                     <div className="text-2xl font-black text-black dark:text-white">
                                         {formatPrice(currentPlan.price)}
                                     </div>
-                                    <span className="text-kicker font-black uppercase tracking-widest text-black/45 dark:text-white/60">{t.billing.perMonth}</span>
+                                    <span className="text-kicker font-black uppercase tracking-widest text-black/55 dark:text-white/60">{t.billing.perMonth}</span>
                                 </div>
                             </div>
 
@@ -153,7 +153,7 @@ export function Billing({
                                     )}
                                     <button
                                         onClick={() => onCancel?.()}
-                                        className="px-5 py-2.5 text-black/45 dark:text-white/60 hover:text-red-500 rounded-xl text-kicker font-black uppercase tracking-wider transition-all"
+                                        className="px-5 py-2.5 text-black/55 dark:text-white/60 hover:text-red-500 rounded-xl text-kicker font-black uppercase tracking-wider transition-all"
                                     >
                                         {t.billing.terminateCycle}
                                     </button>
@@ -195,18 +195,18 @@ export function Billing({
 
                         {invoices.length === 0 ? (
                             <div className="p-20 text-center">
-                                <p className="text-black/45 dark:text-white/60 text-sm italic font-medium">{t.billing.noInvoices}</p>
+                                <p className="text-black/55 dark:text-white/60 text-sm italic font-medium">{t.billing.noInvoices}</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead className="bg-black/5 dark:bg-black">
                                         <tr>
-                                            <th className="px-8 py-4 text-left text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.billing.reference}</th>
-                                            <th className="px-8 py-4 text-left text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.billing.issueDate}</th>
-                                            <th className="px-8 py-4 text-center text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.billing.status}</th>
-                                            <th className="px-8 py-4 text-right text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.billing.amount}</th>
-                                            <th className="px-8 py-4 text-right text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.billing.action}</th>
+                                            <th className="px-8 py-4 text-left text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.billing.reference}</th>
+                                            <th className="px-8 py-4 text-left text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.billing.issueDate}</th>
+                                            <th className="px-8 py-4 text-center text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.billing.status}</th>
+                                            <th className="px-8 py-4 text-right text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.billing.amount}</th>
+                                            <th className="px-8 py-4 text-right text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.billing.action}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-black/10 dark:divide-white/10">
@@ -235,7 +235,7 @@ export function Billing({
                                                         {invoice.pdf_url && (
                                                             <button
                                                                 onClick={() => (onDownloadInvoice ? onDownloadInvoice(invoice.invoice_id) : onOpenPortal?.())}
-                                                                className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                                                                className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black flex items-center justify-center text-black/55 dark:text-white/60 hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                                                             >
                                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeWidth="2.5" /></svg>
                                                             </button>
@@ -278,7 +278,7 @@ export function Billing({
                                         <div className="text-sm font-black text-black dark:text-white uppercase tracking-tight">
                                             {getCardBrandLabel(defaultPaymentMethod.card_brand || "visa")} •••• {defaultPaymentMethod.card_last4}
                                         </div>
-                                        <div className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest mt-0.5">
+                                        <div className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-widest mt-0.5">
                                             {t.billing.expires} {defaultPaymentMethod.card_exp_month}/{defaultPaymentMethod.card_exp_year}
                                         </div>
                                     </div>
@@ -289,7 +289,7 @@ export function Billing({
                                 onClick={() => (onAddPaymentMethod ? onAddPaymentMethod() : onOpenPortal?.())}
                                 className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-black/10 dark:border-white/15 rounded-[32px] hover:border-primary/35 hover:bg-primary/10 transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                             >
-                                <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 group-hover:bg-primary group-hover:text-white dark:group-hover:text-[#1A2420] transition-all mb-4">
+                                <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/55 dark:text-white/60 group-hover:bg-primary group-hover:text-white dark:group-hover:text-[#1A2420] transition-all mb-4">
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 4v16m8-8H4" strokeWidth="2.5" /></svg>
                                 </div>
                                 <span className="text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/60 group-hover:text-black dark:group-hover:text-white">{t.billing.addPaymentSource}</span>
@@ -299,7 +299,7 @@ export function Billing({
                         <div className="mt-10 p-6 bg-black/5 dark:bg-black rounded-3xl border border-black/10 dark:border-white/15">
                             <div className="flex gap-3">
                                 <svg className="w-5 h-5 text-black/35 dark:text-white/55 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" strokeWidth="2" /></svg>
-                                <p className="text-kicker font-medium text-black/45 dark:text-white/60 leading-relaxed italic">
+                                <p className="text-kicker font-medium text-black/55 dark:text-white/60 leading-relaxed italic">
                                     {t.billing.securityNote}
                                 </p>
                             </div>

@@ -291,7 +291,7 @@ export function RecommendationCards({
                                             className="mt-2.5"
                                         >
                                             <div className="rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
+                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/50">
                                                     <FileSearch className="h-3 w-3" />
                                                     {t("Από τα στοιχεία σας", "From your policy data")}
                                                 </p>
@@ -310,7 +310,7 @@ export function RecommendationCards({
                                     ) : smart ? (
                                         <>
                                             <div className="mt-2.5 rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
+                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/50">
                                                     <FileSearch className="h-3 w-3" />
                                                     {t("Από τα στοιχεία σας", "From your policy data")}
                                                 </p>
@@ -336,7 +336,7 @@ export function RecommendationCards({
                                             </p>
                                             {rec.matchedProduct && (
                                                 <div className="rounded-lg bg-black/[0.03] dark:bg-white/[0.04] p-2.5 space-y-1.5">
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-black/40 dark:text-white/45">
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/45">
                                                         {t("Ενδεικτική επιλογή στην αγορά", "One option on the market")}
                                                     </p>
                                                     <p className="text-xs font-semibold text-black/80 dark:text-white/80">
@@ -409,7 +409,7 @@ export function RecommendationCards({
                                         <button
                                             type="button"
                                             onClick={() => handleDismiss(rec.id, "not_relevant")}
-                                            className="text-xs text-black/45 hover:text-black/70 hover:underline cursor-pointer dark:text-white/45 dark:hover:text-white/70"
+                                            className="text-xs text-black/55 hover:text-black/70 hover:underline cursor-pointer dark:text-white/45 dark:hover:text-white/70"
                                         >
                                             {t("Μη σχετικό για εμένα", "Mark as not relevant")}
                                         </button>

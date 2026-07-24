@@ -66,9 +66,9 @@ export function QuickActionsRow({
                                 >
                                     <div className="flex items-center justify-between gap-2">
                                         <span className="truncate text-xs font-semibold text-black dark:text-white">{document.fileName}</span>
-                                        <FileText className="h-4 w-4 flex-shrink-0 text-black/45 dark:text-white/55" />
+                                        <FileText className="h-4 w-4 flex-shrink-0 text-black/55 dark:text-white/55" />
                                     </div>
-                                    <p className="mt-2 truncate text-micro text-black/45 dark:text-white/60">
+                                    <p className="mt-2 truncate text-micro text-black/55 dark:text-white/60">
                                         {document.insurerName}
                                     </p>
                                 </Link>

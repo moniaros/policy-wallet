@@ -27,7 +27,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
             {navigation.map((group, groupIndex) => (
                 <div key={groupIndex}>
                     {group.title && (
-                        <div className="px-3 mb-2 text-kicker font-semibold text-black/45 dark:text-white/45 uppercase tracking-[0.22em]">
+                        <div className="px-3 mb-2 text-kicker font-semibold text-black/55 dark:text-white/45 uppercase tracking-[0.22em]">
                             {group.title}
                         </div>
                     )}
@@ -55,7 +55,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                     <div className="absolute inset-0 bg-black/5 dark:bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity -z-20" />
 
                                     {item.icon && (
-                                        <span className={`flex-shrink-0 w-5 h-5 transition-all duration-300 group-hover:scale-110 ${item.isActive ? 'text-white dark:text-[#1A2420]' : 'text-black/45 dark:text-white/55 group-hover:text-black dark:group-hover:text-mint'}`}>
+                                        <span className={`flex-shrink-0 w-5 h-5 transition-all duration-300 group-hover:scale-110 ${item.isActive ? 'text-white dark:text-[#1A2420]' : 'text-black/55 dark:text-white/55 group-hover:text-black dark:group-hover:text-mint'}`}>
                                             {item.icon}
                                         </span>
                                     )}

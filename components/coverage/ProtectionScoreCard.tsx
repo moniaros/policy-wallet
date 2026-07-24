@@ -134,7 +134,7 @@ export function ProtectionScoreCard({
                         <span className={`text-3xl font-bold ${scoreColor}`}>
                             {overallScore}
                         </span>
-                        <span className="text-xs text-black/50 dark:text-white/50">
+                        <span className="text-xs text-black/60 dark:text-white/50">
                             /100
                         </span>
                     </div>
@@ -148,7 +148,7 @@ export function ProtectionScoreCard({
                     <p className={`text-sm font-medium ${scoreColor} mb-1`}>
                         {tier.label[lang]}
                         {profileCompleteness < 80 && (
-                            <span className="ml-1.5 text-xs font-normal text-black/45 dark:text-white/50">· {copy.provisional}</span>
+                            <span className="ml-1.5 text-xs font-normal text-black/55 dark:text-white/50">· {copy.provisional}</span>
                         )}
                     </p>
                     <p className="text-sm text-black/60 dark:text-white/60 mb-2">
@@ -175,7 +175,7 @@ export function ProtectionScoreCard({
             {/* Category breakdown */}
             {applicableCategories.length > 0 && (
                 <div className="mt-6 pt-5 border-t border-black/8 dark:border-white/10">
-                    <h3 className="text-xs font-semibold text-black/50 dark:text-white/50 uppercase tracking-widest mb-3">
+                    <h3 className="text-xs font-semibold text-black/60 dark:text-white/50 uppercase tracking-widest mb-3">
                         {copy.categories}
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -210,7 +210,7 @@ export function ProtectionScoreCard({
                                             }}
                                         />
                                     </div>
-                                    <p className="text-xs text-black/50 dark:text-white/50 mt-1">
+                                    <p className="text-xs text-black/60 dark:text-white/50 mt-1">
                                         {cat.score >= 0
                                             ? `${cat.score}%`
                                             : copy.notApplicable}
@@ -238,7 +238,7 @@ export function ProtectionScoreCard({
                                         style={{ width: `${profileCompleteness}%` }}
                                     />
                                 </div>
-                                <span className="text-xs font-medium text-black/50 dark:text-white/50">
+                                <span className="text-xs font-medium text-black/60 dark:text-white/50">
                                     {profileCompleteness}%
                                 </span>
                             </div>

@@ -142,7 +142,7 @@ export function SummaryCard({
                             </span>
                         </div>
                         <div>
-                            <p className="text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                            <p className="text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
                                 {copy.healthTitle}
                             </p>
                             <p className={`text-xs font-bold ${healthColorClass}`}>
@@ -156,7 +156,7 @@ export function SummaryCard({
 
             {glanceChips.length > 0 && (
                 <div className="mt-4 border-t border-black/10 pt-4 dark:border-white/10">
-                    <p className="mb-2.5 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <p className="mb-2.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
                         {copy.atAGlance}
                     </p>
                     <div className="flex flex-wrap gap-2">

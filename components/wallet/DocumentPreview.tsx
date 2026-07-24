@@ -63,7 +63,7 @@ export function DocumentPreview({ isOpen, onClose, document, labels }: DocumentP
                             />
                         </div>
                     ) : (
-                        <div className="flex h-full flex-col items-center justify-center gap-3 text-black/50 dark:text-white/50">
+                        <div className="flex h-full flex-col items-center justify-center gap-3 text-black/60 dark:text-white/50">
                             <p className="text-sm">{labels.previewUnavailable}</p>
                             <a
                                 href={document.fileUrl}
@@ -100,7 +100,7 @@ export function DocumentPreviewButton({ onClick, isLocked, label, lockedLabel, o
                     e.stopPropagation()
                     onLockedClick?.()
                 }}
-                className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/40 transition-colors hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white/70"
+                className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/55 transition-colors hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white/70"
                 title={lockedLabel}
                 aria-label={lockedLabel}
             >
@@ -118,7 +118,7 @@ export function DocumentPreviewButton({ onClick, isLocked, label, lockedLabel, o
                 e.stopPropagation()
                 onClick()
             }}
-            className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/50 transition-colors hover:bg-black/5 hover:text-black/80 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white/80"
+            className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/60 transition-colors hover:bg-black/5 hover:text-black/80 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white/80"
             title={label}
         >
             <Eye className="h-3.5 w-3.5" />

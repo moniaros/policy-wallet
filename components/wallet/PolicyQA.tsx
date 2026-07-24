@@ -225,7 +225,7 @@ export function PolicyQA({
                                 : `${freeRemaining} ${t.wallet.qaFreeRemainingMany}`}
                         </p>
                     )}
-                    <p className="text-xs text-black/50 dark:text-white/60 mt-3 text-center">{t.wallet.aiFootnote}</p>
+                    <p className="text-xs text-black/60 dark:text-white/60 mt-3 text-center">{t.wallet.aiFootnote}</p>
                     <AiDisclaimer variant="inline" className="mt-2 justify-center text-center" />
                 </div>
             )}

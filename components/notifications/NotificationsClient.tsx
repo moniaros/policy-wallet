@@ -292,7 +292,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                     </button>
                 </div>
 
-                <p className="mb-4 text-xs text-black/50 dark:text-white/60" role="status" aria-live="polite">
+                <p className="mb-4 text-xs text-black/60 dark:text-white/60" role="status" aria-live="polite">
                     {savingKey ? tr("Αποθήκευση αλλαγών...", "Saving changes...") : tr("Οι αλλαγές αποθηκεύονται αυτόματα.", "Changes are saved automatically.")}
                 </p>
 
@@ -359,7 +359,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                             )}
                             {historyItems.length === 0 ? (
                                 <div className="rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-6 text-center shadow-sm">
-                                    <Settings2 className="mx-auto h-5 w-5 text-black/40 dark:text-white/50" />
+                                    <Settings2 className="mx-auto h-5 w-5 text-black/55 dark:text-white/50" />
                                     <p className="mt-2 text-sm text-black/65 dark:text-white/70">{tr("Δεν υπάρχουν πρόσφατες ειδοποιήσεις.", "No recent notification activity.")}</p>
                                 </div>
                             ) : (
@@ -397,7 +397,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                                         <span>{channelLabel}</span>
                                                     </div>
                                                 </div>
-                                                <p className="text-xs font-medium text-black/50 dark:text-white/60 whitespace-nowrap">
+                                                <p className="text-xs font-medium text-black/60 dark:text-white/60 whitespace-nowrap">
                                                     {createdAtText}
                                                 </p>
                                             </div>

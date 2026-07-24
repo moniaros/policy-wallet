@@ -49,7 +49,7 @@ export function AgentPlanGate({ currentTier, requiredTier, featureLabel, childre
                         </p>
                     )}
 
-                    <p className="text-xs text-black/50 dark:text-white/50">
+                    <p className="text-xs text-black/60 dark:text-white/50">
                         {language === "el"
                             ? `Απαιτεί πλάνο ${tierLabel}`
                             : `Requires ${tierLabel} plan`}

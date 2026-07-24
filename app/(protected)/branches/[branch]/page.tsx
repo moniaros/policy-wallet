@@ -139,7 +139,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
     return (
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
             {/* Header */}
-            <nav className="mb-4 text-xs font-bold text-black/50 dark:text-white/55">
+            <nav className="mb-4 text-xs font-bold text-black/60 dark:text-white/55">
                 <Link href="/branches" className="hover:text-primary dark:hover:text-mint">{t.branches.title}</Link>
                 <span className="mx-2" aria-hidden>/</span>
                 <span className="text-black/75 dark:text-white/80">{branchTitle}</span>
@@ -191,7 +191,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                             <span className="rounded-full bg-black/5 px-2.5 py-1 text-kicker font-bold text-black/60 dark:bg-white/10 dark:text-white/65">
                                                 {statusLabel}
                                             </span>
-                                            <ArrowRight className="h-4 w-4 text-black/40 dark:text-white/45" aria-hidden />
+                                            <ArrowRight className="h-4 w-4 text-black/55 dark:text-white/45" aria-hidden />
                                         </div>
                                     </Link>
                                 )

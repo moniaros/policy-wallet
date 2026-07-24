@@ -42,7 +42,7 @@ function GuideList({ icon: Icon, title, items }: { icon: typeof Eye; title: stri
     if (items.length === 0) return null
     return (
         <div>
-            <h3 className="mb-2 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+            <h3 className="mb-2 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
                 <Icon className="h-3.5 w-3.5 text-primary dark:text-mint" />
                 {title}
             </h3>
@@ -89,7 +89,7 @@ export function BranchGuideCard({
                     )}
                 </div>
                 <ChevronDown
-                    className={`mt-0.5 h-4 w-4 flex-shrink-0 text-black/45 transition-transform dark:text-white/50 ${open ? "rotate-180" : ""}`}
+                    className={`mt-0.5 h-4 w-4 flex-shrink-0 text-black/55 transition-transform dark:text-white/50 ${open ? "rotate-180" : ""}`}
                     aria-hidden
                 />
             </button>
@@ -104,7 +104,7 @@ export function BranchGuideCard({
 
                     {commonGaps.length > 0 && (
                         <div>
-                            <h3 className="mb-2 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                            <h3 className="mb-2 flex items-center gap-1.5 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
                                 <ShieldAlert className="h-3.5 w-3.5 text-primary dark:text-mint" />
                                 {copy.guideCommonGaps}
                             </h3>

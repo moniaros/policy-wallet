@@ -80,7 +80,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
                         <h3 className="text-sm font-bold text-black dark:text-white">
                             {t("Επιτεύγματα", "Achievements")}
                         </h3>
-                        <p className="text-xs text-black/50 dark:text-white/50">
+                        <p className="text-xs text-black/60 dark:text-white/50">
                             {unlockedCount}/{totalCount} {t("ξεκλειδωμένα", "unlocked")}
                         </p>
                     </div>
@@ -143,7 +143,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
                                     <p className="text-xs font-bold text-black dark:text-white truncate">
                                         {language === "el" ? ach.titleEl : ach.titleEn}
                                     </p>
-                                    <p className="mt-0.5 text-kicker text-black/50 dark:text-white/50 truncate">
+                                    <p className="mt-0.5 text-kicker text-black/60 dark:text-white/50 truncate">
                                         {language === "el" ? ach.descriptionEl : ach.descriptionEn}
                                     </p>
                                     {ach.unlocked && ach.unlockedAt && (

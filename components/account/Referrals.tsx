@@ -65,7 +65,7 @@ export function Referrals({
                             </div>
 
                             <h2 className="text-3xl font-black text-black dark:text-white tracking-tighter mb-4">
-                                {t.referrals.helpSomeone} <span className="text-black/45 dark:text-white/60 italic">{t.referrals.helpSomeoneSubtitle}</span>
+                                {t.referrals.helpSomeone} <span className="text-black/55 dark:text-white/60 italic">{t.referrals.helpSomeoneSubtitle}</span>
                             </h2>
                             <p className="text-black/60 dark:text-white/60 text-sm font-medium mb-8 max-w-xl italic">
                                 {t.referrals.shareDesc}
@@ -73,7 +73,7 @@ export function Referrals({
                         </div>
 
                         <div className="space-y-6">
-                            <label className="text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-widest block px-1">{t.referrals.yourLink}</label>
+                            <label className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-widest block px-1">{t.referrals.yourLink}</label>
                             <div className="flex flex-col sm:flex-row items-stretch gap-4">
                                 <div className="flex-1 px-5 py-3 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl text-xs text-black/70 dark:text-white/70 font-black tracking-tight overflow-hidden text-ellipsis flex items-center">
                                     {referralLink}
@@ -145,7 +145,7 @@ export function Referrals({
 
                     {referrals.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center p-20 text-center">
-                            <p className="text-black/45 dark:text-white/60 text-sm italic font-medium">{t.referrals.noConversions}</p>
+                            <p className="text-black/55 dark:text-white/60 text-sm italic font-medium">{t.referrals.noConversions}</p>
                         </div>
                     ) : (
                         <div className="divide-y divide-black/10 dark:divide-white/10">
@@ -158,7 +158,7 @@ export function Referrals({
                                                 <div className="text-sm font-black text-black dark:text-white mb-1 group-hover:text-primary dark:group-hover:text-mint transition-colors">
                                                     {referral.referred_email}
                                                 </div>
-                                                <div className="text-kicker font-bold text-black/45 dark:text-white/60 uppercase tracking-widest">
+                                                <div className="text-kicker font-bold text-black/55 dark:text-white/60 uppercase tracking-widest">
                                                     {t.referrals.added}: {formatDate(referral.created_at)}
                                                     {referral.credited_at && ` • ${t.referrals.earned}: ${formatDate(referral.credited_at)}`}
                                                 </div>
@@ -184,30 +184,30 @@ export function Referrals({
 
                     {creditTransactions.length === 0 ? (
                         <div className="p-20 text-center">
-                            <p className="text-black/45 dark:text-white/60 text-sm italic font-medium">{t.referrals.noActivity}</p>
+                            <p className="text-black/55 dark:text-white/60 text-sm italic font-medium">{t.referrals.noActivity}</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead className="bg-black/5 dark:bg-black">
                                     <tr>
-                                        <th className="px-8 py-4 text-left text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.timestamp}</th>
-                                        <th className="px-8 py-4 text-left text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.event}</th>
-                                        <th className="px-8 py-4 text-right text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.delta}</th>
-                                        <th className="px-8 py-4 text-right text-kicker font-black text-black/45 dark:text-white/60 uppercase tracking-wider">{t.referrals.final}</th>
+                                        <th className="px-8 py-4 text-left text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.referrals.timestamp}</th>
+                                        <th className="px-8 py-4 text-left text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.referrals.event}</th>
+                                        <th className="px-8 py-4 text-right text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.referrals.delta}</th>
+                                        <th className="px-8 py-4 text-right text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-wider">{t.referrals.final}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-black/10 dark:divide-white/10">
                                     {creditTransactions.map((transaction) => (
                                         <tr key={transaction.transaction_id} className="hover:bg-black/5 dark:hover:bg-black/80 transition-all">
-                                            <td className="px-8 py-5 whitespace-nowrap text-kicker font-bold text-black/45 dark:text-white/60 uppercase tracking-wider">
+                                            <td className="px-8 py-5 whitespace-nowrap text-kicker font-bold text-black/55 dark:text-white/60 uppercase tracking-wider">
                                                 {formatDate(transaction.created_at)}
                                             </td>
                                             <td className="px-8 py-5 text-xs font-black text-black dark:text-white uppercase tracking-tight">
                                                 {transaction.description}
                                             </td>
                                             <td className="px-8 py-5 whitespace-nowrap text-right">
-                                                <span className={`text-xs font-black ${transaction.amount > 0 ? "text-primary dark:text-mint" : "text-black/45 dark:text-white/60"}`}>
+                                                <span className={`text-xs font-black ${transaction.amount > 0 ? "text-primary dark:text-mint" : "text-black/55 dark:text-white/60"}`}>
                                                     {transaction.amount > 0 ? "+" : ""}{formatPrice(Math.abs(transaction.amount))}
                                                 </span>
                                             </td>

@@ -46,7 +46,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                 <button
                     type="button"
                     onClick={onDismiss}
-                    className="absolute right-4 top-4 rounded-lg p-1 text-black/40 transition hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/5 dark:hover:text-white/70"
+                    className="absolute right-4 top-4 rounded-lg p-1 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/5 dark:hover:text-white/70"
                     aria-label="Close"
                 >
                     <X className="h-4 w-4" />
@@ -74,7 +74,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                             <p className="text-sm font-bold text-black dark:text-white">
                                 {t("Πόσο πιθανό είναι να μας προτείνετε;", "How likely are you to recommend us?")}
                             </p>
-                            <p className="mt-1 text-micro text-black/50 dark:text-white/55">
+                            <p className="mt-1 text-micro text-black/60 dark:text-white/55">
                                 {t("0 = Καθόλου πιθανό · 10 = Σίγουρα", "0 = Not likely · 10 = Very likely")}
                             </p>
                         </div>

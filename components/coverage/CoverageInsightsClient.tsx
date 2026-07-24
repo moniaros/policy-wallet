@@ -349,7 +349,7 @@ export function CoverageInsightsClient({
                                         {copy.notAnalyzedLockedCta}
                                     </button>
                                 ) : (
-                                    <p className="text-xs text-black/45 dark:text-white/55">{copy.notAnalyzedRefreshHint}</p>
+                                    <p className="text-xs text-black/55 dark:text-white/55">{copy.notAnalyzedRefreshHint}</p>
                                 )}
                             </div>
                         ) : (
@@ -404,7 +404,7 @@ export function CoverageInsightsClient({
                             {isFreeTier ? copy.unlockFull : copy.coverageSettings}
                         </button>
                     </div>
-                    <p className="text-xs text-black/45 dark:text-white/55 mt-5 max-w-md mx-auto leading-relaxed">{copy.independentNote}</p>
+                    <p className="text-xs text-black/55 dark:text-white/55 mt-5 max-w-md mx-auto leading-relaxed">{copy.independentNote}</p>
                 </div>
             </div>
         </div>

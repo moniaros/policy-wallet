@@ -27,7 +27,7 @@ export function PortfolioSummaryCard({
                     <p className="text-3xl font-semibold text-black dark:text-white">{totalLabel}</p>
                     <p className="mt-1 text-xs text-black/55 dark:text-white/60">{labels.totalAnnualPremium}</p>
                     {excludedNote && (
-                        <p className="mt-1 text-kicker text-black/45 dark:text-white/45">{excludedNote}</p>
+                        <p className="mt-1 text-kicker text-black/55 dark:text-white/45">{excludedNote}</p>
                     )}
                 </div>
                 <div className="flex flex-wrap gap-2">

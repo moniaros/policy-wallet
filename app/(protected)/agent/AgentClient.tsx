@@ -536,7 +536,7 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                                     isActive
                                         ? 'bg-primary/15 text-primary dark:text-mint'
-                                        : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                                        : 'text-black/60 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                 }`}
                             >
                                 <Icon className="w-4 h-4" aria-hidden="true" />

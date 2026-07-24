@@ -128,11 +128,11 @@ export function BranchActionsCard({
             item.ctaType === "askAi" ? (
                 <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-mint" aria-hidden />
             ) : item.ctaType === "askAgent" ? (
-                <MessageSquarePlus className="h-3.5 w-3.5 flex-shrink-0 text-black/40 dark:text-white/45" aria-hidden />
+                <MessageSquarePlus className="h-3.5 w-3.5 flex-shrink-0 text-black/55 dark:text-white/45" aria-hidden />
             ) : item.ctaType === "task" ? (
-                <Plus className="h-3.5 w-3.5 flex-shrink-0 text-black/40 dark:text-white/45" aria-hidden />
+                <Plus className="h-3.5 w-3.5 flex-shrink-0 text-black/55 dark:text-white/45" aria-hidden />
             ) : (
-                <ArrowUpRight className="h-3.5 w-3.5 flex-shrink-0 text-black/40 dark:text-white/45" aria-hidden />
+                <ArrowUpRight className="h-3.5 w-3.5 flex-shrink-0 text-black/55 dark:text-white/45" aria-hidden />
             )
 
         // askAgent — open (or reuse) the advisor thread. On the free tier the
@@ -236,7 +236,7 @@ export function BranchActionsCard({
 
             {answered.length > 0 && (
                 <div className="mt-5">
-                    <h3 className="mb-2 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <h3 className="mb-2 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
                         {copy.actionsAnsweredHeading}
                     </h3>
                     <ul className="space-y-2">
@@ -258,7 +258,7 @@ export function BranchActionsCard({
 
             {todo.length > 0 && (
                 <div className="mt-5">
-                    <h3 className="mb-2 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <h3 className="mb-2 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
                         {copy.actionsTodoHeading}
                     </h3>
                     <ul className="space-y-2">

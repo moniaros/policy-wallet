@@ -74,7 +74,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-mono font-bold text-black dark:text-white">{pet.microchipNumber}</span>
-            <Copy className="w-3.5 h-3.5 text-black/45 dark:text-white/50" />
+            <Copy className="w-3.5 h-3.5 text-black/55 dark:text-white/50" />
           </div>
         </button>
       )}
@@ -172,7 +172,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               <CheckCircle2 className="w-4 h-4" /> {copy.available}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-black/45 dark:text-white/50">
+            <span className="flex items-center gap-1 text-xs font-bold text-black/55 dark:text-white/50">
               <XCircle className="w-4 h-4" /> {copy.notAvailable}
             </span>
           )}

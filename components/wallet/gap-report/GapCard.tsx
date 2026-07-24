@@ -96,7 +96,7 @@ export function GapCard({ item, lang, copy, onIgnore, onNotify, ignoring, notify
                             type="button"
                             onClick={() => onIgnore([item.id, ...item.duplicateIds])}
                             disabled={ignoring}
-                            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-black/50 transition-colors hover:bg-black/5 hover:text-black/70 disabled:opacity-50 dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white/75"
+                            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-black/60 transition-colors hover:bg-black/5 hover:text-black/70 disabled:opacity-50 dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white/75"
                         >
                             <EyeOff className="h-3.5 w-3.5" />
                             {copy.hide}

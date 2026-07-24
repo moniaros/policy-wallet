@@ -75,18 +75,18 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
             {/* Summary */}
             <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="pw-card rounded-2xl p-4">
-                    <p className="text-micro font-bold uppercase tracking-wider text-black/50 dark:text-white/55">Open</p>
+                    <p className="text-micro font-bold uppercase tracking-wider text-black/60 dark:text-white/55">Open</p>
                     <p className="mt-1 text-3xl font-black text-black dark:text-white">{summary.open}</p>
                 </div>
                 <div className="pw-card rounded-2xl p-4">
-                    <p className="flex items-center gap-1.5 text-micro font-bold uppercase tracking-wider text-black/50 dark:text-white/55">
+                    <p className="flex items-center gap-1.5 text-micro font-bold uppercase tracking-wider text-black/60 dark:text-white/55">
                         <Sparkles className="h-3 w-3" />
                         Self-healed (re-analyzed or confirmed)
                     </p>
                     <p className="mt-1 text-3xl font-black text-black dark:text-white">{summary.selfHealed}</p>
                 </div>
                 <div className="pw-card rounded-2xl p-4">
-                    <p className="text-micro font-bold uppercase tracking-wider text-black/50 dark:text-white/55">Total reports</p>
+                    <p className="text-micro font-bold uppercase tracking-wider text-black/60 dark:text-white/55">Total reports</p>
                     <p className="mt-1 text-3xl font-black text-black dark:text-white">{summary.total}</p>
                 </div>
             </div>
@@ -103,7 +103,7 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                 <div className="pw-card overflow-hidden rounded-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
-                            <thead className="border-b border-black/10 text-micro font-bold uppercase tracking-wider text-black/45 dark:border-white/10 dark:text-white/50">
+                            <thead className="border-b border-black/10 text-micro font-bold uppercase tracking-wider text-black/55 dark:border-white/10 dark:text-white/50">
                                 <tr>
                                     <th className="px-4 py-3">Flagged</th>
                                     <th className="px-4 py-3">User</th>
@@ -126,20 +126,20 @@ export default function ExtractionFlagsClient({ items, summary }: ExtractionFlag
                                                 <p className="text-body-sm font-semibold text-black dark:text-white">
                                                     {item.userName || "-"}
                                                 </p>
-                                                <p className="text-xs text-black/50 dark:text-white/55">{item.userEmail}</p>
+                                                <p className="text-xs text-black/60 dark:text-white/55">{item.userEmail}</p>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <p className="text-body-sm font-semibold text-black dark:text-white">
                                                     {item.insurerName || "-"}
                                                 </p>
-                                                <p className="text-xs text-black/50 dark:text-white/55">
+                                                <p className="text-xs text-black/60 dark:text-white/55">
                                                     {[item.policyNumber, item.lineOfBusiness].filter(Boolean).join(" · ") || item.policyId || "-"}
                                                 </p>
                                             </td>
                                             <td className="max-w-[280px] px-4 py-3 text-xs leading-relaxed text-black/70 dark:text-white/75">
                                                 {item.reason}
                                                 {item.provider && (
-                                                    <span className="mt-0.5 block text-kicker uppercase tracking-wider text-black/40 dark:text-white/45">
+                                                    <span className="mt-0.5 block text-kicker uppercase tracking-wider text-black/55 dark:text-white/45">
                                                         via {item.provider}
                                                     </span>
                                                 )}

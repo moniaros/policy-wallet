@@ -94,7 +94,7 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy }: Documen
                                                 onLockedClick={() => setUpgradeOpen(true)}
                                             />
                                         )}
-                                        <Download className="h-4 w-4 shrink-0 text-black/45 dark:text-white/55" />
+                                        <Download className="h-4 w-4 shrink-0 text-black/55 dark:text-white/55" />
                                     </div>
                                 </a>
                             </li>

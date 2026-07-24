@@ -33,7 +33,7 @@ export function RenewalRemindersList({ renewals, locale, copy }: RenewalReminder
 
     return (
         <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
-            <h3 className="mb-3 text-kicker font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+            <h3 className="mb-3 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
                 {copy.title}
             </h3>
             <ul className="space-y-2">

@@ -40,7 +40,7 @@ export function PlanGate({ userPlan, requiredPlan, featureLabel, children }: Pla
                         </p>
                     )}
 
-                    <p className="text-xs text-black/50 dark:text-white/50">
+                    <p className="text-xs text-black/60 dark:text-white/50">
                         {copy?.lockedFeature?.replace('{plan}', requiredPlan.charAt(0).toUpperCase() + requiredPlan.slice(1))
                             || (language === 'el'
                                 ? `Απαιτεί ${requiredPlan.charAt(0).toUpperCase() + requiredPlan.slice(1)}`
@@ -52,7 +52,7 @@ export function PlanGate({ userPlan, requiredPlan, featureLabel, children }: Pla
                         className="mt-1 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
                     >
                         <Crown className="h-3.5 w-3.5" />
-                        {copy?.upgradeCta || (language === 'el' ? 'Αναβάθμιση' : 'Upgrade')}
+                        {copy?.upgradeCta || t.wallet.upgradePlan}
                     </Link>
                 </div>
             </div>

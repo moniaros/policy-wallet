@@ -58,7 +58,7 @@ export function PerksCard({ perks, lang, copy }: PerksCardProps) {
             {perks.length === 0 ? (
                 <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-4 dark:border-white/15 dark:bg-white/5">
                     <p className="text-sm text-black/65 dark:text-white/70">{copy.noPerksDetected}</p>
-                    <p className="mt-1 text-xs text-black/50 dark:text-white/55">{copy.exclusionsReanalyzeHint}</p>
+                    <p className="mt-1 text-xs text-black/60 dark:text-white/55">{copy.exclusionsReanalyzeHint}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

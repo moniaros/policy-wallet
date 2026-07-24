@@ -131,10 +131,10 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           {!hasCoveredContent && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center mb-3">
-                <ShieldCheck className="w-6 h-6 text-black/45 dark:text-white/50" />
+                <ShieldCheck className="w-6 h-6 text-black/55 dark:text-white/50" />
               </div>
               <p className="text-sm font-semibold text-black/60 dark:text-white/65">{copy.noCoverageData}</p>
-              <p className="text-xs text-black/45 dark:text-white/50 mt-1">{copy.noCoverageDataDesc}</p>
+              <p className="text-xs text-black/55 dark:text-white/50 mt-1">{copy.noCoverageDataDesc}</p>
             </div>
           )}
         </div>
@@ -163,10 +163,10 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center mb-3">
-                <ShieldOff className="w-6 h-6 text-black/45 dark:text-white/50" />
+                <ShieldOff className="w-6 h-6 text-black/55 dark:text-white/50" />
               </div>
               <p className="text-sm font-semibold text-black/60 dark:text-white/65">{copy.noExclusions}</p>
-              <p className="text-xs text-black/45 dark:text-white/50 mt-1">{copy.noExclusionsDesc}</p>
+              <p className="text-xs text-black/55 dark:text-white/50 mt-1">{copy.noExclusionsDesc}</p>
             </div>
           )}
         </div>

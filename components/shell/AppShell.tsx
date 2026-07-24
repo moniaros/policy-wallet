@@ -325,7 +325,7 @@ export function AppShell({
                                                     key={value}
                                                     onClick={() => setLanguage(value)}
                                                     aria-pressed={isActive}
-                                                    className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? 'bg-white dark:bg-black shadow-sm text-black dark:text-mint' : 'text-black/50 dark:text-white/60'}`}
+                                                    className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? 'bg-white dark:bg-black shadow-sm text-black dark:text-mint' : 'text-black/60 dark:text-white/60'}`}
                                                 >
                                                     {label}
                                                 </button>

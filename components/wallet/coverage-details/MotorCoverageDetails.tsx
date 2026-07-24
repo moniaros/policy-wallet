@@ -166,7 +166,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-black/45 dark:text-white/50">
+            <span className="flex items-center gap-1 text-xs font-bold text-black/55 dark:text-white/50">
               <XCircle className="w-4 h-4" /> {copy.notCovered}
             </span>
           )}
@@ -186,7 +186,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-black/45 dark:text-white/50">
+            <span className="flex items-center gap-1 text-xs font-bold text-black/55 dark:text-white/50">
               <XCircle className="w-4 h-4" /> {copy.notCovered}
             </span>
           )}

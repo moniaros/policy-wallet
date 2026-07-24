@@ -306,7 +306,7 @@ export function PolicyTable({
                         {t.dashboard.previous}
                     </button>
 
-                    <span className="text-caption tabular-nums text-black/50 dark:text-white/50">
+                    <span className="text-caption tabular-nums text-black/60 dark:text-white/50">
                         {page} / {totalPages}
                     </span>
 
