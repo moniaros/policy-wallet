@@ -5,6 +5,7 @@ import { useState } from "react"
 import { ShieldCheck, ShieldOff, CheckCircle2, XCircle, AlertTriangle } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import type { LineOfBusiness } from "@/types/enums"
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
 import { getTranslations } from "@/lib/i18n"
 import { formatExtractedAmount } from "@/lib/i18n/amount-format"
 import { HealthCoverageDetails } from "./HealthCoverageDetails"
@@ -26,7 +27,10 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
   const copy = i18n.coverageDetails
 
   const renderTypeSpecificDetails = () => {
-    switch (lineOfBusiness) {
+    // Resolved to the branch FAMILY: a motorbike or truck is motor, renters is
+    // home, income protection / disability / personal accident are life. Read
+    // raw, those six branches fell to `default` and showed no panel at all.
+    switch (branchFamilyId(lineOfBusiness)) {
       case "health":
         return <HealthCoverageDetails acordData={acordData} language={language} hints={hints} />
       case "motor":

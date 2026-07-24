@@ -49,6 +49,7 @@ import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-rep
 
 import type { GlossaryHintData } from "@/components/insurance/GlossaryHint"
 import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
+import { coverageSectionKeys } from "@/lib/wallet/coverage-sections"
 // Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
 // so the changed-file i18n lint stays clean.
 const EXPORT_COPY = {
@@ -63,23 +64,6 @@ const EXPORT_COPY = {
 
 function pickCopy(pair: { el: string; en: string }, lang: "el" | "en") {
     return pair[lang]
-}
-
-/**
- * lineOfBusiness → the acordData sections that carry its type-specific data.
- *
- * The canonical schema keys are `vehicle` and `property` (lib/schemas/acord-data.ts);
- * `motor` / `home` exist only as legacy aliases for older stored payloads.
- * Probing the line name directly — as this file used to — meant motor and home
- * policies never matched, so they fell through to the coverages/exclusions
- * check and could show the "re-analyze" hint despite having extracted data.
- */
-const TYPE_SECTION_KEYS: Record<string, readonly string[]> = {
-    health: ["health"],
-    motor: ["vehicle", "motor"],
-    home: ["property", "home"],
-    life: ["life"],
-    pet: ["pet"],
 }
 
 interface PolicyDetailsClientProps {
@@ -262,8 +246,7 @@ export function PolicyDetailsClient({
     })
 
     const hasCoverageDetails = (() => {
-        const line = getCoverageType()
-        const sectionKeys = TYPE_SECTION_KEYS[line as keyof typeof TYPE_SECTION_KEYS]
+        const sectionKeys = coverageSectionKeys(getCoverageType())
         const hasTypeData = Boolean(
             sectionKeys?.some((key) => policy.acordData?.[key] && Object.keys(policy.acordData[key]).length > 0)
         )
@@ -272,8 +255,7 @@ export function PolicyDetailsClient({
     })()
 
     const shouldShowReanalyzeHint = (() => {
-        const line = getCoverageType()
-        return Object.prototype.hasOwnProperty.call(TYPE_SECTION_KEYS, line) && !hasCoverageDetails
+        return coverageSectionKeys(getCoverageType()) !== null && !hasCoverageDetails
     })()
 
     /**

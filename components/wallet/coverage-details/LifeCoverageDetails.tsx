@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
+import { lifeSection } from "@/lib/wallet/coverage-sections"
 
 interface LifeCoverageDetailsProps {
   /** Resolved server-side — the 62KB glossary must not ship here. */
@@ -28,7 +29,8 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
   const lifeCopy = copy.life
-  const life = acordData.life
+  // Canonical `lifeAndInvestment` section first, legacy `life` alias as fallback.
+  const life = lifeSection(acordData)
   if (!life) return null
 
   const hasAnyData = Boolean(

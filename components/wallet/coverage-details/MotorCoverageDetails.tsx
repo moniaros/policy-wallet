@@ -15,6 +15,7 @@ import {
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 import { calendarDaysUntil } from "@/lib/policy-status"
+import { motorSection } from "@/lib/wallet/coverage-sections"
 
 interface MotorCoverageDetailsProps {
   /** Resolved server-side — the 62KB glossary must not ship here. */
@@ -27,7 +28,8 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
   const motorCopy = copy.motor
-  const motor = acordData.motor
+  // Canonical `vehicle` section first, legacy `motor` alias as fallback.
+  const motor = motorSection(acordData)
   if (!motor) return null
 
   const hasAnyData = Boolean(

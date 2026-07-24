@@ -117,6 +117,10 @@ function evaluateSingleRule(policy: Policy, rule: any): boolean {
         const declared =
             getNestedField(acord, rule.field || 'coverage.sumInsured') ??
             getNestedField(acord, 'property.insuredValue') ??
+            // The legacy `home` spelling of the same figure. deriveSumInsured
+            // already reads both, so a row this rule called "unknown" was one
+            // the review screen displayed a sum insured for.
+            getNestedField(acord, 'home.insuredValue') ??
             getNestedField(acord, 'coverage.sumInsured')
         // Unknown sum insured is not a low one — say nothing rather than guess.
         if (typeof declared !== 'number' || !Number.isFinite(declared)) return false

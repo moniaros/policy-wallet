@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
+import { homeSection } from "@/lib/wallet/coverage-sections"
 
 interface HomeCoverageDetailsProps {
   /** Resolved server-side — the 62KB glossary must not ship here. */
@@ -30,7 +31,8 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
   const homeCopy = copy.home
-  const home = acordData.home
+  // Canonical `property` section first, legacy `home` alias as fallback.
+  const home = homeSection(acordData)
   if (!home) return null
 
   const hasAnyData = Boolean(
