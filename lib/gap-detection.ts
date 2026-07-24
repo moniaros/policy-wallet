@@ -1,6 +1,6 @@
 import type { Policy, GapDefinition } from '@prisma/client'
 import { db } from '@/lib/db'
-import { isPolicyCoverageActive } from '@/lib/policy-status'
+import { isPolicyCoverageActive, calendarDaysUntil } from '@/lib/policy-status'
 
 export type GapSeverity = 'critical' | 'high' | 'medium' | 'low'
 export type GapStatus = 'detected' | 'acknowledged' | 'resolved' | 'dismissed'
@@ -352,7 +352,7 @@ export function detectGaps(policies: any[]): SimpleGap[] {
         // 2. Check for Expiring Soon
         if (policy.endDate && policy.status === 'active') {
             const endDate = new Date(policy.endDate)
-            const daysUntilExpiry = (endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+            const daysUntilExpiry = calendarDaysUntil(endDate, now)
 
             if (daysUntilExpiry > 0 && daysUntilExpiry <= 30) {
                 gaps.push({

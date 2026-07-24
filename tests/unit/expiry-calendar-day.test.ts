@@ -56,3 +56,33 @@ describe('expiry is judged on the Athens calendar', () => {
         expect(l.daysUntilExpiry).toBe(31)
     })
 })
+
+/**
+ * Four call sites had each rolled their own UTC millisecond version of "days
+ * until this date", which is exactly how they drifted apart — fixing the
+ * lifecycle alone would have left the agent's policy page showing "Expired"
+ * beside a days-left of 0, the two answers coming from two different clocks.
+ */
+describe('one clock answers "how many days until this date"', () => {
+    it('is the only implementation left', async () => {
+        const { readFileSync, globSync } = await import('node:fs')
+        const offenders: string[] = []
+        for (const file of globSync('lib/**/*.ts')) {
+            if (file.endsWith('policy-status.ts')) continue          // the implementation
+            const src = readFileSync(file, 'utf-8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')
+            // day arithmetic applied to an END DATE is a calendar question
+            if (/(endDate|expiry|expiresAt)[^\n]{0,60}(1000 \* 60 \* 60 \* 24|86_?400_?000)/i.test(src)) {
+                offenders.push(file)
+            }
+        }
+        expect(offenders, `hand-rolled expiry day maths:\n${offenders.join('\n')}`).toEqual([])
+    })
+
+    it('leaves elapsed-duration maths alone', async () => {
+        const { readFileSync } = await import('node:fs')
+        // "how long since they last replied" is a duration, not a calendar
+        // deadline, and legitimately stays in absolute milliseconds.
+        const fmt = readFileSync('lib/agent/format.ts', 'utf-8')
+        expect(fmt).toMatch(/diffDays = Math\.floor\(diffMs \/ 86_400_000\)/)
+    })
+})

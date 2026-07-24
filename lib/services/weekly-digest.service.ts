@@ -1,3 +1,4 @@
+import { calendarDaysUntil } from "@/lib/policy-status"
 import { db } from "../db"
 import { sendEmail } from "../email/email-service"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
@@ -172,7 +173,11 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 renewingSoon: renewals.map(r => ({
                     insurerName: r.insurerName,
                     lineOfBusiness: r.lineOfBusiness,
-                    daysUntilExpiry: Math.ceil((r.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+                    // Athens calendar days, like every other expiry count. This
+                    // figure goes out in a renewal email — "expires in 0 days"
+                    // when the cover has actually lapsed is the wrong message to
+                    // send a policyholder.
+                    daysUntilExpiry: calendarDaysUntil(r.endDate, now),
                 })),
                 newGaps,
                 unreadMessages,

@@ -16,8 +16,15 @@ import { parseDocumentDate } from '@/lib/dates/document-date'
  */
 const APP_TIME_ZONE = 'Europe/Athens'
 
-/** Whole days from `now` to `end`, counted on the Athens calendar. */
-function calendarDaysUntil(end: Date, now: Date): number {
+/**
+ * Whole days from `now` to `end`, counted on the Athens calendar.
+ *
+ * Exported because four call sites had each rolled their own UTC millisecond
+ * version, which is how they drifted apart. Anything answering "how many days
+ * until this DATE" belongs here; measuring elapsed duration ("how long since
+ * they last replied") legitimately does not.
+ */
+export function calendarDaysUntil(end: Date, now: Date): number {
     const dayNumber = (d: Date) => {
         // en-CA renders as YYYY-MM-DD, so the parts sort and parse directly.
         const [y, m, day] = new Intl.DateTimeFormat('en-CA', {
@@ -194,11 +201,13 @@ export function coverageEngineStatus(policy: CoverageInput): string {
 /**
  * Calculate days until expiry
  */
-export function getDaysUntilExpiry(endDate: Date): number {
+export function getDaysUntilExpiry(endDate: Date, now: Date = new Date()): number {
     if (!endDate) return 0
-    const today = new Date()
-    const end = new Date(endDate)
-    return Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+    // Same Athens-calendar rule as resolvePolicyLifecycle. Leaving this on UTC
+    // milliseconds while the status moved to calendar days would let one page
+    // show "Expired" next to a days-left of 0 — the two answers coming from two
+    // different clocks.
+    return calendarDaysUntil(new Date(endDate), now)
 }
 
 /**

@@ -1,3 +1,4 @@
+import { calendarDaysUntil } from '@/lib/policy-status'
 import type { Policy } from "@/components/wallet/types"
 import { parseDocumentDate } from "@/lib/dates/document-date"
 
@@ -80,7 +81,7 @@ export function getDocumentPolicySummary(
     const endDate = envelopeEndRaw
         ? parseDocumentDate(envelopeEndRaw)
         : parseDocumentDate(policy.endDate || null)
-    const daysUntilExpiry = endDate ? Math.floor((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null
+    const daysUntilExpiry = endDate ? calendarDaysUntil(endDate, new Date()) : null
     const expiryDisplay = endDate ? endDate.toLocaleDateString(locale, { timeZone: "UTC" }) : null
 
     const status: DocumentStatus = (() => {

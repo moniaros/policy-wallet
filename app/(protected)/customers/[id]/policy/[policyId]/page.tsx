@@ -4,7 +4,7 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
+import { calculatePolicyStatus, getStatusColor, getStatusLabel, resolvePolicyLifecycle } from "@/lib/policy-status"
 import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
@@ -60,7 +60,12 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     const status = calculatePolicyStatus(policy)
     const statusColor = getStatusColor(status)
     const statusLabel = getStatusLabel(status)
-    const daysLeft = getDaysUntilExpiry(policy.endDate)
+    // Was getDaysUntilExpiry(policy.endDate) — the raw column, which
+    // resolvePolicyLifecycle treats as its LAST fallback behind a renewal
+    // re-upload and the extracted envelope. The status badge beside this
+    // number already used the resolved date, so a renewed policy could show
+    // "Active" next to a negative days-left. One source for both now.
+    const daysLeft = resolvePolicyLifecycle(policy).daysUntilExpiry ?? 0
 
     const language = ((dbUser.preferredLanguage as 'el' | 'en') || 'el')
     const t = getTranslations(language)

@@ -1,3 +1,4 @@
+import { calendarDaysUntil } from '@/lib/policy-status'
 import type { Customer } from "@/components/agent/types"
 import type { UrgencyTier } from "@/components/agent/types"
 
@@ -100,9 +101,7 @@ export function classifyUrgencyTier(customer: {
     if (customer.policyCount === 0) return "needs_attention"
 
     if (customer.policies?.some((p) => {
-        const daysToExpiry = Math.floor(
-            (new Date(p.endDate).getTime() - Date.now()) / 86_400_000
-        )
+        const daysToExpiry = calendarDaysUntil(new Date(p.endDate), new Date())
         return daysToExpiry <= 30 && daysToExpiry >= 0
     })) {
         return "needs_attention"
@@ -117,14 +116,14 @@ export function classifyUrgencyTier(customer: {
 export function getUrgencyTierDisplay(tier: UrgencyTier, locale: "en" | "el" = "el") {
     const tiers = {
         needs_attention: {
-            label: locale === "el" ? "Χρειάζεται Προσοχή" : "Needs Attention",
+            label: locale === "el" ? "Χρειάζεται προσοχή" : "Needs Attention",
             color: "text-red-700 dark:text-red-400",
             bgColor: "bg-red-50 dark:bg-red-950/30",
             borderColor: "border-red-200 dark:border-red-900/30",
             dotColor: "bg-red-500",
         },
         on_track: {
-            label: locale === "el" ? "Σε Καλή Πορεία" : "On Track",
+            label: locale === "el" ? "Σε καλή πορεία" : "On Track",
             color: "text-emerald-700 dark:text-emerald-400",
             bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
             borderColor: "border-emerald-200 dark:border-emerald-900/30",
