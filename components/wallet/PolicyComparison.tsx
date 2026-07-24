@@ -10,6 +10,8 @@ import { StatusPill } from "@/components/ui/StatusPill"
 import { useDialog } from "@/hooks/useDialog"
 import { calendarDaysUntil } from "@/lib/policy-status"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
+import { motorSection, homeSection, lifeSection } from "@/lib/wallet/coverage-sections"
+import { classifyMotorCoverageTier } from "@/lib/wallet/motor-coverage-tier"
 
 interface PolicyForComparison {
     id: string
@@ -22,18 +24,9 @@ interface PolicyForComparison {
     premiumAmount?: number | null
     premiumCurrency?: string
     coverageSummary?: string | null
-    acordData?: {
-        coverages?: {
-            name: string
-            limit?: string
-            deductible?: string
-        }[]
-        vehicle?: {
-            plateNumber?: string
-            make?: string
-            model?: string
-        }
-    }
+    // Full extracted envelope. The caller passes it as-is; the branch-specific
+    // rows read the same canonical sections the coverage panels do.
+    acordData?: any
 }
 
 interface PolicyComparisonProps {
@@ -136,14 +129,23 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
             { key: 'insurer', label: c.rowInsurer, getValue: (p: PolicyForComparison) => p.insurerName },
             { key: 'policyNumber', label: c.rowPolicyNumber, getValue: (p: PolicyForComparison) => p.policyNumber },
             { key: 'status', label: c.rowStatus, getValue: (p: PolicyForComparison) => p.status, isStatus: true },
-            { key: 'premium', label: c.rowPremium, getValue: (p: PolicyForComparison) => formatCurrency(p.premiumAmount, p.premiumCurrency), highlight: 'lowest' },
+            { key: 'premium', label: c.rowPremium, getValue: (p: PolicyForComparison) => formatCurrency(p.premiumAmount, p.premiumCurrency), highlight: 'lowest', rawValue: (p: PolicyForComparison) => p.premiumAmount ?? null },
             { key: 'startDate', label: c.rowStartDate, getValue: (p: PolicyForComparison) => formatDate(p.startDate) },
             { key: 'endDate', label: c.rowEndDate, getValue: (p: PolicyForComparison) => formatDate(p.endDate) },
         ]
 
-        // A motorbike or truck comparison used to fall through to the generic
-        // rows, losing the vehicle-specific ones.
-        if (branchFamilyId(lob || '') === 'motor') {
+        const family = branchFamilyId(lob || '')
+
+        // Branch-specific rows — the figures you actually compare between two
+        // policies of the same type. Without these, comparing two health plans
+        // showed only insurer/premium/dates, not which one has the higher annual
+        // limit or better hospital class: the whole point of the comparison.
+        const money = (n: number | null | undefined) =>
+            n === null || n === undefined ? '—' : formatCurrency(n)
+        const yesNo = (v: boolean | undefined) =>
+            v === undefined ? '—' : v ? c.covered : c.notCovered
+
+        if (family === 'motor') {
             return [
                 ...commonRows,
                 {
@@ -152,6 +154,36 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                         return v ? `${v.make || ''} ${v.model || ''} (${v.plateNumber || ''})` : '—'
                     }
                 },
+                { key: 'motorTier', label: c.rowCoverageTier, getValue: (p: PolicyForComparison) => {
+                    const t = classifyMotorCoverageTier(motorSection(p.acordData)?.coverageTier)
+                    return t === 'comprehensive' ? c.tierComprehensive
+                        : t === 'third_party_fire_theft' ? c.tierThirdPartyFireTheft
+                            : t === 'third_party' ? c.tierThirdParty
+                                : (motorSection(p.acordData)?.coverageTier || '—')
+                } },
+            ]
+        }
+
+        if (family === 'health') {
+            return [
+                ...commonRows,
+                { key: 'healthAnnual', label: c.rowAnnualLimit, getValue: (p: PolicyForComparison) => money(p.acordData?.health?.annualLimit), highlight: 'highest', rawValue: (p: PolicyForComparison) => p.acordData?.health?.annualLimit ?? null },
+                { key: 'healthClass', label: c.rowHospitalClass, getValue: (p: PolicyForComparison) => p.acordData?.health?.hospitalClass || '—' },
+            ]
+        }
+
+        if (family === 'home') {
+            return [
+                ...commonRows,
+                { key: 'homeSum', label: c.rowSumInsured, getValue: (p: PolicyForComparison) => money(homeSection(p.acordData)?.insuredValue), highlight: 'highest', rawValue: (p: PolicyForComparison) => homeSection(p.acordData)?.insuredValue ?? null },
+                { key: 'homeEq', label: c.rowEarthquake, getValue: (p: PolicyForComparison) => yesNo(homeSection(p.acordData)?.catastropheCoverage?.earthquake) },
+            ]
+        }
+
+        if (family === 'life') {
+            return [
+                ...commonRows,
+                { key: 'lifeDeath', label: c.rowDeathBenefit, getValue: (p: PolicyForComparison) => money(lifeSection(p.acordData)?.deathBenefit), highlight: 'highest', rawValue: (p: PolicyForComparison) => lifeSection(p.acordData)?.deathBenefit ?? null },
             ]
         }
 
@@ -288,31 +320,41 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                             <td className="py-4 px-4 text-sm font-bold text-muted-foreground uppercase tracking-wider">
                                                 {row.label}
                                             </td>
-                                            {selectedPolicies.map(policy => {
-                                                const value = row.getValue(policy)
-                                                const isLowest = row.highlight === 'lowest' &&
-                                                    selectedPolicies.every(p => {
-                                                        const pVal = policy.premiumAmount ?? Infinity
-                                                        const otherVal = p.premiumAmount ?? Infinity
-                                                        return pVal <= otherVal
-                                                    }) && policy.premiumAmount
-
-                                                return (
-                                                    <td key={policy.id} className={`py-4 px-6 text-center ${isLowest ? 'bg-primary-tint dark:bg-primary/15' : ''}`}>
-                                                        {row.isStatus ? (
-                                                            (() => {
-                                                                const view = getPolicyStatusView(policy, t)
-                                                                return <StatusPill tone={view.tone} label={view.label} icon={false} />
-                                                            })()
-                                                        ) : (
-                                                            <span className={`text-sm ${isLowest ? 'text-primary dark:text-mint font-bold' : 'text-foreground'}`}>
-                                                                {value}
-                                                                {isLowest && <span className="ml-1">⭐</span>}
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                )
-                                            })}
+                                            {(() => {
+                                                // Which cell (if any) is the best in this row — lowest for
+                                                // premium, HIGHEST for cover figures (annual limit, sum
+                                                // insured, death benefit). Only star when at least two
+                                                // policies have a value AND they are not all equal, so an
+                                                // identical row isn't cluttered with stars.
+                                                const rawOf = (p: PolicyForComparison) =>
+                                                    (row as any).rawValue ? (row as any).rawValue(p) as number | null : null
+                                                const nums = selectedPolicies
+                                                    .map(rawOf)
+                                                    .filter((v): v is number => typeof v === 'number')
+                                                const best = !(row as any).highlight || nums.length < 2 || new Set(nums).size < 2
+                                                    ? null
+                                                    : (row as any).highlight === 'lowest' ? Math.min(...nums) : Math.max(...nums)
+                                                return selectedPolicies.map(policy => {
+                                                    const value = row.getValue(policy)
+                                                    const raw = rawOf(policy)
+                                                    const isBest = best !== null && typeof raw === 'number' && raw === best
+                                                    return (
+                                                        <td key={policy.id} className={`py-4 px-6 text-center ${isBest ? 'bg-primary-tint dark:bg-primary/15' : ''}`}>
+                                                            {(row as any).isStatus ? (
+                                                                (() => {
+                                                                    const view = getPolicyStatusView(policy, t)
+                                                                    return <StatusPill tone={view.tone} label={view.label} icon={false} />
+                                                                })()
+                                                            ) : (
+                                                                <span className={`text-sm ${isBest ? 'text-primary dark:text-mint font-bold' : 'text-foreground'}`}>
+                                                                    {value}
+                                                                    {isBest && <span className="ml-1">⭐</span>}
+                                                                </span>
+                                                            )}
+                                                        </td>
+                                                    )
+                                                })
+                                            })()}
                                         </tr>
                                     ))}
                                 </tbody>
