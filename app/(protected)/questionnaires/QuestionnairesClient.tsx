@@ -373,7 +373,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                         <h3 className="text-2xl font-black text-slate-900 dark:text-white">
                             {editingTemplate ? t.editTemplate : t.createNew}
                         </h3>
-                        <button onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                        <button onClick={onClose} aria-label={t.cancel} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
                             <X className="w-5 h-5" />
                         </button>
                     </div>

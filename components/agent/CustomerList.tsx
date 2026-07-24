@@ -394,8 +394,8 @@ export function CustomerList({
                                     {roleCopy.customerList.profile}
                                     <ChevronRight className="w-3 h-3 opacity-50" />
                                 </button>
-                                {customer.phone && <button onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Phone className="w-4 h-4" /></button>}
-                                <button onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Mail className="w-4 h-4" /></button>
+                                {customer.phone && <button aria-label={t.a11yLabels.callClient} onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Phone className="w-4 h-4" /></button>}
+                                <button aria-label={t.a11yLabels.emailClient} onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Mail className="w-4 h-4" /></button>
                             </div>
                         </div>
                     ))}

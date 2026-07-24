@@ -66,7 +66,7 @@ export function ClientDetailView({
     onUploadPolicy,
     onSendQuestionnaire,
 }: ClientDetailViewProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const [activeTab, setActiveTab] = useState<TabId>("overview")
 
     const tabs: Array<{ id: TabId; label: string; icon: React.ElementType; agentOnly?: boolean }> = [
@@ -117,6 +117,7 @@ export function ClientDetailView({
                             <button
                                 type="button"
                                 onClick={onBack}
+                                aria-label={t.common.back}
                                 className="p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition cursor-pointer"
                             >
                                 <ArrowLeft className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
