@@ -117,6 +117,19 @@ export function isAcceptedImageFile(fileName: string | null | undefined): boolea
         .some((ext) => name.endsWith(ext))
 }
 
+/**
+ * Image formats a browser can actually paint in an <img> — jpg/jpeg/png/webp.
+ * DELIBERATELY excludes HEIC: it is an accepted UPLOAD format (iPhones default to
+ * it) and is correctly LABELLED an image, but Chrome, Firefox and Edge cannot
+ * render it in an <img>, only Safari can. Feeding it to the preview showed a
+ * broken image with no way out; a document the browser cannot render must fall to
+ * the download-only fallback instead. Previewability ≠ acceptability.
+ */
+export function isBrowserRenderableImage(fileName: string | null | undefined): boolean {
+    const name = String(fileName || "").toLowerCase()
+    return [".jpg", ".jpeg", ".png", ".webp"].some((ext) => name.endsWith(ext))
+}
+
 /** Is this filename a PDF? Same source, same reason. */
 export function isPdfFile(fileName: string | null | undefined): boolean {
     return String(fileName || "").toLowerCase().endsWith(".pdf")

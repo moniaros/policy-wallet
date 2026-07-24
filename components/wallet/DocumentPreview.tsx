@@ -2,7 +2,7 @@
 
 import { Modal } from "@/components/ui/Modal"
 import { Eye, Download, Crown } from "lucide-react"
-import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
+import { isBrowserRenderableImage, isPdfFile } from "@/lib/security/file-upload"
 
 interface DocumentPreviewProps {
     isOpen: boolean
@@ -26,7 +26,10 @@ interface DocumentPreviewProps {
  */
 function getFileType(fileName: string): "pdf" | "image" | "other" {
     if (isPdfFile(fileName)) return "pdf"
-    if (isAcceptedImageFile(fileName)) return "image"
+    // Only formats the browser can paint reach the <img> branch. HEIC is an
+    // accepted image but not browser-renderable — it falls to "other" so the
+    // reader gets the download link instead of a broken image.
+    if (isBrowserRenderableImage(fileName)) return "image"
     return "other"
 }
 

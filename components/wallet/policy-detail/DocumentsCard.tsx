@@ -6,7 +6,7 @@ import { Download, FileText } from "lucide-react"
 
 import { DocumentPreview, DocumentPreviewButton } from "@/components/wallet/DocumentPreview"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
-import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
+import { isAcceptedImageFile, isBrowserRenderableImage, isPdfFile } from "@/lib/security/file-upload"
 
 interface PolicyDocumentItem {
     id: string
@@ -74,7 +74,11 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                         // file" and lost its inline preview.
                         const isPdf = isPdfFile(doc.fileName)
                         const isImage = isAcceptedImageFile(doc.fileName)
-                        const canPreview = isPdf || isImage
+                        // The LABEL calls HEIC an image (it is one); previewability
+                        // is narrower — HEIC cannot render in a browser <img>, so it
+                        // gets no inline preview button (the modal would show a
+                        // broken image). It stays downloadable via the row link.
+                        const canPreview = isPdf || isBrowserRenderableImage(doc.fileName)
                         const isPreviewLocked = isPdf && isFreeTier
 
                         return (
