@@ -13,8 +13,19 @@
  *    purpose once the invite is consumed or long-expired.
  * 3. Contact/newsletter form submissions older than 24 months (owner decision,
  *    2026-07-21 review).
- * 4. ActivityLog rows older than 5 years — aligned with the privacy policy's
- *    5-year accountability-records retention (owner decision, same review).
+ * 4. ActivityLog, split by what the row actually is.
+ *
+ *    The table holds two different things. Administrator actions — stamped with
+ *    `metadata._audit` by logAdminAction — are accountability records, and the
+ *    privacy policy allows 5 years for those (owner decision, 2026-07-21
+ *    review). Everything else in it is ordinary USER activity: AI questions,
+ *    logins, uploads, analyses. The same policy tells readers technical logs are
+ *    kept "up to 12 months" / «Έως 12 μήνες», and those rows were being kept for
+ *    five years alongside the admin ones.
+ *
+ *    Splitting the sweep honours both published lines rather than applying the
+ *    longer one to everything. The usage meters read this table over day and
+ *    month windows, so a 12-month floor does not affect them.
  */
 
 import { requireApiUser } from "@/lib/api-auth"
@@ -25,7 +36,10 @@ import { Prisma } from "@prisma/client"
 
 const INVITE_RETENTION_DAYS = 90
 const FORM_SUBMISSION_RETENTION_DAYS = 730 // 24 months
-const ACTIVITY_LOG_RETENTION_DAYS = 5 * 365
+/** Accountability records — administrator actions. */
+const ADMIN_AUDIT_RETENTION_DAYS = 5 * 365
+/** Technical/usage logs — everything else in ActivityLog. */
+const USER_ACTIVITY_RETENTION_DAYS = 365
 const DAY_MS = 24 * 60 * 60 * 1000
 
 export async function POST(req: Request) {
@@ -53,9 +67,16 @@ export async function POST(req: Request) {
         const now = new Date()
         const inviteCutoff = new Date(now.getTime() - INVITE_RETENTION_DAYS * DAY_MS)
         const formCutoff = new Date(now.getTime() - FORM_SUBMISSION_RETENTION_DAYS * DAY_MS)
-        const activityLogCutoff = new Date(now.getTime() - ACTIVITY_LOG_RETENTION_DAYS * DAY_MS)
+        const adminAuditCutoff = new Date(now.getTime() - ADMIN_AUDIT_RETENTION_DAYS * DAY_MS)
+        const userActivityCutoff = new Date(now.getTime() - USER_ACTIVITY_RETENTION_DAYS * DAY_MS)
 
-        const [purgedExports, purgedInvites, purgedFormSubmissions, purgedActivityLogs] = await Promise.all([
+        const [
+            purgedExports,
+            purgedInvites,
+            purgedFormSubmissions,
+            purgedAdminAudit,
+            purgedUserActivity,
+        ] = await Promise.all([
             db.dataExportRequest.updateMany({
                 where: {
                     status: { in: ["completed", "expired"] },
@@ -79,7 +100,16 @@ export async function POST(req: Request) {
                 where: { createdAt: { lte: formCutoff } },
             }),
             db.activityLog.deleteMany({
-                where: { timestamp: { lte: activityLogCutoff } },
+                where: {
+                    timestamp: { lte: adminAuditCutoff },
+                    metadata: { path: ["_audit"], not: Prisma.DbNull },
+                } as any,
+            }),
+            db.activityLog.deleteMany({
+                where: {
+                    timestamp: { lte: userActivityCutoff },
+                    metadata: { path: ["_audit"], equals: Prisma.DbNull },
+                } as any,
             }),
         ])
 
@@ -87,14 +117,16 @@ export async function POST(req: Request) {
             purgedExportPayloads: purgedExports.count,
             purgedInvites: purgedInvites.count,
             purgedFormSubmissions: purgedFormSubmissions.count,
-            purgedActivityLogs: purgedActivityLogs.count,
+            purgedAdminAuditLogs: purgedAdminAudit.count,
+            purgedUserActivityLogs: purgedUserActivity.count,
         })
 
         return createApiResponse({
             purged_export_payloads: purgedExports.count,
             purged_invites: purgedInvites.count,
             purged_form_submissions: purgedFormSubmissions.count,
-            purged_activity_logs: purgedActivityLogs.count,
+            purged_admin_audit_logs: purgedAdminAudit.count,
+            purged_user_activity_logs: purgedUserActivity.count,
         })
     } catch (error) {
         logger("error", "Privacy retention sweep failed", { error })

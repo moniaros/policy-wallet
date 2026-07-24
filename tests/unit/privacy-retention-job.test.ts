@@ -55,16 +55,30 @@ describe('privacy-retention job', () => {
             purged_export_payloads: 2,
             purged_invites: 3,
             purged_form_submissions: 4,
-            purged_activity_logs: 5,
+            purged_admin_audit_logs: 5,
+            purged_user_activity_logs: 5,
         })
 
-        // Owner-decided retention windows: 24 months for form submissions,
-        // 5 years for activity logs.
+        // Owner-decided retention windows: 24 months for form submissions.
+        //
+        // ActivityLog is now swept TWICE, because it holds two different things
+        // under one schema. Administrator actions (stamped `metadata._audit`) are
+        // accountability records and keep the policy's 5 years; ordinary user
+        // activity — AI questions, logins, uploads — is a technical log, which
+        // the same policy publishes as "up to 12 months". One clock over the
+        // whole table applied the longer line to customers' usage logs.
         const DAY = 24 * 60 * 60 * 1000
         const formCutoff = formDeleteMany.mock.calls[0]![0].where.createdAt.lte as Date
         expect(Math.round((Date.now() - formCutoff.getTime()) / DAY)).toBe(730)
-        const logCutoff = activityDeleteMany.mock.calls[0]![0].where.timestamp.lte as Date
-        expect(Math.round((Date.now() - logCutoff.getTime()) / DAY)).toBe(5 * 365)
+
+        const [adminSweep, userSweep] = activityDeleteMany.mock.calls.map((c) => c![0])
+        expect(Math.round((Date.now() - (adminSweep.where.timestamp.lte as Date).getTime()) / DAY)).toBe(5 * 365)
+        expect(adminSweep.where.metadata.path).toEqual(['_audit'])
+        expect(Math.round((Date.now() - (userSweep.where.timestamp.lte as Date).getTime()) / DAY)).toBe(365)
+        expect(userSweep.where.metadata.path).toEqual(['_audit'])
+        // The two sweeps must select DISJOINT sets, or the shorter window would
+        // also delete the accountability records.
+        expect(adminSweep.where.metadata).not.toEqual(userSweep.where.metadata)
 
         const exportArgs = exportUpdateMany.mock.calls[0]![0]
         expect(exportArgs.where.status.in).toEqual(['completed', 'expired'])
