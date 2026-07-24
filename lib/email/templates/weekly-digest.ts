@@ -21,6 +21,14 @@ interface WeeklyDigestData {
      * υπάρχουν ακόμη δεδομένα». Zero is a verdict; no data is the truth.
      */
     healthScore: number | null
+    /**
+     * True when the score came from the lightweight estimate rather than the gap
+     * engine. The two are different measures (see provisionalProtectionScore),
+     * and the dashboard has always said so — the email did not, so the same
+     * portfolio could read one number here and another on screen with nothing
+     * to explain the gap.
+     */
+    scoreIsProvisional?: boolean
     /** Top 3 active recommendations for behavioral nudge */
     topRecommendations?: TopRecommendation[]
     /** Profile completeness 0-100 */
@@ -110,6 +118,9 @@ export function getWeeklyDigestEmail(
                             : `${data.healthScore}%`
                     }</p>
                     <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Βαθμολογία προστασίας' : 'Protection score'}</p>
+                    ${data.healthScore !== null && data.scoreIsProvisional ? `<p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${
+                        isGreek ? 'Προσωρινή εκτίμηση' : 'Provisional estimate'
+                    }</p>` : ''}
                     ${data.healthScore === null ? `<p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${
                         isGreek
                             ? 'Προσθέστε ένα ασφαλιστήριο για να υπολογιστεί.'

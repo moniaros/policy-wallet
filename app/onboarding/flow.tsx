@@ -79,7 +79,8 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
 
     const [analysisResult, setAnalysisResult] = useState<{
         status: string
-        healthScore?: number
+        healthScore?: number | null
+        healthScoreIsProvisional?: boolean
         gapCount?: number
     } | null>(null)
 
@@ -425,13 +426,24 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                             </span>
                                         </div>
                                         {analysisResult?.healthScore != null && (
-                                            <div className="flex items-center gap-2 rounded-xl bg-primary-soft px-3 py-2">
-                                                <span className="text-xl font-black text-primary">
-                                                    {analysisResult.healthScore}%
-                                                </span>
-                                                <span className="text-xs text-primary">
-                                                    {t("Σκορ ανάλυσης", "Analysis score")}
-                                                </span>
+                                            <div className="flex flex-col gap-0.5 rounded-xl bg-primary-soft px-3 py-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xl font-black text-primary">
+                                                        {analysisResult.healthScore}%
+                                                    </span>
+                                                    {/* Was «Σκορ ανάλυσης» / "Analysis score" — a fourth name for
+                                                        this metric, and one that reads as a grade for the analysis
+                                                        rather than for the cover. It is the same protection score
+                                                        the dashboard shows, in its provisional form. */}
+                                                    <span className="text-xs text-primary">
+                                                        {t("Βαθμολογία προστασίας", "Protection score")}
+                                                    </span>
+                                                </div>
+                                                {analysisResult.healthScoreIsProvisional && (
+                                                    <span className="text-micro text-primary/80">
+                                                        {t("Προσωρινή εκτίμηση — οριστικοποιείται μετά την πλήρη ανάλυση", "Provisional estimate — finalised after full analysis")}
+                                                    </span>
+                                                )}
                                             </div>
                                         )}
                                         {uploadedFileName && (

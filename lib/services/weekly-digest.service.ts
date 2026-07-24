@@ -1,4 +1,5 @@
 import { calendarDaysUntil, startOfAthensDay } from "@/lib/policy-status"
+import { provisionalProtectionScore } from "./gap-engine/protection-score"
 import { db } from "../db"
 import { sendEmail } from "../email/email-service"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
@@ -14,27 +15,6 @@ type WeeklyDigestSummary = {
  * Weekly digest job: sends every Monday morning.
  * Gathers renewals, gaps, messages, and health score for each policyholder.
  */
-/**
- * The protection score used when the gap engine has not cached one yet.
- *
- * Returns **null**, not 0, for a portfolio with no policies. The app already
- * distinguishes these — «Δεν υπάρχουν ακόμη δεδομένα» beside a real number —
- * but the digest collapsed both to "0%", which reads as a verdict on a
- * portfolio the product has never seen.
- *
- * Extracted so that decision is testable: a guard on the email template alone
- * passed happily with the service still emitting 0.
- */
-export function deriveFallbackProtectionScore(
-    policyCount: number,
-    gapSeverities: string[]
-): number | null {
-    if (policyCount === 0) return null
-    const weight: Record<string, number> = { critical: 25, high: 15, medium: 8, low: 3 }
-    const penalty = gapSeverities.reduce((sum, s) => sum + (weight[s] ?? 0), 0)
-    return Math.max(0, Math.min(100, 100 - penalty))
-}
-
 export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
     const now = new Date()
     let emailsSent = 0
@@ -140,7 +120,10 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 select: { overallScore: true },
             }).catch(() => null)
 
+            // Provisional whenever it did not come from the gap engine — the two
+            // are different measures and the email has to say which one it is.
             let healthScore: number | null
+            const scoreIsProvisional = !cachedScore
             if (cachedScore) {
                 healthScore = cachedScore.overallScore
             } else {
@@ -152,7 +135,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     select: { severity: true },
                 })
                 const policyCount = await db.policy.count({ where: { ownerUserId: user.id } })
-                healthScore = deriveFallbackProtectionScore(
+                healthScore = provisionalProtectionScore(
                     policyCount,
                     openGaps.map((g) => g.severity)
                 )
@@ -204,6 +187,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 newGaps,
                 unreadMessages,
                 healthScore,
+                scoreIsProvisional,
                 topRecommendations,
                 profileCompleteness,
             })

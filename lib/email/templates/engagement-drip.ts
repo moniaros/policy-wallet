@@ -84,7 +84,13 @@ export function getDay3Email(language: 'el' | 'en', name?: string): { subject: s
 export function getDay7Email(
     language: 'el' | 'en',
     name?: string,
-    stats?: { policyCount: number; healthScore: number; gapCount: number }
+    /**
+     * `healthScore` is null when there is nothing to score, and is ALWAYS the
+     * provisional estimate on this path — it never consults the gap engine, so
+     * it is a different measure from the number the same reader sees on their
+     * dashboard and is labelled accordingly.
+     */
+    stats?: { policyCount: number; healthScore: number | null; gapCount: number }
 ): { subject: string; html: string } {
     const isGreek = language === 'el'
     const hello = greeting(name, isGreek)
@@ -105,8 +111,13 @@ export function getDay7Email(
                     </td>
                     <td style="width: 8px;"></td>
                     <td style="text-align: center; padding: 16px; background: #F0FDF4; border-radius: 8px;">
-                        <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${stats!.healthScore}%</p>
+                        <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${
+                            stats!.healthScore === null ? '—' : `${stats!.healthScore}%`
+                        }</p>
                         <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Βαθμολογία προστασίας' : 'Protection score'}</p>
+                        ${stats!.healthScore === null ? '' : `<p style="font-size: 11px; color: #9CA3AF; margin: 4px 0 0;">${
+                            isGreek ? 'Προσωρινή εκτίμηση' : 'Provisional estimate'
+                        }</p>`}
                     </td>
                     <td style="width: 8px;"></td>
                     <td style="text-align: center; padding: 16px; background: ${stats!.gapCount > 0 ? '#FEF3C7' : '#F0FDF4'}; border-radius: 8px;">

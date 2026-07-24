@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/i18n/format"
 import { getTranslations } from "@/lib/i18n"
 import type { User } from "@prisma/client"
 import { getCachedProtectionScore } from "@/lib/services/gap-engine"
+import { provisionalProtectionScore } from "@/lib/services/gap-engine/protection-score"
 import { CircleHelp, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
@@ -201,18 +202,9 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
      */
     const hasPolicies = policies.length > 0
     const isProvisionalScore = hasPolicies && !cachedScore
-    let healthScore: number | null
-    if (!hasPolicies) {
-        healthScore = null
-    } else if (cachedScore) {
-        healthScore = cachedScore.overallScore
-    } else {
-        const criticalGaps = openGaps.filter(g => g.severity === "critical").length
-        const highGaps = openGaps.filter(g => g.severity === "high").length
-        const mediumGaps = openGaps.filter(g => g.severity === "medium").length
-        const lowGaps = openGaps.filter(g => g.severity === "low").length
-        healthScore = Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
-    }
+    const healthScore: number | null = cachedScore
+        ? cachedScore.overallScore
+        : provisionalProtectionScore(policies.length, openGaps.map(g => g.severity))
 
     // Precomputed view models — components stay presentational
     const portfolioChips = Object.entries(lobBreakdown)

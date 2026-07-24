@@ -1,6 +1,7 @@
 import { db } from "../db"
 import { sendEmail } from "../email/email-service"
 import { getWelcomeEmail, getDay3Email, getDay7Email } from "../email/templates/engagement-drip"
+import { provisionalProtectionScore } from "./gap-engine/protection-score"
 
 type EngagementDripSummary = {
     welcomeEmailsSent: number
@@ -169,13 +170,9 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
             select: { severity: true },
         })
         const gapCount = openGaps.length
-        const criticalGaps = openGaps.filter(g => g.severity === "critical").length
-        const highGaps = openGaps.filter(g => g.severity === "high").length
-        const mediumGaps = openGaps.filter(g => g.severity === "medium").length
-        const lowGaps = openGaps.filter(g => g.severity === "low").length
-        const healthScore = policyCount === 0
-            ? 0
-            : Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
+        // The shared provisional estimate — null with no policies, and always
+        // provisional here because this path never consults the gap engine.
+        const healthScore = provisionalProtectionScore(policyCount, openGaps.map((g) => g.severity))
 
         try {
             const lang = user.preferredLanguage === "el" ? "el" as const : "en" as const
@@ -192,7 +189,7 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
                     eventType: "engagement_day7",
                     channel: "email",
                     title: subject,
-                    message: `Coverage snapshot: ${policyCount} policies, ${healthScore}% health, ${gapCount} gaps`,
+                    message: `Coverage snapshot: ${policyCount} policies, ${healthScore === null ? 'n/a' : `${healthScore}%`} provisional score, ${gapCount} gaps`,
                     status: "sent",
                     sentAt: now,
                 },

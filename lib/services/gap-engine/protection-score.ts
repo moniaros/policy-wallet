@@ -106,6 +106,35 @@ export interface CategoryScore {
     missingLobs: string[]
 }
 
+/**
+ * The lightweight estimate used when no protection score has been cached yet.
+ *
+ * **This is not the same measure as `calculateProtectionScore`.** The real score
+ * is a weighted model of which insurance CATEGORIES a profile implies and how
+ * much of each the person actually holds; this is a flat deduction from 100 per
+ * detected gap. For the same portfolio the two can differ by a wide margin — a
+ * single motor policy with no gaps scores 100 here and can score far lower under
+ * the category model, because holding one line of cover is not the same as being
+ * protected.
+ *
+ * So anything rendering this owes the reader the word "provisional". The
+ * dashboard already does (StatTiles `isProvisional`); this exists so the other
+ * four callers stop each carrying their own copy of the arithmetic and their own
+ * decision about whether to say so.
+ *
+ * Returns **null** with no policies: zero is a verdict on a portfolio, and there
+ * is no portfolio to pass one on.
+ */
+export function provisionalProtectionScore(
+    policyCount: number,
+    gapSeverities: string[]
+): number | null {
+    if (policyCount === 0) return null
+    const weight: Record<string, number> = { critical: 25, high: 15, medium: 8, low: 3 }
+    const penalty = gapSeverities.reduce((sum, sev) => sum + (weight[sev] ?? 0), 0)
+    return Math.max(0, Math.min(100, 100 - penalty))
+}
+
 // ── Calculator ───────────────────────────────────────────────────────
 
 /**

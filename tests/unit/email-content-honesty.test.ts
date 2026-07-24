@@ -3,7 +3,7 @@ import { readFileSync, globSync } from 'node:fs'
 import { counted, daysToExpiryPhrase, greeting } from '@/lib/email/templates/phrases'
 import { getWeeklyDigestEmail } from '@/lib/email/templates/weekly-digest'
 import { getChurnDay7Email } from '@/lib/email/templates/churn-prevention'
-import { deriveFallbackProtectionScore } from '@/lib/services/weekly-digest.service'
+import { provisionalProtectionScore } from '@/lib/services/gap-engine/protection-score'
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 const read = (f: string) => strip(readFileSync(f, 'utf-8'))
@@ -37,27 +37,27 @@ describe('the digest does not report a trend it has not computed', () => {
  */
 describe('the fallback score returns nothing to score, not a score of nothing', () => {
     it('is null with no policies, however many gaps', () => {
-        expect(deriveFallbackProtectionScore(0, [])).toBeNull()
-        expect(deriveFallbackProtectionScore(0, ['critical', 'high'])).toBeNull()
+        expect(provisionalProtectionScore(0, [])).toBeNull()
+        expect(provisionalProtectionScore(0, ['critical', 'high'])).toBeNull()
     })
 
     it('is 100 for a policy with no gaps', () => {
-        expect(deriveFallbackProtectionScore(1, [])).toBe(100)
+        expect(provisionalProtectionScore(1, [])).toBe(100)
     })
 
     it('weights severity the way the gap engine does', () => {
-        expect(deriveFallbackProtectionScore(2, ['critical'])).toBe(75)
-        expect(deriveFallbackProtectionScore(2, ['high'])).toBe(85)
-        expect(deriveFallbackProtectionScore(2, ['medium'])).toBe(92)
-        expect(deriveFallbackProtectionScore(2, ['low'])).toBe(97)
+        expect(provisionalProtectionScore(2, ['critical'])).toBe(75)
+        expect(provisionalProtectionScore(2, ['high'])).toBe(85)
+        expect(provisionalProtectionScore(2, ['medium'])).toBe(92)
+        expect(provisionalProtectionScore(2, ['low'])).toBe(97)
     })
 
     it('floors at zero rather than going negative', () => {
-        expect(deriveFallbackProtectionScore(1, Array(10).fill('critical'))).toBe(0)
+        expect(provisionalProtectionScore(1, Array(10).fill('critical'))).toBe(0)
     })
 
     it('ignores a severity it does not recognise instead of scoring NaN', () => {
-        expect(deriveFallbackProtectionScore(1, ['unknown-severity'])).toBe(100)
+        expect(provisionalProtectionScore(1, ['unknown-severity'])).toBe(100)
     })
 })
 

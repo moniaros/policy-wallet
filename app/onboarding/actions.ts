@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { PolicyService } from "@/lib/services/policy.service"
 import { revalidatePath } from "next/cache"
 import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
+import { provisionalProtectionScore } from "@/lib/services/gap-engine/protection-score"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
     "policy_expiring",
@@ -297,7 +298,9 @@ export async function redeemInviteCode(code: string) {
 export async function triggerOnboardingAnalysis(policyId: string): Promise<{
     success: boolean
     status: "completed" | "running" | "queued" | "failed"
-    healthScore?: number
+    healthScore?: number | null
+    /** The score above is the provisional estimate, never the gap engine's. */
+    healthScoreIsProvisional?: boolean
     gapCount?: number
     runId?: string
     error?: string
@@ -324,16 +327,17 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
             where: { policyId, status: { in: ["open", "detected", "acknowledged"] } },
             select: { severity: true },
         })
-        const c = gaps.filter(g => g.severity === "critical").length
-        const h = gaps.filter(g => g.severity === "high").length
-        const m = gaps.filter(g => g.severity === "medium").length
-        const l = gaps.filter(g => g.severity === "low").length
-        const score = Math.max(0, Math.min(100, 100 - (c * 25 + h * 15 + m * 8 + l * 3)))
+        // Always provisional: this is the lightweight estimate, computed from one
+        // freshly-analysed policy, not the gap engine's category-weighted score.
+        // The number the user sees on the dashboard a minute later is a different
+        // measure and can differ materially — so this one has to say what it is.
+        const score = provisionalProtectionScore(1, gaps.map(g => g.severity))
 
         return {
             success: true,
             status: "completed",
             healthScore: score,
+            healthScoreIsProvisional: true,
             gapCount: gaps.length,
         }
     }
