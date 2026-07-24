@@ -1174,7 +1174,7 @@ export const el = {
         expired: 'ΛΗΓΜΕΝΟ',
         unknownDuration: 'ΑΓΝΩΣΤΗ ΔΙΑΡΚΕΙΑ',
         actionNeeded: 'ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ',
-        cancelled: 'ΑΚΥΡΩΜΕΝΗ',
+        cancelled: 'ΑΚΥΡΩΜΕΝΟ',
         incomplete: 'ΕΛΛΙΠΕΣ',
         renewalPending: 'ΕΚΚΡΕΜΕΙ ΑΝΑΝΕΩΣΗ',
         unverified: 'ΜΗ ΕΠΑΛΗΘΕΥΜΕΝΟ',

@@ -172,13 +172,18 @@ export function getDaysUntilExpiry(endDate: Date): number {
  */
 export function getStatusLabel(status: PolicyStatus, language: 'el' | 'en' = 'el'): string {
     const labels = {
+        // Neuter throughout: the subject is «το ασφαλιστήριο». This map had
+        // 'Ενεργή' and 'Ακυρωμένη' (feminine) sitting beside 'Ληγμένο' (neuter),
+        // so one policy's status changed gender between the wallet list and its
+        // own detail page. Sentence case, matching t.policyStatus word-for-word —
+        // a test pins the two together.
         el: {
-            active: 'Ενεργή',
-            expiring_soon: 'Λήγει Σύντομα',
+            active: 'Ενεργό',
+            expiring_soon: 'Λήγει σύντομα',
             expired: 'Ληγμένο',
             unknown_duration: 'Άγνωστη διάρκεια',
-            action_needed: 'Απαιτείται Ενέργεια',
-            cancelled: 'Ακυρωμένη',
+            action_needed: 'Απαιτείται ενέργεια',
+            cancelled: 'Ακυρωμένο',
         },
         en: {
             active: 'Active',
