@@ -122,6 +122,21 @@ export function selectPremiumBearingPolicies<T extends PremiumPolicyLike>(
     }
 }
 
+/**
+ * The premium, NOT multiplied by anything.
+ *
+ * `premiumAmount` is already the total for the policy TERM — `ai/prompts.ts`
+ * instructs the model: "premiumAmount is the premium the customer PAYS for the
+ * policy term … If the document shows an installment plan, report the total
+ * premium for the term and capture the plan in premiumFrequency."
+ *
+ * So `policy.premiumFrequency` is the PAYMENT PLAN — the product labels it
+ * «Συχνότητα πληρωμής» / "Payment frequency" — and describes how that total is
+ * settled, not the unit it is quoted in. Annualising by it would multiply an
+ * already-annual figure by up to twelve. The contract is asserted in
+ * tests/unit/premium-term-semantics.test.ts, because it is stated only inside
+ * the extraction prompt, nowhere near the surfaces that consume the number.
+ */
 function premiumOf(policy: PremiumPolicyLike): number {
     const premium = Number(policy.premiumAmount ?? 0)
     return Number.isFinite(premium) ? premium : 0
