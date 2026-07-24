@@ -75,7 +75,10 @@ export function generateSavingsReportHtml(
 
     const formatDate = (iso: string) => {
         try {
-            return new Date(iso).toLocaleDateString("en-GB", {
+            // This pinned "en-GB" while every label above it switched on
+            // `language` — so a Greek branded report went out to the client with
+            // Greek headings and English dates.
+            return new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
