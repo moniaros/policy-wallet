@@ -143,7 +143,8 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
             'multi_insurer_insights',
             'duplicate_coverage_detection',
             'claims_preparation_assistant',
-            'family_portfolio',
+            // family_portfolio was removed — a Pro-gated promise with full sales
+            // copy that nothing implemented and nothing could reach.
         ] as const
         for (const key of aiGates) {
             expect(FEATURE_GATES[key].requiredPlan, `${key} should require pro`).toBe('pro')

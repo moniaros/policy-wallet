@@ -25,7 +25,6 @@ export type FeatureKey =
     | "token_topup"
     | "duplicate_coverage_detection"
     | "claims_preparation_assistant"
-    | "family_portfolio"
     | "partner_offers"
 
 /** Reasons understood by UpgradePrompt/LimitReachedModal (superset). */
@@ -50,6 +49,22 @@ export interface FeatureGate {
 // Paid-aha-loop model: every DEEP-AI feature unlocks at "pro" (displayed
 // "Plus", €7.99). Only the organizer-level gates (more policies, in-app PDF
 // preview, token top-ups) unlock at "plus" (displayed "Starter", €2.99).
+/**
+ * `family_portfolio` used to be defined here, with full upgrade copy — "See and
+ * organize your whole family's policies together", four benefits and a primary
+ * CTA reading "Enable family portfolio", gated at Pro.
+ *
+ * Nothing implemented it. No page gated on it, no component offered it, and no
+ * plan granted it; the key appeared only in this registry and in the sales copy.
+ * The copy was unreachable, so it was never shown — but a single
+ * `<UpgradePrompt featureKey="family_portfolio">` would have rendered a paid
+ * promise for a feature that does not exist. Removed rather than left loaded.
+ *
+ * `duplicate_coverage_detection` is a different case and stays: the capability
+ * is real (see gap-engine portfolio-rules), it currently runs for every user,
+ * and the gate is simply not applied anywhere. Whether that finding should sit
+ * behind a plan is a pricing decision, not a cleanup.
+ */
 export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     policy_upload_limit: {
         featureKey: "policy_upload_limit",
@@ -119,12 +134,6 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     },
     claims_preparation_assistant: {
         featureKey: "claims_preparation_assistant",
-        requiredPlan: "pro",
-        upgradeReason: "feature_locked",
-        lockedViewedEvent: "feature_locked_viewed",
-    },
-    family_portfolio: {
-        featureKey: "family_portfolio",
         requiredPlan: "pro",
         upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",

@@ -190,21 +190,6 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         successMessage: "Upgrade complete. The claim preparation guide is available.",
         successCta: "Open guide",
     },
-    family_portfolio: {
-        headline: "Family portfolio",
-        body: "See and organize your whole family's policies together, in one view.",
-        primaryCta: "Enable family portfolio",
-        secondaryCta: "Not now",
-        benefits: [
-            "All the family's policies in one place",
-            "A separate coverage view per member",
-            "Shared renewal reminders",
-            "Less manual organizing",
-        ],
-        trust: TRUST,
-        successMessage: "Upgrade complete. Family portfolio is available.",
-        successCta: "Set up portfolio",
-    },
     partner_offers: {
         headline: "Partner benefits with Plus",
         body: "Plus includes benefits from selected partners — prevention services and discounts worth more than the subscription itself.",
