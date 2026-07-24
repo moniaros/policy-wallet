@@ -372,9 +372,28 @@ export async function confirmPolicyReview(policyId: string, edits: ConfirmReview
         return { error: "Confirm failed" }
     }
 
+    // The review step exists to CORRECT the AI extraction — so the gaps and the
+    // protection score, both derived from exactly this data, have to be recomputed
+    // or they keep contradicting the correction: a sum insured an agent just
+    // raised still reads "underinsured", a motor→health line fix leaves the motor
+    // gaps and mismatches the coverage panel, a corrected end date leaves a lapsed
+    // policy scoring as cover. runGapEngine is deterministic (no AI tokens; the
+    // same call coverage-insights already makes), recomputes for the whole owner
+    // so cross-policy rules stay consistent, and runs before revalidatePath so the
+    // refreshed pages read the new gaps. Best-effort: a recompute failure must not
+    // undo a save that already succeeded.
+    try {
+        const { runGapEngine } = await import("@/lib/services/gap-engine")
+        await runGapEngine(policy.ownerUserId)
+    } catch (e: any) {
+        logger('error', 'Gap recompute after review confirm failed', { policyId, error: e?.message })
+    }
+
     revalidatePath("/wallet")
     revalidatePath(`/wallet/${policyId}`)
     revalidatePath(`/customers/${policy.ownerUserId}/policy/${policyId}`)
+    revalidatePath("/coverage-insights")
+    revalidatePath("/dashboard")
     return { success: true }
 }
 

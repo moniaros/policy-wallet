@@ -51,7 +51,7 @@ vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 vi.mock('@/lib/storage', () => ({ uploadFile: vi.fn(), deleteFile: vi.fn() }))
 vi.mock('@/lib/services/ai', () => ({ getAIService: vi.fn() }))
 vi.mock('@/lib/services/gap-analysis.service', () => ({ GapAnalysisService: vi.fn() }))
-vi.mock('@/lib/services/gap-engine', () => ({ refreshProtectionScore: vi.fn() }))
+vi.mock('@/lib/services/gap-engine', () => ({ refreshProtectionScore: vi.fn(), runGapEngine: vi.fn() }))
 vi.mock('@/lib/services/policy.service', () => ({ PolicyService: vi.fn() }))
 vi.mock('@/lib/services/analysis/policy-analysis-orchestrator.service', () => ({
     PolicyAnalysisOrchestratorService: vi.fn(),
@@ -73,6 +73,7 @@ vi.mock('@google/generative-ai', () => ({ GoogleGenerativeAI: vi.fn() }))
 
 import { confirmPolicyReview, flagPolicyExtraction } from '@/app/(protected)/wallet/actions'
 import { db } from '@/lib/db'
+import { runGapEngine } from '@/lib/services/gap-engine'
 
 const OWNER = { id: 'owner-1', email: 'owner@example.com', name: 'Owner', roles: 'policyholder', preferredLanguage: 'en' }
 const AGENT = { id: 'agent-1', email: 'agent@example.com', name: 'Agent', roles: 'agent,policyholder', preferredLanguage: 'en' }
@@ -154,6 +155,39 @@ describe('confirmPolicyReview', () => {
         const updateArgs = (db.policy.update as any).mock.calls[0][0]
         expect(updateArgs.data.insurerName).toBeUndefined()
         expect(updateArgs.data.acordData.extraction.reviewState).toBe('confirmed')
+    })
+
+    it('recomputes the owner’s gaps and score after a successful confirm', async () => {
+        // The review step exists to correct the AI. Without this, a sum insured
+        // an agent just raised keeps showing "underinsured", and a corrected
+        // line of business leaves the old branch's gaps — the derived insights
+        // silently contradict the human's correction.
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow({ ownerUserId: 'owner-1' }))
+
+        await confirmPolicyReview('pol-1', { sumInsured: 300000 })
+
+        expect(runGapEngine).toHaveBeenCalledTimes(1)
+        // Recomputed for the OWNER (cross-policy portfolio rules), not the agent.
+        expect(runGapEngine).toHaveBeenCalledWith('owner-1')
+    })
+
+    it('does not recompute when the save is rejected', async () => {
+        // A recompute on a save that never happened would rebuild gaps from
+        // unchanged data for no reason — and, on an auth failure, for a policy
+        // the caller may not touch.
+        mockGetPolicyAccess.mockResolvedValue(READ_ONLY_ACCESS)
+        await confirmPolicyReview('pol-1', { sumInsured: 300000 })
+        expect(runGapEngine).not.toHaveBeenCalled()
+    })
+
+    it('still succeeds when the recompute throws (best-effort)', async () => {
+        // A failed recompute must never undo a save that already committed.
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow())
+        ;(runGapEngine as any).mockRejectedValueOnce(new Error('engine down'))
+
+        const result = await confirmPolicyReview('pol-1', { premiumAmount: 400 })
+        expect(result).toEqual({ success: true })
+        expect(db.$transaction).toHaveBeenCalledTimes(1)
     })
 
     it('derives the sum-insured target from the post-edit line of business', async () => {
