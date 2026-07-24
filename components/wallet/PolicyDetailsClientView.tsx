@@ -50,6 +50,7 @@ import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-rep
 import type { GlossaryHintData } from "@/components/insurance/GlossaryHint"
 import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import { coverageSectionKeys } from "@/lib/wallet/coverage-sections"
+import { resolveClaimsContact } from "@/lib/wallet/claims-contact"
 // Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
 // so the changed-file i18n lint stays clean.
 const EXPORT_COPY = {
@@ -222,7 +223,17 @@ export function PolicyDetailsClient({
         [policy]
     )
 
-    const insurerPhone = policy.acordData?.policy?.insurerContact || ""
+    // `acordData.policy.insurerContact` was in no schema — always undefined, so
+    // this button never rendered and the claims card always said "no number
+    // found" while the extracted line sat unused in the same envelope.
+    const claimsContact = resolveClaimsContact(policy.acordData, getCoverageType())
+    const insurerPhone = claimsContact?.phone || ""
+    const claimsPhoneLabel =
+        claimsContact?.kind === "accident_declaration" ? t.coverageDetails.motor.accidentDeclaration
+            : claimsContact?.kind === "roadside" ? t.coverageDetails.motor.roadsideAssistance
+                : claimsContact?.kind === "technical_assistance" ? t.coverageDetails.home.technicalAssistance
+                    : claimsContact?.kind === "coordination_centre" ? t.coverageDetails.health.coordinationCentre
+                        : detailsCopy.contactInsurer
     const firstDocumentUrl = policy.documents?.[0]?.fileUrl
 
     // ── Extracted section data (perks / exclusions / conditions / fine print) ──
@@ -936,7 +947,7 @@ export function PolicyDetailsClient({
                                     claimAskAiCta: detailsCopy.claimAskAiCta,
                                     claimAskAgentCta: detailsCopy.claimAskAgentCta,
                                     claimsDisclaimer: detailsCopy.claimsDisclaimer,
-                                    contactInsurer: detailsCopy.contactInsurer,
+                                    contactInsurer: claimsPhoneLabel,
                                     claimsPhoneUnknown: detailsCopy.claimsPhoneUnknown,
                                     policyNumberLabel: t.wallet.policyNumber,
                                 }}
