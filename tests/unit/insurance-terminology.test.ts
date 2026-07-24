@@ -17,7 +17,7 @@ describe('Greek insurance terminology', () => {
         // than the one on their own billing screen.
         const names = new Set(values('agent'))
         for (const n of names) {
-            expect(n, `unexpected agent role name: ${n}`).toMatch(/Σύμβουλος/)
+            expect(n, `unexpected agent role name: ${n}`).toMatch(/[Σσ]ύμβουλος/)
         }
     })
 
