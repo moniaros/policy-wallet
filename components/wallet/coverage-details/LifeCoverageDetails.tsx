@@ -75,26 +75,39 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
               <span className="text-xs text-black/55 dark:text-white/60">{lifeCopy.ytdGrowth}</span>
             </div>
           )}
+          {/* A retail investment return shown to a policyholder without this is
+              a disclosure gap, not a styling choice. */}
+          {life.ytdGrowth !== undefined && (
+            <p className="mt-1.5 ml-12.5 text-xs leading-relaxed text-black/55 dark:text-white/60">
+              {lifeCopy.pastPerformanceNote}
+            </p>
+          )}
         </div>
       )}
 
       {life.taxFreeAtMaturity !== undefined && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
-              <Shield className="w-4 h-4 text-primary dark:text-mint" />
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                <Shield className="w-4 h-4 text-primary dark:text-mint" />
+              </div>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.taxFreeAtMaturity}</span>
             </div>
-            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.taxFreeAtMaturity}</span>
+            {life.taxFreeAtMaturity ? (
+              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border border-primary/20 dark:border-primary/30">
+                <CheckCircle2 className="w-3.5 h-3.5" /> {copy.taxFree}
+              </span>
+            ) : (
+              <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-[#92400E] dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                {copy.taxable}
+              </span>
+            )}
           </div>
-          {life.taxFreeAtMaturity ? (
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border border-primary/20 dark:border-primary/30">
-              <CheckCircle2 className="w-3.5 h-3.5" /> {copy.taxFree}
-            </span>
-          ) : (
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-[#92400E] dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-              {copy.taxable}
-            </span>
-          )}
+          {/* Greek life-policy taxation at maturity turns on the contract type,
+              the holding period and the law in force years from now. Stating it
+              as a settled product benefit is tax advice this product cannot give. */}
+          <p className="mt-2 text-xs leading-relaxed text-black/55 dark:text-white/60">{lifeCopy.taxNote}</p>
         </div>
       )}
 
@@ -129,6 +142,14 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
                 {lifeCopy.unitLinked}: {life.unitLinkedPercentage ?? 0}%
               </span>
             </div>
+            {/* The bar renders the guaranteed share in the affirmative colour and
+                the unit-linked share in neutral grey, which reads as "mostly
+                fine" — the inverse of where the risk actually sits. */}
+            {life.unitLinkedPercentage !== undefined && life.unitLinkedPercentage > 0 && (
+              <p className="mt-1.5 text-xs leading-relaxed text-black/55 dark:text-white/60">
+                {lifeCopy.unitLinkedRiskNote}
+              </p>
+            )}
           </div>
         </div>
       )}

@@ -19,6 +19,7 @@ import {
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 import { homeSection } from "@/lib/wallet/coverage-sections"
+import { classifyHomeCoverScope } from "@/lib/wallet/home-cover-scope"
 
 interface HomeCoverageDetailsProps {
   /** Resolved server-side — the 62KB glossary must not ship here. */
@@ -50,6 +51,16 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
 
   // Shared formatter — these three files each carried an identical private copy.
   const fmt = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 2 })
+
+  // Whether the building, its contents, or both are insured — the difference
+  // between a burglary claim being paid and being declined. Shown verbatim when
+  // the wording is one we do not recognise, never resolved to a guess.
+  const scope = classifyHomeCoverScope(home.contentsVsStructure)
+  const scopeLabel =
+    scope === "both" ? homeCopy.contentsAndStructure
+      : scope === "structure_only" ? homeCopy.structureOnly
+        : scope === "contents_only" ? homeCopy.contentsOnly
+          : home.contentsVsStructure
 
   return (
     <div className="space-y-3">
@@ -197,7 +208,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
             </div>
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.contentsVsStructure}</span>
           </div>
-          <span className="text-sm font-bold text-black dark:text-white">{home.contentsVsStructure}</span>
+          <span className="text-sm font-bold text-black dark:text-white">{scopeLabel}</span>
         </div>
       )}
     </div>

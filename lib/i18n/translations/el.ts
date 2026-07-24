@@ -2151,7 +2151,10 @@ export const el = {
             valueComparison: 'Σύγκριση αξιών',
             contentsVsStructure: 'Περιεχόμενα έναντι κτιρίου',
             contents: 'Περιεχόμενα',
-            structure: 'Κτίριο'
+            structure: 'Κτίριο',
+            contentsOnly: 'Μόνο περιεχόμενα',
+            structureOnly: 'Μόνο κτίριο',
+            contentsAndStructure: 'Κτίριο και περιεχόμενα'
         },
 
         life: {
@@ -2167,6 +2170,9 @@ export const el = {
             unitLinked: 'Unit-Linked',
             surrenderValue: 'Αξία εξαγοράς',
             surrenderWarning: 'Η εξαγορά μπορεί να επιφέρει πρόστιμα',
+            pastPerformanceNote: 'Οι αποδόσεις του παρελθόντος δεν αποτελούν αξιόπιστη ένδειξη για μελλοντικές αποδόσεις.',
+            unitLinkedRiskNote: 'Το τμήμα Unit-Linked είναι επενδεδυμένο και η αξία του μπορεί να μειωθεί.',
+            taxNote: 'Όπως αναφέρεται στο έγγραφό σας. Η φορολογική μεταχείριση εξαρτάται από τη νομοθεσία που ισχύει κατά τη λήξη και από τα προσωπικά σας δεδομένα — δεν αποτελεί φορολογική συμβουλή.',
             beneficiaries: 'Δικαιούχοι',
             lastPremiumDate: 'Ημερομηνία τελευταίου ασφαλίστρου',
             lastPremiumAmount: 'Ποσό τελευταίου ασφαλίστρου',

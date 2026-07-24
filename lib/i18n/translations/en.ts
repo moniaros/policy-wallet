@@ -2135,7 +2135,10 @@ export const en: TranslationKeys = {
             valueComparison: 'Value Comparison',
             contentsVsStructure: 'Contents vs Structure',
             contents: 'Contents',
-            structure: 'Structure'
+            structure: 'Structure',
+            contentsOnly: 'Contents only',
+            structureOnly: 'Building only',
+            contentsAndStructure: 'Building and contents'
         },
 
         life: {
@@ -2151,6 +2154,9 @@ export const en: TranslationKeys = {
             unitLinked: 'Unit-Linked',
             surrenderValue: 'Surrender Value',
             surrenderWarning: 'Early surrender may incur penalties',
+            pastPerformanceNote: 'Past performance is not a reliable indicator of future results.',
+            unitLinkedRiskNote: 'The unit-linked portion is invested and its value can fall.',
+            taxNote: 'As stated in your document. Tax treatment depends on the law in force at maturity and on your personal circumstances — this is not tax advice.',
             beneficiaries: 'Beneficiaries',
             lastPremiumDate: 'Last Premium Date',
             lastPremiumAmount: 'Last Premium Amount',
