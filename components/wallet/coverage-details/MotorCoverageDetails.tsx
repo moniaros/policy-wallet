@@ -16,6 +16,8 @@ import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 import { calendarDaysUntil } from "@/lib/policy-status"
 import { motorSection } from "@/lib/wallet/coverage-sections"
+import { parsePolicyDate, formatPolicyDate } from "@/lib/wallet/policy-detail"
+import { classifyMotorCoverageTier, tierCoversOwnVehicle } from "@/lib/wallet/motor-coverage-tier"
 
 interface MotorCoverageDetailsProps {
   /** Resolved server-side — the 62KB glossary must not ship here. */
@@ -44,17 +46,35 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
 
   if (!hasAnyData) return null
 
+  // The extracted string, parsed the way every other date on this page is.
+  //
+  // `new Date("03-01-2027")` does not fail on a Greek-order date — it returns
+  // 1 MARCH, because V8 reads bare numeric dates as US month-first. A Green Card
+  // expiring on 3 January was therefore displayed as valid until 1 March, two
+  // months past the day it stops proving anything at a border. A Greek month
+  // name ("1 Μαρτίου 2027") produced an Invalid Date, and Intl THROWS on those,
+  // so it took the whole policy page down mid-render.
+  const greenCardExpiry = parsePolicyDate(motor.greenCardExpiry)
+
   const greenCardStatus = (() => {
-    if (!motor.greenCardExpiry) return null
-    const expiry = new Date(motor.greenCardExpiry)
+    if (!greenCardExpiry) return null
     // Athens calendar days. Math.floor on a fractional negative made a Green Card
     // valid until tonight come out at -1 and read "expired" — on a document a
     // driver may be about to rely on at a border.
-    const daysUntil = calendarDaysUntil(expiry, new Date())
+    const daysUntil = calendarDaysUntil(greenCardExpiry, new Date())
     if (daysUntil < 0) return "expired"
     if (daysUntil <= 30) return "expiring"
     return "valid"
   })()
+
+  // Recognised tiers get the market term in the reader's language; anything we
+  // do not recognise is shown verbatim rather than guessed at.
+  const tier = classifyMotorCoverageTier(motor.coverageTier)
+  const tierLabel =
+    tier === "comprehensive" ? motorCopy.comprehensive
+      : tier === "third_party_fire_theft" ? motorCopy.thirdPartyFireTheft
+        : tier === "third_party" ? motorCopy.thirdParty
+          : motor.coverageTier
 
   return (
     <div className="space-y-3">
@@ -64,10 +84,19 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.comprehensive ? <GlossaryHint hint={hints.comprehensive} /> : motorCopy.coverageTier}</span>
+            {/* The glossary term behind this hint is «Μικτή ασφάλεια» — the
+                definition of COMPREHENSIVE cover. It was shown as the row's
+                label whatever the tier, so a third-party-only policy carried a
+                label that, on hover, explained cover the holder does not have.
+                Attach it only when the policy actually is comprehensive. */}
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{tier === "comprehensive" && hints?.comprehensive ? <GlossaryHint hint={hints.comprehensive} /> : motorCopy.coverageTier}</span>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/20 dark:border-primary/30 capitalize">
-            {motor.coverageTier.replace(/_/g, " ")}
+          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
+            tierCoversOwnVehicle(tier)
+              ? "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-primary/20 dark:border-primary/30"
+              : "bg-black/[0.04] dark:bg-white/10 text-black/75 dark:text-white/80 border-black/10 dark:border-white/15"
+          } ${tier ? "" : "capitalize"}`}>
+            {tierLabel}
           </span>
         </div>
       )}
@@ -137,7 +166,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
         </div>
       )}
 
-      {motor.greenCardExpiry && (
+      {greenCardExpiry && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
@@ -146,7 +175,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             <div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.greenCard ? <GlossaryHint hint={hints.greenCard} /> : motorCopy.greenCard}</span>
               <p className="text-xs text-black/55 dark:text-white/60">
-                {copy.expires}: {new Date(motor.greenCardExpiry).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
+                {copy.expires}: {formatPolicyDate(motor.greenCardExpiry, language === "el" ? "el-GR" : "en-GB")}
               </p>
             </div>
           </div>

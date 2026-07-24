@@ -17,6 +17,7 @@ import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
+import { formatPolicyDate } from "@/lib/wallet/policy-detail"
 interface PetCoverageDetailsProps {
   acordData: AcordData
   language: "el" | "en"
@@ -194,7 +195,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
                 <span className="text-black/60 dark:text-white/65">{wp.type || "-"}</span>
                 <span className="text-black dark:text-white font-medium">
                   {wp.endDate
-                    ? `${copy.endsOn} ${new Date(wp.endDate).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}`
+                    ? `${copy.endsOn} ${formatPolicyDate(wp.endDate, language === "el" ? "el-GR" : "en-GB")}`
                     : wp.durationDays
                       ? `${wp.durationDays} ${copy.daysRemaining}`
                       : "-"}

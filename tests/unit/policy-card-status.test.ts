@@ -53,9 +53,38 @@ describe('the card status is judged on the Athens calendar', () => {
  * policy page told them it had expired while it had not.
  */
 describe('the Green Card status counts calendar days', () => {
-    it('uses the shared helper', () => {
-        const src = strip(readFileSync('components/wallet/coverage-details/MotorCoverageDetails.tsx', 'utf-8'))
-        expect(src).toMatch(/calendarDaysUntil\(expiry, new Date\(\)\)/)
-        expect(src).not.toMatch(/1000 \* 60 \* 60 \* 24/)
+    /**
+     * This asserted the literal expression `calendarDaysUntil(expiry, new Date())`
+     * appeared in the source. It caught nothing a rename could not break, and a
+     * rename did break it — while the behaviour it exists to protect was intact.
+     * Assert the badge the driver actually reads instead.
+     *
+     * The bug: dividing milliseconds and flooring gave Math.floor(-0.5) = -1 on
+     * the card's own last valid day, so a Green Card good until tonight showed
+     * "expired" — at a border, the difference between driving and not.
+     */
+    it('does not call a card expired on its final valid day', async () => {
+        const { render } = await import('@testing-library/react')
+        const { MotorCoverageDetails } = await import('@/components/wallet/coverage-details/MotorCoverageDetails')
+        const { getTranslations } = await import('@/lib/i18n')
+        const { vi } = await import('vitest')
+        const copy = getTranslations('el').coverageDetails
+
+        vi.useFakeTimers()
+        try {
+            // 15:00 Athens on 1 March 2027 — the card is valid all day.
+            vi.setSystemTime(new Date('2027-03-01T13:00:00Z'))
+            const { createElement } = await import('react')
+            const { container } = render(
+                createElement(MotorCoverageDetails, {
+                    acordData: { vehicle: { greenCardExpiryDate: '2027-03-01' } } as any,
+                    language: 'el',
+                })
+            )
+            expect(container.textContent).toContain(copy.expiringSoon)
+            expect(container.textContent).not.toContain(copy.expired)
+        } finally {
+            vi.useRealTimers()
+        }
     })
 })

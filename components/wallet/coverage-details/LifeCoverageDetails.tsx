@@ -18,6 +18,7 @@ import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
 import { lifeSection } from "@/lib/wallet/coverage-sections"
 
+import { formatPolicyDate } from "@/lib/wallet/policy-detail"
 interface LifeCoverageDetailsProps {
   /** Resolved server-side — the 62KB glossary must not ship here. */
   hints?: PolicyGlossaryHints | null
@@ -186,7 +187,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
             <div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.lastPremiumDate}</span>
               <p className="text-xs text-black/55 dark:text-white/60">
-                {lifeCopy.paidOn} {new Date(life.lastPremiumDate).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
+                {lifeCopy.paidOn} {formatPolicyDate(life.lastPremiumDate, language === "el" ? "el-GR" : "en-GB")}
               </p>
             </div>
           </div>

@@ -29,8 +29,10 @@ describe('the coverage panel reads what extraction actually wrote', () => {
         }
         render(<MotorCoverageDetails acordData={acord} language="el" />)
 
-        // The single most consequential fact about a motor policy.
-        expect(screen.getByText(/comprehensive/i)).toBeTruthy()
+        // The single most consequential fact about a motor policy — stated in
+        // the reader's language. This first asserted /comprehensive/i, which
+        // was the English enum leaking to a Greek reader, not a passing panel.
+        expect(screen.getByText('Μικτή')).toBeTruthy()
         // The number you are meant to ring from the roadside.
         expect(screen.getByText('210 999 8888')).toBeTruthy()
         expect(screen.getByText('210 111 2222')).toBeTruthy()
