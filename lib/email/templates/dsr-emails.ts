@@ -23,7 +23,7 @@ function wrap(language: DsrEmailLanguage, heading: string, paragraphs: string[])
         <h2>${heading}</h2>
         ${body}
         <p style="color:#6B7280;font-size:14px;">${FOOTER[language]}</p>
-    `)
+    `, language)
 }
 
 export function getDeletionApprovedEmail(language: DsrEmailLanguage): DsrEmail {

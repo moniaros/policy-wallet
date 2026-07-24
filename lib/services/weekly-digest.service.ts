@@ -14,6 +14,27 @@ type WeeklyDigestSummary = {
  * Weekly digest job: sends every Monday morning.
  * Gathers renewals, gaps, messages, and health score for each policyholder.
  */
+/**
+ * The protection score used when the gap engine has not cached one yet.
+ *
+ * Returns **null**, not 0, for a portfolio with no policies. The app already
+ * distinguishes these — «Δεν υπάρχουν ακόμη δεδομένα» beside a real number —
+ * but the digest collapsed both to "0%", which reads as a verdict on a
+ * portfolio the product has never seen.
+ *
+ * Extracted so that decision is testable: a guard on the email template alone
+ * passed happily with the service still emitting 0.
+ */
+export function deriveFallbackProtectionScore(
+    policyCount: number,
+    gapSeverities: string[]
+): number | null {
+    if (policyCount === 0) return null
+    const weight: Record<string, number> = { critical: 25, high: 15, medium: 8, low: 3 }
+    const penalty = gapSeverities.reduce((sum, s) => sum + (weight[s] ?? 0), 0)
+    return Math.max(0, Math.min(100, 100 - penalty))
+}
+
 export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
     const now = new Date()
     let emailsSent = 0
@@ -119,7 +140,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 select: { overallScore: true },
             }).catch(() => null)
 
-            let healthScore: number
+            let healthScore: number | null
             if (cachedScore) {
                 healthScore = cachedScore.overallScore
             } else {
@@ -131,13 +152,10 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     select: { severity: true },
                 })
                 const policyCount = await db.policy.count({ where: { ownerUserId: user.id } })
-                const crit = openGaps.filter(g => g.severity === "critical").length
-                const high = openGaps.filter(g => g.severity === "high").length
-                const med = openGaps.filter(g => g.severity === "medium").length
-                const low = openGaps.filter(g => g.severity === "low").length
-                healthScore = policyCount === 0
-                    ? 0
-                    : Math.max(0, Math.min(100, 100 - (crit * 25 + high * 15 + med * 8 + low * 3)))
+                healthScore = deriveFallbackProtectionScore(
+                    policyCount,
+                    openGaps.map((g) => g.severity)
+                )
             }
 
             // Top recommendations for behavioral nudge
@@ -185,7 +203,6 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 })),
                 newGaps,
                 unreadMessages,
-                healthScoreChange: 0, // TODO: compare with last week's stored score
                 healthScore,
                 topRecommendations,
                 profileCompleteness,
@@ -199,7 +216,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                     eventType: "weekly_digest",
                     channel: "email",
                     title: subject,
-                    message: `Weekly digest: ${renewals.length} renewals, ${newGaps} new gaps, score ${healthScore}%`,
+                    message: `Weekly digest: ${renewals.length} renewals, ${newGaps} new gaps, score ${healthScore === null ? 'n/a' : `${healthScore}%`}`,
                     status: "sent",
                     sentAt: now,
                 },

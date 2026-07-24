@@ -1,4 +1,5 @@
 import { getBaseEmailTemplate } from './base-template'
+import { counted, daysToExpiryPhrase, greeting } from './phrases'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.gr'
 
@@ -12,8 +13,14 @@ interface WeeklyDigestData {
     renewingSoon: { insurerName: string; lineOfBusiness: string; daysUntilExpiry: number }[]
     newGaps: number
     unreadMessages: number
-    healthScoreChange: number // positive = improved, negative = declined
-    healthScore: number
+    /**
+     * The protection score, or null when there is nothing to score yet.
+     *
+     * This was a plain number, and the service passed 0 for a user with no
+     * policies — so the email asserted "0%" where the app itself says «Δεν
+     * υπάρχουν ακόμη δεδομένα». Zero is a verdict; no data is the truth.
+     */
+    healthScore: number | null
     /** Top 3 active recommendations for behavioral nudge */
     topRecommendations?: TopRecommendation[]
     /** Profile completeness 0-100 */
@@ -29,19 +36,17 @@ export function getWeeklyDigestEmail(
     data: WeeklyDigestData
 ): { subject: string; html: string } {
     const isGreek = language === 'el'
-    const greeting = name
-        ? (isGreek ? `Γεια σου ${name},` : `Hi ${name},`)
-        : (isGreek ? 'Γεια σου,' : 'Hi there,')
+    const hello = greeting(name, isGreek)
 
     const subject = isGreek
-        ? '📋 Εβδομαδιαία σύνοψη PolicyWallet'
-        : '📋 Your Weekly PolicyWallet Digest'
+        ? 'Η εβδομαδιαία σας σύνοψη PolicyWallet'
+        : 'Your weekly PolicyWallet summary'
 
     // Renewals section
     const renewalsHtml = data.renewingSoon.length > 0
         ? `
             <h3 style="margin-bottom: 8px; font-size: 16px; color: #111827;">
-                ${isGreek ? '⏰ Ανανεώσεις σε 30 ημέρες' : '⏰ Renewals within 30 days'}
+                ${isGreek ? 'Ανανεώσεις εντός 30 ημερών' : 'Renewals within 30 days'}
             </h3>
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
                 ${data.renewingSoon.map(r => `
@@ -49,7 +54,7 @@ export function getWeeklyDigestEmail(
                         <td style="padding: 8px 0; font-size: 14px; color: #374151;">${r.insurerName}</td>
                         <td style="padding: 8px 0; font-size: 14px; color: #6B7280;">${r.lineOfBusiness}</td>
                         <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: ${r.daysUntilExpiry <= 7 ? '#DC2626' : r.daysUntilExpiry <= 14 ? '#D97706' : '#059669'}; text-align: right;">
-                            ${r.daysUntilExpiry} ${isGreek ? 'ημ.' : 'days'}
+                            ${daysToExpiryPhrase(r.daysUntilExpiry, isGreek)}
                         </td>
                     </tr>
                 `).join('')}
@@ -57,24 +62,27 @@ export function getWeeklyDigestEmail(
         `
         : ''
 
-    // Health score section
-    const healthTrend = data.healthScoreChange > 0
-        ? `<span style="color: #059669;">↑ +${data.healthScoreChange}%</span>`
-        : data.healthScoreChange < 0
-            ? `<span style="color: #DC2626;">↓ ${data.healthScoreChange}%</span>`
-            : `<span style="color: #6B7280;">— ${isGreek ? 'Σταθερό' : 'Stable'}</span>`
+    // There is no trend line here on purpose.
+    //
+    // The email rendered one from `healthScoreChange`, which the service passed
+    // as a literal `0` behind a TODO — so every digest, every week, told the
+    // reader their protection score was "Σταθερό / Stable", including the weeks
+    // it had fallen because a policy lapsed. ProtectionScore is keyed
+    // `@unique userId` and keeps no history, so week-over-week genuinely cannot
+    // be computed today: restoring this needs a stored prior score, not a
+    // default value.
 
     // Alerts section
     const alertItems: string[] = []
     if (data.newGaps > 0) {
         alertItems.push(isGreek
-            ? `🔍 ${data.newGaps} νέα κενά κάλυψης εντοπίστηκαν`
-            : `🔍 ${data.newGaps} new coverage gaps detected`)
+            ? counted(data.newGaps, 'νέο κενό κάλυψης εντοπίστηκε', 'νέα κενά κάλυψης εντοπίστηκαν')
+            : counted(data.newGaps, 'new coverage gap detected', 'new coverage gaps detected'))
     }
     if (data.unreadMessages > 0) {
         alertItems.push(isGreek
-            ? `💬 ${data.unreadMessages} αδιάβαστα μηνύματα`
-            : `💬 ${data.unreadMessages} unread messages`)
+            ? counted(data.unreadMessages, 'αδιάβαστο μήνυμα', 'αδιάβαστα μηνύματα')
+            : counted(data.unreadMessages, 'unread message', 'unread messages'))
     }
 
     const alertsHtml = alertItems.length > 0
@@ -86,8 +94,8 @@ export function getWeeklyDigestEmail(
         : ''
 
     const content = `
-        <h2>${isGreek ? 'Εβδομαδιαία Σύνοψη' : 'Weekly Digest'}</h2>
-        <p>${greeting}</p>
+        <h2>${isGreek ? 'Εβδομαδιαία σύνοψη' : 'Weekly summary'}</h2>
+        <p>${hello}</p>
         <p>${isGreek
             ? 'Ακολουθεί η σύνοψη της εβδομάδας σας.'
             : 'Here\'s your weekly overview.'
@@ -96,9 +104,17 @@ export function getWeeklyDigestEmail(
         <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
             <tr>
                 <td style="text-align: center; padding: 16px; background: #F0FDF4; border-radius: 8px;">
-                    <p style="font-size: 32px; font-weight: bold; margin: 0; color: #111827;">${data.healthScore}%</p>
-                    <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Υγεία Κάλυψης' : 'Coverage Health'}</p>
-                    <p style="font-size: 12px; margin: 4px 0 0;">${healthTrend}</p>
+                    <p style="font-size: 32px; font-weight: bold; margin: 0; color: #111827;">${
+                        data.healthScore === null
+                            ? (isGreek ? '—' : '—')
+                            : `${data.healthScore}%`
+                    }</p>
+                    <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Βαθμολογία προστασίας' : 'Protection score'}</p>
+                    ${data.healthScore === null ? `<p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${
+                        isGreek
+                            ? 'Προσθέστε ένα ασφαλιστήριο για να υπολογιστεί.'
+                            : 'Add a policy so it can be calculated.'
+                    }</p>` : ''}
                 </td>
             </tr>
         </table>
@@ -108,7 +124,7 @@ export function getWeeklyDigestEmail(
         ${buildRecommendationsSection(data.topRecommendations, isGreek)}
         ${buildProfileNudge(data.profileCompleteness, isGreek)}
 
-        <a href="${APP_URL}/home" class="button">${isGreek ? 'Δείτε το Dashboard' : 'View Dashboard'}</a>
+        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Άνοιγμα πίνακα ελέγχου' : 'Open your dashboard'}</a>
 
         <div class="divider"></div>
         <p style="color: #9CA3AF; font-size: 12px;">
@@ -121,7 +137,7 @@ export function getWeeklyDigestEmail(
 
     return {
         subject,
-        html: getBaseEmailTemplate(content),
+        html: getBaseEmailTemplate(content, language),
     }
 }
 

@@ -1,4 +1,5 @@
 import { getBaseEmailTemplate } from './base-template'
+import { counted, greeting } from './phrases'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.gr'
 
@@ -16,26 +17,40 @@ interface ChurnPreventionEmailData {
 export function getChurnDay7Email(data: ChurnPreventionEmailData): { subject: string; html: string } {
     const { name, language, expiringPolicies = 0, openGaps = 0 } = data
     const isGreek = language === 'el'
-    const greeting = name
-        ? (isGreek ? `Γεια σου ${name},` : `Hi ${name},`)
-        : (isGreek ? 'Γεια σου,' : 'Hi there,')
+    const hello = greeting(name, isGreek)
 
-    const subject = isGreek
-        ? '⚠️ Τα ασφαλιστήρια σας χρειάζονται προσοχή'
-        : '⚠️ Your policies need attention'
+    // The trigger for this email is INACTIVITY — seven days without a login —
+    // not any change in the reader's cover. Titled "your policies need
+    // attention" it read as a risk alert, and a reader whose portfolio is in
+    // perfect order (no expiries, no gaps) got it anyway, with an empty body
+    // under the warning. The alert framing is only used when the counts below
+    // actually earn it.
+    const hasFindings = expiringPolicies > 0 || openGaps > 0
+    const subject = hasFindings
+        ? (isGreek ? 'Το χαρτοφυλάκιό σας χρειάζεται προσοχή' : 'Your portfolio needs attention')
+        : (isGreek ? 'Η ασφαλιστική σας κάλυψη σας περιμένει' : 'Your insurance cover is waiting for you')
 
     const content = `
-        <h2>${isGreek ? 'Τα ασφαλιστήρια σας χρειάζονται προσοχή' : 'Your policies need attention'}</h2>
-        <p>${greeting}</p>
+        <h2>${hasFindings
+            ? (isGreek ? 'Το χαρτοφυλάκιό σας χρειάζεται προσοχή' : 'Your portfolio needs attention')
+            : (isGreek ? 'Η ασφαλιστική σας κάλυψη σας περιμένει' : 'Your insurance cover is waiting for you')
+        }</h2>
+        <p>${hello}</p>
         <p>${isGreek
             ? 'Δεν σας έχουμε δει εδώ και λίγο καιρό, αλλά η ασφαλιστική σας κάλυψη δεν σταματά.'
-            : "We haven't seen you in a while, but your insurance coverage doesn't stop."
+            : "We haven't seen you in a while, but your insurance cover doesn't stop."
         }</p>
+        ${!hasFindings ? `<p>${isGreek
+            ? 'Δεν εντοπίσαμε κάτι που να απαιτεί ενέργεια αυτή τη στιγμή — αξίζει όμως μια ματιά στο χαρτοφυλάκιό σας.'
+            : 'We found nothing that needs action right now — but your portfolio is worth a look.'
+        }</p>` : ''}
 
         ${expiringPolicies > 0 ? `
             <div style="background: #FEF2F2; border-radius: 12px; padding: 16px; margin: 20px 0;">
                 <p style="margin: 0; font-size: 14px; color: #991B1B; font-weight: bold;">
-                    🔔 ${expiringPolicies} ${isGreek ? 'ασφαλιστήρια λήγουν σύντομα' : 'policies expiring soon'}
+                    ${isGreek
+                        ? counted(expiringPolicies, 'ασφαλιστήριο λήγει σύντομα', 'ασφαλιστήρια λήγουν σύντομα')
+                        : counted(expiringPolicies, 'policy expiring soon', 'policies expiring soon')}
                 </p>
             </div>
         ` : ''}
@@ -43,15 +58,17 @@ export function getChurnDay7Email(data: ChurnPreventionEmailData): { subject: st
         ${openGaps > 0 ? `
             <div style="background: #FFFBEB; border-radius: 12px; padding: 16px; margin: 20px 0;">
                 <p style="margin: 0; font-size: 14px; color: #92400E; font-weight: bold;">
-                    🔍 ${openGaps} ${isGreek ? 'κενά κάλυψης χρειάζονται αντιμετώπιση' : 'coverage gaps need attention'}
+                    ${isGreek
+                        ? counted(openGaps, 'κενό κάλυψης χρειάζεται αντιμετώπιση', 'κενά κάλυψης χρειάζονται αντιμετώπιση')
+                        : counted(openGaps, 'coverage gap needs attention', 'coverage gaps need attention')}
                 </p>
             </div>
         ` : ''}
 
-        <a href="${APP_URL}/home" class="button">${isGreek ? 'Δείτε το Dashboard σας' : 'View your Dashboard'}</a>
+        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Άνοιγμα πίνακα ελέγχου' : 'Open your dashboard'}</a>
     `
 
-    return { subject, html: getBaseEmailTemplate(content) }
+    return { subject, html: getBaseEmailTemplate(content, language) }
 }
 
 /**
@@ -60,9 +77,7 @@ export function getChurnDay7Email(data: ChurnPreventionEmailData): { subject: st
 export function getChurnDay14Email(data: ChurnPreventionEmailData): { subject: string; html: string } {
     const { name, language } = data
     const isGreek = language === 'el'
-    const greeting = name
-        ? (isGreek ? `Γεια σου ${name},` : `Hi ${name},`)
-        : (isGreek ? 'Γεια σου,' : 'Hi there,')
+    const hello = greeting(name, isGreek)
 
     const subject = isGreek
         ? '✨ Νέες λειτουργίες που χάνετε'
@@ -84,7 +99,7 @@ export function getChurnDay14Email(data: ChurnPreventionEmailData): { subject: s
 
     const content = `
         <h2>${isGreek ? 'Δείτε τι νέο υπάρχει!' : 'See what\'s new!'}</h2>
-        <p>${greeting}</p>
+        <p>${hello}</p>
         <p>${isGreek
             ? 'Έχουμε προσθέσει νέες δυνατότητες στο PolicyWallet:'
             : 'We\'ve added new capabilities to PolicyWallet:'
@@ -98,10 +113,10 @@ export function getChurnDay14Email(data: ChurnPreventionEmailData): { subject: s
             `).join('')}
         </div>
 
-        <a href="${APP_URL}/home" class="button">${isGreek ? 'Εξερευνήστε τα νέα' : 'Explore what\'s new'}</a>
+        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Εξερευνήστε τα νέα' : 'Explore what\'s new'}</a>
     `
 
-    return { subject, html: getBaseEmailTemplate(content) }
+    return { subject, html: getBaseEmailTemplate(content, language) }
 }
 
 /**
@@ -110,9 +125,7 @@ export function getChurnDay14Email(data: ChurnPreventionEmailData): { subject: s
 export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: string; html: string } {
     const { name, language, bonusTokens = 500 } = data
     const isGreek = language === 'el'
-    const greeting = name
-        ? (isGreek ? `Γεια σου ${name},` : `Hi ${name},`)
-        : (isGreek ? 'Γεια σου,' : 'Hi there,')
+    const hello = greeting(name, isGreek)
 
     const subject = isGreek
         ? `🎁 Μας λείπετε — πάρτε ${bonusTokens} δωρεάν credits`
@@ -120,7 +133,7 @@ export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: s
 
     const content = `
         <h2>${isGreek ? 'Μας λείπετε!' : 'We miss you!'}</h2>
-        <p>${greeting}</p>
+        <p>${hello}</p>
         <p>${isGreek
             ? `Ως ένδειξη εκτίμησης, σας δωρίζουμε <strong>${bonusTokens} δωρεάν AI credits</strong> για να εξερευνήσετε τη νέα μας ανάλυση κάλυψης.`
             : `As a token of appreciation, we're gifting you <strong>${bonusTokens} free AI credits</strong> to explore our new coverage analysis.`
@@ -133,7 +146,7 @@ export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: s
             </p>
         </div>
 
-        <a href="${APP_URL}/home" class="button">${isGreek ? 'Χρησιμοποιήστε τα τώρα' : 'Use them now'}</a>
+        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Χρησιμοποιήστε τα τώρα' : 'Use them now'}</a>
 
         <div class="divider"></div>
         <p style="color: #9CA3AF; font-size: 12px;">
@@ -141,7 +154,7 @@ export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: s
         </p>
     `
 
-    return { subject, html: getBaseEmailTemplate(content) }
+    return { subject, html: getBaseEmailTemplate(content, language) }
 }
 
 /**
@@ -150,9 +163,7 @@ export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: s
 export function getChurnDay60Email(data: ChurnPreventionEmailData): { subject: string; html: string } {
     const { name, language } = data
     const isGreek = language === 'el'
-    const greeting = name
-        ? (isGreek ? `Γεια σου ${name},` : `Hi ${name},`)
-        : (isGreek ? 'Γεια σου,' : 'Hi there,')
+    const hello = greeting(name, isGreek)
 
     const subject = isGreek
         ? '🔒 Η κάλυψή σας μπορεί να κινδυνεύει'
@@ -160,13 +171,13 @@ export function getChurnDay60Email(data: ChurnPreventionEmailData): { subject: s
 
     const content = `
         <h2>${isGreek ? 'Η κάλυψή σας μπορεί να κινδυνεύει' : 'Your coverage may be at risk'}</h2>
-        <p>${greeting}</p>
+        <p>${hello}</p>
         <p>${isGreek
             ? 'Δεν έχετε ελέγξει τα ασφαλιστήρια σας εδώ και 2 μήνες. Ανανεώσεις, κενά κάλυψης, και μηνύματα από τον σύμβουλό σας μπορεί να περιμένουν.'
             : "You haven't checked your policies in 2 months. Renewals, coverage gaps, and advisor messages may be waiting."
         }</p>
 
-        <a href="${APP_URL}/home" class="button">${isGreek ? 'Ελέγξτε τώρα' : 'Check now'}</a>
+        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Ελέγξτε τώρα' : 'Check now'}</a>
 
         <div class="divider"></div>
         <p style="color: #9CA3AF; font-size: 12px;">
@@ -176,5 +187,5 @@ export function getChurnDay60Email(data: ChurnPreventionEmailData): { subject: s
         </p>
     `
 
-    return { subject, html: getBaseEmailTemplate(content) }
+    return { subject, html: getBaseEmailTemplate(content, language) }
 }

@@ -1,4 +1,5 @@
 import { getBaseEmailTemplate } from './base-template'
+import { counted, greeting } from './phrases'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.gr'
 
@@ -7,9 +8,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.gr'
  */
 export function getWelcomeEmail(language: 'el' | 'en', name?: string): { subject: string; html: string } {
     const isGreek = language === 'el'
-    const greeting = name
-        ? (isGreek ? `Γεια σου ${name},` : `Hi ${name},`)
-        : (isGreek ? 'Γεια σου,' : 'Hi there,')
+    const hello = greeting(name, isGreek)
 
     const subject = isGreek
         ? '🎉 Καλώς ήρθες στο PolicyWallet!'
@@ -17,7 +16,7 @@ export function getWelcomeEmail(language: 'el' | 'en', name?: string): { subject
 
     const content = `
         <h2>${isGreek ? 'Καλώς ήρθες στο PolicyWallet!' : 'Welcome to PolicyWallet!'}</h2>
-        <p>${greeting}</p>
+        <p>${hello}</p>
         <p>${isGreek
             ? 'Δημιουργήσατε με επιτυχία τον λογαριασμό σας. Τώρα μπορείτε να οργανώσετε όλα τα ασφαλιστήρια συμβόλαιά σας σε ένα ασφαλές μέρος.'
             : 'You\'ve successfully created your account. You can now organize all your insurance policies in one secure place.'
@@ -37,7 +36,7 @@ export function getWelcomeEmail(language: 'el' | 'en', name?: string): { subject
 
     return {
         subject,
-        html: getBaseEmailTemplate(content),
+        html: getBaseEmailTemplate(content, language),
     }
 }
 
@@ -46,9 +45,7 @@ export function getWelcomeEmail(language: 'el' | 'en', name?: string): { subject
  */
 export function getDay3Email(language: 'el' | 'en', name?: string): { subject: string; html: string } {
     const isGreek = language === 'el'
-    const greeting = name
-        ? (isGreek ? `Γεια σου ${name},` : `Hi ${name},`)
-        : (isGreek ? 'Γεια σου,' : 'Hi there,')
+    const hello = greeting(name, isGreek)
 
     const subject = isGreek
         ? '📎 Ανεβάσατε το πρώτο σας συμβόλαιο;'
@@ -56,7 +53,7 @@ export function getDay3Email(language: 'el' | 'en', name?: string): { subject: s
 
     const content = `
         <h2>${isGreek ? 'Ένα βήμα σας χωρίζει!' : 'You\'re one step away!'}</h2>
-        <p>${greeting}</p>
+        <p>${hello}</p>
         <p>${isGreek
             ? 'Παρατηρήσαμε ότι δεν έχετε ανεβάσει ακόμα κάποιο ασφαλιστήριο. Η AI ανάλυσή μας μπορεί να εντοπίσει κενά κάλυψης και ευκαιρίες εξοικονόμησης σε δευτερόλεπτα.'
             : 'We noticed you haven\'t uploaded a policy yet. Our AI analysis can identify coverage gaps and savings opportunities in seconds.'
@@ -77,7 +74,7 @@ export function getDay3Email(language: 'el' | 'en', name?: string): { subject: s
 
     return {
         subject,
-        html: getBaseEmailTemplate(content),
+        html: getBaseEmailTemplate(content, language),
     }
 }
 
@@ -90,9 +87,7 @@ export function getDay7Email(
     stats?: { policyCount: number; healthScore: number; gapCount: number }
 ): { subject: string; html: string } {
     const isGreek = language === 'el'
-    const greeting = name
-        ? (isGreek ? `Γεια σου ${name},` : `Hi ${name},`)
-        : (isGreek ? 'Γεια σου,' : 'Hi there,')
+    const hello = greeting(name, isGreek)
 
     const subject = isGreek
         ? '📊 Η εβδομαδιαία σύνοψη κάλυψης'
@@ -106,17 +101,17 @@ export function getDay7Email(
                 <tr>
                     <td style="text-align: center; padding: 16px; background: #F0FDF4; border-radius: 8px;">
                         <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${stats!.policyCount}</p>
-                        <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Συμβόλαια' : 'Policies'}</p>
+                        <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Ασφαλιστήρια' : 'Policies'}</p>
                     </td>
                     <td style="width: 8px;"></td>
                     <td style="text-align: center; padding: 16px; background: #F0FDF4; border-radius: 8px;">
                         <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${stats!.healthScore}%</p>
-                        <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Υγεία Κάλυψης' : 'Health Score'}</p>
+                        <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Βαθμολογία προστασίας' : 'Protection score'}</p>
                     </td>
                     <td style="width: 8px;"></td>
                     <td style="text-align: center; padding: 16px; background: ${stats!.gapCount > 0 ? '#FEF3C7' : '#F0FDF4'}; border-radius: 8px;">
                         <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${stats!.gapCount}</p>
-                        <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Κενά' : 'Gaps'}</p>
+                        <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Κενά κάλυψης' : 'Coverage gaps'}</p>
                     </td>
                 </tr>
             </table>
@@ -130,22 +125,24 @@ export function getDay7Email(
 
     const content = `
         <h2>${isGreek ? 'Η πρώτη σας εβδομάδα!' : 'Your first week!'}</h2>
-        <p>${greeting}</p>
+        <p>${hello}</p>
         <p>${isGreek
             ? 'Έχει περάσει μία εβδομάδα από την εγγραφή σας. Ας δούμε πού βρίσκεστε:'
             : 'It\'s been one week since you signed up. Here\'s where you stand:'
         }</p>
         ${statsHtml}
-        <a href="${APP_URL}/home" class="button">${isGreek ? 'Δείτε το Dashboard' : 'View Dashboard'}</a>
+        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Άνοιγμα πίνακα ελέγχου' : 'Open your dashboard'}</a>
         ${stats && stats.gapCount > 0 ? `
             <p style="margin-top: 16px;">
-                <span class="warning-badge">${isGreek ? `${stats.gapCount} κενά κάλυψης χρειάζονται προσοχή` : `${stats.gapCount} coverage gaps need attention`}</span>
+                <span class="warning-badge">${isGreek
+                    ? counted(stats.gapCount, 'κενό κάλυψης χρειάζεται προσοχή', 'κενά κάλυψης χρειάζονται προσοχή')
+                    : counted(stats.gapCount, 'coverage gap needs attention', 'coverage gaps need attention')}</span>
             </p>
         ` : ''}
     `
 
     return {
         subject,
-        html: getBaseEmailTemplate(content),
+        html: getBaseEmailTemplate(content, language),
     }
 }

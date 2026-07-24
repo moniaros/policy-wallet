@@ -1,0 +1,198 @@
+import { describe, it, expect } from 'vitest'
+import { readFileSync, globSync } from 'node:fs'
+import { counted, daysToExpiryPhrase, greeting } from '@/lib/email/templates/phrases'
+import { getWeeklyDigestEmail } from '@/lib/email/templates/weekly-digest'
+import { getChurnDay7Email } from '@/lib/email/templates/churn-prevention'
+import { deriveFallbackProtectionScore } from '@/lib/services/weekly-digest.service'
+
+const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+const read = (f: string) => strip(readFileSync(f, 'utf-8'))
+const TEMPLATES = globSync('lib/email/templates/*.ts')
+
+/**
+ * `healthScoreChange` was passed as a literal `0` behind a TODO, and the digest
+ * turned that into a rendered trend line. Every digest, every week, told the
+ * reader their protection score was «Σταθερό» / "Stable" — including the weeks
+ * it had fallen because a policy lapsed. ProtectionScore is keyed
+ * `@unique userId` and keeps no history, so week-over-week cannot be computed
+ * today; the fix is to stop claiming it, not to default it.
+ */
+describe('the digest does not report a trend it has not computed', () => {
+    it('no longer accepts or renders a score change', () => {
+        const digest = read('lib/email/templates/weekly-digest.ts')
+        expect(digest).not.toMatch(/healthScoreChange/)
+        expect(digest).not.toMatch(/Σταθερό|Stable/)
+    })
+
+    it('the service no longer passes a placeholder for it', () => {
+        expect(read('lib/services/weekly-digest.service.ts')).not.toMatch(/healthScoreChange/)
+    })
+})
+
+/**
+ * Guarded at the PRODUCER, not only the renderer. The first version of this
+ * suite asserted the template's behaviour given `healthScore: null` and passed
+ * unchanged with the service still emitting 0 — so the decision that actually
+ * mattered was untested.
+ */
+describe('the fallback score returns nothing to score, not a score of nothing', () => {
+    it('is null with no policies, however many gaps', () => {
+        expect(deriveFallbackProtectionScore(0, [])).toBeNull()
+        expect(deriveFallbackProtectionScore(0, ['critical', 'high'])).toBeNull()
+    })
+
+    it('is 100 for a policy with no gaps', () => {
+        expect(deriveFallbackProtectionScore(1, [])).toBe(100)
+    })
+
+    it('weights severity the way the gap engine does', () => {
+        expect(deriveFallbackProtectionScore(2, ['critical'])).toBe(75)
+        expect(deriveFallbackProtectionScore(2, ['high'])).toBe(85)
+        expect(deriveFallbackProtectionScore(2, ['medium'])).toBe(92)
+        expect(deriveFallbackProtectionScore(2, ['low'])).toBe(97)
+    })
+
+    it('floors at zero rather than going negative', () => {
+        expect(deriveFallbackProtectionScore(1, Array(10).fill('critical'))).toBe(0)
+    })
+
+    it('ignores a severity it does not recognise instead of scoring NaN', () => {
+        expect(deriveFallbackProtectionScore(1, ['unknown-severity'])).toBe(100)
+    })
+})
+
+/**
+ * The app distinguishes "no data yet" from a real score — «Δεν υπάρχουν ακόμη
+ * δεδομένα». The digest collapsed both to "0%", which reads as a verdict on a
+ * portfolio the product has never seen.
+ */
+describe('the digest reports no score rather than a score of zero', () => {
+    const base = {
+        renewingSoon: [],
+        newGaps: 0,
+        unreadMessages: 0,
+    }
+
+    it('renders a dash and an explanation when there is nothing to score', () => {
+        const { html } = getWeeklyDigestEmail('el', 'Μαρία', { ...base, healthScore: null })
+        expect(html).not.toMatch(/>0%</)
+        expect(html).toMatch(/Προσθέστε ένα ασφαλιστήριο/)
+    })
+
+    it('still renders a real score', () => {
+        const { html } = getWeeklyDigestEmail('el', 'Μαρία', { ...base, healthScore: 72 })
+        expect(html).toMatch(/72%/)
+    })
+
+    it('calls it what the app calls it', () => {
+        const { html } = getWeeklyDigestEmail('el', undefined, { ...base, healthScore: 72 })
+        expect(html).toMatch(/Βαθμολογία προστασίας/)
+        expect(html).not.toMatch(/Υγεία Κάλυψης/)
+        const en = getWeeklyDigestEmail('en', undefined, { ...base, healthScore: 72 }).html
+        expect(en).toMatch(/Protection score/)
+        expect(en).not.toMatch(/Coverage Health|Health Score/)
+    })
+})
+
+/**
+ * The day-7 churn email fires on INACTIVITY — seven days without a login — not
+ * on any change in the reader's cover. Titled "your policies need attention" it
+ * read as a risk alert, and a reader whose portfolio is in perfect order got it
+ * anyway, with an empty body under the warning.
+ */
+describe('the win-back email only claims a problem when there is one', () => {
+    it('does not tell a healthy portfolio it needs attention', () => {
+        const { subject, html } = getChurnDay7Email({ language: 'en', expiringPolicies: 0, openGaps: 0 })
+        expect(subject).not.toMatch(/need attention/i)
+        expect(html).not.toMatch(/needs attention/i)
+        expect(html).toMatch(/nothing that needs action/i)
+    })
+
+    it('does say so when there is something', () => {
+        const { subject, html } = getChurnDay7Email({ language: 'en', expiringPolicies: 2, openGaps: 0 })
+        expect(subject).toMatch(/needs attention/i)
+        expect(html).toMatch(/2 policies expiring soon/)
+    })
+
+    it('agrees with itself in Greek', () => {
+        const healthy = getChurnDay7Email({ language: 'el', expiringPolicies: 0, openGaps: 0 })
+        expect(healthy.subject).not.toMatch(/χρειάζεται προσοχή/)
+        const flagged = getChurnDay7Email({ language: 'el', expiringPolicies: 1, openGaps: 3 })
+        expect(flagged.subject).toMatch(/χρειάζεται προσοχή/)
+        expect(flagged.html).toMatch(/1 ασφαλιστήριο λήγει σύντομα/)
+        expect(flagged.html).toMatch(/3 κενά κάλυψης χρειάζονται αντιμετώπιση/)
+    })
+})
+
+/**
+ * Every counted noun was interpolated in front of a fixed plural, so a reader
+ * with exactly one of anything got "1 policies expiring soon" and «1 κενά
+ * κάλυψης». Greek needs the whole clause: the verb agrees too.
+ */
+describe('counted phrases agree with their number', () => {
+    it('singular in both languages', () => {
+        expect(counted(1, 'policy expiring soon', 'policies expiring soon')).toBe('1 policy expiring soon')
+        expect(counted(1, 'κενό κάλυψης χρειάζεται αντιμετώπιση', 'κενά κάλυψης χρειάζονται αντιμετώπιση'))
+            .toBe('1 κενό κάλυψης χρειάζεται αντιμετώπιση')
+    })
+
+    it('plural for everything else', () => {
+        expect(counted(2, 'policy', 'policies')).toBe('2 policies')
+        expect(counted(0, 'policy', 'policies')).toBe('0 policies')
+    })
+
+    it('no template interpolates a bare count in front of a fixed noun', () => {
+        const offenders: string[] = []
+        for (const file of TEMPLATES) {
+            const src = read(file)
+            // e.g. `${openGaps} ${isGreek ? 'κενά …' : 'coverage gaps …'}`
+            if (/\$\{[a-zA-Z.!]*(Gaps|Policies|Messages|gapCount|Count)\}\s*\$\{/.test(src)) offenders.push(file)
+        }
+        expect(offenders, `bare counts in:\n${offenders.join('\n')}`).toEqual([])
+    })
+})
+
+describe('the expiry countdown reads correctly at the boundary', () => {
+    it('names today and tomorrow', () => {
+        expect(daysToExpiryPhrase(0, false)).toBe('expires today')
+        expect(daysToExpiryPhrase(1, true)).toBe('λήγει αύριο')
+    })
+
+    it('counts everything else', () => {
+        expect(daysToExpiryPhrase(12, false)).toBe('in 12 days')
+        expect(daysToExpiryPhrase(12, true)).toBe('σε 12 ημέρες')
+    })
+})
+
+/**
+ * Every template opened with «Γεια σου» — the informal singular — and addressed
+ * the same reader with the formal «σας» in the very next sentence. The product's
+ * own UI copy is formal throughout.
+ */
+describe('emails address the reader the way the product does', () => {
+    it('is formal in Greek', () => {
+        expect(greeting('Μαρία', true)).toBe('Αγαπητέ/ή Μαρία,')
+        expect(greeting(undefined, true)).toBe('Καλησπέρα σας,')
+    })
+
+    it('leaves no informal greeting in any template', () => {
+        const offenders = TEMPLATES.filter((f) => /Γεια σου/.test(read(f)))
+        expect(offenders, `informal greeting in:\n${offenders.join('\n')}`).toEqual([])
+    })
+})
+
+/**
+ * `/home` is now only a redirect to `/dashboard`, and «Dashboard» is an English
+ * word sitting in Greek copy where the product's own term is «Πίνακας ελέγχου».
+ */
+describe('email CTAs point at the canonical route in the reader language', () => {
+    it('no template links to the redirect', () => {
+        const offenders = TEMPLATES.filter((f) => /APP_URL\}\/home/.test(read(f)))
+        expect(offenders, `/home link in:\n${offenders.join('\n')}`).toEqual([])
+    })
+
+    it('no Greek CTA says "Dashboard"', () => {
+        const offenders = TEMPLATES.filter((f) => /'[^']*Dashboard[^']*'\s*:\s*'/.test(read(f)))
+        expect(offenders, `English "Dashboard" in Greek copy:\n${offenders.join('\n')}`).toEqual([])
+    })
+})

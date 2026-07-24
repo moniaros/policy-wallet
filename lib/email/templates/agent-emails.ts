@@ -79,7 +79,10 @@ export function getAgentApprovalEmail(data: AgentApprovalEmailData) {
 
     return {
         subject: '🎉 Your PolicyWallet Agent Application Has Been Approved!',
-        html: getBaseEmailTemplate(content),
+        // These three are English-only — admin-triggered, no language on the
+        // recipient at this call site. Declared explicitly so the base template's
+        // Greek default does not mislabel them.
+        html: getBaseEmailTemplate(content, 'en'),
         text: `Welcome to PolicyWallet, ${agentName}! Your agent application has been approved. You can now access your agent dashboard at ${agentEmailOrigin()}/agent/dashboard`
     }
 }
@@ -138,7 +141,10 @@ export function getAgentRejectionEmail(data: AgentRejectionEmailData) {
 
     return {
         subject: 'Update on Your PolicyWallet Agent Application',
-        html: getBaseEmailTemplate(content),
+        // These three are English-only — admin-triggered, no language on the
+        // recipient at this call site. Declared explicitly so the base template's
+        // Greek default does not mislabel them.
+        html: getBaseEmailTemplate(content, 'en'),
         text: `Dear ${agentName}, thank you for your interest in becoming a PolicyWallet agent. Unfortunately, we are unable to approve your application at this time. Reason: ${reason}. Please contact ${siteConfig.contactEmail} if you have questions.`
     }
 }
@@ -186,7 +192,10 @@ export function getAgentWelcomeEmail(agentName: string) {
 
     return {
         subject: 'Welcome to PolicyWallet - Let\'s Get Started!',
-        html: getBaseEmailTemplate(content),
+        // These three are English-only — admin-triggered, no language on the
+        // recipient at this call site. Declared explicitly so the base template's
+        // Greek default does not mislabel them.
+        html: getBaseEmailTemplate(content, 'en'),
         text: `Welcome to PolicyWallet, ${agentName}! We're excited to have you join our network. Get started at ${agentEmailOrigin()}/agent/onboarding`
     }
 }
