@@ -19,6 +19,8 @@ import {
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatCurrencyFull } from "@/lib/agent/format"
+import { formatDate as formatDateShared } from "@/lib/i18n/format"
+import { daysLeftLabel } from "@/lib/wallet/days-left-label"
 import { EmptyState, RenewalPreviewRow } from "@/components/ui/EmptyState"
 import type { RenewalView } from "./actions"
 import { updateRenewalOutcome, getAgentRenewals, sendBatchRenewalReminder } from "./actions"
@@ -36,6 +38,9 @@ const copy = {
         kicker: "PIPELINE",
         pending: "Pending",
         overdue: "Overdue",
+        expiresToday: "Today",
+        expiresTomorrow: "Tomorrow",
+        daysLeftSuffix: "d",
         completed: "Completed",
         lapsed: "Lapsed",
         all: "All",
@@ -87,6 +92,9 @@ const copy = {
         kicker: "PIPELINE",
         pending: "Εκκρεμεί",
         overdue: "Ληξιπρόθεσμο",
+        expiresToday: "Σήμερα",
+        expiresTomorrow: "Αύριο",
+        daysLeftSuffix: " ημ.",
         completed: "Ολοκληρώθηκε",
         lapsed: "Εκπνοή",
         all: "Όλα",
@@ -253,6 +261,12 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
         }
     }
 
+    // «5d» was hardcoded English on a Greek-default UI — and the countdown reached
+    // 0 and 1, where a bare number is the wrong thing to read on the last day of
+    // cover. (lint:i18n-changed only inspects CHANGED files, so a literal that
+    // has always been here was never put in front of it.)
+    const dayLabels = { today: t.expiresToday, tomorrow: t.expiresTomorrow, suffix: t.daysLeftSuffix }
+
     const getStatusBadge = (status: string, daysLeft: number) => {
         if (status === "completed") return (
             <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-[#166534] bg-primary-soft dark:text-mint dark:bg-primary/15 px-2.5 py-1 rounded-full">
@@ -266,18 +280,21 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
         )
         if (daysLeft <= 7) return (
             <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20 px-2.5 py-1 rounded-full">
-                <AlertTriangle className="w-3 h-3" /> {daysLeft}d
+                <AlertTriangle className="w-3 h-3" /> {daysLeftLabel(daysLeft, dayLabels)}
             </span>
         )
         return (
             <span className="inline-flex items-center gap-1 text-kicker font-black uppercase tracking-widest text-neutral-600 bg-neutral-100 dark:text-neutral-400 dark:bg-neutral-800 px-2.5 py-1 rounded-full">
-                <Clock className="w-3 h-3" /> {daysLeft}d
+                <Clock className="w-3 h-3" /> {daysLeftLabel(daysLeft, dayLabels)}
             </span>
         )
     }
 
+    // Pinned to Athens via the shared helper: a bare toLocaleDateString resolves
+    // against the runtime zone, so this rendered UTC on the server and Athens in
+    // the browser for the same policy.
     const formatDate = (iso: string) =>
-        new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB", { day: "2-digit", month: "short", year: "numeric" })
+        formatDateShared(iso, language === "el" ? "el" : "en", { day: "2-digit", month: "short", year: "numeric" })
 
     return (
         <div className="pw-page-shell min-h-screen">

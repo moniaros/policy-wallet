@@ -47,8 +47,9 @@ describe('a policy expiring today is still in the agent renewal timeline', () =>
  */
 describe('the renewal badge reads correctly at the boundary', () => {
     it('names today and tomorrow instead of counting them', () => {
-        expect(CLIENT).toMatch(/daysUntilExpiry === 0[\s\S]{0,80}expiresTodayBadge/)
-        expect(CLIENT).toMatch(/daysUntilExpiry === 1[\s\S]{0,80}expiresTomorrowBadge/)
+        expect(CLIENT).toMatch(/daysLeftLabel\(item\.daysUntilExpiry, \{/)
+        expect(CLIENT).toMatch(/today: p\.expiresTodayBadge/)
+        expect(CLIENT).toMatch(/tomorrow: p\.expiresTomorrowBadge/)
     })
 
     it('has both labels in both languages', () => {
@@ -59,6 +60,6 @@ describe('the renewal badge reads correctly at the boundary', () => {
     })
 
     it('still counts the days for everything else', () => {
-        expect(CLIENT).toMatch(/\$\{item\.daysUntilExpiry\}\$\{p\.daysAbbr\}/)
+        expect(CLIENT).toMatch(/suffix: p\.daysAbbr/)
     })
 })

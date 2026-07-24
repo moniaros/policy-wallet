@@ -3,6 +3,7 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { notifyCounterparty } from "@/lib/notifications"
+import { calendarDaysUntil, startOfAthensDay } from "@/lib/policy-status"
 
 export type RenewalView = {
     id: string
@@ -38,7 +39,10 @@ export async function getAgentRenewals(filters?: {
     if (filters?.timeframe && filters.timeframe !== "all") {
         const days = parseInt(filters.timeframe)
         const cutoff = new Date(now.getTime() + days * 24 * 60 * 60 * 1000)
-        dateFilter = { policyEndDate: { gte: now, lte: cutoff } }
+        // From the start of today in Athens, not from this instant: end dates are
+        // stored at midnight, so `gte: now` hid a policy expiring TODAY from the
+        // "next 30 days" view three hours into the day it still covered.
+        dateFilter = { policyEndDate: { gte: startOfAthensDay(now), lte: cutoff } }
     }
 
     const renewals = await db.policyRenewal.findMany({
@@ -74,7 +78,11 @@ export async function getAgentRenewals(filters?: {
         customerName: r.policy.owner.name || r.policy.owner.email,
         customerId: r.policy.owner.id,
         policyEndDate: r.policyEndDate.toISOString(),
-        daysBeforeExpiry: r.daysBeforeExpiry,
+        // Recomputed, not the stored snapshot. `daysBeforeExpiry` is only written
+        // when the renewal cron last touched this row — so a missed cron run (they
+        // fail silently) left the agent reading a stale countdown, and this page
+        // disagreed with /insights and the wallet about the same policy.
+        daysBeforeExpiry: calendarDaysUntil(r.policyEndDate, now),
         status: r.status,
         outcome: r.outcome,
         outcomeNotes: r.outcomeNotes,

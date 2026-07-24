@@ -21,6 +21,7 @@ import type { InsightsData } from "./actions"
 
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { daysLeftLabel } from "@/lib/wallet/days-left-label"
 
 interface InsightsClientProps {
     data: InsightsData
@@ -436,11 +437,11 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                         {/* A policy expiring today used to be dropped from this
                                                             list entirely; now that it is here, "0 ημ." is not
                                                             what an agent should read on the last day of cover. */}
-                                                        {item.daysUntilExpiry === 0
-                                                            ? p.expiresTodayBadge
-                                                            : item.daysUntilExpiry === 1
-                                                              ? p.expiresTomorrowBadge
-                                                              : `${item.daysUntilExpiry}${p.daysAbbr}`}
+                                                        {daysLeftLabel(item.daysUntilExpiry, {
+                                                            today: p.expiresTodayBadge,
+                                                            tomorrow: p.expiresTomorrowBadge,
+                                                            suffix: p.daysAbbr,
+                                                        })}
                                                     </span>
                                                     <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400 mt-1">
                                                         {fmt(item.premiumAmount, lang)}

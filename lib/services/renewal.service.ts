@@ -1,4 +1,4 @@
-import { calendarDaysUntil } from "@/lib/policy-status"
+import { calendarDaysUntil, startOfAthensDay } from "@/lib/policy-status"
 import { formatDate } from "@/lib/i18n/format"
 import { db } from "../db"
 import { sendNotification } from "../notifications"
@@ -34,6 +34,11 @@ export type RenewalRunSummary = {
 export async function runRenewalCheck(): Promise<RenewalRunSummary> {
     const now = new Date()
     const cutoff = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000) // 90 days out
+    // The last day of cover is still cover. `gte: now` dropped a policy from the
+    // scan from 00:00 UTC — 03:00 Athens — on its own expiry day, so its renewal
+    // record stopped being updated and its agent task stopped being refreshed on
+    // the one day either could still change the outcome.
+    const startOfToday = startOfAthensDay(now)
 
     const summary: RenewalRunSummary = {
         policiesScanned: 0,
@@ -50,7 +55,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
             where: {
                 status: "active",
                 endDate: {
-                    gte: now,
+                    gte: startOfToday,
                     lte: cutoff,
                 },
             },
@@ -233,11 +238,15 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
             }
         }
 
-        // 7. Mark overdue policies (endDate < now, still pending)
+        // 7. Mark overdue policies — those whose end date is before TODAY.
+        // Keyed off `lt: now` this fired on the expiry day itself: the cron runs
+        // at 05:00 UTC, end dates are stored at midnight, so a policy still in
+        // force until tonight was reported "overdue" at 08:00 Athens that
+        // morning — to the agent, and in the Overdue count on /insights.
         const overdueCount = await db.policyRenewal.updateMany({
             where: {
                 status: "pending",
-                policyEndDate: { lt: now },
+                policyEndDate: { lt: startOfToday },
             },
             data: { status: "overdue" },
         })

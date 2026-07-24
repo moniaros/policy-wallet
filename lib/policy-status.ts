@@ -41,6 +41,36 @@ export function calendarDaysUntil(end: Date, now: Date): number {
     return dayNumber(end) - dayNumber(now)
 }
 
+/**
+ * The instant the current Athens day began — the boundary a database query has
+ * to use when it wants "before today", since Prisma cannot call
+ * `calendarDaysUntil` inside a `where`.
+ *
+ * `{ lt: now }` is not that boundary. Policy end dates are stored at midnight
+ * UTC, which is 03:00 Athens, so a plain `lt: now` treats a policy as past from
+ * three hours into the very day it still covers you.
+ */
+export function startOfAthensDay(now: Date): Date {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: APP_TIME_ZONE,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).format(now)
+    // Midnight on that Athens date, expressed as the UTC instant it occurred.
+    // Offset is read back from the zone so DST is handled without a table.
+    const guess = new Date(`${parts}T00:00:00Z`)
+    const offsetMs = guess.getTime() - new Date(
+        new Intl.DateTimeFormat('sv-SE', {
+            timeZone: APP_TIME_ZONE,
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+            hour12: false,
+        }).format(guess).replace(' ', 'T') + 'Z'
+    ).getTime()
+    return new Date(guess.getTime() + offsetMs)
+}
+
 export type PolicyStatus =
     | 'active'
     | 'expiring_soon'
