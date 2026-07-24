@@ -1,7 +1,7 @@
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
 import { agentMaySeeCustomerIdentity } from "@/lib/agent-consent";
-import { effectivePolicyStatus, isPolicyCoverageActive, isCoveredByEndDate } from "@/lib/policy-status";
+import { effectivePolicyStatus, isPolicyCoverageActive, isCoveredByEndDate, resolvePolicyLifecycle } from "@/lib/policy-status";
 import { normalizeTaxId } from "@/lib/identity/tax-id";
 import { Prisma } from "@prisma/client";
 import { AppError } from "@/lib/errors";
@@ -227,7 +227,14 @@ export class CustomerService extends BaseService {
                 status: effectivePolicyStatus(p),
                 premium: p.premiumAmount,
                 startDate: p.startDate,
-                expiresAt: p.endDate,
+                // ...and the date beside that status has to come from the same
+                // resolution. This read `p.endDate`, the stored column, which
+                // resolvePolicyLifecycle treats as the LAST fallback behind a
+                // renewal re-upload and the extracted envelope. So a renewed
+                // policy showed the agent its resolved status next to its
+                // pre-renewal expiry date — the one date an insurance servicing
+                // workflow actually runs on.
+                expiresAt: resolvePolicyLifecycle(p).endDate ?? p.endDate,
                 gaps: p.gapInstances.length,
                 hasAnalysis: p.analysisRuns.length > 0,
                 createdByUserId: p.createdByUserId
