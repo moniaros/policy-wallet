@@ -43,10 +43,20 @@ export default async function DashboardPage() {
     const endOfToday = new Date()
     endOfToday.setHours(23, 59, 59, 999)
 
+    // What this agent may see: policies they uploaded PLUS policies the owner
+    // explicitly granted them. This query used to filter on createdByUserId
+    // alone, so a policy shared with the agent by its owner was invisible to
+    // every widget fed from it — the action queue skipped its renewal, the KPIs
+    // and portfolio health under-counted it, and the queue told the agent the
+    // client had "no policies linked yet" while the client's own page listed it.
+    // getVisiblePolicyCountsByOwner (below) and the gaps query already resolved
+    // visibility this way; this is the same rule, applied consistently.
+    const policyVisibilityWhere = await getAgentPolicyVisibilityWhere(agentId)
+
     // Fetch policies and customers
     const [policies, relationships, opportunities, agentProfile, analysisRunCount, agentTasks] = await Promise.all([
         prisma.policy.findMany({
-            where: { createdByUserId: agentId },
+            where: policyVisibilityWhere,
             // policyNumber/insurerName/acordData feed resolvePolicyLifecycle — the
             // real end date lives in the extracted envelope, not the endDate column.
             select: {
@@ -258,6 +268,9 @@ export default async function DashboardPage() {
                 clientId: ownerRel?.customer.id || policy.ownerUserId,
                 clientName: presentName(ownerRel?.customer.id),
                 description: `${lobLabel} expires ${endDate.toLocaleDateString("el-GR")}`,
+                // The card localizes from this + dueDate; `description` above is
+                // only a fallback (see ActionQueueItem).
+                lineOfBusiness: policy.lineOfBusiness,
                 dueDate: endDate.toISOString(),
                 urgency: (endDate.getTime() - now.getTime()) < 7 * 86_400_000 ? "high" : "medium",
                 oneTapAction: "renew",
@@ -317,7 +330,11 @@ export default async function DashboardPage() {
     // ── Portfolio Health ───────────────────────────────────────────
     const gapCounts = await prisma.gapInstance.groupBy({
         by: ["policyId"],
-        where: { status: { in: [...OPEN_GAP_STATUSES] }, policy: { createdByUserId: agentId } },
+        // Same visibility rule as the policy query above and as gapsVisibilityWhere
+        // further down — this one filtered on createdByUserId alone, so gaps on a
+        // granted policy were missing from portfolio health while the same file's
+        // other gap query counted them.
+        where: { status: { in: [...OPEN_GAP_STATUSES] }, policy: policyVisibilityWhere },
         _count: true,
     })
     const gapCountByPolicy = new Map(gapCounts.map((g) => [g.policyId, g._count]))

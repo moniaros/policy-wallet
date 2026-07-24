@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import {
     AlertTriangle,
     Calendar,
@@ -13,6 +13,7 @@ import {
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatRelativeDate, formatCurrencyCompact } from "@/lib/agent/format"
 import type { ActionQueueItem, ActionQueueItemType, GapsSummary, OneTapAction } from "./types"
 
@@ -39,7 +40,6 @@ interface ActionQueueCardProps {
     /** Total agent commission at stake across the queue ("€X in renewals at risk"). */
     revenueAtRisk?: number
     onAction: (item: ActionQueueItem) => void
-    onViewAll?: () => void
     onGapClientClick?: (clientId: string) => void
     isLoading?: boolean
     gapsSummary?: GapsSummary | null
@@ -50,8 +50,32 @@ interface ActionQueueCardProps {
     onInviteClient?: () => void
 }
 
-export function ActionQueueCard({ items, revenueAtRisk, onAction, onViewAll, onGapClientClick, isLoading, gapsSummary, hasClients = false, onInviteClient }: ActionQueueCardProps) {
+const COLLAPSED_COUNT = 5
+
+/**
+ * Builds the queue line in the reader's language. The server ships an English
+ * `description` built from the raw lob enum; rendering it directly put "motor
+ * expires 25/5/2027" in front of a Greek agent on their primary work surface.
+ */
+function describeItem(
+    item: ActionQueueItem,
+    language: string,
+    t: any
+): string {
+    const lang: "el" | "en" = language === "el" ? "el" : "en"
+    if (item.type === "expiring_policy" && item.lineOfBusiness) {
+        const branch = normalizeBranch(item.lineOfBusiness)
+        return t.agentDashboard.queueExpiring
+            .replace("{lob}", branch.label[lang])
+            .replace("{date}", new Date(item.dueDate).toLocaleDateString(lang === "el" ? "el-GR" : "en-GB"))
+    }
+    if (item.type === "incomplete_profile") return t.agentDashboard.queueNoPolicies
+    return item.description
+}
+
+export function ActionQueueCard({ items, revenueAtRisk, onAction, onGapClientClick, isLoading, gapsSummary, hasClients = false, onInviteClient }: ActionQueueCardProps) {
     const { language, t } = useLanguage()
+    const [showAll, setShowAll] = useState(false)
 
     if (isLoading) return <ActionQueueCardSkeleton />
 
@@ -101,9 +125,10 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onViewAll, onG
                 <ActionQueueEmpty t={t} hasClients={hasClients} onInviteClient={onInviteClient} />
             ) : (
                 <div className="space-y-2">
-                    {items.slice(0, 5).map((item) => {
+                    {(showAll ? items : items.slice(0, COLLAPSED_COUNT)).map((item) => {
                         const Icon = ACTION_ICONS[item.type] || Clock
                         const label = ONE_TAP_LABELS[item.oneTapAction]
+                        const description = describeItem(item, language, t)
                         return (
                             <div
                                 key={item.id}
@@ -115,7 +140,7 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onViewAll, onG
                                         {item.clientName}
                                     </p>
                                     <p className="text-xs opacity-75 truncate">
-                                        {item.description}
+                                        {description}
                                     </p>
                                 </div>
                                 <span className="text-kicker opacity-60 whitespace-nowrap">
@@ -134,17 +159,23 @@ export function ActionQueueCard({ items, revenueAtRisk, onAction, onViewAll, onG
                 </div>
             )}
 
-            {/* View all */}
-            {totalCount > 5 && onViewAll && (
+            {/* The queue rendered items.slice(0, 5) and gated its only "view all"
+                control behind an onViewAll prop no caller passed. The count badge
+                still showed the true total, so an agent with 12 renewals at risk
+                was told there were 12, shown 5, and given no route to the other 7.
+                There is no full-queue page to link to — the queue is derived on
+                this dashboard — so it expands in place instead. */}
+            {totalCount > COLLAPSED_COUNT && (
                 <button
                     type="button"
-                    onClick={onViewAll}
+                    onClick={() => setShowAll((v) => !v)}
+                    aria-expanded={showAll}
                     className="mt-3 flex w-full items-center justify-center gap-1 text-xs font-medium text-primary dark:text-mint hover:underline"
                 >
-                    {language === "el"
-                        ? `Δείτε όλα τα ${totalCount} στοιχεία`
-                        : `View all ${totalCount} items`}
-                    <ChevronRight className="h-3 w-3" />
+                    {showAll
+                        ? t.agentDashboard.queueShowFewer
+                        : t.agentDashboard.queueShowAll.replace("{count}", String(totalCount))}
+                    <ChevronRight className={`h-3 w-3 transition-transform ${showAll ? "rotate-90" : ""}`} />
                 </button>
             )}
         </BrandCard>

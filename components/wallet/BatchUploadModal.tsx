@@ -4,6 +4,7 @@ import { useId, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { formatCurrencyFull } from "@/lib/agent/format"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
@@ -38,7 +39,7 @@ interface BatchUploadModalProps {
 }
 
 export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModalProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const copy = t.wallet.batchUpload
     const router = useRouter()
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -368,7 +369,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                                             </div>
                                                             <div>
                                                                 <span className="text-muted-foreground">{copy.premiumLabel}: </span>
-                                                                <span className="text-foreground">€{policy.data.premiumAmount?.toLocaleString() || "—"}</span>
+                                                                <span className="text-foreground">{policy.data.premiumAmount ? formatCurrencyFull(policy.data.premiumAmount, language === "el" ? "el" : "en") : "—"}</span>
                                                             </div>
                                                             <div className="col-span-2">
                                                                 <span className="text-muted-foreground">{copy.periodLabel}: </span>

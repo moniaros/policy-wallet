@@ -175,7 +175,15 @@ export interface ActionQueueItem {
     type: ActionQueueItemType
     clientId: string
     clientName: string
+    /**
+     * Server-built English fallback ("motor expires 25/5/2027"). It used to be
+     * rendered directly, so the Greek-default agent dashboard showed its primary
+     * work queue in English with raw database enum values. The card now builds
+     * the line from `type` + the fields below; this is only a last resort.
+     */
     description: string
+    /** Raw lob key for an expiring policy — localized client-side. */
+    lineOfBusiness?: string
     dueDate: string
     urgency: "low" | "medium" | "high"
     oneTapAction: OneTapAction

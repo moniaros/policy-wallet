@@ -14,7 +14,14 @@ export function formatCurrencyCompact(amount: number, locale: "en" | "el" = "el"
         const thousands = amount / 1_000
         return `€${thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)}K`
     }
-    return `€${amount.toLocaleString(locale === "el" ? "el-GR" : "en-GB")}`
+    // toLocaleString defaults to THREE fraction digits, so a €15.7305 commission
+    // rendered as "€15,731" — and in Greek the comma is the decimal separator, so
+    // an agent read their renewals-at-risk as fifteen thousand euros instead of
+    // fifteen. Money is always two decimals, matching formatCurrencyFull.
+    return `€${amount.toLocaleString(locale === "el" ? "el-GR" : "en-GB", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })}`
 }
 
 /**

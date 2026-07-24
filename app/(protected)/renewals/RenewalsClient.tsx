@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { formatCurrencyFull } from "@/lib/agent/format"
 import { EmptyState, RenewalPreviewRow } from "@/components/ui/EmptyState"
 import type { RenewalView } from "./actions"
 import { updateRenewalOutcome, getAgentRenewals, sendBatchRenewalReminder } from "./actions"
@@ -298,7 +299,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                     <StatCard icon={Clock} label={t.expiringThisMonth} value={stats.expiringThisMonth} accent="blue" />
                     <StatCard icon={ShieldAlert} label={t.overdue} value={stats.overdue} accent="rose" />
                     <StatCard icon={CheckCircle2} label={t.completedThisMonth} value={stats.completedThisMonth} accent="emerald" />
-                    <StatCard icon={Euro} label={t.premiumAtRisk} value={`€${stats.premiumAtRisk.toLocaleString()}`} accent="orange" />
+                    <StatCard icon={Euro} label={t.premiumAtRisk} value={formatCurrencyFull(stats.premiumAtRisk, language === "el" ? "el" : "en")} accent="orange" />
                     <StatCard icon={TrendingUp} label={t.totalTracked} value={stats.total} accent="slate" />
                 </div>
 
@@ -436,7 +437,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                     </span>
                                                 </td>
                                                 <td data-label={t.premium} className="px-4 py-3 text-right font-bold text-foreground">
-                                                    {r.premiumAmount ? `€${r.premiumAmount.toLocaleString()}` : "—"}
+                                                    {r.premiumAmount ? formatCurrencyFull(r.premiumAmount, language === "el" ? "el" : "en") : "—"}
                                                 </td>
                                                 <td data-label={t.expires} className="px-4 py-3 text-center text-neutral-600 dark:text-neutral-400">
                                                     {formatDate(r.policyEndDate)}
