@@ -14,6 +14,32 @@ const RENEWAL_MILESTONES = [90, 60, 30, 15, 7] as const
 const BASIC_MILESTONES = [30] as const
 type Milestone = (typeof RENEWAL_MILESTONES)[number]
 
+/**
+ * Which milestone reminder to MAIL, and which milestones to MARK sent, for a
+ * policy that is `daysUntilExpiry` days out given the milestones already sent.
+ *
+ * `mark` is EVERY un-sent milestone at or above the current day count — a single
+ * reminder covers all the milestones already reached. `mail` is the closest of
+ * those (the smallest), because that is the one whose wording ("expiring soon")
+ * fits where the policy actually is.
+ *
+ * The bug this exists to prevent: marking only the mailed milestone left the
+ * higher ones un-sent, so a policy first seen BELOW a milestone boundary drained
+ * its backlog one email per DAY — a policy uploaded 8 days before expiry mailed a
+ * reminder five days running. Pure and exported so that daily-cadence behaviour
+ * is unit-testable without standing up the whole cron.
+ */
+export function selectRenewalReminder(
+    daysUntilExpiry: number,
+    allowedMilestones: readonly number[],
+    alreadySent: readonly number[],
+): { mail: number | null; mark: number[] } {
+    const sent = new Set(alreadySent)
+    const due = allowedMilestones.filter((m) => daysUntilExpiry <= m && !sent.has(m))
+    if (due.length === 0) return { mail: null, mark: [] }
+    return { mail: due[due.length - 1], mark: [...due] }
+}
+
 export type RenewalRunSummary = {
     policiesScanned: number
     renewalRecordsCreated: number
@@ -172,11 +198,13 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     ? RENEWAL_MILESTONES
                     : BASIC_MILESTONES
                 const sentMilestones = parseSentMilestones(renewalRecord?.remindersSent)
-                const milestonesToSend = allowedMilestones.filter(
-                    m => daysUntilExpiry <= m && !sentMilestones.has(m)
+                const { mail: mailMilestone, mark: milestonesToSend } = selectRenewalReminder(
+                    daysUntilExpiry,
+                    allowedMilestones,
+                    [...sentMilestones.keys()],
                 )
 
-                if (milestonesToSend.length === 0) {
+                if (mailMilestone === null) {
                     // No reminder due today, but the agent's open renewal task
                     // still ages: keep its countdown and priority current on every
                     // run, not only on the ~5 days a milestone happens to fire.
@@ -188,7 +216,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
 
                 // Send the most relevant (closest) milestone. This is the ledger
                 // entry — what the reader is TOLD is daysUntilExpiry.
-                const milestone = milestonesToSend[milestonesToSend.length - 1] as Milestone
+                const milestone = mailMilestone as Milestone
                 const isEl = policy.owner.preferredLanguage === "el"
 
                 // 4. Notify policyholder
@@ -218,11 +246,25 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     }
                 }
 
-                // 6. Update reminders_sent
+                // 6. Update reminders_sent.
+                //
+                // Mark EVERY currently-due milestone as sent, not only the one we
+                // mailed. milestonesToSend holds all un-sent milestones at or above
+                // today's day count; one consolidated reminder covers all of them.
+                // Marking just `milestone` left the higher ones un-sent, so a policy
+                // first seen BELOW a milestone boundary drained its backlog one email
+                // per day — a policy uploaded 8 days before expiry sent a reminder
+                // five days running (15→7→30→60→90, one per run). One email a day to
+                // a customer whose policy is about to lapse reads as a malfunction,
+                // not care. Now: one send collapses the passed milestones, and the
+                // remaining ladder fires normally as each boundary is crossed.
+                const nowIso = now.toISOString()
                 const updatedReminders = [
                     ...sentMilestones.entries(),
                 ].map(([m, sentAt]) => ({ milestone: m, sentAt }))
-                updatedReminders.push({ milestone, sentAt: now.toISOString() })
+                for (const m of milestonesToSend) {
+                    updatedReminders.push({ milestone: m, sentAt: nowIso })
+                }
 
                 await db.policyRenewal.update({
                     where: { id: renewalRecord!.id },
