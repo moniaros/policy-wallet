@@ -1907,6 +1907,8 @@ export const el = {
         totalPremium: 'Ασφαλιστικό αποτύπωμα',
         premiumExcludesNoAmount: '{count} συμβόλαιο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο',
         premiumExcludesNoAmountPlural: '{count} συμβόλαια χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετρώνται στο σύνολο',
+        premiumExcludesOtherCurrency: '{count} συμβόλαιο σε άλλο νόμισμα δεν προσμετράται στο σύνολο',
+        premiumExcludesOtherCurrencyPlural: '{count} συμβόλαια σε άλλο νόμισμα δεν προσμετρώνται στο σύνολο',
         premiumExcludesUnknown: '{count} συμβόλαιο χωρίς αναγνώσιμη ημ/νία λήξης δεν προσμετράται',
         premiumExcludesUnknownPlural: '{count} συμβόλαια χωρίς αναγνώσιμη ημ/νία λήξης δεν προσμετρώνται',
         activePolicies: 'Ενεργή προστασία',

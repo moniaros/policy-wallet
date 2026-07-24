@@ -160,6 +160,8 @@ export function PolicyWallet({
                 totalPremium={premiumFootprint.total}
                 unknownDurationCount={premiumFootprint.unknownDurationCount}
                 unknownPremiumCount={premiumFootprint.unknownPremiumCount}
+                premiumCurrency={premiumFootprint.currency}
+                otherCurrencyCount={premiumFootprint.otherCurrencyCount}
             />
 
             <ImportantNotices notices={notices} onSelect={onViewPolicy} />

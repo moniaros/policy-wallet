@@ -8,6 +8,7 @@ export type PremiumPolicyLike = {
     status?: string | null
     endDate?: string | Date | null
     premiumAmount?: unknown
+    premiumCurrency?: string | null
     acordData?: unknown
 }
 
@@ -47,6 +48,15 @@ export interface PremiumFootprint {
     total: number
     /** How many policies contributed to `total`. */
     countedPolicies: number
+    /** The currency `total` is denominated in — the majority one in force. */
+    currency: string
+    /**
+     * In-force policies stated in a DIFFERENT currency, left out of `total`.
+     * Summing across currencies without conversion yields a wrong number; this
+     * is the count that lets the UI say the figure is partial rather than
+     * silently absorbing them into a euro sum.
+     */
+    otherCurrencyCount: number
     /**
      * In-force policies whose premium was never extracted. They are counted as
      * cover but contribute 0 to `total`, so without this the footprint silently
@@ -117,6 +127,15 @@ function premiumOf(policy: PremiumPolicyLike): number {
     return Number.isFinite(premium) ? premium : 0
 }
 
+/**
+ * The currency a policy's premium is stated in. `premiumCurrency` is populated
+ * from the document by extraction, so it is whatever the policy actually says.
+ */
+function currencyOf(policy: PremiumPolicyLike): string {
+    const raw = String(policy.premiumCurrency ?? '').trim().toUpperCase()
+    return raw || 'EUR'
+}
+
 export function calculatePremiumFootprintDetailed(
     policies: PremiumPolicyLike[],
     now: Date = new Date()
@@ -128,9 +147,29 @@ export function calculatePremiumFootprintDetailed(
         return raw === null || raw === undefined || !Number.isFinite(Number(raw))
     }).length
 
+    // Only one currency may be added up.
+    //
+    // `premiumCurrency` comes from the document, so a policy written in sterling
+    // or francs is representable — and the detail page renders it correctly, in
+    // its own currency. The total then added those figures to the euro ones and
+    // labelled the sum "€". Mixing currencies without conversion produces a
+    // number that is simply wrong, and nothing on screen said so.
+    //
+    // The majority currency wins (this is a euro market); anything else is left
+    // out and counted, exactly as a missing premium or an unreadable term
+    // already is — the file's existing discipline is to say what the figure
+    // leaves out rather than quietly absorb it.
+    const byCurrency = new Map<string, number>()
+    for (const policy of inForce) byCurrency.set(currencyOf(policy), (byCurrency.get(currencyOf(policy)) ?? 0) + 1)
+    const currency =
+        [...byCurrency.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]?.[0] ?? 'EUR'
+    const counted = inForce.filter((policy) => currencyOf(policy) === currency)
+
     return {
-        total: inForce.reduce((sum, policy) => sum + premiumOf(policy), 0),
-        countedPolicies: inForce.length,
+        total: counted.reduce((sum, policy) => sum + premiumOf(policy), 0),
+        countedPolicies: counted.length,
+        currency,
+        otherCurrencyCount: inForce.length - counted.length,
         unknownDurationCount,
         unknownPremiumCount,
     }

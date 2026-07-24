@@ -17,6 +17,10 @@ interface StatusSummaryProps {
     unknownDurationCount?: number
     /** In-force policies with no premium recorded — they add 0 to the total. */
     unknownPremiumCount?: number
+    /** Currency `totalPremium` is stated in — the majority one in force. */
+    premiumCurrency?: string
+    /** In-force policies in another currency, left out of the total. */
+    otherCurrencyCount?: number
 }
 
 const RADIUS = 16
@@ -61,12 +65,18 @@ export function StatusSummary({
     totalPremium = 0,
     unknownDurationCount = 0,
     unknownPremiumCount = 0,
+    premiumCurrency = 'EUR',
+    otherCurrencyCount = 0,
 }: StatusSummaryProps) {
     const { t, language } = useLanguage()
 
+    // The currency comes from the footprint, not a constant: `premiumCurrency`
+    // is extracted from each document, so a policy written in sterling is
+    // representable and the detail page already renders it as such. Hardcoding
+    // EUR here labelled whatever was summed as euros.
     const premiumLabel = new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-GB', {
         style: 'currency',
-        currency: 'EUR',
+        currency: premiumCurrency || 'EUR',
         maximumFractionDigits: 0,
     }).format(totalPremium)
 
@@ -82,6 +92,14 @@ export function StatusSummary({
     // readable end date (excluded from "in force" entirely) or no premium
     // recorded (counted as cover, contributes 0). Both mean the figure understates
     // reality, so both are said out loud.
+    const otherCurrencyNote =
+        otherCurrencyCount > 0
+            ? (otherCurrencyCount === 1
+                ? t.status.premiumExcludesOtherCurrency
+                : t.status.premiumExcludesOtherCurrencyPlural
+            ).replace('{count}', String(otherCurrencyCount))
+            : undefined
+
     const noAmountNote =
         unknownPremiumCount > 0
             ? (unknownPremiumCount === 1
@@ -127,7 +145,7 @@ export function StatusSummary({
             <StatTile
                 label={t.status.totalPremium}
                 value={premiumLabel}
-                hint={[excludedNote, noAmountNote].filter(Boolean).join(' · ') || undefined}
+                hint={[excludedNote, noAmountNote, otherCurrencyNote].filter(Boolean).join(' · ') || undefined}
                 icon={Euro}
                 accent="brand"
             />
