@@ -1870,6 +1870,15 @@ export const el = {
         policyExpiry: 'Προειδοποιήσεις λήξης συμβολαίων',
         securityAlert: 'Ειδοποιήσεις πρόσβασης ασφαλείας',
         innovationUpdates: 'Ενημερώσεις καινοτομίας',
+        // Keyed to the eventTypes the senders actually read — see
+        // lib/notifications/preference-registry.
+        notificationGroups: {
+            renewalReminders: 'Υπενθυμίσεις ανανέωσης και λήξης',
+            weeklyDigest: 'Εβδομαδιαία σύνοψη',
+            coverageFindings: 'Ευρήματα ανάλυσης κάλυψης',
+            advisorMessages: 'Μηνύματα και υπενθυμίσεις συμβούλου',
+            productUpdates: 'Ενημερώσεις και συμβουλές για το προϊόν',
+        },
         securityFirst: 'Πρώτα η',
         securityFirstSubtitle: 'Ασφάλεια.',
         securityFirstDesc: 'Παρακολουθούμε κάθε σημείο πρόσβασης ειδικά για να προστατεύσουμε το χαρτοφυλάκιο δεδομένων ασφάλισης σας.',

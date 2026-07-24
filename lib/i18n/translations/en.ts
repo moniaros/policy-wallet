@@ -1856,6 +1856,13 @@ export const en: TranslationKeys = {
         policyExpiry: 'Policy Expiry Warnings',
         securityAlert: 'Security Access Alerts',
         innovationUpdates: 'Innovation Updates',
+        notificationGroups: {
+            renewalReminders: 'Renewal and expiry reminders',
+            weeklyDigest: 'Weekly summary',
+            coverageFindings: 'Coverage analysis findings',
+            advisorMessages: 'Advisor messages and reminders',
+            productUpdates: 'Product updates and tips',
+        },
         securityFirst: 'Security',
         securityFirstSubtitle: 'First.',
         securityFirstDesc: 'We monitor every access point specifically to protect your insurance data portfolio.',

@@ -5,11 +5,24 @@ import type { SettingsProps } from './types'
 import { deleteAccount, cancelDeletionRequest } from '@/app/(protected)/account/actions'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight, LogIn, LogOut, KeyRound, Mail, X } from 'lucide-react'
+import { AlertTriangle, Bell, CheckCircle2, ChevronRight, Globe, KeyRound, Loader2, Lock, LogIn, LogOut, Mail, MessageSquare, Shield, Smartphone, X, Zap } from 'lucide-react'
 import { ProcessingHUD } from '@/components/ui/ProcessingHUD'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { toast } from 'sonner'
+import { NOTIFICATION_PREFERENCE_GROUPS, eventTypesFor } from "@/lib/notifications/preference-registry"
+
+/**
+ * One icon per switch. The list itself comes from the registry — see
+ * lib/notifications/preference-registry — so the UI cannot invent a key again.
+ */
+const GROUP_ICON = {
+    renewalReminders: AlertTriangle,
+    weeklyDigest: Mail,
+    coverageFindings: Shield,
+    advisorMessages: MessageSquare,
+    productUpdates: Zap,
+} as const
 
 export function Settings({
     currentUser,
@@ -319,11 +332,18 @@ export function Settings({
                         </div>
 
                         <div className="space-y-6">
-                            {[
-                                { id: 'policy_expiry', label: t.settings.policyExpiry, icon: AlertTriangle },
-                                { id: 'security_alert', label: t.settings.securityAlert, icon: Shield },
-                                { id: 'marketing', label: t.settings.innovationUpdates, icon: Zap }
-                            ].map(pref => (
+                            {/* Driven by the registry, so the key this writes is the key
+                                the sender reads. These were three ids invented here —
+                                `policy_expiry` while the renewal reminder reads
+                                `policy_expiring`, plus two nothing consulted at all —
+                                and the three email streams that DO check preferences
+                                had no switch. */}
+                            {NOTIFICATION_PREFERENCE_GROUPS.map(group => ({
+                                id: group.eventType,
+                                eventTypes: eventTypesFor(group),
+                                label: t.settings.notificationGroups[group.labelKey],
+                                icon: GROUP_ICON[group.labelKey],
+                            })).map(pref => (
                                 <div key={pref.id} className="flex items-center justify-between group p-3 hover:bg-black/5 dark:hover:bg-black/80 rounded-2xl transition-all">
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 flex items-center justify-center text-black/55 dark:text-white/60 group-hover:text-primary dark:group-hover:text-mint transition-all">
@@ -335,7 +355,11 @@ export function Settings({
                                         role="switch"
                                         aria-checked={isPreferenceEnabled(pref.id, 'email')}
                                         aria-label={pref.label}
-                                        onClick={() => onToggleNotification?.(pref.id, 'email', !isPreferenceEnabled(pref.id, 'email'))}
+                                        onClick={() =>
+                                            pref.eventTypes.forEach((et) =>
+                                                onToggleNotification?.(et, 'email', !isPreferenceEnabled(pref.id, 'email'))
+                                            )
+                                        }
                                         className={`w-11 h-6 rounded-full transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isPreferenceEnabled(pref.id, 'email') ? 'bg-primary' : 'bg-black/10 dark:bg-white/10'}`}
                                     >
                                         <motion.span
