@@ -28,6 +28,7 @@ import {
     AlertTriangle,
     RefreshCw,
 } from 'lucide-react'
+import { acceptAttribute } from "@/lib/security/file-upload"
 
 interface AddPolicyClientProps {
     insurers: { id: string, name: string }[]
@@ -418,7 +419,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
                             <UploadDropzone
                                 onFiles={(files) => { setSelectedFiles(prev => [...prev, ...files]); setFieldErrors(prev => ({ ...prev, files: undefined })) }}
-                                accept=".pdf,.png,.jpg,.jpeg"
+                                accept={acceptAttribute("policy")}
                                 inputId="file-upload"
                                 inputName="files"
                                 title={t.wallet.tapToUpload}

@@ -8,6 +8,7 @@ import { scanPolicyForResolution, commitScannedPolicy, requestAiConsent } from '
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
 import type { CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
+import { acceptAttribute } from "@/lib/security/file-upload"
 
 interface Props {
     isOpen: boolean
@@ -41,7 +42,9 @@ interface Extraction {
 
 type AnalysisState = 'started' | 'consent_required' | 'limit_reached' | 'none'
 
-const ACCEPTED = 'application/pdf,image/jpeg,image/png,image/webp'
+// Derived from the server allowlist — this hand-written copy omitted HEIC, so
+// an agent could not select an iPhone photo of a client's policy.
+const ACCEPTED = acceptAttribute('policy')
 const INPUT_CLASS = 'w-full h-12 px-5 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold'
 
 export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName }: Props) {

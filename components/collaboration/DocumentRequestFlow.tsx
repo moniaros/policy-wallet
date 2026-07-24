@@ -19,6 +19,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { formatDateShort } from "@/lib/agent/format"
 import { DOCUMENT_TYPE_TAXONOMY } from "./types"
 import type { DocumentRequestData, DocumentUrgency, DocumentTypeKey, ViewerRole } from "./types"
+import { acceptAttribute } from "@/lib/security/file-upload"
 
 // ── Agent: Create Document Request ────────────────────────────────────
 
@@ -261,7 +262,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
                 <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*,.pdf,.doc,.docx"
+                    accept={acceptAttribute("document")}
                     onChange={handleFileChange}
                     className="hidden"
                 />

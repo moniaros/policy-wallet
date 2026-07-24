@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react'
 import { addCustomerManually, parsePolicyPdfWithGemini } from '@/app/(protected)/agent/actions'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
+import { acceptAttribute } from "@/lib/security/file-upload"
 
 interface Props {
     isOpen: boolean
@@ -165,7 +166,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     </div>
                                     <h3 className="text-lg font-black text-foreground tracking-tight mb-2">{t.agentModals.addCustomer.pdfTitle}</h3>
                                     <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium leading-relaxed">{t.agentModals.addCustomer.pdfDesc}</p>
-                                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="application/pdf" className="hidden" />
+                                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept={acceptAttribute("policy")} className="hidden" />
                                 </button>
                             </div>
 

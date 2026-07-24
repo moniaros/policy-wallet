@@ -10,6 +10,7 @@ import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode, trigg
 import { inviteAdvisorByEmail } from "@/app/(protected)/agent/relationship-actions"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
+import { acceptAttribute } from "@/lib/security/file-upload"
 
 type GoalType = "save_money" | "health_family" | "my_car" | "organize_policies" | "review_policy" | "investments_reminders"
 
@@ -360,7 +361,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 {selectedFile ? selectedFile.name : t("Επιλογή PDF", "Choose PDF")}
                                 <input
                                     type="file"
-                                    accept=".pdf"
+                                    accept={acceptAttribute("policy")}
                                     className="hidden"
                                     onChange={(event) => setSelectedFile(event.target.files?.[0] || null)}
                                 />

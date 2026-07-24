@@ -99,6 +99,33 @@ const CATEGORY_EXTENSIONS: Record<UploadCategory, string[]> = {
     image: [".jpg", ".jpeg", ".png", ".webp"],
 }
 
+
+/**
+ * The `accept` attribute for a file input, derived from the same allowlist the
+ * server enforces.
+ *
+ * Five upload surfaces each carried their own hand-written string and none of
+ * them matched this table. The main "add a policy" flow offered
+ * `.pdf,.png,.jpg,.jpeg` — so an iPhone photo of a policy, HEIC by default, was
+ * greyed out in the picker on the product's primary upload path, while the batch
+ * modal's `image/*` accepted it happily. The agent's add-customer modal took
+ * `application/pdf` alone, so an agent could not photograph a client's policy at
+ * all. A document request offered `.doc,.docx` — correct for its category, and
+ * correct only by luck.
+ *
+ * The picker should offer exactly what the server will take. Both extensions and
+ * canonical MIME types go in: Safari matches on MIME, and HEIC files often
+ * arrive with an empty or wrong `type`, so the extension has to be there too.
+ */
+export function acceptAttribute(category: UploadCategory): string {
+    const exts = CATEGORY_EXTENSIONS[category]
+    const mimes = new Set<string>()
+    for (const ext of exts) {
+        for (const mime of FILE_TYPES[ext]?.mimeTypes ?? []) mimes.add(mime)
+    }
+    return [...exts, ...mimes].join(",")
+}
+
 /**
  * Extensions that must never appear ANYWHERE in a filename — including as an
  * inner segment of a double extension (`invoice.php.pdf`). The final extension

@@ -5,6 +5,7 @@ import { ArrowRight, ShieldCheck, FileText, CheckCircle2 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useSupabaseUser } from "@/hooks/useSupabaseUser"
 import { uploadAgentAsset } from "@/app/onboarding/agent/actions"
+import { acceptAttribute } from "@/lib/security/file-upload"
 
 interface StepProps {
     onNext: () => void
@@ -91,9 +92,12 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                         </p>
                     </>
                 )}
+                {/* "policy", not "document": app/onboarding/agent/actions validates
+                    the licence with category 'policy', so offering .doc/.docx here
+                    would recreate the very mismatch this replaces. */}
                 <input
                     type="file"
-                    accept=".pdf,image/*"
+                    accept={acceptAttribute("policy")}
                     onChange={handleFileUpload}
                     className="hidden"
                 />

@@ -9,6 +9,7 @@ import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { useDialog } from "@/hooks/useDialog"
+import { acceptAttribute } from "@/lib/security/file-upload"
 
 interface ExtractedPolicy {
     id: string
@@ -261,7 +262,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                     {policies.length === 0 ? (
                         <UploadDropzone
                             onFiles={handleFiles}
-                            accept=".pdf,image/*"
+                            accept={acceptAttribute("policy")}
                             inputId="batch-upload-file-input"
                             inputTestId="batch-upload-file-input"
                             title={copy.dropTitle}
@@ -388,7 +389,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                 ref={fileInputRef}
                                 type="file"
                                 multiple
-                                accept=".pdf,image/*"
+                                accept={acceptAttribute("policy")}
                                 className="hidden"
                                 onChange={handleFileSelect}
                             />
