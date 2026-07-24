@@ -2107,6 +2107,9 @@ export const el = {
             waitingPeriodEnd: 'Λήξη αναμονής',
             outpatientLimit: 'Όριο εξωνοσοκομειακών',
             deductiblePerClaim: 'Απαλλαγή ανά ζημιά',
+            annualLimit: 'Ετήσιο όριο κάλυψης',
+            roomAndBoardLimit: 'Όριο δωματίου & τροφής (ημερησίως)',
+            outOfPocketMax: 'Μέγιστη ίδια συμμετοχή',
             classA: 'Κατηγορία Α',
             classB: 'Κατηγορία Β',
             classC: 'Κατηγορία Γ'

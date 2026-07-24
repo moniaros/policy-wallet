@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
+import { formatCurrency } from "@/lib/i18n/format"
 
 import { formatPolicyDate } from "@/lib/wallet/policy-detail"
 interface HealthCoverageDetailsProps {
@@ -36,14 +37,60 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
     health.annualCheckupIncluded !== undefined ||
     health.directBillingAvailable !== undefined ||
     (health.waitingPeriods && health.waitingPeriods.length > 0) ||
+    health.annualLimit !== undefined ||
+    health.roomAndBoardLimit !== undefined ||
+    health.outOfPocketMax !== undefined ||
     health.outpatientLimit !== undefined ||
     health.deductiblePerClaim !== undefined
   )
 
   if (!hasAnyData) return null
 
+  const fmt = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 0 })
+
   return (
     <div className="space-y-3">
+      {/* The single most consequential number on a health policy: the ceiling on
+          what the insurer pays in a year. The panel extracted it and every other
+          coverage limit but rendered none of them — only outpatient. Annual limit
+          leads, in the affirmative treatment life's fund value uses. */}
+      {health.annualLimit !== undefined && (
+        <div className="p-4 rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-primary dark:text-mint" />
+              </div>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.annualLimit}</span>
+            </div>
+            <span className="text-xl font-black text-primary dark:text-mint">{fmt(health.annualLimit)}</span>
+          </div>
+        </div>
+      )}
+
+      {health.roomAndBoardLimit !== undefined && (
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-primary dark:text-mint" />
+            </div>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.roomAndBoardLimit}</span>
+          </div>
+          <span className="text-sm font-bold text-black dark:text-white">{fmt(health.roomAndBoardLimit)}</span>
+        </div>
+      )}
+
+      {health.outOfPocketMax !== undefined && (
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+              <CreditCard className="w-4 h-4 text-[#92400E] dark:text-amber-400" />
+            </div>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.outOfPocketMax}</span>
+          </div>
+          <span className="text-sm font-bold text-black dark:text-white">{fmt(health.outOfPocketMax)}</span>
+        </div>
+      )}
       {health.hospitalClass && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">

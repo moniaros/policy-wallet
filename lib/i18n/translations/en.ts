@@ -2091,6 +2091,9 @@ export const en: TranslationKeys = {
             waitingPeriodEnd: 'Waiting Period End',
             outpatientLimit: 'Outpatient Limit',
             deductiblePerClaim: 'Deductible Per Claim',
+            annualLimit: 'Annual Coverage Limit',
+            roomAndBoardLimit: 'Room & Board Limit (per day)',
+            outOfPocketMax: 'Out-of-Pocket Maximum',
             classA: 'Class A',
             classB: 'Class B',
             classC: 'Class C'
