@@ -337,6 +337,8 @@ export const el = {
             rowDeathBenefit: 'Κεφάλαιο θανάτου',
             covered: 'Ναι',
             notCovered: 'Όχι',
+            bestLowest: '(χαμηλότερο ασφάλιστρο)',
+            bestHighest: '(μεγαλύτερη κάλυψη)',
             perYear: '/έτος',
             perYearShort: '/έτος',
             quickInsights: 'Γρήγορη επισκόπηση',

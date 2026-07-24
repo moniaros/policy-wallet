@@ -300,9 +300,9 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                             <table className="w-full">
                                 <thead>
                                     <tr className="border-b border-border">
-                                        <th className="py-4 px-4 text-left w-40"></th>
+                                        <th scope="col" className="py-4 px-4 text-left w-40"><span className="sr-only">{c.rowInsurer}</span></th>
                                         {selectedPolicies.map(policy => (
-                                            <th key={policy.id} className="py-4 px-6 text-center">
+                                            <th scope="col" key={policy.id} className="py-4 px-6 text-center">
                                                 <div className="flex flex-col items-center gap-2">
                                                     <span className="text-3xl">{getPolicyTypeIcon(policy.lineOfBusiness)}</span>
                                                     <span className="font-bold text-foreground">
@@ -322,9 +322,9 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                 <tbody>
                                     {getCoverageRows().map(row => (
                                         <tr key={row.key} className="border-b border-border">
-                                            <td className="py-4 px-4 text-sm font-bold text-muted-foreground uppercase tracking-wider">
+                                            <th scope="row" className="py-4 px-4 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">
                                                 {row.label}
-                                            </td>
+                                            </th>
                                             {(() => {
                                                 // Which cell (if any) is the best in this row — lowest for
                                                 // premium, HIGHEST for cover figures (annual limit, sum
@@ -353,7 +353,14 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                             ) : (
                                                                 <span className={`text-sm ${isBest ? 'text-primary dark:text-mint font-bold' : 'text-foreground'}`}>
                                                                     {value}
-                                                                    {isBest && <span className="ml-1">⭐</span>}
+                                                                    {isBest && (
+                                                                        <span className="ml-1">
+                                                                            <span aria-hidden="true">⭐</span>
+                                                                            <span className="sr-only">
+                                                                                {' '}{(row as any).highlight === 'lowest' ? c.bestLowest : c.bestHighest}
+                                                                            </span>
+                                                                        </span>
+                                                                    )}
                                                                 </span>
                                                             )}
                                                         </td>

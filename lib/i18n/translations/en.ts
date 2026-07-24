@@ -340,6 +340,8 @@ export const en: TranslationKeys = {
             rowDeathBenefit: 'Death benefit',
             covered: 'Yes',
             notCovered: 'No',
+            bestLowest: '(lowest premium)',
+            bestHighest: '(most cover)',
             perYear: '/year',
             perYearShort: '/yr',
             quickInsights: 'Quick Insights',

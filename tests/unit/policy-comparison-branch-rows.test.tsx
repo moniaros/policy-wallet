@@ -133,3 +133,36 @@ describe('same-family policies are comparable', () => {
         expect(container.textContent).not.toContain('PN-plan')
     })
 })
+
+/**
+ * The comparison is a data table a screen-reader user cross-references. It needs
+ * column/row header semantics, and the ⭐ best-value marker — visual-only — needs
+ * a text alternative or a blind user cannot tell which policy the table
+ * recommends.
+ */
+describe('the comparison table is accessible', () => {
+    const setup = () => {
+        const policies = [
+            policy('a', { acordData: { health: { annualLimit: 30000 } } }),
+            policy('b', { acordData: { health: { annualLimit: 50000 } } }),
+        ]
+        return render(
+            <PolicyComparison policies={policies} isOpen onClose={() => {}} selectedPolicyIds={['a', 'b']} />
+        )
+    }
+
+    it('uses column and row header scopes', () => {
+        const { container } = setup()
+        expect(container.querySelectorAll('th[scope="col"]').length).toBeGreaterThanOrEqual(3) // label + 2 policies
+        expect(container.querySelectorAll('th[scope="row"]').length).toBeGreaterThan(0)
+    })
+
+    it('gives the best-value star a screen-reader text alternative', () => {
+        const { container } = setup()
+        const star = [...container.querySelectorAll('span')].find((s) => s.textContent?.includes('⭐'))
+        // The ⭐ glyph itself is decorative…
+        expect(star?.querySelector('[aria-hidden="true"]')?.textContent).toContain('⭐')
+        // …and an sr-only span explains WHY (higher annual limit = most cover).
+        expect(star?.textContent).toContain(el.bestHighest)
+    })
+})
