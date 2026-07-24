@@ -1021,6 +1021,7 @@ export function PolicyDetailsClient({
                             <DocumentsCard
                                 policyId={policy.id}
                                 documents={policy.documents}
+                                locale={lang}
                                 isFreeTier={isFreeTier}
                                 copy={{
                                     documentsArea: detailsCopy.documentsArea,

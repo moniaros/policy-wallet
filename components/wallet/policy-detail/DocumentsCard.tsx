@@ -11,10 +11,14 @@ interface PolicyDocumentItem {
     id: string
     fileName: string
     fileUrl: string
+    /** ISO string. Already loaded and ordered desc by the page — see below. */
+    uploadedAt?: string
 }
 
 interface DocumentsCardProps {
     policyId: string
+    /** Resolved by the caller, like `copy` — this card reads no context. */
+    locale?: "el" | "en"
     documents: PolicyDocumentItem[]
     isFreeTier: boolean
     copy: {
@@ -41,7 +45,7 @@ interface DocumentsCardProps {
  * Uploaded documents with inline preview (PDF preview is Plus-gated).
  * Owns the preview-modal state so the page orchestrator stays stateless.
  */
-export function DocumentsCard({ policyId, documents, isFreeTier, copy }: DocumentsCardProps) {
+export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = "el" }: DocumentsCardProps) {
     const pathname = usePathname()
     const [previewDoc, setPreviewDoc] = useState<{ fileName: string; fileUrl: string } | null>(null)
     const [upgradeOpen, setUpgradeOpen] = useState(false)
@@ -80,8 +84,26 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy }: Documen
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <p className="truncate text-sm font-semibold text-black dark:text-white">{doc.fileName}</p>
+                                        {/* A policy accumulates documents over its life — the
+                                            original schedule, a renewal endorsement, an amended
+                                            schedule after a mid-term change — and insurer PDFs
+                                            often arrive with near-identical names. The page
+                                            already loads uploadedAt and orders newest first, but
+                                            the card showed only the filename and format, so the
+                                            reader could not tell which one is current. */}
                                         <p className="text-xs text-black/55 dark:text-white/60">
                                             {isPdf ? copy.documentFormatPdf : isImage ? copy.documentFormatImage : copy.documentFormatOther}
+                                            {doc.uploadedAt && (
+                                                <>
+                                                    {" · "}
+                                                    <time dateTime={doc.uploadedAt}>
+                                                        {new Date(doc.uploadedAt).toLocaleDateString(
+                                                            locale === "el" ? "el-GR" : "en-GB",
+                                                            { day: "numeric", month: "short", year: "numeric" }
+                                                        )}
+                                                    </time>
+                                                </>
+                                            )}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-1.5">
