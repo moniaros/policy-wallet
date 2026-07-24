@@ -335,6 +335,23 @@ export class PolicyAnalysisOrchestratorService {
                 where: { policyId },
                 data: { processingStatus: "completed" },
             })
+
+            // Recompute the owner's DETERMINISTIC gaps + protection score. This is
+            // the free/Starter path — the deep AI gap analysis is gated to Plus,
+            // but the profile gaps ("you have a car and no motor policy") and the
+            // score are rule-based, need no tokens, and ARE shown to free users.
+            // Without this a new user finishing onboarding — their first policy,
+            // their first impression — saw an empty score and no gaps until a
+            // once-daily cron caught up. Best-effort: extraction already committed.
+            try {
+                const { refreshProtectionScore } = await import("@/lib/services/gap-engine")
+                await refreshProtectionScore(policy.ownerUserId)
+            } catch (error) {
+                logger("warn", "Gap recompute after basic summary failed", {
+                    policyId, error: error instanceof Error ? error.message : String(error),
+                })
+            }
+
             return { status: "completed" }
         } catch (error) {
             logger("error", "extractBasicSummary failed", {

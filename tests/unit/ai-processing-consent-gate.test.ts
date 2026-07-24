@@ -43,6 +43,11 @@ vi.mock('@/lib/subscription-entitlements', () => ({
     resolveAgentEntitlements: vi.fn(async () => ({ tier: 'agent_pro', limits: { priorityQueue: true } })),
 }))
 
+const mockRefresh = vi.fn((..._a: unknown[]) => Promise.resolve({} as any))
+vi.mock('@/lib/services/gap-engine', () => ({
+    refreshProtectionScore: (...a: unknown[]) => mockRefresh(...a),
+}))
+
 import { db } from '@/lib/db'
 import { canUserUseTokens } from '@/lib/token-tracking'
 import { resolveUserEntitlements } from '@/lib/subscription-entitlements'
@@ -169,6 +174,65 @@ describe('AI-processing consent gate — legacy GapAnalysisService.analyzePolicy
         const result = await service.analyzePolicy('pol-1', OWNER_ID, 'en')
         expect(result.success).toBe(true)
         expect(result.count).toBe(0)
+    })
+})
+
+describe('basic summary (free/Starter path) recomputes the owner’s gaps + score', () => {
+    // The deep AI gap analysis is Plus-only, but the deterministic profile gaps
+    // and the protection score are free-tier features that need no tokens. This
+    // path — a new user's first policy at onboarding — extracted and marked the
+    // policy active but never recomputed, so their first impression was an empty
+    // score and no gaps until a once-daily cron caught up.
+    it('runs the gap engine for the OWNER, even when an agent triggers the extraction', async () => {
+        // Owner ≠ actor: the recompute must target whose coverage the policy is,
+        // not who pressed the button (the initiator-vs-owner trap).
+        vi.mocked(db.accessGrant.findFirst).mockResolvedValue(null)
+        vi.mocked(db.customerRelationship.findFirst).mockResolvedValue({ id: 'rel-1' } as any)
+        mockUserFind.mockResolvedValue({ aiProcessingConsentVersion: '2026-07' } as any)
+        mockPolicyFind.mockResolvedValue({ ...POLICY, documents: [{ id: 'doc-1' }] } as any)
+        mockGetAIService.mockReturnValue({
+            isAvailable: () => true,
+            getServiceName: () => 'mock',
+            extractPolicyData: vi.fn(async () => ({ insurerName: 'ΕΘΝΙΚΗ' })),
+        } as any)
+
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        // Stub the document/metadata seams; the recompute wiring is what's under test.
+        ;(orchestrator as any).prepareDocument = vi.fn(async () => ({ document: { bytes: 'x' } }))
+        ;(orchestrator as any).buildMetadata = vi.fn(() => ({
+            insurerName: 'ΕΘΝΙΚΗ', policyNumber: 'P-1', lineOfBusiness: 'motor',
+            startDate: null, endDate: null, premiumAmount: null, coverageSummary: null,
+        }))
+
+        const result = await orchestrator.extractBasicSummary('pol-1', 'agent-77')
+
+        expect(result.status).toBe('completed')
+        expect(mockRefresh).toHaveBeenCalledWith(OWNER_ID)
+        expect(mockRefresh).not.toHaveBeenCalledWith('agent-77')
+    })
+
+    it('does not recompute when the owner has not consented (blocked before extraction)', async () => {
+        mockUserFind.mockResolvedValue({ aiProcessingConsentVersion: null } as any)
+        mockPolicyFind.mockResolvedValue({ ...POLICY, documents: [{ id: 'doc-1' }] } as any)
+
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        const result = await orchestrator.extractBasicSummary('pol-1', OWNER_ID)
+
+        expect(result.status).toBe('blocked')
+        expect(mockRefresh).not.toHaveBeenCalled()
+    })
+
+    it('does not recompute when extraction fails', async () => {
+        mockUserFind.mockResolvedValue({ aiProcessingConsentVersion: '2026-07' } as any)
+        mockPolicyFind.mockResolvedValue({ ...POLICY, documents: [{ id: 'doc-1' }] } as any)
+
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        ;(orchestrator as any).prepareDocument = vi.fn(async () => { throw new Error('doc gone') })
+
+        const result = await orchestrator.extractBasicSummary('pol-1', OWNER_ID)
+
+        expect(result.status).toBe('failed')
+        expect(mockRefresh).not.toHaveBeenCalled()
     })
 })
 
