@@ -109,8 +109,20 @@ function evaluateSingleRule(policy: Policy, rule: any): boolean {
     }
 
     if (rule.type === 'duration_short') {
-        const durationMonths = (policy.endDate.getTime() - policy.startDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44)
-        return durationMonths < (rule.minMonths || 12)
+        // Calendar arithmetic, not days ÷ 30.44. The average-month divisor made a
+        // standard 365-day annual policy compute as 11.99 months, so it was
+        // flagged as short — while the SAME policy spanning a leap day (366 days)
+        // computed as 12.02 and was not. Whether a customer's annual cover looked
+        // unusually short came down to which side of 29 February it fell.
+        // detectionLogic is a JSON column, so an admin can add a duration rule at
+        // any time; this is reachable, not hypothetical.
+        const minMonths = rule.minMonths || 12
+        const threshold = new Date(policy.startDate.getTime())
+        const dayOfMonth = threshold.getUTCDate()
+        threshold.setUTCMonth(threshold.getUTCMonth() + minMonths)
+        // Rolled past the end of a shorter month (31 Jan + 1 → 3 Mar): step back.
+        if (threshold.getUTCDate() < dayOfMonth) threshold.setUTCDate(0)
+        return policy.endDate.getTime() < threshold.getTime()
     }
 
     if (rule.type === 'always') return true
