@@ -3,6 +3,7 @@ import { logger } from "../logger"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import { isPolicyCoverageActive } from "@/lib/policy-status"
 import { commissionOn } from "@/lib/agent/commission"
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
 /**
  * Greek insurance coverage matrix.
@@ -42,7 +43,13 @@ export interface CrossSellResult {
 export function analyzePortfolioGaps(
     existingLobs: string[]
 ): CrossSellResult["missingLines"] {
-    const normalizedExisting = new Set(existingLobs.map((l) => l.toLowerCase()))
+    // Match on branch FAMILY, not the raw line. The coverage matrix lists parent
+    // branches (motor, home, life); a customer's policy may be a child branch
+    // (motorbike, renters, income_protection). Comparing raw meant a motorbike
+    // owner was flagged as missing MOTOR — an essential line — so the agent was
+    // told to cross-sell a customer coverage they already hold. Every branchFamilyId
+    // defect the taxonomy exists to end, here in the opportunity engine.
+    const normalizedExisting = new Set(existingLobs.map((l) => branchFamilyId(l)))
 
     return GREEK_COVERAGE_MATRIX
         .filter((line) => !normalizedExisting.has(line.lob))
@@ -58,7 +65,10 @@ export function analyzePortfolioGaps(
  * Calculate coverage score (0-100) based on how many essential + optional lines are covered.
  */
 export function calculateCoverageScore(existingLobs: string[]): number {
-    const normalizedExisting = new Set(existingLobs.map((l) => l.toLowerCase()))
+    // Branch family, not raw line — see analyzePortfolioGaps. Otherwise a
+    // motorbike/renters/income-protection holder scored as having NO motor/home/
+    // life cover, understating their coverage and inflating the cross-sell pitch.
+    const normalizedExisting = new Set(existingLobs.map((l) => branchFamilyId(l)))
     const essentialLines = GREEK_COVERAGE_MATRIX.filter((l) => l.essential)
     const optionalLines = GREEK_COVERAGE_MATRIX.filter((l) => !l.essential)
 
