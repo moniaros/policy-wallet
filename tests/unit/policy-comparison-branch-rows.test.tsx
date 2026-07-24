@@ -98,3 +98,38 @@ describe('the comparison surfaces branch-specific coverage figures', () => {
         expect(container.textContent).not.toContain('⭐')
     })
 })
+
+/**
+ * The comparison renders rows by branch FAMILY, so its selection filter must
+ * group by family too — a motorbike and a car are both motor. Raw-line equality
+ * blocked selecting them together (and renters+home, income-protection+life),
+ * making the whole comparison unreachable for those pairs.
+ */
+describe('same-family policies are comparable', () => {
+    it('offers a motorbike as comparable once a car is selected', () => {
+        // One selected (a car) → the selection grid shows the comparable set,
+        // filtered by comparablePolicies. The motorbike belongs there (both
+        // motor). Raw-line equality filtered it out entirely.
+        const policies = [
+            policy('car', { lineOfBusiness: 'motor' }),
+            policy('bike', { lineOfBusiness: 'motorbike' }),
+        ]
+        const { container } = render(
+            <PolicyComparison policies={policies} isOpen onClose={() => {}} selectedPolicyIds={['car']} />
+        )
+        // The motorbike's row must appear in the selectable grid.
+        expect(container.textContent).toContain('PN-bike')
+    })
+
+    it('excludes a different family from the comparable set', () => {
+        // A health policy is NOT comparable with a selected motor policy.
+        const policies = [
+            policy('car', { lineOfBusiness: 'motor' }),
+            policy('plan', { lineOfBusiness: 'health' }),
+        ]
+        const { container } = render(
+            <PolicyComparison policies={policies} isOpen onClose={() => {}} selectedPolicyIds={['car']} />
+        )
+        expect(container.textContent).not.toContain('PN-plan')
+    })
+})

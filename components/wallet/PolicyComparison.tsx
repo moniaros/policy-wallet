@@ -50,7 +50,11 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
         const firstSelected = policies.find(p => p.id === selectedIds[0])
         if (!firstSelected) return policies
 
-        return policies.filter(p => p.lineOfBusiness === firstSelected.lineOfBusiness)
+        // Compare by branch FAMILY, not the raw line: a motorbike and a car are
+        // both motor and the comparison renders motor rows for both, so they must
+        // be selectable together. Raw equality blocked motorbike-vs-car,
+        // renters-vs-home, income-protection-vs-life.
+        return policies.filter(p => branchFamilyId(p.lineOfBusiness) === branchFamilyId(firstSelected.lineOfBusiness))
     }, [policies, selectedIds])
 
     const selectedPolicies = policies.filter(p => selectedIds.includes(p.id))
@@ -75,7 +79,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
             const firstSelected = policies.find(p => p.id === selectedIds[0])
 
             // Must be same line of business
-            if (firstSelected && policy?.lineOfBusiness !== firstSelected.lineOfBusiness) {
+            if (firstSelected && policy && branchFamilyId(policy.lineOfBusiness) !== branchFamilyId(firstSelected.lineOfBusiness)) {
                 return
             }
 
@@ -237,8 +241,9 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {comparablePolicies.map(policy => {
                                     const isSelected = selectedIds.includes(policy.id)
+                                    const firstSelectedLob = policies.find(p => p.id === selectedIds[0])?.lineOfBusiness
                                     const isDisabled = selectedIds.length > 0 &&
-                                        policy.lineOfBusiness !== policies.find(p => p.id === selectedIds[0])?.lineOfBusiness
+                                        branchFamilyId(policy.lineOfBusiness) !== branchFamilyId(firstSelectedLob || '')
 
                                     return (
                                         <button
