@@ -78,8 +78,20 @@ describe('one clock answers "how many days until this date"', () => {
         for (const file of files) {
             if (file.endsWith('policy-status.ts')) continue          // the implementation
             const src = readFileSync(file, 'utf-8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')
-            // day arithmetic applied to an END DATE is a calendar question
-            if (/(endDate|expiry|expiresAt)[^\n]{0,60}(1000 \* 60 \* 60 \* 24|86_?400_?000)/i.test(src)) {
+            // Day arithmetic applied to an END DATE is a calendar question.
+            //
+            // The first version matched only the literal millisecond constants,
+            // so `endDate.getTime() - now.getTime()) / DAY_MS` slipped through —
+            // and with it the motor-expiry rule, which dropped a policy expiring
+            // TODAY on the compulsory line. Match the SHAPE: any end-date
+            // subtraction that is then divided, whatever the divisor is called.
+            const literal = /(endDate|expiry|expiresAt)[^\n]{0,60}(1000 \* 60 \* 60 \* 24|86_?400_?000)/i
+            const viaConstant =
+                /(endDate|expiry|expiresAt)[^\n]{0,40}\.getTime\(\)[^\n]{0,40}-[^\n]{0,40}\.getTime\(\)\s*\)?\s*\//i
+            // Comparing an end date to an instant is the same calendar question.
+            const instantCompare =
+                /(endDate|expiresAt)[^\n]{0,20}\.getTime\(\)\s*[<>]=?\s*now\.getTime\(\)/i
+            if (literal.test(src) || viaConstant.test(src) || instantCompare.test(src)) {
                 offenders.push(file)
             }
         }

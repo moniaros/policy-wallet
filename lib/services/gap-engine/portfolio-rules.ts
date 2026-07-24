@@ -14,6 +14,8 @@
 
 import type { GapSeverity } from "./profile-gap-rules"
 import { normalizeBranch, branchFamilyId } from "@/lib/insurance/taxonomy"
+import { calendarDaysUntil } from "@/lib/policy-status"
+import { formatDate as formatDateShared } from "@/lib/i18n/format"
 
 export interface SmartCardContent {
     /** What we saw in the user's own data — always cites concrete facts. */
@@ -73,8 +75,14 @@ function policyRef(p: PortfolioPolicyFacts): string {
     return insurer || number || lobLabel(p.lineOfBusiness).en
 }
 
-function formatDate(date: Date, locale: string): string {
-    return date.toLocaleDateString(locale)
+/**
+ * Athens-pinned, like every other date the product renders. This was a bare
+ * `toLocaleDateString(locale)`, which resolves against the RUNTIME zone — UTC on
+ * Vercel — so a policy ending at Athens midnight was dated to the previous day
+ * in the evidence line beside a correct countdown.
+ */
+function formatDate(date: Date, language: "el" | "en"): string {
+    return formatDateShared(date, language)
 }
 
 function isActive(p: PortfolioPolicyFacts): boolean {
@@ -93,14 +101,19 @@ function expiringMotorRule(
                 isActive(p) &&
                 branchFamilyId(p.lineOfBusiness) === "motor" &&
                 p.endDate &&
-                p.endDate.getTime() > now.getTime() &&
-                p.endDate.getTime() - now.getTime() <= 30 * DAY_MS
+                // Athens calendar days, and >= 0 so the LAST day of cover still
+                // counts. End dates are stored at midnight UTC, so `endDate >
+                // now` dropped a policy expiring TODAY from three hours into the
+                // day it still covered — on the compulsory line, on the one day
+                // the renewal still matters.
+                calendarDaysUntil(p.endDate, now) >= 0 &&
+                calendarDaysUntil(p.endDate, now) <= 30
         )
         .sort((a, b) => a.endDate!.getTime() - b.endDate!.getTime())[0]
 
     if (!expiring) return null
 
-    const daysLeft = Math.ceil((expiring.endDate!.getTime() - now.getTime()) / DAY_MS)
+    const daysLeft = calendarDaysUntil(expiring.endDate!, now)
     const ref = policyRef(expiring)
 
     return {
@@ -116,8 +129,12 @@ function expiringMotorRule(
             el: "Η κυκλοφορία χωρίς ενεργή ασφάλιση είναι παράνομη στην Ελλάδα και ακόμα και μία ημέρα κενού σας αφήνει προσωπικά υπεύθυνους για οποιοδήποτε ατύχημα.",
         },
         evidence: {
-            en: `Your policy ${ref} expires on ${formatDate(expiring.endDate!, "en-GB")} — in ${daysLeft} day${daysLeft === 1 ? "" : "s"}.`,
-            el: `Το συμβόλαιό σας ${ref} λήγει στις ${formatDate(expiring.endDate!, "el-GR")} — σε ${daysLeft} ${daysLeft === 1 ? "ημέρα" : "ημέρες"}.`,
+            en: `Your policy ${ref} expires on ${formatDate(expiring.endDate!, "en")}${
+                daysLeft <= 0 ? " — today" : daysLeft === 1 ? " — tomorrow" : ` — in ${daysLeft} days`
+            }.`,
+            el: `Το ασφαλιστήριό σας ${ref} λήγει στις ${formatDate(expiring.endDate!, "el")}${
+                daysLeft <= 0 ? " — σήμερα" : daysLeft === 1 ? " — αύριο" : ` — σε ${daysLeft} ημέρες`
+            }.`,
         },
         nextAction: {
             en: "Check the renewal terms before the expiry date, or ask your insurer for the renewal notice.",

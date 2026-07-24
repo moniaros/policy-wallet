@@ -357,3 +357,49 @@ describe('buildProfileGapEvidence', () => {
         expect(content.evidence.en).toContain('travel')
     })
 })
+
+/**
+ * Motor is the compulsory line. `endDate > now` dropped a policy expiring TODAY
+ * from three hours into the day it still covered — the one day the renewal still
+ * matters — because end dates are stored at midnight UTC.
+ */
+describe('motor_expiring_soon covers the last day', () => {
+    const withEnd = (end: string) => ({
+        ...policy({ id: 'm', policyNumber: 'MOT-1' }),
+        endDate: new Date(end),
+    })
+    const at = (iso: string) => ({ hasAgent: true, now: new Date(iso) })
+    const rule = (end: string, nowIso: string) =>
+        evaluatePortfolioRules([withEnd(end)], at(nowIso)).find((g) => g.ruleId === 'motor_expiring_soon')
+
+    it('still fires on the final day of cover', () => {
+        const gap = rule('2026-07-24T00:00:00Z', '2026-07-24T09:00:00Z')
+        expect(gap).toBeDefined()
+        expect(gap!.severity).toBe('critical')
+        expect(gap!.evidence.en).toMatch(/— today\./)
+        expect(gap!.evidence.el).toMatch(/— σήμερα\./)
+    })
+
+    it('says tomorrow rather than "in 1 days"', () => {
+        const gap = rule('2026-07-25T00:00:00Z', '2026-07-24T09:00:00Z')
+        expect(gap!.evidence.en).toMatch(/— tomorrow\./)
+        expect(gap!.evidence.el).toMatch(/— αύριο\./)
+    })
+
+    it('stops once the policy has actually lapsed', () => {
+        expect(rule('2026-07-23T00:00:00Z', '2026-07-24T09:00:00Z')).toBeUndefined()
+    })
+
+    it('counts the window on the Athens calendar', () => {
+        // 00:30 Athens on 25 July is still 24 July in UTC.
+        const gap = rule('2026-08-24T00:00:00Z', '2026-07-24T21:30:00Z')
+        expect(gap).toBeDefined()
+        expect(gap!.evidence.en).toMatch(/in 30 days/)
+    })
+
+    it('dates the policy in Athens, not the runtime zone', () => {
+        // An Athens-midnight end instant must not render as the previous day.
+        const gap = rule('2026-07-24T21:00:00Z', '2026-07-24T09:00:00Z')
+        expect(gap!.evidence.en).toMatch(/25\/07\/2026/)
+    })
+})
