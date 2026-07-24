@@ -5,27 +5,51 @@ import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getActivityLogs } from "../actions"
 import { formatDateTime } from "@/lib/i18n/format"
+import { hasAnyRole } from "@/lib/api-auth"
 
 export default async function AdminActivityPage({
     searchParams,
 }: {
-    searchParams: Promise<{ page?: string }>
+    searchParams: Promise<{ page?: string; scope?: string }>
 }) {
     const { dbUser } = await getAuthenticatedUser()
-    if (!dbUser.roles.includes("admin")) {
+    // Substring matching on the comma-separated roles string is banned by
+    // CLAUDE.md for exactly the reason it looks harmless: it matches any role
+    // that merely CONTAINS "admin".
+    if (!hasAnyRole(dbUser.roles, ["admin"])) {
         redirect("/wallet")
     }
 
-    const { page } = await searchParams
+    const { page, scope: scopeParam } = await searchParams
     const pageNum = Math.max(1, Number(page) || 1)
-    const { logs, pagination } = await getActivityLogs(pageNum, 25)
+    const scope: "admin" | "all" = scopeParam === "all" ? "all" : "admin"
+    const { logs, pagination } = await getActivityLogs(pageNum, 25, scope)
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">Admin Activity Log</h1>
+                <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">
+                    {scope === "admin" ? "Admin Activity Log" : "All Activity"}
+                </h1>
                 <p className="text-stone-600 dark:text-stone-400 mt-2">
-                    Every admin action, most recent first. {pagination.total.toLocaleString()} total.
+                    {scope === "admin"
+                        ? "Administrator actions only, most recent first."
+                        : "Every logged event, including customer activity, most recent first."}{" "}
+                    {pagination.total.toLocaleString()} total.
+                </p>
+                <p className="mt-3 flex gap-3 text-sm">
+                    <Link
+                        href="/admin/activity"
+                        className={scope === "admin" ? "font-bold underline" : "text-stone-500 hover:underline"}
+                    >
+                        Admin actions
+                    </Link>
+                    <Link
+                        href="/admin/activity?scope=all"
+                        className={scope === "all" ? "font-bold underline" : "text-stone-500 hover:underline"}
+                    >
+                        All activity
+                    </Link>
                 </p>
             </div>
 

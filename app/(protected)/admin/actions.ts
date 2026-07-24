@@ -26,6 +26,7 @@ const OPEN_DELETION_STATUSES = ["requested", "in_review", "approved", "processin
 import { logAdminAction, verifyAdminRole } from "@/lib/admin/admin-guard"
 import { z } from "zod"
 import { createAdminClient, getSupabaseAuthUserByEmail } from "@/lib/supabase/admin"
+import { Prisma } from "@prisma/client"
 
 /**
  * DASHBOARD METRICS
@@ -173,19 +174,45 @@ export async function getDashboardMetrics() {
 /**
  * ACTIVITY LOGS
  */
-export async function getActivityLogs(page: number = 1, limit: number = 20) {
+/**
+ * ActivityLog carries two different things under one schema.
+ *
+ * Its columns are named for administrators — `adminUserId`, `adminEmail` — and
+ * the admin screen is titled activity, but most rows are ordinary USER events:
+ * every AI question asked, every policy analysed, uploaded, shared or deleted,
+ * every login. This query had no filter at all, so /admin/activity — the screen
+ * an operator opens to review what administrators did — was buried under
+ * customer activity at 25 rows a page. A role change, a break-glass access or a
+ * refund was effectively unfindable, which is exactly what that log exists to
+ * evidence.
+ *
+ * `logAdminAction` stamps `metadata._audit` (requestor, IP, timestamp) on every
+ * administrator action and nothing else writes it, so the discriminator was
+ * already there. Filtering on it needs no migration and cannot drift the way a
+ * hardcoded action-type list would.
+ */
+export async function getActivityLogs(
+    page: number = 1,
+    limit: number = 20,
+    scope: "admin" | "all" = "admin"
+) {
     const admin = await verifyAdminRole()
 
     try {
         const skip = (page - 1) * limit
+        const where =
+            scope === "admin"
+                ? { metadata: { path: ["_audit"], not: Prisma.DbNull } }
+                : {}
 
         const [logs, total] = await Promise.all([
             db.activityLog.findMany({
+                where: where as any,
                 orderBy: { timestamp: "desc" },
                 skip,
                 take: limit
             }),
-            db.activityLog.count()
+            db.activityLog.count({ where: where as any })
         ])
 
         return {
