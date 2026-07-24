@@ -10,6 +10,7 @@ import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
 import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp, Bell } from 'lucide-react'
+import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
@@ -57,11 +58,6 @@ export interface AppShellProps {
 
 /** The two locales, as the mobile footer toggle renders them. "GR"/"EN" are
  *  locale codes shown verbatim in both languages, not translatable copy. */
-const LANGUAGE_OPTIONS = [
-    { value: 'el' as const, label: 'GR' },
-    { value: 'en' as const, label: 'EN' },
-]
-
 interface BottomNavItem {
     href: string
     icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
@@ -317,21 +313,7 @@ export function AppShell({
                                         POST /api/user/language. Active state now reads the
                                         live context value rather than the server-rendered
                                         prop, which could disagree with it. */}
-                                    <div className="flex bg-black/5 dark:bg-white/10 rounded-lg p-0.5" role="group" aria-label={t.userMenu.language}>
-                                        {LANGUAGE_OPTIONS.map(({ value, label }) => {
-                                            const isActive = language === value
-                                            return (
-                                                <button
-                                                    key={value}
-                                                    onClick={() => setLanguage(value)}
-                                                    aria-pressed={isActive}
-                                                    className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? 'bg-white dark:bg-black shadow-sm text-black dark:text-mint' : 'text-black/60 dark:text-white/60'}`}
-                                                >
-                                                    {label}
-                                                </button>
-                                            )
-                                        })}
-                                    </div>
+                                    <LocaleToggle variant="group" ariaLabel={t.userMenu.language} />
                                     <ThemeToggle />
                                 </div>
                             </div>

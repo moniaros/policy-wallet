@@ -9,6 +9,8 @@ import { Inter } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Mail, ShieldCheck } from "lucide-react"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
+import { LocaleToggle } from "@/components/ui/LocaleToggle"
+import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { resetPasswordForEmail } from "../actions"
 
@@ -25,6 +27,7 @@ type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>
 
 export default function ForgotPasswordPage() {
     const { language, setLanguage } = useLanguage()
+    const uiText = getTranslations(language)
     const [submitting, setSubmitting] = useState(false)
     const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
     const [serverError, setServerError] = useState<string | null>(null)
@@ -92,14 +95,7 @@ export default function ForgotPasswordPage() {
                 >
                     {copy.backHome}
                 </Link>
-                <button
-                    type="button"
-                    onClick={() => setLanguage(otherLocale)}
-                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-caption font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
-                >
-                    {/* A locale CODE, shown verbatim in both languages — not copy. */}
-                    {otherLocale.toUpperCase()}
-                </button>
+                <LocaleToggle ariaLabel={uiText.userMenu.language} />
             </header>
 
             {/* Card */}

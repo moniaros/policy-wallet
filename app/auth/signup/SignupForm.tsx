@@ -13,6 +13,8 @@ import { registerUser } from "../actions"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { buildSyntheticEmailFromPhone, normalizeGreekMobile } from "@/lib/auth/phone-auth"
+import { LocaleToggle } from "@/components/ui/LocaleToggle"
+import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
 
 const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
@@ -89,6 +91,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { language, setLanguage } = useLanguage()
+    const uiText = getTranslations(language)
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
     const source = searchParams.get("source") || "signup_direct"
@@ -203,9 +206,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                         ← {t("Αρχική", "Home")}
                     </Link>
                     <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => setLanguage("el")} className={`text-caption font-semibold transition-colors ${language === "el" ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"}`}>ΕΛ</button>{/* i18n-hardcoded-ignore — language switcher */}
-                        <span className="text-[#E2E8F0] dark:text-white/20">|</span>
-                        <button type="button" onClick={() => setLanguage("en")} className={`text-caption font-semibold transition-colors ${language === "en" ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"}`}>EN</button>
+                        <LocaleToggle ariaLabel={uiText.userMenu.language} />
                     </div>
                 </div>
 

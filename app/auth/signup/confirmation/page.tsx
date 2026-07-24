@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Inter } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowRight, CheckCircle2, CreditCard, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
+import { LocaleToggle } from "@/components/ui/LocaleToggle"
+import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { completeOnboardingStep } from "@/app/onboarding/actions"
@@ -35,6 +37,7 @@ function SignupConfirmationContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { language, setLanguage } = useLanguage()
+    const uiText = getTranslations(language)
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
     const role = searchParams.get("role") === "agent" ? "agent" : "policyholder"
@@ -249,13 +252,7 @@ function SignupConfirmationContent() {
                 >
                     {copy.backHome}
                 </Link>
-                <button
-                    type="button"
-                    onClick={() => setLanguage(language === "el" ? "en" : "el")}
-                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-caption font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
-                >
-                    {language === "el" ? "EN" : "EL"} {/* i18n-hardcoded-ignore — language switcher shows target code */}
-                </button>
+                <LocaleToggle ariaLabel={uiText.userMenu.language} />
             </header>
 
             {/* Card */}

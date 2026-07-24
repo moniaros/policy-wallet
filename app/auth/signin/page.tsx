@@ -6,15 +6,11 @@ import { useRouter } from "next/navigation"
 import { AlertCircle, ArrowRight, Loader2, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
+import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { resolveAuthEmailIdentifier } from "@/lib/auth/phone-auth"
 import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
 import { useDialog } from "@/hooks/useDialog"
-
-const LOCALE_TABS = [
-    { value: "el" as const, label: "ΕΛ" },
-    { value: "en" as const, label: "EN" },
-]
 
 type Tab = "email" | "phone"
 type ResetStep = "request" | "verify" | "success"
@@ -178,21 +174,7 @@ export default function SignInPage() {
                     <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#64748B] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
                         ← {copy.backHome}
                     </Link>
-                    <div className="flex items-center gap-2">
-                        {LOCALE_TABS.map(({ value, label }, i) => (
-                            <span key={value} className="flex items-center gap-2">
-                                {i > 0 && <span aria-hidden="true" className="text-[#E2E8F0] dark:text-white/20">|</span>}
-                                <button
-                                    type="button"
-                                    onClick={() => setLanguage(value)}
-                                    aria-pressed={language === value}
-                                    className={`text-caption font-semibold transition-colors ${language === value ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"}`}
-                                >
-                                    {label}
-                                </button>
-                            </span>
-                        ))}
-                    </div>
+                    <LocaleToggle ariaLabel={t.userMenu.language} />
                 </div>
 
                 {/* Card */}
