@@ -57,7 +57,28 @@ const LIFE_EVENT_TYPES = [
     { value: "new_vehicle", label: { en: "New vehicle", el: "Νέο όχημα" }, icon: Car },
 ]
 
+/**
+ * Field key -> the label the wizard shows for it, so a rejected field can be
+ * named in the reader's language rather than as a schema key.
+ */
+const FIELD_LABELS: Record<string, { el: string; en: string }> = {
+    dependentsCount: { el: "Εξαρτώμενα μέλη", en: "Dependants" },
+    mortgageAmount: { el: "Υπόλοιπο στεγαστικού", en: "Mortgage amount" },
+    vehiclesCount: { el: "Οχήματα", en: "Vehicles" },
+    dateOfBirth: { el: "Ημερομηνία γέννησης", en: "Date of birth" },
+    annualIncome: { el: "Ετήσιο εισόδημα", en: "Annual income" },
+    occupation: { el: "Επάγγελμα", en: "Occupation" },
+    loanAmount: { el: "Ύψος δανείων", en: "Loan amount" },
+    lifeEvents: { el: "Γεγονότα ζωής", en: "Life events" },
+    heightCm: { el: "Ύψος", en: "Height" },
+    weightKg: { el: "Βάρος", en: "Weight" },
+    chronicConditions: { el: "Χρόνιες παθήσεις", en: "Chronic conditions" },
+    familyMedicalHistory: { el: "Οικογενειακό ιστορικό", en: "Family history" },
+}
+
 export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileWizardProps) {
+    const fieldLabel = (key: string) =>
+        FIELD_LABELS[key]?.[language === "el" ? "el" : "en"] ?? key
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const lang = language
@@ -149,7 +170,34 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                 }),
             })
 
-            if (!response.ok) throw new Error("Failed to save profile")
+            if (!response.ok) {
+                // The route validates with Zod and returns `parsed.error.issues`
+                // — field-level detail. Discarding it left the reader with
+                // "Failed to save" on a twenty-field form spanning several steps,
+                // with no way to know WHICH field was rejected. Height out of
+                // range and a malformed life-event date looked identical, and the
+                // only recourse was to guess or abandon — abandoning the health
+                // data they had just entered.
+                const body = await response.json().catch(() => null)
+                const issues = Array.isArray(body?.error?.details) ? body.error.details : []
+                const fields = [
+                    ...new Set(
+                        issues
+                            .map((i: { path?: unknown[] }) => String(i?.path?.[0] ?? ""))
+                            .filter(Boolean)
+                            .map((f: string) => fieldLabel(f))
+                    ),
+                ]
+                toast.error(
+                    fields.length > 0
+                        ? t(
+                              `Ελέγξτε: ${fields.join(", ")}`,
+                              `Check: ${fields.join(", ")}`
+                          )
+                        : t("Αποτυχία αποθήκευσης", "Failed to save")
+                )
+                return
+            }
 
             toast.success(t("Το προφίλ ενημερώθηκε", "Profile updated"))
             router.refresh()
