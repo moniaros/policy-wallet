@@ -986,6 +986,8 @@ export const en: TranslationKeys = {
             expiringWithin90: 'Policies expiring within 90 days',
             noUpcomingRenewals: 'No upcoming renewals',
             daysAbbr: 'd',
+            expiresTodayBadge: 'Today',
+            expiresTomorrowBadge: 'Tomorrow',
             renewalMetrics: 'Renewal Metrics',
             manageRenewals: 'Manage Renewals →',
             tracked: 'Tracked',

@@ -3,7 +3,7 @@
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
-import { resolvePolicyLifecycle } from "@/lib/policy-status"
+import { resolvePolicyLifecycle, calendarDaysUntil } from "@/lib/policy-status"
 import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
 import { isAgentRole } from "@/lib/auth/require-agent"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
@@ -138,15 +138,21 @@ export async function getInsightsData(): Promise<InsightsData | null> {
 
     // 3. Renewal timeline (next 90 days)
     const now = new Date()
-    const ninetyDaysOut = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000)
 
     const customerMap = new Map(relationships.map(r => [r.policyholderUserId, r.customer?.name || 'Unknown']))
 
+    // Athens calendar days, like every other expiry count in the product.
+    //
+    // The window was `endDate >= now`, and endDate is stored at midnight, so a
+    // policy expiring TODAY left this list the moment the clock passed 00:00
+    // UTC — 03:00 in Athens. The agent lost it from their renewal pipeline on
+    // the one day the renewal could still be saved, and it never reappeared: the
+    // next day it is simply expired. The day count was separately hand-rolled
+    // from UTC milliseconds, so it could also disagree by one with the wallet
+    // and the renewals page for the same policy.
     const renewalTimeline = policies
         .map(p => ({ p, endDate: resolvePolicyLifecycle(p, now).endDate }))
-        .filter((entry): entry is { p: typeof entry.p; endDate: Date } =>
-            entry.endDate !== null && entry.endDate >= now && entry.endDate <= ninetyDaysOut
-        )
+        .filter((entry): entry is { p: typeof entry.p; endDate: Date } => entry.endDate !== null)
         .map(({ p, endDate }) => ({
             policyId: p.id,
             policyNumber: p.policyNumber || 'N/A',
@@ -155,9 +161,10 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             customerId: p.ownerUserId,
             lineOfBusiness: p.lineOfBusiness || 'other',
             endDate: endDate.toISOString(),
-            daysUntilExpiry: Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+            daysUntilExpiry: calendarDaysUntil(endDate, now),
             premiumAmount: Number(p.premiumAmount ?? 0),
         }))
+        .filter(item => item.daysUntilExpiry >= 0 && item.daysUntilExpiry <= 90)
         .sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry)
 
     // 4. Opportunity metrics — grouped counts + summed estimate in the DB

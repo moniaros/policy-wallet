@@ -433,7 +433,14 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                 </div>
                                                 <div className="text-right flex-shrink-0">
                                                     <span className={`inline-block text-kicker font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${uc.badge}`}>
-                                                        {item.daysUntilExpiry}{p.daysAbbr}
+                                                        {/* A policy expiring today used to be dropped from this
+                                                            list entirely; now that it is here, "0 ημ." is not
+                                                            what an agent should read on the last day of cover. */}
+                                                        {item.daysUntilExpiry === 0
+                                                            ? p.expiresTodayBadge
+                                                            : item.daysUntilExpiry === 1
+                                                              ? p.expiresTomorrowBadge
+                                                              : `${item.daysUntilExpiry}${p.daysAbbr}`}
                                                     </span>
                                                     <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400 mt-1">
                                                         {fmt(item.premiumAmount, lang)}

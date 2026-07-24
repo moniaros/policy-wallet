@@ -983,6 +983,8 @@ export const el = {
             expiringWithin90: 'Ασφαλιστήρια που λήγουν εντός 90 ημερών',
             noUpcomingRenewals: 'Κανένα ασφαλιστήριο δεν λήγει σύντομα',
             daysAbbr: ' ημ.',
+            expiresTodayBadge: 'Σήμερα',
+            expiresTomorrowBadge: 'Αύριο',
             renewalMetrics: 'Μετρικές ανανεώσεων',
             manageRenewals: 'Διαχείριση ανανεώσεων →',
             tracked: 'Σύνολο',
