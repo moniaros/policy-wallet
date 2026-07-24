@@ -79,11 +79,22 @@ describe('one clock answers "how many days until this date"', () => {
     })
 
     it('leaves elapsed-duration maths alone', async () => {
-        const { readFileSync } = await import('node:fs')
-        // "how long since they last replied" is a duration, not a calendar
-        // deadline, and legitimately stays in absolute milliseconds.
-        const fmt = readFileSync('lib/agent/format.ts', 'utf-8')
-        expect(fmt).toMatch(/diffDays = Math\.floor\(diffMs \/ 86_400_000\)/)
+        // "how long since they last replied" is a DURATION, not a calendar
+        // deadline, and legitimately stays in absolute milliseconds. Asserted as
+        // the property rather than a line of source: an earlier version of this
+        // test pinned the exact expression, so rewriting the formatter to fix an
+        // unrelated bug failed a guard that had no quarrel with the rewrite.
+        const { formatRelativeDate } = await import('@/lib/agent/format')
+        const { vi } = await import('vitest')
+        vi.useFakeTimers()
+        try {
+            // 00:10 local, reading a message sent at 23:50 — twenty minutes back,
+            // but one calendar day back. A duration says twenty minutes.
+            vi.setSystemTime(new Date('2026-07-24T21:10:00Z')) // 00:10 Athens, 25 Jul
+            expect(formatRelativeDate('2026-07-24T20:50:00Z', 'en')).toBe('20 minutes ago')
+        } finally {
+            vi.useRealTimers()
+        }
     })
 })
 

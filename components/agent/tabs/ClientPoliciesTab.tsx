@@ -7,7 +7,7 @@ import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { EmptyState, PolicyPreviewRow } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { formatCurrencyCompact, formatCurrencyFull, formatDateGreek } from "@/lib/agent/format"
+import { formatCurrencyCompact, formatCurrencyFull, formatDateShort } from "@/lib/agent/format"
 import type { Policy } from "../types"
 import type { ViewerRole } from "@/components/collaboration/types"
 
@@ -233,7 +233,7 @@ export function ClientPoliciesTab({
                                 <div className="text-right">
                                     <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                                         <Calendar className="h-3 w-3" />
-                                        {formatDateGreek(policy.endDate)}
+                                        {formatDateShort(policy.endDate, language)}
                                     </div>
                                     {showCommission && viewerRole === "agent" && commissionRate > 0 && (
                                         <p className="text-kicker font-medium text-primary dark:text-mint mt-0.5">

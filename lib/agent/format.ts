@@ -1,4 +1,5 @@
 import { calendarDaysUntil } from '@/lib/policy-status'
+import { formatDate, resolveLocale } from '@/lib/i18n/format'
 import type { Customer } from "@/components/agent/types"
 import type { UrgencyTier } from "@/components/agent/types"
 
@@ -37,44 +38,53 @@ export function formatCurrencyFull(amount: number, locale: "en" | "el" = "el"): 
 }
 
 /**
- * Format a date in Greek locale.
+ * Short date, in the reader's language and pinned to Athens.
+ *
+ * Was `formatDateGreek`, which hardcoded `el-GR` whatever language the agent had
+ * chosen — so an English-speaking agent read a document-request due date as
+ * "15 Ιουν 2026" — and left the timezone to the runtime, the mismatch class
+ * lib/i18n/format.ts exists to end (UTC on the server, Athens in the browser).
  */
-export function formatDateGreek(dateStr: string): string {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString("el-GR", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-    })
+export function formatDateShort(dateStr: string, locale: "en" | "el" = "el"): string {
+    return formatDate(dateStr, locale, { day: "numeric", month: "short", year: "numeric" })
 }
 
+const MINUTE_MS = 60_000
+const HOUR_MS = 3_600_000
+const DAY_MS = 86_400_000
+
 /**
- * Format a date relative to now (e.g., "2 days ago", "πριν 2 ημέρες").
+ * A date relative to now — "πριν 2 ημέρες", "σε 3 ημέρες", "αύριο".
+ *
+ * The past-only version returned "Just now" / «Μόλις τώρα» for anything in the
+ * FUTURE, because `now - date` goes negative and the first bucket is
+ * `diffMins < 1`. Two callers pass future dates — the agent action queue's due
+ * column (`ActionQueueCard`) and the client card's next action (`ClientCard`) —
+ * so every task due next week read as due this instant. On a work queue, that is
+ * the most urgent label the UI has, applied to the least urgent items.
+ *
+ * Intl.RelativeTimeFormat handles the sign, and with `numeric: "auto"` also the
+ * Greek forms a hand-rolled version gets wrong: «χθες», «αύριο», «πριν 1 λεπτό»
+ * rather than «πριν 1 λεπτά».
  */
 export function formatRelativeDate(dateStr: string, locale: "en" | "el" = "el"): string {
-    const now = Date.now()
-    const date = new Date(dateStr).getTime()
-    const diffMs = now - date
-    const diffMins = Math.floor(diffMs / 60_000)
-    const diffHours = Math.floor(diffMs / 3_600_000)
-    const diffDays = Math.floor(diffMs / 86_400_000)
+    const target = new Date(dateStr).getTime()
+    if (Number.isNaN(target)) return "—"
+    const diffMs = target - Date.now()
+    const abs = Math.abs(diffMs)
 
-    if (locale === "el") {
-        if (diffMins < 1) return "Μόλις τώρα"
-        if (diffMins < 60) return `πριν ${diffMins} λεπτά`
-        if (diffHours < 24) return `πριν ${diffHours} ώρες`
-        if (diffDays < 7) return `πριν ${diffDays} ημέρες`
-        return formatDateGreek(dateStr)
+    // Beyond a week either way a calendar date is more use than a count.
+    if (abs >= 7 * DAY_MS) return formatDateShort(dateStr, locale)
+
+    const rtf = new Intl.RelativeTimeFormat(resolveLocale(locale), { numeric: "auto" })
+    if (abs < HOUR_MS) {
+        const minutes = Math.round(diffMs / MINUTE_MS)
+        // Rounding to zero inside the smallest unit is genuinely "now".
+        if (minutes === 0) return locale === "el" ? "Μόλις τώρα" : "Just now"
+        return rtf.format(minutes, "minute")
     }
-
-    if (diffMins < 1) return "Just now"
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays < 7) return `${diffDays}d ago`
-    return new Date(dateStr).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-    })
+    if (abs < DAY_MS) return rtf.format(Math.round(diffMs / HOUR_MS), "hour")
+    return rtf.format(Math.round(diffMs / DAY_MS), "day")
 }
 
 /**

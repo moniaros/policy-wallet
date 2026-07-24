@@ -7,7 +7,7 @@ import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getHealthScoreColor } from "@/lib/agent/health-score"
-import { formatDateGreek } from "@/lib/agent/format"
+import { formatDateShort } from "@/lib/agent/format"
 import type { Customer, Policy, Opportunity } from "../types"
 
 interface ClientOverviewTabProps {
@@ -112,7 +112,7 @@ export function ClientOverviewTab({
                                     <div className="text-right">
                                         <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                                             <Calendar className="h-3 w-3" />
-                                            {formatDateGreek(policy.endDate)}
+                                            {formatDateShort(policy.endDate, language)}
                                         </div>
                                         {policy.status === "expiring_soon" && (
                                             <span className="text-kicker font-medium text-amber-700 dark:text-amber-400">

@@ -17,7 +17,7 @@ import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { formatCurrencyFull, formatDateGreek } from "@/lib/agent/format"
+import { formatCurrencyFull } from "@/lib/agent/format"
 import { TrustSignalsFooter, VerifiedInsurerBadge } from "./TrustSignals"
 import type { ProposalData, ProposalType, ViewerRole } from "./types"
 

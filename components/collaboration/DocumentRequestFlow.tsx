@@ -16,7 +16,7 @@ import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { formatDateGreek } from "@/lib/agent/format"
+import { formatDateShort } from "@/lib/agent/format"
 import { DOCUMENT_TYPE_TAXONOMY } from "./types"
 import type { DocumentRequestData, DocumentUrgency, DocumentTypeKey, ViewerRole } from "./types"
 
@@ -237,7 +237,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             {request.dueDate && (
                 <p className="text-xs text-amber-700 dark:text-amber-400 mt-2 flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    {t.collaboration.documentRequests.due}: {formatDateGreek(request.dueDate)}
+                    {t.collaboration.documentRequests.due}: {formatDateShort(request.dueDate, language)}
                 </p>
             )}
 
