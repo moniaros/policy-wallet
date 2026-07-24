@@ -13,6 +13,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Toaster } from "sonner";
 import NextTopLoader from 'nextjs-toploader';
 import { OfflineProvider } from "@/components/providers/OfflineProvider";
+import { MotionProvider } from "@/components/providers/MotionProvider";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { GoogleAnalyticsWebVitals } from "@/components/analytics/GoogleAnalyticsWebVitals";
 import { CookieConsentBanner } from "@/components/compliance/CookieConsentBanner";
@@ -70,6 +71,7 @@ export default function RootLayout({
           speed={200}
         />
         <LanguageProvider>
+          <MotionProvider>
           <OfflineProvider>
             <ThemeProvider
               attribute="class"
@@ -81,6 +83,7 @@ export default function RootLayout({
               <CookieConsentBanner />
             </ThemeProvider>
           </OfflineProvider>
+          </MotionProvider>
         </LanguageProvider>
         <Toaster richColors position="top-right" />
         <Suspense fallback={null}>

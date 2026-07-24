@@ -620,3 +620,23 @@ pre {
     min-height: 0;
   }
 }
+
+/* ─── Reduced motion (WCAG 2.3.3) ──────────────────────────────────────────────
+   25 components animate via framer-motion, plus CSS animate-in / pulse / ping
+   transitions — and `prefers-reduced-motion` was honoured in exactly ONE place
+   (a public scroll button). A user with a vestibular disorder who sets the OS
+   preference still received every entrance animation and transition.
+
+   Unlayered so it beats the utilities that set the durations. `animate-spin` is
+   deliberately EXEMPT: a loading spinner is essential feedback, and freezing it
+   would leave the user staring at a static icon with no sign of progress. */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.animate-spin),
+  *:not(.animate-spin)::before,
+  *:not(.animate-spin)::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
