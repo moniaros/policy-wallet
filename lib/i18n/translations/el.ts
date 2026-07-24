@@ -1352,7 +1352,7 @@ export const el = {
         'FIRE': 'Πυρκαγιά',
         'THEFT': 'Κλοπή',
         'PARTIAL THEFT': 'Μερική κλοπή',
-        'NATURAL PHENOMENA / FLOOD': 'Φυσικά Φαινόμενα / Πλημμύρα',
+        'NATURAL PHENOMENA / FLOOD': 'Φυσικά φαινόμενα / Πλημμύρα',
         'NATURAL PHENOMENA': 'Φυσικά φαινόμενα',
         'FLOOD': 'Πλημμύρα',
         'LEGAL PROTECTION': 'Νομική προστασία',
@@ -1361,7 +1361,23 @@ export const el = {
         'UNINSURED VEHICLE': 'Ανασφάλιστο όχημα',
         'ROADSIDE ASSISTANCE': 'Οδική βοήθεια',
         'GLASS BREAKAGE': 'Θραύση κρυστάλλων',
-        'OWN DAMANGE': 'Ιδίες Ζημιές (Μικτή)',
+        // The key was misspelled 'OWN DAMANGE'. localizeCoverageName normalises
+        // case, spaces and separators — it cannot see past a transposed letter —
+        // so the correct 'OWN DAMAGE', which is what a model reading a policy
+        // actually emits, never matched. A Greek policyholder saw «Κλοπή»,
+        // «Θραύση κρυστάλλων» and then raw English "OWN DAMAGE" for the single
+        // most valuable cover on a comprehensive motor policy. The misspelling is
+        // kept as an alias so anything already stored under it still resolves.
+        'OWN DAMAGE': 'Ιδίες ζημιές (μικτή)',
+        'OWN DAMANGE': 'Ιδίες ζημιές (μικτή)',
+        // Renderings the same cover arrives under, depending on the wording the
+        // document uses and how the model translates it.
+        'THIRD PARTY LIABILITY': 'Αστική ευθύνη έναντι τρίτων',
+        'CIVIL LIABILITY': 'Αστική ευθύνη έναντι τρίτων',
+        'ROAD ASSISTANCE': 'Οδική βοήθεια',
+        'WINDSCREEN': 'Θραύση κρυστάλλων',
+        'WINDSHIELD': 'Θραύση κρυστάλλων',
+        'GLASS': 'Θραύση κρυστάλλων',
         'TERRORIST ACTS': 'Τρομοκρατικές ενέργειες',
         'MALICIOUS ACTS': 'Κακόβουλες ενέργειες',
 
