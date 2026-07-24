@@ -1361,6 +1361,7 @@ export const el = {
     // Errors
     errors: {
         somethingWentWrong: 'Κάτι πήγε στραβά',
+        incidentId: 'Κωδικός συμβάντος',
         errorBoundaryBody: 'Παρουσιάστηκε ένα απρόσμενο σφάλμα σε αυτή τη σελίδα. Δοκιμάστε ξανά ή επιστρέψτε στην αρχική.',
         tryAgain: 'Δοκιμάστε ξανά',
         notFound: 'Δεν βρέθηκε',

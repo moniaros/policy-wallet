@@ -60,6 +60,17 @@ export function RouteError({
                         {homeLabel}
                     </Link>
                 </div>
+
+                {/* Next's digest is the only handle that ties what the user saw to
+                    the Sentry event captured above. app/error.tsx already shows it;
+                    this component backs 19 route boundaries and did not, so which
+                    boundary happened to fire decided whether a policyholder ringing
+                    their advisor had a reference to quote. */}
+                {error.digest && (
+                    <p className="mt-10 font-mono text-micro text-black/55 dark:text-white/55">
+                        {t.errors.incidentId}: {error.digest}
+                    </p>
+                )}
             </div>
         </div>
     )

@@ -1363,6 +1363,7 @@ export const en: TranslationKeys = {
     // Errors
     errors: {
         somethingWentWrong: 'Something went wrong',
+        incidentId: 'Incident ID',
         errorBoundaryBody: 'An unexpected error occurred on this page. Try again or head back home.',
         tryAgain: 'Try again',
         notFound: 'Not found',
