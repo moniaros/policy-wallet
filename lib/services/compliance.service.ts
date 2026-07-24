@@ -13,6 +13,11 @@ export async function buildUserDataExportPayload(userId: string) {
         tokenPurchases,
         consentAudits,
         deletionRequests,
+        detectedGaps,
+        protectionScore,
+        recommendations,
+        advisorRelationships,
+        accessGrants,
         analysisRuns,
     ] = await Promise.all([
         db.user.findUnique({
@@ -31,9 +36,41 @@ export async function buildUserDataExportPayload(userId: string) {
                 cookieConsentVersion: true,
                 consentUpdatedAt: true,
                 consentLocale: true,
+                // Art. 15(1) is a copy of the personal data undergoing processing.
+                // This selected `preferences` and the timestamps — so a subject
+                // access request returned everything EXCEPT what the person had
+                // actually told us: date of birth, income, mortgage and loans,
+                // occupation, driving record, and the special-category health
+                // fields the risk wizard collects under Art. 9 (chronic
+                // conditions, family medical history, height, weight, smoking,
+                // activity level, gender). Those are precisely the data someone
+                // exercises this right over.
                 policyholderProfile: {
                     select: {
                         preferences: true,
+                        maritalStatus: true,
+                        dependentsCount: true,
+                        employmentStatus: true,
+                        ownsHome: true,
+                        mortgageAmount: true,
+                        hasPets: true,
+                        vehiclesCount: true,
+                        dateOfBirth: true,
+                        annualIncome: true,
+                        occupation: true,
+                        riskTolerance: true,
+                        hasLoans: true,
+                        loanAmount: true,
+                        travelsFrequently: true,
+                        smokingStatus: true,
+                        lifeEvents: true,
+                        gender: true,
+                        heightCm: true,
+                        weightKg: true,
+                        chronicConditions: true,
+                        familyMedicalHistory: true,
+                        drivingRecord: true,
+                        activityLevel: true,
                         createdAt: true,
                         updatedAt: true,
                     },
@@ -147,6 +184,61 @@ export async function buildUserDataExportPayload(userId: string) {
             },
             orderBy: { createdAt: "desc" },
         }),
+        // Derived personal data — assessments and profiling outputs the product
+        // holds about this person. Art. 15 covers what is inferred, not only what
+        // was submitted, and these are the conclusions the product acts on.
+        db.gapInstance.findMany({
+            where: { policy: { ownerUserId: userId } },
+            select: {
+                id: true,
+                policyId: true,
+                severity: true,
+                status: true,
+                aiExplanation: true,
+                aiSuggestion: true,
+                detectedAt: true,
+            },
+            orderBy: { detectedAt: "desc" },
+            take: 200,
+        }),
+        db.protectionScore.findUnique({
+            where: { userId },
+            select: {
+                overallScore: true,
+                categoryScores: true,
+                gapCount: true,
+                expectedLines: true,
+                actualLines: true,
+                computedAt: true,
+            },
+        }),
+        db.recommendationInstance.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                lineOfBusiness: true,
+                ruleId: true,
+                title: true,
+                description: true,
+                urgency: true,
+                status: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 200,
+        }),
+        // Who can see this person's policies, and which advisor is linked to
+        // them — relationships are personal data about the subject too.
+        db.customerRelationship.findMany({
+            where: { policyholderUserId: userId },
+            select: { id: true, agentUserId: true, status: true, createdAt: true },
+            orderBy: { createdAt: "desc" },
+        }),
+        db.accessGrant.findMany({
+            where: { granterUserId: userId },
+            select: { id: true, granteeUserId: true, scope: true, permissions: true, status: true, grantedAt: true, revokedAt: true },
+            orderBy: { grantedAt: "desc" },
+        }),
         db.policyAnalysisRun.findMany({
             where: { userId },
             select: {
@@ -207,6 +299,27 @@ export async function buildUserDataExportPayload(userId: string) {
                 ...doc,
                 uploadedAt: toIso(doc.uploadedAt),
             })),
+        })),
+        // Derived data — what the product concluded about this person.
+        detectedGaps: detectedGaps.map((gap) => ({
+            ...gap,
+            detectedAt: toIso(gap.detectedAt),
+        })),
+        protectionScore: protectionScore
+            ? { ...protectionScore, computedAt: toIso(protectionScore.computedAt) }
+            : null,
+        recommendations: recommendations.map((rec) => ({
+            ...rec,
+            createdAt: toIso(rec.createdAt),
+        })),
+        advisorRelationships: advisorRelationships.map((rel) => ({
+            ...rel,
+            createdAt: toIso(rel.createdAt),
+        })),
+        accessGrants: accessGrants.map((grant) => ({
+            ...grant,
+            grantedAt: toIso(grant.grantedAt),
+            revokedAt: toIso(grant.revokedAt),
         })),
         analysisArtifacts: analysisRuns.map((run) => ({
             ...run,
