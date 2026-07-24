@@ -1374,18 +1374,17 @@ export async function ignoreGap(gapId: string) {
     })
     if (!gap || !gap.policy) return { error: "Gap not found" }
 
-    const isOwner = gap.policy.ownerUserId === authResult.dbUser.id
-    if (!isOwner) {
-        const hasAccess = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: gap.policy.ownerUserId,
-                granteeUserId: authResult.dbUser.id,
-                scope: `policy:${gap.policyId}`,
-                status: 'active'
-            }
-        })
-        if (!hasAccess) return { error: "Unauthorized" }
-    }
+    // Dismissing a gap MUTATES the owner's coverage picture and moves their
+    // protection score, so it is a WRITE. This checked only that a grant existed,
+    // ignoring its permission level — a view-only agent could dismiss a customer's
+    // coverage gap. Gate on canWrite, like every other policy write (updatePolicy,
+    // confirmPolicyReview, deletePolicy). Owner still passes (canWrite true).
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(gap.policy.id, {
+        id: authResult.dbUser.id,
+        roles: authResult.dbUser.roles,
+    })
+    if (!access.canWrite) return { error: "Unauthorized" }
 
     await db.gapInstance.update({
         where: { id: gapId },

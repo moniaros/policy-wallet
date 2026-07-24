@@ -13,11 +13,12 @@ vi.mock('@/lib/db', () => ({
     db: {
         policy: { findUnique: vi.fn(), findFirst: vi.fn(), update: vi.fn() },
         user: { findUnique: vi.fn() },
-        accessGrant: { create: vi.fn() },
+        accessGrant: { create: vi.fn(), findFirst: vi.fn() },
         invite: { create: vi.fn() },
         customerRelationship: { findUnique: vi.fn(), create: vi.fn() },
         notificationEvent: { create: vi.fn() },
         activityLog: { create: vi.fn() },
+        gapInstance: { findUnique: vi.fn(), update: vi.fn() },
         $transaction: vi.fn(async (ops: unknown[]) => ops),
     },
 }))
@@ -51,7 +52,10 @@ vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 vi.mock('@/lib/storage', () => ({ uploadFile: vi.fn(), deleteFile: vi.fn() }))
 vi.mock('@/lib/services/ai', () => ({ getAIService: vi.fn() }))
 vi.mock('@/lib/services/gap-analysis.service', () => ({ GapAnalysisService: vi.fn() }))
-vi.mock('@/lib/services/gap-engine', () => ({ refreshProtectionScore: vi.fn(), runGapEngine: vi.fn() }))
+vi.mock('@/lib/services/gap-engine', () => ({
+    refreshProtectionScore: vi.fn(() => Promise.resolve()),
+    runGapEngine: vi.fn(() => Promise.resolve()),
+}))
 vi.mock('@/lib/services/policy.service', () => ({ PolicyService: vi.fn() }))
 vi.mock('@/lib/services/analysis/policy-analysis-orchestrator.service', () => ({
     PolicyAnalysisOrchestratorService: vi.fn(),
@@ -71,7 +75,7 @@ vi.mock('@/lib/subscription-entitlements', () => ({
 }))
 vi.mock('@google/generative-ai', () => ({ GoogleGenerativeAI: vi.fn() }))
 
-import { confirmPolicyReview, flagPolicyExtraction } from '@/app/(protected)/wallet/actions'
+import { confirmPolicyReview, flagPolicyExtraction, ignoreGap } from '@/app/(protected)/wallet/actions'
 import { db } from '@/lib/db'
 import { runGapEngine } from '@/lib/services/gap-engine'
 
@@ -310,5 +314,52 @@ describe('flagPolicyExtraction', () => {
         const result = await flagPolicyExtraction('pol-1', 'nope')
         expect(result).toEqual({ error: 'Not found' })
         expect(db.$transaction).not.toHaveBeenCalled()
+    })
+})
+
+/**
+ * Dismissing a coverage gap mutates the owner's coverage picture and moves their
+ * protection score — it is a WRITE. It checked only that a grant EXISTED, not its
+ * permission level, so a view-only agent could ignore a customer's gap. It must
+ * gate on canWrite, like every other policy write.
+ */
+describe('ignoreGap — dismissing a gap is a write, not a read', () => {
+    const gapRow = (ownerUserId = OWNER.id) => ({
+        id: 'gap-1',
+        policyId: 'pol-1',
+        policy: { id: 'pol-1', ownerUserId },
+    })
+
+    beforeEach(() => {
+        mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: AGENT })
+        ;(db.gapInstance.findUnique as any).mockResolvedValue(gapRow())
+    })
+
+    it('rejects a view-only agent and does NOT dismiss the gap', async () => {
+        mockGetPolicyAccess.mockResolvedValue(READ_ONLY_ACCESS)
+        const result = await ignoreGap('gap-1')
+        expect(result).toEqual({ error: 'Unauthorized' })
+        expect(db.gapInstance.update).not.toHaveBeenCalled()
+    })
+
+    it('lets an agent with write access dismiss it', async () => {
+        mockGetPolicyAccess.mockResolvedValue(WRITE_ACCESS)
+        const result = await ignoreGap('gap-1')
+        expect(result).toEqual({ success: true })
+        expect(db.gapInstance.update).toHaveBeenCalledWith(
+            expect.objectContaining({ where: { id: 'gap-1' }, data: { status: 'ignored' } })
+        )
+    })
+
+    it('checks access against the gap’s own policy', async () => {
+        mockGetPolicyAccess.mockResolvedValue(WRITE_ACCESS)
+        await ignoreGap('gap-1')
+        expect(mockGetPolicyAccess).toHaveBeenCalledWith('pol-1', expect.objectContaining({ id: AGENT.id }))
+    })
+
+    it('returns not-found for a missing gap without touching access', async () => {
+        ;(db.gapInstance.findUnique as any).mockResolvedValue(null)
+        const result = await ignoreGap('gap-x')
+        expect(result).toEqual({ error: 'Gap not found' })
     })
 })
