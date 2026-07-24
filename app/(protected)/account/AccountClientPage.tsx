@@ -19,7 +19,7 @@ import {
 } from "./actions"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import type { Policy } from "@/components/wallet/types"
@@ -54,7 +54,15 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     // NOTE: the Referrals tab is intentionally not rendered — the referral
     // program has no earn/redeem loop yet (credits could never be paid out).
     // Re-add the tab when the loop is real (see PXA audit §8.2 / B18).
-    const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'settings'>('overview')
+    // The tab is addressable, because things link INTO it: every email footer
+    // offers "manage your preferences", and the notification toggles live on the
+    // settings tab. Without this the link landed on the overview and the reader
+    // had to go looking for what the email had just promised them.
+    const searchParams = useSearchParams()
+    const requestedTab = searchParams.get('tab')
+    const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'settings'>(
+        requestedTab === 'billing' || requestedTab === 'settings' ? requestedTab : 'overview'
+    )
     const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false)
 
     const handleSwitchRole = (role: 'policyholder' | 'agent') => {

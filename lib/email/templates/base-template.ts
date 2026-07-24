@@ -19,17 +19,28 @@ const FOOTER_COPY = {
         dashboard: 'Πίνακας ελέγχου',
         support: 'Υποστήριξη',
         privacy: 'Απόρρητο',
+        preferences: 'Διαχείριση ειδοποιήσεων',
     },
     en: {
         rights: 'All rights reserved.',
         dashboard: 'Dashboard',
         support: 'Support',
         privacy: 'Privacy',
+        preferences: 'Manage notifications',
     },
 } as const
 
 /**
  * Base email template with PolicyWallet branding.
+ *
+ * The preferences link is not decoration. The privacy policy states the lawful
+ * basis for these emails as "consent, with an unsubscribe option in every
+ * message" («με δυνατότητα απεγγραφής σε κάθε μήνυμα») — and no email carried
+ * one. The NotificationPreference toggles already exist and every engagement
+ * cron already honours them; nothing pointed a reader at them. Note this is a
+ * link into the authenticated preferences screen, not a one-click opt-out: that
+ * needs a signed unsubscribe token, and the product has no token-signing helper
+ * to build it on yet.
  *
  * Footer links: "Visit Dashboard" pointed at the bare origin (the marketing
  * landing page) and "Support" at `/support`, a route that has never existed —
@@ -161,6 +172,9 @@ export function getBaseEmailTemplate(content: string, language: 'el' | 'en' = 'e
         <a href="${origin}/dashboard">${f.dashboard}</a> •
         <a href="${origin}/help">${f.support}</a> •
         <a href="${origin}/privacy">${f.privacy}</a>
+      </p>
+      <p>
+        <a href="${origin}/account?tab=settings">${f.preferences}</a>
       </p>
       <p>
         <a href="mailto:${siteConfig.contactEmail}">${siteConfig.contactEmail}</a>

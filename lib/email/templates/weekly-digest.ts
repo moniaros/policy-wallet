@@ -129,8 +129,8 @@ export function getWeeklyDigestEmail(
         <div class="divider"></div>
         <p style="color: #9CA3AF; font-size: 12px;">
             ${isGreek
-                ? 'Λαμβάνετε αυτό το email κάθε Δευτέρα. Διαχείριση προτιμήσεων στις Ρυθμίσεις.'
-                : 'You receive this email every Monday. Manage preferences in Settings.'
+                ? 'Λαμβάνετε αυτό το email κάθε Δευτέρα.'
+                : 'You receive this email every Monday.'
             }
         </p>
     `
