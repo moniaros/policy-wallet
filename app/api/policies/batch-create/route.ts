@@ -145,7 +145,29 @@ export const POST = withApiGuard(
                 }
             })
 
+            // Recompute the owner's gaps + protection score once the batch has
+            // landed. Single-policy create reaches gap detection through its
+            // background analysis run; batch create never enters that path — it
+            // persists the client-extracted rows and stops — so without this a
+            // batch upload leaves the score unchanged and detects no gaps,
+            // including the duplicate coverage ACROSS the batch that uploading
+            // several policies at once is the very moment to surface.
+            // Deterministic (no AI tokens), best-effort: a recompute failure must
+            // not fail a batch that already committed.
+            if (createdPolicies.length > 0) {
+                try {
+                    const { refreshProtectionScore } = await import("@/lib/services/gap-engine")
+                    await refreshProtectionScore(userId)
+                } catch (error) {
+                    console.error("Batch create: gap recompute failed", {
+                        userId, error: error instanceof Error ? error.message : String(error),
+                    })
+                }
+            }
+
             revalidatePath("/wallet")
+            revalidatePath("/coverage-insights")
+            revalidatePath("/dashboard")
 
             return NextResponse.json({
                 success: createdPolicies.length > 0,
