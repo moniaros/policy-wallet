@@ -30,9 +30,15 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
   const pet = acordData.pet
   if (!pet) return null
 
+  // `annualLimit` is the schema's canonical field; `annualLimitTotal` is its
+  // documented legacy alias. The panel read only the alias, so a policy whose
+  // extraction populated the canonical field — which the prompt targets —
+  // showed no pet annual limit at all. Canonical first, alias as fallback.
+  const annualLimitValue = pet.annualLimit ?? pet.annualLimitTotal
+
   const hasAnyData = Boolean(
     pet.microchipNumber ||
-    pet.annualLimitTotal !== undefined ||
+    annualLimitValue !== undefined ||
     pet.leishmaniaCovered !== undefined ||
     (pet.breedSpecificDiseases && pet.breedSpecificDiseases.length > 0) ||
     pet.directVetPayment !== undefined ||
@@ -51,8 +57,8 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
     }
   }
 
-  const usagePercent = pet.annualLimitTotal
-    ? Math.min(((pet.annualLimitUsed ?? 0) / pet.annualLimitTotal) * 100, 100)
+  const usagePercent = annualLimitValue
+    ? Math.min(((pet.annualLimitUsed ?? 0) / annualLimitValue) * 100, 100)
     : 0
 
   // Shared formatter — these three files each carried an identical private copy.
@@ -81,7 +87,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
         </button>
       )}
 
-      {pet.annualLimitTotal !== undefined && (
+      {annualLimitValue !== undefined && (
         <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
@@ -90,7 +96,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               </div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.annualLimit}</span>
             </div>
-            <span className="text-sm font-bold text-black dark:text-white">{fmt(pet.annualLimitTotal)}</span>
+            <span className="text-sm font-bold text-black dark:text-white">{fmt(annualLimitValue)}</span>
           </div>
           <div className="ml-10.5">
             <div className="w-full h-3 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
@@ -104,7 +110,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
                 {copy.used}: {fmt(pet.annualLimitUsed ?? 0)}
               </span>
               <span className="font-semibold text-[#166534] dark:text-mint">
-                {copy.remaining}: {fmt(pet.annualLimitTotal - (pet.annualLimitUsed ?? 0))}
+                {copy.remaining}: {fmt(annualLimitValue - (pet.annualLimitUsed ?? 0))}
               </span>
             </div>
           </div>
