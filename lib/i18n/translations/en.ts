@@ -417,6 +417,8 @@ export const en: TranslationKeys = {
             analysisFailedHint: 'You can try again. If it fails again the file may not be readable — upload a clearer copy, or ask your advisor.',
             analysisFoundNothingTitle: 'The analysis finished without detailed coverages',
             analysisFoundNothingHint: 'This document did not contain structured coverage detail we could read. Re-analysing the same file will most likely give the same result — upload the full policy document, or ask your advisor.',
+            analysisDegradedTitle: 'The analysis did not finish cleanly',
+            analysisDegradedHint: 'Some steps of the analysis did not complete, which is why coverage detail is missing. Unlike a clean run that found nothing, this one is worth retrying — the cause is often temporary.',
             reanalyzeToSeeCoverage: 'Re-analyze to see detailed coverage',
             reanalyzeToSeeCoverageHint: 'Type-specific coverage details will appear after a new AI analysis',
             analyzingDocument: 'Analyzing your document',

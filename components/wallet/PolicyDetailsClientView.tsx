@@ -282,17 +282,27 @@ export function PolicyDetailsClient({
      * third tells the reader to spend metered analysis on a run that will
      * produce the same nothing.
      */
-    const coverageAbsence: "never" | "failed" | "empty" = (() => {
+    // `completed_with_warnings` used to collapse into "empty" — the state whose
+    // copy tells the reader "re-analysing the same file will most likely give the
+    // same result". True for a CLEAN run that found nothing: the document simply
+    // has no structured coverage. False for a degraded one, where steps failed
+    // and sections are missing, and where retrying is precisely the right move
+    // because the cause is often transient. The AnalysisCard on this same route
+    // already knew the run was degraded and listed the missing sections, so the
+    // two halves of one page disagreed about whether retrying was worth it.
+    const coverageAbsence: "never" | "failed" | "degraded" | "empty" = (() => {
         const last = policy.analysisRuns?.[0]?.status
         if (!last) return "never"
         if (last === "failed" || last === "blocked") return "failed"
-        if (last === "completed" || last === "completed_with_warnings") return "empty"
+        if (last === "completed_with_warnings") return "degraded"
+        if (last === "completed") return "empty"
         return "never"   // queued / running — nothing has produced a verdict yet
     })()
 
     const absenceCopy = {
         never: { title: detailsCopy.analysisNeverRun, hint: detailsCopy.analysisNeverRunHint },
         failed: { title: detailsCopy.analysisFailedTitle, hint: detailsCopy.analysisFailedHint },
+        degraded: { title: detailsCopy.analysisDegradedTitle, hint: detailsCopy.analysisDegradedHint },
         empty: { title: detailsCopy.analysisFoundNothingTitle, hint: detailsCopy.analysisFoundNothingHint },
     }[coverageAbsence]
 

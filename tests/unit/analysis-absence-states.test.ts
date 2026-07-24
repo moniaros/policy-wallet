@@ -27,7 +27,7 @@ const enCopy = en.wallet.policyDetailsPage
  * failed → «Η τελευταία ανάλυση δεν ολοκληρώθηκε», completed → «Η ανάλυση
  * ολοκληρώθηκε χωρίς αναλυτικές καλύψεις».
  */
-describe('the coverage-absence message says which of the three happened', () => {
+describe('the coverage-absence message says which of the four happened', () => {
     it('loads the latest run so the state is knowable at all', () => {
         expect(page).toMatch(/analysisRuns: \{/)
         expect(page).toMatch(/orderBy: \{ createdAt: 'desc' \}/)
@@ -38,7 +38,10 @@ describe('the coverage-absence message says which of the three happened', () => 
         // queued/running have produced no verdict, so they read as "never".
         expect(view).toMatch(/if \(!last\) return "never"/)
         expect(view).toMatch(/last === "failed" \|\| last === "blocked"/)
-        expect(view).toMatch(/last === "completed" \|\| last === "completed_with_warnings"/)
+        // completed_with_warnings used to share the "empty" branch with a clean
+        // completion — and therefore its copy, which says retrying will not help.
+        expect(view).toMatch(/last === "completed_with_warnings"\) return "degraded"/)
+        expect(view).toMatch(/last === "completed"\) return "empty"/)
     })
 
     it('renders the branched copy, not the single old line', () => {
@@ -47,9 +50,10 @@ describe('the coverage-absence message says which of the three happened', () => 
         expect(view).not.toMatch(/\{detailsCopy\.reanalyzeToSeeCoverage\}/)
     })
 
-    it('ships all three states in both languages', () => {
+    it('ships all four states in both languages', () => {
         for (const key of ['analysisNeverRun', 'analysisNeverRunHint', 'analysisFailedTitle',
-            'analysisFailedHint', 'analysisFoundNothingTitle', 'analysisFoundNothingHint'] as const) {
+            'analysisFailedHint', 'analysisDegradedTitle', 'analysisDegradedHint',
+            'analysisFoundNothingTitle', 'analysisFoundNothingHint'] as const) {
             expect(elCopy[key], `el.${key}`).toBeTruthy()
             expect(enCopy[key], `en.${key}`).toBeTruthy()
             expect(elCopy[key], `el.${key} must be Greek`).toMatch(/[Ͱ-Ͽ]/)
