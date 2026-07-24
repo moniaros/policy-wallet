@@ -254,7 +254,10 @@ export function PolicyDetailsClient({
     // Deduped count — must agree with the summary band and the tab badge.
     const health = calculatePolicyHealthScore({
         gapCount: gapReportItems.length,
-        exclusionCount: exclusions.length,
+        // Not the raw exclusion count — see calculatePolicyHealthScore. Only the
+        // clauses the analysis itself flagged as able to cost the holder.
+        criticalClauseCount: finePrint.filter((c) => c.riskLevel === "critical").length,
+        warningClauseCount: finePrint.filter((c) => c.riskLevel === "warning").length,
         verified: Boolean(policy.verified),
     })
 

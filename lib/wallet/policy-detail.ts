@@ -187,19 +187,39 @@ export interface PolicyHealthScore {
 }
 
 /**
- * Per-policy health signal shown in the detail-page donut. Same semantics as
- * the original CoverageHealthScore widget: every exclusion costs 10, every
- * open gap 15, confirmed extraction earns +5, clamped to 0–100.
+ * Per-policy health signal shown in the detail-page donut.
  * (The portfolio-level ProtectionScore is a separate, user-scoped metric.)
+ *
+ * It used to deduct 10 points for every EXCLUSION found. Exclusions are not
+ * defects — they are the boundary that defines the cover and makes the premium
+ * calculable. Every policy has them; this page's own exclusions card says so in
+ * as many words («Κάθε ασφαλιστήριο περιλαμβάνει εξαιρέσεις»), directly beneath
+ * a donut that had just docked the policy ten points each for having them.
+ *
+ * The consequences ran the wrong way twice over. A carefully drafted wording
+ * that enumerates twelve exclusions scored 0 — "needs attention" — while a vague
+ * one listing two scored 80 and read "good": the product rewarded the worse
+ * contract. And because the count comes from AI extraction, a BETTER analysis
+ * lowered the score; re-running it to get more detail was punished.
+ *
+ * What actually reflects on a policy is whether something in it is unexpected or
+ * leaves the holder exposed. The engine already decides that: open gaps, and
+ * fine-print clauses the analysis rated `critical` or `warning`. Those are the
+ * inputs now. Confirmed extraction still earns +5, because a verified reading is
+ * genuinely worth more than an unverified one.
  */
 export function calculatePolicyHealthScore(input: {
     gapCount: number
-    exclusionCount: number
+    /** Fine-print clauses rated `critical` — things that can cost the holder. */
+    criticalClauseCount?: number
+    /** Fine-print clauses rated `warning`. */
+    warningClauseCount?: number
     verified: boolean
 }): PolicyHealthScore {
     let score = 100
-    score -= Math.max(0, input.exclusionCount) * 10
     score -= Math.max(0, input.gapCount) * 15
+    score -= Math.max(0, input.criticalClauseCount ?? 0) * 10
+    score -= Math.max(0, input.warningClauseCount ?? 0) * 4
     if (input.verified) score = Math.min(score + 5, 100)
     score = Math.max(0, Math.min(100, score))
 

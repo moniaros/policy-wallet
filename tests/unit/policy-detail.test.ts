@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { el } from '@/lib/i18n/translations/el'
 import {
     calculatePolicyHealthScore,
     deriveClaimDeadlines,
@@ -174,43 +176,88 @@ describe('pickLang', () => {
     })
 })
 
+/**
+ * The score used to deduct 10 points for every EXCLUSION. Exclusions are not
+ * defects — they are the boundary that defines the cover. Every policy has them,
+ * and this page's own exclusions card says so directly beneath the donut. A
+ * carefully drafted wording listing twelve scored 0 ("needs attention") while a
+ * vague one listing two scored 80 ("good"), so the product rewarded the worse
+ * contract — and because the count comes from AI extraction, a better analysis
+ * lowered the score.
+ */
 describe('calculatePolicyHealthScore', () => {
     it('starts at 100 with no findings and no verification', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 0, exclusionCount: 0, verified: false })).toEqual({
+        expect(calculatePolicyHealthScore({ gapCount: 0, verified: false })).toEqual({
             score: 100,
             level: 'good',
         })
     })
 
-    it('caps the verified bonus at 100', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 0, exclusionCount: 0, verified: true }).score).toBe(100)
+    it('does not punish a policy for stating its exclusions', () => {
+        // Twelve exclusions, nothing flagged as risky: still a clean policy.
+        expect(
+            calculatePolicyHealthScore({
+                gapCount: 0,
+                criticalClauseCount: 0,
+                warningClauseCount: 0,
+                verified: false,
+            }).score
+        ).toBe(100)
     })
 
-    it('subtracts 10 per exclusion and 15 per gap, adds 5 when verified', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 1, exclusionCount: 2, verified: false }).score).toBe(65)
-        expect(calculatePolicyHealthScore({ gapCount: 1, exclusionCount: 2, verified: true }).score).toBe(70)
+    it('caps the verified bonus at 100', () => {
+        expect(calculatePolicyHealthScore({ gapCount: 0, verified: true }).score).toBe(100)
+    })
+
+    it('weighs open gaps heaviest, then critical clauses, then warnings', () => {
+        expect(calculatePolicyHealthScore({ gapCount: 1, verified: false }).score).toBe(85)
+        expect(calculatePolicyHealthScore({ gapCount: 0, criticalClauseCount: 1, verified: false }).score).toBe(90)
+        expect(calculatePolicyHealthScore({ gapCount: 0, warningClauseCount: 1, verified: false }).score).toBe(96)
+    })
+
+    it('adds 5 when the extraction is confirmed', () => {
+        expect(calculatePolicyHealthScore({ gapCount: 1, criticalClauseCount: 2, verified: false }).score).toBe(65)
+        expect(calculatePolicyHealthScore({ gapCount: 1, criticalClauseCount: 2, verified: true }).score).toBe(70)
     })
 
     it('clamps at zero', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 10, exclusionCount: 10, verified: false }).score).toBe(0)
+        expect(
+            calculatePolicyHealthScore({ gapCount: 10, criticalClauseCount: 10, verified: false }).score
+        ).toBe(0)
     })
 
     it('maps levels at the 40 / 70 boundaries', () => {
-        expect(calculatePolicyHealthScore({ gapCount: 4, exclusionCount: 0, verified: false })).toMatchObject({
+        expect(calculatePolicyHealthScore({ gapCount: 4, verified: false })).toMatchObject({
             score: 40,
             level: 'attention',
         })
-        expect(calculatePolicyHealthScore({ gapCount: 2, exclusionCount: 0, verified: false })).toMatchObject({
+        expect(calculatePolicyHealthScore({ gapCount: 2, verified: false })).toMatchObject({
             score: 70,
             level: 'moderate',
         })
-        expect(calculatePolicyHealthScore({ gapCount: 1, exclusionCount: 1, verified: false })).toMatchObject({
-            score: 75,
-            level: 'good',
-        })
+    })
+})
+
+/**
+ * The call site must feed it the flagged clauses, not the raw exclusion list —
+ * the guard above only pins the function, and the defect lived in what was
+ * passed to it.
+ */
+describe('the policy detail page scores on what it flagged, not on exclusions', () => {
+    const VIEW = readFileSync('components/wallet/PolicyDetailsClientView.tsx', 'utf-8')
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/^\s*\/\/.*$/gm, '')
+
+    it('no longer passes the exclusion count', () => {
+        expect(VIEW).not.toMatch(/exclusionCount: exclusions\.length/)
     })
 
-    it('ignores negative counts', () => {
-        expect(calculatePolicyHealthScore({ gapCount: -3, exclusionCount: -2, verified: false }).score).toBe(100)
+    it('passes the critical and warning clause counts', () => {
+        expect(VIEW).toMatch(/criticalClauseCount: finePrint\.filter\(\(c\) => c\.riskLevel === "critical"\)\.length/)
+        expect(VIEW).toMatch(/warningClauseCount: finePrint\.filter\(\(c\) => c\.riskLevel === "warning"\)\.length/)
+    })
+
+    it('the exclusions card still says every policy has exclusions', () => {
+        expect(el.wallet.policyDetailsPage.exclusionsReanalyzeHint).toMatch(/Κάθε ασφαλιστήριο περιλαμβάνει εξαιρέσεις/)
     })
 })
