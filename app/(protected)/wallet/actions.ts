@@ -1407,20 +1407,16 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    // Verify ownership or access
+    // OWNER-ONLY. This action means "I, the policyholder, want to ask my agent
+    // about this gap": below, the relationship is looked up with the CALLER as
+    // the policyholder. The previous ownership-OR-grant check let a non-owner
+    // (an agent with a grant) through — but for them that lookup finds THEIR own
+    // agent relationship, not the customer's, so the opportunity would be minted
+    // in the wrong relationship, cross-linking this owner's gap. It only makes
+    // sense for the owner, like updateGapStatus.
     const policy = await db.policy.findUnique({ where: { id: policyId } })
     if (!policy) return { error: "Policy not found" }
-    if (policy.ownerUserId !== authResult.dbUser.id) {
-        const hasAccess = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: policy.ownerUserId,
-                granteeUserId: authResult.dbUser.id,
-                scope: `policy:${policy.id}`,
-                status: 'active'
-            }
-        })
-        if (!hasAccess) return { error: "Unauthorized" }
-    }
+    if (policy.ownerUserId !== authResult.dbUser.id) return { error: "Unauthorized" }
 
     // Agent collaboration (incl. gap escalation) is a paid-plan feature.
     const notifierEntitlements = await resolveUserEntitlements(authResult.dbUser.id)

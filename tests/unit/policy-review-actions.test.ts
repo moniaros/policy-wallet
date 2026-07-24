@@ -18,7 +18,8 @@ vi.mock('@/lib/db', () => ({
         customerRelationship: { findUnique: vi.fn(), create: vi.fn() },
         notificationEvent: { create: vi.fn() },
         activityLog: { create: vi.fn() },
-        gapInstance: { findUnique: vi.fn(), update: vi.fn() },
+        gapInstance: { findUnique: vi.fn(), update: vi.fn(), findFirst: vi.fn() },
+        opportunity: { findFirst: vi.fn(), create: vi.fn() },
         $transaction: vi.fn(async (ops: unknown[]) => ops),
     },
 }))
@@ -75,7 +76,7 @@ vi.mock('@/lib/subscription-entitlements', () => ({
 }))
 vi.mock('@google/generative-ai', () => ({ GoogleGenerativeAI: vi.fn() }))
 
-import { confirmPolicyReview, flagPolicyExtraction, ignoreGap } from '@/app/(protected)/wallet/actions'
+import { confirmPolicyReview, flagPolicyExtraction, ignoreGap, notifyAgentAboutGap } from '@/app/(protected)/wallet/actions'
 import { db } from '@/lib/db'
 import { runGapEngine } from '@/lib/services/gap-engine'
 
@@ -361,5 +362,32 @@ describe('ignoreGap — dismissing a gap is a write, not a read', () => {
         ;(db.gapInstance.findUnique as any).mockResolvedValue(null)
         const result = await ignoreGap('gap-x')
         expect(result).toEqual({ error: 'Gap not found' })
+    })
+})
+
+/**
+ * "Ask my agent about this gap" is policyholder-initiated: the relationship is
+ * looked up with the CALLER as the policyholder. Allowing a non-owner through a
+ * grant made no sense — it would mint the opportunity in the caller's OWN agent
+ * relationship, cross-linking this owner's gap. Owner-only, like updateGapStatus.
+ */
+describe('notifyAgentAboutGap — owner-only', () => {
+    it('rejects a non-owner EVEN WITH an active grant, and mints no opportunity', async () => {
+        mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: AGENT }) // not the owner
+        ;(db.policy.findUnique as any).mockResolvedValue({ id: 'pol-1', ownerUserId: OWNER.id })
+        // A grant exists — the OLD owner-or-grant check would let the agent past
+        // here; owner-only must still reject before any relationship/opportunity.
+        ;(db.accessGrant.findFirst as any).mockResolvedValue({ id: 'grant-1', permissions: 'edit' })
+
+        const result = await notifyAgentAboutGap('gap-1', 'pol-1')
+
+        expect(result).toEqual({ error: 'Unauthorized' })
+        expect(db.opportunity.create).not.toHaveBeenCalled()
+    })
+
+    it('returns not-found for a missing policy', async () => {
+        ;(db.policy.findUnique as any).mockResolvedValue(null)
+        const result = await notifyAgentAboutGap('gap-1', 'pol-x')
+        expect(result).toEqual({ error: 'Policy not found' })
     })
 })
