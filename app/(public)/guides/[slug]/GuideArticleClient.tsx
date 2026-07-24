@@ -37,7 +37,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                     <h1 className="mb-6 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] md:text-h1">
                         {guide.title[lang]}
                     </h1>
-                    <div className="flex flex-wrap items-center gap-4 border-b border-[#E2E8F0] pb-6 text-body text-[#64748B]">
+                    <div className="flex flex-wrap items-center gap-4 border-b border-[#E2E8F0] pb-6 text-body text-[#5B6A7A]">
                         {/* Byline: named author when one is published, editorial team otherwise. */}
                         <span className="inline-flex items-center gap-1.5 font-medium text-[#334155]">
                             {guide.author
@@ -54,7 +54,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                         </span>
                     </div>
                     {guide.author && (
-                        <p className="mt-3 text-body-sm leading-relaxed text-[#64748B]">
+                        <p className="mt-3 text-body-sm leading-relaxed text-[#5B6A7A]">
                             {guide.author.bio[lang]}
                         </p>
                     )}

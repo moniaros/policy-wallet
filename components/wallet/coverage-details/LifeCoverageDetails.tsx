@@ -104,7 +104,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
             <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.guaranteedVsUnitLinked}</span>
           </div>
           <div className="ml-10.5">
-            <div className="w-full h-4 rounded-full bg-black/10 dark:bg-white/15 overflow-hidden flex">
+            <div className="w-full h-4 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden flex">
               {life.guaranteedPercentage !== undefined && (
                 <div
                   className="h-full bg-primary dark:bg-mint rounded-l-full"

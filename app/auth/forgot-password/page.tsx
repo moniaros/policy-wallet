@@ -107,7 +107,7 @@ export default function ForgotPasswordPage() {
                     className="w-full max-w-[440px] rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-10"
                 >
                     {/* Top meta row */}
-                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#64748B] dark:text-white/60">
+                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#5B6A7A] dark:text-white/60">
                         <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1 dark:bg-white/10">
                             {t("Ασφαλής ανάκτηση", "Secure recovery")}
                         </span>
@@ -123,7 +123,7 @@ export default function ForgotPasswordPage() {
                             <PolicyWalletLogo size="md" language={language} />
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] dark:text-white">{copy.title}</h1>
-                        <p className="mt-1.5 text-sm text-[#64748B] dark:text-white/65">{copy.subtitle}</p>
+                        <p className="mt-1.5 text-sm text-[#5B6A7A] dark:text-white/65">{copy.subtitle}</p>
                     </div>
 
                     {submittedEmail ? (
@@ -135,7 +135,7 @@ export default function ForgotPasswordPage() {
                                         <p className="text-sm font-semibold text-[#0F172A] dark:text-white">{copy.sentTitle}</p>
                                         <p className="mt-1 text-sm text-[#475569] dark:text-white/65">{copy.sentBody}</p>
                                         <p className="mt-1 break-all text-xs font-semibold text-primary">{submittedEmail}</p>
-                                        <p className="mt-2 text-xs text-[#64748B] dark:text-white/60">{copy.sentHint}</p>
+                                        <p className="mt-2 text-xs text-[#5B6A7A] dark:text-white/60">{copy.sentHint}</p>
                                     </div>
                                 </div>
                             </div>
@@ -167,12 +167,12 @@ export default function ForgotPasswordPage() {
                             <div>
                                 <label
                                     htmlFor="forgot-email"
-                                    className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65"
+                                    className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65"
                                 >
                                     {copy.emailLabel}
                                 </label>
                                 <div className="relative">
-                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
+                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A]" />
                                     <input
                                         id="forgot-email"
                                         type="email"

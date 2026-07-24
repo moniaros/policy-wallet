@@ -102,7 +102,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#29685B] text-kicker font-bold text-white">
                                     20
                                 </div>
-                                <p className="text-body-sm text-[#64748B]">
+                                <p className="text-body-sm text-[#5B6A7A]">
                                     <span className="font-semibold text-[#0F172A]">
                                         {t("ασφαλιστικοί κλάδοι", "insurance branches")}
                                     </span>{" "}
@@ -122,7 +122,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                 {/* ── 2. TRUST BAR ─────────────────────────────────── */}
                 <div className="border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-10 lg:px-12">
                     <div className="mx-auto max-w-page space-y-6 text-center">
-                        <p className="text-caption font-semibold uppercase tracking-widest text-[#64748B]">
+                        <p className="text-caption font-semibold uppercase tracking-widest text-[#5B6A7A]">
                             {t(
                                 "Αναγνωρίζει συμβόλαια από όλες τις ασφαλιστικές",
                                 "Works with every Greek insurer"
@@ -216,7 +216,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                 <p className="text-h2 font-bold tracking-tight text-[#29685B] lg:text-h1">
                                     {stat.value}
                                 </p>
-                                <p className="mt-1 text-body text-[#64748B]">
+                                <p className="mt-1 text-body text-[#5B6A7A]">
                                     {t(stat.labelEl, stat.labelEn)}
                                 </p>
                             </div>

@@ -163,7 +163,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     <div>
                         <Link href={l("/")} className="inline-flex items-center text-title font-bold tracking-tight">
                             <span className="text-[#0F172A]">Policy</span>
-                            <span className="text-[#64748B]">Wallet</span>
+                            <span className="text-[#5B6A7A]">Wallet</span>
                         </Link>
                         <p className="mt-4 max-w-[320px] text-body leading-relaxed text-[#475569]">
                             {t(
@@ -207,7 +207,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 </li>
                             ))}
                         </ul>
-                        <p className="mt-4 text-caption leading-relaxed text-[#64748B]">
+                        <p className="mt-4 text-caption leading-relaxed text-[#5B6A7A]">
                             {t(
                                 "Συντομεύσεις για γρήγορη πρόσβαση σε FAQ και κρίσιμες σελίδες αξιολόγησης.",
                                 "Shortcuts for quick access to FAQs and key decision pages."
@@ -292,7 +292,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             </div>
 
             <div className="border-t border-[#E2E8F0] px-6 py-5 lg:px-12">
-                <div className="mx-auto max-w-page-wide pb-4 text-body-sm leading-relaxed text-[#64748B]">
+                <div className="mx-auto max-w-page-wide pb-4 text-body-sm leading-relaxed text-[#5B6A7A]">
                     <p>
                         {t(
                             "Η πλατφόρμα PolicyWallet λειτουργεί από ελληνική εταιρεία.",
@@ -301,7 +301,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         {entity.detailsComingSoon}
                     </p>
                 </div>
-                <div className="mx-auto flex max-w-page-wide flex-col gap-3 text-body-sm text-[#64748B] sm:flex-row sm:items-center sm:justify-between">
+                <div className="mx-auto flex max-w-page-wide flex-col gap-3 text-body-sm text-[#5B6A7A] sm:flex-row sm:items-center sm:justify-between">
                     <p>
                         (c) {new Date().getFullYear()} PolicyWallet.{" "}
                         {t("Με επιφύλαξη παντός δικαιώματος.", "All rights reserved.")}

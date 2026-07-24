@@ -18,7 +18,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
         <LoBPageShell activeNav="none" locale={language}>
             <article className="mx-auto max-w-[760px] px-6 pb-16 md:px-12">
                 {/* Breadcrumb */}
-                <nav className="mb-8 flex flex-wrap items-center gap-1.5 text-body-sm text-[#64748B]">
+                <nav className="mb-8 flex flex-wrap items-center gap-1.5 text-body-sm text-[#5B6A7A]">
                     <Link href={l("/lexiko")} className="hover:text-[#29685B]">
                         {t("Ασφαλιστικό λεξικό", "Insurance glossary")}
                     </Link>
@@ -39,7 +39,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                 </p>
 
                 {entry.aliases && entry.aliases.length > 0 && (
-                    <p className="mb-8 text-body text-[#64748B]">
+                    <p className="mb-8 text-body text-[#5B6A7A]">
                         {t("Γνωστό και ως:", "Also known as:")}{" "}
                         <span className="text-[#475569] dark:text-slate-300">
                             {entry.aliases.map((alias) => alias[lang]).join(" · ")}
@@ -95,7 +95,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                 {/* Related */}
                 {entry.related && entry.related.length > 0 && (
                     <section className="mt-12">
-                        <h2 className="mb-4 text-body font-semibold uppercase tracking-widest text-[#64748B]">
+                        <h2 className="mb-4 text-body font-semibold uppercase tracking-widest text-[#5B6A7A]">
                             {t("Σχετικά", "Related")}
                         </h2>
                         <div className="flex flex-col gap-2.5">
@@ -114,7 +114,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                 )}
 
                 {/* Honesty line */}
-                <p className="mt-12 flex items-start gap-2 text-body-sm leading-relaxed text-[#94A3B8]">
+                <p className="mt-12 flex items-start gap-2 text-body-sm leading-relaxed text-[#5B6A7A]">
                     <Check className="mt-0.5 h-4 w-4 shrink-0" />
                     {t(
                         "Ενημερωτικό περιεχόμενο, όχι ασφαλιστική συμβουλή. Το PolicyWallet εξηγεί τι σημαίνει ο όρος και σας βοηθά να τον εντοπίσετε στο δικό σας έγγραφο — δεν βεβαιώνει τι καλύπτει το συμβόλαιό σας.",

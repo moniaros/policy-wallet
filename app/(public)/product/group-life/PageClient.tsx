@@ -89,7 +89,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                                                 {t("Αυτή η σελίδα", "This page")}
                                             </span>
                                         ) : (
-                                            <ArrowRight className="h-4 w-4 text-[#94A3B8]" />
+                                            <ArrowRight className="h-4 w-4 text-[#5B6A7A]" />
                                         )}
                                     </div>
                                     <h3 className="text-title font-semibold text-[#0F172A] mb-3">{t(pillar.titleEl, pillar.titleEn)}</h3>

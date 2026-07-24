@@ -336,7 +336,7 @@ export function Settings({
                                         aria-checked={isPreferenceEnabled(pref.id, 'email')}
                                         aria-label={pref.label}
                                         onClick={() => onToggleNotification?.(pref.id, 'email', !isPreferenceEnabled(pref.id, 'email'))}
-                                        className={`w-11 h-6 rounded-full transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isPreferenceEnabled(pref.id, 'email') ? 'bg-primary' : 'bg-black/10 dark:bg-white/15'}`}
+                                        className={`w-11 h-6 rounded-full transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isPreferenceEnabled(pref.id, 'email') ? 'bg-primary' : 'bg-black/10 dark:bg-white/10'}`}
                                     >
                                         <motion.span
                                             animate={{ x: isPreferenceEnabled(pref.id, 'email') ? 22 : 2 }}
@@ -403,7 +403,7 @@ export function Settings({
                                             </div>
                                             <div className="text-kicker font-bold text-black/55 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
                                                 <span>{session.location}</span>
-                                                <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/25" />
+                                                <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/10" />
                                                 <span className="font-mono">{session.ip_address}</span>
                                             </div>
                                             <div className="text-kicker font-medium text-black/55 dark:text-white/60 mt-2 italic flex items-center gap-1.5">
@@ -462,7 +462,7 @@ export function Settings({
                                                 </div>
                                                 <div className="text-kicker font-bold text-black/55 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
                                                     <span>{event.device_name}</span>
-                                                    <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/25" />
+                                                    <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/10" />
                                                     <span>{formatDateTime(event.created_at)}</span>
                                                 </div>
                                             </div>

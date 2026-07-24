@@ -17,7 +17,7 @@ const DOT_STYLES: Record<BranchTileState, string> = {
     covered: "bg-primary dark:bg-mint",
     attention: "bg-amber-500",
     gap: "bg-rose-500",
-    neutral: "bg-black/25 dark:bg-white/25",
+    neutral: "bg-black/25 dark:bg-white/10",
 }
 
 /**

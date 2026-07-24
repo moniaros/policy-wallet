@@ -39,7 +39,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                 aria-expanded={isOpen}
                 aria-controls={menuId}
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 hover:bg-black/10 dark:hover:bg-white/15 transition-all group"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 hover:bg-black/10 dark:hover:bg-white/10 transition-all group"
             >
                 <div className="flex flex-col items-start min-w-0">
                     <span className="text-kicker font-bold uppercase tracking-widest text-black/55 dark:text-white/50 group-hover:text-black/65 dark:group-hover:text-white/75 transition-colors">
@@ -49,7 +49,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                         {currentRole.label}
                     </span>
                 </div>
-                <div className={`p-1 rounded-lg bg-black/10 dark:bg-white/15 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                <div className={`p-1 rounded-lg bg-black/10 dark:bg-white/10 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
                     <svg className="w-3.5 h-3.5 text-black/60 dark:text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                     </svg>

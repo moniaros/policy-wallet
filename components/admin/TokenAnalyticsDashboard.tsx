@@ -151,7 +151,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 {/* Active Users */}
                 <div className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl border-2 border-amber-200 dark:border-amber-800 p-6">
                     <div className="flex items-center justify-between mb-2">
-                        <Users className="w-8 h-8 text-[#D97706] dark:text-amber-400" />
+                        <Users className="w-8 h-8 text-[#92400E] dark:text-amber-400" />
                     </div>
                     <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
                         {copy.activeUsers[language]}

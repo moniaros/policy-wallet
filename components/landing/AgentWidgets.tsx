@@ -15,7 +15,7 @@ function BrowserChrome({ url, children }: { url: string; children: React.ReactNo
                     <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                     <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                 </div>
-                <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#64748B]">
+                <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#5B6A7A]">
                     {url}
                 </div>
             </div>
@@ -54,7 +54,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                 <div className="mb-4 flex items-center justify-between">
                     <div>
                         <p className="text-body-sm font-semibold text-[#0F172A]">{t("Χαρτοφυλάκιο Πελατών", "Client Portfolio")}</p>
-                        <p className="text-micro text-[#64748B]">{t("47 ενεργοί πελάτες", "47 active clients")}</p>
+                        <p className="text-micro text-[#5B6A7A]">{t("47 ενεργοί πελάτες", "47 active clients")}</p>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1">
                         <Shield className="h-3 w-3 text-[#29685B]" />
@@ -73,7 +73,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                             style={{ transitionDelay: `${i * 80 + 400}ms` }}
                         >
                             <p className="text-lead font-bold text-[#0F172A]">{s.value}</p>
-                            <p className="text-kicker text-[#64748B]">{s.label}</p>
+                            <p className="text-kicker text-[#5B6A7A]">{s.label}</p>
                         </div>
                     ))}
                 </div>
@@ -134,7 +134,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                                             }}
                                         />
                                     </div>
-                                    <span className="text-kicker font-medium text-[#64748B]">{c.score}%</span>
+                                    <span className="text-kicker font-medium text-[#5B6A7A]">{c.score}%</span>
                                 </div>
                             </div>
                         </div>
@@ -201,7 +201,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                 <div className="mb-4 flex items-center justify-between">
                     <div>
                         <p className="text-body-sm font-semibold text-[#0F172A]">{t("AI Σαρωτής Κενών", "AI Gap Scanner")}</p>
-                        <p className="text-micro text-[#64748B]">{t("Σάρωση: Παπαδοπούλου Μ.", "Scanning: Papadopoulou M.")}</p>
+                        <p className="text-micro text-[#5B6A7A]">{t("Σάρωση: Παπαδοπούλου Μ.", "Scanning: Papadopoulou M.")}</p>
                     </div>
                     <div
                         className={`flex items-center gap-1.5 transition-all duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
@@ -304,7 +304,7 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
                 <div className="mb-4 flex items-center justify-between">
                     <div>
                         <p className="text-body-sm font-semibold text-[#0F172A]">{t("Pipeline Ανανεώσεων", "Renewal Pipeline")}</p>
-                        <p className="text-micro text-[#64748B]">{t("Επόμενες 60 μέρες", "Next 60 days")}</p>
+                        <p className="text-micro text-[#5B6A7A]">{t("Επόμενες 60 μέρες", "Next 60 days")}</p>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full border border-[#FECACA] bg-[#FEF2F2] px-2.5 py-1">
                         <Clock className="h-3 w-3 text-[#B91C1C]" />
@@ -331,7 +331,7 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <p className="truncate text-caption font-semibold text-[#0F172A]">{r.name}</p>
-                                    <p className="text-micro text-[#64748B]">{r.policy}</p>
+                                    <p className="text-micro text-[#5B6A7A]">{r.policy}</p>
                                 </div>
                                 <button
                                     onClick={() => setSent((prev) => ({ ...prev, [i]: true }))}
@@ -399,7 +399,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                                 {t("Ασφαλιστική Αναφορά", "Insurance Report")}
                             </span>
                         </div>
-                        <div className="rounded bg-white/15 px-2 py-0.5 text-kicker font-medium text-white/90">
+                        <div className="rounded bg-white/10 px-2 py-0.5 text-kicker font-medium text-white">
                             01/04/2026
                         </div>
                     </div>
@@ -411,7 +411,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                         }`}
                         style={{ transitionDelay: "600ms" }}
                     >
-                        <p className="text-kicker uppercase tracking-wider text-[#64748B]">{t("Πελάτης", "Client")}</p>
+                        <p className="text-kicker uppercase tracking-wider text-[#5B6A7A]">{t("Πελάτης", "Client")}</p>
                         <p className="text-body font-semibold text-[#0F172A]">Νικολαΐδης Γεώργιος</p>
                     </div>
 
@@ -427,7 +427,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                             >
                                 <div>
                                     <p className="text-caption font-semibold text-[#0F172A]">{r.type}</p>
-                                    <p className="text-micro text-[#64748B]">{r.insurer}</p>
+                                    <p className="text-micro text-[#5B6A7A]">{r.insurer}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-micro font-semibold text-[#29685B]">{r.premium}</p>

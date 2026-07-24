@@ -90,7 +90,7 @@ export function ProductSections({ language }: { language: Language }) {
                         </ProductScrollButton>
                     </div>
 
-                    <p className="mt-4 flex items-center justify-center gap-2 text-body text-[#64748B]">
+                    <p className="mt-4 flex items-center justify-center gap-2 text-body text-[#5B6A7A]">
                         <ChevronDown className="h-4 w-4 text-[#29685B]" />
                         {t(
                             "Κύλιση στην ίδια σελίδα για τα 3 βήματα.",
@@ -137,7 +137,7 @@ export function ProductSections({ language }: { language: Language }) {
                         <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
                             <div className="mb-6 flex items-center justify-between border-b border-[#E2E8F0] pb-4">
                                 <div>
-                                    <p className="mb-1 text-micro font-semibold uppercase tracking-wider text-[#64748B]">
+                                    <p className="mb-1 text-micro font-semibold uppercase tracking-wider text-[#5B6A7A]">
                                         {t("Πύλη Ασφάλισης", "Insurance Hub")}
                                     </p>
                                     <p className="text-lead font-semibold text-[#0F172A]">
@@ -191,7 +191,7 @@ export function ProductSections({ language }: { language: Language }) {
                                             <p className="truncate text-body font-medium text-[#0F172A]">
                                                 {t(nameEl, nameEn)}
                                             </p>
-                                            <p className={`text-caption ${status === "warn" ? "text-amber-700" : "text-[#64748B]"}`}>
+                                            <p className={`text-caption ${status === "warn" ? "text-amber-700" : "text-[#5B6A7A]"}`}>
                                                 {t(expEl, expEn)}
                                             </p>
                                         </div>

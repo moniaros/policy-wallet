@@ -41,7 +41,7 @@ export default function GlossaryIndexClient() {
                             href={localizeHref(`/lexiko/${entry.slug}`, language)}
                             className="group rounded-2xl border border-[#E2E8F0] bg-white p-7 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:border-slate-800 dark:bg-slate-900"
                         >
-                            <div className="mb-3 inline-flex items-center gap-1.5 text-body-sm text-[#64748B]">
+                            <div className="mb-3 inline-flex items-center gap-1.5 text-body-sm text-[#5B6A7A]">
                                 <BookOpen className="h-4 w-4 text-[#29685B]" />
                                 {t("Ορισμός", "Definition")}
                             </div>

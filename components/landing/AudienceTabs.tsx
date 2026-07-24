@@ -52,7 +52,7 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         className={`rounded-full px-6 py-2 text-body font-semibold transition-all duration-200 ${
                             activeTab === "policyholders"
                                 ? "bg-[#29685B] text-white shadow-sm"
-                                : "text-[#64748B] hover:text-[#0F172A]"
+                                : "text-[#5B6A7A] hover:text-[#0F172A]"
                         }`}
                     >
                         {t("Ιδιώτες", "Individuals")}
@@ -69,7 +69,7 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         className={`rounded-full px-6 py-2 text-body font-semibold transition-all duration-200 ${
                             activeTab === "agents"
                                 ? "bg-[#29685B] text-white shadow-sm"
-                                : "text-[#64748B] hover:text-[#0F172A]"
+                                : "text-[#5B6A7A] hover:text-[#0F172A]"
                         }`}
                     >
                         {t("Ασφαλιστές", "Agents")}
@@ -183,7 +183,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                             >
                                 <p.Icon
                                     className={`h-4 w-4 ${
-                                        p.type === "warn" ? "text-[#D97706]" : "text-[#29685B]"
+                                        p.type === "warn" ? "text-[#92400E]" : "text-[#29685B]"
                                     }`}
                                 />
                             </div>
@@ -192,8 +192,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                             </span>
                             {p.type === "warn" ? (
                                 <div className="flex items-center gap-1">
-                                    <AlertTriangle className="h-3.5 w-3.5 text-[#D97706]" />
-                                    <span className="text-micro font-semibold text-[#D97706]">
+                                    <AlertTriangle className="h-3.5 w-3.5 text-[#92400E]" />
+                                    <span className="text-micro font-semibold text-[#92400E]">
                                         {t("Κενό", "Gap")}
                                     </span>
                                 </div>
@@ -206,7 +206,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     ))}
                 </div>
                 <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#FDE68A] bg-[#FFFBEB] p-3">
-                    <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#D97706]" />
+                    <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#92400E]" />
                     <p className="text-caption font-medium text-[#92400E]">
                         {t(
                             "Κατοικία: λείπει κάλυψη πλημμύρας",
@@ -285,7 +285,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {[
                         { value: "47", label: t("Πελάτες", "Clients"), color: "text-[#0F172A]" },
-                        { value: "8", label: t("Ανανεώσεις", "Renewals"), color: "text-[#D97706]" },
+                        { value: "8", label: t("Ανανεώσεις", "Renewals"), color: "text-[#92400E]" },
                         { value: "12", label: t("Ευκαιρίες", "Opps"), color: "text-[#29685B]" },
                     ].map((stat) => (
                         <div
@@ -293,7 +293,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                             className="rounded-xl border border-[#E2E8F0] bg-white p-3 text-center"
                         >
                             <p className={`text-lead font-bold ${stat.color}`}>{stat.value}</p>
-                            <p className="text-kicker text-[#64748B]">{stat.label}</p>
+                            <p className="text-kicker text-[#5B6A7A]">{stat.label}</p>
                         </div>
                     ))}
                 </div>
@@ -319,7 +319,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                             ) : (
                                 <span
                                     className={`text-micro font-semibold ${
-                                        c.score >= 85 ? "text-[#29685B]" : "text-[#64748B]"
+                                        c.score >= 85 ? "text-[#29685B]" : "text-[#5B6A7A]"
                                     }`}
                                 >
                                     {c.score}%

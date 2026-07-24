@@ -214,7 +214,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                             <p className="truncate text-body-sm font-semibold text-[#0F172A] dark:text-white">
                                 {NO_AGENT_COPY.exampleName[lang]}
                             </p>
-                            <p className="inline-flex items-center gap-1 text-micro text-[#64748B] dark:text-white/55">
+                            <p className="inline-flex items-center gap-1 text-micro text-[#5B6A7A] dark:text-white/55">
                                 <ShieldCheck className="h-3 w-3 text-primary dark:text-mint" />
                                 {NO_AGENT_COPY.exampleMeta[lang]}
                             </p>

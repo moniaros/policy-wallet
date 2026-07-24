@@ -264,7 +264,7 @@ function SignupConfirmationContent() {
                     className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-7"
                 >
                     {/* Top meta row */}
-                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#64748B] dark:text-white/60">
+                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#5B6A7A] dark:text-white/60">
                         <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1 dark:bg-white/10">{copy.stepLabel}</span>
                         <span className="inline-flex items-center gap-1 text-[#475569] dark:text-white/65">
                             <ShieldCheck className="h-3.5 w-3.5 text-primary" />
@@ -278,11 +278,11 @@ function SignupConfirmationContent() {
                             <PolicyWalletLogo size="md" language={language} />
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] dark:text-white">{copy.heading}</h1>
-                        <p className="mt-1.5 text-sm text-[#64748B] dark:text-white/65">{copy.subtitle}</p>
+                        <p className="mt-1.5 text-sm text-[#5B6A7A] dark:text-white/65">{copy.subtitle}</p>
                     </div>
 
                     {loadingState ? (
-                        <div className="flex items-center justify-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 text-[#64748B] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
+                        <div className="flex items-center justify-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 text-[#5B6A7A] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
                             <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
                             {copy.loading}
                         </div>
@@ -307,7 +307,7 @@ function SignupConfirmationContent() {
                             {/* Onboarding shell card */}
                             <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 dark:border-white/10 dark:bg-white/5">
                                 <p className="text-sm font-semibold text-[#0F172A] dark:text-white">{copy.shellTitle}</p>
-                                <p className="mt-1 text-sm text-[#64748B] dark:text-white/65">{copy.shellDesc}</p>
+                                <p className="mt-1 text-sm text-[#5B6A7A] dark:text-white/65">{copy.shellDesc}</p>
                                 <ul className="mt-3 space-y-2 text-sm text-[#475569] dark:text-white/65">
                                     {copy.trustedPoints.map((point) => (
                                         <li key={point} className="flex items-center gap-2">

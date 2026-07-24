@@ -56,7 +56,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                         <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                     </div>
-                    <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#64748B]">
+                    <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#5B6A7A]">
                         {`${PRODUCT_DISPLAY_HOST}/wallet`}
                     </div>
                 </div>
@@ -68,7 +68,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                             <p className="text-body-sm font-semibold text-[#0F172A]">
                                 {t("Χαρτοφυλάκιο", "My Portfolio")}
                             </p>
-                            <p className="text-micro text-[#64748B]">
+                            <p className="text-micro text-[#5B6A7A]">
                                 {t("3 ενεργά συμβόλαια", "3 active policies")}
                             </p>
                         </div>
@@ -97,7 +97,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                 >
                                     <p.Icon
                                         className={`h-5 w-5 ${
-                                            p.type === "expiring" ? "text-[#D97706]" : "text-[#29685B]"
+                                            p.type === "expiring" ? "text-[#92400E]" : "text-[#29685B]"
                                         }`}
                                     />
                                 </div>
@@ -116,7 +116,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                             {p.status}
                                         </span>
                                     </div>
-                                    <p className="mb-1.5 text-micro text-[#64748B]">{p.insurer}</p>
+                                    <p className="mb-1.5 text-micro text-[#5B6A7A]">{p.insurer}</p>
                                     <div className="flex items-center gap-2">
                                         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#F1F5F9]">
                                             <div
@@ -129,7 +129,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                                 }}
                                             />
                                         </div>
-                                        <span className="text-kicker font-medium text-[#64748B]">
+                                        <span className="text-kicker font-medium text-[#5B6A7A]">
                                             {p.coverage}%
                                         </span>
                                     </div>
@@ -145,7 +145,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         }`}
                         style={{ transitionDelay: "900ms" }}
                     >
-                        <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 animate-pulse text-[#D97706]" />
+                        <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 animate-pulse text-[#92400E]" />
                         <div className="flex-1 min-w-0">
                             <p className="text-caption font-semibold text-[#92400E]">
                                 {t("Κενό κάλυψης εντοπίστηκε", "Coverage gap detected")}
@@ -177,7 +177,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
             >
                 <span className="h-2 w-2 animate-pulse rounded-full bg-[#29685B]" />
                 <span className="text-micro font-semibold text-[#0F172A]">AI</span>
-                <span className="text-micro text-[#64748B]">
+                <span className="text-micro text-[#5B6A7A]">
                     {t("Ανάλυση σε 28s", "Analyzed in 28s")}
                 </span>
             </div>
@@ -189,7 +189,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                 }`}
                 style={{ transitionDelay: "1300ms" }}
             >
-                <Clock className="h-3.5 w-3.5 text-[#D97706]" />
+                <Clock className="h-3.5 w-3.5 text-[#92400E]" />
                 <span className="text-micro font-semibold text-[#92400E]">
                     {t("Λήγει σε 14 μέρες", "Expires in 14 days")}
                 </span>

@@ -202,7 +202,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 
                 {/* Back + language */}
                 <div className="mb-6 flex items-center justify-between">
-                    <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#64748B] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
+                    <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
                         ← {t("Αρχική", "Home")}
                     </Link>
                     <div className="flex items-center gap-2">
@@ -226,13 +226,13 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                         <h1 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
                             {t("Δημιουργία λογαριασμού", "Create your account")}
                         </h1>
-                        <p className="mt-1 text-body text-[#64748B] dark:text-white/65">
+                        <p className="mt-1 text-body text-[#5B6A7A] dark:text-white/65">
                             {t("Όλα τα συμβόλαιά σας σε ένα ασφαλές μέρος.", "All your policies in one secure place.")}
                         </p>
                     </div>
 
                     {/* Role cross-link: two dedicated forms, one per audience */}
-                    <p className="mb-5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-center text-caption text-[#64748B] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
+                    <p className="mb-5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-center text-caption text-[#5B6A7A] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
                         {role === "policyholder" ? (
                             <>
                                 {t("Είστε ασφαλιστικός σύμβουλος;", "Are you an insurance agent?")}{" "}
@@ -262,7 +262,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 
                         {role === "agent" && (
                             <div>
-                                <label htmlFor="signup-name" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">
+                                <label htmlFor="signup-name" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">
                                     {t("Ονοματεπώνυμο", "Full name")}
                                 </label>
                                 <input
@@ -278,7 +278,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 
                         {/* Mobile */}
                         <div>
-                            <label htmlFor="signup-mobile" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">
+                            <label htmlFor="signup-mobile" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">
                                 {t("Αριθμός κινητού", "Mobile number")}
                             </label>
                             <div className="relative">
@@ -298,14 +298,14 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 
                         {/* Email */}
                         <div>
-                            <label htmlFor="signup-email" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">
+                            <label htmlFor="signup-email" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">
                                 {role === "agent" ? t("Email", "Email") : t("Email (προαιρετικό)", "Email (optional)")}
                             </label>
                             <div className="relative">
                                 <input id="signup-email" type="email" placeholder="name@example.com" {...register("email")} className={`${inputBase} ${errors.email ? "border-rose-300" : ""}`} />
                                 {isEmailValid && <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-primary" />}
                             </div>
-                            <p className="mt-1 text-micro text-[#94A3B8] dark:text-white/60">
+                            <p className="mt-1 text-micro text-[#5B6A7A] dark:text-white/60">
                                 {t("Για ανάκτηση λογαριασμού και ειδοποιήσεις.", "For account recovery and alerts.")}
                             </p>
                             {errors.email && <p className="mt-1 text-caption text-rose-600">{getZodError(errors.email.message, language)}</p>}
@@ -313,7 +313,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 
                         {/* Password */}
                         <div>
-                            <label htmlFor="signup-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">
+                            <label htmlFor="signup-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">
                                 {t("Κωδικός πρόσβασης", "Password")}
                             </label>
                             <div className="relative">
@@ -327,7 +327,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword((v) => !v)}
-                                    className="absolute right-2 top-2.5 rounded-md p-1.5 text-[#94A3B8] transition hover:bg-[#F1F5F9] dark:hover:bg-white/10"
+                                    className="absolute right-2 top-2.5 rounded-md p-1.5 text-[#5B6A7A] transition hover:bg-[#F1F5F9] dark:hover:bg-white/10"
                                     aria-label={showPassword ? t("Απόκρυψη κωδικού", "Hide password") : t("Εμφάνιση κωδικού", "Show password")}
                                 >
                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -337,7 +337,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                             <div className="mt-2 flex items-center gap-2" aria-hidden>
                                 <div className="flex flex-1 gap-1">
                                     {[0, 1, 2].map((i) => (
-                                        <span key={i} className={`h-1.5 flex-1 rounded-full transition-colors ${strength > i ? strengthColors[strength - 1] : "bg-[#E2E8F0] dark:bg-white/15"}`} />
+                                        <span key={i} className={`h-1.5 flex-1 rounded-full transition-colors ${strength > i ? strengthColors[strength - 1] : "bg-[#E2E8F0] dark:bg-white/10"}`} />
                                     ))}
                                 </div>
                                 {strengthLabel && <span className={`text-micro font-semibold ${strength === 1 ? "text-rose-500" : strength === 2 ? "text-amber-500" : "text-primary"}`}>{strengthLabel}</span>}
@@ -377,12 +377,12 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                             {signupSuccess ? t("Πορτοφόλι δημιουργήθηκε", "Wallet Created") : t("Δημιουργία Πορτοφολιού", "Create My Wallet")}
                         </motion.button>
 
-                        <p className="text-center text-caption text-[#94A3B8] dark:text-white/60">
+                        <p className="text-center text-caption text-[#5B6A7A] dark:text-white/60">
                             {t("Χρειάζονται 90 δευτερόλεπτα. Ακυρώστε οποτεδήποτε.", "Takes 90 seconds. Cancel anytime.")}
                         </p>
                     </form>
 
-                    <p className="mt-5 border-t border-[#E2E8F0] pt-4 text-center text-body-sm text-[#64748B] dark:border-white/10 dark:text-white/65">
+                    <p className="mt-5 border-t border-[#E2E8F0] pt-4 text-center text-body-sm text-[#5B6A7A] dark:border-white/10 dark:text-white/65">
                         {t("Έχετε ήδη λογαριασμό;", "Already have an account?")}{" "}
                         <Link href="/auth/signin" className="font-semibold text-primary hover:underline">
                             {t("Σύνδεση", "Log in")}

@@ -25,7 +25,7 @@ function FAQItem({ q, a }: ProductFaqEntry) {
                 {open ? (
                     <ChevronUp className="h-5 w-5 flex-shrink-0 text-[#29685B]" />
                 ) : (
-                    <ChevronDown className="h-5 w-5 flex-shrink-0 text-[#64748B] transition-colors duration-150 group-hover:text-[#29685B]" />
+                    <ChevronDown className="h-5 w-5 flex-shrink-0 text-[#5B6A7A] transition-colors duration-150 group-hover:text-[#29685B]" />
                 )}
             </button>
             <div className={`overflow-hidden transition-all duration-300 ease-out ${open ? "max-h-[300px] pb-5" : "max-h-0"}`}>

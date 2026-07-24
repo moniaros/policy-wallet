@@ -111,7 +111,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                             <div className="p-4 bg-[#F0FDF4] rounded-lg flex justify-between items-center border border-[#29685B]/20">
                                 <div>
                                     <p className="font-medium text-[#166534] text-sm">Home Policy · Section D</p>
-                                    <p className="text-xs text-[#166534]/80 mt-1">Family liability included</p>
+                                    <p className="text-xs text-[#166534] mt-1">Family liability included</p>
                                 </div>
                                 <ShieldCheck className="w-5 h-5 text-[#29685B]" />
                             </div>

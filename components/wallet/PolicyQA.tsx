@@ -172,7 +172,7 @@ export function PolicyQA({
                                         key={idx}
                                         onClick={() => setQuestion(q)}
                                         disabled={!inputEnabled}
-                                        className="w-full text-left px-4 py-3 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 rounded-xl text-sm text-black/75 dark:text-white/75 transition-colors border border-black/10 dark:border-white/15 hover:border-primary/35 dark:hover:border-mint/35 cursor-pointer disabled:cursor-default disabled:opacity-60 disabled:hover:bg-black/5 dark:disabled:hover:bg-white/10"
+                                        className="w-full text-left px-4 py-3 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl text-sm text-black/75 dark:text-white/75 transition-colors border border-black/10 dark:border-white/15 hover:border-primary/35 dark:hover:border-mint/35 cursor-pointer disabled:cursor-default disabled:opacity-60 disabled:hover:bg-black/5 dark:disabled:hover:bg-white/10"
                                     >
                                         <MessageCircle className="w-4 h-4 inline mr-2 text-primary dark:text-mint" />
                                         {q}

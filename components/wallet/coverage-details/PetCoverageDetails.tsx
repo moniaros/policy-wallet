@@ -92,7 +92,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
             <span className="text-sm font-bold text-black dark:text-white">{fmt(pet.annualLimitTotal)}</span>
           </div>
           <div className="ml-10.5">
-            <div className="w-full h-3 rounded-full bg-black/10 dark:bg-white/15 overflow-hidden">
+            <div className="w-full h-3 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${usagePercent > 80 ? "bg-red-500" : usagePercent > 50 ? "bg-amber-500" : "bg-primary"}`}
                 style={{ width: `${usagePercent}%` }}

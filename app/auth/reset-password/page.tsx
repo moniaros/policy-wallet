@@ -181,7 +181,7 @@ function ResetPasswordContent() {
                             </div>
                             <div className="mt-2 grid grid-cols-3 gap-1.5" aria-hidden>
                                 {[0, 1, 2].map((index) => (
-                                    <span key={index} className={`h-1.5 rounded-full ${strength > index ? (strength === 1 ? "bg-rose-500" : strength === 2 ? "bg-amber-500" : "bg-primary") : "bg-slate-200 dark:bg-white/15"}`} />
+                                    <span key={index} className={`h-1.5 rounded-full ${strength > index ? (strength === 1 ? "bg-rose-500" : strength === 2 ? "bg-amber-500" : "bg-primary") : "bg-slate-200 dark:bg-white/10"}`} />
                                 ))}
                             </div>
                             {errors.password ? <p className="mt-1 text-xs text-rose-600">{errors.password.message}</p> : null}

@@ -150,14 +150,14 @@ export default function CompanyPage() {
                                     className="rounded-2xl border border-[#E2E8F0] bg-white p-6"
                                 >
                                     <h3 className="text-title font-semibold text-[#0F172A]">{member.name}</h3>
-                                    <p className="mt-1 text-body font-medium uppercase tracking-wider text-[#64748B]">
+                                    <p className="mt-1 text-body font-medium uppercase tracking-wider text-[#5B6A7A]">
                                         {isGreek ? member.role.el : member.role.en}
                                     </p>
                                     <p className="mt-3 text-body leading-relaxed text-[#334155]">
                                         {isGreek ? member.bio.el : member.bio.en}
                                     </p>
                                     {member.credentials && (
-                                        <p className="mt-2 text-body-sm text-[#64748B]">
+                                        <p className="mt-2 text-body-sm text-[#5B6A7A]">
                                             {isGreek ? member.credentials.el : member.credentials.en}
                                         </p>
                                     )}
@@ -184,7 +184,7 @@ export default function CompanyPage() {
                             <h2 className="mb-6 text-h2 font-semibold tracking-tight md:text-h1">
                                 {t("Ελάτε στην ομάδα μας", "Join our mission")}
                             </h2>
-                            <p className="mb-10 text-lead leading-relaxed text-[#94A3B8]">
+                            <p className="mb-10 text-lead leading-relaxed text-[#5B6A7A]">
                                 {t(
                                     "Αναζητούμε ανθρώπους που θέλουν να εξελίξουν την εμπειρία ασφάλισης στην Ελλάδα και διεθνώς.",
                                     "We are hiring people who want to modernize insurance experiences in Greece and beyond."
@@ -198,7 +198,7 @@ export default function CompanyPage() {
                             </Link>
                             {/* Plain-text address so crawlers can read it despite
                                 CDN-level email obfuscation of mailto links. */}
-                            <p className="mt-6 text-body text-[#94A3B8]">{siteConfig.careersEmail}</p>
+                            <p className="mt-6 text-body text-[#5B6A7A]">{siteConfig.careersEmail}</p>
                         </div>
                     </div>
                 </section>

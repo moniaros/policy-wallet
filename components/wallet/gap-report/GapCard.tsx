@@ -105,7 +105,7 @@ export function GapCard({ item, lang, copy, onIgnore, onNotify, ignoring, notify
                             type="button"
                             onClick={() => onNotify(item.id)}
                             disabled={notifying}
-                            className="flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-1.5 text-xs font-bold text-primary shadow-sm transition-colors hover:bg-primary/5 disabled:opacity-50 dark:border-white/15 dark:bg-white/10 dark:text-mint dark:hover:bg-white/15"
+                            className="flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-1.5 text-xs font-bold text-primary shadow-sm transition-colors hover:bg-primary/5 disabled:opacity-50 dark:border-white/15 dark:bg-white/10 dark:text-mint dark:hover:bg-white/10"
                         >
                             <MessageSquare className="h-3.5 w-3.5" />
                             {notifying ? copy.sending : copy.notifyAgent}

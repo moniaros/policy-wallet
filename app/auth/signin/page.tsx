@@ -171,7 +171,7 @@ export default function SignInPage() {
 
                 {/* Back to home */}
                 <div className="mb-6 flex items-center justify-between">
-                    <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#64748B] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
+                    <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
                         ← {copy.backHome}
                     </Link>
                     <LocaleToggle ariaLabel={t.userMenu.language} />
@@ -187,7 +187,7 @@ export default function SignInPage() {
                         <h1 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
                             {t.auth.welcomeBack}
                         </h1>
-                        <p className="mt-1 text-body text-[#64748B] dark:text-white/65">
+                        <p className="mt-1 text-body text-[#5B6A7A] dark:text-white/65">
                             {copy.signInToContinue}
                         </p>
                     </div>
@@ -209,10 +209,10 @@ export default function SignInPage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Email / Phone toggle */}
                         <div className="flex rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-1 dark:border-white/10 dark:bg-white/5">
-                            <button type="button" onClick={() => setTab("email")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "email" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
+                            <button type="button" onClick={() => setTab("email")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "email" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
                                 Email
                             </button>
-                            <button type="button" onClick={() => setTab("phone")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "phone" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
+                            <button type="button" onClick={() => setTab("phone")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "phone" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
                                 {copy.phoneTab}
                             </button>
                         </div>
@@ -220,17 +220,17 @@ export default function SignInPage() {
                         {/* Identifier field */}
                         {tab === "email" ? (
                             <div>
-                                <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">Email</label>
+                                <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">Email</label>
                                 <div className="relative">
-                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
+                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A]" />
                                     <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputBase} pl-9`} placeholder="name@example.com" />
                                 </div>
                             </div>
                         ) : (
                             <div>
-                                <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{copy.phonePlaceholder}</label>
+                                <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.phonePlaceholder}</label>
                                 <div className="relative">
-                                    <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
+                                    <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A]" />
                                     <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className={`${inputBase} pl-9`} placeholder="+30 69X XXX XXXX" />
                                 </div>
                             </div>
@@ -238,9 +238,9 @@ export default function SignInPage() {
 
                         {/* Password */}
                         <div>
-                            <label htmlFor="signin-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{copy.passwordLabel}</label>
+                            <label htmlFor="signin-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.passwordLabel}</label>
                             <div className="relative">
-                                <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
+                                <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A]" />
                                 <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={`${inputBase} pl-9`} />
                             </div>
                         </div>
@@ -275,13 +275,13 @@ export default function SignInPage() {
                         <Lock className="h-4 w-4 flex-shrink-0 text-primary" />
                         <div className="min-w-0">
                             <p className="text-caption font-semibold text-[#0F172A] dark:text-white">{copy.encryptionTitle}</p>
-                            <p className="text-micro text-[#64748B] dark:text-white/60">{copy.encryptionSubtitle}</p>
+                            <p className="text-micro text-[#5B6A7A] dark:text-white/60">{copy.encryptionSubtitle}</p>
                         </div>
                         <span className="flex-shrink-0 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2 py-0.5 text-kicker font-bold text-primary dark:border-primary/30 dark:bg-primary/15">GDPR</span>
                     </div>
 
                     {/* Sign up link */}
-                    <p className="mt-5 text-center text-body-sm text-[#64748B] dark:text-white/65">
+                    <p className="mt-5 text-center text-body-sm text-[#5B6A7A] dark:text-white/65">
                         {copy.noAccountYet}{" "}
                         <Link href="/auth/signup" className="font-semibold text-primary hover:underline">
                             {copy.createAccount}
@@ -297,7 +297,7 @@ export default function SignInPage() {
                         <h2 id={resetTitleId} className="mb-1 text-lead font-semibold text-[#0F172A] dark:text-white">
                             {copy.resetTitle}
                         </h2>
-                        <p className="mb-4 text-body-sm text-[#64748B] dark:text-white/65">
+                        <p className="mb-4 text-body-sm text-[#5B6A7A] dark:text-white/65">
                             {resetStep === "request"
                                 ? (copy.resetStepRequest)
                                 : (copy.resetStepVerify)}
