@@ -279,7 +279,7 @@ export function CoverageInsightsClient({
                             <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
                                 {copy.expiredExcludedTitle}
                             </p>
-                            <p className="mt-0.5 text-xs leading-relaxed text-amber-800/90 dark:text-amber-300/90">
+                            <p className="mt-0.5 text-xs leading-relaxed text-amber-800 dark:text-amber-300/90">
                                 {copy.expiredExcludedBody} {excludedExpired.map((policy) => policy.label).join(' · ')}
                             </p>
                         </div>

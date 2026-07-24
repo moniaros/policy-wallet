@@ -178,6 +178,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                     />
                 </div>
                 <select
+                    aria-label={t.collaboration.timeline.filterByType}
                     value={filterType || ""}
                     onChange={(e) => setFilterType(e.target.value || null)}
                     className="pw-input pw-input-sm"
@@ -190,6 +191,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                     ))}
                 </select>
                 <select
+                    aria-label={t.collaboration.timeline.filterByStatus}
                     value={filterStatus || ""}
                     onChange={(e) => setFilterStatus(e.target.value || null)}
                     className="pw-input pw-input-sm"

@@ -27,10 +27,12 @@ interface SummaryCardProps {
     }
 }
 
+// These colour the health VERDICT text («Θέλει μια ματιά»), not an icon, so
+// they have to clear AA: amber-500 measured 2.15:1 on white and red-500 3.76:1.
 const HEALTH_COLOR: Record<string, string> = {
     good: "text-primary dark:text-mint",
-    moderate: "text-amber-500 dark:text-amber-400",
-    attention: "text-red-500 dark:text-red-400",
+    moderate: "text-amber-700 dark:text-amber-400",
+    attention: "text-red-700 dark:text-red-400",
 }
 
 /**

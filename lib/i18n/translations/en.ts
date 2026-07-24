@@ -2363,6 +2363,12 @@ export const en: TranslationKeys = {
                 document_request: "Document Request",
                 proposal: "Proposal",
             },
+            selectActionStatus: 'Action status',
+            selectAssignee: 'Assign to',
+            filterByType: 'Filter by type',
+            filterByStatus: 'Filter by status',
+            filterByDateRange: 'Filter by date range',
+            categoryLabel: 'Discussion category',
             category: {
                 general: "General",
                 coverage_gap: "Coverage gap",

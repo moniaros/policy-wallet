@@ -2361,6 +2361,12 @@ export const el = {
                 document_request: "Αίτημα εγγράφου",
                 proposal: "Πρόταση",
             },
+            selectActionStatus: 'Κατάσταση ενέργειας',
+            selectAssignee: 'Ανάθεση σε',
+            filterByType: 'Φίλτρο ανά τύπο',
+            filterByStatus: 'Φίλτρο ανά κατάσταση',
+            filterByDateRange: 'Φίλτρο χρονικού εύρους',
+            categoryLabel: 'Κατηγορία συζήτησης',
             category: {
                 general: "Γενικά",
                 coverage_gap: "Κενό κάλυψης",

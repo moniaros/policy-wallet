@@ -552,7 +552,10 @@ export function AnalysisCard({
                 <button
                     onClick={handleAnalyze}
                     disabled={analysisInProgress}
-                    className="pw-secondary-button bg-white/20 backdrop-blur-sm"
+                    // Dark label on a translucent white panel over the brand teal: at /20 the
+                    // effective surface is #54867c and the label measures 4.32:1. /35 lifts it
+                    // to ~5.9 while keeping the glass treatment.
+                    className="pw-secondary-button bg-white/35 backdrop-blur-sm"
                 >
                     {analysisInProgress ? statusCopy.inProgress : t.analysis.runAnalysis}
                 </button>
@@ -638,7 +641,7 @@ export function AnalysisCard({
                                 <p className="text-sm font-bold text-amber-900 dark:text-amber-100">
                                     {statusCopy.completedWithWarnings}
                                 </p>
-                                <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-200/90">
+                                <p className="mt-1 text-xs text-amber-800 dark:text-amber-200/90">
                                     {analysisWarning}
                                 </p>
                                 {missingArtifacts.length > 0 && (
@@ -698,7 +701,7 @@ export function AnalysisCard({
                                 <p className="text-sm font-bold text-amber-900 dark:text-amber-100">
                                     {statusCopy.attention}
                                 </p>
-                                <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-200/90">
+                                <p className="mt-1 text-xs text-amber-800 dark:text-amber-200/90">
                                     {analysisError}
                                 </p>
                             </div>

@@ -287,6 +287,7 @@ export function CollaborationTimeline({
                         className="pw-input pw-input-sm md:col-span-2"
                     />
                     <select
+                        aria-label={t.collaboration.timeline.categoryLabel}
                         value={threadCategory}
                         onChange={(e) => setThreadCategory(e.target.value)}
                         className="pw-input pw-input-sm"
@@ -497,6 +498,7 @@ export function CollaborationTimeline({
                                                 <p className="text-xs text-neutral-500 dark:text-neutral-400">{t.collaboration.timeline.assignee}: {item.assignee.name || item.assignee.email}</p>
                                             </div>
                                             <select
+                                                aria-label={t.collaboration.timeline.selectActionStatus}
                                                 value={item.status}
                                                 onChange={(e) => patchActionStatus(item.id, e.target.value as any)}
                                                 className="pw-input pw-input-sm"
@@ -518,6 +520,7 @@ export function CollaborationTimeline({
                                         className="pw-input pw-input-sm"
                                     />
                                     <select
+                                        aria-label={t.collaboration.timeline.selectAssignee}
                                         value={actionAssigneeId}
                                         onChange={(e) => setActionAssigneeId(e.target.value)}
                                         className="pw-input pw-input-sm"
