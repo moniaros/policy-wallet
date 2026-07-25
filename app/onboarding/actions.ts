@@ -177,8 +177,12 @@ export async function uploadOnboardingPolicy(formData: FormData) {
 
         return { success: true, policyId: result.policyId }
     } catch (error) {
+        // Log the real error, but do NOT return error.message to the client — it
+        // was rendered in a toast during first-run onboarding, leaking a raw
+        // (English, sometimes technical) exception. flow.tsx shows a localised
+        // "upload failed" when error is absent.
         console.error("Upload error:", error)
-        return { success: false, error: error instanceof Error ? error.message : "Upload failed" }
+        return { success: false as const }
     }
 }
 
