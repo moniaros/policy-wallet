@@ -2060,6 +2060,7 @@ export const en: TranslationKeys = {
 
     coverageDetails: {
         whatsCovered: "What's Covered",
+        coverageTabsLabel: "Coverage",
         whatsNotCovered: "What's NOT Covered",
         reanalyzePrompt: 'Re-analyze to see detailed coverage',
         reanalyzeDesc: 'This policy has not been analyzed with the new fields yet. Tap "Understand Policy" to see detailed coverage.',

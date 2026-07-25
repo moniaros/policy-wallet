@@ -2076,6 +2076,7 @@ export const el = {
 
     coverageDetails: {
         whatsCovered: 'Τι καλύπτεται',
+        coverageTabsLabel: 'Κάλυψη',
         whatsNotCovered: 'Τι ΔΕΝ καλύπτεται',
         reanalyzePrompt: 'Επαναναλύστε για λεπτομερή κάλυψη',
         reanalyzeDesc: 'Αυτό το ασφαλιστήριο δεν έχει αναλυθεί ακόμα με τα νέα πεδία. Πατήστε "Κατανόηση Συμβολαίου" για αναλυτική κάλυψη.',

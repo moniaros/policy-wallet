@@ -6,6 +6,7 @@ import { ShieldCheck, ShieldOff, CheckCircle2, MinusCircle, AlertTriangle } from
 import type { AcordData } from "@/types/domain"
 import type { LineOfBusiness } from "@/types/enums"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
+import { useTabs } from "@/hooks/useTabs"
 import { getTranslations } from "@/lib/i18n"
 import { formatExtractedAmount } from "@/lib/i18n/amount-format"
 import { HealthCoverageDetails } from "./HealthCoverageDetails"
@@ -25,6 +26,10 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
   const [activeTab, setActiveTab] = useState<"covered" | "not_covered">("covered")
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
+  // Real tab semantics (role tablist/tab, aria-selected, aria-controls, roving
+  // tabindex + arrow keys), matching ClientDetailView — the tabs were bare
+  // <button>s a screen reader announced as unrelated, with no selected state.
+  const { tabProps, panelProps } = useTabs(["covered", "not_covered"] as const, activeTab, setActiveTab)
 
   const renderTypeSpecificDetails = () => {
     // Resolved to the branch FAMILY: a motorbike or truck is motor, renters is
@@ -54,27 +59,27 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
 
   return (
     <div className="space-y-4">
-      <div className="flex rounded-xl bg-black/5 dark:bg-white/5 p-1 border border-black/10 dark:border-white/15">
+      <div role="tablist" aria-label={copy.coverageTabsLabel} className="flex rounded-xl bg-black/5 dark:bg-white/5 p-1 border border-black/10 dark:border-white/15">
         <button
-          onClick={() => setActiveTab("covered")}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
+          {...tabProps("covered")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             activeTab === "covered"
               ? "bg-white dark:bg-white/10 text-primary dark:text-mint shadow-sm"
               : "text-black/55 dark:text-white/60 hover:text-black/75 dark:hover:text-white/80"
           }`}
         >
-          <ShieldCheck className="w-4 h-4" />
+          <ShieldCheck className="w-4 h-4" aria-hidden="true" />
           {copy.whatsCovered}
         </button>
         <button
-          onClick={() => setActiveTab("not_covered")}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
+          {...tabProps("not_covered")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             activeTab === "not_covered"
               ? "bg-white dark:bg-white/10 text-red-700 dark:text-red-400 shadow-sm"
               : "text-black/55 dark:text-white/60 hover:text-black/75 dark:hover:text-white/80"
           }`}
         >
-          <ShieldOff className="w-4 h-4" />
+          <ShieldOff className="w-4 h-4" aria-hidden="true" />
           {copy.whatsNotCovered}
           {hasExclusions && (
             <span className="ml-1 px-1.5 py-0.5 rounded-full text-kicker font-bold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
@@ -84,6 +89,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
         </button>
       </div>
 
+      <div {...panelProps} className="focus-visible:outline-none">
       {activeTab === "covered" && (
         <div className="space-y-4">
           {typeSpecific}
@@ -183,6 +189,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
           )}
         </div>
       )}
+      </div>
     </div>
   )
 }
