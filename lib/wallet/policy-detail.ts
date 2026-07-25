@@ -9,6 +9,7 @@
  */
 
 import { parseDocumentDate } from "@/lib/dates/document-date"
+import { APP_TIME_ZONE } from "@/lib/i18n/format"
 
 export type Bilingual = { en: string; el: string }
 
@@ -118,7 +119,11 @@ export function parsePolicyDate(value: unknown): Date | null {
 export function formatPolicyDate(value: unknown, locale: string): string {
     const parsed = parsePolicyDate(value)
     if (!parsed) return "-"
-    return parsed.toLocaleDateString(locale)
+    // Contractual dates (start / end / renewal) must render as the SAME calendar
+    // day for every viewer — pin Athens, not the runtime (UTC on SSR) or the
+    // viewer's browser zone, which shifted the day at Athens midnight and could
+    // disagree with the Athens-computed day counts shown alongside.
+    return parsed.toLocaleDateString(locale, { timeZone: APP_TIME_ZONE })
 }
 
 /** Resolve a bilingual {en, el} value for the active language, falling back across languages. */

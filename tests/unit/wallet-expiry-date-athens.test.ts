@@ -31,6 +31,13 @@ describe('wallet renders contractual expiry dates in Athens, not UTC', () => {
         expect(offenders, `raw UTC date render:\n${offenders.join('\n')}`).toEqual([])
     })
 
+    it('formatPolicyDate (shared policy-detail date formatter) pins Athens', () => {
+        // Used for every start/end/renewal date on the policy-detail page.
+        const SRC = readFileSync('lib/wallet/policy-detail.ts', 'utf-8')
+        expect(SRC).toMatch(/toLocaleDateString\(locale,\s*\{\s*timeZone:\s*APP_TIME_ZONE/)
+        expect(SRC).not.toMatch(/toLocaleDateString\(locale\)\s*\n?\s*}/) // no zone-less render
+    })
+
     it('PolicyCard expiry uses the Athens formatter and correct singular/today', () => {
         const CARD = readFileSync('components/wallet/PolicyCard.tsx', 'utf-8')
         expect(CARD).toContain('formatDate(endDate, locale)')
