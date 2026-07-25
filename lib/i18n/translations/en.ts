@@ -44,6 +44,7 @@ export const en: TranslationKeys = {
         aiConsentRequired: 'AI-processing consent is required before analysis.',
         aiConsentOwnerRequired: 'The policy owner has not granted consent for AI analysis.',
         aiConsentSaveFailed: 'Saving your consent failed. Please try again.',
+        aiConsentSaved: 'Your consent has been recorded.',
         aiConsentRequestTitle: 'AI analysis consent request',
         aiConsentRequestMessage: 'Your insurance advisor requests your consent to analyze your policies with AI.',
         aiConsentRequestSent: 'Consent request sent to the client.',

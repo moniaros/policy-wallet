@@ -15,7 +15,11 @@ export function AiConsentApprovalClient() {
                 isOpen
                 onClose={() => router.push("/dashboard")}
                 onConsented={() => {
-                    toast.success(t.common.aiConsentTitle)
+                    // Confirm the action was recorded — the standalone approval page
+                    // redirects to the dashboard, so (unlike the in-flow consenters
+                    // that start analysis) this needs an explicit "recorded" toast,
+                    // not the modal title.
+                    toast.success(t.common.aiConsentSaved)
                     router.push("/dashboard")
                 }}
                 source="agent_consent_request"
