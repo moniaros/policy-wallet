@@ -276,7 +276,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                         <label htmlFor="riskprofilewizard-f2" className={labelClass}>
                             {t("Επάγγελμα", "Occupation")}
                         </label>
-                        <input id="riskprofilewizard-f2" type="text" value={occupation} onChange={(e) => setOccupation(e.target.value)} className={inputClass} placeholder={t("π.χ. Μηχανικός", "e.g. Engineer")} />
+                        <input id="riskprofilewizard-f2" type="text" value={occupation} onChange={(e) => setOccupation(e.target.value)} className={inputClass} placeholder={t("π.χ. μηχανικός", "e.g. Engineer")} />
                     </div>
                 </div>
 
