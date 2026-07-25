@@ -50,7 +50,7 @@ const copy = {
         totalPipeline: "Pipeline Value",
         totalWon: "Won Revenue",
         sharedPipeline: "Shared Pipeline",
-        agent: "Agent",
+        agent: "Advisor",
         customer: "Customer",
         sortLabel: "Sort",
         defaultOrder: "Default order",

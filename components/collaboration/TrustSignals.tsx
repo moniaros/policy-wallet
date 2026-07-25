@@ -55,7 +55,7 @@ export function DataConfidenceBadge({ confidence, className }: DataConfidenceBad
         },
         agent_suggested: {
             icon: Lightbulb,
-            label: { en: "Agent suggested", el: "Πρόταση ασφαλιστή" },
+            label: { en: "Advisor suggested", el: "Πρόταση συμβούλου" },
             style: "text-blue-700 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/20",
         },
     }

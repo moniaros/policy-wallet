@@ -446,7 +446,7 @@ export const el = {
             reanalyzeToSeeCoverageHint: 'Τα ειδικά στοιχεία κάλυψης εμφανίζονται μετά από νέα ανάλυση AI',
             analyzingDocument: 'Ανάλυση του εγγράφου σας',
             analyzingHint: 'Τα στοιχεία του συμβολαίου θα εμφανιστούν αυτόματα μόλις ολοκληρωθεί η εξαγωγή AI.',
-            upgradeHint: 'Ξεκλειδώστε συνεργασία με πράκτορα, προηγμένες αναλύσεις και απεριόριστες ερωτήσεις AI με Plus ή Pro.',
+            upgradeHint: 'Ξεκλειδώστε συνεργασία με σύμβουλο, προηγμένες αναλύσεις και απεριόριστες ερωτήσεις AI με Plus ή Pro.',
             // Redesigned detail page — section navigation
             onThisPage: 'Σε αυτή τη σελίδα',
             navSummary: 'Σύνοψη',

@@ -64,7 +64,7 @@ const DEFAULT_WALLET_COPY = {
         minutesAgo: "{count}m ago",
         hoursAgo: "{count}h ago",
         daysAgo: "{count}d ago",
-        agent: "Agent",
+        agent: "Advisor",
         footerInfo: "Collaborators can access this policy based on granted permissions.",
     },
 } as const
