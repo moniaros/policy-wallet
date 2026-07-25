@@ -89,33 +89,33 @@ export function CoverageInsightsClient({
         independentNote: lang === 'el'
             ? 'Το PolicyWallet παραμένει ανεξάρτητη πλατφόρμα που υποστηρίζει καλύτερες αποφάσεις κάλυψης.'
             : 'PolicyWallet remains an independent platform designed to support better coverage decisions.',
-        policiesWithPoints: lang === 'el' ? 'Συμβόλαια με σημεία ελέγχου' : 'Policies with points',
-        totalPolicies: lang === 'el' ? 'Ενεργά συμβόλαια' : 'Active policies',
+        policiesWithPoints: lang === 'el' ? 'Ασφαλιστήρια με σημεία ελέγχου' : 'Policies with points',
+        totalPolicies: lang === 'el' ? 'Ενεργά ασφαλιστήρια' : 'Active policies',
         expiredExcludedTitle: lang === 'el'
-            ? 'Ληγμένα συμβόλαια δεν προσμετρώνται στην κάλυψη'
+            ? 'Ληγμένα ασφαλιστήρια δεν προσμετρώνται στην κάλυψη'
             : 'Expired policies are not counted as coverage',
         expiredExcludedBody: lang === 'el'
             ? 'Η εικόνα κάλυψης αφορά μόνο όσα ισχύουν σήμερα. Εκτός:'
             : 'This coverage picture reflects only what is in force today. Excluded:',
         dismissSuccess: lang === 'el' ? 'Η σύσταση αποκρύφτηκε' : 'Insight dismissed',
         dismissFail: lang === 'el' ? 'Αποτυχία ενημέρωσης' : 'Failed to update',
-        noLinkedPolicy: lang === 'el' ? 'Δεν βρέθηκε συνδεδεμένο συμβόλαιο' : 'No linked policy found',
-        reviewPolicy: lang === 'el' ? 'Προβολή συμβολαίου' : 'Review policy',
+        noLinkedPolicy: lang === 'el' ? 'Δεν βρέθηκε συνδεδεμένο ασφαλιστήριο' : 'No linked policy found',
+        reviewPolicy: lang === 'el' ? 'Προβολή ασφαλιστηρίου' : 'Review policy',
         addNote: lang === 'el' ? 'Σημείωση' : 'Add note',
         ignore: lang === 'el' ? 'Αγνόηση' : 'Ignore',
         immediateReview: lang === 'el' ? 'Συνιστάται άμεσος έλεγχος' : 'Immediate review recommended',
         noImmediateAction: lang === 'el' ? 'Δεν απαιτείται άμεση ενέργεια' : 'No immediate action required',
         // Add-first-policy state (no policies yet)
-        addFirstTitle: lang === 'el' ? 'Προσθέστε το πρώτο σας συμβόλαιο' : 'Add your first policy',
-        addFirstBody: lang === 'el' ? 'Προσθέστε ένα συμβόλαιο για να δείτε την εικόνα κάλυψής σας.' : 'Add a policy to see your coverage picture.',
-        addFirstCta: lang === 'el' ? 'Προσθήκη συμβολαίου' : 'Add a policy',
+        addFirstTitle: lang === 'el' ? 'Προσθέστε το πρώτο σας ασφαλιστήριο' : 'Add your first policy',
+        addFirstBody: lang === 'el' ? 'Προσθέστε ένα ασφαλιστήριο για να δείτε την εικόνα κάλυψής σας.' : 'Add a policy to see your coverage picture.',
+        addFirstCta: lang === 'el' ? 'Προσθήκη ασφαλιστηρίου' : 'Add a policy',
         // Not-yet-deep-analyzed state (replaces a false "no gaps")
         notAnalyzedTitle: lang === 'el' ? 'Δεν έχει γίνει ακόμη πλήρης ανάλυση' : 'No full analysis yet',
         notAnalyzedBody: lang === 'el'
-            ? 'Τρέξτε πλήρη ανάλυση για να ελεγχθούν τα συμβόλαιά σας για κενά.'
+            ? 'Τρέξτε πλήρη ανάλυση για να ελεγχθούν τα ασφαλιστήριά σας για κενά.'
             : 'Run a full analysis to check your policies for gaps.',
         notAnalyzedLockedCta: lang === 'el' ? 'Ξεκλείδωμα με Plus' : 'Unlock with Plus',
-        notAnalyzedRefreshHint: lang === 'el' ? 'Ανεβάστε ή ανανεώστε ένα συμβόλαιο για να ξεκινήσει.' : 'Upload or refresh a policy to start it.',
+        notAnalyzedRefreshHint: lang === 'el' ? 'Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει.' : 'Upload or refresh a policy to start it.',
         unknownCount: '—',
     }
 
@@ -138,7 +138,7 @@ export function CoverageInsightsClient({
             },
             summary: isDeepAnalysisLocked
                 ? { el: 'Δεν έχει γίνει ακόμη πλήρης ανάλυση κενών — ξεκλειδώστε την με το Plus.', en: "Full gap analysis hasn't run yet — unlock it with Plus." }
-                : { el: 'Η ανάλυση κενών εκκρεμεί — ανεβάστε ή ανανεώστε ένα συμβόλαιο.', en: 'Gap analysis pending — upload or refresh a policy.' },
+                : { el: 'Η ανάλυση κενών εκκρεμεί — ανεβάστε ή ανανεώστε ένα ασφαλιστήριο.', en: 'Gap analysis pending — upload or refresh a policy.' },
             color: 'text-black/60 dark:text-white/60',
             bg: 'bg-black/5 dark:bg-white/10',
         }
@@ -146,10 +146,10 @@ export function CoverageInsightsClient({
             ? {
                 label: { el: 'Επαρκής', en: 'Adequate' },
                 desc: {
-                    el: 'Δεν βρέθηκαν προβλήματα στα ενεργά σας συμβόλαια.',
+                    el: 'Δεν βρέθηκαν προβλήματα στα ενεργά σας ασφαλιστήρια.',
                     en: 'No issues found in your active policies.',
                 },
-                summary: { el: 'Δεν εντοπίστηκαν κενά στα ενεργά σας συμβόλαια.', en: 'No gaps found in your active policies.' },
+                summary: { el: 'Δεν εντοπίστηκαν κενά στα ενεργά σας ασφαλιστήρια.', en: 'No gaps found in your active policies.' },
                 color: 'text-[#166534] dark:text-mint',
                 bg: 'bg-primary-soft dark:bg-primary/15',
             }
@@ -161,7 +161,7 @@ export function CoverageInsightsClient({
                         en: 'There are important points worth reviewing.',
                     },
                     summary: {
-                        el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα συμβόλαιά σας.`,
+                        el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`,
                         en: `${visibleGaps.length} points to review across your policies.`,
                     },
                     color: 'text-red-700',
@@ -174,7 +174,7 @@ export function CoverageInsightsClient({
                         en: 'A few minor points to improve.',
                     },
                     summary: {
-                        el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα συμβόλαιά σας.`,
+                        el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`,
                         en: `${visibleGaps.length} points to review across your policies.`,
                     },
                     color: 'text-amber-700',

@@ -11,10 +11,28 @@ import { readFileSync } from 'node:fs'
 const EL = readFileSync('lib/i18n/translations/el.ts', 'utf-8')
 const EN = readFileSync('lib/i18n/translations/en.ts', 'utf-8')
 
+// In-app B2C UI components with hardcoded Greek labels — standardized too.
+// (Long-form editorial content — guides, glossary bodies, branch education, SEO,
+// marketing narrative — deliberately keeps «συμβόλαιο» as a prose synonym.)
+const UI_FILES = [
+    'components/coverage/CoverageInsightsClient.tsx',
+    'app/onboarding/flow.tsx',
+    'lib/monetization/upgrade-copy.el.ts',
+    'lib/pricing/public-pricing-content.ts',
+]
+
 describe('policy term is «ασφαλιστήριο», never «συμβόλαιο»', () => {
     it('no «συμβόλαι…» form remains in the Greek UI', () => {
         expect(EL).not.toMatch(/συμβόλαι/i)
         expect(EL).not.toMatch(/συμβολαί/i)
+    })
+
+    it('the in-app B2C UI components use «ασφαλιστήριο» in their labels', () => {
+        for (const file of UI_FILES) {
+            const src = readFileSync(file, 'utf-8')
+            expect.soft(src, file).not.toMatch(/συμβόλαι/i)
+            expect.soft(src, file).not.toMatch(/συμβολαί/i)
+        }
     })
 
     it('EN policy-meaning labels say "policy"/"Insurer", not "contract"', () => {

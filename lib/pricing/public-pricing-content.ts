@@ -81,7 +81,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             en: "Plans for individuals",
         },
         subtitle: {
-            el: "Από απλή οργάνωση συμβολαίων μέχρι πλήρη ανάλυση κάλυψης: κενά, λήξεις, απαντήσεις.",
+            el: "Από απλή οργάνωση ασφαλιστηρίων μέχρι πλήρη ανάλυση κάλυψης: κενά, λήξεις, απαντήσεις.",
             en: "From simple policy organization to full coverage analysis: gaps, renewals, answers.",
         },
         plans: [
@@ -97,8 +97,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     },
                 },
                 features: [
-                    { label: { el: "1 συμβόλαιο", en: "1 policy" }, included: true },
-                    { label: { el: "Βασική σύνοψη συμβολαίου από το AI", en: "Basic AI policy summary" }, included: true },
+                    { label: { el: "1 ασφαλιστήριο", en: "1 policy" }, included: true },
+                    { label: { el: "Βασική σύνοψη ασφαλιστηρίου από το AI", en: "Basic AI policy summary" }, included: true },
                     { label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
                     { label: { el: "Υπενθυμίσεις ανανέωσης", en: "Renewal reminders" }, included: false },
                     { label: { el: "Πλήρης ανάλυση AI, ερωτήσεις & κενά κάλυψης", en: "Full AI analysis, Q&A & coverage gaps" }, included: false },
@@ -121,7 +121,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     },
                 },
                 features: [
-                    { label: { el: "Έως 5 συμβόλαια", en: "Up to 5 policies" }, included: true, highlight: true },
+                    { label: { el: "Έως 5 ασφαλιστήρια", en: "Up to 5 policies" }, included: true, highlight: true },
                     { label: { el: "Βασική σύνοψη & οργάνωση", en: "Basic summaries & organization" }, included: true },
                     { label: { el: "Υπενθυμίσεις ανανέωσης (email)", en: "Renewal reminders (email)" }, included: true },
                     { label: { el: "Πλήρης ανάλυση AI & ερωτήσεις", en: "Full AI analysis & Q&A" }, included: false },
@@ -147,7 +147,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     },
                 },
                 features: [
-                    { label: { el: "Απεριόριστα συμβόλαια", en: "Unlimited policies" }, included: true, highlight: true },
+                    { label: { el: "Απεριόριστα ασφαλιστήρια", en: "Unlimited policies" }, included: true, highlight: true },
                     { label: { el: "Πλήρης ανάλυση AI & απεριόριστες ερωτήσεις", en: "Full AI analysis & unlimited Q&A" }, included: true, highlight: true },
                     { label: { el: "Εντοπισμός κενών & διπλών καλύψεων", en: "Gap & duplicate-coverage detection" }, included: true },
                     { label: { el: "Ανάλυση από πολλές ασφαλιστικές", en: "Multi-insurer insights" }, included: true },
@@ -162,11 +162,11 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
         comparisonRows: [
             {
                 category: { el: "Όρια χρήσης", en: "Usage limits" },
-                name: { el: "Αριθμός συμβολαίων", en: "Number of policies" },
+                name: { el: "Αριθμός ασφαλιστηρίων", en: "Number of policies" },
                 values: { free: "1", plus: "5", pro: "Απεριόριστα / Unlimited" },
             },
             {
-                name: { el: "Βασική σύνοψη συμβολαίου", en: "Basic policy summary" },
+                name: { el: "Βασική σύνοψη ασφαλιστηρίου", en: "Basic policy summary" },
                 values: { free: true, plus: true, pro: true },
             },
             {
@@ -418,7 +418,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             },
             {
                 question: {
-                    el: "Μπορώ να προσκαλέσω πελάτες να βλέπουν τα συμβόλαιά τους;",
+                    el: "Μπορώ να προσκαλέσω πελάτες να βλέπουν τα ασφαλιστήριά τους;",
                     en: "Can I invite clients to view their policies?",
                 },
                 answer: {

@@ -39,8 +39,8 @@ function mapGoalToLegacy(goal: GoalType): string {
 }
 
 const GOALS: { key: GoalType; el: string; en: string }[] = [
-    { key: "organize_policies", el: "Έλεγχος των συμβολαίων μου", en: "Control My Policies" },
-    { key: "review_policy", el: "Έλεγχος υπάρχοντος συμβολαίου", en: "Review an Existing Policy" },
+    { key: "organize_policies", el: "Έλεγχος των ασφαλιστηρίων μου", en: "Control My Policies" },
+    { key: "review_policy", el: "Έλεγχος υπάρχοντος ασφαλιστηρίου", en: "Review an Existing Policy" },
     { key: "save_money", el: "Εξοικονόμηση", en: "Save Money" },
     { key: "health_family", el: "Υγεία & Οικογένεια", en: "Health & Family" },
     { key: "my_car", el: "Το αυτοκίνητό μου", en: "My Car" },
@@ -116,8 +116,8 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         if (goal === "save_money") return t("Θα ξεκινήσουμε με ευκαιρίες εξοικονόμησης.", "We will prioritize savings opportunities first.")
         if (goal === "health_family") return t("Θα δώσουμε έμφαση σε υγεία και οικογενειακή κάλυψη.", "We will prioritize health and family coverage first.")
         if (goal === "my_car") return t("Θα ξεκινήσουμε από την ασφάλιση αυτοκινήτου σας.", "We will start from your motor coverage first.")
-        if (goal === "organize_policies") return t("Θα οργανώσουμε όλα τα συμβόλαιά σας σε ένα ασφαλές πορτοφόλι με υπενθυμίσεις ανανέωσης.", "We will organize all your policies in one secure wallet with renewal reminders.")
-        if (goal === "review_policy") return t("Θα ξεκινήσουμε με έλεγχο του υπάρχοντος συμβολαίου σας για κενά και ασάφειες.", "We will start by reviewing your existing policy for gaps and unclear terms.")
+        if (goal === "organize_policies") return t("Θα οργανώσουμε όλα τα ασφαλιστήριά σας σε ένα ασφαλές πορτοφόλι με υπενθυμίσεις ανανέωσης.", "We will organize all your policies in one secure wallet with renewal reminders.")
+        if (goal === "review_policy") return t("Θα ξεκινήσουμε με έλεγχο του υπάρχοντος ασφαλιστηρίου σας για κενά και ασάφειες.", "We will start by reviewing your existing policy for gaps and unclear terms.")
         return t("Θα παρακολουθούμε επενδυτικά προϊόντα ασφάλισης και θα ρυθμίσουμε έξυπνες υπενθυμίσεις.", "We will track investment-linked policies and set up smart reminders.")
     }, [goal, isGreek])
 
@@ -360,7 +360,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl font-black text-stone-900">
-                                    {t("Ανεβάστε το πρώτο σας συμβόλαιο", "Upload your first policy")}
+                                    {t("Ανεβάστε το πρώτο σας ασφαλιστήριο", "Upload your first policy")}
                                 </h2>
                                 <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
                                     {t("Το έγγραφο κρυπτογραφείται και παραμένει ιδιωτικό.", "Your document is encrypted and stays private.")}
@@ -418,7 +418,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                     <div className="flex items-center gap-3 text-sm text-stone-700">
                                         <Loader2 className="h-4 w-4 animate-spin text-primary" />
                                         {uploadedPolicyId
-                                            ? t("Το AI αναλύει το συμβόλαιό σας...", "AI is analyzing your policy...")
+                                            ? t("Το AI αναλύει το ασφαλιστήριό σας...", "AI is analyzing your policy...")
                                             : t("Προετοιμασία...", "Preparing...")}
                                     </div>
                                 ) : (
@@ -433,8 +433,8 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                                         : uploadedPolicyId && analysisResult?.status === "failed"
                                                             ? t("Η ανάλυση απέτυχε. Μπορείτε να τη ξεκινήσετε ξανά από το Wallet.", "Analysis failed. You can retry from your Wallet.")
                                                             : uploadedPolicyId
-                                                                ? t("Το συμβόλαιο προστέθηκε και αναλύεται.", "Your policy was added and is being analyzed.")
-                                                                : t("Μπορείς να ξεκινήσεις χωρίς upload και να προσθέσεις συμβόλαια αργότερα.", "You can start now and upload policies later.")}
+                                                                ? t("Το ασφαλιστήριο προστέθηκε και αναλύεται.", "Your policy was added and is being analyzed.")
+                                                                : t("Μπορείς να ξεκινήσεις χωρίς upload και να προσθέσεις ασφαλιστήρια αργότερα.", "You can start now and upload policies later.")}
                                             </span>
                                         </div>
                                         {analysisResult?.healthScore != null && (
@@ -493,7 +493,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 </h2>
                                 <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
                                     {t(
-                                        "Θα σας ειδοποιούμε πριν από κάθε λήξη ή ανανέωση συμβολαίου — με βάση τις ημερομηνίες των συμβολαίων σας. Δωρεάν, πάντα.",
+                                        "Θα σας ειδοποιούμε πριν από κάθε λήξη ή ανανέωση ασφαλιστηρίου — με βάση τις ημερομηνίες των ασφαλιστηρίων σας. Δωρεάν, πάντα.",
                                         "We will remind you before every policy expiry or renewal — based on your policies' dates. Free, always."
                                     )}
                                 </p>
@@ -501,7 +501,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
 
                             <div className="rounded-2xl border border-primary/20 bg-primary-tint p-4 text-sm text-primary">
                                 {t(
-                                    "Οι υπενθυμίσεις ανανέωσης ενεργοποιούνται αυτόματα για κάθε συμβόλαιο που προσθέτετε.",
+                                    "Οι υπενθυμίσεις ανανέωσης ενεργοποιούνται αυτόματα για κάθε ασφαλιστήριο που προσθέτετε.",
                                     "Renewal reminders are enabled automatically for every policy you add."
                                 )}
                             </div>
