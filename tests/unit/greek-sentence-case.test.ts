@@ -31,15 +31,23 @@ describe('Greek UI labels use sentence case', () => {
         // A casing rule that cannot tell a person from a label will keep
         // producing that, so the exemption is by key, not by guessing.
         const PROPER_NOUN_KEYS = new Set(['exampleName', 'exampleCustomer', 'sampleName'])
+        // Language and place names are proper nouns — correctly capitalised even
+        // mid-label, e.g. «Απλή εξήγηση (Ελληνικά)».
+        const PROPER_NOUN_WORDS = new Set(['Ελληνικά', 'Αγγλικά', 'Ελλάδα', 'Ελλάδας'])
         for (const m of src.matchAll(/(\w+):\s*(['"])([^'"]{3,60})\2/g)) {
-            const [full, key, , val] = m
-            if (/[.;!?,·:0-9A-Za-z/()→]/.test(val)) continue
+            const [full, key, , rawVal] = m
+            // A parenthetical aside — «Κύρια Αποσύνδεση (Όλες οι Συσκευές)» — used
+            // to skip the WHOLE value (the skip set contained `()`), hiding the
+            // Title Case. Drop the paren CHARACTERS (keep their words) and check
+            // everything, so both «Αποσύνδεση» and «Συσκευές» are seen.
+            const val = rawVal.replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim()
+            if (/[.;!?,·:0-9A-Za-z/→]/.test(val)) continue
             if (coverageTaxonomy.includes(full)) continue
             if (PROPER_NOUN_KEYS.has(key)) continue
             const words = val.split(' ')
             if (words.length < 2 || words.length > 4) continue
             if (!isTitleCase(words[0])) continue
-            if (words.filter(isTitleCase).length >= 2) offenders.push(`${key}: ${val}`)
+            if (words.filter((w) => isTitleCase(w) && !PROPER_NOUN_WORDS.has(w)).length >= 2) offenders.push(`${key}: ${val}`)
         }
         expect(offenders, `Title Case Greek labels:\n${offenders.join('\n')}`).toEqual([])
     })
