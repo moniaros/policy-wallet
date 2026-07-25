@@ -47,7 +47,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                     type="button"
                     onClick={onDismiss}
                     className="absolute right-4 top-4 rounded-lg p-1 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white/70"
-                    aria-label="Close"
+                    aria-label={t("Κλείσιμο", "Close")}
                 >
                     <X className="h-4 w-4" />
                 </button>

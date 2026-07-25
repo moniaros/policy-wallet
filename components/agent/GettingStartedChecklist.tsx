@@ -134,7 +134,7 @@ export function AgentGettingStartedChecklist({
                         type="button"
                         onClick={() => setCollapsed(!collapsed)}
                         className="rounded-lg p-1.5 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white/70"
-                        aria-label={collapsed ? "Expand" : "Collapse"}
+                        aria-label={collapsed ? t("Ανάπτυξη", "Expand") : t("Σύμπτυξη", "Collapse")}
                     >
                         {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
                     </button>
@@ -147,7 +147,7 @@ export function AgentGettingStartedChecklist({
                             }
                         }}
                         className="rounded-lg p-1.5 text-black/55 transition hover:bg-black/5 hover:text-black/70 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white/70"
-                        aria-label="Dismiss"
+                        aria-label={t("Απόρριψη", "Dismiss")}
                     >
                         <X className="h-4 w-4" />
                     </button>

@@ -129,7 +129,7 @@ export function InstallPrompt() {
                         <button
                             onClick={dismissPrompt}
                             className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer"
-                            aria-label="Dismiss install prompt"
+                            aria-label={t.common.close}
                         >
                             <X className="w-4 h-4" />
                         </button>
