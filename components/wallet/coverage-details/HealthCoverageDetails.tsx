@@ -46,6 +46,11 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
 
   if (!hasAnyData) return null
 
+  // Every money amount on this card goes through `fmt` for a consistent format.
+  // Outpatient limit and deductible previously used a raw toLocaleString with
+  // 2 decimals, so they read "1.500,00 €" beside a "15.000 €" annual limit —
+  // mixed decimals on the same card. Health figures are round; 0 decimals, like
+  // the annual limit / room&board / out-of-pocket above.
   const fmt = (value: number) => formatCurrency(value, language === "el" ? "el" : "en", { decimals: 0 })
 
   return (
@@ -205,7 +210,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{healthCopy.outpatientLimit}</span>
             </div>
             <span className="text-sm font-bold text-black dark:text-white">
-              {health.outpatientLimit.toLocaleString(language === "el" ? "el-GR" : "en-GB", { style: "currency", currency: "EUR" })}
+              {fmt(health.outpatientLimit)}
             </span>
           </div>
         </div>
@@ -223,7 +228,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
               </span>
             </div>
             <span className="text-sm font-bold text-black dark:text-white">
-              {health.deductiblePerClaim.toLocaleString(language === "el" ? "el-GR" : "en-GB", { style: "currency", currency: "EUR" })}
+              {fmt(health.deductiblePerClaim)}
             </span>
           </div>
         </div>
