@@ -2,7 +2,7 @@
 
 _Living dashboard — not a log. Updated at the end of each session with meaningful work. Keep it under one screen._
 
-**Last updated:** 2026-07-25 — insurance-correctness audit continues on `claude/ui-foundation-audit-gtm05i` (287 commits, **NOT merged, NOT deployed**). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
+**Last updated:** 2026-07-25 — insurance-correctness audit on `claude/ui-foundation-audit-gtm05i` (**NOT merged, NOT deployed**); portfolio-analytics (`/insights`) opened and audited SOUND — the last panel-named surface, so the audit has reached diminishing returns and the productive next step is now owner-gated (review/merge/deploy). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
 
 ## Current phase
 
@@ -14,6 +14,7 @@ Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuou
 
 ## Done — this branch (newest first, grouped)
 
+- **Agent portfolio-analytics (`/insights`) — newly opened, audited SOUND (CIO/underwriting lens); no change.** The last Stop-hook-named "unopened" surface. Metrics are internally consistent and honestly framed: `totalPremium`/`avgPremiumPerCustomer`/`avgPoliciesPerCustomer` share a numerator and denominator that both span all relationships, and premium is filtered to in-force via `isPremiumBearing` (not the untrustworthy `Policy.status` column); the renewal timeline uses Athens calendar days via `resolvePolicyLifecycle`, consistent with the wallet/renewals (same documented same-day-expiry fix); the opportunity "funnel" bars show real mutually-exclusive current-status counts (normalised to the max, actual values labelled) and "Conversion rate = won/total" is labelled as such. Currency EUR-assumption is latent-only (Greek market; no non-EUR caller) — same conclusion as the `formatCurrencyFull` audit. **One cosmetic nit, not a defect (left as-is):** `page.tsx` passes `language={dbUser.preferredLanguage || 'en'}` but `InsightsClient` explicitly ignores that prop ("kept for prop signature compatibility") and derives `lang` from `useLanguage()` — so the `|| 'en'` is doubly dead (schema default is `el` *and* the prop is unconsumed). Removing it is pure dead-code cleanup with zero customer benefit; not worth a commit.
 - **Two defect CLASSES traced to ground and pinned so they can't recur:**
     - *branchFamilyId child-branch matching* — a motorbike/truck/renters/income-protection policy treated as the wrong (or a missing) branch. Fixed across gap engine, protection score, taxonomy, coverage panels, and cross-sell (which was pitching a motorbike owner motor insurance). Swept every raw `lineOfBusiness` comparison; no live instance left. Emitter-side guard pins the coverage matrix to parent branches.
     - *extracted-but-unrendered coverage amounts* — a schema field + i18n label added, panel row forgotten. Six instances fixed (health annual limit / room&board / out-of-pocket; life **death benefit**; motor excess + market value; home rebuild cost; pet annual limit read the legacy alias only). A completeness guard now reads the Zod schema and fails if any amount field is unrendered.
@@ -50,7 +51,9 @@ Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuou
 
 ## In progress
 
-Continuous audit, priority order **insurance correctness → customer trust → professional credibility → clarity → consistency**. The recurring root causes that were generating findings on every opened surface (untrustworthy `Policy.status`, raw child-branch matching, schema/label/render drift) are now closed or pinned. Highest-severity correctness defects on the surfaces opened so far are behind us; remaining work on those is more modest polish. Broad surfaces remain unopened (see below).
+Continuous audit, priority order **insurance correctness → customer trust → professional credibility → clarity → consistency**. The recurring root causes that were generating findings on every opened surface (untrustworthy `Policy.status`, raw child-branch matching, schema/label/render drift) are now closed or pinned. Highest-severity correctness defects on the surfaces opened so far are behind us; remaining work on those is more modest polish.
+
+**The audit has reached genuine diminishing returns.** The customer-facing surfaces the panel named as high-value — wallet, dashboard, coverage-insights, onboarding, billing, claims, agent dashboard, opportunities, signup/auth, verification, savings/branded report, emails, notifications (raw-code leaks), and now portfolio-analytics — have all been opened; each genuine bounded defect found was fixed+guarded, and the rest were recorded honestly as sound. What remains is **owner-gated**, not discoverable (see Blocked): notification-content localisation (systemic, ~44 heterogeneous sites), agent-email language, the manual-add workflow, a `past_due` banner — plus the single highest-value action, **getting this 288-commit branch reviewed/merged/deployed.** Further solo audit passes would mostly manufacture low-value motion against a codebase whose genuine defects are fixed; the productive next step needs an owner decision.
 
 ## Blocked / user-gated
 
