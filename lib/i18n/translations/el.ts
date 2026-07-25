@@ -1410,6 +1410,34 @@ export const el = {
         'TERRORIST ACTS': 'Τρομοκρατικές ενέργειες',
         'MALICIOUS ACTS': 'Κακόβουλες ενέργειες',
 
+        // Home (fire / theft / flood / natural phenomena / glass are shared with
+        // motor above; these are the home-specific perils a Greek policy lists).
+        'EARTHQUAKE': 'Σεισμός',
+        'BUILDING': 'Κτίριο',
+        'STRUCTURE': 'Κτίριο',
+        'CONTENTS': 'Περιεχόμενο',
+        'WATER DAMAGE': 'Ζημιές από νερά',
+        'STORM': 'Θύελλα',
+        'EXPLOSION': 'Έκρηξη',
+        'BURGLARY': 'Διάρρηξη',
+        'PUBLIC LIABILITY': 'Αστική ευθύνη',
+
+        // Life
+        'DEATH': 'Απώλεια ζωής',
+        'ACCIDENTAL DEATH': 'Θάνατος από ατύχημα',
+        'PERMANENT TOTAL DISABILITY': 'Μόνιμη ολική ανικανότητα',
+        'PERMANENT DISABILITY': 'Μόνιμη ανικανότητα',
+        'CRITICAL ILLNESS': 'Σοβαρές ασθένειες',
+        'PREMIUM WAIVER': 'Απαλλαγή πληρωμής ασφαλίστρων',
+
+        // Health
+        'SURGERY': 'Χειρουργικές επεμβάσεις',
+        'MATERNITY': 'Μητρότητα',
+        'INTENSIVE CARE': 'Μονάδα εντατικής θεραπείας',
+        'DIAGNOSTIC TESTS': 'Διαγνωστικές εξετάσεις',
+        'DENTAL': 'Οδοντιατρική περίθαλψη',
+        'DAILY HOSPITAL ALLOWANCE': 'Ημερήσιο νοσοκομειακό επίδομα',
+
         // Generic / Other
         'Medical Expenses': 'Ιατροφαρμακευτικά έξοδα',
         'Hospitalization': 'Νοσηλεία',

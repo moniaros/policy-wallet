@@ -1399,6 +1399,34 @@ export const en: TranslationKeys = {
         'TERRORIST ACTS': 'Terrorist Acts',
         'MALICIOUS ACTS': 'Malicious Acts',
 
+        // Home (fire / theft / flood / natural phenomena / glass are shared with
+        // motor above; these are the home-specific perils a policy lists).
+        'EARTHQUAKE': 'Earthquake',
+        'BUILDING': 'Building',
+        'STRUCTURE': 'Building',
+        'CONTENTS': 'Contents',
+        'WATER DAMAGE': 'Water Damage',
+        'STORM': 'Storm',
+        'EXPLOSION': 'Explosion',
+        'BURGLARY': 'Burglary',
+        'PUBLIC LIABILITY': 'Public Liability',
+
+        // Life
+        'DEATH': 'Death',
+        'ACCIDENTAL DEATH': 'Accidental Death',
+        'PERMANENT TOTAL DISABILITY': 'Permanent Total Disability',
+        'PERMANENT DISABILITY': 'Permanent Disability',
+        'CRITICAL ILLNESS': 'Critical Illness',
+        'PREMIUM WAIVER': 'Premium Waiver',
+
+        // Health
+        'SURGERY': 'Surgery',
+        'MATERNITY': 'Maternity',
+        'INTENSIVE CARE': 'Intensive Care',
+        'DIAGNOSTIC TESTS': 'Diagnostic Tests',
+        'DENTAL': 'Dental Care',
+        'DAILY HOSPITAL ALLOWANCE': 'Daily Hospital Allowance',
+
         // Generic / Other
         'Medical Expenses': 'Medical Expenses',
         'Hospitalization': 'Hospitalization',
