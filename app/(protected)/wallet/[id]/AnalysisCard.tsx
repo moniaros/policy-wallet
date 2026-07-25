@@ -803,17 +803,23 @@ export function AnalysisCard({
                             const explanation = language === 'el' ? (gap.aiExplanationEl || gap.aiExplanation) : gap.aiExplanation
                             const suggestion = language === 'el' ? (gap.aiSuggestionEl || gap.aiSuggestion) : gap.aiSuggestion
 
+                            // Neutral styling, matching the canonical GapCard ("neutral by
+                            // design — severity values are unvalidated"): every gap was
+                            // rendered in alarming red regardless of its severity, so a
+                            // low-severity finding looked as critical as an uninsured
+                            // compulsory line — over-alarming and losing the priority signal.
+                            // The recommendation keeps its soft amber highlight.
                             return (
-                                <div key={gap.id} className="bg-red-50 dark:bg-red-900/20 p-5 rounded-xl border border-red-200 dark:border-red-900/30 transition-all duration-300 hover:shadow-md">
+                                <div key={gap.id} className="bg-white dark:bg-white/5 p-5 rounded-xl border border-black/10 dark:border-white/15 transition-all duration-300 hover:shadow-md">
                                     <div className="flex gap-4">
                                         <div className="shrink-0">
-                                            <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center shadow-lg">
-                                                <AlertTriangle className="w-5 h-5 text-white" />
+                                            <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center">
+                                                <AlertTriangle className="w-5 h-5 text-black/55 dark:text-white/60" />
                                             </div>
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
-                                                <h4 className="font-bold text-red-900 dark:text-red-100 text-sm mb-2">
+                                                <h4 className="font-bold text-foreground text-sm mb-2">
                                                     {gap.definition.title || t.analysis.gapDetected}
                                                 </h4>
 
@@ -830,7 +836,7 @@ export function AnalysisCard({
                                                 </div>
                                             </div>
 
-                                            <p className="text-sm text-red-700 dark:text-red-300 leading-relaxed mb-3">
+                                            <p className="text-sm text-black/70 dark:text-white/75 leading-relaxed mb-3">
                                                 {explanation}
                                             </p>
 
@@ -853,7 +859,7 @@ export function AnalysisCard({
                                                 <button
                                                     onClick={() => handleNotify(gap.id)}
                                                     disabled={notifying === gap.id}
-                                                    className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800/50 rounded-lg text-xs font-bold text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shadow-sm"
+                                                    className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-black/10 dark:border-white/15 rounded-lg text-xs font-bold text-black/75 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/10 transition-colors shadow-sm"
                                                 >
                                                     <MessageSquare className="w-3.5 h-3.5" />
                                                     {notifying === gap.id
