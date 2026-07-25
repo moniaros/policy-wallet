@@ -239,6 +239,7 @@ export const en: TranslationKeys = {
         dangerZone: 'Danger Zone',
         deletePolicy: 'Delete Policy',
         aiPolicyInsights: 'AI Policy Insights',
+        analysisTabsLabel: 'Policy analysis',
         aiAnalysis: "Understand Policy",
         acordVerified: "ACORD Verified",
         verificationOverview: "Verification Overview",

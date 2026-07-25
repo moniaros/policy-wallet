@@ -236,6 +236,7 @@ export const el = {
         dangerZone: 'Περιοχή κινδύνου',
         deletePolicy: 'Διαγραφή ασφάλισης',
         aiPolicyInsights: 'Ανάλυση συμβολαίου',
+        analysisTabsLabel: 'Ανάλυση συμβολαίου',
         aiAnalysis: "Κατανόηση συμβολαίου",
         acordVerified: 'Επαληθεύτηκε',
         verificationOverview: 'Επισκόπηση',

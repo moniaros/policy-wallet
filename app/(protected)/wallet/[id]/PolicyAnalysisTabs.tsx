@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { AnalysisCard } from './AnalysisCard'
+import { useTabs } from '@/hooks/useTabs'
 import { localizeCoverageName, toGreekUppercaseNoAccents } from '@/lib/i18n/text-format'
 import type { GapReportItem } from '@/lib/wallet/gap-report'
 
@@ -43,6 +44,11 @@ export function PolicyAnalysisTabs({
     trialAnalysisAvailable = null,
 }: PolicyAnalysisTabsProps) {
     const [activeTab, setActiveTab] = useState<'insights' | 'gaps'>('gaps')
+    // Real tab semantics (role tablist/tab, aria-selected, aria-controls, roving
+    // tabindex + arrow keys), matching CoverageTabView/ClientDetailView — the tabs
+    // were bare <button>s a screen reader announced as unrelated, with no selected
+    // state or tab↔panel relationship.
+    const { tabProps, panelProps } = useTabs(['gaps', 'insights'] as const, activeTab, setActiveTab)
     // Deduped count when the report view is active, else the raw gap count.
     const gapBadgeCount = report ? report.items.length : gaps.length
 
@@ -61,10 +67,10 @@ export function PolicyAnalysisTabs({
 
     return (
         <div className="space-y-6">
-            <div className="flex p-1 bg-black/5 dark:bg-black rounded-2xl border border-black/10 dark:border-white/15">
+            <div role="tablist" aria-label={t.wallet.analysisTabsLabel} className="flex p-1 bg-black/5 dark:bg-black rounded-2xl border border-black/10 dark:border-white/15">
                 <button
-                    onClick={() => setActiveTab('gaps')}
-                    className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all ${activeTab === 'gaps'
+                    {...tabProps('gaps')}
+                    className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${activeTab === 'gaps'
                         ? 'bg-white dark:bg-white/10 text-black dark:text-white shadow-sm'
                         : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                         }`}
@@ -77,9 +83,9 @@ export function PolicyAnalysisTabs({
                     )}
                 </button>
                 <button
-                    onClick={() => setActiveTab('insights')}
+                    {...tabProps('insights')}
                     disabled={!hasAcordData}
-                    className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all ${activeTab === 'insights'
+                    className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${activeTab === 'insights'
                         ? 'bg-white dark:bg-white/10 text-black dark:text-white shadow-sm'
                         : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                         } ${!hasAcordData ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -88,7 +94,7 @@ export function PolicyAnalysisTabs({
                 </button>
             </div>
 
-            <div className="min-h-[400px]">
+            <div {...panelProps} className="min-h-[400px] focus-visible:outline-none">
                 {activeTab === 'gaps' && (
                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                         <AnalysisCard
