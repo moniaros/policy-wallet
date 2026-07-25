@@ -31,6 +31,17 @@ describe('sublimit (Υποόριο) is defined in the dictionary and explained i
         expect(hints.sublimit!.definition.length).toBeGreaterThan(0)
     })
 
+    it('co-payment (Συμμετοχή) is also defined and wired as a condition hint', () => {
+        const term = getGlossaryTerm('symmetochi')
+        expect(term).toBeTruthy()
+        expect(term!.term.el).toBe('Συμμετοχή')
+        expect(term!.term.en).toBe('Co-payment')
+        expect(term!.shortDefinition.el.length).toBeGreaterThan(60)
+        const hints = resolvePolicyGlossaryHints('el', { copayment: 'Συμμετοχή στο κόστος' })
+        expect(hints.copayment).toBeTruthy()
+        expect(hints.copayment!.href).toBe('/lexiko/symmetochi')
+    })
+
     it('ExclusionsCard renders a glossary hint for matching condition types', () => {
         const src = readFileSync('components/wallet/policy-detail/ExclusionsCard.tsx', 'utf-8')
         expect(src).toContain('conditionHints')

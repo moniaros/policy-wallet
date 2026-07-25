@@ -310,6 +310,7 @@ export default async function PolicyDetailPage({
                 sumInsured: t.coverageDetails.home.insuredValue,
                 underinsurance: t.coverageDetails.home.valueComparison,
                 sublimit: t.wallet.policyDetailsPage.conditionTypes.sub_limit,
+                copayment: t.wallet.policyDetailsPage.conditionTypes.co_payment,
             })}
             tier={entitlements.tier}
             tierLimits={entitlements.limits}

@@ -46,6 +46,7 @@ const POLICY_HINT_SLUGS = {
     sumInsured: "asfalismeno-kefalaio",
     underinsurance: "ypasfalisi",
     sublimit: "ypoorio",
+    copayment: "symmetochi",
 } as const
 
 export type PolicyHintKey = keyof typeof POLICY_HINT_SLUGS

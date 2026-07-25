@@ -682,6 +682,61 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         dateModified: "2026-07-25",
     },
+    {
+        slug: "symmetochi",
+        term: { el: "Συμμετοχή", en: "Co-payment" },
+        aliases: [{ el: "Συνασφάλιση", en: "Co-insurance" }],
+        metaTitle: {
+            el: "Τι είναι η συμμετοχή στο κόστος στην ασφάλιση;",
+            en: "What is a co-payment (cost sharing) in insurance?",
+        },
+        metaDescription: {
+            el: "Συμμετοχή είναι το μέρος κάθε καλυπτόμενης δαπάνης που πληρώνετε εσείς, συνήθως ως ποσοστό. Δείτε πώς διαφέρει από την απαλλαγή και πόσο επηρεάζει την αποζημίωση.",
+            en: "A co-payment is the share of each covered cost that you pay yourself, usually as a percentage. See how it differs from a deductible and how much it affects your payout.",
+        },
+        shortDefinition: {
+            el: "Συμμετοχή (ή συνασφάλιση) είναι το μέρος μιας καλυπτόμενης δαπάνης που επιβαρύνεστε εσείς, συνήθως ως ποσοστό — π.χ. ο ασφαλιστής πληρώνει το 80% και εσείς το 20%. Συναντάται κυρίως στην υγεία και ισχύει ακόμη κι όταν η παροχή καλύπτεται: η κάλυψη μειώνει, δεν μηδενίζει, το κόστος σας.",
+            en: "A co-payment (or co-insurance) is the part of a covered cost that you bear, usually as a percentage — e.g. the insurer pays 80% and you pay 20%. It is most common in health insurance and applies even when a benefit is covered: cover reduces, but does not zero, your cost.",
+        },
+        body: [
+            {
+                el: "Η συμμετοχή μπερδεύεται συχνά με την απαλλαγή, αλλά είναι διαφορετική: η απαλλαγή είναι ένα σταθερό ποσό που πληρώνετε πρώτοι σε κάθε ζημιά, ενώ η συμμετοχή είναι ένα ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Δύο συμβόλαια που «καλύπτουν νοσηλεία» μπορεί να σας κοστίσουν πολύ διαφορετικά αν το ένα έχει συμμετοχή 10% και το άλλο 30%. Ορισμένα προγράμματα έχουν και ανώτατο όριο ετήσιας συμμετοχής, πάνω από το οποίο ο ασφαλιστής καλύπτει το 100%.",
+                en: "Co-payment is often confused with a deductible, but it is different: a deductible is a fixed amount you pay first on each claim, while a co-payment is a percentage of the cost you share with the insurer. Two policies that both 'cover hospitalisation' can cost you very differently if one has a 10% co-payment and the other 30%. Some plans also cap your annual co-payment, above which the insurer covers 100%.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο δικό σας ασφαλιστήριο υγείας, αναζητήστε «συμμετοχή», «ποσοστό συμμετοχής» ή «συνασφάλιση» στους όρους κάθε παροχής — διαφέρει ανά κάλυψη και ανά τρόπο νοσηλείας (π.χ. με ή χωρίς παραπεμπτικό). Το PolicyWallet εντοπίζει τις συμμετοχές στο έγγραφό σας, ώστε να ξέρετε τι θα πληρώσετε ακόμη και όταν η παροχή καλύπτεται.",
+            en: "In your own health policy, look for «συμμετοχή», «ποσοστό συμμετοχής» or «συνασφάλιση» in the terms of each benefit — it varies per cover and per pathway (e.g. with or without a referral). PolicyWallet surfaces the co-payments in your document, so you know what you will pay even when a benefit is covered.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Ποια η διαφορά συμμετοχής και απαλλαγής;",
+                    en: "What is the difference between a co-payment and a deductible?",
+                },
+                answer: {
+                    el: "Η απαλλαγή είναι σταθερό ποσό που πληρώνετε πρώτοι· η συμμετοχή είναι ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Ένα συμβόλαιο μπορεί να έχει και τα δύο.",
+                    en: "A deductible is a fixed amount you pay first; a co-payment is a percentage of the cost you share with the insurer. A policy can have both.",
+                },
+            },
+            {
+                question: {
+                    el: "Πληρώνω συμμετοχή αν η θεραπεία καλύπτεται;",
+                    en: "Do I pay a co-payment even if the treatment is covered?",
+                },
+                answer: {
+                    el: "Συνήθως ναι. Η κάλυψη μειώνει το κόστος σας κατά το ποσοστό του ασφαλιστή, αλλά η συμμετοχή σας παραμένει εκτός αν το συμβόλαιο ορίζει διαφορετικά.",
+                    en: "Usually yes. Cover reduces your cost by the insurer's share, but your co-payment remains unless the policy states otherwise.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
+            { label: { el: "Υποόριο", en: "Sublimit" }, href: "/lexiko/ypoorio" },
+            { label: { el: "Ασφάλεια υγείας", en: "Health insurance" }, href: "/product/health" },
+        ],
+        dateModified: "2026-07-25",
+    },
 ]
 
 /** One glossary term by slug, or undefined when the slug is unknown. */
