@@ -32,4 +32,21 @@ describe('intermediary role reads as "advisor", never "agent"/«πράκτορα
         const offenders = valueSides(EL).filter((v) => /πράκτορ/i.test(v))
         expect(offenders).toEqual([])
     })
+
+    it('advisor-role labels use «σύμβουλος», not «ασφαλιστής» (which is the insurer)', () => {
+        // «ασφαλιστής» legitimately means the INSURER in many places (kept), but
+        // these phrases name the policyholder's ADVISOR — where it is the wrong
+        // word. Guards EN/EL parity after the product-wide advisor standardization.
+        const advisorPhrasesThatMustNotSayInsurer = [
+            'Πιστοποιημένος ασφαλιστής', // licensedAgent (×2)
+            'Ο ασφαλιστής ενημερώθηκε', // agentNotified
+            'Ενεργή πρόσβαση ασφαλιστή', // agentAccessActive
+            'Πρόταση ασφαλιστή', // agentSuggested
+            'χαρτοφυλακίου ασφαλιστή', // portfolioManager
+            'ασφαλισμένου-ασφαλιστή', // noRelationship
+            'μόνο για ασφαλιστή', // privateNotePlaceholder
+        ]
+        const present = advisorPhrasesThatMustNotSayInsurer.filter((p) => EL.includes(p))
+        expect(present).toEqual([])
+    })
 })

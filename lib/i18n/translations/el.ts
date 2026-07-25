@@ -510,7 +510,7 @@ export const el = {
                 geographic_restriction: 'Γεωγραφικός περιορισμός',
                 claim_deadline: 'Προθεσμία δήλωσης ζημιάς',
                 notification_obligation: 'Υποχρέωση ενημέρωσης',
-                no_claims_bonus: 'Bonus μη ζημιάς',
+                no_claims_bonus: 'Έκπτωση μη ζημιάς',
             },
             riskLevels: {
                 info: 'Καλό να το ξέρετε',
@@ -1039,7 +1039,7 @@ export const el = {
     },
 
     agentUi: {
-        licensedAgent: 'Πιστοποιημένος ασφαλιστής',
+        licensedAgent: 'Πιστοποιημένος σύμβουλος',
         verified: 'Πιστοποιημένος',
         website: 'Ιστοσελίδα',
         eaeeLicenseNo: 'Αρ. Μητρώου ΕΑΕΕ',
@@ -1346,7 +1346,7 @@ export const el = {
             hidden: 'Η ειδοποίηση αποκρύφθηκε',
             sending: 'Αποστολή...',
             viewMoreDetails: 'Περισσότερες λεπτομέρειες',
-            agentNotified: 'Ο ασφαλιστής ενημερώθηκε',
+            agentNotified: 'Ο σύμβουλος ενημερώθηκε',
             unknownSection: 'Ελλιπής ενότητα',
             viewAgentPlans: 'Δείτε τα πλάνα συνεργατών',
         },
@@ -2390,11 +2390,11 @@ export const el = {
         trustSignals: {
             lastUpdated: "Τελευταία ενημέρωση",
             verified: "Πιστοποιημένος",
-            licensedAgent: "Πιστοποιημένος ασφαλιστής",
+            licensedAgent: "Πιστοποιημένος σύμβουλος",
             eaeeLicense: "Αρ. Μητρώου ΕΑΕΕ",
             confirmed: "Επιβεβαιωμένο",
             pendingVerification: "Εκκρεμεί επαλήθευση",
-            agentSuggested: "Πρόταση ασφαλιστή",
+            agentSuggested: "Πρόταση συμβούλου",
         },
         inbox: {
             title: "Εισερχόμενα",
@@ -2417,7 +2417,7 @@ export const el = {
         timelineToasts: {
             loadTimelineFailed: "Αποτυχία φόρτωσης χρονολογίου συνεργασίας",
             loadThreadDetailFailed: "Αποτυχία φόρτωσης λεπτομερειών θέματος",
-            noRelationship: "Δεν βρέθηκε ενεργή σχέση ασφαλισμένου-ασφαλιστή για αυτό το συμβόλαιο.",
+            noRelationship: "Δεν βρέθηκε ενεργή σχέση ασφαλισμένου-συμβούλου για αυτό το συμβόλαιο.",
             createThreadFailed: "Η δημιουργία θέματος απέτυχε",
             threadCreated: "Το θέμα δημιουργήθηκε",
             sendMessageFailed: "Η αποστολή μηνύματος απέτυχε",
@@ -2441,7 +2441,7 @@ export const el = {
             system: "Σύστημα",
             templates: "Πρότυπα",
             hideTemplates: "Απόκρυψη προτύπων",
-            privateNotePlaceholder: "Ιδιωτική σημείωση (μόνο για ασφαλιστή)...",
+            privateNotePlaceholder: "Ιδιωτική σημείωση (μόνο για σύμβουλο)...",
             postUpdatePlaceholder: "Δημοσίευση ενημέρωσης...",
             privateNote: "Ιδιωτική σημείωση",
             send: "Αποστολή",
@@ -2564,7 +2564,7 @@ export const el = {
         policyDetail: {
             breadcrumbCustomers: 'Πελάτες',
             loading: 'Φόρτωση...',
-            portfolioManager: 'Διαχειριστής χαρτοφυλακίου ασφαλιστή',
+            portfolioManager: 'Διαχειριστής χαρτοφυλακίου συμβούλου',
             portfolioManagerDesc: 'Διαχειρίζεστε αυτήν τη στιγμή αυτό το συμβόλαιο πελάτη.',
             edit: 'Επεξεργασία',
             reviewExtraction: 'Έλεγχος εξαγωγής AI',
@@ -2589,7 +2589,7 @@ export const el = {
             policyId: 'Κωδικός συμβολαίου',
             starts: 'Έναρξη',
             ends: 'Λήξη',
-            agentAccessActive: 'Ενεργή πρόσβαση ασφαλιστή',
+            agentAccessActive: 'Ενεργή πρόσβαση συμβούλου',
             documents: 'Έγγραφα',
             noFiles: 'Δεν έχουν επισυναφθεί αρχεία',
             contract: 'Συμβόλαιο',
