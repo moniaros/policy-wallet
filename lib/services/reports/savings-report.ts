@@ -91,11 +91,13 @@ export function generateSavingsReportHtml(
         try {
             // This pinned "en-GB" while every label above it switched on
             // `language` — so a Greek branded report went out to the client with
-            // Greek headings and English dates.
+            // Greek headings and English dates. Athens-pinned like every other
+            // contractual-date render (raw zone shifts the day at Athens midnight).
             return new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
+                timeZone: "Europe/Athens",
             })
         } catch {
             return iso
@@ -159,6 +161,7 @@ export function generateSavingsReportHtml(
   .savings-total { background: #e8f5e9; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; }
   .savings-total .amount { font-size: 28px; font-weight: 700; color: #2e7d32; }
   .savings-total .label { color: #388e3c; font-size: 14px; }
+  .savings-total .caveat { color: #444; font-size: 12px; margin-top: 8px; line-height: 1.5; }
   .savings-card { background: #f8f9fa; border-radius: 6px; padding: 14px 16px; margin-bottom: 10px; border-left: 4px solid #43a047; }
   .savings-card .action { font-weight: 600; font-size: 14px; }
   .savings-card .rationale { font-size: 13px; color: #555; margin-top: 4px; }
@@ -186,9 +189,9 @@ ${headerBlock}
 
 <div class="meta-grid">
   <span class="meta-label">${L("Ασφαλιστική", "Insurer")}</span><span class="meta-value">${escapeHtml(metadata.insurerName || "—")}</span>
-  <span class="meta-label">${L("Αριθμός συμβολαίου", "Policy Number")}</span><span class="meta-value">${escapeHtml(metadata.policyNumber || "—")}</span>
+  <span class="meta-label">${L("Αριθμός ασφαλιστηρίου", "Policy Number")}</span><span class="meta-value">${escapeHtml(metadata.policyNumber || "—")}</span>
   <span class="meta-label">${L("Τύπος", "Type")}</span><span class="meta-value">${escapeHtml(metadata.lineOfBusiness ? normalizeBranch(metadata.lineOfBusiness).label[language] : "—")}</span>
-  <span class="meta-label">${L("Περίοδος", "Period")}</span><span class="meta-value">${escapeHtml(metadata.startDate?.split("T")[0] || "—")} ${L("έως", "to")} ${escapeHtml(metadata.endDate?.split("T")[0] || "—")}</span>
+  <span class="meta-label">${L("Περίοδος", "Period")}</span><span class="meta-value">${escapeHtml(metadata.startDate ? formatDate(metadata.startDate) : "—")} ${L("έως", "to")} ${escapeHtml(metadata.endDate ? formatDate(metadata.endDate) : "—")}</span>
   <span class="meta-label">${L("Ασφάλιστρο", "Premium")}</span><span class="meta-value">${metadata.premiumAmount != null ? escapeHtml(formatCurrency(Number(metadata.premiumAmount), language, { currency: "EUR", decimals: 2 })) : "—"}</span>
 </div>
 
@@ -201,6 +204,10 @@ ${totalSavings > 0 ? `
 <div class="savings-total">
   <div class="amount">${escapeHtml(formatCurrency(totalSavings, language, { currency: "EUR", decimals: 0 }))}</div>
   <div class="label">${L("Εκτιμώμενη ετήσια δυνατότητα εξοικονόμησης", "Estimated annual savings potential")}</div>
+  <div class="caveat">${L(
+      "Οι εκτιμήσεις προκύπτουν από ανάλυση AI του εγγράφου σας και είναι ενδεικτικές — τα πραγματικά ποσά εξαρτώνται από τις προσφορές των ασφαλιστών. Χαμηλότερο ασφάλιστρο μπορεί να σημαίνει μικρότερη κάλυψη: συγκρίνετε τις καλύψεις, όχι μόνο την τιμή. Αυθεντική πηγή παραμένει το ασφαλιστήριό σας.",
+      "Estimates come from AI analysis of your document and are indicative — actual amounts depend on insurer quotes. A lower premium can mean less cover: compare the covers, not just the price. Your policy document remains the authoritative source."
+  )}</div>
 </div>
 ` : ""}
 
@@ -208,7 +215,7 @@ ${savings.map((s) => `
 <div class="savings-card">
   <div class="action">${escapeHtml(loc(s.action))}</div>
   <div class="rationale">${escapeHtml(loc(s.rationale))}</div>
-  ${s.estimatedAnnualSavingsEur ? `<div class="estimate">${L("Εκτιμώμενη εξοικονόμηση", "Estimated saving")}: ${escapeHtml(formatCurrency(Number(s.estimatedAnnualSavingsEur), language, { currency: "EUR", decimals: 0 }))}/${L("έτος", "year")} (${Math.round(s.confidence * 100)}% ${L("βεβαιότητα", "confidence")})</div>` : ""}
+  ${s.estimatedAnnualSavingsEur ? `<div class="estimate">${L("Ενδεικτική εκτίμηση", "Indicative estimate")}: ${escapeHtml(formatCurrency(Number(s.estimatedAnnualSavingsEur), language, { currency: "EUR", decimals: 0 }))}/${L("έτος", "year")}</div>` : ""}
 </div>
 `).join("")}
 

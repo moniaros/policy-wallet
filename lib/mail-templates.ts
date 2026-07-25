@@ -134,8 +134,8 @@ export const templates = {
             html: getBaseTemplate({
                 title: isEl ? 'Εντοπίστηκε πιθανό κενό κάλυψης' : 'Possible coverage gap found',
                 description: isEl
-                    ? `Η AI ανάλυσή μας εντόπισε πιθανό κενό κάλυψης στο ασφαλιστήριο <strong>${data.policyName}</strong>: <strong>${data.gapTitle}</strong>. Ελέγξτε τώρα για πλήρη προστασία.`
-                    : `Our AI has identified a potential coverage gap in your <strong>${data.policyName}</strong> policy: <strong>${data.gapTitle}</strong>. Review this now to ensure you are fully protected.`,
+                    ? `Η AI ανάλυσή μας εντόπισε πιθανό κενό κάλυψης στο ασφαλιστήριο <strong>${data.policyName}</strong>: <strong>${data.gapTitle}</strong>. Δείτε τις λεπτομέρειες για να αξιολογήσετε αν χρειάζεται κάποια ενέργεια.`
+                    : `Our AI has identified a potential coverage gap in your <strong>${data.policyName}</strong> policy: <strong>${data.gapTitle}</strong>. Review the details to see whether any action is needed.`,
                 actionUrl: data.url,
                 actionLabel: isEl ? 'Προβολή λεπτομερειών' : 'View details',
             })
@@ -169,7 +169,7 @@ export const templates = {
                     : `Your policy expires in ${data.daysLeft} days`,
                 description: isEl
                     ? `Το ασφαλιστήριο <strong>${data.policyName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Ελέγξτε τις επιλογές ανανέωσης τώρα.`
-                    : `Your <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Review your renewal options now to ensure continuous coverage.`,
+                    : `Your <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Review your renewal options before the expiry date.`,
                 actionUrl: data.url,
                 actionLabel: isEl ? 'Έλεγχος Ασφαλιστηρίου' : 'Review Policy',
             })
