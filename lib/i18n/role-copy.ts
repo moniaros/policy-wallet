@@ -35,8 +35,11 @@ type RoleCopy = {
         payouts: string
         status: string
         pending: string
+        verifiedLabel: string
+        rejectedLabel: string
         verifiedDescription: string
         underReviewDescription: string
+        rejectedDescription: string
         agencyName: string
         agencyNamePlaceholder: string
         licenseNumber: string
@@ -238,8 +241,11 @@ const roleCopy: Record<Language, RoleCopy> = {
             payouts: "Εκκαθαρίσεις",
             status: "Κατάσταση",
             pending: "Σε αξιολόγηση",
+            verifiedLabel: "Επιβεβαιωμένος",
+            rejectedLabel: "Δεν εγκρίθηκε",
             verifiedDescription: "Τα επαγγελματικά σας στοιχεία έχουν επιβεβαιωθεί.",
             underReviewDescription: "Το προφίλ σας αξιολογείται από την ομάδα κανονιστικής συμμόρφωσης.",
+            rejectedDescription: "Η ομάδα κανονιστικής συμμόρφωσης δεν ενέκρινε τα στοιχεία σας. Επικοινωνήστε μαζί μας για τα επόμενα βήματα.",
             agencyName: "Επωνυμία Πρακτορείου",
             agencyNamePlaceholder: "π.χ. Alpha Insurance Advisors",
             licenseNumber: "Αριθμός Άδειας",
@@ -443,8 +449,11 @@ const roleCopy: Record<Language, RoleCopy> = {
             payouts: "Payouts",
             status: "Status",
             pending: "Pending",
+            verifiedLabel: "Verified",
+            rejectedLabel: "Not approved",
             verifiedDescription: "Your professional credentials have been verified.",
             underReviewDescription: "Your profile is currently under review by our compliance team.",
+            rejectedDescription: "Our compliance team did not approve your credentials. Contact us for the next steps.",
             agencyName: "Agency Name",
             agencyNamePlaceholder: "e.g. Acme Insurance Services",
             licenseNumber: "License Number",

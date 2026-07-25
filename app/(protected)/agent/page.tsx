@@ -8,6 +8,7 @@ import { redirect } from "next/navigation"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 import { mapPolicyCardStatus } from '@/lib/wallet/map-policy-card-status'
+import { isAgentVerified } from "@/lib/agent/verification"
 
 export default async function AgentPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -76,7 +77,7 @@ export default async function AgentPage() {
             logoUrl: agentProfile.logoUrl,
             brandColor: agentProfile.brandColor || "#10b981",
             website: agentProfile.website,
-            verified: agentProfile.verificationStatus === "verified",
+            verified: isAgentVerified(agentProfile.verificationStatus),
         } : undefined,
     } : undefined
 

@@ -7,6 +7,7 @@ import { updateAgentProfile } from "../actions"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
+import { isAgentVerified, isAgentRejected } from "@/lib/agent/verification"
 
 const LOB_OPTIONS = [
     { key: "motor", en: "Motor", el: "Αυτοκίνητο" },
@@ -52,6 +53,16 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
     const [isSaving, setIsSaving] = useState(false)
     const { language } = useLanguage()
     const roleCopy = getRoleCopy(language)
+
+    // "approved" is the value the admin review writes; isAgentVerified is the
+    // single source of truth so this card can never drift from it again.
+    const verified = isAgentVerified(verificationStatus)
+    const rejected = isAgentRejected(verificationStatus)
+    const statusLabel = verified
+        ? roleCopy.agentSettings.verifiedLabel
+        : rejected
+            ? roleCopy.agentSettings.rejectedLabel
+            : roleCopy.agentSettings.pending
 
     const handleCommissionChange = (lob: string, value: string) => {
         const num = parseFloat(value)
@@ -101,19 +112,24 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
                     {/* Main Content */}
                     <div className="md:col-span-2 space-y-6">
-                        {/* Verification Status Banner */}
-                        <div className={`p-4 rounded-3xl border flex items-center gap-4 ${verificationStatus === 'verified'
+                        {/* Verification Status Banner — reads the SAME status the admin
+                            review writes ("approved"), via the shared isAgentVerified
+                            helper. Comparing against "verified" here (a value nothing
+                            writes) left approved advisors permanently shown as under review. */}
+                        <div className={`p-4 rounded-3xl border flex items-center gap-4 ${verified
                                 ? 'bg-primary-soft border-primary/20 text-[#166534] dark:bg-primary/15 dark:border-primary/30 dark:text-mint'
-                                : 'bg-amber-50 border-amber-100 text-amber-800 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400'
+                                : rejected
+                                    ? 'bg-red-50 border-red-100 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
+                                    : 'bg-amber-50 border-amber-100 text-amber-800 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400'
                             }`}>
-                            {verificationStatus === 'verified' ? (
+                            {verified ? (
                                 <CheckCircle className="w-5 h-5 flex-shrink-0" />
                             ) : (
                                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
                             )}
                             <div>
                                 <p className="text-xs font-black uppercase tracking-widest">
-                                    {roleCopy.agentSettings.status}: {verificationStatus || roleCopy.agentSettings.pending}
+                                    {roleCopy.agentSettings.status}: {statusLabel}
                                 </p>
                                 {/* This states whether a licensed intermediary's professional
                                     credentials are verified or still under review. opacity-80
@@ -122,9 +138,11 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                     rendered the least legibly. Hierarchy is already carried by
                                     the uppercase status line above. */}
                                 <p className="text-xs font-medium mt-0.5">
-                                    {verificationStatus === 'verified'
+                                    {verified
                                         ? roleCopy.agentSettings.verifiedDescription
-                                        : roleCopy.agentSettings.underReviewDescription}
+                                        : rejected
+                                            ? roleCopy.agentSettings.rejectedDescription
+                                            : roleCopy.agentSettings.underReviewDescription}
                                 </p>
                             </div>
                         </div>

@@ -3,6 +3,7 @@
 import React from "react"
 import { Phone, Globe, Mail, ShieldCheck, ExternalLink } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { isAgentVerified } from "@/lib/agent/verification"
 import type { AgentCardData, ViewerRole } from "./types"
 
 interface AgentCardProps {
@@ -36,7 +37,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                 <div>
                     <p className="text-sm font-semibold text-foreground">{agent.name}</p>
                     <div className="flex items-center gap-1">
-                        {agent.verificationStatus === "verified" && (
+                        {isAgentVerified(agent.verificationStatus) && (
                             <ShieldCheck className="h-3 w-3 text-[#22C55E]" />
                         )}
                         <span className="text-kicker text-muted-foreground">
@@ -72,7 +73,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         <h3 className="text-lg font-bold text-foreground truncate">
                             {agent.name}
                         </h3>
-                        {agent.verificationStatus === "verified" && (
+                        {isAgentVerified(agent.verificationStatus) && (
                             <span className="flex items-center gap-1 rounded-full bg-primary-soft dark:bg-primary/15 px-2 py-0.5 text-kicker font-medium text-[#166534] dark:text-mint">
                                 <ShieldCheck className="h-3 w-3" />
                                 {t.agentUi.verified}
