@@ -575,6 +575,7 @@ export const el = {
             actionsTaskFailed: 'Δεν ήταν δυνατή η αποθήκευση. Δοκιμάστε ξανά.',
             claimAskAiCta: 'Ρωτήστε το AI για ζημιές',
             claimAskAgentCta: 'Ρωτήστε τον σύμβουλό μου',
+            claimFindAgentCta: 'Βρείτε σύμβουλο',
             claimsDisclaimer: 'Γενική καθοδήγηση, όχι νομική συμβουλή — η διαδικασία του ασφαλιστή σας μπορεί να διαφέρει.',
             // Agent section
             agentSectionTitle: 'Σημειώσεις συμβούλου & συνεργασία',

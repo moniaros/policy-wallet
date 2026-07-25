@@ -35,6 +35,8 @@ interface ClaimsGuidanceCardProps {
         claimNeedHelp: string
         claimAskAiCta: string
         claimAskAgentCta: string
+        /** No-advisor variant — "my agent" is false when hasAgent is false. */
+        claimFindAgentCta: string
         claimsDisclaimer: string
         contactInsurer: string
         /** Shown when no claims number was extracted — never a fabricated number. */
@@ -178,7 +180,9 @@ export function ClaimsGuidanceCard({
                         className="inline-flex items-center gap-1.5 rounded-full border border-black/15 bg-white px-3.5 py-2 text-xs font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10"
                     >
                         <MessageCircle className="h-3.5 w-3.5 text-primary dark:text-mint" />
-                        {copy.claimAskAgentCta}
+                        {/* "Ask my agent" only if they actually have one; otherwise
+                            the possessive is false and this routes to /agent to find one. */}
+                        {hasAgent ? copy.claimAskAgentCta : copy.claimFindAgentCta}
                     </Link>
                 </div>
                 <p className="mt-3 text-micro text-black/55 dark:text-white/50">{copy.claimsDisclaimer}</p>

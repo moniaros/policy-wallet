@@ -918,6 +918,7 @@ export function PolicyDetailsClient({
                                     claimNeedHelp: detailsCopy.claimNeedHelp,
                                     claimAskAiCta: detailsCopy.claimAskAiCta,
                                     claimAskAgentCta: detailsCopy.claimAskAgentCta,
+                                    claimFindAgentCta: detailsCopy.claimFindAgentCta,
                                     claimsDisclaimer: detailsCopy.claimsDisclaimer,
                                     contactInsurer: claimsPhoneLabel,
                                     claimsPhoneUnknown: detailsCopy.claimsPhoneUnknown,

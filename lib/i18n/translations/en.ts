@@ -578,6 +578,10 @@ export const en: TranslationKeys = {
             actionsTaskFailed: 'Could not save. Please try again.',
             claimAskAiCta: 'Ask AI about claims',
             claimAskAgentCta: 'Ask my agent',
+            /** Shown only when the policyholder has NO linked advisor — the
+                possessive "my agent" would be false, so this routes to the
+                find-an-advisor page instead. */
+            claimFindAgentCta: 'Find an agent',
             claimsDisclaimer: 'General guidance, not legal advice — your insurer\'s process may differ.',
             // Agent section
             agentSectionTitle: 'Agent notes & collaboration',
