@@ -116,19 +116,22 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                             )}
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-1.5">
-                                        {canPreview && (
-                                            <DocumentPreviewButton
-                                                onClick={() => setPreviewDoc({ fileName: doc.fileName, fileUrl: docHref(doc.id) })}
-                                                isLocked={isPreviewLocked}
-                                                label={copy.preview}
-                                                lockedLabel={copy.upgradeToPlusPreview}
-                                                onLockedClick={() => setUpgradeOpen(true)}
-                                            />
-                                        )}
-                                        <Download className="h-4 w-4 shrink-0 text-black/55 dark:text-white/55" />
-                                    </div>
+                                    <Download className="h-4 w-4 shrink-0 text-black/55 dark:text-white/55" />
                                 </a>
+                                {/* The preview control is a real <button>, so it must be a SIBLING
+                                    of the download <a> — never a child. A <button> nested inside an
+                                    <a> is invalid HTML (an anchor may have no interactive descendant)
+                                    and a screen-reader anti-pattern the rest of the app avoids. It
+                                    sits at the row's trailing edge, beside the link. */}
+                                {canPreview && (
+                                    <DocumentPreviewButton
+                                        onClick={() => setPreviewDoc({ fileName: doc.fileName, fileUrl: docHref(doc.id) })}
+                                        isLocked={isPreviewLocked}
+                                        label={copy.preview}
+                                        lockedLabel={copy.upgradeToPlusPreview}
+                                        onLockedClick={() => setUpgradeOpen(true)}
+                                    />
+                                )}
                             </li>
                         )
                     })}

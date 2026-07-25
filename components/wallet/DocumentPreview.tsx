@@ -129,6 +129,7 @@ export function DocumentPreviewButton({ onClick, isLocked, label, lockedLabel, o
             }}
             className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/60 transition-colors hover:bg-black/5 hover:text-black/80 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white/80"
             title={label}
+            aria-label={label}
         >
             <Eye className="h-3.5 w-3.5" />
         </button>
