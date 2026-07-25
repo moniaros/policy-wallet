@@ -171,7 +171,10 @@ export function ClientOverviewTab({
                                                             : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
                                                 }`}>
                                                     <ArrowUpRight className="w-2.5 h-2.5" />
-                                                    {opp.conversionScore != null ? `${opp.conversionScore}%` : opp.conversionLikelihood}
+                                                    {/* When there's no numeric score, fall back to the LOCALISED
+                                                        likelihood label (as OpportunitiesClient does) — the raw
+                                                        "high"/"medium"/"low" enum was shown to Greek agents. */}
+                                                    {opp.conversionScore != null ? `${opp.conversionScore}%` : t.agentPages.opportunities.likelihood[opp.conversionLikelihood]}
                                                 </span>
                                             )}
                                         </div>
