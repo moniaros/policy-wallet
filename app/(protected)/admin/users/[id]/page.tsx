@@ -2,6 +2,7 @@ export const runtime = "nodejs"
 
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getUserDetails } from "../../actions"
 import GrantTokensButton from "@/components/admin/GrantTokensButton"
@@ -136,7 +137,7 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
                                     <tr key={p.id} className="border-t border-stone-100 dark:border-stone-700">
                                         <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{p.policyNumber}</td>
                                         <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{p.insurerName}</td>
-                                        <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{p.lineOfBusiness}</td>
+                                        <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{normalizeBranch(p.lineOfBusiness).label.en}</td>
                                         <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{p.status}</td>
                                         <td className="py-2 pr-4 text-stone-600 dark:text-stone-400">{fmt(p.createdAt)}</td>
                                     </tr>

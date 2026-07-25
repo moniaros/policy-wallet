@@ -4,6 +4,7 @@ import { useId, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrencyFull } from "@/lib/agent/format"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
@@ -354,7 +355,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-sm font-bold text-foreground">{policy.data.insurerName}</span>
                                                             <span className="px-2 py-0.5 bg-muted rounded text-xs font-medium text-muted-foreground capitalize">
-                                                                {t.policyTypes?.[policy.data.lineOfBusiness as keyof typeof t.policyTypes] || policy.data.lineOfBusiness}
+                                                                {t.policyTypes?.[policy.data.lineOfBusiness as keyof typeof t.policyTypes] || normalizeBranch(policy.data.lineOfBusiness).label[language]}
                                                             </span>
                                                         </div>
                                                         <div className="grid grid-cols-2 gap-2 text-xs">

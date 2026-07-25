@@ -9,7 +9,7 @@ import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
 import { StatusPill } from "@/components/ui/StatusPill"
 import { useDialog } from "@/hooks/useDialog"
 import { calendarDaysUntil } from "@/lib/policy-status"
-import { branchFamilyId } from "@/lib/insurance/taxonomy"
+import { branchFamilyId, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { motorSection, homeSection, lifeSection } from "@/lib/wallet/coverage-sections"
 import { classifyMotorCoverageTier } from "@/lib/wallet/motor-coverage-tier"
 
@@ -244,7 +244,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                 <p className="text-sm font-medium text-muted-foreground mb-4">
                                     {selectedIds.length === 0
                                         ? c.selectFirst
-                                        : `${c.selectedPrefix}: ${selectedPolicies[0]?.insurerName} (${selectedPolicies[0]?.lineOfBusiness}). ${c.selectMore}`
+                                        : `${c.selectedPrefix}: ${selectedPolicies[0]?.insurerName} (${selectedPolicies[0] ? normalizeBranch(selectedPolicies[0].lineOfBusiness).label[language] : ''}). ${c.selectMore}`
                                     }
                                 </p>
                             )}

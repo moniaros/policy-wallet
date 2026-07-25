@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { toast } from "sonner"
 import { Search, RefreshCw, Pencil, Trash2, GitMerge } from "lucide-react"
 import { requeuePolicy, deletePolicy, updatePolicyFields, mergePolicies, type AdminPolicyRow } from "../policy-actions"
@@ -206,7 +207,7 @@ export default function PoliciesClient({
                                 <tr key={row.id} className="border-b border-stone-100 dark:border-stone-700">
                                     <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{row.policyNumber}</td>
                                     <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{row.insurerName}</td>
-                                    <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{row.lineOfBusiness}</td>
+                                    <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{normalizeBranch(row.lineOfBusiness).label.en}</td>
                                     <td className="py-2 px-4 font-mono text-xs text-stone-600 dark:text-stone-400">{row.ownerEmail || row.ownerUserId}</td>
                                     <td className="py-2 px-4">
                                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded ${row.status === "analyzing" ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300" : "bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300"}`}>

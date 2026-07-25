@@ -2,6 +2,7 @@
 
 import { useId, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import {
     ClipboardList, Plus, Trash2, GripVertical, Eye, Send,
     Sparkles, ChevronDown, CheckCircle2, Clock, FileQuestion,
@@ -271,7 +272,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
 
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{tpl.name}</h4>
                     <p className="text-kicker font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-                        {tpl.lineOfBusiness} · {tpl.questions.length} {t.questions} · {tpl.instanceCount} {t.sentCount}
+                        {normalizeBranch(tpl.lineOfBusiness).label[language === 'el' ? 'el' : 'en']} · {tpl.questions.length} {t.questions} · {tpl.instanceCount} {t.sentCount}
                     </p>
 
                     {/* Question preview */}

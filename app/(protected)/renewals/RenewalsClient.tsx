@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrencyFull } from "@/lib/agent/format"
 import { formatDate as formatDateShared } from "@/lib/i18n/format"
 import { daysLeftLabel } from "@/lib/wallet/days-left-label"
@@ -451,7 +452,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                 <td data-label={t.insurer} className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{r.insurerName}</td>
                                                 <td data-label={t.lob} className="px-4 py-3">
                                                     <span className="text-xs font-bold text-neutral-500 bg-muted dark:text-neutral-400 px-2 py-0.5 rounded">
-                                                        {r.lineOfBusiness}
+                                                        {normalizeBranch(r.lineOfBusiness).label[language]}
                                                     </span>
                                                 </td>
                                                 <td data-label={t.premium} className="px-4 py-3 text-right font-bold text-foreground">

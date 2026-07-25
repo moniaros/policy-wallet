@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import {
     Send,
     CheckCircle2,
@@ -343,7 +344,7 @@ export function ProposalView({
                     <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         {PROPOSAL_TYPE_LABELS[proposal.proposalType]?.[language] || proposal.proposalType}
                         {" · "}
-                        {LOB_OPTIONS.find((l) => l.value === proposal.lineOfBusiness)?.[language] || proposal.lineOfBusiness}
+                        {LOB_OPTIONS.find((l) => l.value === proposal.lineOfBusiness)?.[language] || normalizeBranch(proposal.lineOfBusiness).label[language]}
                     </p>
                 </div>
                 <div className="text-right">
