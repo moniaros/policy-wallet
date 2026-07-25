@@ -1112,6 +1112,8 @@ export const en: TranslationKeys = {
         submitting: 'SUBMITTING...',
         submitError: 'Submission failed. Please try again.',
         typeAnswer: 'Type your answer here...',
+        questionnairePrivacyNote: 'Your answers — including any health details — are shared with your insurance advisor to assess your needs and are handled under our',
+        questionnairePrivacyLink: 'Privacy Policy',
         everythingPerfect: 'Everything is Perfect!',
         completedAllTasks: "You've completed all outstanding requests. We'll notify you when new insights are available.",
         startAssessment: 'Start Assessment',

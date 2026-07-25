@@ -218,7 +218,20 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     <Alert variant="error" className="mt-8">{t.tasks.submitError}</Alert>
                 )}
 
-                <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
+                {/* Data-handling note. The health/life templates collect GDPR
+                    special-category data (conditions, medication, health history);
+                    the client must be told who receives it and how it's handled
+                    before they submit — consistent with the app's AI-consent and
+                    provenance-disclaimer discipline. */}
+                <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
+                    {t.tasks.questionnairePrivacyNote}{" "}
+                    <Link href="/privacy" className="underline hover:text-foreground">
+                        {t.tasks.questionnairePrivacyLink}
+                    </Link>
+                    .
+                </p>
+
+                <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
                     <button
                         type="button"
                         onClick={() => router.back()}
