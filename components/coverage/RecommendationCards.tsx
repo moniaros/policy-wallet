@@ -229,7 +229,7 @@ export function RecommendationCards({
                 </div>
                 <div className="flex-1">
                     <h2 className="text-lg font-semibold text-black dark:text-white">
-                        {t("Προτάσεις Κάλυψης", "Coverage Recommendations")}
+                        {t("Προτάσεις κάλυψης", "Coverage Recommendations")}
                     </h2>
                     <p className="text-xs text-black/55 dark:text-white/60">
                         {t(

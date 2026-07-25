@@ -54,7 +54,7 @@ export function ProtectionScoreCard({
     const methodology = getTranslations(lang).dashboard.home
 
     const copy = {
-        title: lang === "el" ? "Βαθμολογία Προστασίας" : "Protection Score",
+        title: lang === "el" ? "Βαθμολογία προστασίας" : "Protection Score",
         subtitle: lang === "el" ? "Πόσο καλά καλύπτεστε" : "How well you are covered",
         // Concept A — missing coverage TYPES (profile categories), distinct from
         // the policy-gap count on the rest of the page. Never call these "gaps".

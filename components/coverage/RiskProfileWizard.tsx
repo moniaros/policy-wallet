@@ -226,7 +226,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                 </div>
                 <div>
                     <h2 className="text-lg font-semibold text-black dark:text-white">
-                        {t("Προφίλ Κινδύνου", "Risk Profile")}
+                        {t("Προφίλ κινδύνου", "Risk Profile")}
                     </h2>
                     <p className="text-xs text-black/55 dark:text-white/60">
                         {t(
@@ -304,7 +304,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                 {/* Row 4: Health & Lifestyle */}
                 <div className="pt-3 border-t border-black/8 dark:border-white/10">
                     <p className="text-xs font-semibold text-black/60 dark:text-white/50 uppercase tracking-widest mb-3">
-                        {t("Υγεία & Τρόπος Ζωής", "Health & Lifestyle")}
+                        {t("Υγεία & Τρόπος ζωής", "Health & Lifestyle")}
                     </p>
 
                     {/* Special-category (health) data — GDPR Art. 9. The wizard
@@ -623,7 +623,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                         <ShieldCheck className="h-4 w-4" />
                         {loading
                             ? t("Αποθήκευση...", "Saving...")
-                            : t("Αποθήκευση & Ανανέωση Βαθμολογίας", "Save & Update Protection Score")}
+                            : t("Αποθήκευση & Ανανέωση βαθμολογίας", "Save & Update Protection Score")}
                     </button>
                 </div>
             </form>
