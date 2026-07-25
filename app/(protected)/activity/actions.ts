@@ -1,6 +1,7 @@
 'use server'
 
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
+import { opportunityStatusLabel } from '@/lib/opportunity/status-labels'
 import { db as prisma } from '@/lib/db'
 import { presentCustomerIdentity } from '@/lib/agent-consent'
 import { getVisiblePolicyCountsByOwner } from '@/lib/agent-visibility'
@@ -195,12 +196,12 @@ export async function getActivityFeed(limit = 50): Promise<ActivityEvent[]> {
                 type: opp.status === 'won' ? 'opportunity_won' : opp.status === 'lost' ? 'opportunity_lost' : 'opportunity_updated',
                 category: 'opportunity',
                 title: {
-                    en: opp.status === 'won' ? 'Opportunity Won!' : `Opportunity Update: ${opp.status}`,
-                    el: opp.status === 'won' ? 'Επιτυχής Ευκαιρία!' : `Ενημέρωση Ευκαιρίας: ${opp.status}`
+                    en: opp.status === 'won' ? 'Opportunity Won!' : `Opportunity Update: ${opportunityStatusLabel(opp.status).en}`,
+                    el: opp.status === 'won' ? 'Επιτυχής Ευκαιρία!' : `Ενημέρωση Ευκαιρίας: ${opportunityStatusLabel(opp.status).el}`
                 },
                 description: {
-                    en: `Opportunity status changed to ${opp.status} for ${label}.`,
-                    el: `Η ευκαιρία για τον/την ${label} ενημερώθηκε σε ${opp.status}.`
+                    en: `Opportunity status changed to ${opportunityStatusLabel(opp.status).en} for ${label}.`,
+                    el: `Η ευκαιρία για τον/την ${label} ενημερώθηκε σε ${opportunityStatusLabel(opp.status).el}.`
                 },
                 timestamp: opp.updatedAt,
                 customerId: opp.relationship.customer.id,
