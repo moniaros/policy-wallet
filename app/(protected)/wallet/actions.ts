@@ -3,6 +3,7 @@
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { z } from "zod"
 
 import { createClient } from "@/lib/supabase/server"
@@ -858,7 +859,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
             eventType: 'policy_shared',
             channel: 'in_app',
             title: 'New Policy Shared With You',
-            message: `${authResult.dbUser.name || 'A customer'} has shared their ${policy?.lineOfBusiness || 'insurance'} policy (${policy?.insurerName}) with you with ${permissions} access.`,
+            message: `${authResult.dbUser.name || 'A customer'} has shared their ${policy?.lineOfBusiness ? normalizeBranch(policy.lineOfBusiness).label.en : 'insurance'} policy (${policy?.insurerName}) with you with ${permissions} access.`,
             relatedObjectType: 'policy',
             relatedObjectId: policyId
         }

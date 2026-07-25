@@ -3,6 +3,7 @@
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { notifyCounterparty } from "@/lib/notifications"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 import { redirect } from "next/navigation"
@@ -671,7 +672,7 @@ export async function addPolicyForCustomer(data: {
                 eventType: 'policy_added',
                 channel: 'in_app',
                 title: 'New Policy Added',
-                message: `${agentLabel} added a ${data.policy.lineOfBusiness} policy from ${data.policy.insurerName} to your wallet and can view and manage that policy. You can revoke this access at any time from My Agent.`,
+                message: `${agentLabel} added a ${normalizeBranch(data.policy.lineOfBusiness).label.en} policy from ${data.policy.insurerName} to your wallet and can view and manage that policy. You can revoke this access at any time from My Agent.`,
                 relatedObjectType: 'policy',
                 relatedObjectId: policy.id
             }
