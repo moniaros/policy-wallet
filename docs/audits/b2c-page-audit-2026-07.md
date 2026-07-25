@@ -270,6 +270,33 @@ Closing the census page-by-page (each page read, not pattern-matched):
 - **Terms/privacy/cookies/subprocessors**: legal pages under counsel's
   ownership — out of copy-audit scope, flagged for the legal review list.
 
+## Metric layer — render-level verification (closing the "static/by-concept" gap)
+
+Each metric re-audited **in its rendered component** (not just the copy strings):
+
+- **`ProtectionScoreCard.tsx`** — the 0–100 ring, the per-category `%` bars, and
+  the profile-completeness meter all render under one `ScoreMethodology`
+  disclosure (title + body + limits + **not-advice**, single-sourced with the
+  `/dashboard` tile so legal edits one place). When `profileCompleteness < 80`
+  the tier label gets a **«Προσωρινή — συμπληρώστε το προφίλ σας»** ("Provisional")
+  suffix and a completeness nudge — explicit uncertainty on incomplete data.
+  "Coverage types missing" is deliberately kept distinct from the policy-gap
+  count (code comment enforces "never call these gaps").
+- **Opportunity likelihood score (0–100, `opportunity-scoring.ts`)** — consumed
+  only by `/opportunities` and `/agent/actions.ts` (**B2B**); the B2C
+  `coverage-insights` page passes recommendations *without* the score. A
+  sales-likelihood figure is never shown to the policyholder. ✅
+- **`RecommendationCards.tsx`** — priority badges labeled "…priority" (not
+  "…risk"), qualified by `recPriorityNote` («…δεν αποτελούν οριστική αξιολόγηση
+  κινδύνου» / "not a definitive risk assessment"), a not-advice trust line, and
+  three honest empty states. No € figure paired with a recommendation. ✅
+- **Coverage-completeness fallback** (`coverage-insights/page.tsx`) — guarded so
+  an engine error yields `0`, never a misleading "100 = Strong". ✅
+
+No new defect at the metric layer — it was already built with deliberate
+compliance care. The metric census above stands, now verified at the render
+level rather than by concept.
+
 ## Conduct verdict
 
 With the savings-report and email fixes, the B2C experience is **transparent,
