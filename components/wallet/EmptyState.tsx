@@ -12,9 +12,16 @@ interface EmptyStateProps {
     viaAgentInvite?: boolean
 }
 
-export function EmptyState({ onAddManually }: EmptyStateProps) {
+export function EmptyState({ onAddManually, onUploadDocument }: EmptyStateProps) {
     const { t } = useLanguage()
     const copy = t.wallet.emptyState
+
+    // The benefit line sells uploading ("Upload a PDF and in under 30 seconds the
+    // AI extracts…"), so the single primary CTA must open the UPLOAD flow — not
+    // the manual handler it was wired to (which also left onUploadDocument, passed
+    // by the parent, silently unused). Fall back to onAddManually only if no
+    // upload handler was supplied.
+    const onPrimary = onUploadDocument ?? onAddManually
 
     return (
         <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-10">
@@ -28,7 +35,7 @@ export function EmptyState({ onAddManually }: EmptyStateProps) {
                     icon={Wallet}
                     headline={copy.headline}
                     description={copy.benefit}
-                    cta={{ label: copy.ctaPrimary, onClick: onAddManually }}
+                    cta={{ label: copy.ctaPrimary, onClick: onPrimary }}
                     previewLabel={copy.previewLabel}
                     preview={
                         <>
