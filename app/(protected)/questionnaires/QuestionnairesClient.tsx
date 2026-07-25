@@ -253,7 +253,7 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                             </span>
                         </div>
                         {!tpl.isSystem && (
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                                 <button
                                     onClick={() => onEdit(tpl.id)}
                                     className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-600 dark:text-slate-400"

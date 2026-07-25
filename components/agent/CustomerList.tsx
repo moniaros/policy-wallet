@@ -342,7 +342,7 @@ export function CustomerList({
                                             )}
                                         </td>
                                         <td className="px-4 py-3.5 text-right">
-                                            <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                                                 {customer.phone && <button aria-label={t.a11yLabels.callClient} onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Phone className="w-3.5 h-3.5" /></button>}
                                                 <button aria-label={t.a11yLabels.emailClient} onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Mail className="w-3.5 h-3.5" /></button>
                                                 <ChevronRight className="w-4 h-4 text-neutral-300 dark:text-neutral-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />

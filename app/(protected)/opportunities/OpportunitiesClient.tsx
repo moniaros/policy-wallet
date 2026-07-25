@@ -206,7 +206,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB') : '—'}
                                             </td>
                                             <td data-label={opp_t.colActions} className="px-6 py-6 text-right pr-8">
-                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setSelectedOpp(opp)}
                                                         className="pw-secondary-button pw-btn-sm"
