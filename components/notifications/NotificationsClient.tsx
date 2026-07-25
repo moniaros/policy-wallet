@@ -379,7 +379,10 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                             onClick={() => void handleMarkRead(event.event_id)}
                                             role="button"
                                             tabIndex={0}
-                                            onKeyDown={(e) => { if (e.key === "Enter") void handleMarkRead(event.event_id) }}
+                                            // A role="button" must activate on Space as well as Enter
+                                            // (WAI-ARIA button pattern). preventDefault stops Space
+                                            // from scrolling the page instead of marking as read.
+                                            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); void handleMarkRead(event.event_id) } }}
                                             className={`cursor-pointer rounded-2xl border p-4 shadow-sm transition ${
                                                 isRead
                                                     ? "border-black/10 dark:border-white/15 bg-white dark:bg-black"
