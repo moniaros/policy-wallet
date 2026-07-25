@@ -345,7 +345,8 @@ test.describe('Mobile trigger surfaces', () => {
         await page.goto('/wallet')
         await dismissCookieBanner(page)
 
-        // useIsMobile flips after mount — wait for the mobile trigger card.
+        // Post un-fork the wallet renders one responsive tree at all widths, so
+        // the upgrade CTA is reachable at 390px too — this asserts that.
         const upgradeCta = page
             .getByRole('button', { name: /Ξεκλείδωμα πλήρους|Unlock full/i })
             .first()
