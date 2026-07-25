@@ -31,4 +31,11 @@ describe('data-heavy protected routes ship a loading state', () => {
         )
         expect(missing, `routes missing loading.tsx (blank flash on slow load):\n${missing.join('\n')}`).toEqual([])
     })
+
+    it('every listed route has an error.tsx (a throw is contained + retryable, not shell-wide)', () => {
+        const missing = DATA_ROUTES.filter(
+            (r) => !existsSync(`app/(protected)/${r}/error.tsx`),
+        )
+        expect(missing, `routes missing error.tsx (a query failure tears down the whole shell):\n${missing.join('\n')}`).toEqual([])
+    })
 })
