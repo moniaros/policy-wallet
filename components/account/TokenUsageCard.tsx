@@ -41,7 +41,7 @@ interface Props {
     className?: string
 }
 
-export function TokenUsageCard({ language = "en", className = "" }: Props) {
+export function TokenUsageCard({ language = "el", className = "" }: Props) {
     const [data, setData] = useState<TokenUsageData | null>(null)
     const [loading, setLoading] = useState(true)
     const [purchasing, setPurchasing] = useState<string | null>(null)

@@ -76,7 +76,7 @@ const FIELD_LABELS: Record<string, { el: string; en: string }> = {
     familyMedicalHistory: { el: "Οικογενειακό ιστορικό", en: "Family history" },
 }
 
-export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileWizardProps) {
+export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileWizardProps) {
     const fieldLabel = (key: string) =>
         FIELD_LABELS[key]?.[language === "el" ? "el" : "en"] ?? key
     const router = useRouter()

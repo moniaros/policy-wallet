@@ -13,7 +13,7 @@ interface LogoProps {
 export function PolicyWalletLogo({
     variant = 'default',
     size = 'md',
-    language = 'en',
+    language = 'el',
     className = ''
 }: LogoProps) {
     const sizeClasses = {
