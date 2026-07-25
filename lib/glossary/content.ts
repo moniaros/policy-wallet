@@ -627,6 +627,61 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         dateModified: "2026-07-21",
     },
+    {
+        slug: "ypoorio",
+        term: { el: "Υποόριο", en: "Sublimit" },
+        aliases: [{ el: "Επιμέρους όριο", en: "Inner limit" }],
+        metaTitle: {
+            el: "Τι είναι το υποόριο σε ασφαλιστήριο;",
+            en: "What is a sublimit in an insurance policy?",
+        },
+        metaDescription: {
+            el: "Υποόριο είναι ένα χαμηλότερο ανώτατο όριο για μια συγκεκριμένη κάλυψη, μέσα στο συνολικό ασφαλισμένο κεφάλαιο. Δείτε γιατί μπορεί να πληρωθείτε λιγότερα από όσα νομίζετε.",
+            en: "A sublimit is a lower ceiling on a specific cover, inside the overall sum insured. See why you may be paid less than the headline limit suggests.",
+        },
+        shortDefinition: {
+            el: "Υποόριο είναι ένα χαμηλότερο ανώτατο όριο που ισχύει για μια συγκεκριμένη κάλυψη ή κατηγορία ζημιάς, μέσα στο συνολικό ασφαλισμένο κεφάλαιο. Παράδειγμα: σε ασφάλιση κατοικίας 200.000€ μπορεί να υπάρχει υποόριο 3.000€ για κοσμήματα. Ακόμη κι αν το συνολικό όριο είναι υψηλό, η συγκεκριμένη αποζημίωση περιορίζεται στο υποόριο.",
+            en: "A sublimit is a lower ceiling that applies to a specific cover or type of loss, within the overall sum insured. Example: a €200,000 home policy may carry a €3,000 sublimit for jewellery. Even when the overall limit is high, that particular claim is capped at the sublimit.",
+        },
+        body: [
+            {
+                el: "Το υποόριο είναι από τους πιο συχνούς λόγους που μια αποζημίωση βγαίνει μικρότερη από το αναμενόμενο. Δύο συμβόλαια με το ίδιο «ασφαλισμένο κεφάλαιο» μπορεί να πληρώνουν πολύ διαφορετικά, αν το ένα έχει αυστηρά υποόρια ανά κατηγορία — π.χ. για κλοπή, για μετρητά, για ένα μεμονωμένο αντικείμενο ή, στην υγεία, ανά ημέρα νοσηλείας ή ανά πράξη. Το υποόριο δεν είναι εξαίρεση: η ζημιά καλύπτεται, αλλά μέχρι ένα χαμηλότερο ποσό.",
+                en: "A sublimit is one of the most common reasons a payout comes out smaller than expected. Two policies with the same 'sum insured' can pay very differently if one carries strict sublimits per category — for theft, for cash, for a single item, or, in health, per day of hospitalisation or per procedure. A sublimit is not an exclusion: the loss is covered, but only up to a lower amount.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο δικό σας ασφαλιστήριο, τα υποόρια αναγράφονται συνήθως στον πίνακα καλύψεων δίπλα σε κάθε κάλυψη — αναζητήστε φράσεις όπως «έως», «μέχρι», «ανώτατο όριο ανά…» ή «υποόριο». Το PolicyWallet εντοπίζει τα υποόρια ανά κάλυψη στο έγγραφό σας, ώστε να δείτε πού η πραγματική σας προστασία είναι χαμηλότερη από το συνολικό όριο.",
+            en: "In your own policy, sublimits usually appear in the schedule of cover next to each cover — look for phrases like «έως», «μέχρι», «ανώτατο όριο ανά…» or «υποόριο». PolicyWallet surfaces the sublimits per cover in your document, so you can see where your real protection is lower than the overall limit.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Είναι το υποόριο το ίδιο με το ασφαλισμένο κεφάλαιο;",
+                    en: "Is a sublimit the same as the sum insured?",
+                },
+                answer: {
+                    el: "Όχι. Το ασφαλισμένο κεφάλαιο είναι το συνολικό ανώτατο όριο· το υποόριο είναι ένα χαμηλότερο όριο για μια συγκεκριμένη κάλυψη μέσα σε αυτό.",
+                    en: "No. The sum insured is the overall ceiling; a sublimit is a lower cap on a specific cover within it.",
+                },
+            },
+            {
+                question: {
+                    el: "Πού συναντώ συχνότερα υποόρια;",
+                    en: "Where do I most often meet sublimits?",
+                },
+                answer: {
+                    el: "Στην υγεία (π.χ. δωμάτιο & τροφή ανά ημέρα, συγκεκριμένες πράξεις) και στην κατοικία (κοσμήματα, μετρητά, μεμονωμένο αντικείμενο).",
+                    en: "In health (e.g. room & board per day, specific procedures) and home (jewellery, cash, a single item).",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured" }, href: "/lexiko/asfalismeno-kefalaio" },
+            { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
+            { label: { el: "Εξαίρεση", en: "Exclusion" }, href: "/lexiko/exairesi" },
+        ],
+        dateModified: "2026-07-25",
+    },
 ]
 
 /** One glossary term by slug, or undefined when the slug is unknown. */

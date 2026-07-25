@@ -45,6 +45,7 @@ const POLICY_HINT_SLUGS = {
     surrender: "exagora",
     sumInsured: "asfalismeno-kefalaio",
     underinsurance: "ypasfalisi",
+    sublimit: "ypoorio",
 } as const
 
 export type PolicyHintKey = keyof typeof POLICY_HINT_SLUGS

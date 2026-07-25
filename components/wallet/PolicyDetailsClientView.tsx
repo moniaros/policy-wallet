@@ -793,6 +793,7 @@ export function PolicyDetailsClient({
                                     }}
                                     disclaimer={t.coverageDetails.exclusionsDisclaimer}
                                     termHint={exclusionHint}
+                                    conditionHints={{ sub_limit: glossaryHints?.sublimit ?? null }}
                                 />
                             </section>
                         )}

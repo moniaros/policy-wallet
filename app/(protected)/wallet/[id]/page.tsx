@@ -309,6 +309,7 @@ export default async function PolicyDetailPage({
                 surrender: t.coverageDetails.life.surrenderValue,
                 sumInsured: t.coverageDetails.home.insuredValue,
                 underinsurance: t.coverageDetails.home.valueComparison,
+                sublimit: t.wallet.policyDetailsPage.conditionTypes.sub_limit,
             })}
             tier={entitlements.tier}
             tierLimits={entitlements.limits}

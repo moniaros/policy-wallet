@@ -46,6 +46,12 @@ interface ExclusionsCardProps {
     disclaimer: string
     /** Inline definition of "Εξαίρεση", resolved server-side. */
     termHint?: GlossaryHintData | null
+    /**
+     * Inline definitions for notable-condition TYPES, keyed by conditionType
+     * (e.g. `sub_limit` → «Υποόριο»). Like the covers above, a condition that
+     * caps a payout is a specialist term worth explaining where it is read.
+     */
+    conditionHints?: Record<string, GlossaryHintData | null>
 }
 
 const CONDITION_ICON: Record<string, typeof Clock> = {
@@ -90,7 +96,7 @@ const EXCLUSIONS_PREVIEW_COUNT = 8
  * (waiting periods, deadlines, sub-limits) and fine-print clauses that
  * commonly surprise policyholders at claim time.
  */
-export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, disclaimer, termHint }: ExclusionsCardProps) {
+export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, disclaimer, termHint, conditionHints }: ExclusionsCardProps) {
     const [showAllFinePrint, setShowAllFinePrint] = useState(false)
     const [showAllExclusions, setShowAllExclusions] = useState(false)
 
@@ -161,6 +167,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                 {conditions.map((condition, i) => {
                                     const ConditionIcon = CONDITION_ICON[condition.conditionType] || Info
                                     const typeLabel = copy.conditionTypes[condition.conditionType] || condition.conditionType
+                                    const condHint = conditionHints?.[condition.conditionType]
                                     return (
                                         <li
                                             key={i}
@@ -170,7 +177,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                             <div className="min-w-0 flex-1">
                                                 <div className="flex flex-wrap items-center gap-1.5">
                                                     <span className="text-kicker font-black uppercase tracking-wider text-black/60 dark:text-white/55">
-                                                        {typeLabel}
+                                                        {condHint ? <GlossaryHint hint={condHint} /> : typeLabel}
                                                     </span>
                                                     {condition.value && (
                                                         <span className="rounded-full bg-primary/10 px-2 py-0.5 font-mono text-kicker font-bold text-primary dark:bg-primary/15 dark:text-mint">
