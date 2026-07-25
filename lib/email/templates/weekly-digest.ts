@@ -1,5 +1,6 @@
 import { getBaseEmailTemplate } from './base-template'
 import { counted, daysToExpiryPhrase, greeting } from './phrases'
+import { normalizeBranch } from '@/lib/insurance/taxonomy'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.gr'
 
@@ -60,7 +61,7 @@ export function getWeeklyDigestEmail(
                 ${data.renewingSoon.map(r => `
                     <tr style="border-bottom: 1px solid #E5E7EB;">
                         <td style="padding: 8px 0; font-size: 14px; color: #374151;">${r.insurerName}</td>
-                        <td style="padding: 8px 0; font-size: 14px; color: #6B7280;">${r.lineOfBusiness}</td>
+                        <td style="padding: 8px 0; font-size: 14px; color: #6B7280;">${normalizeBranch(r.lineOfBusiness).label[language]}</td>
                         <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: ${r.daysUntilExpiry <= 7 ? '#DC2626' : r.daysUntilExpiry <= 14 ? '#D97706' : '#059669'}; text-align: right;">
                             ${daysToExpiryPhrase(r.daysUntilExpiry, isGreek)}
                         </td>

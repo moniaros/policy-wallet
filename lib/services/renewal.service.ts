@@ -5,6 +5,7 @@ import { sendNotification } from "../notifications"
 import { logger } from "../logger"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 
 // Milestone days before policy expiry when reminders are sent
 const RENEWAL_MILESTONES = [90, 60, 30, 15, 7] as const
@@ -380,6 +381,17 @@ async function sendPolicyholderReminder(
     })
 }
 
+/**
+ * Agent renewal-alert subject line. `lineOfBusiness` is a raw taxonomy code
+ * (e.g. `income_protection`), so the title must resolve it to the human branch
+ * label — an underscored machine code in a professional email to an intermediary
+ * reads as auto-generated. Pure + exported so the resolution is unit-testable.
+ */
+export function agentRenewalEmailTitle(customerName: string, lineOfBusiness: string): string {
+    const branchLabel = normalizeBranch(lineOfBusiness).label.en
+    return `Renewal alert: ${customerName}'s ${branchLabel} policy`
+}
+
 async function sendAgentRenewalNotification(
     agentUserId: string,
     policy: {
@@ -395,7 +407,7 @@ async function sendAgentRenewalNotification(
 ) {
     const customerName = policy.owner.name || "Customer"
     const expiryDate = formatDate(policy.endDate, "en")
-    const title = `Renewal alert: ${customerName}'s ${policy.lineOfBusiness} policy`
+    const title = agentRenewalEmailTitle(customerName, policy.lineOfBusiness)
     // Real days remaining, not the milestone rung — the agent TASK created in the
     // same iteration already quotes daysUntilExpiry, so the two disagreed about
     // the same policy in the same run.
@@ -496,7 +508,7 @@ async function createAgentRenewalTask(
         data: {
             userId: agentUserId,
             type: "renewal",
-            title: `Renew: ${customerName} — ${policy.insurerName} ${policy.lineOfBusiness}`,
+            title: `Renew: ${customerName} — ${policy.insurerName} ${normalizeBranch(policy.lineOfBusiness).label.en}`,
             description,
             status: "pending",
             priority,
