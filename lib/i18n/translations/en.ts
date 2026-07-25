@@ -546,7 +546,7 @@ export const en: TranslationKeys = {
             claimStep3Title: 'Have your details ready',
             claimStep3Desc: 'You will be asked for your policy number and personal details.',
             claimStep4Title: 'Mind the deadlines',
-            claimStep4Desc: 'Late claims can be rejected. Deadlines detected in your policy:',
+            claimStep4Desc: 'Late claims can be rejected, so act within any notification window your policy sets.',
             claimNoDeadlines: 'No specific deadlines were detected — check your policy terms or ask the AI.',
             claimWhatYouNeedTitle: 'What you will need',
             claimDeadlinesTitle: 'Deadlines from your policy',
