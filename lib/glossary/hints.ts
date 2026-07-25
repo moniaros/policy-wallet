@@ -24,7 +24,7 @@ export function resolveGlossaryHint(
 /**
  * The in-product hint set, resolved once on the server.
  *
- * The dictionary defines 14 terms and backs a full public /lexiko section, but
+ * The dictionary defines 12 terms and backs a full public /lexiko section, but
  * only `exairesi` was ever wired into the product — so a policyholder met
  * «Απαλλαγή» and «Χρόνος αναμονής» on their own policy with no explanation,
  * while the definition sat one route away. These are the terms that decide what
