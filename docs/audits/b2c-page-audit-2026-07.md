@@ -211,6 +211,51 @@ its real price and count.
 4. **Claims-preparation checklist per branch** — the claims card's steps are
    there; a printable/checkable list at claim time is a small step up.
 
+# Compliance census — every number a policyholder sees, and every risk class
+
+Conduct-risk pass (Senior-Compliance-Auditor lens), completing the audit with a
+systematic census rather than spot checks.
+
+## Metric census (all rendered B2C numbers)
+
+| Metric | What it measures | Reproducible? | Methodology shown? | Verdict |
+|---|---|---|---|---|
+| Protection score | Rule-based coverage footprint | Yes (rule engine) | `<details>` methodology + explicit limits + not-advice | ✅ Keep — best-defended metric |
+| Gap count / severity | Detected rule + AI findings | Partly (AI-assisted) | Hedged «πιθανό», neutral cards, per-gap evidence lines | ✅ Keep |
+| Premium footprint | Sum of extracted premiums | Yes | Label says what it is; currency-safe | ✅ Keep |
+| **Savings report total & per-item** | **Sum of AI estimates** | **No** | **Was: none + «85% βεβαιότητα»** | **⚠ Fixed** — pseudo-certainty removed; caveat (AI-derived, indicative, lower premium ↔ less cover, policy authoritative) added beside the number |
+| Extraction confidence | Model extraction quality | Model-reported | Qualitative high/med/low + honest "not found" | ✅ B2B-only (agent review screen) — out of B2C scope, and sound anyway |
+| Risk profile | Inputs only | n/a | Outputs **no numeric score** to the user | ✅ No metric to defend |
+| Annual-limit usage (pet/health) | Extracted limit vs claimed | Yes (extracted) | Data-labeled | ✅ Keep |
+| Comparison "lowest premium" highlight | Extracted premiums | Yes | Carries the lowest-premium caveat (covers ≠ price) | ✅ Keep |
+| Token usage | SaaS metering | Yes | Not an insurance metric | ✅ Keep |
+
+No other B2C surface renders a score, savings figure, health indicator, or
+completeness percentage (swept: `score|savings|εξοικονόμ|%`-render patterns).
+
+## Risk-class sweep results
+
+| Class | Result |
+|---|---|
+| False urgency / scarcity / fear | **Zero hits** («Μόνο σήμερα», countdowns, "last chance", «Βιαστείτε»… — none exist; the unlock CTA is documented "no urgency, no countdown" by design) |
+| Directive advice ("you must buy") | **Zero hits** — and `lib/insurance/content/types.ts` codifies the editorial rule *forbidding* directive («πρέπει να αγοράσεις») and absolute («είσαι πλήρως καλυμμένος») phrasing |
+| Guarantee language | Only correct life-product **field labels** («Εγγυημένο ποσοστό», guaranteed-rate vs unit-linked) — extracted facts, kept; the dormant "Full protection" keys deleted |
+| Overpromised outcomes | Fixed: gap email "ensure you are fully protected", renewal "ensure continuous coverage", help's fabricated features/limits |
+| Assumptions as facts | Hedges verified: «φαίνεται» on auto-renewal/expiry inferences, «πιθανό» on gaps, "may not be 100% accurate" on AI answers |
+| Fact / estimate / recommendation separation | Extracted values carry provenance (`SourceSnippetBox`: verbatim document snippet + page, on key dates and the agent review screen); deadlines render as data, distinct from editorial guidance; recommendations labeled as suggestions with the proposal/claims/score disclaimers |
+| Source & date transparency | Analysis date shown (last-check), report carries generated-date + "by PolicyWallet", provenance snippets name the page; policy document named authoritative in the report caveat, AI footnote, and score methodology |
+
+## Conduct verdict
+
+With the savings-report and email fixes, the B2C experience is **transparent,
+balanced, and defensible**: every rendered metric is either objective, defended
+with visible methodology and limits, or explicitly indicative; no urgency
+manufacturing, no outcome promises, no directive advice; extracted facts are
+visually and textually separated from estimates and suggestions, with the
+policy document consistently named as the authority. Open items are legal-form
+questions (IDD intermediary identification on branded reports; counsel sign-off
+on the product-wide AI disclaimer), not copy defects.
+
 # Overall verdict
 
 Post-program, the B2C surface communicates insurance **correctly,
