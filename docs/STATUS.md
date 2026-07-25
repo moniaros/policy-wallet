@@ -12,6 +12,8 @@ Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuou
 
 ⚠️ **Branch-name correction.** `fix/coverage-insights-verdict` is a **stale pointer** at `65183b7` (= `NEW-UI`); commit messages on this branch that name it are misattributed — all work is on `claude/ui-foundation-audit-gtm05i`. Delete the stale pointer.
 
+- **Policy review/edit field labels SOUND + occupation-placeholder casing fix.** Audited the review/edit/add insurance fields — «Ημερομηνία έναρξης/λήξης/έκδοσης/ανανέωσης», «Ποσό ασφαλίστρου», «Ασφαλισμένο κεφάλαιο», «Κλάδος», «Εξαιρέσεις», «Σημαντικοί όροι» — all accurate and dictionary-consistent. Extended the abbreviation-dot Title-Case check to `.tsx`: only genuine fix was the risk-profile occupation placeholder «π.χ. Μηχανικός» → «π.χ. μηχανικός» (Greek professions are lowercase); the other hit «π.χ. Μαρία» is a name (correct), rest are B2B (out of scope).
+
 ## Done — this branch (newest first, grouped)
 
 - **Policy-number label casing inconsistency («Αρ. Ασφαλιστηρίου» vs the 4 lowercase siblings) — the abbreviation-dot blind spot.** Auditing the policy review/edit fields: `policyNumberLabel` was «Αρ. Ασφαλιστηρίου» (capital) while the other four policy-number labels use lowercase «Αρ. ασφαλιστηρίου»/«Αριθμός ασφαλιστηρίου». «Αρ.» is an abbreviation dot (not a sentence end), so the next word stays lowercase — the greek-sentence-case guard misses this because it treats «.» as a restart. Aligned + guarded. Left «Αρ. Μητρώου» (advisor's official registry number — formal, consistent, «Μητρώου» defensibly capital).
