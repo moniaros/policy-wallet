@@ -259,16 +259,23 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
         }
     }
 
-    const roleIcon = (role: string) => {
-        if (role === "owner") return <Crown className="w-3.5 h-3.5 text-amber-500" />
-        if (role === "manager") return <Shield className="w-3.5 h-3.5 text-primary dark:text-mint" />
-        return <User className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
-    }
-
     const roleLabel = (role: string) => {
         if (role === "owner") return t.owner
         if (role === "manager") return t.manager
         return t.member
+    }
+
+    // The role was shown only as an unlabelled icon — a screen reader announced
+    // nothing and a sighted user had to guess (is Crown owner? Shield manager?).
+    // Carry the localised role label as the icon's accessible name + a hover
+    // tooltip; the inner SVG is decorative once the wrapper names the role.
+    const roleIcon = (role: string) => {
+        const label = roleLabel(role)
+        const icon =
+            role === "owner" ? <Crown className="w-3.5 h-3.5 text-amber-500" aria-hidden="true" />
+                : role === "manager" ? <Shield className="w-3.5 h-3.5 text-primary dark:text-mint" aria-hidden="true" />
+                    : <User className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
+        return <span role="img" aria-label={label} title={label} className="inline-flex">{icon}</span>
     }
 
     const statusBadge = (status: string) => {
