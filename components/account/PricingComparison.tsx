@@ -86,7 +86,6 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 ? { ...copy.tiers.plus.annual, price: bothLangs(formatEur(starterFacts.annualEur)) }
                 : undefined,
             icon: Zap,
-            popular: true,
             features: [
                 { name: copy.features.policyLimit[language].replace('{count}', asCount(plusPolicyLimit)), included: true },
                 { name: copy.features.documentStorage[language], included: true },
@@ -104,6 +103,13 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 ? { ...copy.tiers.pro.annual, price: bothLangs(formatEur(plusFacts.annualEur)) }
                 : undefined,
             icon: Star,
+            // The highlighted tier must be the one that actually carries the
+            // "Popular"/"Best value" badge — PolicyWallet Plus (code `pro`), the
+            // flagship AI tier every other surface recommends. This flag used to
+            // sit on Starter, which has no badge, so the emphasis ribbon rendered
+            // the generic word "Upgrade" and the cheaper organizer tier was pushed
+            // as the recommendation.
+            popular: true,
             features: [
                 { name: copy.features.unlimitedPolicies[language], included: true },
                 { name: copy.features.advancedAnalytics[language], included: true },
