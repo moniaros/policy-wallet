@@ -35,7 +35,7 @@ const PROFILE_COPY = {
     requestDocument: { el: "Αίτημα εγγράφου", en: "Request Document" },
     createProposal: { el: "Δημιουργία πρότασης", en: "Create Proposal" },
     addPolicy: { el: "Προσθήκη ασφαλιστηρίου", en: "Add Policy" },
-    createTask: { el: "Δημιουργία Task", en: "Create Task" },
+    createTask: { el: "Δημιουργία εργασίας", en: "Create Task" },
     questionnaire: { el: "Ερωτηματολόγιο", en: "Questionnaire" },
     documentRequests: { el: "Αιτήματα εγγράφων", en: "Document Requests" },
     newRequest: { el: "Νέο", en: "New" },
