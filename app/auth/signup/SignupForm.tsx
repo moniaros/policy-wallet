@@ -8,7 +8,7 @@ import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AnimatePresence, motion } from "framer-motion"
-import { AlertCircle, Briefcase, CheckCircle2, Eye, EyeOff, Loader2, Shield, ShieldCheck, Sparkles } from "lucide-react"
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2, Sparkles } from "lucide-react"
 import { registerUser } from "../actions"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { trackLandingEvent } from "@/lib/landing/analytics"
@@ -354,15 +354,14 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                         </label>
                         {errors.termsAccepted && <p className="-mt-2 text-caption text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p>}
 
-                        {/* FaceID hint */}
-                        <AnimatePresence>
-                            {isMobileValid && strength >= 2 && (
-                                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="inline-flex items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-1 text-micro font-medium text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
-                                    <ShieldCheck className="h-3.5 w-3.5" />
-                                    {t("Χρήση FaceID μετά την πρώτη εγγραφή", "Use FaceID after first signup")}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {/* A "Use FaceID after first signup" hint used to sit here. It
+                            promised a capability the product does not have: there is no
+                            WebAuthn/passkey login flow, and the sign-in page's fake
+                            "Biometric / PIN" unlock was already removed for the same
+                            reason (see app/auth/signin/page.tsx). It also showed on every
+                            device — FaceID is Apple-only. Promising biometric login the
+                            product cannot deliver is a false trust signal at the very
+                            first screen; do not reintroduce it until real WebAuthn exists. */}
 
                         {/* Submit */}
                         <motion.button
