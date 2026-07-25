@@ -7,6 +7,7 @@ import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getDocumentPolicySummary } from '@/lib/wallet/document-insights'
 import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
+import { formatDate } from '@/lib/i18n/format'
 import { StatusPill } from '@/components/ui/StatusPill'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { getBranchIcon } from '@/lib/insurance/branch-icons'
@@ -34,7 +35,6 @@ export function PolicyTable({
 }: PolicyTableProps) {
     const { language, t } = useLanguage()
     const lang: 'el' | 'en' = language === 'el' ? 'el' : 'en'
-    const locale = lang === 'el' ? 'el-GR' : 'en-GB'
 
     const [currentPage, setCurrentPage] = useState(1)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)
@@ -77,12 +77,12 @@ export function PolicyTable({
                 <table className="w-full min-w-[760px] text-left">
                     <thead>
                         <tr className="border-b border-black/[0.07] dark:border-white/10">
-                            <th className="pw-kicker px-4 py-2.5">{columns.policy}</th>
-                            <th className="pw-kicker px-4 py-2.5">{columns.type}</th>
-                            <th className="pw-kicker px-4 py-2.5">{columns.renewal}</th>
-                            <th className="pw-kicker px-4 py-2.5 text-right">{columns.annualPremium}</th>
-                            <th className="pw-kicker px-4 py-2.5">{columns.status}</th>
-                            <th className="pw-kicker px-4 py-2.5 text-right">{columns.actions}</th>
+                            <th scope="col" className="pw-kicker px-4 py-2.5">{columns.policy}</th>
+                            <th scope="col" className="pw-kicker px-4 py-2.5">{columns.type}</th>
+                            <th scope="col" className="pw-kicker px-4 py-2.5">{columns.renewal}</th>
+                            <th scope="col" className="pw-kicker px-4 py-2.5 text-right">{columns.annualPremium}</th>
+                            <th scope="col" className="pw-kicker px-4 py-2.5">{columns.status}</th>
+                            <th scope="col" className="pw-kicker px-4 py-2.5 text-right">{columns.actions}</th>
                         </tr>
                     </thead>
 
@@ -94,8 +94,13 @@ export function PolicyTable({
                             const view = getPolicyStatusView(policy, t)
                             const isMenuOpen = openMenuId === policy.id
 
+                            // Athens-pinned via the shared helper — the same endDate
+                            // the days-left count (below) is computed from in Athens.
+                            // A raw UTC render showed the previous day for a policy
+                            // ending at Athens midnight, so the date and the day count
+                            // in one row could disagree.
                             const renewalLabel = view.endDate
-                                ? view.endDate.toLocaleDateString(locale, { timeZone: 'UTC' })
+                                ? formatDate(view.endDate, lang)
                                 : '—'
                             const daysLeft =
                                 view.daysUntilExpiry !== null &&
