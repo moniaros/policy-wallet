@@ -23,6 +23,7 @@ import {
     type FeatureKey,
 } from "@/lib/monetization"
 import type { PlanTier } from "@/types/subscription-entitlements"
+import { formatEur } from "@/lib/pricing/pricing-view-model"
 import { BillingTrustBox } from "./BillingTrustBox"
 import { PlanBadge } from "./PlanBadge"
 import { usePlanFacts } from "./PlanFactsProvider"
@@ -244,7 +245,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold uppercase tracking-widest text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                 >
                     {redirectingPlan === PLUS.planId && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-                    {pick(MODAL_COPY.plusPrefix, language)} €{plusPrice}{suffix}
+                    {pick(MODAL_COPY.plusPrefix, language)} {formatEur(plusPrice)}{suffix}
                 </button>
                 {PLUS.trialDays > 0 && (
                     <p className="mt-1.5 text-center text-xs font-semibold text-primary dark:text-mint">
@@ -261,7 +262,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-transparent py-3.5 text-sm font-bold text-foreground transition-all hover:bg-muted disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 >
                     {redirectingPlan === STARTER.planId && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-                    {pick(MODAL_COPY.starterPrefix, language)} €{starterPrice}{suffix}
+                    {pick(MODAL_COPY.starterPrefix, language)} {formatEur(starterPrice)}{suffix}
                 </button>
 
                 {/* Tertiary — dismiss */}
