@@ -2,7 +2,7 @@
 
 import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import { useState } from "react"
-import { ShieldCheck, ShieldOff, CheckCircle2, XCircle, AlertTriangle } from "lucide-react"
+import { ShieldCheck, ShieldOff, CheckCircle2, MinusCircle, AlertTriangle } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import type { LineOfBusiness } from "@/types/enums"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
@@ -151,15 +151,20 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
         <div className="space-y-3">
           {hasExclusions ? (
             <>
+              {/* Exclusions are neutral facts of the contract, not alarms — every
+                  policy excludes war, wear-and-tear, etc. Alarming red framed
+                  standard exclusions as dangers and contradicted the dedicated
+                  ExclusionsCard on this same page (whose documented principle is
+                  neutral styling). MinusCircle = "excluded", not a red ✗. */}
               {acordData.exclusions!.map((exclusion, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-2.5 p-3 rounded-xl bg-red-50/60 dark:bg-red-900/10 border border-red-200/60 dark:border-red-800/40"
+                  className="flex items-start gap-2.5 p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15"
                 >
-                  <div className="w-6 h-6 rounded-md bg-red-100 dark:bg-red-900/30 flex items-center justify-center mt-0.5 flex-shrink-0">
-                    <XCircle className="w-3.5 h-3.5 text-red-500 dark:text-red-400" />
+                  <div className="w-6 h-6 rounded-md bg-black/5 dark:bg-white/10 flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <MinusCircle className="w-3.5 h-3.5 text-black/55 dark:text-white/60" />
                   </div>
-                  <p className="text-sm text-red-800 dark:text-red-300 font-medium">{exclusion}</p>
+                  <p className="text-sm text-black/80 dark:text-white/85 font-medium">{exclusion}</p>
                 </div>
               ))}
               <div className="flex items-start gap-2 p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/10 border border-amber-200/40 dark:border-amber-800/30">
