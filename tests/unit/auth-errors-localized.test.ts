@@ -15,7 +15,9 @@ import { readFileSync } from 'node:fs'
 const SRC =
     readFileSync('app/auth/actions.ts', 'utf-8') +
     '\n' +
-    readFileSync('app/auth/verify-email/actions.ts', 'utf-8')
+    readFileSync('app/auth/verify-email/actions.ts', 'utf-8') +
+    '\n' +
+    readFileSync('app/(protected)/account/actions.ts', 'utf-8')
 
 const LOCALIZED_MESSAGES = [
     'Too many signup attempts. Please try again in a few minutes.',
@@ -39,6 +41,12 @@ const LOCALIZED_MESSAGES = [
     'Verification link has expired. Please request a new one.',
     'User not found',
     'An unexpected error occurred during verification',
+    // account actions (upgradeSubscription / cancelSubscription) shown raw via toast.
+    'Plan not found',
+    'Plan is not purchasable',
+    'You are already on this plan.',
+    'Failed to initialize payment',
+    'Failed to cancel the subscription with Stripe. Please try again or use the billing portal.',
 ]
 
 describe('auth action errors are localised (not bare English)', () => {
@@ -51,8 +59,8 @@ describe('auth action errors are localised (not bare English)', () => {
 
     it('each localised message carries a Greek translation via authErr', () => {
         for (const m of LOCALIZED_MESSAGES) {
-            // authErr/vErr(language, "<greek>", "<this english>") — English is the 3rd arg.
-            const re = new RegExp(`(authErr|vErr)\\(language,\\s*"[^"]*[Α-Ωα-ω][^"]*",\\s*"${m.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\)`)
+            // authErr/vErr/acctErr(language, "<greek>", "<this english>") — English is the 3rd arg.
+            const re = new RegExp(`(authErr|vErr|acctErr)\\(language,\\s*"[^"]*[Α-Ωα-ω][^"]*",\\s*"${m.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\)`)
             expect(re.test(SRC), `"${m}" is not localised via authErr with a Greek string`).toBe(true)
         }
     })

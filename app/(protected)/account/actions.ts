@@ -347,27 +347,33 @@ export async function logoutAllSessions() {
  * (existing free-granted subscriptions are grandfathered until their
  * currentPeriodEnd; see docs/STATUS.md).
  */
+// Bilingual account-action error. These strings are shown VERBATIM
+// (toast.error(result.error) on the upgrade/account pages), so on the Greek-
+// default app they must be localised at source — lint:i18n-changed only sees .tsx.
+const acctErr = (language: "el" | "en", el: string, en: string) => (language === "el" ? el : en)
+
 export async function upgradeSubscription(
     planId: string,
     billingPeriod: "monthly" | "annual" = "monthly",
     returnTo?: string
 ) {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
+    if (!authResult) return { error: acctErr("el", "Μη εξουσιοδοτημένη πρόσβαση", "Unauthorized") }
+    const language: "el" | "en" = (authResult.dbUser.preferredLanguage as "el" | "en") || "el"
 
     const plan = await db.plan.findUnique({ where: { id: planId } })
-    if (!plan) return { error: "Plan not found" }
-    if (Number(plan.price) <= 0) return { error: "Plan is not purchasable" }
+    if (!plan) return { error: acctErr(language, "Το πρόγραμμα δεν βρέθηκε", "Plan not found") }
+    if (Number(plan.price) <= 0) return { error: acctErr(language, "Το πρόγραμμα δεν είναι διαθέσιμο για αγορά", "Plan is not purchasable") }
     // Admin-deactivated plans take no new checkouts (createCheckoutSession
     // enforces this too — this is the friendlier server-action error path).
-    if (plan.isActive === false) return { error: "Plan is not purchasable" }
+    if (plan.isActive === false) return { error: acctErr(language, "Το πρόγραμμα δεν είναι διαθέσιμο για αγορά", "Plan is not purchasable") }
 
     // Don't start a redundant checkout for the plan the user is already on
     // (the pricing UI disables that button; this is the server-side backstop).
     const existing = await db.subscription.findFirst({
         where: { userId: authResult.dbUser.id, planId, status: "active" },
     })
-    if (existing) return { error: "You are already on this plan." }
+    if (existing) return { error: acctErr(language, "Είστε ήδη σε αυτό το πρόγραμμα.", "You are already on this plan.") }
 
     try {
         const checkout = await createCheckoutSession(
@@ -386,7 +392,7 @@ export async function upgradeSubscription(
         return { url: checkout.url }
     } catch (error) {
         logger('error', 'Stripe checkout creation failed', { error })
-        return { error: "Failed to initialize payment" }
+        return { error: acctErr(language, "Αποτυχία έναρξης της πληρωμής", "Failed to initialize payment") }
     }
 }
 
@@ -413,7 +419,8 @@ export async function createBillingPortalSession() {
 
 export async function cancelSubscription() {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
+    if (!authResult) return { error: acctErr("el", "Μη εξουσιοδοτημένη πρόσβαση", "Unauthorized") }
+    const language: "el" | "en" = (authResult.dbUser.preferredLanguage as "el" | "en") || "el"
 
     const activeSubs = await db.subscription.findMany({
         where: { userId: authResult.dbUser.id, status: 'active' },
@@ -442,7 +449,7 @@ export async function cancelSubscription() {
             // Do NOT flip local state when Stripe still considers the
             // subscription renewing — a silent local-only "cancel" is the
             // exact dishonesty this replaces.
-            return { error: "Failed to cancel the subscription with Stripe. Please try again or use the billing portal." }
+            return { error: acctErr(language, "Αποτυχία ακύρωσης της συνδρομής μέσω Stripe. Δοκιμάστε ξανά ή χρησιμοποιήστε την πύλη χρεώσεων.", "Failed to cancel the subscription with Stripe. Please try again or use the billing portal.") }
         }
     }
 
