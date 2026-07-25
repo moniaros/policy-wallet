@@ -273,6 +273,16 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         }
     }
 
+    // Step-3 subtitle tracked the actual analysis state. It used to say "Your
+    // first analysis is ready" unconditionally — but on the queued path (QStash
+    // is the active prod route) the body says "will complete in a few minutes",
+    // so the header contradicted it. Only claim "ready" when it actually is.
+    const step3Subtitle = simulatingAi
+        ? t("Ετοιμάζουμε την ανάλυσή σας...", "Preparing your analysis…")
+        : (!uploadedPolicyId || analysisResult?.status === "completed")
+            ? t("Η πρώτη σας ανάλυση ετοιμάστηκε.", "Your first analysis is ready.")
+            : t("Δείτε την τρέχουσα κατάσταση παρακάτω.", "Here's the current status below.")
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] px-4 py-10">
             <AiConsentModal
@@ -398,7 +408,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                     {t("AI Σύνοψη", "AI Summary")}
                                 </h2>
                                 <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-                                    {t("Η πρώτη σας ανάλυση ετοιμάστηκε.", "Your first analysis is ready.")}
+                                    {step3Subtitle}
                                 </p>
                             </div>
 
