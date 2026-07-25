@@ -14,6 +14,7 @@ import { getPolicyStatusView, isAttentionKey } from '@/lib/wallet/policy-status-
 import { ImportantNotices, type Notice } from './ImportantNotices'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { INSURANCE_BRANCHES, normalizeBranch } from '@/lib/insurance/taxonomy'
+import { formatDate } from '@/lib/i18n/format'
 
 export function PolicyWallet({
     policies,
@@ -100,7 +101,9 @@ export function PolicyWallet({
             .sort((a, b) => (a.view.daysUntilExpiry ?? 9999) - (b.view.daysUntilExpiry ?? 9999))
             .map(({ policy, view }) => {
                 const name = `${normalizeBranch(policy.lineOfBusiness).label[language === 'el' ? 'el' : 'en']} · ${policy.insurerName}`
-                const date = view.endDate?.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB', { timeZone: 'UTC' }) ?? ''
+                // Athens-pinned (shared formatter): a raw UTC date could show the
+                // previous day and disagree with the Athens-computed days-left.
+                const date = view.endDate ? formatDate(view.endDate, language === 'el' ? 'el' : 'en') : ''
                 const template =
                     view.key === 'expired' ? copy.expired
                         : view.key === 'expiring_soon' ? copy.expiringSoon

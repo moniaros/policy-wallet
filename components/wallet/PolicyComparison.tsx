@@ -4,6 +4,7 @@ import { useId, useState, useMemo } from "react"
 import { Info } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { parseDocumentDate } from "@/lib/dates/document-date"
+import { APP_TIME_ZONE } from "@/lib/i18n/format"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
 import { StatusPill } from "@/components/ui/StatusPill"
@@ -106,7 +107,9 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
             day: 'numeric',
             month: 'short',
             year: 'numeric',
-            timeZone: 'UTC'
+            // Contractual start/end dates — pin Athens so they can't render the
+            // previous day (and disagree with the Athens-computed day counts).
+            timeZone: APP_TIME_ZONE,
         })
     }
 

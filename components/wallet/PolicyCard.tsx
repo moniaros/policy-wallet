@@ -3,6 +3,7 @@
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { resolvePolicyLifecycle, type PolicyLifecycle } from '@/lib/policy-status'
+import { formatDate } from '@/lib/i18n/format'
 import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
 import { StatusPill } from '@/components/ui/StatusPill'
 import { BadgeCheck, Sparkles, Search, FileText, Share2, Trash2 } from 'lucide-react'
@@ -29,9 +30,16 @@ interface PolicyCardProps {
 function formatRelativeExpiry(lifecycle: PolicyLifecycle, locale: 'el' | 'en'): string {
     const { endDate, daysUntilExpiry: days } = lifecycle
     if (!endDate || days === null) return ''
-    const dateDisplay = endDate.toLocaleDateString(locale === 'el' ? 'el-GR' : 'en-GB', { timeZone: 'UTC' })
-    if (days < 0) return locale === 'el' ? `Έληξε στις ${dateDisplay}` : `Expired on ${dateDisplay}`
-    if (days <= 60) return locale === 'el' ? `σε ${days} ημέρες` : `in ${days} days`
+    const el = locale === 'el'
+    // Athens-pinned like the day count beside it: a raw UTC date rendered the
+    // previous day for a policy ending at Athens midnight, disagreeing with the
+    // Athens-computed `days`.
+    const dateDisplay = formatDate(endDate, locale)
+    if (days < 0) return el ? `Έληξε στις ${dateDisplay}` : `Expired on ${dateDisplay}`
+    // Singular/today: «σε 0 ημέρες» / «σε 1 ημέρες» were grammatically broken.
+    if (days === 0) return el ? 'σήμερα' : 'today'
+    if (days === 1) return el ? 'σε 1 ημέρα' : 'in 1 day'
+    if (days <= 60) return el ? `σε ${days} ημέρες` : `in ${days} days`
     return dateDisplay
 }
 
