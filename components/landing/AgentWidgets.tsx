@@ -373,10 +373,13 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
         return () => clearTimeout(timer)
     }, [])
 
+    // Demo premiums follow the row labels' language — el-GR puts € after the
+    // amount ("450 €/έτος"), so a Greek visitor no longer sees an English-format
+    // "€450/yr" mixed into an otherwise-Greek mock row.
     const rows = [
-        { type: t("Αυτοκίνητο", "Motor"), insurer: "Interamerican", premium: "€450/yr" },
-        { type: t("Κατοικία", "Home"), insurer: t("Εθνική", "Ethniki"), premium: "€280/yr" },
-        { type: t("Υγεία", "Health"), insurer: "Eurolife", premium: "€1.200/yr" },
+        { type: t("Αυτοκίνητο", "Motor"), insurer: "Interamerican", premium: t("450 €/έτος", "€450/yr") },
+        { type: t("Κατοικία", "Home"), insurer: t("Εθνική", "Ethniki"), premium: t("280 €/έτος", "€280/yr") },
+        { type: t("Υγεία", "Health"), insurer: "Eurolife", premium: t("1.200 €/έτος", "€1.200/yr") },
     ]
 
     return (
