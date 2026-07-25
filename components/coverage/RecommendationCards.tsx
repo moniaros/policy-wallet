@@ -24,6 +24,7 @@ import {
     Umbrella,
 } from "lucide-react"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { formatCurrency } from "@/lib/i18n/format"
 import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyState"
 import type { SmartCardContent } from "@/lib/services/gap-engine/portfolio-rules"
 import { LockedInsightPreview } from "@/components/monetization/LockedInsightPreview"
@@ -359,7 +360,7 @@ export function RecommendationCards({
                                                         <p className="text-xs text-black/60 dark:text-white/60">
                                                             {t("Ενδεικτικό εύρος ασφαλίστρου", "Typical premium range")}:{" "}
                                                             <span className="font-medium text-primary dark:text-mint">
-                                                                €{rec.matchedProduct.premiumRangeLow}–€{rec.matchedProduct.premiumRangeHigh}{t("/έτος", "/yr")}
+                                                                {formatCurrency(rec.matchedProduct.premiumRangeLow, lang, { decimals: 0 })}–{formatCurrency(rec.matchedProduct.premiumRangeHigh, lang, { decimals: 0 })}{t("/έτος", "/yr")}
                                                             </span>
                                                         </p>
                                                     )}
@@ -384,7 +385,7 @@ export function RecommendationCards({
                                                 <p className="text-xs font-medium text-black/70 dark:text-white/70">
                                                     {t("Τάξη μεγέθους ασφαλίστρου", "Rough order of magnitude")}:{" "}
                                                     <span className="text-primary dark:text-mint font-semibold">
-                                                        ~€{rec.estimatedCostEur}
+                                                        ~{formatCurrency(rec.estimatedCostEur, lang, { decimals: 0 })}
                                                         {t("/έτος", "/year")}
                                                     </span>
                                                     <span className="block text-black/55 dark:text-white/55">
