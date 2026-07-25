@@ -346,10 +346,10 @@ export default function HelpPage() {
                         </div>
                         <p className="text-sm text-muted-foreground mb-5">{t.help.communityDesc}</p>
                         <button
-                            onClick={() => router.push('/account')}
+                            onClick={() => router.push('/agent')}
                             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         >
-                            {t.help.openSettings}
+                            {t.help.openAdvisorPage}
                             <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>

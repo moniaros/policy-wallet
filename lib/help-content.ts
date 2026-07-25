@@ -22,7 +22,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         'upload-policy': {
             id: 'upload-policy',
             title: 'How to Upload Your First Policy',
-            subtitle: 'Securely digitize your insurance assets in seconds using our AI-powered scanner.',
+            subtitle: 'Securely digitize your policies using our AI-powered scanner.',
             readTime: '4 min',
             category: 'Getting Started',
             sections: [
@@ -33,7 +33,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Step 1: Navigate to Wallet',
-                    text: 'From your dashboard, locate the "Wallet" tab in the main navigation menu. This is your central hub for all insurance assets.',
+                    text: 'From your dashboard, locate the "Wallet" tab in the main navigation menu. This is your central hub for all your policies.',
                 },
                 {
                     heading: 'Step 2: Add New Policy',
@@ -41,7 +41,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Step 3: Analyze & Verify',
-                    text: 'Once your file is uploaded, our AI will automatically start scanning it. This process usually takes 10-30 seconds. You will see a "Processing" status.',
+                    text: 'Once your file is uploaded, our AI will automatically start scanning it. You will see a "Processing" status — the analysis usually completes within a few minutes, and you will be notified when it is ready.',
                     list: [
                         'The AI extracts the Insurer Name',
                         'It identifies the Policy Number',
@@ -58,13 +58,13 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         'sharing-access': {
             id: 'sharing-access',
             title: 'Sharing Policy Access',
-            subtitle: 'Grant secure, temporary, or permanent access to family members or your insurance agent.',
+            subtitle: 'Grant secure, temporary, or permanent access to family members or your insurance advisor.',
             readTime: '2 min',
             category: 'Collaboration',
             sections: [
                 {
                     heading: 'Why Share Access?',
-                    text: 'Sharing access is crucial for ensuring your loved ones have access to critical documents in an emergency, or for allowing your agent to review your coverage for gaps.',
+                    text: 'Sharing access is crucial for ensuring your loved ones have access to critical documents in an emergency, or for allowing your advisor to review your coverage for gaps.',
                 },
                 {
                     heading: 'Sharing with Family',
@@ -72,36 +72,35 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     note: 'They do not need a paid account to view policies you share with them.'
                 },
                 {
-                    heading: 'Sharing with an Agent',
-                    text: 'If you are working with an insurance professional, you can grant them "Agent Access". This allows them to see your entire portfolio and propose better coverage options.',
+                    heading: 'Sharing with an Advisor',
+                    text: 'If you are working with an insurance advisor, you can share individual policies with them so they can review your covers and propose options. You stay in control: you choose what to share, and you can revoke access at any time.',
                     list: [
-                        'Navigate to "Account" -> "Settings"',
-                        'Select "Grant Access"',
-                        'Choose "Professional/Agent"',
-                        'Enter their professional email address'
+                        'Open the policy you want to share and click "Share with Advisor"',
+                        'Enter your advisor\'s email address',
+                        'Alternatively, open the "Advisor" page to connect with your advisor once — policies you share appear there',
+                        'Review or revoke any shared access from the same place at any time'
                     ]
                 }
             ]
         },
         'premium-features': {
             id: 'premium-features',
-            title: 'Understanding Premium Benefits',
-            subtitle: 'Unlock the full power of AI analysis and unlimited storage with PolicyWallet Premium.',
+            title: 'Understanding Paid Plan Benefits',
+            subtitle: 'Unlock full AI analysis and more policy storage with the paid plans.',
             readTime: '5 min',
             category: 'Features',
             sections: [
                 {
                     heading: 'AI Gap Analysis',
-                    text: 'The core benefit of Premium is the deep-dive analysis. Our AI doesn\'t just read your policy; it understands it. It compares your coverage against standard industry benchmarks to find "Gaps" - risks you are exposed to but not covered for.',
+                    text: 'The core benefit of the paid plans is the deep-dive analysis. Our AI doesn\'t just read your policy; it understands it. It compares your coverage against standard industry benchmarks to find "Gaps" - risks you are exposed to but not covered for.',
                 },
                 {
-                    heading: 'Unlimited Storage',
-                    text: 'Free accounts are limited to 3 active policies. Premium allows you to store unlimited policies, including past/expired policies for historical auditing.',
+                    heading: 'More Policy Storage',
+                    text: 'The free plan includes 1 policy with a basic AI summary. Starter allows up to 5 policies, and Plus removes the limit entirely — including past/expired policies for historical review.',
                 },
                 {
                     heading: 'Priority Support',
-                    text: 'Premium members get access to our "Expert Agent" chat. Real human insurance experts (not bots) are available to answer varying questions about your coverage or claims process.',
-                    note: 'Support hours are Monday - Friday, 9am - 6pm.'
+                    text: 'Paid plans include priority support by email. For questions about your coverage, you can also ask the AI directly on any policy page, or share the policy with your insurance advisor and review it together.',
                 }
             ]
         },
@@ -138,7 +137,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     heading: 'Notification types',
                     text: 'We send notifications for critical events to keep you protected.',
                     list: [
-                        'Renewal Reminders (30, 14, and 3 days before expiry)',
+                        'Renewal reminders — 30 days before expiry on the free plan; at 90, 60, 30, 15 and 7 days on paid plans',
                         'Payment confirmations',
                         'Security alerts (new device logins)',
                         'AI Analysis results'
@@ -215,7 +214,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
         'upload-policy': {
             id: 'upload-policy',
             title: 'Πώς να Ανεβάσετε το Πρώτο σας Ασφαλιστήριο',
-            subtitle: 'Ψηφιοποιήστε με ασφάλεια τα ασφαλιστήριά σας σε δευτερόλεπτα χρησιμοποιώντας τον AI σαρωτή μας.',
+            subtitle: 'Ψηφιοποιήστε με ασφάλεια τα ασφαλιστήριά σας χρησιμοποιώντας τον AI σαρωτή μας.',
             readTime: '4 λεπτά',
             category: 'Ξεκινώντας',
             sections: [
@@ -226,15 +225,15 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Βήμα 1: Μετάβαση στο Πορτοφόλι',
-                    text: 'Από τον πίνακα ελέγχου, εντοπίστε την καρτέλα "Πορτοφόλι" στο κεντρικό μενού πλοήγησης. Αυτό είναι το κεντρικό σημείο για όλα τα ασφαλιστικά σας περιουσιακά στοιχεία.',
+                    text: 'Από τον πίνακα ελέγχου, εντοπίστε την καρτέλα "Πορτοφόλι" στο κεντρικό μενού πλοήγησης. Αυτό είναι το κεντρικό σημείο για όλα τα ασφαλιστήριά σας.',
                 },
                 {
                     heading: 'Βήμα 2: Προσθήκη Νέου Ασφαλιστηρίου',
-                    text: 'Κάντε κλικ στο μεγάλο πετρόλ κουμπί "Προσθήκη Ασφαλιστηρίου". Θα σας παρουσιαστούν δύο επιλογές: "Μεταφόρτωση Εγγράφου" και "Χειροκίνητη Προσθήκη". Επιλέξτε "Μεταφόρτωση Εγγράφου" για την πιο γρήγορη εμπειρία.',
+                    text: 'Κάντε κλικ στο μεγάλο πετρόλ κουμπί "Προσθήκη ασφαλιστηρίου". Θα σας παρουσιαστούν δύο επιλογές: "Μεταφόρτωση εγγράφου" και "Χειροκίνητη προσθήκη". Επιλέξτε "Μεταφόρτωση εγγράφου" για την πιο γρήγορη εμπειρία.',
                 },
                 {
                     heading: 'Βήμα 3: Ανάλυση & Επαλήθευση',
-                    text: 'Μόλις μεταφορτωθεί το αρχείο σας, η AI μας θα ξεκινήσει αυτόματα τη σάρωση. Αυτή η διαδικασία διαρκεί συνήθως 10-30 δευτερόλεπτα. Θα δείτε μια κατάσταση "Επεξεργασία".',
+                    text: 'Μόλις μεταφορτωθεί το αρχείο σας, η AI μας θα ξεκινήσει αυτόματα τη σάρωση. Θα δείτε μια κατάσταση "Επεξεργασία" — η ανάλυση ολοκληρώνεται συνήθως μέσα σε λίγα λεπτά και θα ειδοποιηθείτε μόλις είναι έτοιμη.',
                     list: [
                         'Η AI εξάγει το Όνομα της Ασφαλιστικής',
                         'Εντοπίζει τον Αριθμό Ασφαλιστηρίου',
@@ -257,7 +256,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
             sections: [
                 {
                     heading: 'Γιατί να Κοινοποιήσετε Πρόσβαση;',
-                    text: 'Η κοινοποίηση πρόσβασης είναι κρίσιμη για να διασφαλίσετε ότι οι αγαπημένοι σας έχουν πρόσβαση σε κρίσιμα έγγραφα σε περίπτωση έκτακτης ανάγκης, ή για να επιτρέψετε στον πράκτορά σας να ελέγξει την κάλυψή σας για κενά.',
+                    text: 'Η κοινοποίηση πρόσβασης είναι κρίσιμη για να διασφαλίσετε ότι οι αγαπημένοι σας έχουν πρόσβαση σε κρίσιμα έγγραφα σε περίπτωση έκτακτης ανάγκης, ή για να επιτρέψετε στον σύμβουλό σας να ελέγξει την κάλυψή σας για κενά.',
                 },
                 {
                     heading: 'Κοινοποίηση με Οικογένεια',
@@ -266,35 +265,34 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Κοινοποίηση με Σύμβουλο',
-                    text: 'Εάν συνεργάζεστε με έναν επαγγελματία ασφαλειών, μπορείτε να του παραχωρήσετε "Πρόσβαση Συμβούλου". Αυτό τους επιτρέπει να δουν ολόκληρο το χαρτοφυλάκιό σας και να προτείνουν καλύτερες επιλογές κάλυψης.',
+                    text: 'Εάν συνεργάζεστε με ασφαλιστικό σύμβουλο, μπορείτε να μοιραστείτε μαζί του μεμονωμένα ασφαλιστήρια, ώστε να ελέγξει τις καλύψεις σας και να σας προτείνει επιλογές. Εσείς έχετε τον έλεγχο: επιλέγετε τι κοινοποιείτε και μπορείτε να ανακαλέσετε την πρόσβαση όποτε θέλετε.',
                     list: [
-                        'Πλοηγηθείτε στο "Λογαριασμός" -> "Ρυθμίσεις"',
-                        'Επιλέξτε "Παραχώρηση Πρόσβασης"',
-                        'Επιλέξτε "Επαγγελματίας/Σύμβουλος"',
-                        'Εισάγετε το επαγγελματικό τους email'
+                        'Ανοίξτε το ασφαλιστήριο που θέλετε να μοιραστείτε και πατήστε "Κοινοποίηση σε σύμβουλο"',
+                        'Εισάγετε το email του συμβούλου σας',
+                        'Εναλλακτικά, ανοίξτε τη σελίδα "Σύμβουλος" για να συνδεθείτε μία φορά — τα ασφαλιστήρια που μοιράζεστε εμφανίζονται εκεί',
+                        'Ελέγχετε ή ανακαλείτε οποιαδήποτε πρόσβαση από το ίδιο σημείο, όποτε θέλετε'
                     ]
                 }
             ]
         },
         'premium-features': {
             id: 'premium-features',
-            title: 'Κατανόηση των Premium Προνομίων',
-            subtitle: 'Ξεκλειδώστε την πλήρη δύναμη της ανάλυσης AI και απεριόριστο αποθηκευτικό χώρο με το PolicyWallet Premium.',
+            title: 'Κατανόηση των προνομίων των πληρωμένων πλάνων',
+            subtitle: 'Ξεκλειδώστε την πλήρη ανάλυση AI και περισσότερο χώρο ασφαλιστηρίων με τα πληρωμένα πλάνα.',
             readTime: '5 λεπτά',
             category: 'Δυνατότητες',
             sections: [
                 {
                     heading: 'Ανάλυση Κενών με AI',
-                    text: 'Το βασικό πλεονέκτημα του Premium είναι η εις βάθος ανάλυση. Η AI μας δεν διαβάζει απλώς το ασφαλιστήριό σας. Το κατανοεί. Συγκρίνει την κάλυψή σας με τα πρότυπα της αγοράς για να βρει "Κενά" - κινδύνους στους οποίους είστε εκτεθειμένοι αλλά όχι καλυμμένοι.',
+                    text: 'Το βασικό πλεονέκτημα των πληρωμένων πλάνων είναι η εις βάθος ανάλυση. Η AI μας δεν διαβάζει απλώς το ασφαλιστήριό σας. Το κατανοεί. Συγκρίνει την κάλυψή σας με τα πρότυπα της αγοράς για να βρει "Κενά" - κινδύνους στους οποίους είστε εκτεθειμένοι αλλά όχι καλυμμένοι.',
                 },
                 {
-                    heading: 'Απεριόριστος Αποθηκευτικός Χώρος',
-                    text: 'Οι δωρεάν λογαριασμοί περιορίζονται σε 3 ενεργά ασφαλιστήρια. Το Premium σας επιτρέπει να αποθηκεύετε απεριόριστα ασφαλιστήρια, συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο.',
+                    heading: 'Περισσότερος χώρος ασφαλιστηρίων',
+                    text: 'Το δωρεάν πλάνο περιλαμβάνει 1 ασφαλιστήριο με βασική AI σύνοψη. Το Starter επιτρέπει έως 5 ασφαλιστήρια και το Plus αφαιρεί εντελώς το όριο — συμπεριλαμβανομένων παλαιών/ληγμένων ασφαλιστηρίων για ιστορικό έλεγχο.',
                 },
                 {
                     heading: 'Προτεραιότητα Υποστήριξης',
-                    text: 'Τα μέλη Premium έχουν πρόσβαση στη συνομιλία "Ειδικού Συμβούλου". Πραγματικοί ειδικοί ασφαλειών (όχι bots) είναι διαθέσιμοι για να απαντήσουν σε διάφορες ερωτήσεις σχετικά με την κάλυψή σας ή τη διαδικασία αποζημίωσης.',
-                    note: 'Ώρες υποστήριξης: Δευτέρα - Παρασκευή, 9πμ - 6μμ.'
+                    text: 'Τα πληρωμένα πλάνα περιλαμβάνουν προτεραιότητα υποστήριξης μέσω email. Για ερωτήσεις σχετικά με την κάλυψή σας, μπορείτε επίσης να ρωτήσετε απευθείας την AI στη σελίδα κάθε ασφαλιστηρίου, ή να μοιραστείτε το ασφαλιστήριο με τον ασφαλιστικό σας σύμβουλο και να το εξετάσετε μαζί του.',
                 }
             ]
         },
@@ -331,7 +329,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     heading: 'Τύποι Ειδοποιήσεων',
                     text: 'Στέλνουμε ειδοποιήσεις για κρίσιμα γεγονότα για να σας κρατάμε προστατευμένους.',
                     list: [
-                        'Υπενθυμίσεις Ανανέωσης (30, 14 και 3 ημέρες πριν τη λήξη)',
+                        'Υπενθυμίσεις ανανέωσης — 30 ημέρες πριν τη λήξη στο δωρεάν πλάνο· στις 90, 60, 30, 15 και 7 ημέρες στα πληρωμένα πλάνα',
                         'Επιβεβαιώσεις πληρωμής',
                         'Ειδοποιήσεις ασφαλείας (συνδέσεις από νέες συσκευές)',
                         'Αποτελέσματα Ανάλυσης AI'
