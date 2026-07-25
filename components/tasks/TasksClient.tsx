@@ -104,12 +104,19 @@ export function TasksClient({ actionItems }: TasksClientProps) {
     const priorityLabel = (p: ActionItem['priority']): string =>
         t.tasks.priorities[p] || p
 
+    // Priority colours follow the app's urgency ramp (see CoverageGapsWidget:
+    // critical=rose, high=amber, medium=sky, low=grey). Tasks top out at "high",
+    // so high=amber — the app's high-urgency colour. The old ramp coloured HIGH
+    // with the brand green (a success/positive colour) while MEDIUM was amber, so
+    // the most urgent task looked reassuring and the medium one looked alarming —
+    // an inverted risk signal, and inconsistent (amber meant "high" everywhere
+    // else but "medium" here).
     const priorityPill = (p: ActionItem['priority']): string => {
         switch (p) {
             case 'high':
-                return 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint'
-            case 'medium':
                 return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+            case 'medium':
+                return 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400'
             default:
                 return 'bg-muted text-muted-foreground'
         }
@@ -146,7 +153,7 @@ export function TasksClient({ actionItems }: TasksClientProps) {
                             <p className="text-micro font-semibold uppercase tracking-wide text-muted-foreground">
                                 {t.tasks.priorities[key]}
                             </p>
-                            <p className={`mt-1 text-2xl font-bold ${key === 'high' ? 'text-primary dark:text-mint' : 'text-foreground'}`}>
+                            <p className={`mt-1 text-2xl font-bold ${key === 'high' ? 'text-amber-600 dark:text-amber-400' : 'text-foreground'}`}>
                                 {count}
                             </p>
                         </div>
