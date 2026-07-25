@@ -122,7 +122,7 @@ function expiringMotorRule(
         severity: daysLeft <= 7 ? "critical" : "high",
         name: {
             en: "Motor policy expiring soon",
-            el: "Το συμβόλαιο αυτοκινήτου λήγει σύντομα",
+            el: "Το ασφαλιστήριο αυτοκινήτου λήγει σύντομα",
         },
         reason: {
             en: "Driving without active cover is illegal in Greece and even one day's lapse leaves you personally liable for any accident.",
@@ -183,7 +183,7 @@ function lowHealthCoverageRule(
         },
         evidence: {
             en: `Your health policy ${ref} has an annual limit of ${limitFmtEn}, based on the document you uploaded.`,
-            el: `Το συμβόλαιο υγείας ${ref} έχει ετήσιο όριο ${limitFmtEl}, σύμφωνα με το έγγραφο που ανεβάσατε.`,
+            el: `Το ασφαλιστήριο υγείας ${ref} έχει ετήσιο όριο ${limitFmtEl}, σύμφωνα με το έγγραφο που ανεβάσατε.`,
         },
         nextAction: {
             en: "Check whether the limit matches the hospital class you would actually use — an upgrade quote is worth comparing.",
@@ -352,7 +352,7 @@ function noAgentRule(
         },
         evidence: {
             en: `You have ${activeCount} active ${activeCount === 1 ? "policy" : "policies"} in your wallet and no connected insurance advisor.`,
-            el: `Έχετε ${activeCount} ${activeCount === 1 ? "ενεργό συμβόλαιο" : "ενεργά συμβόλαια"} στο πορτοφόλι σας και κανέναν συνδεδεμένο ασφαλιστικό σύμβουλο.`,
+            el: `Έχετε ${activeCount} ${activeCount === 1 ? "ενεργό ασφαλιστήριο" : "ενεργά ασφαλιστήρια"} στο πορτοφόλι σας και κανέναν συνδεδεμένο ασφαλιστικό σύμβουλο.`,
         },
         nextAction: {
             en: "If you already work with an advisor, connect them with their invite code — access is revocable at any time.",
@@ -390,11 +390,11 @@ function homeNoEarthquakeRule(policies: PortfolioPolicyFacts[]): PortfolioGap | 
         },
         reason: {
             en: "Earthquake cover is usually an optional add-on in Greek home policies — many basic packages leave it out.",
-            el: "Η κάλυψη σεισμού είναι συνήθως προαιρετική προσθήκη στα ελληνικά συμβόλαια κατοικίας — πολλά βασικά πακέτα δεν την περιλαμβάνουν.",
+            el: "Η κάλυψη σεισμού είναι συνήθως προαιρετική προσθήκη στα ελληνικά ασφαλιστήρια κατοικίας — πολλά βασικά πακέτα δεν την περιλαμβάνουν.",
         },
         evidence: {
             en: `The analysis of your policy ${ref} did not find earthquake coverage in the extracted terms.`,
-            el: `Η ανάλυση του συμβολαίου σας ${ref} δεν εντόπισε κάλυψη σεισμού στους όρους που εξήχθησαν.`,
+            el: `Η ανάλυση του ασφαλιστηρίου σας ${ref} δεν εντόπισε κάλυψη σεισμού στους όρους που εξήχθησαν.`,
         },
         nextAction: {
             en: "Ask your insurer or advisor to confirm whether earthquake cover is included, and what adding it would cost.",
@@ -501,11 +501,11 @@ function motorNoRoadsideRule(policies: PortfolioPolicyFacts[]): PortfolioGap | n
         },
         evidence: {
             en: `The analysis of your policy ${ref} did not find roadside assistance in the extracted coverages.`,
-            el: `Η ανάλυση του συμβολαίου σας ${ref} δεν εντόπισε οδική βοήθεια στις καλύψεις που εξήχθησαν.`,
+            el: `Η ανάλυση του ασφαλιστηρίου σας ${ref} δεν εντόπισε οδική βοήθεια στις καλύψεις που εξήχθησαν.`,
         },
         nextAction: {
             en: "Check whether roadside assistance exists as a separate contract, or ask your insurer about adding it.",
-            el: "Ελέγξτε αν έχετε οδική βοήθεια ως ξεχωριστό συμβόλαιο ή ρωτήστε τον ασφαλιστή σας για την προσθήκη της.",
+            el: "Ελέγξτε αν έχετε οδική βοήθεια ως ξεχωριστό ασφαλιστήριο ή ρωτήστε τον ασφαλιστή σας για την προσθήκη της.",
         },
         reviewHref: `/wallet/${candidate.id}`,
     }
@@ -574,7 +574,7 @@ const PROFILE_RULE_FACTS: Record<string, { en: string; el: string }> = {
     },
     no_health: {
         en: "no private health policy was found",
-        el: "δεν βρέθηκε ιδιωτικό συμβόλαιο υγείας",
+        el: "δεν βρέθηκε ιδιωτικό ασφαλιστήριο υγείας",
     },
 }
 
@@ -587,7 +587,7 @@ export function buildProfileGapEvidence(
     const fact = PROFILE_RULE_FACTS[ruleId]
 
     const scanEn = `We checked your ${activePolicyCount} active ${activePolicyCount === 1 ? "policy" : "policies"} — none covers ${label.en}`
-    const scanEl = `Ελέγξαμε ${activePolicyCount === 1 ? "το 1 ενεργό συμβόλαιό σας" : `τα ${activePolicyCount} ενεργά συμβόλαιά σας`} — κανένα δεν καλύπτει ${label.el === lineOfBusiness ? `τον κλάδο «${lineOfBusiness}»` : `τον κλάδο ${label.el}`}`
+    const scanEl = `Ελέγξαμε ${activePolicyCount === 1 ? "το 1 ενεργό ασφαλιστήριό σας" : `τα ${activePolicyCount} ενεργά ασφαλιστήριά σας`} — κανένα δεν καλύπτει ${label.el === lineOfBusiness ? `τον κλάδο «${lineOfBusiness}»` : `τον κλάδο ${label.el}`}`
 
     return {
         evidence: {

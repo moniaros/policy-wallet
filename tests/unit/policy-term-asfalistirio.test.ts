@@ -19,6 +19,10 @@ const UI_FILES = [
     'app/onboarding/flow.tsx',
     'lib/monetization/upgrade-copy.el.ts',
     'lib/pricing/public-pricing-content.ts',
+    // Gap-engine findings are short customer-facing cards (title + evidence),
+    // not long-form editorial — a card must not say «συμβόλαιο» in its title and
+    // «ασφαλιστήριο» in its evidence. Its sibling rule files already use «ασφαλιστήριο».
+    'lib/services/gap-engine/portfolio-rules.ts',
 ]
 
 describe('policy term is «ασφαλιστήριο», never «συμβόλαιο»', () => {
