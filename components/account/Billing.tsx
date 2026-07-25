@@ -107,8 +107,14 @@ export function Billing({
                                     <h2 className="text-3xl font-black text-black dark:text-white tracking-tighter mb-2">
                                         {currentPlan.name}
                                     </h2>
+                                    {/* A cancelled subscription has next_billing_date === null
+                                        (account/actions.ts). Showing "renews on" then rendered
+                                        "Billing renews on —" — the OPPOSITE of what's happening.
+                                        When it won't renew, say when access actually ENDS. */}
                                     <p className="text-black/60 dark:text-white/60 text-sm font-medium italic">
-                                        {t.billing.renewsOn} {formatDate(currentSubscription.next_billing_date)}
+                                        {currentSubscription.next_billing_date
+                                            ? `${t.billing.renewsOn} ${formatDate(currentSubscription.next_billing_date)}`
+                                            : `${t.billing.endsOn} ${formatDate(currentSubscription.current_period_end)}`}
                                     </p>
                                 </div>
                                 <div className="text-right">

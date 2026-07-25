@@ -1825,6 +1825,7 @@ export const el = {
     billing: {
         subscriptionStatus: 'Κατάσταση συνδρομής',
         renewsOn: 'Ανανεώνεται στις',
+        endsOn: 'Η πρόσβαση λήγει στις',
         perMonth: 'Ανά μήνα',
         modifyPlan: 'Τροποποίηση πλάνου',
         terminateCycle: 'Ακύρωση ανανέωσης',

@@ -1811,6 +1811,7 @@ export const en: TranslationKeys = {
     billing: {
         subscriptionStatus: 'Subscription Status',
         renewsOn: 'Billing renews on',
+        endsOn: 'Access ends on',
         perMonth: 'Per Month',
         modifyPlan: 'Modify Plan',
         terminateCycle: 'Cancel renewal',
