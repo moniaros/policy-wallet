@@ -36,11 +36,12 @@ describe('Greek UI labels use sentence case', () => {
         const PROPER_NOUN_WORDS = new Set(['Ελληνικά', 'Αγγλικά', 'Ελλάδα', 'Ελλάδας'])
         for (const m of src.matchAll(/(\w+):\s*(['"])([^'"]{3,60})\2/g)) {
             const [full, key, , rawVal] = m
-            // A parenthetical aside — «Κύρια Αποσύνδεση (Όλες οι Συσκευές)» — used
-            // to skip the WHOLE value (the skip set contained `()`), hiding the
-            // Title Case. Drop the paren CHARACTERS (keep their words) and check
-            // everything, so both «Αποσύνδεση» and «Συσκευές» are seen.
-            const val = rawVal.replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim()
+            // Two former blind spots, both from the skip set: a parenthetical
+            // aside — «Κύρια Αποσύνδεση (Όλες οι Συσκευές)» — and a TRAILING
+            // exclamation/question mark — «Όλα Τέλεια!» — skipped the WHOLE value.
+            // Drop paren characters (keep their words) and trailing sentence
+            // punctuation, then check; internal punctuation still marks a sentence.
+            const val = rawVal.replace(/[()]/g, ' ').replace(/[.!?·]+$/, '').replace(/\s+/g, ' ').trim()
             if (/[.;!?,·:0-9A-Za-z/→]/.test(val)) continue
             if (coverageTaxonomy.includes(full)) continue
             if (PROPER_NOUN_KEYS.has(key)) continue
