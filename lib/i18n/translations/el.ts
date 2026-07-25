@@ -741,7 +741,7 @@ export const el = {
             failed: 'Απέτυχαν',
             analyzing: 'Ανάλυση με AI...',
             extractionFailed: 'Δεν ήταν δυνατή η εξαγωγή στοιχείων ασφαλιστηρίου',
-            policyNumberLabel: 'Αρ. Ασφαλιστηρίου',
+            policyNumberLabel: 'Αρ. ασφαλιστηρίου',
             premiumLabel: 'Ασφάλιστρο',
             periodLabel: 'Περίοδος',
             addMoreFiles: 'Προσθήκη περισσότερων αρχείων',

@@ -39,6 +39,14 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
         }
     })
 
+    it('policy-number labels lowercase «ασφαλιστηρίου» after the «Αρ.» abbreviation', () => {
+        // «Αρ.» is an abbreviation, not a sentence end, so the next word stays
+        // lowercase — and the greek-sentence-case guard misses this (it treats «.»
+        // as a restart). policyNumberLabel was the lone «Αρ. Ασφαλιστηρίου» outlier.
+        expect(EL).not.toMatch(/Αρ\. Ασφαλιστηρίου/)
+        expect(EL).not.toMatch(/Αριθμός Ασφαλιστηρίου/)
+    })
+
     it('EN policy-meaning labels say "policy"/"Insurer", not "contract"', () => {
         expect(EN).toContain('downloadContract: "Download policy"')
         expect(EN).not.toContain('contractInsurer: "Contract Insurer"')
