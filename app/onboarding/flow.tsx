@@ -326,6 +326,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                     <button
                                         key={g.key}
                                         type="button"
+                                        aria-pressed={goal === g.key}
                                         onClick={() => setGoal(g.key)}
                                         className={`rounded-2xl border px-4 py-5 text-left transition ${
                                             goal === g.key

@@ -155,6 +155,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                                 <button
                                                     key={String(val)}
                                                     type="button"
+                                                    aria-pressed={answers[q.id] === val}
                                                     onClick={() => setAnswers({ ...answers, [q.id]: val })}
                                                     className={`flex-1 rounded-xl border py-3.5 text-sm font-semibold transition-colors ${
                                                         answers[q.id] === val
@@ -196,6 +197,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                                 <button
                                                     key={opt}
                                                     type="button"
+                                                    aria-pressed={answers[q.id] === opt}
                                                     onClick={() => setAnswers({ ...answers, [q.id]: opt })}
                                                     className={`rounded-xl border px-4 py-3 text-sm font-medium transition-colors ${
                                                         answers[q.id] === opt

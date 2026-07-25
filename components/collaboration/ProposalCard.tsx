@@ -455,6 +455,7 @@ export function ProposalView({
                             <button
                                 key={r.value}
                                 type="button"
+                                aria-pressed={declineReason === r.value}
                                 onClick={() => setDeclineReason(r.value)}
                                 className={`rounded-full px-3 py-1.5 text-xs font-medium border transition ${
                                     declineReason === r.value
