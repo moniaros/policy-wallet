@@ -115,7 +115,7 @@ export const DOCUMENT_TYPE_TAXONOMY = {
     medical_certificate: { en: "Medical Certificate", el: "Ιατρικό Πιστοποιητικό" },
     drivers_license: { en: "Driver's License", el: "Δίπλωμα Οδήγησης" },
     vehicle_registration: { en: "Vehicle Registration", el: "Άδεια Κυκλοφορίας" },
-    bank_statement: { en: "Bank Statement", el: "Τελευταίος Λογαριασμός" },
+    bank_statement: { en: "Bank Statement", el: "Αντίγραφο Κίνησης Λογαριασμού" },
     property_deed: { en: "Property Deed", el: "Τίτλος Ιδιοκτησίας" },
     other: { en: "Other Document", el: "Άλλο Έγγραφο" },
 } as const
