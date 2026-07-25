@@ -2,13 +2,13 @@
 
 _Living dashboard — not a log. Updated at the end of each session with meaningful work. Keep it under one screen._
 
-**Last updated:** 2026-07-25 — insurance-correctness audit continues on `claude/ui-foundation-audit-gtm05i` (286 commits, **NOT merged, NOT deployed**). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
+**Last updated:** 2026-07-25 — insurance-correctness audit continues on `claude/ui-foundation-audit-gtm05i` (287 commits, **NOT merged, NOT deployed**). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
 
 ## Current phase
 
 **Production is live** at policywallet.gr. `NEW-UI` is at `65183b7`; the last deploy this doc recorded was `97f908b`, so **`65183b7` may not be deployed — verify before assuming prod matches `NEW-UI`.**
 
-Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuous insurance-correctness audit, 286 commits, unmerged and undeployed pending review. All guardrails + 2257 unit tests (269 files) + prod build green at every commit; Playwright not yet re-run against the branch.
+Everything since sits on **`claude/ui-foundation-audit-gtm05i`** — a continuous insurance-correctness audit, 287 commits, unmerged and undeployed pending review. All guardrails + 2257 unit tests (269 files) + prod build green at every commit; Playwright not yet re-run against the branch.
 
 ⚠️ **Branch-name correction.** `fix/coverage-insights-verdict` is a **stale pointer** at `65183b7` (= `NEW-UI`); commit messages on this branch that name it are misattributed — all work is on `claude/ui-foundation-audit-gtm05i`. Delete the stale pointer.
 
