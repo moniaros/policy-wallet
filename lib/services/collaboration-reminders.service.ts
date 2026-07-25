@@ -17,6 +17,31 @@ function startOfToday() {
     return startOfAthensDay(new Date())
 }
 
+/**
+ * These reminders reach whichever party owes a reply or an action — in an
+ * advisor↔policyholder thread that is often the policyholder — so the title and
+ * message must be in THAT recipient's language (Greek default). sendNotification
+ * localizes only the email shell, so we resolve the copy here and write both the
+ * in-app record and the email.
+ */
+async function notifyReminder(params: {
+    userId: string
+    eventType: string
+    title: { el: string; en: string }
+    message: { el: string; en: string }
+    relatedObjectId: string
+}) {
+    await sendNotification({
+        userId: params.userId,
+        eventType: params.eventType,
+        title: params.title,
+        message: params.message,
+        channels: ["email", "in_app"],
+        relatedObjectType: "customer",
+        relatedObjectId: params.relatedObjectId,
+    })
+}
+
 export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary> {
     const now = new Date()
     const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000)
@@ -74,24 +99,14 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
         if (hasReply) continue
 
         const senderName = message.sender.name || message.sender.email
-        await db.notificationEvent.create({
-            data: {
-                userId: recipientId,
-                eventType: "collaboration_unread_followup",
-                channel: "in_app",
-                title: "Unread collaboration message",
-                message: `You have an unread collaboration update from ${senderName}.`,
-                relatedObjectType: "customer",
-                relatedObjectId: message.id,
-            },
-        })
-        await sendNotification({
+        await notifyReminder({
             userId: recipientId,
             eventType: "collaboration_unread_followup",
-            title: "Unread collaboration message",
-            message: `You have an unread collaboration update from ${senderName}.`,
-            channels: ["email"],
-            relatedObjectType: "customer",
+            title: { el: "Μη αναγνωσμένο μήνυμα", en: "Unread message" },
+            message: {
+                el: `Έχετε ένα μη αναγνωσμένο μήνυμα από ${senderName}.`,
+                en: `You have an unread message from ${senderName}.`,
+            },
             relatedObjectId: message.id,
         })
         unreadFollowupsSent += 1
@@ -123,25 +138,14 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
         })
         if (sentToday) continue
 
-        const msg = `Action "${action.title}" is overdue in thread "${action.thread.subject}".`
-        await db.notificationEvent.create({
-            data: {
-                userId: action.assigneeUserId,
-                eventType: "collaboration_action_overdue",
-                channel: "in_app",
-                title: "Overdue collaboration action",
-                message: msg,
-                relatedObjectType: "customer",
-                relatedObjectId: action.id,
-            },
-        })
-        await sendNotification({
+        await notifyReminder({
             userId: action.assigneeUserId,
             eventType: "collaboration_action_overdue",
-            title: "Overdue collaboration action",
-            message: msg,
-            channels: ["email"],
-            relatedObjectType: "customer",
+            title: { el: "Εκπρόθεσμη ενέργεια", en: "Overdue action" },
+            message: {
+                el: `Η ενέργεια «${action.title}» είναι εκπρόθεσμη στη συζήτηση «${action.thread.subject}».`,
+                en: `Action "${action.title}" is overdue in thread "${action.thread.subject}".`,
+            },
             relatedObjectId: action.id,
         })
         overdueActionRemindersSent += 1
@@ -180,25 +184,16 @@ export async function runCollaborationReminderJobs(): Promise<ReminderRunSummary
         })
         if (unresolved === 0 && overdue === 0) continue
 
-        const digestMessage = `You have ${unresolved} unresolved thread(s) and ${overdue} overdue action(s).`
-        await db.notificationEvent.create({
-            data: {
-                userId: p.userId,
-                eventType: "collaboration_daily_digest",
-                channel: "in_app",
-                title: "Daily collaboration digest",
-                message: digestMessage,
-                relatedObjectType: "customer",
-                relatedObjectId: p.userId,
-            },
-        })
-        await sendNotification({
+        const threadsEl = unresolved === 1 ? "ανοιχτή συζήτηση" : "ανοιχτές συζητήσεις"
+        const actionsEl = overdue === 1 ? "εκπρόθεσμη ενέργεια" : "εκπρόθεσμες ενέργειες"
+        await notifyReminder({
             userId: p.userId,
             eventType: "collaboration_daily_digest",
-            title: "Daily collaboration digest",
-            message: digestMessage,
-            channels: ["email"],
-            relatedObjectType: "customer",
+            title: { el: "Καθημερινή σύνοψη", en: "Daily digest" },
+            message: {
+                el: `Έχετε ${unresolved} ${threadsEl} και ${overdue} ${actionsEl}.`,
+                en: `You have ${unresolved} unresolved thread(s) and ${overdue} overdue action(s).`,
+            },
             relatedObjectId: p.userId,
         })
         dailyDigestsSent += 1

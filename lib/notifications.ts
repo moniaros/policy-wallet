@@ -3,16 +3,28 @@ import { sendEmail } from "./email/email-service"
 import { buildNotificationEmail } from "./mail-templates"
 import { sendPushNotification } from "./services/push.service"
 
-export type NotificationChannel = 'email' | 'push' | 'whatsapp' | 'viber'
+export type NotificationChannel = 'email' | 'push' | 'whatsapp' | 'viber' | 'in_app'
 export type NotificationStatus = 'queued' | 'sent' | 'failed'
 
 export type RelatedObjectType = 'policy' | 'customer' | 'questionnaire' | 'thread'
 
+/**
+ * Pass a plain string for language-agnostic content, or `{ el, en }` to have the
+ * notification resolved to the *recipient's* preferred language. Resolving here
+ * (once, next to the user lookup) means callers no longer fetch the recipient's
+ * language themselves just to localize a title.
+ */
+export type LocalizedText = string | { el: string; en: string }
+
+function resolveLocalized(text: LocalizedText, lang: 'el' | 'en'): string {
+    return typeof text === 'string' ? text : text[lang]
+}
+
 interface SendNotificationParams {
     userId: string
     eventType: string
-    title: string
-    message: string
+    title: LocalizedText
+    message: LocalizedText
     channels?: NotificationChannel[]
     relatedObjectType?: RelatedObjectType
     relatedObjectId?: string
@@ -63,19 +75,23 @@ export async function sendNotification({
     const user = await (db.user.findUnique as any)({ where: { id: userId }, select: { email: true, pushToken: true, preferredLanguage: true } })
     if (!user) return []
 
+    // Resolve any { el, en } title/message to the recipient's language once.
+    const language: 'el' | 'en' = user.preferredLanguage === 'el' ? 'el' : 'en'
+    const resolvedTitle = resolveLocalized(title, language)
+    const resolvedMessage = resolveLocalized(message, language)
+
     const eventPromises = finalChannels.map(async (channel) => {
         let status: NotificationStatus = 'sent'
         let failureReason: string | null = null
 
         try {
             if (channel === 'email' && user.email) {
-                const language = user.preferredLanguage === 'el' ? 'el' : 'en'
                 // Every notification email goes through the shared branded shell
                 // (title + message + deep-link CTA), replacing the old plain-text
                 // fallback and the per-event templates that rendered `undefined`.
                 const { subject: emailSubject, html: emailHtml } = buildNotificationEmail({
-                    title,
-                    message,
+                    title: resolvedTitle,
+                    message: resolvedMessage,
                     relatedObjectType,
                     relatedObjectId,
                     language,
@@ -83,8 +99,8 @@ export async function sendNotification({
 
                 const result = await sendEmail({
                     to: user.email,
-                    subject: emailSubject || title,
-                    html: emailHtml || message,
+                    subject: emailSubject || resolvedTitle,
+                    html: emailHtml || resolvedMessage,
                 })
                 if (!result.success) {
                     throw new Error(result.error || "Email delivery failed")
@@ -92,8 +108,8 @@ export async function sendNotification({
             } else if (channel === 'push' && user.pushToken) {
                 const pushResult = await sendPushNotification({
                     token: user.pushToken,
-                    title,
-                    body: message,
+                    title: resolvedTitle,
+                    body: resolvedMessage,
                     url: relatedObjectId ? `/wallet/${relatedObjectId}` : '/home',
                 })
                 if (!pushResult.success) {
@@ -111,8 +127,8 @@ export async function sendNotification({
                 eventType,
                 channel,
                 status,
-                title,
-                message,
+                title: resolvedTitle,
+                message: resolvedMessage,
                 relatedObjectType,
                 relatedObjectId,
                 sentAt: status === 'sent' ? new Date() : null,
@@ -123,12 +139,6 @@ export async function sendNotification({
 
     const events = await Promise.all(eventPromises)
     return events
-}
-
-type LocalizedText = string | { el: string; en: string }
-
-function resolveLocalized(text: LocalizedText, lang: 'el' | 'en'): string {
-    return typeof text === 'string' ? text : text[lang]
 }
 
 export interface NotifyCounterpartyParams {

@@ -224,24 +224,11 @@ export class CollaborationService {
         })
 
         if (assignedToUserId) {
-            await db.notificationEvent.create({
-                data: {
-                    userId: assignedToUserId,
-                    eventType: "collaboration_thread_assigned",
-                    channel: "in_app",
-                    title: "New collaboration thread",
-                    message: thread.subject,
-                    relatedObjectType: "customer",
-                    relatedObjectId: thread.relationshipId,
-                },
-            })
-            await sendNotification({
-                userId: assignedToUserId,
+            await this.notifyCollabParticipant({
+                recipientId: assignedToUserId,
                 eventType: "collaboration_thread_assigned",
-                title: "New collaboration thread",
+                title: { el: "Νέα συζήτηση", en: "New conversation" },
                 message: thread.subject,
-                channels: ["email"],
-                relatedObjectType: "customer",
                 relatedObjectId: thread.relationshipId,
             })
         }
@@ -306,25 +293,12 @@ export class CollaborationService {
             },
         })
 
-        await sendNotification({
-            userId: recipientId,
+        await this.notifyCollabParticipant({
+            recipientId,
             eventType: "collaboration_message",
-            title: "New collaboration message",
+            title: { el: "Νέο μήνυμα", en: "New message" },
             message: body.slice(0, 140),
-            channels: ["email"],
-            relatedObjectType: "customer",
             relatedObjectId: thread.relationshipId,
-        })
-        await db.notificationEvent.create({
-            data: {
-                userId: recipientId,
-                eventType: "collaboration_message",
-                channel: "in_app",
-                title: "New collaboration message",
-                message: body.slice(0, 140),
-                relatedObjectType: "customer",
-                relatedObjectId: thread.relationshipId,
-            },
         })
 
         return message
@@ -364,28 +338,41 @@ export class CollaborationService {
             },
         })
 
-        await sendNotification({
-            userId: input.assigneeUserId,
+        await this.notifyCollabParticipant({
+            recipientId: input.assigneeUserId,
             eventType: "collaboration_action_assigned",
-            title: "New action assigned",
+            title: { el: "Νέα ενέργεια", en: "New action" },
             message: input.title,
-            channels: ["email"],
-            relatedObjectType: "customer",
             relatedObjectId: thread.relationshipId,
-        })
-        await db.notificationEvent.create({
-            data: {
-                userId: input.assigneeUserId,
-                eventType: "collaboration_action_assigned",
-                channel: "in_app",
-                title: "New action assigned",
-                message: input.title,
-                relatedObjectType: "customer",
-                relatedObjectId: thread.relationshipId,
-            },
         })
 
         return action
+    }
+
+    /**
+     * Collaboration notifications reach whichever party did NOT act — in an
+     * advisor↔policyholder thread that is often the policyholder — so the title
+     * must be in THAT recipient's language. sendNotification resolves the { el,
+     * en } title to the recipient's preferred language (Greek default) and writes
+     * both the in-app record and the email. The message body is user-typed content
+     * passed through as-is.
+     */
+    private async notifyCollabParticipant(params: {
+        recipientId: string
+        eventType: string
+        title: { el: string; en: string }
+        message: string
+        relatedObjectId: string
+    }) {
+        await sendNotification({
+            userId: params.recipientId,
+            eventType: params.eventType,
+            title: params.title,
+            message: params.message,
+            channels: ["email", "in_app"],
+            relatedObjectType: "customer",
+            relatedObjectId: params.relatedObjectId,
+        })
     }
 
     async updateActionStatus(userId: string, rolesRaw: string, threadId: string, actionId: string, status: string) {
