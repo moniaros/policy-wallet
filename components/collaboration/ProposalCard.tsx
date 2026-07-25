@@ -393,6 +393,22 @@ export function ProposalView({
                 </div>
             )}
 
+            {/* Indicative-proposal disclaimer. A proposal shows a firm premium and
+                an "Accept" CTA; without this a client could read "Accept" as binding
+                cover and believe they are insured before the insurer issues the
+                policy. Mirrors the app's claims/exclusions "the insurer's terms
+                prevail" discipline (IDD / Law 4583/2018). Shown in the client view
+                and in the agent's preview (which renders as policyholder), above the
+                CTAs, for every status. */}
+            {viewerRole === "policyholder" && (
+                <div className="rounded-xl bg-muted/60 dark:bg-neutral-800/40 border border-neutral-200/70 dark:border-neutral-700/60 p-3 mb-4 flex items-start gap-2">
+                    <Shield className="h-4 w-4 mt-0.5 shrink-0 text-neutral-500 dark:text-neutral-400" />
+                    <p className="text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
+                        {t.collaboration.proposals.proposalDisclaimer}
+                    </p>
+                </div>
+            )}
+
             {/* CTAs (client view, pending only) */}
             {viewerRole === "policyholder" && proposal.status === "pending" && !isPreview && !isDeclining && (
                 <div className="flex flex-wrap gap-3 mt-4">

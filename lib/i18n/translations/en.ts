@@ -2339,6 +2339,7 @@ export const en: TranslationKeys = {
             upgrade: "Upgrade",
             bundle: "Bundle",
             proposalPreview: "Proposal Preview",
+            proposalDisclaimer: "This is an indicative proposal for your consideration — not a binding insurance contract. Cover, the final premium and the full terms are governed by the insurer's policy documentation. Accepting lets your advisor proceed with the application on your behalf.",
             edit: "Edit",
             sending: "Sending...",
             forClient: "For client {name}",
