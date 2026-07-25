@@ -6,6 +6,7 @@ import { FileText, MessageSquare, FileUp, Lock } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { apiErrorMessage } from "@/lib/api-error-copy"
+import { threadStatusLabel, threadPriorityLabel, actionStatusLabel } from "@/lib/collaboration/status-labels"
 import type { ViewerRole, ThreadType } from "./types"
 
 type Thread = {
@@ -77,7 +78,7 @@ export function CollaborationTimeline({
     compact = false,
     initialThreadId = null,
 }: CollaborationTimelineProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const [threads, setThreads] = useState<Thread[]>([])
     const [selectedId, setSelectedId] = useState<string | null>(initialThreadId)
     const [selected, setSelected] = useState<ThreadDetail | null>(null)
@@ -335,11 +336,11 @@ export function CollaborationTimeline({
                                                 <TypeIcon className={`w-4 h-4 flex-shrink-0 ${typeConfig.color}`} />
                                                 <p className="text-sm font-semibold text-foreground truncate">{thread.subject}</p>
                                             </div>
-                                            <span className="text-kicker uppercase font-bold text-neutral-500 dark:text-neutral-400">{thread.priority}</span>
+                                            <span className="text-kicker uppercase font-bold text-neutral-500 dark:text-neutral-400">{threadPriorityLabel(thread.priority)[language]}</span>
                                         </div>
                                         <div className="mt-1 flex gap-2 items-center flex-wrap">
                                             <span className={`text-kicker px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-muted`}>{t.collaboration.timeline.threadType[threadTypeKey]}</span>
-                                            <span className="text-xs text-neutral-500 dark:text-neutral-400">{thread.status}</span>
+                                            <span className="text-xs text-neutral-500 dark:text-neutral-400">{threadStatusLabel(thread.status)[language]}</span>
                                             {waitingOnYou ? (
                                                 <span className="text-kicker px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">{t.collaboration.timeline.waitingOnYou}</span>
                                             ) : null}
@@ -503,10 +504,10 @@ export function CollaborationTimeline({
                                                 onChange={(e) => patchActionStatus(item.id, e.target.value as any)}
                                                 className="pw-input pw-input-sm"
                                             >
-                                                <option value="pending">pending</option>
-                                                <option value="in_progress">in_progress</option>
-                                                <option value="done">done</option>
-                                                <option value="cancelled">cancelled</option>
+                                                <option value="pending">{actionStatusLabel("pending")[language]}</option>
+                                                <option value="in_progress">{actionStatusLabel("in_progress")[language]}</option>
+                                                <option value="done">{actionStatusLabel("done")[language]}</option>
+                                                <option value="cancelled">{actionStatusLabel("cancelled")[language]}</option>
                                             </select>
                                         </div>
                                     ))}

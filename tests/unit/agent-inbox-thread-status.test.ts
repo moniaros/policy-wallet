@@ -1,11 +1,16 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
+import { THREAD_STATUS_LABELS } from '@/lib/collaboration/status-labels'
 
 /**
  * The agent inbox rendered the raw thread status enum ("waiting_policyholder"),
  * and two of the five statuses (waiting_agent / waiting_policyholder) had no label
  * anywhere. Every STYLED status must also carry a human label, and the badge must
  * render the label, not the code.
+ *
+ * The labels now live in the shared lib/collaboration/status-labels.ts (single
+ * source of truth for the inbox AND the CollaborationTimeline); the inbox keeps
+ * only its presentational STATUS_STYLES.
  */
 const SRC = readFileSync('components/collaboration/AgentInbox.tsx', 'utf-8')
 
@@ -23,7 +28,7 @@ describe('agent inbox renders a thread-status LABEL, not the raw enum', () => {
 
     it('every styled status has a label (waiting_* included)', () => {
         const styled = keysOf('STATUS_STYLES')
-        const labelled = new Set(keysOf('THREAD_STATUS_LABELS'))
+        const labelled = new Set(Object.keys(THREAD_STATUS_LABELS))
         expect(styled.length).toBeGreaterThanOrEqual(5)
         const missing = styled.filter((s) => !labelled.has(s))
         expect(missing, `styled thread statuses with no label: ${missing.join(', ')}`).toEqual([])

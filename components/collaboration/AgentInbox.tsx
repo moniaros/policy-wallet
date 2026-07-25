@@ -19,6 +19,7 @@ import { EmptyState } from "@/components/ui/EmptyState"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatRelativeDate } from "@/lib/agent/format"
+import { THREAD_STATUS_LABELS } from "@/lib/collaboration/status-labels"
 import type { ThreadType } from "./types"
 
 interface InboxThread {
@@ -55,16 +56,8 @@ const THREAD_TYPE_LABELS: Record<string, { en: string; el: string }> = {
     proposal: { en: "Proposal", el: "Πρόταση" },
 }
 
-// The status badge used to render the raw enum ("waiting_policyholder") — and the
-// two waiting_* states had no label anywhere. All five now have a human label.
-const THREAD_STATUS_LABELS: Record<string, { en: string; el: string }> = {
-    open: { en: "Open", el: "Ανοιχτό" },
-    resolved: { en: "Resolved", el: "Επιλύθηκε" },
-    closed: { en: "Closed", el: "Έκλεισε" },
-    waiting_agent: { en: "Awaiting advisor", el: "Αναμονή συμβούλου" },
-    waiting_policyholder: { en: "Awaiting client", el: "Αναμονή πελάτη" },
-}
-
+// Thread-status labels are the shared source of truth (lib/collaboration/
+// status-labels.ts) so this inbox and the CollaborationTimeline can't drift.
 const STATUS_STYLES: Record<string, string> = {
     open: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
     resolved: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
