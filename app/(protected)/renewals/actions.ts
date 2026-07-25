@@ -2,6 +2,7 @@
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { formatDate } from "@/lib/i18n/format"
 import { notifyCounterparty } from "@/lib/notifications"
 import { calendarDaysUntil, startOfAthensDay } from "@/lib/policy-status"
 
@@ -279,7 +280,12 @@ export async function sendBatchRenewalReminder(renewalIds: string[]): Promise<{
         if (!renewal) continue
 
         const isEl = renewal.policy.owner.preferredLanguage === "el"
-        const expiryDate = renewal.policy.endDate.toLocaleDateString(isEl ? "el-GR" : "en-GB")
+        // Athens-zone, like the automated policy_expiring reminder in
+        // renewal.service.ts (and the wallet). A bare toLocaleDateString renders
+        // in the runtime zone — UTC on Vercel — so a policy ending at Athens
+        // midnight was reminded as the PREVIOUS day, disagreeing with both the
+        // wallet and the automated reminder for the very same policy.
+        const expiryDate = formatDate(renewal.policy.endDate, isEl ? "el" : "en")
         const title = isEl
             ? `Υπενθύμιση ανανέωσης: ${renewal.policy.insurerName}`
             : `Renewal reminder: ${renewal.policy.insurerName}`
