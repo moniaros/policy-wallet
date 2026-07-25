@@ -7,6 +7,20 @@
  */
 
 import { getTranslations } from "@/lib/i18n"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { formatCurrency } from "@/lib/i18n/format"
+
+/** Gap severity label for the report badge — was the raw enum ("medium"). */
+function gapSeverityLabel(severity: string, language: "en" | "el"): string {
+    const labels: Record<string, { el: string; en: string }> = {
+        critical: { el: "Κρίσιμο", en: "Critical" },
+        high: { el: "Υψηλό", en: "High" },
+        medium: { el: "Μεσαίο", en: "Medium" },
+        low: { el: "Χαμηλό", en: "Low" },
+    }
+    const l = labels[severity] ?? { el: severity, en: severity }
+    return language === "el" ? l.el : l.en
+}
 
 interface SavingsOpportunity {
     action: { en: string; el: string } | string
@@ -108,25 +122,29 @@ export function generateSavingsReportHtml(
           `\n  .powered-by { font-weight: 600; color: var(--pw-accent); margin-bottom: 6px; }`
         : ""
 
-    const preparedByLabel = language === "el" ? "Ετοιμάστηκε από" : "Prepared by"
+    // Static report labels: this is a client-facing (and agent-branded) document,
+    // so every heading must follow `language`, not just the dates + disclaimer.
+    const L = (el: string, en: string) => (language === "el" ? el : en)
+    const preparedByLabel = L("Ετοιμάστηκε από", "Prepared by")
+    const reportTitle = L("Έκθεση Εξοικονόμησης &amp; Κάλυψης", "Savings &amp; Coverage Report")
     const contactBits = [website, phone].filter(Boolean).map((b) => escapeHtml(b)).join(" · ")
     const headerBlock = hasBranding
         ? `<div class="agency-header">${logoUrl ? `<img src="${escapeHtml(logoUrl)}" alt="${escapeHtml(agencyName)}">` : ""}<div>${agencyName ? `<div class="agency-name">${escapeHtml(agencyName)}</div>` : ""}${contactBits ? `<div class="agency-contact">${contactBits}</div>` : ""}</div></div>
-<h1>Savings &amp; Coverage Report</h1>
+<h1>${reportTitle}</h1>
 <p class="subtitle">${agencyName ? `${preparedByLabel} ${escapeHtml(agencyName)} · ` : ""}${formatDate(generatedAt)}</p>`
-        : `<h1>Savings &amp; Coverage Report</h1>
-<p class="subtitle">Generated ${formatDate(generatedAt)} by PolicyWallet</p>`
+        : `<h1>${reportTitle}</h1>
+<p class="subtitle">${L("Δημιουργήθηκε", "Generated")} ${formatDate(generatedAt)} ${L("από το", "by")} PolicyWallet</p>`
 
     const poweredByBlock = hasBranding
         ? `<p class="powered-by">Powered by PolicyWallet</p>\n  `
         : ""
 
     return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${language}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Savings Report — ${escapeHtml(metadata.policyNumber || "Policy")}</title>
+<title>${L("Έκθεση", "Savings Report")} — ${escapeHtml(metadata.policyNumber || "Policy")}</title>
 <style>${brandingStyleVars}
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a2e; line-height: 1.6; padding: 40px; max-width: 800px; margin: 0 auto; }
@@ -162,27 +180,27 @@ export function generateSavingsReportHtml(
 </head>
 <body>
 
-<button class="print-btn no-print" onclick="window.print()">Print / Save as PDF</button>
+<button class="print-btn no-print" onclick="window.print()">${L("Εκτύπωση / Αποθήκευση ως PDF", "Print / Save as PDF")}</button>
 
 ${headerBlock}
 
 <div class="meta-grid">
-  <span class="meta-label">Insurer</span><span class="meta-value">${escapeHtml(metadata.insurerName || "—")}</span>
-  <span class="meta-label">Policy Number</span><span class="meta-value">${escapeHtml(metadata.policyNumber || "—")}</span>
-  <span class="meta-label">Type</span><span class="meta-value">${escapeHtml(metadata.lineOfBusiness || "—")}</span>
-  <span class="meta-label">Period</span><span class="meta-value">${escapeHtml(metadata.startDate?.split("T")[0] || "—")} to ${escapeHtml(metadata.endDate?.split("T")[0] || "—")}</span>
-  <span class="meta-label">Premium</span><span class="meta-value">${metadata.premiumAmount != null ? `€${Number(metadata.premiumAmount).toFixed(2)}` : "—"}</span>
+  <span class="meta-label">${L("Ασφαλιστική", "Insurer")}</span><span class="meta-value">${escapeHtml(metadata.insurerName || "—")}</span>
+  <span class="meta-label">${L("Αριθμός συμβολαίου", "Policy Number")}</span><span class="meta-value">${escapeHtml(metadata.policyNumber || "—")}</span>
+  <span class="meta-label">${L("Τύπος", "Type")}</span><span class="meta-value">${escapeHtml(metadata.lineOfBusiness ? normalizeBranch(metadata.lineOfBusiness).label[language] : "—")}</span>
+  <span class="meta-label">${L("Περίοδος", "Period")}</span><span class="meta-value">${escapeHtml(metadata.startDate?.split("T")[0] || "—")} ${L("έως", "to")} ${escapeHtml(metadata.endDate?.split("T")[0] || "—")}</span>
+  <span class="meta-label">${L("Ασφάλιστρο", "Premium")}</span><span class="meta-value">${metadata.premiumAmount != null ? escapeHtml(formatCurrency(Number(metadata.premiumAmount), language, { currency: "EUR", decimals: 2 })) : "—"}</span>
 </div>
 
-${summary ? `<h2>Summary</h2><p style="font-size:14px">${escapeHtml(loc(summary))}</p>` : ""}
+${summary ? `<h2>${L("Σύνοψη", "Summary")}</h2><p style="font-size:14px">${escapeHtml(loc(summary))}</p>` : ""}
 
-<h2>Savings Opportunities</h2>
-${savings.length === 0 ? "<p style='font-size:14px;color:#888'>No savings opportunities identified.</p>" : ""}
+<h2>${L("Ευκαιρίες Εξοικονόμησης", "Savings Opportunities")}</h2>
+${savings.length === 0 ? `<p style='font-size:14px;color:#888'>${L("Δεν εντοπίστηκαν ευκαιρίες εξοικονόμησης.", "No savings opportunities identified.")}</p>` : ""}
 
 ${totalSavings > 0 ? `
 <div class="savings-total">
-  <div class="amount">€${totalSavings.toFixed(0)}</div>
-  <div class="label">Estimated annual savings potential</div>
+  <div class="amount">${escapeHtml(formatCurrency(totalSavings, language, { currency: "EUR", decimals: 0 }))}</div>
+  <div class="label">${L("Εκτιμώμενη ετήσια δυνατότητα εξοικονόμησης", "Estimated annual savings potential")}</div>
 </div>
 ` : ""}
 
@@ -190,33 +208,33 @@ ${savings.map((s) => `
 <div class="savings-card">
   <div class="action">${escapeHtml(loc(s.action))}</div>
   <div class="rationale">${escapeHtml(loc(s.rationale))}</div>
-  ${s.estimatedAnnualSavingsEur ? `<div class="estimate">Estimated saving: €${s.estimatedAnnualSavingsEur}/year (${Math.round(s.confidence * 100)}% confidence)</div>` : ""}
+  ${s.estimatedAnnualSavingsEur ? `<div class="estimate">${L("Εκτιμώμενη εξοικονόμηση", "Estimated saving")}: ${escapeHtml(formatCurrency(Number(s.estimatedAnnualSavingsEur), language, { currency: "EUR", decimals: 0 }))}/${L("έτος", "year")} (${Math.round(s.confidence * 100)}% ${L("βεβαιότητα", "confidence")})</div>` : ""}
 </div>
 `).join("")}
 
 ${gaps.length > 0 ? `
-<h2>Coverage Gaps Detected (${gaps.length})</h2>
+<h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2>
 ${gaps.map((g) => `
 <div class="gap-card ${g.severity || "medium"}">
-  <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(g.severity || "medium")}</span></div>
+  <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(gapSeverityLabel(g.severity || "medium", language))}</span></div>
   ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""}
-  ${g.suggestion ? `<div class="detail"><strong>Recommendation:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""}
+  ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""}
 </div>
 `).join("")}
 ` : ""}
 
 ${snapshot ? `
-<h2>Coverage Snapshot</h2>
+<h2>${L("Στιγμιότυπο Κάλυψης", "Coverage Snapshot")}</h2>
 ${snapshot.covered?.length ? `
-<h3>Covered</h3>
+<h3>${L("Καλύπτονται", "Covered")}</h3>
 <ul class="coverage-list">${(snapshot.covered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>
 ` : ""}
 ${snapshot.notCovered?.length ? `
-<h3>Not Covered</h3>
+<h3>${L("Δεν καλύπτονται", "Not Covered")}</h3>
 <ul class="coverage-list">${(snapshot.notCovered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>
 ` : ""}
 ${snapshot.exclusions?.length ? `
-<h3>Exclusions</h3>
+<h3>${L("Εξαιρέσεις", "Exclusions")}</h3>
 <ul class="coverage-list">${(snapshot.exclusions as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>
 ` : ""}
 ` : ""}
