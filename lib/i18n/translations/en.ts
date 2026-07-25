@@ -1907,6 +1907,7 @@ export const en: TranslationKeys = {
         revokeAccess: 'Revoke Access',
         auditTrail: 'Audit Trail',
         downloadReport: 'Download Report',
+        securityAlertBadge: 'Alert',
         nuclearDeletion: 'Delete Account',
         nuclearDesc: 'Submitting a request starts the deletion process (GDPR Article 17): it will be reviewed and completed within one month at the latest. Your policies, documents and personal data are deleted; anything the law requires us to keep (e.g. invoices for 5 years) is retained in anonymized form.',
         deletePermanently: 'Request Deletion',

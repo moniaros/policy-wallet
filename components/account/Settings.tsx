@@ -480,7 +480,7 @@ export function Settings({
                                                     </span>
                                                     {!event.success && (
                                                         <span className="text-kicker font-black text-red-500 uppercase tracking-widest bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
-                                                            Alert
+                                                            {t.settings.securityAlertBadge}
                                                         </span>
                                                     )}
                                                 </div>
