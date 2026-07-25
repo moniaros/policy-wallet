@@ -245,6 +245,31 @@ completeness percentage (swept: `score|savings|εξοικονόμ|%`-render patt
 | Fact / estimate / recommendation separation | Extracted values carry provenance (`SourceSnippetBox`: verbatim document snippet + page, on key dates and the agent review screen); deadlines render as data, distinct from editorial guidance; recommendations labeled as suggestions with the proposal/claims/score disclaimers |
 | Source & date transparency | Analysis date shown (last-check), report carries generated-date + "by PolicyWallet", provenance snippets name the page; policy document named authoritative in the report caveat, AI footnote, and score methodology |
 
+## Page verdicts — remaining B2C pages under the compliance lens
+
+Closing the census page-by-page (each page read, not pattern-matched):
+
+- **/account → Referrals**: conditional inducement copy ("when they upgrade,
+  you earn credits") — factual. One absolute softened: «Οι πιστώσεις δεν λήγουν
+  **ποτέ**» → «δεν λήγουν» / "never expire" → "do not expire" (schema and logic
+  have no expiry — true today, but present tense states the fact without a
+  perpetual contractual commitment). Compliance **Low**.
+- **/account → Billing**: deliberately honest by construction — renewing plans
+  say "renews on", cancelled say "ends on" (documented in-code); the annual
+  "10 months instead of 12" claim is arithmetically conservative (€29 ≈ 9.7
+  monthly payments); app-store subscriptions correctly redirected to the store
+  for cancellation. Cancel honesty separately unit-tested. Compliance **Low**.
+- **Onboarding (all states)**: 62 bilingual strings swept — zero promise/
+  guarantee/urgency phrasing; the analysis step is state-aware (no "ready"
+  while queued — fixed earlier this program); goal descriptions describe app
+  behavior, not insurance outcomes. Compliance **Low**.
+- **Questionnaire delivery (advisor → policyholder)**: carries the health-data
+  privacy note (answers shared with YOUR advisor for needs assessment, GDPR
+  link) added this program; questions are advisor-authored content, clearly in
+  the advisor-collaboration frame — not platform advice. Compliance **Low**.
+- **Terms/privacy/cookies/subprocessors**: legal pages under counsel's
+  ownership — out of copy-audit scope, flagged for the legal review list.
+
 ## Conduct verdict
 
 With the savings-report and email fixes, the B2C experience is **transparent,

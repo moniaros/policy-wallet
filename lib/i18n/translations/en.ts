@@ -1883,7 +1883,7 @@ export const en: TranslationKeys = {
         shareInvite: 'Share Invite',
         creditBalance: 'Credit Balance',
         valueProp: 'Value Proposition',
-        valuePropDesc: '"You helped someone — here is the value back. Credits never expire."',
+        valuePropDesc: '"You helped someone — here is the value back. Credits do not expire."',
         successRegistry: 'Success Registry',
         noConversions: 'No conversion events logged yet.',
         added: 'Added',
