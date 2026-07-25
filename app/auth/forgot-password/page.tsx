@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -19,11 +19,21 @@ const inter = Inter({
     weight: ["400", "500", "600", "700"],
 })
 
-const forgotPasswordSchema = z.object({
-    email: z.string().email("Please provide a valid email address"),
-})
+// Lang-aware: the Zod message the form renders (errors.email.message) was
+// hardcoded English, so a Greek user with an invalid email saw "Please provide a
+// valid email address" in English. lint:i18n-changed doesn't inspect Zod args.
+const INVALID_EMAIL_MSG = {
+    el: "Δώσε ένα έγκυρο email",
+    en: "Please provide a valid email address",
+} as const
 
-type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>
+function buildForgotSchema(invalidEmail: string) {
+    return z.object({
+        email: z.string().email(invalidEmail),
+    })
+}
+
+type ForgotPasswordValues = { email: string }
 
 export default function ForgotPasswordPage() {
     const { language, setLanguage } = useLanguage()
@@ -58,6 +68,12 @@ export default function ForgotPasswordPage() {
         genericError: t("Κάτι πήγε στραβά. Δοκιμάστε ξανά.", "Something went wrong. Please try again."),
         backHome: t("← Αρχική", "← Home"),
     }
+
+    const lang: "el" | "en" = isGreek ? "el" : "en"
+    const forgotPasswordSchema = useMemo(
+        () => buildForgotSchema(INVALID_EMAIL_MSG[lang]),
+        [lang],
+    )
 
     const {
         register,

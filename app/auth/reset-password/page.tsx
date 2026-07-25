@@ -18,15 +18,21 @@ const ibmPlexSans = IBM_Plex_Sans({
     weight: ["400", "500", "600", "700"],
 })
 
-const resetSchema = z.object({
-    password: z.string().min(8, "Use at least 8 characters"),
-    confirmPassword: z.string().min(8, "Use at least 8 characters"),
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-})
+// Lang-aware so the Zod messages the form renders (errors.*.message) are
+// localised — they were hardcoded English, so a Greek user resetting their
+// password saw "Use at least 8 characters" / "Passwords do not match" in
+// English. lint:i18n-changed doesn't inspect Zod message args.
+function buildResetSchema(msgs: { minChars: string; mismatch: string }) {
+    return z.object({
+        password: z.string().min(8, msgs.minChars),
+        confirmPassword: z.string().min(8, msgs.minChars),
+    }).refine((data) => data.password === data.confirmPassword, {
+        message: msgs.mismatch,
+        path: ["confirmPassword"],
+    })
+}
 
-type ResetValues = z.infer<typeof resetSchema>
+type ResetValues = { password: string; confirmPassword: string }
 
 function passwordStrength(password: string): 0 | 1 | 2 | 3 {
     let score = 0
@@ -70,6 +76,14 @@ function ResetPasswordContent() {
             : "Your password was reset. You can now sign in with the new password.",
         backToSignIn: COPY.goToSignIn[lang],
     }
+
+    const resetSchema = useMemo(
+        () => buildResetSchema({
+            minChars: COPY.passwordMinChars[lang],
+            mismatch: COPY.passwordsDoNotMatch[lang],
+        }),
+        [lang],
+    )
 
     const {
         register,
@@ -234,6 +248,8 @@ const COPY = {
     secureReset: { el: "Επαναφορά ασφαλείας", en: "Secure reset" },
     encryptedFlow: { el: "Κρυπτογραφημένη ροή", en: "Encrypted flow" },
     requestNewLink: { el: "Ζήτα νέο σύνδεσμο", en: "Request a new link" },
+    passwordMinChars: { el: "Χρησιμοποίησε τουλάχιστον 8 χαρακτήρες", en: "Use at least 8 characters" },
+    passwordsDoNotMatch: { el: "Οι κωδικοί δεν ταιριάζουν", en: "Passwords do not match" },
 } as const
 
 export default function ResetPasswordPage() {
