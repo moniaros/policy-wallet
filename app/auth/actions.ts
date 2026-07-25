@@ -280,11 +280,21 @@ export async function redeemInvite(token: string, userId: string) {
     }
 }
 
+/**
+ * Bilingual auth error. These strings are returned to the client and displayed
+ * VERBATIM (setServerError(result.error)), so on the Greek-default app they must
+ * be localised at the source — lint:i18n-changed only checks .tsx, so hardcoded
+ * English here shipped unflagged.
+ */
+const authErr = (language: "el" | "en", el: string, en: string) => (language === "el" ? el : en)
+
 export async function registerUser(formData: FormData) {
+    // Read language up front — the rate-limit reply below fires before Zod parses it.
+    const language: "el" | "en" = formData.get("language") === "en" ? "en" : "el"
     const ip = await getRequestIp()
     const registrationRateLimit = await rateLimit(`auth:register:${ip}`, 5, 15 * 60 * 1000)
     if (!registrationRateLimit.success) {
-        return { success: false, error: "Too many signup attempts. Please try again in a few minutes." }
+        return { success: false, error: authErr(language, "Πάρα πολλές προσπάθειες εγγραφής. Δοκιμάστε ξανά σε λίγα λεπτά.", "Too many signup attempts. Please try again in a few minutes.") }
     }
 
     const data = Object.fromEntries(formData.entries())
@@ -299,10 +309,10 @@ export async function registerUser(formData: FormData) {
         return { success: false, error: validation.error.flatten().fieldErrors }
     }
 
-    const { name, email, mobileNumber, password, role, language, token, selectedPlan, selectedBilling } = validation.data
+    const { name, email, mobileNumber, password, role, token, selectedPlan, selectedBilling } = validation.data
     const normalizedPhone = normalizeGreekMobile(mobileNumber)
     if (!normalizedPhone) {
-        return { success: false, error: "Invalid Greek mobile number" }
+        return { success: false, error: authErr(language, "Μη έγκυρος αριθμός ελληνικού κινητού", "Invalid Greek mobile number") }
     }
 
     const authEmail = email || buildSyntheticEmailFromPhone(normalizedPhone)
@@ -335,7 +345,7 @@ export async function registerUser(formData: FormData) {
             return { success: false, error: authError.message }
         }
         if (!authData.user) {
-            return { success: false, error: "Registration failed. Please try again." }
+            return { success: false, error: authErr(language, "Η εγγραφή απέτυχε. Δοκιμάστε ξανά.", "Registration failed. Please try again.") }
         }
 
         const existingUser = await db.user.findUnique({ where: { email: authEmail } })
@@ -436,11 +446,11 @@ export async function registerUser(formData: FormData) {
         console.error("REGISTER_USER_FATAL:", error)
         if (error instanceof Error) {
             if (error.message.includes("Unique constraint")) {
-                return { success: false, error: "User already exists" }
+                return { success: false, error: authErr(language, "Υπάρχει ήδη λογαριασμός με αυτά τα στοιχεία", "User already exists") }
             }
             return { success: false, error: error.message }
         }
-        return { success: false, error: "An unexpected error occurred during registration." }
+        return { success: false, error: authErr(language, "Παρουσιάστηκε μη αναμενόμενο σφάλμα κατά την εγγραφή.", "An unexpected error occurred during registration.") }
     }
 }
 
@@ -460,7 +470,7 @@ export async function resendVerificationEmail(email: string, language: "el" | "e
     const ip = await getRequestIp()
     const resendRateLimit = await rateLimit(`auth:resend-verification:${ip}:${normalizedEmail}`, 5, 15 * 60 * 1000)
     if (!resendRateLimit.success) {
-        return { success: false, error: "Too many verification email requests. Please try again later." }
+        return { success: false, error: authErr(language, "Πάρα πολλά αιτήματα email επιβεβαίωσης. Δοκιμάστε ξανά αργότερα.", "Too many verification email requests. Please try again later.") }
     }
 
     try {
@@ -479,7 +489,7 @@ export async function resendVerificationEmail(email: string, language: "el" | "e
         return { success: true }
     } catch (error) {
         console.error("Resend verification exception:", error)
-        return { success: false, error: "Failed to resend verification email." }
+        return { success: false, error: authErr(language, "Αποτυχία επαναποστολής email επιβεβαίωσης.", "Failed to resend verification email.") }
     }
 }
 
@@ -489,11 +499,11 @@ export async function resetPasswordForEmail(email: string, language: "el" | "en"
 
     const resetRateLimit = await rateLimit(`auth:reset-password:${ip}:${normalizedEmail}`, 5, 15 * 60 * 1000)
     if (!resetRateLimit.success) {
-        return { success: false, error: "Too many password reset attempts. Please try again later." }
+        return { success: false, error: authErr(language, "Πάρα πολλές προσπάθειες επαναφοράς κωδικού. Δοκιμάστε ξανά αργότερα.", "Too many password reset attempts. Please try again later.") }
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-        return { success: false, error: "Please provide a valid email address." }
+        return { success: false, error: authErr(language, "Δώστε μια έγκυρη διεύθυνση email.", "Please provide a valid email address.") }
     }
 
     try {
@@ -522,7 +532,7 @@ export async function resetPasswordForEmail(email: string, language: "el" | "en"
         return { success: true }
     } catch (error) {
         console.error("Reset password exception:", error)
-        return { success: false, error: "Failed to send password reset email." }
+        return { success: false, error: authErr(language, "Αποτυχία αποστολής email επαναφοράς κωδικού.", "Failed to send password reset email.") }
     }
 }
 
