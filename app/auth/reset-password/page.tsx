@@ -96,6 +96,7 @@ function ResetPasswordContent() {
             email,
             token,
             password: values.password,
+            language,
         })
 
         setSubmitting(false)

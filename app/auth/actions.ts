@@ -540,17 +540,19 @@ export async function resetPasswordWithToken(payload: {
     email: string
     token: string
     password: string
+    language?: "el" | "en"
 }) {
+    const language: "el" | "en" = payload.language === "en" ? "en" : "el"
     const email = payload.email.trim().toLowerCase()
     const token = payload.token.trim()
     const password = payload.password
 
     if (!email || !token) {
-        return { success: false, error: "Invalid reset request." }
+        return { success: false, error: authErr(language, "Μη έγκυρο αίτημα επαναφοράς.", "Invalid reset request.") }
     }
 
     if (password.length < 8) {
-        return { success: false, error: "Password must be at least 8 characters." }
+        return { success: false, error: authErr(language, "Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες.", "Password must be at least 8 characters.") }
     }
 
     const tokenValidation = await validatePasswordResetToken(email, token)
@@ -560,14 +562,14 @@ export async function resetPasswordWithToken(payload: {
 
     const supabaseUserId = await findSupabaseUserIdByEmail(email)
     if (!supabaseUserId) {
-        return { success: false, error: "Could not find account for this reset request." }
+        return { success: false, error: authErr(language, "Δεν βρέθηκε λογαριασμός για αυτό το αίτημα επαναφοράς.", "Could not find account for this reset request.") }
     }
 
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 
     if (!serviceRoleKey || !supabaseUrl) {
-        return { success: false, error: "Server auth configuration is incomplete." }
+        return { success: false, error: authErr(language, "Η διαμόρφωση ταυτοποίησης του διακομιστή είναι ελλιπής.", "Server auth configuration is incomplete.") }
     }
 
     const adminClient = createSupabaseAdminClient(supabaseUrl, serviceRoleKey, {

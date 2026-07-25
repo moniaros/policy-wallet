@@ -25,6 +25,11 @@ const LOCALIZED_MESSAGES = [
     'Too many password reset attempts. Please try again later.',
     'Please provide a valid email address.',
     'Failed to send password reset email.',
+    // resetPasswordWithToken — language now threaded from the reset client.
+    'Invalid reset request.',
+    'Password must be at least 8 characters.',
+    'Could not find account for this reset request.',
+    'Server auth configuration is incomplete.',
 ]
 
 describe('auth action errors are localised (not bare English)', () => {
