@@ -107,15 +107,20 @@ export function Billing({
                                     <h2 className="text-3xl font-black text-black dark:text-white tracking-tighter mb-2">
                                         {currentPlan.name}
                                     </h2>
-                                    {/* A cancelled subscription has next_billing_date === null
-                                        (account/actions.ts). Showing "renews on" then rendered
-                                        "Billing renews on —" — the OPPOSITE of what's happening.
-                                        When it won't renew, say when access actually ENDS. */}
-                                    <p className="text-black/60 dark:text-white/60 text-sm font-medium italic">
-                                        {currentSubscription.next_billing_date
-                                            ? `${t.billing.renewsOn} ${formatDate(currentSubscription.next_billing_date)}`
-                                            : `${t.billing.endsOn} ${formatDate(currentSubscription.current_period_end)}`}
-                                    </p>
+                                    {/* Only PAID plans carry a renewal/end date. Free has a
+                                        placeholder subscription (next_billing_date null, a 30-day
+                                        current_period_end) — showing "ends on …" there would imply
+                                        the free plan expires. A cancelled paid sub also has
+                                        next_billing_date === null (account/actions.ts), so within
+                                        paid, branch: renewing → "renews on"; cancelled → "ends on"
+                                        (not the old "renews on —", the opposite of what happens). */}
+                                    {currentPlan.price > 0 && (
+                                        <p className="text-black/60 dark:text-white/60 text-sm font-medium italic">
+                                            {currentSubscription.next_billing_date
+                                                ? `${t.billing.renewsOn} ${formatDate(currentSubscription.next_billing_date)}`
+                                                : `${t.billing.endsOn} ${formatDate(currentSubscription.current_period_end)}`}
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="text-right">
                                     <div className="text-2xl font-black text-black dark:text-white">

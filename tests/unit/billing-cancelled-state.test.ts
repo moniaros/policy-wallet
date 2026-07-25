@@ -20,9 +20,15 @@ describe('billing card tells a cancelled subscriber when access ends, not "renew
         expect(SRC).toContain('t.billing.endsOn} ${formatDate(currentSubscription.current_period_end)')
     })
 
+    it('only shows the renewal/end date for PAID plans (free has a placeholder sub)', () => {
+        // The renews/ends <p> must be gated on price so a free user does not see
+        // "Access ends on {30 days}" from the placeholder subscription.
+        expect(SRC).toMatch(/currentPlan\.price > 0 && \(\s*\n\s*<p[^]*t\.billing\.renewsOn/)
+    })
+
     it('t.billing.endsOn exists in both languages', () => {
-        expect((en.billing as Record<string, string>).endsOn).toBeTruthy()
-        expect((el.billing as Record<string, string>).endsOn).toBeTruthy()
-        expect((el.billing as Record<string, string>).endsOn).toMatch(/[Α-Ωα-ω]/) // actually Greek
+        expect((en.billing as unknown as Record<string, string>).endsOn).toBeTruthy()
+        expect((el.billing as unknown as Record<string, string>).endsOn).toBeTruthy()
+        expect((el.billing as unknown as Record<string, string>).endsOn).toMatch(/[Α-Ωα-ω]/) // actually Greek
     })
 })
