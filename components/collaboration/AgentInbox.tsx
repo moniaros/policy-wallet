@@ -66,6 +66,10 @@ const STATUS_STYLES: Record<string, string> = {
     waiting_policyholder: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 }
 
+// Accessible name for the unread-count badge — a bare "3" reads as an
+// unexplained number to a screen reader on the advisor's triage screen.
+const UNREAD_ARIA = { el: "μη αναγνωσμένα", en: "unread" } as const
+
 export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: AgentInboxProps) {
     const { language, t } = useLanguage()
     const [threads, setThreads] = useState<InboxThread[]>([])
@@ -272,7 +276,10 @@ function ThreadRow({
                     <Icon className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                 </div>
                 {thread.unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-kicker font-bold text-white">
+                    <span
+                        aria-label={`${thread.unreadCount} ${UNREAD_ARIA[language === "el" ? "el" : "en"]}`}
+                        className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-kicker font-bold text-white"
+                    >
                         {thread.unreadCount}
                     </span>
                 )}
