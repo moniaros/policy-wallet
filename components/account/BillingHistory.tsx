@@ -3,6 +3,7 @@
 import React from 'react'
 import { FileText, Download, CheckCircle2, XCircle, Clock } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
+import { formatCurrency } from '@/lib/i18n/format'
 
 export interface Invoice {
     id: string
@@ -66,7 +67,7 @@ export function BillingHistory({ invoices, language, className = '' }: BillingHi
                                 </div>
                                 <div className="flex items-center gap-2 ml-8">
                                     <span className="text-lg font-bold text-slate-900 dark:text-white">
-                                        €{invoice.amount.toFixed(2)}
+                                        {formatCurrency(invoice.amount, language, { currency: invoice.currency || 'EUR', decimals: 2 })}
                                     </span>
                                     {getStatusBadge(invoice.status, language)}
                                 </div>
