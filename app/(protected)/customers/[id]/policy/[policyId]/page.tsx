@@ -176,30 +176,14 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                 </div>
                             </div>
                         </div>
-
-                        <div className="p-8">
-                            <h2 className="text-sm font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-6">{pd.coverageHighlights}</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="mt-1 w-5 h-5 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint shrink-0">
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-neutral-900 dark:text-neutral-100">{pd.standardCoverage}</p>
-                                        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{pd.standardCoverageDesc}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-4">
-                                    <div className="mt-1 w-5 h-5 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint shrink-0">
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-neutral-900 dark:text-neutral-100">{pd.directSupport}</p>
-                                        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{pd.directSupportDesc}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {/* Removed: a generic "Coverage Highlights" block that showed the
+                            SAME two static items with green checkmarks for every policy —
+                            "Standard Coverage · Full protection based on policy
+                            specifications" and "Direct Support · 24/7 assistance via
+                            insurer". Neither was extracted from the policy; the 24/7-
+                            assistance line asserted cover many policies don't have. The
+                            real, policy-specific coverage is the summary + AI-extracted
+                            structured coverages + gap analysis below. */}
                     </div>
 
                     {/* Summary Section */}
