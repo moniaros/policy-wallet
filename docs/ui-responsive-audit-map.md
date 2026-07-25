@@ -18,7 +18,7 @@
 | No skip link, unlabelled nav landmarks | `d0377d6` — skip link + `id="main-content"`, both nav landmarks labelled |
 | Admin double shell (two sidebars, nested `<main>`, 10-vs-14 item disagreement) | `d0377d6` — one translated nav (all 14), `AdminSidebar` deleted, `admin/layout.tsx` is now only the auth gate |
 | `AgentMobileNav` dead code | `d0377d6` |
-| `useIsMobile` initialised `false`; 768-vs-1024 disagreement | `d0377d6` (matchMedia + `useSyncExternalStore` at 1024) → hook **removed entirely** in `6fa6074` once its last consumer went |
+| `useIsMobile` initialised `false`; 768-vs-1024 disagreement | `d0377d6` (matchMedia + `useSyncExternalStore` at 1024) → last consumers migrated to CSS-first in `6fa6074`; the now-dead `hooks/useResponsive.ts` file (all 5 exports 0-importer) finally removed in `773cb34` |
 | **Wallet JS fork loses features on mobile** (R1, the map's top finding) | `6fa6074` — see "corrections" below; the fix needed a second layer the map did not identify |
 | `MobileAppShell` dead routes / placebo tabs | `6fa6074` — component deleted |
 | `AppShell` dead language toggle + lying role switcher; badge that can never render; undefined `safe-area-inset-bottom`; drawer without focus trap | `399892e` |
