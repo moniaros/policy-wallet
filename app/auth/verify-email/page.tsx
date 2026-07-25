@@ -37,7 +37,7 @@ function VerifyEmailContent() {
             email_domain: email.includes("@") ? email.split("@")[1] : "unknown",
         })
 
-        verifyEmailToken(token, email)
+        verifyEmailToken(token, email, language === "el" ? "el" : "en")
             .then((result) => {
                 if (result.success) {
                     setStatus("success")

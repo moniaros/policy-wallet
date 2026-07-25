@@ -3,10 +3,15 @@
 import { db } from "@/lib/db"
 import { createClient } from "@supabase/supabase-js"
 
-export async function verifyEmailToken(token: string, email: string) {
+// Bilingual: these errors are shown VERBATIM on the verify-email page
+// (result.error), so on the Greek-default app they must be localised at source —
+// lint:i18n-changed only sees .tsx.
+const vErr = (language: "el" | "en", el: string, en: string) => (language === "el" ? el : en)
+
+export async function verifyEmailToken(token: string, email: string, language: "el" | "en" = "el") {
     try {
         if (!token || !email) {
-            return { success: false, error: "Missing token or email" }
+            return { success: false, error: vErr(language, "Λείπει το token ή το email", "Missing token or email") }
         }
 
         // 1. Verify token exists in our database and is valid
@@ -18,7 +23,7 @@ export async function verifyEmailToken(token: string, email: string) {
         })
 
         if (!verificationToken) {
-            return { success: false, error: "Invalid or expired verification link" }
+            return { success: false, error: vErr(language, "Μη έγκυρος ή ληγμένος σύνδεσμος επαλήθευσης", "Invalid or expired verification link") }
         }
 
         if (new Date() > verificationToken.expires) {
@@ -31,7 +36,7 @@ export async function verifyEmailToken(token: string, email: string) {
                     }
                 }
             }).catch(() => { }) // Ignore delete errors
-            return { success: false, error: "Verification link has expired. Please request a new one." }
+            return { success: false, error: vErr(language, "Ο σύνδεσμος επαλήθευσης έληξε. Ζητήστε νέο σύνδεσμο.", "Verification link has expired. Please request a new one.") }
         }
 
         // 2. Update local database (Primary Source of Truth for App)
@@ -40,7 +45,7 @@ export async function verifyEmailToken(token: string, email: string) {
         })
 
         if (!dbUser) {
-            return { success: false, error: "User not found" }
+            return { success: false, error: vErr(language, "Ο χρήστης δεν βρέθηκε", "User not found") }
         }
 
         await db.user.update({
@@ -93,6 +98,6 @@ export async function verifyEmailToken(token: string, email: string) {
         return { success: true }
     } catch (error) {
         console.error("Email verification error:", error)
-        return { success: false, error: "An unexpected error occurred during verification" }
+        return { success: false, error: vErr(language, "Παρουσιάστηκε μη αναμενόμενο σφάλμα κατά την επαλήθευση", "An unexpected error occurred during verification") }
     }
 }
