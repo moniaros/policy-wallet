@@ -18,15 +18,18 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const [file, setFile] = useState<File | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.[0]) {
             setFile(e.target.files[0])
+            setError(null)
         }
     }
 
     const handleContinue = async () => {
         if (!user?.id) return
+        setError(null)
 
         if (file) {
             setIsLoading(true)
@@ -34,9 +37,29 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                 const formData = new FormData()
                 formData.append("file", file)
                 formData.append("type", "license")
-                await uploadAgentAsset(formData)
+                const result = await uploadAgentAsset(formData)
+                // A compliance document must NOT be silently dropped. The action
+                // returns { success: false } on a rejected file or storage error
+                // rather than throwing, so ignoring its result would advance the
+                // agent as though their licence had been submitted when it had not.
+                if (!result?.success) {
+                    setError(
+                        result?.error ||
+                        t(
+                            "Το έγγραφο δεν υποβλήθηκε. Δοκιμάστε ξανά ή επιλέξτε «Παράλειψη προς το παρόν».",
+                            "Your document was not submitted. Try again, or choose “Skip for now”."
+                        )
+                    )
+                    return
+                }
             } catch {
-                // Still proceed — license upload is optional during onboarding
+                setError(
+                    t(
+                        "Το έγγραφο δεν υποβλήθηκε. Δοκιμάστε ξανά ή επιλέξτε «Παράλειψη προς το παρόν».",
+                        "Your document was not submitted. Try again, or choose “Skip for now”."
+                    )
+                )
+                return
             } finally {
                 setIsLoading(false)
             }
@@ -53,12 +76,18 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
 
             <div>
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                    {t("Επαληθεύστε την άδειά σας.", "Verify your license.")}
+                    {t("Υποβάλετε την άδειά σας για έλεγχο.", "Submit your licence for review.")}
                 </h1>
                 <p className="text-slate-600 dark:text-slate-400 text-lg">
+                    {/* Honest about the actual flow: the upload is SUBMITTED for review;
+                        the admin approves it (verificationStatus → approved) before the
+                        Verified badge appears. The prior copy claimed uploading itself
+                        "unlocked Verified Agent status and premium features" — neither is
+                        true, and awarding a checked-credentials badge for an unverified
+                        upload is exactly the trust signal a compliance officer flags. */}
                     {t(
-                        "Ανεβάστε την επαγγελματική σας άδεια για να ενεργοποιήσετε την κατάσταση Πιστοποιημένου Συνεργάτη και premium λειτουργίες.",
-                        "Upload your professional license to unlock Verified Agent status and premium features."
+                        "Ανεβάστε την επαγγελματική σας άδεια. Η ομάδα μας την ελέγχει και, μόλις εγκριθεί, εμφανίζεται η ένδειξη Πιστοποιημένου Συμβούλου στο προφίλ σας. Μέχρι τότε η κατάστασή σας παραμένει σε εκκρεμότητα.",
+                        "Upload your professional licence. Our team reviews it and, once approved, the Verified Advisor badge appears on your profile. Until then your status stays pending."
                     )}
                 </p>
             </div>
@@ -102,6 +131,12 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                     className="hidden"
                 />
             </label>
+
+            {error && (
+                <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    {error}
+                </p>
+            )}
 
             <div className="flex gap-3 pt-4">
                 <button
