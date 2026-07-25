@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrencyFull } from "@/lib/agent/format"
+import { formatPolicyDate } from "@/lib/wallet/policy-detail"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
@@ -375,7 +376,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                                             </div>
                                                             <div className="col-span-2">
                                                                 <span className="text-muted-foreground">{copy.periodLabel}: </span>
-                                                                <span className="text-foreground">{policy.data.startDate} → {policy.data.endDate}</span>
+                                                                <span className="text-foreground">{formatPolicyDate(policy.data.startDate, language === "el" ? "el-GR" : "en-GB")} → {formatPolicyDate(policy.data.endDate, language === "el" ? "el-GR" : "en-GB")}</span>
                                                             </div>
                                                         </div>
                                                     </div>
