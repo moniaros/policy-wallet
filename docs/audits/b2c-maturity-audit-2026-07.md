@@ -118,6 +118,58 @@ Legend: ✅ meets the bar · ◑ adequate, upside noted · ➕ improved this pro
   screen-reader walk; a pre-presentation QA pass in a browser is still worth
   doing.
 
+## Five-persona verdict pass (July 26 close-out)
+
+**Nature of this section, stated plainly:** these are the five professional
+lenses the audit directive assigns to the auditor, applied one at a time against
+verified evidence (live production walks, the metrics governance register, the
+guard suite, the shipped fixes). It is a structured expert review in persona —
+**it is not, and does not substitute for, an external review by five real
+insurance professionals.** Commissioning that panel is the owner's step; this
+section is written to be handed to exactly such a panel.
+
+**Senior intermediary** — *Would I screen-share this with a client?* Yes, the
+policy detail specifically: provenance snippets behind extracted dates, Athens-
+consistent dates on both my view and the client's (the cross-zone discrepancy is
+fixed), branch-correct coverage cards, renewal/lapse explained in place.
+Sharpest remaining objection: I'd want per-field extraction dates before
+relying on older uploads. **Credible: yes.**
+
+**Underwriter** — *Is the risk vocabulary honest?* The score measures breadth
+and says so; exclusions no longer penalize the health score (the prior
+inversion — rewarding vaguer wordings — is fixed and documented in the engine);
+sums, sublimits, co-payments, and the underinsurance warning use the correct
+concepts. Objection: extraction confidence surfaces to agents only — fine, but
+per-field confidence would deepen trust. **Credible: yes.**
+
+**Claims manager** — *Does it set claim expectations it can't meet?* No "we'll
+handle your claim" anywhere; the claims card gives branch steps, THIS policy's
+extracted deadlines (visually separated as data), the insurer's number or an
+honest absence, and a disclaimer. The lapse/expiry copy states cover
+consequences without promising outcomes. Objection: a claims-prep document
+checklist per branch is roadmap. **Credible: yes.**
+
+**Compliance officer** — *Can I defend every claim on these screens?* The
+register documents all metrics on seven dimensions; no guarantees, no
+"fully protected", no false speed claims survive (each class is guard-locked,
+mutation-tested); estimates are labelled indicative; not-advice language is
+single-sourced; the savings report carries the cover-reduction caveat.
+Objections that remain are MY items: counsel sign-off on the AI disclaimer and
+IDD identification on branded reports — tracked, not hidden. **Defensible: yes,
+subject to those two counsel items.**
+
+**Insurance executive** — *Does this team understand the lifecycle?* The
+expiry/lapse/cancellation vocabulary is correct and taught in-product; renewal
+is treated as a decision point; the dictionary and guides are wired into the
+journey; marketing now promises exactly what the product does. Objection: the
+E2E environment must be restored before I'd call the release process complete.
+**Mature: yes, with that infrastructure caveat.**
+
+**Panel synthesis:** five yes-verdicts with four named objections — all of them
+roadmap or process items, none of them credibility defects on the shipped
+product. The owner should validate this section with a real external panel; it
+is structured so that panel can attack each verdict directly.
+
 ## Verdict
 
 No B2C page reads as a generic document manager or a generic AI wrapper: policy
