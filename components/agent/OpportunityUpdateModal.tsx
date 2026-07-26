@@ -10,8 +10,10 @@ import {
     logOpportunityNote,
     suggestQualificationFromNotes,
     applyQualificationSuggestions,
+    patchOpportunityMedic,
 } from "@/app/(protected)/agent/actions"
 import type { MedicData } from "@/lib/medic/types"
+import type { MedicPatch } from "@/lib/medic/patch"
 import type { QualificationSuggestions } from "@/lib/medic/suggest"
 
 interface OpportunityUpdateModalProps {
@@ -110,6 +112,16 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
         }
     }
 
+    // §F inline fields: € value-at-risk + stakeholder identification.
+    const handleMedicPatch = async (patch: MedicPatch) => {
+        const res = await patchOpportunityMedic(opportunity.id, patch)
+        if (res && 'success' in res && res.success) {
+            setMedicView(res.medic as MedicData)
+        } else {
+            toast.error(tt.scPatchError)
+        }
+    }
+
     const stanceLabel: Record<string, string> = {
         economic_buyer: tt.stanceEconomicBuyer,
         champion: tt.stanceChampion,
@@ -194,7 +206,13 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                     qualifiedNo: tt.qualifiedNo,
                                     complianceClear: tt.complianceClear,
                                     complianceOpen: tt.complianceOpen,
+                                    scValueAtRisk: tt.scValueAtRisk,
+                                    scSave: tt.scSave,
+                                    scAddEb: tt.scAddEb,
+                                    scEbNamePlaceholder: tt.scEbNamePlaceholder,
+                                    scIdentified: tt.scIdentified,
                                 }}
+                                onPatch={handleMedicPatch}
                             />
                         </div>
                     </details>

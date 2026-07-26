@@ -436,6 +436,40 @@ export async function applyQualificationSuggestions(opportunityId: string, accep
     return { success: true, medic, medicScore: score.score }
 }
 
+/**
+ * Advisor edits to the two qualification fields no automation can honestly
+ * supply (blueprint §F inline fields): the Metrics € value-at-risk and the
+ * stakeholder map (add / mark identified). Whitelisted patch only — the pain
+ * ladder, criteria, and process keep their own write paths.
+ */
+export async function patchOpportunityMedic(opportunityId: string, patch: unknown) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+
+    const opp = await db.opportunity.findUnique({
+        where: { id: opportunityId },
+        select: { medic: true, relationship: { select: { agentUserId: true } } },
+    })
+    if (!opp || opp.relationship?.agentUserId !== authResult.dbUser.id) {
+        return { error: "Opportunity not found or access denied" }
+    }
+
+    const { validateMedicPatch, applyMedicPatch } = await import("@/lib/medic/patch")
+    const { calculateMedicScore } = await import("@/lib/medic/score")
+
+    const validated = validateMedicPatch(patch)
+    if (!validated) return { error: "INVALID_PATCH" }
+
+    const medic = applyMedicPatch(opp.medic as any, validated)
+    const score = calculateMedicScore(medic)
+    await db.opportunity.update({
+        where: { id: opportunityId },
+        data: { medic: medic as any, medicScore: score.score, medicUpdatedAt: new Date() },
+    })
+    return { success: true, medic, medicScore: score.score }
+}
+
 export async function updateOpportunityStatus(
     opportunityId: string,
     status: OpportunityStatus,

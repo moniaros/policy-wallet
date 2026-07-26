@@ -2,14 +2,18 @@
 
 /**
  * MEDIC scorecard — the qualification VIEW on the opportunity modal (blueprint
- * §F/§K Now: "advisors inspect & prioritize"). Read-only by design in this
- * slice: values are seeded from gaps/renewals and, in the Next slice, from
- * AI-suggested note extraction the advisor confirms. Transparent everywhere —
- * six dimensions, each 0/1/2, no black box.
+ * §F/§K Now: "advisors inspect & prioritize"). Values are seeded from
+ * gaps/renewals and from AI-suggested note extraction the advisor confirms.
+ * §F's inline fields cover the two dimensions no automation can honestly
+ * fill: the Metrics € figure and stakeholder identification — editable only
+ * when the parent wires `onPatch`. Transparent everywhere — six dimensions,
+ * each 0/1/2, no black box.
  */
 
+import { useState } from "react"
 import { calculateMedicScore } from "@/lib/medic/score"
-import type { MedicData } from "@/lib/medic/types"
+import type { MedicData, MedicStakeholder } from "@/lib/medic/types"
+import type { MedicPatch } from "@/lib/medic/patch"
 
 interface ScorecardCopy {
     scorecardTitle: string
@@ -28,6 +32,11 @@ interface ScorecardCopy {
     qualifiedNo: string
     complianceClear: string
     complianceOpen: string
+    scValueAtRisk?: string
+    scSave?: string
+    scAddEb?: string
+    scEbNamePlaceholder?: string
+    scIdentified?: string
 }
 
 const RATING_STYLE: Record<0 | 1 | 2, string> = {
@@ -36,9 +45,75 @@ const RATING_STYLE: Record<0 | 1 | 2, string> = {
     2: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
 }
 
-export function MedicScorecard({ medic, copy }: { medic: MedicData | null; copy: ScorecardCopy }) {
+export function MedicScorecard({
+    medic,
+    copy,
+    onPatch,
+}: {
+    medic: MedicData | null
+    copy: ScorecardCopy
+    /** When provided, the Metrics € figure and EB/Champion identification become editable (§F inline fields). */
+    onPatch?: (patch: MedicPatch) => Promise<void>
+}) {
     const result = calculateMedicScore(medic)
     const hasAnyEvidence = medic && Object.keys(medic).length > 0
+
+    const [varDraft, setVarDraft] = useState(() =>
+        medic?.metrics?.valueAtRisk != null ? String(medic.metrics.valueAtRisk) : ""
+    )
+    const [ebName, setEbName] = useState("")
+    const [busy, setBusy] = useState(false)
+
+    const submit = async (patch: MedicPatch) => {
+        if (!onPatch || busy) return
+        setBusy(true)
+        try {
+            await onPatch(patch)
+        } finally {
+            setBusy(false)
+        }
+    }
+
+    const saveValueAtRisk = () => {
+        const trimmed = varDraft.trim().replace(",", ".")
+        if (trimmed === "") return void submit({ valueAtRisk: null })
+        const parsed = Number(trimmed)
+        if (!Number.isFinite(parsed) || parsed < 0 || parsed > 10_000_000) return
+        void submit({ valueAtRisk: parsed })
+    }
+
+    const markIdentified = (stance: MedicStakeholder["stance"]) => {
+        const list = medic?.stakeholders ?? []
+        let flipped = false
+        const next = list.map((s) => {
+            if (!flipped && s.stance === stance && !s.identified) {
+                flipped = true
+                return { ...s, identified: true }
+            }
+            return s
+        })
+        if (flipped) void submit({ stakeholders: next })
+    }
+
+    const addEconomicBuyer = () => {
+        const name = ebName.trim()
+        if (!name) return
+        const next: MedicStakeholder[] = [
+            ...(medic?.stakeholders ?? []),
+            // The advisor naming the decision-maker IS the identification.
+            { name, stance: "economic_buyer", identified: true },
+        ]
+        setEbName("")
+        void submit({ stakeholders: next })
+    }
+
+    const eb = medic?.stakeholders?.find((s) => s.stance === "economic_buyer")
+    const champion = medic?.stakeholders?.find((s) => s.stance === "champion")
+
+    const inputClass =
+        "w-24 rounded-lg border border-black/15 bg-white px-2 py-1 text-xs text-black focus:outline-none focus:ring-1 focus:ring-primary dark:border-white/20 dark:bg-white/10 dark:text-white"
+    const miniBtnClass =
+        "rounded-lg border border-black/15 px-2 py-1 text-kicker font-bold uppercase tracking-wider text-black/70 transition hover:bg-black/5 disabled:opacity-50 dark:border-white/20 dark:text-white/70 dark:hover:bg-white/10"
 
     const rows: Array<{ label: string; rating: 0 | 1 | 2; detail?: string }> = [
         { label: copy.dimIdentifyPain, rating: result.ratings.identifyPain, detail: medic?.pain?.summary ?? undefined },
@@ -89,6 +164,71 @@ export function MedicScorecard({ medic, copy }: { medic: MedicData | null; copy:
                     </li>
                 ))}
             </ul>
+            {onPatch && (
+                <div className="mt-2 space-y-1.5 border-t border-black/10 pt-2 dark:border-white/15">
+                    <div className="flex items-center justify-between gap-2">
+                        <label htmlFor="medic-var" className="text-micro text-black/60 dark:text-white/60">
+                            {copy.scValueAtRisk}
+                        </label>
+                        <span className="flex items-center gap-1.5">
+                            <input
+                                id="medic-var"
+                                type="text"
+                                inputMode="decimal"
+                                value={varDraft}
+                                onChange={(e) => setVarDraft(e.target.value)}
+                                disabled={busy}
+                                className={inputClass}
+                            />
+                            <button type="button" onClick={saveValueAtRisk} disabled={busy} className={miniBtnClass}>
+                                {copy.scSave}
+                            </button>
+                        </span>
+                    </div>
+                    {eb ? (
+                        !eb.identified && (
+                            <div className="flex items-center justify-between gap-2">
+                                <span className="max-w-[160px] truncate text-micro text-black/60 dark:text-white/60">
+                                    {copy.dimEconomicBuyer}: {eb.name}
+                                </span>
+                                <button type="button" onClick={() => markIdentified("economic_buyer")} disabled={busy} className={miniBtnClass}>
+                                    {copy.scIdentified}
+                                </button>
+                            </div>
+                        )
+                    ) : (
+                        <div className="flex items-center justify-between gap-2">
+                            <label htmlFor="medic-eb-name" className="text-micro text-black/60 dark:text-white/60">
+                                {copy.scAddEb}
+                            </label>
+                            <span className="flex items-center gap-1.5">
+                                <input
+                                    id="medic-eb-name"
+                                    type="text"
+                                    value={ebName}
+                                    onChange={(e) => setEbName(e.target.value)}
+                                    placeholder={copy.scEbNamePlaceholder}
+                                    disabled={busy}
+                                    className={inputClass}
+                                />
+                                <button type="button" onClick={addEconomicBuyer} disabled={busy || !ebName.trim()} className={miniBtnClass}>
+                                    {copy.scSave}
+                                </button>
+                            </span>
+                        </div>
+                    )}
+                    {champion && !champion.identified && (
+                        <div className="flex items-center justify-between gap-2">
+                            <span className="max-w-[160px] truncate text-micro text-black/60 dark:text-white/60">
+                                {copy.dimChampion}: {champion.name}
+                            </span>
+                            <button type="button" onClick={() => markIdentified("champion")} disabled={busy} className={miniBtnClass}>
+                                {copy.scIdentified}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
             <p className="mt-2 text-micro leading-snug text-black/55 dark:text-white/55">{copy.scorecardHint}</p>
         </div>
     )
