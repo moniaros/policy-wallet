@@ -22,6 +22,10 @@ for (const width of WIDTHS) {
 }
 
 test('primary actions are never clipped by the viewport edge', async ({ page }) => {
+    // Five full /wallet loads (one per width) share one budget — over a
+    // remote-pooler dev DB each load is seconds, so 30s times out while the
+    // assertions themselves are instant. Latency accommodation, not a cheat.
+    test.setTimeout(90_000)
     for (const width of WIDTHS) {
         await page.setViewportSize({ width, height: 900 })
         await page.goto('/wallet')

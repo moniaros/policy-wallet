@@ -140,7 +140,12 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         await closeUpgradeModal(page)
     })
 
-    test('AI Q&A gives free users their complimentary questions with a live meter', async ({ page }) => {
+    test('AI Q&A offers free users no complimentary questions — locked with an upgrade path', async ({ page }) => {
+        // Product decision: FREE_LIFETIME_QUESTIONS = 0 (deep AI Q&A has no
+        // free allowance at all — see lib/monetization/feature-gates.ts). The
+        // old assertion of a "free floor" with a live meter described a
+        // feature that was deliberately removed; the honest contract for a
+        // free user is a locked input with the upgrade pre-empt from the start.
         await page.goto(`/wallet/${policyId}`)
         await dismissCookieBanner(page)
 
@@ -149,15 +154,12 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         // The section header's only initial button toggles the chat open.
         await qaSection.getByRole('button').first().click()
 
-        // The free floor: the input is live and the meter states what is left.
-        await expect(qaSection.getByRole('textbox')).toBeEnabled({ timeout: 15000 })
+        // No enabled input for the free tier…
+        await expect(qaSection.getByRole('textbox')).toHaveCount(0, { timeout: 15000 })
+        // …and the upgrade pre-empt states what paid unlocks.
         await expect(
-            qaSection.getByText(/δωρεάν ερωτήσεις|free questions/i).first()
+            qaSection.getByText(/απεριόριστες ερωτήσεις|unlimited questions/i).first()
         ).toBeVisible()
-        // No pre-empt card while questions remain.
-        await expect(
-            qaSection.getByText(/απεριόριστες ερωτήσεις|unlimited questions/i)
-        ).toHaveCount(0)
     })
 
     test('AI Q&A pre-empts with an upgrade nudge once the free questions are used up', async ({ page }) => {
