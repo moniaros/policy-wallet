@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { AnalysisCard } from './AnalysisCard'
 import { useTabs } from '@/hooks/useTabs'
 import { localizeCoverageName, toGreekUppercaseNoAccents } from '@/lib/i18n/text-format'
+import { formatDateTime } from '@/lib/i18n/format'
 import type { GapReportItem } from '@/lib/wallet/gap-report'
 
 interface PolicyAnalysisTabsProps {
@@ -121,7 +122,10 @@ export function PolicyAnalysisTabs({
                             </div>
                             {lastAnalyzedAt && (
                                 <span className="text-kicker text-black/55 dark:text-white/60 font-bold uppercase tracking-widest hidden sm:inline-block">
-                                    {heading(t.wallet.lastCheck)}: {new Date(lastAnalyzedAt).toLocaleDateString(locale)}
+                                    {/* Athens-pinned + time-of-day: a freshness stamp
+                                        an intermediary can trust, consistent with every
+                                        other date the app renders. */}
+                                    {heading(t.wallet.lastCheck)}: {formatDateTime(lastAnalyzedAt, isGreek ? 'el' : 'en')}
                                 </span>
                             )}
                         </div>

@@ -7,6 +7,7 @@ import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 import { ScoreMethodology } from "@/components/coverage/ScoreMethodology"
 import { getTranslations } from "@/lib/i18n"
+import { formatDate } from "@/lib/i18n/format"
 interface CategoryScoreData {
     key: string
     label: { en: string; el: string }
@@ -30,6 +31,13 @@ interface ProtectionScoreCardProps {
     actualLines: string[]
     profileCompleteness: number
     language: "en" | "el"
+    /**
+     * When the underlying policies were most recently deep-analyzed. Shown as a
+     * freshness stamp so the score reads as "computed from data as of DATE",
+     * not a timeless verdict. Null when no policy has been deep-analyzed yet —
+     * the score is then profile/extraction-based and no date is claimed.
+     */
+    analyzedAt?: string | null
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -48,6 +56,7 @@ export function ProtectionScoreCard({
     gapCount,
     profileCompleteness,
     language,
+    analyzedAt,
 }: ProtectionScoreCardProps) {
     const router = useRouter()
     const lang = language
@@ -60,6 +69,9 @@ export function ProtectionScoreCard({
         // the policy-gap count on the rest of the page. Never call these "gaps".
         typesMissing: lang === "el" ? "κατηγορίες χωρίς κάλυψη" : "coverage types missing",
         provisional: lang === "el" ? "Προσωρινή — συμπληρώστε το προφίλ σας" : "Provisional — complete your profile",
+        // Freshness stamp: the score is computed from your policy data as it
+        // stood at the last deep analysis — an intermediary's "as of" anchor.
+        analyzedOn: lang === "el" ? "Βάσει ανάλυσης της" : "Based on analysis from",
         categories: lang === "el" ? "Κατηγορίες" : "Categories",
         notApplicable: lang === "el" ? "Δεν εφαρμόζεται" : "N/A",
         completeProfile: lang === "el"
@@ -157,6 +169,11 @@ export function ProtectionScoreCard({
                     <p className="text-sm text-black/60 dark:text-white/60 mb-2">
                         {copy.subtitle}
                     </p>
+                    {analyzedAt && (
+                        <p className="text-xs text-black/55 dark:text-white/55 mb-2">
+                            {copy.analyzedOn} {formatDate(analyzedAt, lang)}
+                        </p>
+                    )}
                     {missingTypes > 0 && (
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/25 text-amber-700 dark:text-amber-400 text-xs font-medium">
                             <AlertTriangle className="w-3.5 h-3.5" />

@@ -111,6 +111,16 @@ export default async function CoverageInsightsPage() {
     const hasDeepAnalysis = policies.some((p) => (p as any).lastAnalyzedAt != null)
     const isDeepAnalysisLocked = entitlements.tier !== 'pro'
 
+    // Freshness anchor for the protection score: the most recent deep-analysis
+    // across the portfolio. Null when nothing has been deep-analyzed yet, so the
+    // score claims no "as of" date it cannot back up.
+    const latestAnalyzedAt = policies.reduce<string | null>((latest, p) => {
+        const at = (p as any).lastAnalyzedAt as Date | null
+        if (!at) return latest
+        const iso = at.toISOString()
+        return latest === null || iso > latest ? iso : latest
+    }, null)
+
     const userLanguage = (dbUser.preferredLanguage || 'en') as 'en' | 'el'
     const t = getTranslations(userLanguage)
 
@@ -237,6 +247,7 @@ export default async function CoverageInsightsPage() {
                                 actualLines={engineResult.protectionScore.actualLines}
                                 profileCompleteness={engineResult.profileCompleteness}
                                 language={userLanguage}
+                                analyzedAt={latestAnalyzedAt}
                             />
                         )}
                     </div>
