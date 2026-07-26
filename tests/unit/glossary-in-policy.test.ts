@@ -124,6 +124,39 @@ describe('renewal & lapse are explained where inaction has consequences', () => 
 })
 
 /**
+ * The 14 core insurance concepts a policyholder is expected to understand must
+ * each have a dictionary entry to link to — otherwise a specialist term stays
+ * unexplained. Slugs are the Greek headwords; both spellings of co-insurance
+ * live on `symmetochi` (alias «Συνασφάλιση»).
+ */
+describe('every core insurance concept is defined in the dictionary', () => {
+    const CONCEPT_SLUGS: Record<string, string> = {
+        deductible: 'apallagi',
+        exclusion: 'exairesi',
+        endorsement: 'prostheti-praxi',
+        waitingPeriod: 'chronos-anamonis',
+        insuredAmount: 'asfalismeno-kefalaio',
+        replacementValue: 'axia-antikatastasis',
+        indemnity: 'apozimiosi',
+        beneficiary: 'dikaiouchos',
+        premium: 'asfalistro',
+        renewal: 'ananeosi',
+        lapse: 'ekpnoi',
+        cancellation: 'akyrosi',
+        coInsurance: 'symmetochi',
+        sublimit: 'ypoorio',
+    }
+    it('resolves all 14 in both languages', () => {
+        for (const [concept, slug] of Object.entries(CONCEPT_SLUGS)) {
+            const term = getGlossaryTerm(slug)
+            expect(term, `${concept} → ${slug}`).toBeTruthy()
+            expect(term!.term.el.length, `${concept} el headword`).toBeGreaterThan(0)
+            expect(term!.term.en.length, `${concept} en headword`).toBeGreaterThan(0)
+        }
+    })
+})
+
+/**
  * A dangling /lexiko cross-link is a silent literacy dead-end: the "Read more"
  * on a related term 404s. Every internal /lexiko/<slug> href must resolve.
  */

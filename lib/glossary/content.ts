@@ -855,6 +855,234 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         dateModified: "2026-07-26",
     },
+    {
+        slug: "apozimiosi",
+        term: { el: "Αποζημίωση", en: "Indemnity (apozimiosi)" },
+        aliases: [{ el: "Αρχή της αποζημίωσης", en: "Principle of indemnity" }],
+        metaTitle: {
+            el: "Τι είναι η αποζημίωση στην ασφάλιση;",
+            en: "What is indemnity (apozimiosi) in insurance?",
+        },
+        metaDescription: {
+            el: "Αποζημίωση είναι το ποσό που πληρώνει η ασφαλιστική για μια καλυπτόμενη ζημιά, με βάση την αρχή ότι σας επαναφέρει στην προηγούμενη οικονομική σας θέση — όχι σε καλύτερη.",
+            en: "Indemnity is what the insurer pays for a covered loss, on the principle that it restores your previous financial position — not a better one.",
+        },
+        shortDefinition: {
+            el: "Αποζημίωση είναι το ποσό που καταβάλλει η ασφαλιστική για μια καλυπτόμενη ζημιά, καθώς και η αρχή πίσω από αυτό: η ασφάλιση σας επαναφέρει στην οικονομική θέση που είχατε πριν τη ζημιά — όχι σε καλύτερη. Το ποσό αντανακλά την πραγματική ζημιά, εντός των ορίων και μετά την απαλλαγή ή τη συμμετοχή. Δεν κερδίζετε από μια αποζημίωση.",
+            en: "Indemnity is the amount the insurer pays for a covered loss, and the principle behind it: insurance restores you to the financial position you were in before the loss — not a better one. The amount reflects the actual loss, within the limits and after any deductible or co-payment. You do not profit from a claim.",
+        },
+        body: [
+            {
+                el: "Η αρχή της αποζημίωσης εξηγεί γιατί η πληρωμή δεν ισούται πάντα με το ποσό που ζητάτε. Ο ασφαλιστής υπολογίζει την πραγματική σας ζημιά, αφαιρεί την απαλλαγή και τυχόν συμμετοχή, και εφαρμόζει τα όρια και υποόρια της κάλυψης. Αν είστε υπασφαλισμένος, μπορεί να μειωθεί κι άλλο αναλογικά.",
+                en: "The principle of indemnity explains why a payout does not always equal the amount you claim. The insurer works out your actual loss, subtracts the deductible and any co-payment, and applies the cover's limits and sublimits. If you are underinsured, it can be reduced further, proportionally.",
+            },
+            {
+                el: "Εξαιρέσεις υπάρχουν: ορισμένες ασφαλίσεις ζωής και προσωπικών ατυχημάτων πληρώνουν ένα προσυμφωνημένο ποσό ανεξάρτητα από την «πραγματική ζημιά», γιατί η ζωή ή η αρτιμέλεια δεν αποτιμώνται σαν περιουσιακό στοιχείο. Στις ασφαλίσεις περιουσίας και ευθύνης, όμως, η αρχή της αποζημίωσης είναι ο κανόνας.",
+                en: "There are exceptions: some life and personal-accident policies pay a pre-agreed sum regardless of the 'actual loss', because a life or a limb is not valued like an asset. In property and liability insurance, though, indemnity is the rule.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο δικό σας ασφαλιστήριο, δείτε πώς ορίζεται η βάση αποζημίωσης ανά κάλυψη — «σε αξία καινούριου», «σε τρέχουσα αξία», με απαλλαγή ή συμμετοχή. Αυτά καθορίζουν πόσα θα λάβετε στην πράξη. Αν κάτι δεν είναι σαφές πριν από μια ζημιά, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας.",
+            en: "In your own policy, look at how the basis of settlement is defined per cover — «replacement value», «current value», with a deductible or co-payment. These decide how much you receive in practice. If anything is unclear before a loss, ask your insurer or advisor.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Γιατί η αποζημίωση είναι μικρότερη από τη ζημιά μου;",
+                    en: "Why is my payout smaller than my loss?",
+                },
+                answer: {
+                    el: "Συνήθως λόγω απαλλαγής, συμμετοχής, ορίων ή υποασφάλισης, ή επειδή η κάλυψη αποτιμά την τρέχουσα και όχι την καινούρια αξία. Οι όροι του συμβολαίου σας εξηγούν τη βάση.",
+                    en: "Usually because of a deductible, co-payment, limits or underinsurance, or because the cover values the current rather than the new price. Your policy terms explain the basis.",
+                },
+            },
+            {
+                question: {
+                    el: "Μπορώ να κερδίσω από μια ασφαλιστική αποζημίωση;",
+                    en: "Can I profit from an insurance claim?",
+                },
+                answer: {
+                    el: "Στις ασφαλίσεις περιουσίας και ευθύνης, όχι — η αρχή της αποζημίωσης το αποκλείει. Ορισμένες ασφαλίσεις ζωής/ατυχημάτων πληρώνουν προσυμφωνημένο ποσό, που είναι διαφορετική λογική.",
+                    en: "In property and liability insurance, no — the principle of indemnity rules it out. Some life/accident policies pay a pre-agreed sum, which follows a different logic.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Insured amount" }, href: "/lexiko/asfalismeno-kefalaio" },
+            { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
+            { label: { el: "Υπασφάλιση", en: "Underinsurance" }, href: "/lexiko/ypasfalisi" },
+        ],
+        dateModified: "2026-07-26",
+    },
+    {
+        slug: "axia-antikatastasis",
+        term: { el: "Αξία αντικατάστασης", en: "Replacement value (axia antikatastasis)" },
+        aliases: [{ el: "Αξία καινούριου", en: "New-for-old value" }],
+        metaTitle: {
+            el: "Τι είναι η αξία αντικατάστασης;",
+            en: "What is replacement value (axia antikatastasis)?",
+        },
+        metaDescription: {
+            el: "Αξία αντικατάστασης είναι το κόστος να αντικαταστήσετε ένα αντικείμενο με καινούριο ισοδύναμο, χωρίς αφαίρεση για παλαιότητα. Δείτε πώς διαφέρει από την τρέχουσα αξία.",
+            en: "Replacement value is the cost to replace an item with a new equivalent, without deducting for age. See how it differs from current (actual cash) value.",
+        },
+        shortDefinition: {
+            el: "Αξία αντικατάστασης (ή αξία καινούριου) είναι το κόστος να αντικαταστήσετε ένα κατεστραμμένο ή χαμένο αντικείμενο με καινούριο ισοδύναμο, χωρίς αφαίρεση για παλαιότητα ή φθορά. Διαφέρει από την «τρέχουσα αξία», που αφαιρεί την απόσβεση και πληρώνει λιγότερα. Το ποια βάση χρησιμοποιεί το συμβόλαιό σας καθορίζει πόσα θα λάβετε.",
+            en: "Replacement value (new-for-old) is the cost to replace a damaged or lost item with a new equivalent, without deducting for age or wear. It differs from «current value», which subtracts depreciation and pays less. Which basis your policy uses decides how much you receive.",
+        },
+        body: [
+            {
+                el: "Δύο συμβόλαια που «καλύπτουν» την ίδια συσκευή μπορεί να πληρώσουν πολύ διαφορετικά: το ένα σε αξία καινούριου (αγοράζετε καινούρια), το άλλο σε τρέχουσα αξία (λαμβάνετε την παλιά, μειωμένη τιμή). Στην ασφάλιση κατοικίας και περιεχομένου, αυτή η διαφορά είναι από τις πιο σημαντικές και συχνά περνά απαρατήρητη μέχρι τη ζημιά.",
+                en: "Two policies that both 'cover' the same appliance can pay very differently: one at new-for-old (you buy new), the other at current value (you get the old, reduced price). In home and contents insurance this difference is one of the most important, and it often goes unnoticed until a loss.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο δικό σας ασφαλιστήριο κατοικίας, αναζητήστε αν η αποζημίωση δίνεται «σε αξία αντικατάστασης / καινούριου» ή «σε τρέχουσα / πραγματική αξία», ανά κάλυψη. Ελέγξτε επίσης αν υπάρχει όριο ηλικίας αντικειμένων. Το PolicyWallet εντοπίζει τη βάση αποτίμησης στο έγγραφό σας.",
+            en: "In your own home policy, look for whether settlement is «on a replacement / new-for-old basis» or «on a current / actual value basis», per cover. Check too for any age limit on items. PolicyWallet surfaces the valuation basis in your document.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Ποια η διαφορά αξίας αντικατάστασης και τρέχουσας αξίας;",
+                    en: "What is the difference between replacement value and current value?",
+                },
+                answer: {
+                    el: "Η αξία αντικατάστασης πληρώνει το καινούριο ισοδύναμο· η τρέχουσα αξία αφαιρεί την παλαιότητα και πληρώνει λιγότερα. Η πρώτη κοστίζει συνήθως ακριβότερο ασφάλιστρο.",
+                    en: "Replacement value pays for the new equivalent; current value deducts for age and pays less. The former usually costs a higher premium.",
+                },
+            },
+            {
+                question: {
+                    el: "Καλύπτεται πάντα η αξία καινούριου;",
+                    en: "Is new-for-old always covered?",
+                },
+                answer: {
+                    el: "Όχι — εξαρτάται από το συμβόλαιο και συχνά από την ηλικία του αντικειμένου. Ορισμένες καλύψεις περνούν σε τρέχουσα αξία μετά από κάποια έτη. Ελέγξτε τους όρους.",
+                    en: "No — it depends on the policy and often on the item's age. Some covers switch to current value after a number of years. Check the terms.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Insured amount" }, href: "/lexiko/asfalismeno-kefalaio" },
+            { label: { el: "Υπασφάλιση", en: "Underinsurance" }, href: "/lexiko/ypasfalisi" },
+            { label: { el: "Ασφάλεια κατοικίας", en: "Home insurance" }, href: "/product/property" },
+        ],
+        dateModified: "2026-07-26",
+    },
+    {
+        slug: "prostheti-praxi",
+        term: { el: "Πρόσθετη πράξη", en: "Endorsement (prostheti praxi)" },
+        aliases: [{ el: "Προσάρτημα", en: "Rider / amendment" }],
+        metaTitle: {
+            el: "Τι είναι η πρόσθετη πράξη (προσάρτημα);",
+            en: "What is an endorsement (prostheti praxi)?",
+        },
+        metaDescription: {
+            el: "Πρόσθετη πράξη είναι έγγραφο που τροποποιεί το ασφαλιστήριό σας κατά τη διάρκειά του — προσθέτει ή αλλάζει κάλυψη, όριο ή στοιχεία. Δείτε γιατί μετράει και πού να το φυλάτε.",
+            en: "An endorsement is a document that amends your policy during its term — adding or changing a cover, a limit or details. See why it matters and where to keep it.",
+        },
+        shortDefinition: {
+            el: "Πρόσθετη πράξη (ή προσάρτημα) είναι έγγραφο που τροποποιεί το ασφαλιστήριό σας κατά τη διάρκειά του — προσθέτει ή αφαιρεί μια κάλυψη, αλλάζει ένα όριο ή το ασφαλισμένο κεφάλαιο, ή διορθώνει στοιχεία. Γίνεται μέρος της σύμβασης και υπερισχύει των αρχικών όρων που τροποποιεί. Φυλάξτε κάθε πρόσθετη πράξη μαζί με το ασφαλιστήριο.",
+            en: "An endorsement (prostheti praxi) is a document that amends your policy during its term — adding or removing a cover, changing a limit or the sum insured, or correcting details. It becomes part of the contract and prevails over the original terms it changes. Keep every endorsement together with your policy.",
+        },
+        body: [
+            {
+                el: "Μια πρόσθετη πράξη είναι ο τρόπος που αλλάζει ένα συμβόλαιο χωρίς να εκδοθεί νέο: προσθέτετε έναν οδηγό, αυξάνετε το ασφαλισμένο κεφάλαιο μετά από ανακαίνιση, διορθώνετε μια διεύθυνση. Επειδή υπερισχύει των αρχικών όρων, μια πρόσθετη πράξη που λείπει μπορεί να σημαίνει ότι διαβάζετε λάθος εκδοχή της κάλυψής σας.",
+                en: "An endorsement is how a policy changes without a whole new one being issued: you add a driver, increase the sum insured after a renovation, correct an address. Because it prevails over the original terms, a missing endorsement can mean you are reading the wrong version of your own cover.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο δικό σας ασφαλιστήριο, ελέγξτε αν υπάρχουν πρόσθετες πράξεις ή προσαρτήματα με μεταγενέστερη ημερομηνία — αυτά υπερισχύουν των αρχικών όρων. Κρατήστε τα όλα μαζί. Στο PolicyWallet μπορείτε να ανεβάσετε και τις πρόσθετες πράξεις, ώστε η εικόνα της κάλυψής σας να είναι ενημερωμένη.",
+            en: "In your own policy, check for any endorsements or riders with a later date — these prevail over the original terms. Keep them all together. In PolicyWallet you can upload endorsements too, so your coverage picture stays current.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Ισχύει η πρόσθετη πράξη πάνω από τους αρχικούς όρους;",
+                    en: "Does an endorsement override the original terms?",
+                },
+                answer: {
+                    el: "Ναι, ως προς ό,τι τροποποιεί. Γι' αυτό πρέπει να τη διαβάζετε μαζί με το ασφαλιστήριο και όχι μεμονωμένα.",
+                    en: "Yes, for whatever it changes. That is why you should read it together with the policy, not on its own.",
+                },
+            },
+            {
+                question: {
+                    el: "Χρειάζεται να πληρώσω για μια πρόσθετη πράξη;",
+                    en: "Do I pay for an endorsement?",
+                },
+                answer: {
+                    el: "Εξαρτάται από την αλλαγή. Μια αύξηση κάλυψης μπορεί να αλλάξει το ασφάλιστρο· μια διόρθωση στοιχείων συνήθως όχι. Ρωτήστε την ασφαλιστική σας.",
+                    en: "It depends on the change. Increasing cover may change the premium; correcting details usually does not. Ask your insurer.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Ασφαλιστήριο", en: "Insurance policy" }, href: "/lexiko/asfalistirio" },
+            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Insured amount" }, href: "/lexiko/asfalismeno-kefalaio" },
+            { label: { el: "Εξαίρεση", en: "Exclusion" }, href: "/lexiko/exairesi" },
+        ],
+        dateModified: "2026-07-26",
+    },
+    {
+        slug: "akyrosi",
+        term: { el: "Ακύρωση", en: "Cancellation (akyrosi)" },
+        aliases: [{ el: "Ποινή ακύρωσης", en: "Cancellation penalty" }],
+        metaTitle: {
+            el: "Τι είναι η ακύρωση ασφαλιστηρίου;",
+            en: "What is policy cancellation (akyrosi)?",
+        },
+        metaDescription: {
+            el: "Ακύρωση είναι ο σκόπιμος τερματισμός ενός ασφαλιστηρίου πριν τη λήξη. Δείτε πότε υπάρχει ποινή ή επιστροφή ασφαλίστρου και πώς διαφέρει από την εκπνοή.",
+            en: "Cancellation is deliberately ending a policy before its expiry. See when a penalty or premium refund applies, and how it differs from a lapse.",
+        },
+        shortDefinition: {
+            el: "Ακύρωση είναι ο σκόπιμος τερματισμός ενός ασφαλιστηρίου πριν από τη φυσιολογική του λήξη, από εσάς ή από την ασφαλιστική. Ανάλογα με τους όρους και τον χρόνο, μπορεί να συνεπάγεται ποινή ακύρωσης ή επιστροφή του μη δεδουλευμένου ασφαλίστρου. Διαφέρει από την εκπνοή, που προκύπτει από αδράνεια και όχι από απόφαση.",
+            en: "Cancellation is the deliberate ending of a policy before its normal expiry, by you or the insurer. Depending on the terms and the timing, it may carry a cancellation penalty or entitle you to a refund of the unused premium. It differs from a lapse, which happens through inaction rather than a decision.",
+        },
+        body: [
+            {
+                el: "Η ακύρωση δεν είναι πάντα «δωρεάν»: κάποια συμβόλαια προβλέπουν ποινή ή κρατούν ένα ελάχιστο ασφάλιστρο, ενώ άλλα επιστρέφουν αναλογικά το ποσό που δεν χρησιμοποιήσατε. Σε ορισμένες περιπτώσεις ο νόμος δίνει δικαίωμα εναντίωσης ή υπαναχώρησης μέσα σε συγκεκριμένη προθεσμία μετά τη σύναψη — χωρίς επιβάρυνση.",
+                en: "Cancellation is not always 'free': some policies apply a penalty or keep a minimum premium, while others refund the unused amount pro-rata. In certain cases the law grants a right of objection or withdrawal within a set period after signing — at no cost.",
+            },
+            {
+                el: "Πριν ακυρώσετε, αξίζει να ελέγξετε δύο πράγματα: τι θα κοστίσει η ακύρωση και πότε ακριβώς σταματά η κάλυψη. Το κενό μεταξύ της ακύρωσης ενός συμβολαίου και της έναρξης ενός νέου είναι διάστημα χωρίς προστασία.",
+                en: "Before cancelling, it is worth checking two things: what the cancellation will cost, and exactly when cover stops. The gap between cancelling one policy and a new one starting is a period with no protection.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο δικό σας ασφαλιστήριο, αναζητήστε τους όρους ακύρωσης — προθεσμία προειδοποίησης, τυχόν ποινή και τρόπο επιστροφής ασφαλίστρου. Αν σκέφτεστε να ακυρώσετε, ρωτήστε πρώτα την ασφαλιστική ή τον σύμβουλό σας για το κόστος και για το πότε παύει η κάλυψη — και φροντίστε να μη μείνετε χωρίς προστασία.",
+            en: "In your own policy, look for the cancellation terms — the notice period, any penalty, and how premium is refunded. If you are thinking of cancelling, first ask your insurer or advisor about the cost and when cover stops — and make sure you are not left without protection.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Παίρνω πίσω ασφάλιστρα αν ακυρώσω;",
+                    en: "Do I get premium back if I cancel?",
+                },
+                answer: {
+                    el: "Συχνά ναι, αναλογικά για το διάστημα που δεν χρησιμοποιήσατε — αλλά κάποια συμβόλαια κρατούν ποινή ή ελάχιστο ασφάλιστρο. Το ορίζουν οι όροι σας.",
+                    en: "Often yes, pro-rata for the unused period — but some policies keep a penalty or a minimum premium. Your terms decide.",
+                },
+            },
+            {
+                question: {
+                    el: "Ποια η διαφορά ακύρωσης και εκπνοής;",
+                    en: "What is the difference between cancellation and lapse?",
+                },
+                answer: {
+                    el: "Η ακύρωση είναι απόφαση να τερματιστεί το συμβόλαιο μέσα στη διάρκειά του· η εκπνοή είναι το τέλος χωρίς ανανέωση, συνήθως από αδράνεια. Και οι δύο σας αφήνουν χωρίς κάλυψη.",
+                    en: "Cancellation is a decision to end the contract during its term; a lapse is the end without renewal, usually through inaction. Both leave you without cover.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Εκπνοή", en: "Lapse" }, href: "/lexiko/ekpnoi" },
+            { label: { el: "Ανανέωση", en: "Renewal" }, href: "/lexiko/ananeosi" },
+            { label: { el: "Ασφάλιστρο", en: "Premium" }, href: "/lexiko/asfalistro" },
+        ],
+        dateModified: "2026-07-26",
+    },
 ]
 
 /** One glossary term by slug, or undefined when the slug is unknown. */
