@@ -2223,6 +2223,9 @@ export const en: TranslationKeys = {
             unitLinkedRiskNote: 'The unit-linked portion is invested and its value can fall.',
             taxNote: 'As stated in your document. Tax treatment depends on the law in force at maturity and on your personal circumstances — this is not tax advice.',
             beneficiaries: 'Beneficiaries',
+            beneficiaryReviewNote: 'Review your beneficiaries after any major life change — marriage, divorce, a new child — and update them with your insurer if needed.',
+            beneficiaryMissingTitle: 'No beneficiary found',
+            beneficiaryMissingNote: 'No named beneficiary was found in this document. If this policy pays a benefit on death, check with your insurer who is on file — a benefit with no named beneficiary can pass through your estate.',
             lastPremiumDate: 'Last Premium Date',
             lastPremiumAmount: 'Last Premium Amount',
             paidOn: 'Paid on'

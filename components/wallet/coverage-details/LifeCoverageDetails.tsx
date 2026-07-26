@@ -13,6 +13,8 @@ import {
   Users,
   Calendar,
   PieChart,
+  UserPlus,
+  Info,
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import { getTranslations } from "@/lib/i18n"
@@ -225,6 +227,33 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
                 </div>
               </div>
             ))}
+          </div>
+          {/* Servicing nudge (guidance, not extracted data): beneficiary
+              designations go stale after life events and are among the most
+              costly things a policyholder forgets to update. */}
+          <p className="ml-10.5 mt-2.5 flex items-start gap-1.5 text-xs leading-relaxed text-black/55 dark:text-white/60">
+            <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-mint" />
+            {lifeCopy.beneficiaryReviewNote}
+          </p>
+        </div>
+      )}
+
+      {/* No beneficiary was extracted. Hedged deliberately — "not found in this
+          document", never "you have none" — and conditional on a death benefit,
+          so investment-only holders are not alarmed. The estate/probate
+          consequence is the reason this silence was worth breaking. */}
+      {(!acordData.beneficiaries || acordData.beneficiaries.length === 0) && (
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-start gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center flex-shrink-0">
+              <UserPlus className="w-4 h-4 text-primary dark:text-mint" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">
+                {hints?.beneficiary ? <GlossaryHint hint={hints.beneficiary} /> : lifeCopy.beneficiaryMissingTitle}
+              </span>
+              <p className="mt-0.5 text-xs leading-relaxed text-black/60 dark:text-white/65">{lifeCopy.beneficiaryMissingNote}</p>
+            </div>
           </div>
         </div>
       )}
