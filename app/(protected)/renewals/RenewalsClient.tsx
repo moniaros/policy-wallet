@@ -38,6 +38,8 @@ const copy = {
         subtitle: "Track and manage upcoming policy renewals across your portfolio.",
         kicker: "PIPELINE",
         pending: "Pending",
+        readyToContact: "Ready to contact",
+        noActiveConnection: "No active connection",
         overdue: "Overdue",
         expiresToday: "Today",
         expiresTomorrow: "Tomorrow",
@@ -92,6 +94,8 @@ const copy = {
         subtitle: "Παρακολούθηση και διαχείριση ανανεώσεων ασφαλιστηρίων.",
         kicker: "PIPELINE",
         pending: "Εκκρεμεί",
+        readyToContact: "Έτοιμο για επικοινωνία",
+        noActiveConnection: "Χωρίς ενεργή σύνδεση",
         overdue: "Ληξιπρόθεσμο",
         expiresToday: "Σήμερα",
         expiresTomorrow: "Αύριο",
@@ -463,6 +467,20 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                 </td>
                                                 <td data-label={t.status} className="px-4 py-3 text-center">
                                                     {getStatusBadge(r.status, r.daysBeforeExpiry)}
+                                                    {/* MEDIC renewal-actionable gate (§H): ready = real-date
+                                                        window + active customer-accepted relationship; a
+                                                        missing connection is the one hole worth flagging.
+                                                        Suppressed rows (completed/renewed) show nothing. */}
+                                                    {r.readiness.ready && (
+                                                        <span className="mt-1 block text-kicker font-bold uppercase tracking-wider text-primary dark:text-mint">
+                                                            {t.readyToContact}
+                                                        </span>
+                                                    )}
+                                                    {!r.readiness.ready && r.readiness.missing.includes('consent_to_contact') && (
+                                                        <span className="mt-1 block text-kicker font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                                            {t.noActiveConnection}
+                                                        </span>
+                                                    )}
                                                 </td>
                                                 <td data-label={t.actions} className="px-4 py-3 text-right">
                                                     {isActionable && (

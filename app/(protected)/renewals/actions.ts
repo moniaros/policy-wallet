@@ -23,6 +23,10 @@ export type RenewalView = {
     outcomeAt: string | null
     lastReminderAt: string | null
     createdAt: string
+    /** MEDIC §H renewal-actionable gate: real-date window + owner + an ACTIVE
+     *  (customer-accepted) relationship as the servicing-contact basis; known
+     *  false positives (completed/renewed) suppressed. */
+    readiness: { ready: boolean; missing: string[] }
 }
 
 export async function getAgentRenewals(filters?: {
@@ -69,6 +73,18 @@ export async function getAgentRenewals(filters?: {
         orderBy: { policyEndDate: "asc" },
     })
 
+    // Contact basis for the readiness gate: an ACTIVE relationship with the
+    // policy owner (customer-accepted — servicing contact, not marketing).
+    const ownerIds = [...new Set(renewals.map((r) => r.policy.owner.id))]
+    const activeRels = ownerIds.length
+        ? await db.customerRelationship.findMany({
+              where: { agentUserId: dbUser.id, policyholderUserId: { in: ownerIds }, status: 'active' },
+              select: { policyholderUserId: true },
+          })
+        : []
+    const activeRelOwners = new Set(activeRels.map((rel) => rel.policyholderUserId))
+    const { gateRenewalActionable } = await import('@/lib/medic/gates')
+
     return renewals.map((r) => ({
         id: r.id,
         policyId: r.policy.id,
@@ -90,6 +106,22 @@ export async function getAgentRenewals(filters?: {
         outcomeAt: r.outcomeAt?.toISOString() ?? null,
         lastReminderAt: r.lastReminderAt?.toISOString() ?? null,
         createdAt: r.createdAt.toISOString(),
+        readiness: (() => {
+            const days = calendarDaysUntil(r.policyEndDate, now)
+            const gate = gateRenewalActionable({
+                // Actionable window: inside 90 days (overdue counts — an
+                // expired-but-unresolved renewal is MORE urgent, not done).
+                expiresInWindow: days <= 90,
+                // The query is agent-scoped, so an owner always exists.
+                ownerAssigned: true,
+                consentToContact: activeRelOwners.has(r.policy.owner.id),
+                knownFalsePositive:
+                    r.status === 'completed' || Boolean(r.outcome?.startsWith('renewed')),
+            })
+            // "Ready" means the good-enough bar is fully met — the warn-mode
+            // allowed flag is about proceeding anyway, not readiness.
+            return { ready: gate.missing.length === 0, missing: gate.missing }
+        })(),
     }))
 }
 
