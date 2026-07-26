@@ -42,13 +42,13 @@ is for" lead.
 | 2 Why | ✅ each coverage explained; gaps flagged |
 | 3 Source | ✅ **best-in-class** — `SourceSnippetBox` shows the verbatim document text + page behind extracted dates; editorial notes are visibly hedged and separate |
 | 4 Next | ✅ review, share, request renewal quote |
-| 5 Inaction | ➕ renewal-date label now carries the **renewal** hint (what renewal is, what a lapse costs); expiry banner states "cover stops → request a quote" |
-| 6 Learn | ✅ contextual `GlossaryHint` on deductible, waiting period, sum insured, underinsurance, beneficiary, surrender, comprehensive, roadside, green card, exclusion, sublimit, co-payment — **and now renewal** |
+| 5 Inaction | ➕ renewal-date label carries the **renewal** hint; ➕ when the policy has **expired**, the status pill now carries the **lapse** hint ("no cover for new losses right now"); expiry banner states "cover stops → request a quote" |
+| 6 Learn | ✅ contextual `GlossaryHint` on deductible, waiting period, sum insured, underinsurance, beneficiary, surrender, comprehensive, roadside, green card, exclusion, sublimit, co-payment — **and now renewal + lapse** |
 | 7 Contact | ◑ share-with-advisor present; "ask your insurer/advisor" now in the new glossary entries' `howToCheck` |
 
 **Strong, and stronger this program.** The one page a novice most needs is the
-one that teaches most. Remaining upside is wiring the new `lapse` hint onto the
-expired-status pill (available in `POLICY_HINT_SLUGS`, not yet rendered).
+one that teaches most — and the two moments where inaction costs cover (renewal
+date, expired status) now each explain themselves at the point of reading.
 
 ## /coverage-insights — score, gaps, recommendations
 
@@ -115,7 +115,6 @@ surfacing the existing `/guides` + `/lexiko` content as help articles.
 
 ## Remaining literacy roadmap (not defects — backlog)
 
-- Wire the `lapse` hint onto the expired-status pill (term already available).
 - Surface `/guides` + `/lexiko` content as in-app help articles (help is honest
   but thin on insurance education).
 - One-line "what this page is for" leads on `/wallet` and `/coverage-insights`.
