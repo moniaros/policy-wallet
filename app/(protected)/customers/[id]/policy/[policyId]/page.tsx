@@ -196,7 +196,14 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     </div>
 
                     {/* Gap Analysis */}
-                    <AnalysisCard policyId={policyId} gaps={policy.gapInstances as any} canRequestOwnerConsent />
+                    <AnalysisCard
+                        policyId={policyId}
+                        gaps={policy.gapInstances as any}
+                        canRequestOwnerConsent
+                        // Evidence ladder: only an advisor with write access may
+                        // confirm an AI-probable gap (probable → confirmed).
+                        canConfirmGaps={isAgentRole(dbUser.roles) && access.canWrite}
+                    />
 
                     <CollaborationTimeline
                         policyId={policyId}

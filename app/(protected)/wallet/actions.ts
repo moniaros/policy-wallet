@@ -1404,6 +1404,47 @@ export async function ignoreGap(gapId: string) {
     return { success: true }
 }
 
+/**
+ * Advisor confirms an AI-detected gap (MEDIC blueprint §C evidence ladder:
+ * probable → confirmed). Agent-only — the ladder's meaning IS "an advisor
+ * agrees", so the owner cannot self-confirm — and forward-only: confirmation
+ * never regresses to probable, and `validated` (documented recommendation)
+ * belongs to the cross-sell gate, not this action.
+ */
+export async function confirmGap(gapId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    const { isAgentRole } = await import("@/lib/auth/require-agent")
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+
+    const gap = await db.gapInstance.findUnique({
+        where: { id: gapId },
+        include: { policy: true },
+    })
+    if (!gap || !gap.policy) return { error: "Gap not found" }
+
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(gap.policy.id, {
+        id: authResult.dbUser.id,
+        roles: authResult.dbUser.roles,
+    })
+    if (!access.canWrite) return { error: "Unauthorized" }
+
+    // Forward-only: probable → confirmed. Already confirmed/validated is a no-op
+    // success so a double-click never errors or regresses the ladder.
+    if (gap.validationState === 'probable') {
+        await db.gapInstance.update({
+            where: { id: gapId },
+            data: { validationState: 'confirmed' },
+        })
+    }
+
+    revalidatePath(`/customers/${gap.policy.ownerUserId}/policy/${gap.policy.id}`)
+    revalidatePath(`/wallet/${gap.policy.id}`)
+    return { success: true, validationState: 'confirmed' as const }
+}
+
 export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }

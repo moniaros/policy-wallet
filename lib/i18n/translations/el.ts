@@ -1295,6 +1295,15 @@ export const el = {
                 costSharing: 'Συμμετοχή',
                 other: 'Σημείο προσοχής',
             },
+            // Evidence ladder (never «MEDIC» in customer-facing copy): AI-detected
+            // → advisor agreed → documented recommendation.
+            validationChip: {
+                probable: 'Πιθανό',
+                confirmed: 'Επιβεβαιωμένο',
+                validated: 'Εγκεκριμένο από σύμβουλο',
+            },
+            validationConfirmCta: 'Επιβεβαίωση κενού',
+            validationConfirming: 'Επιβεβαίωση…',
             areas: {
                 hospital: 'Νοσηλεία',
                 outpatient: 'Εξωνοσοκομειακά',

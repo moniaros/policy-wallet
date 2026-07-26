@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap } from "../actions"
+import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap, confirmGap } from "../actions"
 import { requestAiConsent } from "@/app/(protected)/agent/actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -24,6 +24,8 @@ interface Gap {
     aiExplanationEl: string | null
     aiSuggestion: string | null
     aiSuggestionEl: string | null
+    /** Evidence ladder: probable (AI) → confirmed (advisor) → validated. */
+    validationState?: 'probable' | 'confirmed' | 'validated'
     definition: {
         title: string
         severity: string
@@ -62,6 +64,12 @@ interface AnalysisCardProps {
     tier?: "free" | "plus" | "pro"
     /** Free-tier owners: complimentary deep analysis still unused? (null = n/a) */
     trialAnalysisAvailable?: boolean | null
+    /**
+     * Advisor with write access on the agent customers page: show the
+     * probable → confirmed action on each gap (evidence ladder). The owner
+     * never sees this — confirmation MEANS "an advisor agrees".
+     */
+    canConfirmGaps?: boolean
 }
 
 export function AnalysisCard({
@@ -74,6 +82,7 @@ export function AnalysisCard({
     report,
     tier,
     trialAnalysisAvailable = null,
+    canConfirmGaps = false,
 }: AnalysisCardProps) {
     const [analyzing, setAnalyzing] = useState(false)
     const [runId, setRunId] = useState<string | null>(null)
@@ -82,6 +91,10 @@ export function AnalysisCard({
     const [runStepLabel, setRunStepLabel] = useState<string | null>(null)
     const [runStepHint, setRunStepHint] = useState<string | null>(null)
     const [analysisError, setAnalysisError] = useState<string | null>(null)
+    // Evidence ladder: which gap is mid-confirmation, and which confirmed this
+    // session (optimistic chip flip without a refetch).
+    const [confirmingGapId, setConfirmingGapId] = useState<string | null>(null)
+    const [confirmedGapIds, setConfirmedGapIds] = useState<Set<string>>(new Set())
     const [analysisWarning, setAnalysisWarning] = useState<string | null>(null)
     const [missingArtifacts, setMissingArtifacts] = useState<string[]>([])
     const [lastCompletedRunId, setLastCompletedRunId] = useState<string | null>(null)
@@ -802,6 +815,11 @@ export function AnalysisCard({
                         {uniqueGaps.map((gap) => {
                             const explanation = language === 'el' ? (gap.aiExplanationEl || gap.aiExplanation) : gap.aiExplanation
                             const suggestion = language === 'el' ? (gap.aiSuggestionEl || gap.aiSuggestion) : gap.aiSuggestion
+                            // Evidence ladder chip + advisor confirm action.
+                            const gapValidation = confirmedGapIds.has(gap.id)
+                                ? 'confirmed'
+                                : (gap.validationState ?? 'probable')
+                            const validationLabel = t.analysis.report.validationChip[gapValidation]
 
                             // Neutral styling, matching the canonical GapCard ("neutral by
                             // design — severity values are unvalidated"): every gap was
@@ -819,11 +837,40 @@ export function AnalysisCard({
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
-                                                <h4 className="font-bold text-foreground text-sm mb-2">
-                                                    {gap.definition.title || t.analysis.gapDetected}
-                                                </h4>
+                                                <div className="flex flex-wrap items-center gap-2 mb-2">
+                                                    <h4 className="font-bold text-foreground text-sm">
+                                                        {gap.definition.title || t.analysis.gapDetected}
+                                                    </h4>
+                                                    <span
+                                                        className={
+                                                            gapValidation === 'probable'
+                                                                ? "rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60"
+                                                                : "rounded-full border border-primary/25 bg-primary/5 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-primary/90 dark:border-primary/30 dark:bg-primary/10 dark:text-mint/90"
+                                                        }
+                                                    >
+                                                        {validationLabel}
+                                                    </span>
+                                                </div>
 
                                                 <div className="flex gap-2">
+                                                    {canConfirmGaps && gapValidation === 'probable' && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                setConfirmingGapId(gap.id)
+                                                                const res = await confirmGap(gap.id)
+                                                                setConfirmingGapId(null)
+                                                                if (res && 'success' in res && res.success) {
+                                                                    setConfirmedGapIds((prev) => new Set(prev).add(gap.id))
+                                                                }
+                                                            }}
+                                                            disabled={confirmingGapId === gap.id}
+                                                            className="rounded-lg border border-primary/30 px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/5 disabled:opacity-50 dark:border-primary/35 dark:text-mint dark:hover:bg-primary/10"
+                                                        >
+                                                            {confirmingGapId === gap.id
+                                                                ? t.analysis.report.validationConfirming
+                                                                : t.analysis.report.validationConfirmCta}
+                                                        </button>
+                                                    )}
                                                     {/* Ignore Button */}
                                                     <button
                                                         onClick={() => handleIgnore(gap.id)}

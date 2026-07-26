@@ -1295,6 +1295,14 @@ export const en: TranslationKeys = {
                 costSharing: 'Cost sharing',
                 other: 'Point to review',
             },
+            // Evidence ladder (never "MEDIC" in customer-facing copy).
+            validationChip: {
+                probable: 'Probable',
+                confirmed: 'Confirmed',
+                validated: 'Advisor-approved',
+            },
+            validationConfirmCta: 'Confirm gap',
+            validationConfirming: 'Confirming…',
             areas: {
                 hospital: 'Hospital care',
                 outpatient: 'Outpatient',

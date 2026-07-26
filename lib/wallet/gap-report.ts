@@ -67,6 +67,13 @@ export interface GapReportItem {
      * that never set it default to the least-urgent rank rather than crash.
      */
     severity?: GapSeverity | null
+    /**
+     * Evidence ladder carried from GapInstance.validationState: probable
+     * (AI-detected) → confirmed (advisor agrees) → validated (documented
+     * recommendation). Optional so older callers default to the AI-probable
+     * reading rather than crash.
+     */
+    validationState?: 'probable' | 'confirmed' | 'validated' | null
     content: GapContent
     aiExplanation: string | null
     aiExplanationEl: string | null

@@ -24,6 +24,7 @@ interface GapReportListProps {
         summaryFoundMany: string
         mechanics: Record<string, string>
         mechanicChip: Record<string, string>
+        validationChip: Record<string, string>
         areas: Record<string, string>
         expand: string
         collapse: string

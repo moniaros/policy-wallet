@@ -26,6 +26,14 @@ enum AnalysisStepStatus {
   skipped
 }
 
+enum GapValidationState {
+  probable
+  confirmed
+  validated
+
+  @@map("gap_validation_state")
+}
+
 enum ConsentType {
   cookie
   terms
@@ -403,6 +411,10 @@ model GapInstance {
   resolvedAt           DateTime?                @map("resolved_at")
   aiExplanationEl      String?                  @map("ai_explanation_el")
   aiSuggestionEl       String?                  @map("ai_suggestion_el")
+  /// Evidence ladder (MEDIC blueprint §C): probable = AI-detected, confirmed =
+  /// advisor agrees, validated = documented recommendation. Makes "gap
+  /// detection" honest and gates advisor-ready cross-sell.
+  validationState      GapValidationState       @default(probable) @map("validation_state")
   definition           GapDefinition            @relation(fields: [gapDefinitionId], references: [id])
   policy               Policy?                  @relation(fields: [policyId], references: [id], onDelete: Cascade)
   user                 User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -505,6 +517,15 @@ model Opportunity {
   wonPremium           Decimal?              @map("won_premium")
   currency             String                @default("EUR")
   lineOfBusiness       String?               @map("line_of_business")
+  /// MEDIC qualification snapshot (blueprint §E): stakeholders[], criteria[],
+  /// decisionProcess, pain, metrics — JSON per the acordData/preferences
+  /// precedent. Structured detail lives here; the scalar below is for sort.
+  medic                Json?
+  /// Transparent 0-100 qualification score (calculateMedicScore) — a sortable/
+  /// filterable scalar mirroring ProtectionScore.overallScore.
+  medicScore           Int?                  @map("medic_score")
+  /// Staleness/audit stamp for the qualification snapshot.
+  medicUpdatedAt       DateTime?             @map("medic_updated_at")
   createdAt            DateTime              @default(now()) @map("created_at")
   updatedAt            DateTime              @updatedAt @map("updated_at")
   gapInstance          GapInstance?          @relation(fields: [gapInstanceId], references: [id])
@@ -520,6 +541,8 @@ model Opportunity {
   // Dashboard, priorities and scoring all filter by (owner, status); the two
   // single-column indexes force a scan-and-filter on the larger side.
   @@index([ownerAgentUserId, status])
+  // Pipeline sorted MEDIC-score-descending per owner (blueprint §F /customers).
+  @@index([ownerAgentUserId, medicScore])
   @@map("opportunities")
 }
 

@@ -11,6 +11,8 @@ interface GapCardProps {
     lang: "el" | "en"
     copy: {
         mechanicChip: Record<string, string>
+        /** Evidence-ladder labels: probable / confirmed / validated. */
+        validationChip: Record<string, string>
         expand: string
         collapse: string
         recommendation: string
@@ -43,6 +45,10 @@ export function GapCard({ item, lang, copy, onIgnore, onNotify, ignoring, notify
             ? item.aiSuggestionEl || item.aiSuggestion
             : item.aiSuggestion || item.aiSuggestionEl
     const mechanicLabel = copy.mechanicChip[MECHANIC_CHIP_KEY[item.content.mechanic]]
+    // Evidence ladder: an AI-detected gap says «Πιθανό» until an advisor confirms
+    // it — the honesty chip that separates a probable finding from a validated
+    // recommendation (never "MEDIC" in customer-facing copy).
+    const validationLabel = copy.validationChip[item.validationState ?? "probable"]
 
     return (
         <div className="rounded-xl border border-black/10 bg-white transition-all dark:border-white/15 dark:bg-white/5">
@@ -58,6 +64,19 @@ export function GapCard({ item, lang, copy, onIgnore, onNotify, ignoring, notify
                         <span className="rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60">
                             {mechanicLabel}
                         </span>
+                        {validationLabel && (
+                            <span
+                                className={
+                                    item.validationState === "validated"
+                                        ? "rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-primary dark:border-primary/35 dark:bg-primary/15 dark:text-mint"
+                                        : item.validationState === "confirmed"
+                                          ? "rounded-full border border-primary/25 bg-primary/5 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-primary/90 dark:border-primary/30 dark:bg-primary/10 dark:text-mint/90"
+                                          : "rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60"
+                                }
+                            >
+                                {validationLabel}
+                            </span>
+                        )}
                     </div>
                     {!expanded && explanation && (
                         <p className="mt-1 text-xs leading-relaxed text-black/55 dark:text-white/60">
