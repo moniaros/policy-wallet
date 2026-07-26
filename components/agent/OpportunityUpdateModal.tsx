@@ -240,7 +240,8 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                                 checked={!rejected.has(`s${i}`)}
                                                 onChange={() => setRejected((prev) => {
                                                     const next = new Set(prev)
-                                                    next.has(`s${i}`) ? next.delete(`s${i}`) : next.add(`s${i}`)
+                                                    if (next.has(`s${i}`)) next.delete(`s${i}`)
+                                                    else next.add(`s${i}`)
                                                     return next
                                                 })}
                                                 className="mt-0.5"
@@ -262,7 +263,8 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                                 checked={!rejected.has(`c${i}`)}
                                                 onChange={() => setRejected((prev) => {
                                                     const next = new Set(prev)
-                                                    next.has(`c${i}`) ? next.delete(`c${i}`) : next.add(`c${i}`)
+                                                    if (next.has(`c${i}`)) next.delete(`c${i}`)
+                                                    else next.add(`c${i}`)
                                                     return next
                                                 })}
                                                 className="mt-0.5"
@@ -284,7 +286,8 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                                 checked={!rejected.has('pain')}
                                                 onChange={() => setRejected((prev) => {
                                                     const next = new Set(prev)
-                                                    next.has('pain') ? next.delete('pain') : next.add('pain')
+                                                    if (next.has('pain')) next.delete('pain')
+                                                    else next.add('pain')
                                                     return next
                                                 })}
                                                 className="mt-0.5"
