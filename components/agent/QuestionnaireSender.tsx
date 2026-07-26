@@ -38,10 +38,10 @@ const copy = {
     },
     el: {
         sendRequest: "Ερωτηματολόγιο",
-        gatherInsights: "Συλλογή Πληροφοριών",
+        gatherInsights: "Συλλογή πληροφοριών",
         requestInfo: "Ζητήστε δομημένες πληροφορίες από",
         identifyGaps: "για τον εντοπισμό κενών κάλυψης.",
-        selectTemplate: "Επιλέξτε Πρότυπο Ερωτηματολογίου",
+        selectTemplate: "Επιλέξτε πρότυπο ερωτηματολογίου",
         requestSent: "Το αίτημα στάλθηκε επιτυχώς!",
         followUpWhatsApp: "Παρακολούθηση μέσω WhatsApp",
         sendFailed: "Αποτυχία αποστολής. Δοκιμάστε ξανά.",

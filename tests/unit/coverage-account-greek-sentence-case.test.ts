@@ -46,3 +46,43 @@ describe('core B2C coverage/account components use sentence-case Greek', () => {
         })
     }
 })
+
+/**
+ * B2B agent pages joined the sentence-case standard in the enterprise-quality
+ * loop (28 Title-Case labels normalized — «Διαχείριση Ομάδας», «Νέο Πρότυπο»,
+ * «Κερδισμένη Προμήθεια»… — plus «Κοινός Σωλήνας», a literal mistranslation of
+ * "shared pipeline", now «Κοινό pipeline» matching its sibling «Αξία Pipeline»).
+ * The agency-NAME placeholder «Ασφαλιστικό Πρακτορείο...» is a proper-noun
+ * exemplar and stays capitalized.
+ */
+const B2B_FILES = [
+    'app/(protected)/team/TeamClient.tsx',
+    'app/(protected)/questionnaires/QuestionnairesClient.tsx',
+    'app/(protected)/commissions/CommissionsClient.tsx',
+    'components/agent/QuestionnaireSender.tsx',
+]
+const B2B_PROPER = new Set([...PROPER, 'Πρακτορείο...', 'Pipeline', 'pipeline'])
+
+describe('B2B agent pages use sentence-case Greek too', () => {
+    for (const f of B2B_FILES) {
+        it(f, () => {
+            const src = readFileSync(f, 'utf-8')
+            const offenders: string[] = []
+            for (const m of src.matchAll(/(['"`])((?:[^\\]|\\.)*?)\1/g)) {
+                const val = m[2]
+                if (!/[Ά-ώ]/.test(val)) continue
+                if (/[[\]{}<>=]|\/\//.test(val)) continue
+                let atStart = true
+                for (const tok of val.split(/\s+/)) {
+                    const core = tok.replace(/^[«"'(]+|[»"')]+$/g, '')
+                    if (!atStart && core.length > 2 && GU.includes(core[0]) && !B2B_PROPER.has(core) && core !== core.toUpperCase()) {
+                        offenders.push(val.slice(0, 50))
+                        break
+                    }
+                    atStart = RESTARTS.some((r) => tok.endsWith(r))
+                }
+            }
+            expect(offenders, `Title Case in ${f}`).toEqual([])
+        })
+    }
+})
