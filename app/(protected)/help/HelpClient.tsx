@@ -203,6 +203,10 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                             </p>
                         </div>
                         <div className="flex items-center gap-3">
+                            {/* One action here. The email CTA used to sit beside this,
+                                duplicating the full email-support card in the support
+                                band below — two identical mailto CTAs on one screen.
+                                Support entry points live in the support band. */}
                             <button
                                 onClick={() => router.push('/wallet')}
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
@@ -210,12 +214,6 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                                 {t.help.openWallet}
                                 <ArrowRight className="w-4 h-4" />
                             </button>
-                            <a
-                                href={`mailto:${siteConfig.contactEmail}`}
-                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                            >
-                                {t.help.sendEmail}
-                            </a>
                         </div>
                     </div>
 

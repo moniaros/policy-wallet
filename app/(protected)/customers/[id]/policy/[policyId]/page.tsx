@@ -9,6 +9,7 @@ import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 import { getTranslations } from "@/lib/i18n"
+import { formatDate, formatDateTime } from "@/lib/i18n/format"
 import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
 
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
@@ -215,7 +216,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                 </div>
                                 {(policy as any).lastAnalyzedAt && (
                                     <span className="text-kicker text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-widest">
-                                        {pd.lastCheck}: {new Date((policy as any).lastAnalyzedAt).toLocaleDateString(locale)}
+                                        {pd.lastCheck}: {formatDateTime((policy as any).lastAnalyzedAt, language)}
                                     </span>
                                 )}
                             </div>
@@ -276,11 +277,13 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.starts}</p>
-                                <p className="text-neutral-900 dark:text-neutral-100 font-bold">{policy.startDate.toLocaleDateString(locale)}</p>
+                                {/* Contractual date — Athens-pinned like every B2C render;
+                                    the server's UTC zone shifted the day at Athens midnight. */}
+                                <p className="text-neutral-900 dark:text-neutral-100 font-bold">{formatDate(policy.startDate, language)}</p>
                             </div>
                             <div>
                                 <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.ends}</p>
-                                <p className="text-neutral-900 dark:text-neutral-100 font-bold">{policy.endDate.toLocaleDateString(locale)}</p>
+                                <p className="text-neutral-900 dark:text-neutral-100 font-bold">{formatDate(policy.endDate, language)}</p>
                             </div>
                         </div>
 
