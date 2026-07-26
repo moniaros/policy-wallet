@@ -403,6 +403,12 @@ test.describe('Billing management (cancel honesty)', () => {
     })
 
     test('cancel from the Billing tab stops auto-renewal in the DB', async ({ page }) => {
+        // This test stacks page navigation + a server action + poll iterations
+        // that each open a fresh Prisma client — every hop a round trip to the
+        // remote pooler. The default 30s budget expired mid-poll while the
+        // flip landed late (verified: the exact DB sequence succeeds in ~5s
+        // standalone). Give the trans-continental path a realistic budget.
+        test.setTimeout(90_000)
         await page.goto('/account')
         await dismissCookieBanner(page)
 
