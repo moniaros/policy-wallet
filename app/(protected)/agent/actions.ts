@@ -298,6 +298,144 @@ export async function logOpportunityNote(opportunityId: string, body: string) {
     return { success: true }
 }
 
+/** Shared loader for the suggest/apply pair: the agent-owned opportunity's
+ *  discovery notes (newest 20, oldest-first for reading order). */
+async function loadOpportunityNotes(opportunityId: string, agentUserId: string) {
+    const opp = await db.opportunity.findUnique({
+        where: { id: opportunityId },
+        select: {
+            relationshipId: true,
+            policyId: true,
+            medic: true,
+            relationship: { select: { agentUserId: true } },
+            policy: {
+                select: {
+                    insurerName: true, policyNumber: true, lineOfBusiness: true,
+                    startDate: true, endDate: true, premiumAmount: true, coverageSummary: true,
+                },
+            },
+        },
+    })
+    if (!opp || opp.relationship?.agentUserId !== agentUserId) return null
+    const thread = await db.collaborationThread.findFirst({
+        where: { linkedOpportunityId: opportunityId },
+        select: { id: true },
+    })
+    const notes = thread
+        ? (
+              await db.collaborationMessage.findMany({
+                  where: { threadId: thread.id, messageType: 'note' },
+                  select: { id: true, body: true },
+                  orderBy: { createdAt: 'desc' },
+                  take: 20,
+              })
+          ).reverse()
+        : []
+    return { opp, thread, notes }
+}
+
+/**
+ * suggestQualification (MEDIC blueprint §I / §K Next): AI reads the logged
+ * discovery notes and PROPOSES stakeholders/criteria/pain — each row carrying a
+ * verbatim evidence snippet, mechanically dropped when the snippet is not in
+ * the notes. Nothing is written here; the advisor accepts rows explicitly via
+ * applyQualificationSuggestions.
+ */
+export async function suggestQualificationFromNotes(opportunityId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+
+    const loaded = await loadOpportunityNotes(opportunityId, authResult.dbUser.id)
+    if (!loaded) return { error: "Opportunity not found or access denied" }
+    if (loaded.notes.length === 0) return { error: "NO_NOTES" }
+
+    const { getAIService } = await import("@/lib/services/ai")
+    const aiService = getAIService()
+    if (!aiService.isAvailable()) return { error: "AI service is not configured" }
+
+    const { buildSuggestQualificationPrompt, parseSuggestions, filterByEvidence } =
+        await import("@/lib/medic/suggest")
+
+    // Cap the notes payload — 20 notes × 4000 chars is already generous.
+    const notes = loaded.notes.map((n) => ({ id: n.id, body: n.body.slice(0, 4000) }))
+    const prompt = buildSuggestQualificationPrompt(notes)
+
+    // Reuse the metered Q&A path. Metadata comes from the linked policy when
+    // present; placeholder metadata otherwise — the prompt is self-contained
+    // and instructs the model to ignore the Q&A framing.
+    const p = loaded.opp.policy
+    const metadata = {
+        insurerName: p?.insurerName ?? "—",
+        policyNumber: p?.policyNumber ?? "—",
+        lineOfBusiness: p?.lineOfBusiness ?? "other",
+        startDate: p?.startDate ?? new Date(0),
+        endDate: p?.endDate ?? new Date(0),
+        premiumAmount: p?.premiumAmount ? Number(p.premiumAmount) : null,
+        coverageSummary: p?.coverageSummary ?? null,
+    }
+
+    let raw: string
+    try {
+        raw = await aiService.askQuestion(null, metadata, prompt, { userId: authResult.dbUser.id })
+    } catch {
+        return { error: "SUGGESTION_FAILED" }
+    }
+
+    const parsed = parseSuggestions(raw)
+    if (!parsed) return { error: "SUGGESTION_UNPARSEABLE" }
+    const notesText = notes.map((n) => n.body).join("\n")
+    const suggestions = filterByEvidence(parsed, notesText)
+    return { success: true, suggestions }
+}
+
+/**
+ * Apply the rows the advisor ACCEPTED. The payload is untrusted client input:
+ * re-validated by schema AND re-filtered against the actual notes server-side,
+ * so a tampered payload cannot smuggle unevidenced rows in. Merge is
+ * append-only and can never touch the pain validation ladder.
+ */
+export async function applyQualificationSuggestions(opportunityId: string, accepted: unknown) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+
+    const loaded = await loadOpportunityNotes(opportunityId, authResult.dbUser.id)
+    if (!loaded) return { error: "Opportunity not found or access denied" }
+
+    const { validateAcceptedSuggestions, filterByEvidence, mergeAcceptedSuggestions } =
+        await import("@/lib/medic/suggest")
+    const { calculateMedicScore } = await import("@/lib/medic/score")
+
+    const validated = validateAcceptedSuggestions(accepted)
+    if (!validated) return { error: "INVALID_SUGGESTIONS" }
+    const notesText = loaded.notes.map((n) => n.body).join("\n")
+    const evidenced = filterByEvidence(validated, notesText)
+
+    const medic = mergeAcceptedSuggestions(loaded.opp.medic as any, evidenced)
+    const score = calculateMedicScore(medic)
+
+    await db.opportunity.update({
+        where: { id: opportunityId },
+        data: { medic: medic as any, medicScore: score.score, medicUpdatedAt: new Date() },
+    })
+
+    // Audit trail (§I): what was applied, on the opportunity's own thread.
+    if (loaded.thread) {
+        await db.collaborationMessage.create({
+            data: {
+                threadId: loaded.thread.id,
+                senderUserId: authResult.dbUser.id,
+                messageType: "system_event",
+                isPrivate: true,
+                body: `Qualification updated from notes: ${evidenced.stakeholders.length} stakeholder(s), ${evidenced.criteria.length} criteria${evidenced.pain ? ", pain summary" : ""}. Score → ${score.score}.`,
+            },
+        })
+    }
+
+    return { success: true, medic, medicScore: score.score }
+}
+
 export async function updateOpportunityStatus(
     opportunityId: string,
     status: OpportunityStatus,

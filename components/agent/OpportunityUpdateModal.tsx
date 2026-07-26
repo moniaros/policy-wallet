@@ -6,8 +6,13 @@ import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useDialog } from "@/hooks/useDialog"
 import { MedicScorecard } from "@/components/agent/MedicScorecard"
-import { logOpportunityNote } from "@/app/(protected)/agent/actions"
+import {
+    logOpportunityNote,
+    suggestQualificationFromNotes,
+    applyQualificationSuggestions,
+} from "@/app/(protected)/agent/actions"
 import type { MedicData } from "@/lib/medic/types"
+import type { QualificationSuggestions } from "@/lib/medic/suggest"
 
 interface OpportunityUpdateModalProps {
     isOpen: boolean
@@ -57,6 +62,59 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
         } else {
             toast.error(tt.logNoteError)
         }
+    }
+
+    // suggestQualification (§I): AI proposes, the advisor confirms each row.
+    const [suggesting, setSuggesting] = useState(false)
+    const [suggestions, setSuggestions] = useState<QualificationSuggestions | null>(null)
+    const [rejected, setRejected] = useState<Set<string>>(new Set())
+    const [applying, setApplying] = useState(false)
+    const [medicView, setMedicView] = useState<MedicData | null>(opportunity.medic ?? null)
+
+    const handleSuggest = async () => {
+        setSuggesting(true)
+        setSuggestions(null)
+        const res = await suggestQualificationFromNotes(opportunity.id)
+        setSuggesting(false)
+        if (res && 'success' in res && res.success) {
+            const s = res.suggestions
+            if (s.stakeholders.length === 0 && s.criteria.length === 0 && !s.pain) {
+                toast.info(tt.suggestNone)
+            } else {
+                setSuggestions(s)
+                setRejected(new Set())
+            }
+        } else if (res && 'error' in res && res.error === 'NO_NOTES') {
+            toast.info(tt.suggestNoNotes)
+        } else {
+            toast.error(tt.suggestError)
+        }
+    }
+
+    const handleApplySuggestions = async () => {
+        if (!suggestions) return
+        const accepted: QualificationSuggestions = {
+            stakeholders: suggestions.stakeholders.filter((_, i) => !rejected.has(`s${i}`)),
+            criteria: suggestions.criteria.filter((_, i) => !rejected.has(`c${i}`)),
+            pain: suggestions.pain && !rejected.has('pain') ? suggestions.pain : null,
+        }
+        setApplying(true)
+        const res = await applyQualificationSuggestions(opportunity.id, accepted)
+        setApplying(false)
+        if (res && 'success' in res && res.success) {
+            setSuggestions(null)
+            setMedicView(res.medic as MedicData)
+            toast.success(tt.suggestApplied)
+        } else {
+            toast.error(tt.suggestError)
+        }
+    }
+
+    const stanceLabel: Record<string, string> = {
+        economic_buyer: tt.stanceEconomicBuyer,
+        champion: tt.stanceChampion,
+        influencer: tt.stanceInfluencer,
+        blocker: tt.stanceBlocker,
     }
 
     if (!isOpen) return null
@@ -118,7 +176,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                         </summary>
                         <div className="mt-2">
                             <MedicScorecard
-                                medic={opportunity.medic ?? null}
+                                medic={medicView}
                                 copy={{
                                     scorecardTitle: tt.scorecardTitle,
                                     scorecardHint: tt.scorecardHint,
@@ -140,6 +198,100 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             />
                         </div>
                     </details>
+
+                    {/* suggestQualification (§I): AI proposes rows with verbatim
+                        evidence; the advisor unchecks rejects and applies. */}
+                    <div>
+                        <button
+                            type="button"
+                            onClick={handleSuggest}
+                            disabled={suggesting}
+                            className="pw-secondary-button pw-btn-sm disabled:opacity-50"
+                        >
+                            {suggesting ? tt.suggesting : tt.suggestCta}
+                        </button>
+                        {suggestions && (
+                            <div className="mt-3 rounded-xl border border-black/10 bg-black/[0.02] p-3 dark:border-white/15 dark:bg-white/5">
+                                <p className="mb-2 text-xs text-black/60 dark:text-white/65">{tt.suggestReview}</p>
+                                <ul className="space-y-2">
+                                    {suggestions.stakeholders.map((s, i) => (
+                                        <li key={`s${i}`} className="flex items-start gap-2 text-xs">
+                                            <input
+                                                type="checkbox"
+                                                id={`sug-s${i}`}
+                                                checked={!rejected.has(`s${i}`)}
+                                                onChange={() => setRejected((prev) => {
+                                                    const next = new Set(prev)
+                                                    next.has(`s${i}`) ? next.delete(`s${i}`) : next.add(`s${i}`)
+                                                    return next
+                                                })}
+                                                className="mt-0.5"
+                                            />
+                                            <label htmlFor={`sug-s${i}`} className="min-w-0 flex-1 cursor-pointer">
+                                                <span className="font-semibold text-black dark:text-white">{s.name}</span>{" "}
+                                                <span className="text-black/60 dark:text-white/60">— {stanceLabel[s.stance] ?? s.stance}</span>
+                                                <span className="mt-0.5 block text-black/55 dark:text-white/55">
+                                                    {tt.suggestEvidence}: «{s.evidenceSnippet}»
+                                                </span>
+                                            </label>
+                                        </li>
+                                    ))}
+                                    {suggestions.criteria.map((c, i) => (
+                                        <li key={`c${i}`} className="flex items-start gap-2 text-xs">
+                                            <input
+                                                type="checkbox"
+                                                id={`sug-c${i}`}
+                                                checked={!rejected.has(`c${i}`)}
+                                                onChange={() => setRejected((prev) => {
+                                                    const next = new Set(prev)
+                                                    next.has(`c${i}`) ? next.delete(`c${i}`) : next.add(`c${i}`)
+                                                    return next
+                                                })}
+                                                className="mt-0.5"
+                                            />
+                                            <label htmlFor={`sug-c${i}`} className="min-w-0 flex-1 cursor-pointer">
+                                                <span className="font-semibold text-black dark:text-white">{tt.suggestCriterionLabel}:</span>{" "}
+                                                <span className="text-black/70 dark:text-white/70">{c.label}</span>
+                                                <span className="mt-0.5 block text-black/55 dark:text-white/55">
+                                                    {tt.suggestEvidence}: «{c.evidenceSnippet}»
+                                                </span>
+                                            </label>
+                                        </li>
+                                    ))}
+                                    {suggestions.pain && (
+                                        <li className="flex items-start gap-2 text-xs">
+                                            <input
+                                                type="checkbox"
+                                                id="sug-pain"
+                                                checked={!rejected.has('pain')}
+                                                onChange={() => setRejected((prev) => {
+                                                    const next = new Set(prev)
+                                                    next.has('pain') ? next.delete('pain') : next.add('pain')
+                                                    return next
+                                                })}
+                                                className="mt-0.5"
+                                            />
+                                            <label htmlFor="sug-pain" className="min-w-0 flex-1 cursor-pointer">
+                                                <span className="font-semibold text-black dark:text-white">{tt.suggestPainLabel}:</span>{" "}
+                                                <span className="text-black/70 dark:text-white/70">{suggestions.pain.summary}</span>
+                                                <span className="mt-0.5 block text-black/55 dark:text-white/55">
+                                                    {tt.suggestEvidence}: «{suggestions.pain.evidenceSnippet}»
+                                                </span>
+                                            </label>
+                                        </li>
+                                    )}
+                                </ul>
+                                <button
+                                    type="button"
+                                    onClick={handleApplySuggestions}
+                                    disabled={applying}
+                                    className="pw-primary-button pw-btn-sm mt-3 disabled:opacity-50"
+                                >
+                                    {applying ? tt.suggestApplying : tt.suggestApply}
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Log note — the MEDIC discovery capture path. Separate
                         button, never submits the status form. */}
