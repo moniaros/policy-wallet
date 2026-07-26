@@ -257,27 +257,44 @@ test.describe('Focus Management', () => {
     test('focus should be trapped in modals', async ({ page }) => {
         await page.goto('/');
 
-        // Try to open a modal
-        const modalTriggers = page.getByRole('button');
-        const count = await modalTriggers.count();
+        // The old construction clicked the FIRST button on the page (the
+        // «Λύσεις» nav dropdown — a menu, not a modal) and then asserted focus
+        // against WHATEVER [role=dialog] existed anywhere in the DOM (the
+        // cookie banner), comparing focus in a menu against a dialog it never
+        // opened. Assert the real contract instead: when clicking a button
+        // OPENS a dialog that was not previously present, Tab must keep focus
+        // inside it. If no button on the landing opens a dialog, skip — a
+        // false assertion is worse than none.
+        const before = await page.locator('[role="dialog"], .modal').count();
 
-        if (count > 0) {
-            await modalTriggers.first().click();
-            await page.waitForTimeout(500);
-
-            const modal = page.locator('[role="dialog"], .modal');
-            if (await modal.count() > 0) {
-                // Tab through - focus should stay in modal
-                await page.keyboard.press('Tab');
-                const focusedElement = await page.evaluate(() => {
-                    const el = document.activeElement;
-                    const dialog = document.querySelector('[role="dialog"], .modal');
-                    return dialog?.contains(el);
-                });
-
-                expect(focusedElement).toBeTruthy();
+        const buttons = page.getByRole('button');
+        const count = Math.min(await buttons.count(), 5);
+        let opened = false;
+        for (let i = 0; i < count; i++) {
+            // Some buttons are off-viewport/hidden variants (mobile nav) —
+            // skip anything unclickable rather than stalling the probe.
+            try {
+                await buttons.nth(i).click({ timeout: 2000 });
+            } catch {
+                continue;
             }
+            await page.waitForTimeout(400);
+            if ((await page.locator('[role="dialog"], .modal').count()) > before) {
+                opened = true;
+                break;
+            }
+            // Close whatever non-dialog UI the click opened (menus etc.).
+            await page.keyboard.press('Escape');
         }
+        test.skip(!opened, 'No landing-page button opens a modal dialog — nothing to trap.');
+
+        await page.keyboard.press('Tab');
+        const focusedInDialog = await page.evaluate(() => {
+            const el = document.activeElement;
+            const dialogs = document.querySelectorAll('[role="dialog"], .modal');
+            return Array.from(dialogs).some((d) => d.contains(el));
+        });
+        expect(focusedInDialog).toBeTruthy();
     });
 
     test('focus should return to trigger after modal closes', async ({ page }) => {

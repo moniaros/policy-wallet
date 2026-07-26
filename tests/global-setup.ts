@@ -195,6 +195,20 @@ export default async function globalSetup() {
         const policyholder = await provisionUser(db, E2E_POLICYHOLDER)
         await provisionUser(db, E2E_AGENT)
         await provisionFixturePolicy(db, policyholder.id)
+
+        // Deterministic usage-state reset: the free-tier gates are LIFETIME
+        // counters (free questions from activityLog POLICY_QUESTION_ASKED, the
+        // complimentary trial from trialAnalysisUsedAt). Accumulated rows from
+        // prior runs silently flip the free fixture into the exhausted state —
+        // money-path 143 failed exactly this way after months of dev-DB drift.
+        await db.activityLog.deleteMany({
+            where: { adminUserId: policyholder.id, actionType: 'POLICY_QUESTION_ASKED' },
+        })
+        await db.user.update({
+            where: { id: policyholder.id },
+            data: { trialAnalysisUsedAt: null },
+        })
+        console.log('✅ E2E fixture usage counters reset (free questions + trial)')
     } catch (error) {
         console.error(
             '❌ E2E user provisioning failed. If this is a GoTrue schema/permission issue, ' +

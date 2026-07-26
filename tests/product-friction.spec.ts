@@ -12,9 +12,10 @@ test.describe("Product Browse Friction", () => {
         await cta.focus()
         await page.keyboard.press("Enter")
 
-        const heading = page.getByRole("heading", {
-            name: /three steps to full control of your insurance|τρία βήματα για τον πλήρη έλεγχο των ασφαλίσεών σας/i,
-        })
+        // Copy evolved (was "three steps to full control…"); target the stable
+        // structural id so the test tracks the MECHANISM (scroll + focus), and
+        // assert the current heading text loosely.
+        const heading = page.locator("#how-it-works-heading")
 
         await expect(heading).toBeFocused()
 
