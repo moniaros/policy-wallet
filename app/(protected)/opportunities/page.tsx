@@ -75,6 +75,10 @@ export default async function OpportunitiesPage() {
             policyId: opp.gapInstance?.policyId || null,
             conversionLikelihood: (scored?.likelihood as "high" | "medium" | "low") || null,
             conversionScore: scored?.score ?? null,
+            // MEDIC qualification (blueprint §F): sortable scalar beside the
+            // sales-likelihood score + the snapshot for the modal scorecard.
+            medicScore: opp.medicScore ?? null,
+            medic: (opp.medic as import("@/lib/medic/types").MedicData | null) ?? null,
         }
     })
 

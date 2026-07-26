@@ -237,6 +237,67 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
  * ACTIONS
  */
 
+/**
+ * Log a discovery note against an opportunity (MEDIC blueprint §F/§K Now:
+ * the note create-path). Writes CollaborationMessage{messageType:'note'} on the
+ * opportunity's thread (lazily created), so the existing timeline renders it —
+ * no new surface, no new table. AI qualification-suggest over notes is the
+ * NEXT-slice item; this is only the honest capture path it will feed on.
+ */
+export async function logOpportunityNote(opportunityId: string, body: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+
+    const trimmed = (body || "").trim()
+    if (!trimmed) return { error: "Empty note" }
+    if (trimmed.length > 4000) return { error: "Note too long" }
+
+    const opp = await db.opportunity.findUnique({
+        where: { id: opportunityId },
+        select: {
+            relationshipId: true,
+            policyId: true,
+            relationship: { select: { agentUserId: true } },
+        },
+    })
+    if (!opp || opp.relationship?.agentUserId !== authResult.dbUser.id) {
+        return { error: "Opportunity not found or access denied" }
+    }
+
+    let thread = await db.collaborationThread.findFirst({
+        where: { linkedOpportunityId: opportunityId },
+        select: { id: true },
+    })
+    if (!thread) {
+        thread = await db.collaborationThread.create({
+            data: {
+                relationshipId: opp.relationshipId,
+                policyId: opp.policyId,
+                subject: "Opportunity notes",
+                category: "general",
+                createdByUserId: authResult.dbUser.id,
+                linkedOpportunityId: opportunityId,
+            },
+            select: { id: true },
+        })
+    }
+
+    await db.collaborationMessage.create({
+        data: {
+            threadId: thread.id,
+            senderUserId: authResult.dbUser.id,
+            messageType: "note",
+            body: trimmed,
+            // Discovery notes are the agent's working record, not a message to
+            // the customer.
+            isPrivate: true,
+        },
+    })
+
+    return { success: true }
+}
+
 export async function updateOpportunityStatus(
     opportunityId: string,
     status: OpportunityStatus,

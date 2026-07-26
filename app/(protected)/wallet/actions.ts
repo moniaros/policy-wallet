@@ -1471,7 +1471,13 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     // cross-linked to another policy's gap.
     const gap = await db.gapInstance.findFirst({
         where: { id: gapId, policyId },
-        select: { id: true },
+        select: {
+            id: true,
+            severity: true,
+            validationState: true,
+            aiExplanation: true,
+            definition: { select: { title: true } },
+        },
     })
     if (!gap) {
         return { error: "Gap not found for this policy." }
@@ -1501,7 +1507,20 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
         return { success: true, message: "Agent already notified." }
     }
 
-    // Create Opportunity
+    // Create Opportunity — seeded with the MEDIC pain evidence the platform
+    // already holds (gap + its validation state + the policy's contractual
+    // end date as the compelling event), so qualification starts honest.
+    const { seedOpportunityMedic } = await import("@/lib/medic/seed")
+    const medicSeed = seedOpportunityMedic({
+        pain: {
+            category: 'coverage_gap',
+            gapInstanceIds: [gap.id],
+            summary: gap.definition?.title || gap.aiExplanation || undefined,
+            severity: (gap.severity as any) ?? undefined,
+            validationState: gap.validationState,
+        },
+        compellingEventAt: policy.endDate,
+    })
     const opportunity = await db.opportunity.create({
         data: {
             relationshipId: relationship.id,
@@ -1509,7 +1528,10 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
             gapInstanceId: gapId,
             ownerAgentUserId: relationship.agentUserId,
             status: 'open',
-            notes: 'Customer requested more details on this gap.'
+            notes: 'Customer requested more details on this gap.',
+            medic: medicSeed.medic as any,
+            medicScore: medicSeed.medicScore,
+            medicUpdatedAt: medicSeed.medicUpdatedAt,
         }
     })
 

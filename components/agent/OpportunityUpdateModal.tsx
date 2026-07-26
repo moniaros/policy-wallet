@@ -5,6 +5,9 @@ import * as Sentry from "@sentry/nextjs"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useDialog } from "@/hooks/useDialog"
+import { MedicScorecard } from "@/components/agent/MedicScorecard"
+import { logOpportunityNote } from "@/app/(protected)/agent/actions"
+import type { MedicData } from "@/lib/medic/types"
 
 interface OpportunityUpdateModalProps {
     isOpen: boolean
@@ -15,6 +18,8 @@ interface OpportunityUpdateModalProps {
         title: string
         status: string
         notes?: string
+        /** MEDIC qualification snapshot (read view — blueprint §F). */
+        medic?: MedicData | null
     }
     onUpdate: (opportunityId: string, status: string, notes: string, nextActionDate?: string) => Promise<void>
 }
@@ -36,6 +41,23 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
     const [notes, setNotes] = useState(opportunity.notes || '')
     const [nextActionDate, setNextActionDate] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+    // Discovery-note capture (MEDIC note create-path) — separate from the
+    // status form so a note never rides along with an accidental status change.
+    const [noteDraft, setNoteDraft] = useState('')
+    const [savingNote, setSavingNote] = useState(false)
+
+    const handleLogNote = async () => {
+        if (!noteDraft.trim()) return
+        setSavingNote(true)
+        const res = await logOpportunityNote(opportunity.id, noteDraft)
+        setSavingNote(false)
+        if (res && 'success' in res && res.success) {
+            setNoteDraft('')
+            toast.success(tt.logNoteSaved)
+        } else {
+            toast.error(tt.logNoteError)
+        }
+    }
 
     if (!isOpen) return null
 
@@ -87,6 +109,64 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    {/* MEDIC scorecard — read view, progressive disclosure */}
+                    <details className="group">
+                        <summary className="cursor-pointer list-none text-sm font-bold text-neutral-700 dark:text-neutral-300">
+                            <span className="group-open:hidden">{tt.scorecardShow}</span>
+                            <span className="hidden group-open:inline">{tt.scorecardHide}</span>
+                            <span className="ml-2 text-xs font-normal text-neutral-500 dark:text-neutral-400">{tt.scorecardTitle}</span>
+                        </summary>
+                        <div className="mt-2">
+                            <MedicScorecard
+                                medic={opportunity.medic ?? null}
+                                copy={{
+                                    scorecardTitle: tt.scorecardTitle,
+                                    scorecardHint: tt.scorecardHint,
+                                    scorecardEmpty: tt.scorecardEmpty,
+                                    dimMetrics: tt.dimMetrics,
+                                    dimEconomicBuyer: tt.dimEconomicBuyer,
+                                    dimDecisionCriteria: tt.dimDecisionCriteria,
+                                    dimDecisionProcess: tt.dimDecisionProcess,
+                                    dimIdentifyPain: tt.dimIdentifyPain,
+                                    dimChampion: tt.dimChampion,
+                                    ratingMissing: tt.ratingMissing,
+                                    ratingPartial: tt.ratingPartial,
+                                    ratingSolid: tt.ratingSolid,
+                                    qualifiedYes: tt.qualifiedYes,
+                                    qualifiedNo: tt.qualifiedNo,
+                                    complianceClear: tt.complianceClear,
+                                    complianceOpen: tt.complianceOpen,
+                                }}
+                            />
+                        </div>
+                    </details>
+
+                    {/* Log note — the MEDIC discovery capture path. Separate
+                        button, never submits the status form. */}
+                    <div>
+                        <label htmlFor="opp-log-note" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
+                            {tt.logNoteLabel}
+                        </label>
+                        <div className="flex gap-2">
+                            <textarea
+                                id="opp-log-note"
+                                value={noteDraft}
+                                onChange={(e) => setNoteDraft(e.target.value)}
+                                placeholder={tt.logNotePlaceholder}
+                                rows={2}
+                                className="pw-input flex-1 resize-none"
+                            />
+                            <button
+                                type="button"
+                                onClick={handleLogNote}
+                                disabled={savingNote || !noteDraft.trim()}
+                                className="pw-secondary-button pw-btn-sm self-end disabled:opacity-50"
+                            >
+                                {savingNote ? tt.logNoteSaving : tt.logNoteCta}
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Status */}
                     <div>
                         <label className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">

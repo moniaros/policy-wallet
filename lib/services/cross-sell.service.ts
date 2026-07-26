@@ -184,6 +184,17 @@ export async function runCrossSellForCustomer(
         for (const line of missingLines) {
             if (existingOppLobs.has(line.lob)) continue
 
+            // Seed MEDIC pain from the missing line — AI-probable until an
+            // advisor confirms (evidence ladder, blueprint §C).
+            const { seedOpportunityMedic } = await import("@/lib/medic/seed")
+            const medicSeed = seedOpportunityMedic({
+                pain: {
+                    category: 'coverage_gap',
+                    gapInstanceIds: [],
+                    summary: line.label.en,
+                    validationState: 'probable',
+                },
+            })
             await db.opportunity.create({
                 data: {
                     relationshipId: relationship.id,
@@ -194,6 +205,9 @@ export async function runCrossSellForCustomer(
                     estimatedPremium: estimatedPremium,
                     estimatedCommission: estimatedPremium ? commissionOn(commissionRates, line.lob, estimatedPremium) : null,
                     currency: "EUR",
+                    medic: medicSeed.medic as any,
+                    medicScore: medicSeed.medicScore,
+                    medicUpdatedAt: medicSeed.medicUpdatedAt,
                 },
             })
 

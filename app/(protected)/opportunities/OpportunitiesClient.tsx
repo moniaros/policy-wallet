@@ -22,13 +22,17 @@ interface Opportunity {
     policyId: string | null
     conversionLikelihood: "high" | "medium" | "low" | null
     conversionScore: number | null
+    /** MEDIC qualification score (0–100) — null until the advisor qualifies. */
+    medicScore: number | null
+    /** MEDIC snapshot for the modal scorecard (read view). */
+    medic: import("@/lib/medic/types").MedicData | null
 }
 
 interface OpportunitiesClientProps {
     initialOpportunities: Opportunity[]
 }
 
-type OppSortKey = "customer" | "status" | "likelihood" | "nextAction"
+type OppSortKey = "customer" | "status" | "likelihood" | "qualification" | "nextAction"
 
 export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClientProps) {
     const [opportunities, setOpportunities] = useState(initialOpportunities)
@@ -68,6 +72,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
         customer: (o: Opportunity) => o.customerName,
         status: (o: Opportunity) => o.status,
         likelihood: (o: Opportunity) => o.conversionScore,
+        qualification: (o: Opportunity) => o.medicScore,
         nextAction: (o: Opportunity) => (o.nextActionAt ? new Date(o.nextActionAt) : null),
     })
 
@@ -145,7 +150,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         {opp_t.likelihoodNote}
                     </p>
                     <TableShell label={opp_t.title}>
-                        <MobileSortControl sort={sort} onSort={toggle} onClear={() => setSort(null)} columns={[{ key: "customer", label: opp_t.colCustomer }, { key: "status", label: opp_t.colStatus }, { key: "likelihood", label: opp_t.colLikelihood }, { key: "nextAction", label: opp_t.colNextAction }]} label={opp_t.sortLabel} defaultLabel={opp_t.defaultOrder} className="mb-3" />
+                        <MobileSortControl sort={sort} onSort={toggle} onClear={() => setSort(null)} columns={[{ key: "customer", label: opp_t.colCustomer }, { key: "status", label: opp_t.colStatus }, { key: "likelihood", label: opp_t.colLikelihood }, { key: "qualification", label: opp_t.colQualification }, { key: "nextAction", label: opp_t.colNextAction }]} label={opp_t.sortLabel} defaultLabel={opp_t.defaultOrder} className="mb-3" />
                         <table className="pw-stacked-table w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-800/60">
@@ -153,6 +158,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                     <th className="px-6 py-5 text-micro font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{opp_t.colOpportunity}</th>
                                     <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={opp_t.colStatus} align="left" className="px-6 py-5" />
                                     <SortableColumn columnKey="likelihood" sort={sort} onSort={toggle} label={opp_t.colLikelihood} align="left" className="px-6 py-5" />
+                                    <SortableColumn columnKey="qualification" sort={sort} onSort={toggle} label={opp_t.colQualification} align="left" className="px-6 py-5" />
                                     <SortableColumn columnKey="nextAction" sort={sort} onSort={toggle} label={opp_t.colNextAction} align="left" className="px-6 py-5" />
                                     <th className="px-6 py-5 text-micro font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
                                 </tr>
@@ -198,6 +204,16 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                             </span>
                                                         )}
                                                     </div>
+                                                ) : (
+                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400">—</span>
+                                                )}
+                                            </td>
+                                            <td data-label={opp_t.colQualification} className="px-6 py-6">
+                                                {opp.medicScore != null ? (
+                                                    <span className="inline-flex items-center gap-1.5">
+                                                        <span className="font-mono text-xs font-bold text-neutral-700 dark:text-neutral-300">{opp.medicScore}</span>
+                                                        <span className="text-kicker text-neutral-500 dark:text-neutral-400">/100</span>
+                                                    </span>
                                                 ) : (
                                                     <span className="text-xs text-neutral-500 dark:text-neutral-400">—</span>
                                                 )}
