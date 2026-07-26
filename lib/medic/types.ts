@@ -16,6 +16,14 @@
 
 export type MedicStance = 'economic_buyer' | 'champion' | 'influencer' | 'blocker'
 
+/** Single source for the evidence-ladder ordering (probable → confirmed →
+ *  validated). Was duplicated across score/gates/seed — one rank table now. */
+export const VALIDATION_RANK: Record<string, number> = {
+    probable: 1,
+    confirmed: 2,
+    validated: 3,
+}
+
 export interface MedicStakeholder {
     /** Display name as the advisor knows them (spouse, accountant, office manager…). */
     name: string

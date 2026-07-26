@@ -148,6 +148,28 @@ export const POST = withApiGuard(
                     where: { id: gapInstanceId, validationState: { in: ['probable', 'confirmed'] } },
                     data: { validationState: 'validated' },
                 })
+
+                // Sync linked opportunities' medic mirror + score with the
+                // ladder (same discipline as confirmGap).
+                const { advancePainValidation } = await import("@/lib/medic/seed")
+                const { calculateMedicScore } = await import("@/lib/medic/score")
+                const linkedOpps = await tx.opportunity.findMany({
+                    where: { gapInstanceId },
+                    select: { id: true, medic: true },
+                })
+                for (const opp of linkedOpps) {
+                    const advanced = advancePainValidation(opp.medic, gapInstanceId, 'validated')
+                    if (advanced) {
+                        await tx.opportunity.update({
+                            where: { id: opp.id },
+                            data: {
+                                medic: advanced as any,
+                                medicScore: calculateMedicScore(advanced).score,
+                                medicUpdatedAt: new Date(),
+                            },
+                        })
+                    }
+                }
             }
 
             return { thread, proposal }

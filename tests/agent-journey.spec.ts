@@ -61,3 +61,200 @@ test.describe('Agent Journey', () => {
         await expect(page.getByText('Health & Lifestyle Assessment')).toHaveCount(0);
     });
 });
+
+/**
+ * MEDIC evidence ladder — the blueprint's own E2E verification list:
+ * confirm a gap (probable → confirmed) on the agent customer-policy view, see
+ * the opportunity carry the Pain + transparent score, and log a discovery note.
+ * Fixtures mirror scripts/seed-agent-demo.mjs row shapes (relationship +
+ * manage grant + gap on the provisioned E2E-MOT-001 policy).
+ */
+test.describe('MEDIC evidence ladder', () => {
+    test.describe.configure({ mode: 'serial' });
+
+    let agentId: string;
+    let phId: string;
+    let policyId: string;
+    let gapId: string;
+    let oppId: string;
+
+    async function prismaClient() {
+        const { PrismaClient } = await import('@prisma/client');
+        return new PrismaClient();
+    }
+
+    test.beforeAll(async () => {
+        const db = await prismaClient();
+        try {
+            const [agent, ph] = await Promise.all([
+                db.user.findFirstOrThrow({ where: { email: 'e2e-agent@policywallet.test' }, select: { id: true } }),
+                db.user.findFirstOrThrow({ where: { email: 'e2e-ph@policywallet.test' }, select: { id: true } }),
+            ]);
+            agentId = agent.id;
+            phId = ph.id;
+
+            const policy = await db.policy.findFirstOrThrow({
+                where: { ownerUserId: phId, policyNumber: 'E2E-MOT-001' },
+                select: { id: true },
+            });
+            policyId = policy.id;
+
+            let rel = await db.customerRelationship.findFirst({
+                where: { agentUserId: agentId, policyholderUserId: phId },
+                select: { id: true },
+            });
+            if (rel) {
+                await db.customerRelationship.update({
+                    where: { id: rel.id },
+                    data: { status: 'active', activationStatus: 'active' },
+                });
+            } else {
+                rel = await db.customerRelationship.create({
+                    data: { agentUserId: agentId, policyholderUserId: phId, status: 'active', activationStatus: 'active' },
+                    select: { id: true },
+                });
+            }
+
+            // confirmGap gates on canWrite: a manage-level policy-scoped grant.
+            const scope = `policy:${policyId}`;
+            const grant = await db.accessGrant.findFirst({
+                where: { granterUserId: phId, granteeUserId: agentId, scope, status: 'active' },
+                select: { id: true, permissions: true },
+            });
+            if (!grant) {
+                await db.accessGrant.create({
+                    data: { granterUserId: phId, granteeUserId: agentId, scope, permissions: 'manage', status: 'active' },
+                });
+            } else if (grant.permissions !== 'manage') {
+                await db.accessGrant.update({ where: { id: grant.id }, data: { permissions: 'manage' } });
+            }
+
+            const def = await db.gapDefinition.findFirstOrThrow({ select: { id: true } });
+            const gap = await db.gapInstance.create({
+                data: {
+                    policyId,
+                    gapDefinitionId: def.id,
+                    severity: 'high',
+                    status: 'open',
+                    validationState: 'probable',
+                    aiExplanation: 'E2E MEDIC ladder fixture gap',
+                    aiExplanationEl: 'Δοκιμαστικό κενό για τη σκάλα τεκμηρίωσης',
+                },
+                select: { id: true },
+            });
+            gapId = gap.id;
+
+            const opp = await db.opportunity.create({
+                data: {
+                    relationshipId: rel.id,
+                    policyId,
+                    gapInstanceId: gapId,
+                    ownerAgentUserId: agentId,
+                    status: 'open',
+                    notes: 'E2E MEDIC fixture opportunity',
+                    medic: {
+                        pain: {
+                            category: 'coverage_gap',
+                            gapInstanceIds: [gapId],
+                            summary: 'Δοκιμαστικό κενό',
+                            severity: 'high',
+                            validationState: 'probable',
+                        },
+                    },
+                    medicScore: 17,
+                    medicUpdatedAt: new Date(),
+                },
+                select: { id: true },
+            });
+            oppId = opp.id;
+        } finally {
+            await db.$disconnect();
+        }
+    });
+
+    test.afterAll(async () => {
+        const db = await prismaClient();
+        try {
+            const thread = await db.collaborationThread.findFirst({
+                where: { linkedOpportunityId: oppId },
+                select: { id: true },
+            });
+            if (thread) {
+                await db.collaborationMessage.deleteMany({ where: { threadId: thread.id } });
+                await db.collaborationThread.delete({ where: { id: thread.id } });
+            }
+            if (oppId) await db.opportunity.deleteMany({ where: { id: oppId } });
+            if (gapId) await db.gapInstance.deleteMany({ where: { id: gapId } });
+        } finally {
+            await db.$disconnect();
+        }
+    });
+
+    test('advisor confirms an AI-probable gap (probable → confirmed)', async ({ page }) => {
+        test.setTimeout(90_000); // remote-pooler page loads
+        await page.goto(`/customers/${phId}/policy/${policyId}`);
+
+        // The AI-probable chip renders on the fixture gap…
+        await expect(page.getByText(/^Πιθανό$|^Probable$/).first()).toBeVisible({ timeout: 30000 });
+        // …and the advisor's forward-only confirm action flips it.
+        await page.getByRole('button', { name: /Επιβεβαίωση κενού|Confirm gap/i }).first().click();
+        await expect(page.getByText(/^Επιβεβαιωμένο$|^Confirmed$/).first()).toBeVisible({ timeout: 15000 });
+
+        // The observable contract: the ladder advanced in the DB — and the
+        // linked opportunity's medic mirror + score advanced WITH it.
+        const db = await prismaClient();
+        try {
+            await expect
+                .poll(async () => {
+                    const g = await db.gapInstance.findUnique({ where: { id: gapId }, select: { validationState: true } });
+                    return g?.validationState;
+                }, { timeout: 15000 })
+                .toBe('confirmed');
+            await expect
+                .poll(async () => {
+                    const o = await db.opportunity.findUnique({ where: { id: oppId }, select: { medic: true } });
+                    return (o?.medic as any)?.pain?.validationState;
+                }, { timeout: 15000 })
+                .toBe('confirmed');
+        } finally {
+            await db.$disconnect();
+        }
+    });
+
+    test('opportunity modal shows the scorecard and logs a discovery note', async ({ page }) => {
+        test.setTimeout(90_000);
+        await page.goto('/opportunities');
+
+        // Open the fixture opportunity's update modal (row actions reveal on hover;
+        // Playwright hovers implicitly on click).
+        await page.getByRole('button', { name: /Ενημέρωση|Update/i }).first().click();
+
+        // Scorecard behind progressive disclosure — open it and see the transparent
+        // ratings (the pain dimension carries the seeded evidence).
+        await page.getByText(/Προβολή αξιολόγησης|Show qualification/i).click();
+        await expect(page.getByText(/Ανάγκη|^Need$/).first()).toBeVisible();
+        await expect(page.getByText(/Ελλιπής εικόνα|Incomplete picture/i).first()).toBeVisible();
+
+        // Log a discovery note (the §I capture path) and verify it persisted as a
+        // private note message on the lazily-created linked thread.
+        await page.locator('#opp-log-note').fill('E2E: ο σύζυγος αποφασίζει για τα οικονομικά');
+        await page.getByRole('button', { name: /Αποθήκευση σημείωσης|Save note/i }).click();
+        await expect(page.getByText(/Η σημείωση αποθηκεύτηκε|Note saved/i).first()).toBeVisible({ timeout: 15000 });
+
+        const db = await prismaClient();
+        try {
+            await expect
+                .poll(async () => {
+                    const thread = await db.collaborationThread.findFirst({
+                        where: { linkedOpportunityId: oppId },
+                        select: { id: true },
+                    });
+                    if (!thread) return 0;
+                    return db.collaborationMessage.count({ where: { threadId: thread.id, messageType: 'note' } });
+                }, { timeout: 15000 })
+                .toBeGreaterThan(0);
+        } finally {
+            await db.$disconnect();
+        }
+    });
+});

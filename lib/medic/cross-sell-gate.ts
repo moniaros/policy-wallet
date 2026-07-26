@@ -14,8 +14,8 @@
  */
 
 import { getMedicConfig, type MedicConfig } from '@/lib/medic/config'
+import { VALIDATION_RANK } from '@/lib/medic/types'
 
-const VALIDATION_RANK: Record<string, number> = { probable: 1, confirmed: 2, validated: 3 }
 
 export interface CrossSellGateInput {
     gapValidationState?: 'probable' | 'confirmed' | 'validated' | null

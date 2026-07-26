@@ -13,13 +13,13 @@
  */
 
 import { getMedicConfig, type MedicConfig } from '@/lib/medic/config'
-import type {
-    MedicData,
-    MedicDimensionRatings,
-    MedicScoreResult,
+import {
+    VALIDATION_RANK,
+    type MedicData,
+    type MedicDimensionRatings,
+    type MedicScoreResult,
 } from '@/lib/medic/types'
 
-const VALIDATION_RANK: Record<string, number> = { probable: 1, confirmed: 2, validated: 3 }
 
 function rateMetrics(medic: MedicData): 0 | 1 | 2 {
     const m = medic.metrics

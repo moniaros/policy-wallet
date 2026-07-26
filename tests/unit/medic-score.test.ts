@@ -3,6 +3,7 @@ import { calculateMedicScore, complianceClear } from '@/lib/medic/score'
 import { gateOpportunityQualified, gateRenewalActionable, buildRenewalPain } from '@/lib/medic/gates'
 import { crossSellAdvisorReady } from '@/lib/medic/cross-sell-gate'
 import { computeQualificationHealth } from '@/lib/medic/portfolio'
+import { advancePainValidation } from '@/lib/medic/seed'
 import { getMedicConfig, DEFAULT_MEDIC_CONFIG } from '@/lib/medic/config'
 import type { MedicData } from '@/lib/medic/types'
 
@@ -174,6 +175,38 @@ describe('computeQualificationHealth — dashboard tile (§F)', () => {
         expect(q.pipelineCount).toBe(1)
         expect(q.missingEb).toBe(1)
         expect(q.unconfirmedPain).toBe(1)
+    })
+})
+
+describe('advancePainValidation — ladder sync into opportunity mirrors', () => {
+    const medic = {
+        pain: { category: 'coverage_gap', gapInstanceIds: ['gap1'], validationState: 'probable' },
+    }
+
+    it('advances the mirror when the gap matches, forward-only', () => {
+        const advanced = advancePainValidation(medic, 'gap1', 'confirmed')
+        expect(advanced?.pain?.validationState).toBe('confirmed')
+        // Never regresses: validated stays validated.
+        const validated = { pain: { ...medic.pain, validationState: 'validated' } }
+        expect(advancePainValidation(validated, 'gap1', 'confirmed')).toBeNull()
+    })
+
+    it('ignores opportunities whose pain references a different gap', () => {
+        expect(advancePainValidation(medic, 'other-gap', 'confirmed')).toBeNull()
+    })
+
+    it('never throws on malformed/absent medic JSON', () => {
+        expect(advancePainValidation(null, 'gap1', 'confirmed')).toBeNull()
+        expect(advancePainValidation('garbage', 'gap1', 'confirmed')).toBeNull()
+        expect(advancePainValidation({}, 'gap1', 'confirmed')).toBeNull()
+    })
+
+    it('the synced mirror moves the score (partial pain → solid pain)', () => {
+        const before = calculateMedicScore(medic as any).ratings.identifyPain
+        const advanced = advancePainValidation(medic, 'gap1', 'validated')!
+        const after = calculateMedicScore(advanced).ratings.identifyPain
+        expect(before).toBe(1)
+        expect(after).toBe(2)
     })
 })
 

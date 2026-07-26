@@ -1438,6 +1438,29 @@ export async function confirmGap(gapId: string) {
             where: { id: gapId },
             data: { validationState: 'confirmed' },
         })
+
+        // Keep linked opportunities' medic mirror + score in step with the
+        // ladder — otherwise the scorecard keeps showing "probable" pain and a
+        // stale score after the advisor confirmed.
+        const { advancePainValidation } = await import("@/lib/medic/seed")
+        const { calculateMedicScore } = await import("@/lib/medic/score")
+        const linkedOpps = await db.opportunity.findMany({
+            where: { gapInstanceId: gapId },
+            select: { id: true, medic: true },
+        })
+        for (const opp of linkedOpps) {
+            const advanced = advancePainValidation(opp.medic, gapId, 'confirmed')
+            if (advanced) {
+                await db.opportunity.update({
+                    where: { id: opp.id },
+                    data: {
+                        medic: advanced as any,
+                        medicScore: calculateMedicScore(advanced).score,
+                        medicUpdatedAt: new Date(),
+                    },
+                })
+            }
+        }
     }
 
     revalidatePath(`/customers/${gap.policy.ownerUserId}/policy/${gap.policy.id}`)

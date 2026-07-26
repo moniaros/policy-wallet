@@ -252,6 +252,9 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
             {/* Update Modal */}
             {selectedOpp && (
                 <OpportunityUpdateModal
+                    // Remount per opportunity: the modal seeds local state
+                    // (medicView, note draft) from props on mount.
+                    key={selectedOpp.id}
                     isOpen={!!selectedOpp}
                     onClose={() => setSelectedOpp(null)}
                     opportunity={{
@@ -259,7 +262,11 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         customerName: selectedOpp.customerName,
                         title: selectedOpp.title,
                         status: selectedOpp.status,
-                        notes: selectedOpp.notes || undefined
+                        notes: selectedOpp.notes || undefined,
+                        // The scorecard's data — omitting this rendered the
+                        // empty state for EVERY opportunity (caught by the
+                        // MEDIC-ladder E2E, exactly as §K's verification intended).
+                        medic: selectedOpp.medic,
                     }}
                     onUpdate={handleUpdate}
                 />
