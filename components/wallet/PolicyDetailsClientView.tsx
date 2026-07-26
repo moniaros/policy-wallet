@@ -659,6 +659,7 @@ export function PolicyDetailsClient({
                                     startDate={getStartDate()}
                                     endDate={getEndDate()}
                                     renewalDate={renewalDate}
+                                    renewalHint={glossaryHints?.renewal ?? null}
                                     daysLeft={computedDaysLeft}
                                     statusLabel={statusLabel}
                                     statusColor={statusColor}

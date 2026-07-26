@@ -737,6 +737,124 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         dateModified: "2026-07-25",
     },
+    {
+        slug: "ananeosi",
+        term: { el: "Ανανέωση", en: "Renewal (ananeosi)" },
+        aliases: [{ el: "Ανανέωση ασφαλιστηρίου", en: "Policy renewal" }],
+        metaTitle: {
+            el: "Τι είναι η ανανέωση ασφαλιστηρίου;",
+            en: "What is insurance renewal (ananeosi)?",
+        },
+        metaDescription: {
+            el: "Ανανέωση είναι η παράταση του ασφαλιστηρίου για νέα περίοδο ώστε να μη διακοπεί η κάλυψη. Δείτε πότε γίνεται αυτόματα, τι μπορεί να αλλάξει και τι να ελέγξετε πριν πληρώσετε.",
+            en: "Renewal extends your policy for a new period so cover is not interrupted. See when it happens automatically, what can change, and what to check before you pay.",
+        },
+        shortDefinition: {
+            el: "Ανανέωση είναι η παράταση του ασφαλιστηρίου για νέα περίοδο (συνήθως ένα έτος) πριν λήξει, ώστε η κάλυψη να συνεχιστεί χωρίς κενό. Μπορεί να γίνεται αυτόματα ή να απαιτεί δική σας επιβεβαίωση και πληρωμή. Στην ανανέωση το ασφάλιστρο και οι όροι μπορεί να αλλάξουν — είναι η στιγμή να ξαναδείτε την κάλυψη, όχι απλώς να πληρώσετε.",
+            en: "Renewal extends your policy for a new period (usually a year) before it expires, so cover continues without a gap. It may happen automatically or require your confirmation and payment. At renewal the premium and terms can change — it is the moment to re-check your cover, not just to pay.",
+        },
+        body: [
+            {
+                el: "Ένα ασφαλιστήριο έχει ημερομηνία λήξης. Αν ανανεωθεί, η κάλυψη συνεχίζεται· αν δεν ανανεωθεί, εκπνέει και μένετε χωρίς κάλυψη από εκείνο το σημείο. Γι' αυτό η ανανέωση δεν είναι διαδικαστική λεπτομέρεια: είναι το σημείο όπου κρίνεται αν παραμένετε ασφαλισμένος.",
+                en: "A policy has an expiry date. If it is renewed, cover continues; if it is not, it lapses and you are left without cover from that point. That is why renewal is not a formality: it is the point at which staying insured is decided.",
+            },
+            {
+                el: "Ακόμη κι όταν η ανανέωση είναι αυτόματη, αξίζει να τη δείτε σαν μικρό ετήσιο έλεγχο: έχει αλλάξει το ασφάλιστρο; έχουν αλλάξει οι απαλλαγές ή οι εξαιρέσεις; καλύπτει ακόμη τις σημερινές σας ανάγκες; Μια αυτόματη ανανέωση σας γλιτώνει από το κενό κάλυψης, αλλά δεν εγγυάται ότι οι όροι παρέμειναν ίδιοι.",
+                en: "Even when renewal is automatic, it is worth treating as a small annual check: has the premium changed? have the deductibles or exclusions changed? does it still fit your current needs? An automatic renewal spares you a gap in cover, but does not guarantee the terms stayed the same.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και δείτε αν αναφέρεται «αυτόματη ανανέωση» και με ποια προθεσμία προειδοποίησης. Αν δεν είστε βέβαιοι, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας πριν τη λήξη — όχι μετά. Το PolicyWallet σας θυμίζει τις επερχόμενες λήξεις ώστε να έχετε χρόνο να αποφασίσετε.",
+            en: "In your own policy, find the expiry date and check whether it mentions «automatic renewal» and with what notice period. If you are unsure, ask your insurer or advisor before the expiry date — not after. PolicyWallet reminds you of upcoming expiries so you have time to decide.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Ανανεώνεται αυτόματα το ασφαλιστήριό μου;",
+                    en: "Does my policy renew automatically?",
+                },
+                answer: {
+                    el: "Εξαρτάται από τους όρους του συμβολαίου σας. Ορισμένα ανανεώνονται αυτόματα εκτός αν δηλώσετε το αντίθετο· άλλα απαιτούν ενεργή επιβεβαίωση και πληρωμή. Ελέγξτε τους όρους ή ρωτήστε τον ασφαλιστή σας.",
+                    en: "It depends on your policy terms. Some renew automatically unless you say otherwise; others require active confirmation and payment. Check the terms or ask your insurer.",
+                },
+            },
+            {
+                question: {
+                    el: "Τι γίνεται αν αφήσω το ασφαλιστήριο να λήξει;",
+                    en: "What happens if I let my policy expire?",
+                },
+                answer: {
+                    el: "Αν λήξει χωρίς ανανέωση, εκπνέει και δεν έχετε κάλυψη για νέες ζημιές από εκείνο το σημείο. Η επανασφάλιση μπορεί να απαιτεί νέα αίτηση και ενδέχεται να χαθούν συνέχειες όπως ο χρόνος αναμονής που έχετε ήδη συμπληρώσει.",
+                    en: "If it expires without renewal it lapses, and you have no cover for new losses from that point. Re-insuring may require a fresh application, and continuities such as a waiting period you have already served can be lost.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Εκπνοή", en: "Lapse" }, href: "/lexiko/ekpnoi" },
+            { label: { el: "Ασφάλιστρο", en: "Premium" }, href: "/lexiko/asfalistro" },
+            { label: { el: "Ασφαλιστήριο", en: "Insurance policy" }, href: "/lexiko/asfalistirio" },
+        ],
+        dateModified: "2026-07-26",
+    },
+    {
+        slug: "ekpnoi",
+        term: { el: "Εκπνοή", en: "Lapse (ekpnoi)" },
+        aliases: [{ el: "Λήξη χωρίς ανανέωση", en: "Lapsed policy" }],
+        metaTitle: {
+            el: "Τι σημαίνει εκπνοή ασφαλιστηρίου;",
+            en: "What does a policy lapse (ekpnoi) mean?",
+        },
+        metaDescription: {
+            el: "Εκπνοή είναι όταν ένα ασφαλιστήριο τελειώνει χωρίς ανανέωση και σταματά η κάλυψη. Δείτε τις συνέπειες, τη διαφορά από την ακύρωση και πώς να την αποφύγετε.",
+            en: "A lapse is when a policy ends without renewal and cover stops. See the consequences, how it differs from cancellation, and how to avoid it.",
+        },
+        shortDefinition: {
+            el: "Εκπνοή είναι όταν ένα ασφαλιστήριο τελειώνει και δεν ανανεώνεται — συνήθως επειδή πέρασε η λήξη ή δεν πληρώθηκε το ασφάλιστρο — οπότε δεν έχετε κάλυψη από εκείνο το σημείο. Νέες ζημιές δεν αποζημιώνονται. Η επανενεργοποίηση μπορεί να απαιτεί νέα αίτηση και ενδέχεται να χαθούν συνέχειες, όπως ο χρόνος αναμονής που έχετε ήδη συμπληρώσει.",
+            en: "A lapse is when a policy ends and is not renewed — usually because the expiry passed or the premium went unpaid — so you have no cover from that point. New losses are not paid. Reinstating may require a fresh application, and continuities such as a waiting period you have already served can be lost.",
+        },
+        body: [
+            {
+                el: "Η εκπνοή διαφέρει από την ακύρωση. Η ακύρωση είναι μια σκόπιμη ενέργεια — εσείς ή ο ασφαλιστής τερματίζετε το συμβόλαιο μέσα στη διάρκειά του. Η εκπνοή προκύπτει συχνά από αδράνεια: αφήσατε τη λήξη να περάσει ή δεν ολοκληρώθηκε η πληρωμή. Το αποτέλεσμα και στις δύο περιπτώσεις είναι το ίδιο — δεν είστε πλέον ασφαλισμένος.",
+                en: "A lapse is different from a cancellation. Cancellation is a deliberate act — you or the insurer end the contract during its term. A lapse often results from inaction: you let the expiry pass, or a payment did not go through. The result in both cases is the same — you are no longer insured.",
+            },
+            {
+                el: "Το ακριβό κομμάτι της εκπνοής δεν είναι μόνο το κενό κάλυψης. Όταν ξανασφαλιστείτε, ο ασφαλιστής μπορεί να ζητήσει νέα αίτηση, να επανεκτιμήσει τον κίνδυνο και να μην αναγνωρίσει συνέχειες που είχατε ήδη κερδίσει. Γι' αυτό είναι σχεδόν πάντα προτιμότερο να ανανεώσετε εγκαίρως παρά να αφήσετε ένα ασφαλιστήριο να εκπνεύσει.",
+                en: "The costly part of a lapse is not only the gap in cover. When you re-insure, the insurer may ask for a fresh application, re-assess the risk, and not recognise continuities you had already earned. That is why it is almost always better to renew in time than to let a policy lapse.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και βεβαιωθείτε ότι το ασφάλιστρο έχει πληρωθεί και είναι ενήμερο. Αν πλησιάζει η λήξη ή έχετε αμφιβολία, επικοινωνήστε με την ασφαλιστική ή τον σύμβουλό σας πριν την ημερομηνία λήξης. Το PolicyWallet σας ειδοποιεί για τις επερχόμενες λήξεις ώστε να προλάβετε.",
+            en: "In your own policy, find the expiry date and make sure the premium is paid and up to date. If the expiry is near or you are in any doubt, contact your insurer or advisor before the expiry date. PolicyWallet alerts you to upcoming expiries so you can act in time.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Μπορώ να επαναφέρω ένα ασφαλιστήριο που έχει εκπνεύσει;",
+                    en: "Can I reinstate a lapsed policy?",
+                },
+                answer: {
+                    el: "Μερικές φορές, αλλά δεν είναι εγγυημένο. Ο ασφαλιστής μπορεί να το επιτρέψει εντός μιας προθεσμίας, να ζητήσει νέα αίτηση ή να επανεκτιμήσει τους όρους. Ρωτήστε την ασφαλιστική σας το συντομότερο δυνατό.",
+                    en: "Sometimes, but it is not guaranteed. The insurer may allow it within a time window, ask for a fresh application, or re-assess the terms. Ask your insurer as soon as possible.",
+                },
+            },
+            {
+                question: {
+                    el: "Ποια η διαφορά εκπνοής και ακύρωσης;",
+                    en: "What is the difference between a lapse and a cancellation?",
+                },
+                answer: {
+                    el: "Η ακύρωση είναι σκόπιμος τερματισμός του συμβολαίου μέσα στη διάρκειά του· η εκπνοή είναι το τέλος χωρίς ανανέωση, συχνά από αδράνεια. Και οι δύο σας αφήνουν χωρίς κάλυψη.",
+                    en: "Cancellation is a deliberate ending of the contract during its term; a lapse is the end without renewal, often through inaction. Both leave you without cover.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Ανανέωση", en: "Renewal" }, href: "/lexiko/ananeosi" },
+            { label: { el: "Χρόνος αναμονής", en: "Waiting period" }, href: "/lexiko/chronos-anamonis" },
+            { label: { el: "Ασφαλιστήριο", en: "Insurance policy" }, href: "/lexiko/asfalistirio" },
+        ],
+        dateModified: "2026-07-26",
+    },
 ]
 
 /** One glossary term by slug, or undefined when the slug is unknown. */

@@ -311,6 +311,7 @@ export default async function PolicyDetailPage({
                 underinsurance: t.coverageDetails.home.valueComparison,
                 sublimit: t.wallet.policyDetailsPage.conditionTypes.sub_limit,
                 copayment: t.wallet.policyDetailsPage.conditionTypes.co_payment,
+                renewal: t.wallet.policyDetailsPage.renewalDateLabel,
             })}
             tier={entitlements.tier}
             tierLimits={entitlements.limits}

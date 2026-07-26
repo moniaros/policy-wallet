@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
-import { getGlossaryTerm } from '@/lib/glossary/content'
+import { getGlossaryTerm, glossaryTerms } from '@/lib/glossary/content'
 import { resolvePolicyGlossaryHints } from '@/lib/glossary/hints'
 
 /**
@@ -82,5 +82,59 @@ describe('the dictionary explains terms where the policyholder meets them', () =
         expect(card).not.toMatch(/from "@\/lib\/glossary\/content"/)
         const tab = readFileSync('components/wallet/coverage-details/CoverageTabView.tsx', 'utf-8')
         expect(tab).not.toMatch(/from "@\/lib\/glossary\/content"/)
+    })
+})
+
+/**
+ * Renewal + lapse are the two terms that answer "what happens if I take no
+ * action" — the literacy question a policyholder most needs help with, and the
+ * one the renewals status labels («Έληξε», «Εκπνοή») never explained. Both are
+ * now defined AND wired onto the policy-detail key-dates block.
+ */
+describe('renewal & lapse are explained where inaction has consequences', () => {
+    it('defines both terms in both languages, answer-first', () => {
+        for (const slug of ['ananeosi', 'ekpnoi']) {
+            const term = getGlossaryTerm(slug)
+            expect(term, slug).toBeTruthy()
+            // shortDefinition is the 40–60 word extractable answer.
+            expect(term!.shortDefinition.el.length, `${slug} el`).toBeGreaterThan(120)
+            expect(term!.shortDefinition.en.length, `${slug} en`).toBeGreaterThan(120)
+        }
+    })
+
+    it('the lapse definition states the material consequence (no cover for new losses)', () => {
+        const el = getGlossaryTerm('ekpnoi')!.shortDefinition.el
+        const en = getGlossaryTerm('ekpnoi')!.shortDefinition.en
+        expect(el).toMatch(/δεν έχετε κάλυψη/)
+        expect(en).toMatch(/no cover/)
+    })
+
+    it('resolves both as policy hints, linking to the live route', () => {
+        const hEl = resolvePolicyGlossaryHints('el', {})
+        expect(hEl.renewal, 'renewal el').toBeTruthy()
+        expect(hEl.lapse, 'lapse el').toBeTruthy()
+        expect(hEl.renewal!.href).toBe('/lexiko/ananeosi')
+        expect(resolvePolicyGlossaryHints('en', {}).lapse!.href).toBe('/en/lexiko/ekpnoi')
+    })
+
+    it('wires the renewal hint onto the key-dates card, falling back to the plain label', () => {
+        const src = readFileSync('components/wallet/policy-detail/KeyDatesCard.tsx', 'utf-8')
+        expect(src).toMatch(/renewalHint \? <GlossaryHint hint=\{renewalHint\} \/> : copy\.renewalDateLabel/)
+    })
+})
+
+/**
+ * A dangling /lexiko cross-link is a silent literacy dead-end: the "Read more"
+ * on a related term 404s. Every internal /lexiko/<slug> href must resolve.
+ */
+describe('glossary cross-links are not dead ends', () => {
+    it('every related /lexiko link points to a term that exists', () => {
+        for (const term of glossaryTerms) {
+            for (const rel of term.related ?? []) {
+                const m = rel.href.match(/^\/lexiko\/([a-z0-9-]+)$/)
+                if (!m) continue // non-glossary links (/product, /guides) are out of scope here
+                expect(getGlossaryTerm(m[1]), `${term.slug} → ${rel.href}`).toBeTruthy()
+            }
+        }
     })
 })

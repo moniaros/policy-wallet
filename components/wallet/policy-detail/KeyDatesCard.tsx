@@ -4,6 +4,7 @@ import { Calendar, RefreshCw } from "lucide-react"
 
 import { RenewalRemindersList } from "@/components/wallet/policy-detail/RenewalRemindersList"
 import { SourceSnippetBox } from "@/components/ui/SourceSnippetBox"
+import { GlossaryHint, type GlossaryHintData } from "@/components/insurance/GlossaryHint"
 import {
     formatPolicyDate,
     parsePolicyDate,
@@ -16,6 +17,12 @@ interface KeyDatesCardProps {
     endDate: string | null
     /** Extracted renewal date from acordData.policy — often differs from the end date. */
     renewalDate: string | null
+    /**
+     * Glossary hint for "renewal", resolved server-side. Wraps the renewal-date
+     * label so a policyholder can learn — at the point of reading — what renewal
+     * means and what happens if a policy is not renewed. Null hides the hint.
+     */
+    renewalHint?: GlossaryHintData | null
     /** null = no trustworthy end date — the countdown tile is hidden entirely. */
     daysLeft: number | null
     statusLabel: string
@@ -71,6 +78,7 @@ export function KeyDatesCard({
     startDate,
     endDate,
     renewalDate,
+    renewalHint,
     daysLeft,
     statusLabel,
     statusColor,
@@ -143,7 +151,9 @@ export function KeyDatesCard({
                 )}
                 {renewalDate && (
                     <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
-                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">{copy.renewalDateLabel}</p>
+                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                            {renewalHint ? <GlossaryHint hint={renewalHint} /> : copy.renewalDateLabel}
+                        </p>
                         <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(renewalDate, locale)}</p>
                     </div>
                 )}
