@@ -100,6 +100,28 @@ describe('score methodology disclosure', () => {
 })
 
 /**
+ * Governance: the score's own explanation must disown the two misreadings a
+ * policyholder is most likely to make — that a high score means they are safely
+ * insured, or that a low score means a claim will be refused. The score measures
+ * the BREADTH of cover held, not its adequacy or any claim outcome.
+ */
+describe('score methodology disowns the dangerous misreadings', () => {
+    it('EN: a high score is not "adequately insured" and a low score is not "claim rejected"', () => {
+        const en = readFileSync('lib/i18n/translations/en.ts', 'utf-8')
+        const limits = /scoreMethodologyLimits:\s*'([^']*)'/.exec(en)?.[1] || ''
+        expect(limits).toMatch(/high score does not mean you are adequately insured/i)
+        expect(limits).toMatch(/low score does not mean a claim will be rejected/i)
+        expect(limits.toLowerCase()).toContain('breadth')
+    })
+    it('EL: high score ≠ επαρκή ασφάλιση, low score ≠ απορριφθεί απαίτηση', () => {
+        const el = readFileSync('lib/i18n/translations/el.ts', 'utf-8')
+        const limits = /scoreMethodologyLimits:\s*'([^']*)'/.exec(el)?.[1] || ''
+        expect(limits).toContain('Υψηλή βαθμολογία δεν σημαίνει επαρκή ασφάλιση')
+        expect(limits).toContain('δεν σημαίνει ότι μια απαίτηση θα απορριφθεί')
+    })
+})
+
+/**
  * "Ευκαιρίες εξοικονόμησης" / "Savings opportunities" headed a check that only
  * counts branches holding more than one active policy. Two cars, or life cover
  * for two people, is not evidence of savings — and "no savings opportunities

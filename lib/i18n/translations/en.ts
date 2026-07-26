@@ -1502,7 +1502,7 @@ export const en: TranslationKeys = {
             protectionScore: 'Protection score',
             scoreMethodologyTitle: 'How is this score calculated?',
             scoreMethodologyBody: 'We compare the lines of insurance that would be expected for your profile against the ones you actually hold, then deduct points for gaps found inside the policies you already have. Each category is weighted by how important it is.',
-            scoreMethodologyLimits: 'The score does NOT assess premiums, insurers, or the quality of your policy wording.',
+            scoreMethodologyLimits: 'The score reflects the breadth of cover you hold — not whether its limits are enough for your needs. A high score does not mean you are adequately insured, nor that a loss will be paid; a low score does not mean a claim will be rejected. It does not assess premiums, insurers, or the quality of your policy wording.',
             scoreMethodologyNotAdvice: 'This is an informational indicator based on the documents you have uploaded — it is not personalised insurance advice. For a recommendation suited to your circumstances, speak to a licensed insurance intermediary.',
             scoreProvisional: 'Provisional estimate',
             scoreProvisionalHint: 'Based only on the gaps detected so far. It will be finalised once the analysis of your policies completes.',
