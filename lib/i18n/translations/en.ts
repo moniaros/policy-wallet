@@ -882,6 +882,9 @@ export const en: TranslationKeys = {
             title: 'Policy check',
             gaps: 'Coverage gaps',
             recommendations: 'AI suggestions',
+            methodologyTitle: 'How is this worked out?',
+            methodologyBody: 'It starts at 100 and goes down for each coverage gap and for fine-print clauses the analysis flags as critical or worth attention. A verified reading adds a few points back.',
+            methodologyLimits: 'It shows what stands out in this policy based on the analysis — not whether its limits are enough for you, nor whether a loss will be paid. Exclusions do not lower it: every policy has exclusions.',
         },
     },
 

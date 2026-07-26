@@ -85,18 +85,47 @@ describe('score methodology disclosure', () => {
         expect(screen.getByText(/Not personalised insurance advice/)).toBeTruthy()
     })
 
-    it('accompanies every protection score we render', () => {
-        // Both surfaces show a 0-100 figure with a colour verdict; neither may
-        // ship it bare.
+    it('accompanies every score we render', () => {
+        // Every 0-100 figure with a colour verdict — the portfolio protection
+        // score (dashboard tile + coverage card) AND the per-policy health donut
+        // — must ship with a methodology disclosure, never bare.
         for (const f of [
             'components/dashboard/home/StatTiles.tsx',
             'components/coverage/ProtectionScoreCard.tsx',
+            'components/wallet/policy-detail/SummaryCard.tsx',
         ]) {
-            expect(readFileSync(f, 'utf-8'), `${f} renders a score with no methodology`).toContain(
-                'ScoreMethodology'
+            // Require the actual JSX render, not merely the imported symbol —
+            // an import alone leaves the score bare on screen.
+            expect(readFileSync(f, 'utf-8'), `${f} renders a score with no methodology`).toMatch(
+                /<ScoreMethodology/
             )
         }
     })
+})
+
+/**
+ * The per-policy health donut is a 0-100 score with a verdict; it must explain
+ * what it measures and disown adequacy / claim-outcome readings, the same as the
+ * portfolio score. Exclusions must NOT lower it (every policy has them — the
+ * engine comment records the prior bug where they did).
+ */
+describe('per-policy health score is explained, not bare', () => {
+    it.each(['lib/i18n/translations/el.ts', 'lib/i18n/translations/en.ts'])(
+        '%s: health-score methodology exists and states its limits',
+        (file) => {
+            const src = readFileSync(file, 'utf-8')
+            expect(src).toMatch(/methodologyTitle:/)
+            expect(src).toMatch(/methodologyBody:/)
+            const isEl = file.includes('el.ts')
+            if (isEl) {
+                expect(src).toContain('ούτε αν μια ζημιά θα αποζημιωθεί')
+                expect(src).toContain('Οι εξαιρέσεις δεν μειώνουν τον δείκτη')
+            } else {
+                expect(src).toMatch(/nor whether a loss will be paid/)
+                expect(src).toMatch(/Exclusions do not lower it/)
+            }
+        }
+    )
 })
 
 /**

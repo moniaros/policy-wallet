@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Calendar, FileText, ShieldCheck, ShieldOff, Sparkles } from "lucide-react"
 
+import { ScoreMethodology } from "@/components/coverage/ScoreMethodology"
 import type { PolicyHealthScore } from "@/lib/wallet/policy-detail"
 
 interface SummaryCardProps {
@@ -24,6 +25,18 @@ interface SummaryCardProps {
         glanceConditions: string
         glancePerks: string
         days: string
+    }
+    /**
+     * Methodology disclosure for the health donut — a 0–100 figure with a verdict
+     * must not ship bare, the same rule the portfolio protection score follows.
+     * Explains the rule, the limits (not adequacy, not a claim prediction), and
+     * that it is not personalised advice.
+     */
+    methodology?: {
+        title: string
+        body: string
+        limits: string
+        notAdvice: string
     }
 }
 
@@ -49,6 +62,7 @@ export function SummaryCard({
     perkCount,
     daysLeft,
     copy,
+    methodology,
 }: SummaryCardProps) {
     const healthColorClass = HEALTH_COLOR[health.level] || HEALTH_COLOR.good
 
@@ -150,6 +164,9 @@ export function SummaryCard({
                             <p className={`text-xs font-bold ${healthColorClass}`}>
                                 {copy.healthLevels[health.level]}
                             </p>
+                            {methodology && (
+                                <ScoreMethodology className="mt-1" copy={methodology} />
+                            )}
                         </div>
                     </div>
                 )}

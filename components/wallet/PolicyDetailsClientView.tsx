@@ -649,6 +649,14 @@ export function PolicyDetailsClient({
                                     glancePerks: detailsCopy.glancePerks,
                                     days: t.wallet.days,
                                 }}
+                                methodology={{
+                                    title: t.wallet.healthScore.methodologyTitle,
+                                    body: t.wallet.healthScore.methodologyBody,
+                                    limits: t.wallet.healthScore.methodologyLimits,
+                                    // Single-source the regulated not-advice line with the
+                                    // portfolio score, so legal edits it in one place.
+                                    notAdvice: t.dashboard.home.scoreMethodologyNotAdvice,
+                                }}
                             />
                         </section>
 
