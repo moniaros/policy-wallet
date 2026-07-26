@@ -227,7 +227,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                             {t("Δημιουργία λογαριασμού", "Create your account")}
                         </h1>
                         <p className="mt-1 text-body text-[#5B6A7A] dark:text-white/65">
-                            {t("Όλα τα συμβόλαιά σας σε ένα ασφαλές μέρος.", "All your policies in one secure place.")}
+                            {t("Όλα τα ασφαλιστήριά σας σε ένα ασφαλές μέρος.", "All your policies in one secure place.")}
                         </p>
                     </div>
 

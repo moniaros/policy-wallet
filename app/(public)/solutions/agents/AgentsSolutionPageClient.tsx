@@ -189,7 +189,7 @@ export default function AgentSolutionsPage() {
                         </p>
                         <ul className="space-y-4">
                             {[
-                                t("Ανάλυση κάθε συμβολαίου σε λιγότερο από 30 δευτερόλεπτα", "Every policy analyzed in under 30 seconds"),
+                                t("Ανάλυση κάθε συμβολαίου σε λίγα λεπτά", "Every policy analyzed in minutes"),
                                 t("20 ασφαλιστικοί κλάδοι, όλες οι ελληνικές ασφαλιστικές", "20 insurance branches, every Greek insurer"),
                                 t("Δεδομένα πελατών σε servers ΕΕ, με GDPR & AES-256", "Client data on EU servers, GDPR & AES-256"),
                             ].map((fact) => (

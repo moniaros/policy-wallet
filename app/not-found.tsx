@@ -24,7 +24,7 @@ export default function NotFound() {
                 Η σελίδα δεν βρέθηκε
             </h1>
             <p className="mb-2 max-w-md text-center text-lg text-neutral-600 dark:text-neutral-400">
-                Η σελίδα ή το συμβόλαιο που ψάχνετε δεν υπάρχει ή έχει μετακινηθεί.
+                Η σελίδα ή το ασφαλιστήριο που ψάχνετε δεν υπάρχει ή έχει μετακινηθεί.
             </p>
             <p className="mb-10 max-w-md text-center text-sm text-neutral-500 dark:text-neutral-400">
                 The page or policy you are looking for doesn’t exist or has been moved.

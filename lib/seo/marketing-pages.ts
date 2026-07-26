@@ -63,7 +63,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product",
         title: "Ψηφιακό πορτοφόλι ασφαλίσεων με ανάλυση AI",
         description:
-            "Ανεβάστε τα ασφαλιστήριά σας σε PDF και η AI τα αναλύει σε λιγότερο από 30 δευτερόλεπτα: καλύψεις, κενά, υπενθυμίσεις ανανέωσης. Δωρεάν για 1 συμβόλαιο.",
+            "Ανεβάστε τα ασφαλιστήριά σας σε PDF και η AI τα αναλύει σε λίγα λεπτά: καλύψεις, κενά, υπενθυμίσεις ανανέωσης. Δωρεάν για 1 ασφαλιστήριο, χωρίς κάρτα.",
         keywords: [
             "διαχείριση ασφαλιστηρίων",
             "ανάλυση ασφαλιστηρίου AI",
@@ -74,7 +74,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         en: {
             title: "Digital insurance wallet with AI analysis",
             description:
-                "Upload your insurance policies as PDFs and AI analyzes them in under 30 seconds: coverages, gaps and renewal reminders. Free for 1 policy, no card needed.",
+                "Upload your insurance policies as PDFs and AI analyzes them in minutes: coverages, gaps and renewal reminders. Free for 1 policy, no card needed.",
             breadcrumb: "Product",
         },
     },
@@ -137,13 +137,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product/motor",
         title: "Ασφάλεια αυτοκινήτου: ανάλυση καλύψεων με AI",
         description:
-            "Παρακολουθήστε την εμπορική αξία του οχήματος, συγκρίνετε καλύψεις και εντοπίστε κενά όπως η οδική βοήθεια. Η AI διαβάζει το συμβόλαιό σας σε δευτερόλεπτα.",
+            "Παρακολουθήστε την εμπορική αξία του οχήματος, συγκρίνετε καλύψεις και εντοπίστε κενά όπως η οδική βοήθεια. Η AI διαβάζει το ασφαλιστήριό σας σε λίγα λεπτά.",
         keywords: ["ασφάλεια αυτοκινήτου", "καλύψεις ασφάλειας αυτοκινήτου"],
         breadcrumb: "Αυτοκίνητο",
         en: {
             title: "Car insurance in Greece: AI coverage analysis",
             description:
-                "Track your vehicle's market value, compare coverages and spot gaps like missing roadside assistance. AI reads your motor policy in under 30 seconds.",
+                "Track your vehicle's market value, compare coverages and spot gaps like missing roadside assistance. AI reads your motor policy for you in minutes.",
             breadcrumb: "Motor",
         },
     },

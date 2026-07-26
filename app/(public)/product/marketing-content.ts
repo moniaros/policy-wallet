@@ -21,8 +21,8 @@ export const PRODUCT_STEPS = [
         icon: Sparkles,
         titleEl: "Αφήστε την AI να εργαστεί",
         titleEn: "Let the AI work",
-        descEl: "Ανάλυση κενών, σύγκριση καλύψεων και επισήμανση κινδύνων σε δευτερόλεπτα, σε γλώσσα που καταλαβαίνετε.",
-        descEn: "Gap analysis, coverage comparison, and risk flagging in seconds, in language you actually understand.",
+        descEl: "Ανάλυση κενών, σύγκριση καλύψεων και επισήμανση κινδύνων σε λίγα λεπτά, σε γλώσσα που καταλαβαίνετε.",
+        descEn: "Gap analysis, coverage comparison, and risk flagging in minutes, in language you actually understand.",
     },
     {
         n: "03",

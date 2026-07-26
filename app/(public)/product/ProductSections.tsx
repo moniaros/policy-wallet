@@ -120,7 +120,7 @@ export function ProductSections({ language }: { language: Language }) {
                         </p>
                         <ul className="space-y-3">
                             {[
-                                t("Ανάλυση εγγράφων σε δευτερόλεπτα", "Document analysis in seconds"),
+                                t("Ανάλυση εγγράφων σε λίγα λεπτά", "Document analysis in minutes"),
                                 t("Εντοπισμός κενών και επικαλύψεων", "Gap and overlap detection"),
                                 t("Υπενθυμίσεις ανανέωσης και ειδοποιήσεις", "Renewal reminders and alerts"),
                                 t("Κοινοποίηση με ασφαλιστές και μεσίτες", "Sharing with insurers and brokers"),

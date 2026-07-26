@@ -21,7 +21,7 @@ import { UpgradeSuccessTracker } from "@/components/monetization/UpgradeSuccessT
 const COPY = {
     title: { el: "Η αναβάθμιση ολοκληρώθηκε", en: "Upgrade complete" },
     body: {
-        el: "Το πλάνο σας είναι ενεργό. Ξεκλειδώσατε πλήρη ανάλυση, περισσότερα συμβόλαια και απεριόριστες ερωτήσεις AI.",
+        el: "Το πλάνο σας είναι ενεργό. Ξεκλειδώσατε πλήρη ανάλυση, περισσότερα ασφαλιστήρια και απεριόριστες ερωτήσεις AI.",
         en: "Your plan is active. You unlocked full analysis, more policies and unlimited AI questions.",
     },
     agentBody: {
@@ -46,7 +46,7 @@ const COPY = {
     },
     reportTitle: { el: "Η αναφορά ξεκλειδώθηκε", en: "Report unlocked" },
     reportBody: {
-        el: "Όλα τα κενά κάλυψης του συμβολαίου σας είναι πλέον ορατά, μαζί με τις πλήρεις εξηγήσεις και προτάσεις.",
+        el: "Όλα τα κενά κάλυψης του ασφαλιστηρίου σας είναι πλέον ορατά, μαζί με τις πλήρεις εξηγήσεις και προτάσεις.",
         en: "All coverage gaps of your policy are now visible, with full explanations and recommendations.",
     },
 } as const

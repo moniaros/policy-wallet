@@ -13,7 +13,7 @@ export function LeftColumnContent() {
             </h2>
             <p className="text-lg text-neutral-300 mb-8">
                 {t(
-                    "Διαχειριστείτε πελάτες, αναλύστε συμβόλαια με AI και αναπτύξτε την επιχείρησή σας με επαγγελματικά εργαλεία σχεδιασμένα για σύγχρονους ασφαλιστές.",
+                    "Διαχειριστείτε πελάτες, αναλύστε ασφαλιστήρια με AI και αναπτύξτε την επιχείρησή σας με επαγγελματικά εργαλεία σχεδιασμένα για σύγχρονους ασφαλιστές.",
                     "Manage clients, analyze policies with AI, and grow your business with a professional toolset designed for modern agents."
                 )}
             </p>

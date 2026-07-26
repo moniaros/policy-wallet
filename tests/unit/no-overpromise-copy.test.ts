@@ -48,6 +48,35 @@ describe('savings report presents estimates as estimates', () => {
     })
 })
 
+describe('marketing never promises analysis "in seconds"', () => {
+    // Analysis queues (QStash) and takes minutes — the help center was fixed to
+    // say so, but the marketing/SEO layer still promised "under 30 seconds",
+    // breaking the product's first promise on first use. Uploading IS seconds;
+    // claims about the ANALYSIS must not be.
+    it('no analysis/read-speed claim in seconds across marketing + SEO', () => {
+        const { readdirSync, statSync } = require('node:fs') as typeof import('node:fs')
+        const { join } = require('node:path') as typeof import('node:path')
+        const collect = (dir: string): string[] =>
+            readdirSync(dir).flatMap((name) => {
+                const p = join(dir, name)
+                if (statSync(p).isDirectory()) return collect(p)
+                return /\.(tsx?|ts)$/.test(p) ? [p] : []
+            })
+        const files = [
+            ...collect('app/(public)'),
+            'lib/seo/marketing-pages.ts',
+            'lib/landing/content.ts',
+        ]
+        expect(files.length).toBeGreaterThan(10)
+        const CLAIM = /(αναλύ\p{L}*|analy[sz]\p{L}*|διαβάζ\p{L}*|reads?)[^.\n]{0,50}(δευτερόλεπτ|seconds)/iu
+        for (const file of files) {
+            const src = readFileSync(file, 'utf-8')
+            const m = src.match(CLAIM)
+            expect.soft(m, `${file}: "${m?.[0] ?? ''}"`).toBeNull()
+        }
+    })
+})
+
 describe('no "full protection" claims wait in the translations', () => {
     it('standardCoverageDesc ("Full protection…") is gone from both languages', () => {
         expect(EL).not.toContain('standardCoverageDesc')
