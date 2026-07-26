@@ -1263,10 +1263,6 @@ export const en: TranslationKeys = {
     },
 
     // Placeholders
-    placeholders: {
-        comingSoon: 'Coming Soon',
-        milestone: 'Milestone',
-    },
 
     analysis: {
         title: 'GAP ANALYSIS',

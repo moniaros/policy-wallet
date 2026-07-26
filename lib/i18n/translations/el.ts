@@ -1264,12 +1264,6 @@ export const el = {
         currentTypes: 'Τρέχοντες τύποι',
     },
 
-    // Placeholders
-    placeholders: {
-        comingSoon: 'Έρχεται σύντομα',
-        milestone: 'Ορόσημο',
-    },
-
     analysis: {
         title: 'ΑΝΑΛΥΣΗ ΑΣΦΑΛΙΣΤΙΚΩΝ ΚΕΝΩΝ',
         runAnalysis: 'Κατανόηση ασφαλιστηρίου',
