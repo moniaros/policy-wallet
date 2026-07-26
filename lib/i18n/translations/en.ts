@@ -2050,8 +2050,13 @@ export const en: TranslationKeys = {
             policyManagement: 'Policy Management',
             accountSecure: 'Account & Security',
             billing: 'Billing & Subscriptions',
-            mobileApp: 'Mobile App & PWA'
+            mobileApp: 'Mobile App & PWA',
+            insuranceBasics: 'Insurance basics'
         },
+        minRead: 'min read',
+        dictionaryTitle: 'Insurance dictionary',
+        dictionaryDesc: 'Plain, bilingual explanations of every insurance term — deductible, exclusion, renewal, lapse and more.',
+        openDictionary: 'Open dictionary',
         articles: {
             uploadPolicy: 'How to upload your first policy',
             sharingAccess: 'Sharing policy access with family',

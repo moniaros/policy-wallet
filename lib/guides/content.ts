@@ -1548,3 +1548,27 @@ export const guides: Guide[] = [
 export function getGuide(slug: string): Guide | undefined {
     return guides.find((guide) => guide.slug === slug)
 }
+
+/**
+ * A guide reduced to what a card needs: slug, bilingual title + 40–60 word
+ * summary, and reading time. Deliberately DROPS `sections`/`faq`/`sources` so a
+ * caller (e.g. the in-app help center) can list every guide without importing —
+ * and shipping to the client — the full ~60KB `guides` module. Resolve this on
+ * the server and pass the plain array down, the same discipline the glossary
+ * hints follow.
+ */
+export type GuideSummary = {
+    slug: string
+    title: LocalizedString
+    summary: LocalizedString
+    readingMinutes: number
+}
+
+export function getGuideSummaries(): GuideSummary[] {
+    return guides.map((g) => ({
+        slug: g.slug,
+        title: g.title,
+        summary: g.summary,
+        readingMinutes: g.readingMinutes,
+    }))
+}

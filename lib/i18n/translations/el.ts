@@ -2063,8 +2063,13 @@ export const el = {
             policyManagement: 'Διαχείριση ασφαλιστηρίων',
             accountSecure: 'Λογαριασμός & ασφάλεια',
             billing: 'Χρεώσεις & συνδρομές',
-            mobileApp: 'Mobile App & PWA'
+            mobileApp: 'Mobile App & PWA',
+            insuranceBasics: 'Βασικά ασφάλισης'
         },
+        minRead: 'λεπτά ανάγνωσης',
+        dictionaryTitle: 'Λεξικό ασφαλιστικών όρων',
+        dictionaryDesc: 'Απλές, δίγλωσσες εξηγήσεις για κάθε ασφαλιστικό όρο — απαλλαγή, εξαίρεση, ανανέωση, εκπνοή και πολλά ακόμη.',
+        openDictionary: 'Άνοιγμα λεξικού',
         articles: {
             uploadPolicy: 'Πώς να ανεβάσετε το πρώτο σας ασφαλιστήριο',
             sharingAccess: 'Κοινοποίηση πρόσβασης με την οικογένεια',
