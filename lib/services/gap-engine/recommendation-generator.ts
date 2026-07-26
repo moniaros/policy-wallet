@@ -106,6 +106,13 @@ export interface RecommendationOutput {
     status: string
     createdAt: Date
     matchedProduct: MatchedProduct | null
+    /**
+     * Evidence ladder of the linked gap (MEDIC): confirmed/validated lets the
+     * card show that an advisor stands behind the finding; null/probable stays
+     * a hedged informational suggestion. Never gates B2C display — it adds
+     * advisor weight, it does not remove information.
+     */
+    gapValidationState: 'probable' | 'confirmed' | 'validated' | null
 }
 
 // ── Greek market premium estimates ───────────────────────────────────
@@ -597,6 +604,8 @@ export async function getActiveRecommendations(
                     greekMarketPopularity: true,
                 },
             },
+            // Evidence ladder passthrough — lets the card show advisor weight.
+            gapInstance: { select: { validationState: true } },
         },
         orderBy: [{ createdAt: "desc" }],
     })
@@ -642,6 +651,7 @@ export async function getActiveRecommendations(
         personalReason: r.personalReason as { en: string; el: string },
         status: r.status,
         createdAt: r.createdAt,
+        gapValidationState: r.gapInstance?.validationState ?? null,
         matchedProduct: r.product
             ? {
                   id: r.product.id,

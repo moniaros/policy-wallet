@@ -1565,6 +1565,8 @@ export const en: TranslationKeys = {
             recPriorityMedium: 'Medium priority',
             recPriorityLow: 'Low priority',
             recPriorityNote: 'Priorities are based on your profile and the gaps we detected — they are not a definitive risk assessment.',
+            recAdvisorConfirmed: 'Advisor-confirmed',
+            recAdvisorValidated: 'Advisor recommendation',
             severityCritical: 'critical',
             severityHigh: 'high',
             severityMedium: 'medium',

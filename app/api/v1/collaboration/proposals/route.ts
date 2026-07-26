@@ -17,6 +17,10 @@ const createProposalSchema = z.object({
     coverageSummary: z.string().min(1).max(8000),
     comparisonData: z.record(z.string(), z.unknown()).optional(),
     plainLanguageSummary: z.string().max(8000).optional(),
+    /** Optional evidence link: the gap this proposal documents a fix for.
+     *  Creating the proposal is the "documented recommendation" moment, so the
+     *  gap's evidence ladder advances to `validated` (MEDIC blueprint §C). */
+    gapInstanceId: z.string().min(1).optional(),
 })
 
 // POST — Create a proposal
@@ -77,6 +81,26 @@ export const POST = withApiGuard(
             )
         }
 
+        // Optional gap evidence link: the gap must belong to THIS relationship's
+        // policyholder — the client supplies the id, and trusting it would let
+        // an agent "validate" (and link a proposal to) another customer's gap.
+        const gapInstanceId = (body as { gapInstanceId?: string }).gapInstanceId
+        if (gapInstanceId) {
+            const gap = await prisma.gapInstance.findFirst({
+                where: {
+                    id: gapInstanceId,
+                    OR: [
+                        { userId: relationship.policyholderUserId },
+                        { policy: { ownerUserId: relationship.policyholderUserId } },
+                    ],
+                },
+                select: { id: true },
+            })
+            if (!gap) {
+                return NextResponse.json({ error: "Gap not found for this customer" }, { status: 404 })
+            }
+        }
+
         const result = await prisma.$transaction(async (tx) => {
             const thread = await tx.collaborationThread.create({
                 data: {
@@ -87,6 +111,7 @@ export const POST = withApiGuard(
                     priority: "medium",
                     createdByUserId: agentUserId,
                     assignedToUserId: relationship.policyholderUserId,
+                    linkedGapInstanceId: gapInstanceId ?? null,
                 },
             })
 
@@ -114,6 +139,16 @@ export const POST = withApiGuard(
                     body: `Proposal created: ${insurerName} ${lineOfBusiness} — €${premiumAmount}`,
                 },
             })
+
+            // The documented recommendation exists — advance the gap's evidence
+            // ladder to `validated`. Forward-only: never regresses, and a gap
+            // already validated stays put.
+            if (gapInstanceId) {
+                await tx.gapInstance.updateMany({
+                    where: { id: gapInstanceId, validationState: { in: ['probable', 'confirmed'] } },
+                    data: { validationState: 'validated' },
+                })
+            }
 
             return { thread, proposal }
         })

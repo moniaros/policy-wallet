@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { calculateMedicScore, complianceClear } from '@/lib/medic/score'
 import { gateOpportunityQualified, gateRenewalActionable, buildRenewalPain } from '@/lib/medic/gates'
+import { crossSellAdvisorReady } from '@/lib/medic/cross-sell-gate'
 import { getMedicConfig, DEFAULT_MEDIC_CONFIG } from '@/lib/medic/config'
 import type { MedicData } from '@/lib/medic/types'
 
@@ -122,6 +123,32 @@ describe('soft gates (§H) — warn by default, never a silent hard wall', () =>
         const r = gateRenewalActionable({ expiresInWindow: true, ownerAssigned: true, consentToContact: true, knownFalsePositive: true })
         expect(r.allowed).toBe(false)
         expect(r.missing).toEqual(['false_positive'])
+    })
+})
+
+describe('cross-sell advisor-ready gate (§G promise 7 / §H row 3)', () => {
+    it('ready only with confirmed pain + confident evidence + not dismissed', () => {
+        const r = crossSellAdvisorReady({ gapValidationState: 'confirmed', extractionConfidence: 0.9, dismissed: false })
+        expect(r).toEqual({ ready: true, missing: [] })
+        expect(crossSellAdvisorReady({ gapValidationState: 'validated', extractionConfidence: 0.8, dismissed: false }).ready).toBe(true)
+    })
+
+    it('an AI-probable gap is NOT customer-eligible — it stays in the agent queue', () => {
+        const r = crossSellAdvisorReady({ gapValidationState: 'probable', extractionConfidence: 0.9, dismissed: false })
+        expect(r.ready).toBe(false)
+        expect(r.missing).toEqual(['pain_confirmed'])
+    })
+
+    it('unknown confidence never passes — evidence-positive, not benefit-of-the-doubt', () => {
+        const r = crossSellAdvisorReady({ gapValidationState: 'confirmed', extractionConfidence: null, dismissed: false })
+        expect(r.ready).toBe(false)
+        expect(r.missing).toEqual(['evidence_confidence'])
+    })
+
+    it('dismissed kills eligibility regardless of evidence', () => {
+        const r = crossSellAdvisorReady({ gapValidationState: 'validated', extractionConfidence: 1, dismissed: true })
+        expect(r.ready).toBe(false)
+        expect(r.missing).toEqual(['dismissed'])
     })
 })
 

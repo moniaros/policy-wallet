@@ -1575,6 +1575,8 @@ export const el = {
             recPriorityMedium: 'Μεσαία προτεραιότητα',
             recPriorityLow: 'Χαμηλή προτεραιότητα',
             recPriorityNote: 'Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου.',
+            recAdvisorConfirmed: 'Επιβεβαιωμένο από σύμβουλο',
+            recAdvisorValidated: 'Σύσταση συμβούλου',
             severityCritical: 'κρίσιμα',
             severityHigh: 'υψηλά',
             severityMedium: 'μέτρια',

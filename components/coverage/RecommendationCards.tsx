@@ -42,6 +42,9 @@ interface Recommendation {
     personalReason: { en: string; el: string }
     status: string
     createdAt: string
+    /** Evidence ladder of the linked gap — confirmed/validated adds visible
+     *  advisor weight; probable/null stays a hedged suggestion (no chip). */
+    gapValidationState?: "probable" | "confirmed" | "validated" | null
     matchedProduct?: {
         id: string
         name: { en: string; el: string }
@@ -290,6 +293,14 @@ export function RecommendationCards({
                                             )}
                                             {urgLabel}
                                         </span>
+                                        {/* Advisor weight from the evidence ladder — shown only
+                                            once a human stands behind the finding; a probable
+                                            (AI-only) finding earns no extra authority chip. */}
+                                        {(rec.gapValidationState === "confirmed" || rec.gapValidationState === "validated") && (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider border border-primary/25 bg-primary/5 text-primary/90 dark:border-primary/30 dark:bg-primary/10 dark:text-mint/90">
+                                                {rec.gapValidationState === "validated" ? home.recAdvisorValidated : home.recAdvisorConfirmed}
+                                            </span>
+                                        )}
                                     </div>
 
                                     {/* Plain-language explanation */}
