@@ -23,6 +23,12 @@ interface KeyDatesCardProps {
      * means and what happens if a policy is not renewed. Null hides the hint.
      */
     renewalHint?: GlossaryHintData | null
+    /**
+     * Glossary hint for "lapse", rendered ONLY when the policy has expired — a
+     * novice reading «Έληξε» rarely knows it means "no cover for new losses right
+     * now". Shown at that exact moment, next to the expired status. Null hides it.
+     */
+    lapseHint?: GlossaryHintData | null
     /** null = no trustworthy end date — the countdown tile is hidden entirely. */
     daysLeft: number | null
     statusLabel: string
@@ -79,6 +85,7 @@ export function KeyDatesCard({
     endDate,
     renewalDate,
     renewalHint,
+    lapseHint,
     daysLeft,
     statusLabel,
     statusColor,
@@ -117,6 +124,15 @@ export function KeyDatesCard({
                     {copy.renewalStatusLabel}: {statusLabel}
                 </span>
             </div>
+
+            {/* When the policy has expired, explain what that means for cover at
+                the exact moment the reader sees the status — a novice rarely
+                knows «Έληξε» means "no cover for new losses right now". */}
+            {isExpired && lapseHint && (
+                <p className="-mt-2 mb-5 text-caption text-black/60 dark:text-white/60">
+                    <GlossaryHint hint={lapseHint} />
+                </p>
+            )}
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">

@@ -121,6 +121,13 @@ describe('renewal & lapse are explained where inaction has consequences', () => 
         const src = readFileSync('components/wallet/policy-detail/KeyDatesCard.tsx', 'utf-8')
         expect(src).toMatch(/renewalHint \? <GlossaryHint hint=\{renewalHint\} \/> : copy\.renewalDateLabel/)
     })
+
+    it('explains lapse ONLY when the policy has expired (consequence at the moment of need)', () => {
+        const src = readFileSync('components/wallet/policy-detail/KeyDatesCard.tsx', 'utf-8')
+        // Gated on isExpired — never shown for an active or expiring-soon policy.
+        expect(src).toMatch(/isExpired && lapseHint && \(/)
+        expect(src).toMatch(/<GlossaryHint hint=\{lapseHint\} \/>/)
+    })
 })
 
 /**
