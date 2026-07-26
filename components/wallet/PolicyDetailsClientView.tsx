@@ -58,7 +58,7 @@ import { deriveInsuredNames } from "@/lib/wallet/insured-people"
 const EXPORT_COPY = {
     title: { el: "Αναφορά εξοικονόμησης", en: "Savings report" },
     subtitle: {
-        el: "Κατέβασε μια καθαρή σύνοψη καλύψεων, κενών και πιθανής εξοικονόμησης για αυτό το συμβόλαιο.",
+        el: "Κατέβασε μια καθαρή σύνοψη καλύψεων, κενών και πιθανής εξοικονόμησης για αυτό το ασφαλιστήριο.",
         en: "Download a clean summary of coverages, gaps and potential savings for this policy.",
     },
     exportCta: { el: "Εξαγωγή αναφοράς", en: "Export report" },

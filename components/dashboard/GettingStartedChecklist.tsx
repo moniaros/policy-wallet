@@ -58,7 +58,7 @@ export function GettingStartedChecklist({
     const items: ChecklistItem[] = [
         {
             id: "upload",
-            titleEl: "Ανέβασμα συμβολαίου",
+            titleEl: "Ανέβασμα ασφαλιστηρίου",
             titleEn: "Upload a policy",
             descEl: "Ανεβάστε το πρώτο σας ασφαλιστήριο PDF ή φωτογραφία.",
             descEn: "Upload your first insurance policy PDF or photo.",

@@ -39,6 +39,27 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
         }
     })
 
+    it('no B2C component tree carries «συμβόλαιο» in inline strings (the t()-helper blind spot)', () => {
+        // The rendered-page walk caught /coverage-insights saying «Προσθέστε το
+        // πρώτο σας συμβόλαιο» one section above «Προσθέστε ένα ασφαλιστήριο» —
+        // inline t("el","en") calls that lint:i18n-changed and the el.ts scan
+        // both miss. Scan the B2C component DIRECTORIES so the class stays closed.
+        const { readdirSync, statSync } = require('node:fs') as typeof import('node:fs')
+        const { join } = require('node:path') as typeof import('node:path')
+        const collect = (dir: string): string[] =>
+            readdirSync(dir).flatMap((name) => {
+                const p = join(dir, name)
+                if (statSync(p).isDirectory()) return collect(p)
+                return p.endsWith('.tsx') ? [p] : []
+            })
+        const files = ['components/coverage', 'components/wallet', 'components/dashboard'].flatMap(collect)
+        expect(files.length).toBeGreaterThan(20) // the scan must actually see the tree
+        for (const file of files) {
+            const src = readFileSync(file, 'utf-8')
+            expect.soft(src, file).not.toMatch(/συμβόλαι|συμβολαί/i)
+        }
+    })
+
     it('policy-number labels lowercase «ασφαλιστηρίου» after the «Αρ.» abbreviation', () => {
         // «Αρ.» is an abbreviation, not a sentence end, so the next word stays
         // lowercase — and the greek-sentence-case guard misses this (it treats «.»

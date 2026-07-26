@@ -20,7 +20,7 @@ export interface Share {
 }
 
 const MANAGE_BADGE_COPY = {
-    el: "Διαχειρίζεται το συμβόλαιο",
+    el: "Διαχειρίζεται το ασφαλιστήριο",
     en: "Manages this policy",
 } as const
 

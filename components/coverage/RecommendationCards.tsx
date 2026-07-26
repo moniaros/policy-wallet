@@ -174,21 +174,21 @@ export function RecommendationCards({
                 icon={Lightbulb}
                 headline={
                     !hasPolicies
-                        ? t("Προσθέστε το πρώτο σας συμβόλαιο", "Add your first policy")
+                        ? t("Προσθέστε το πρώτο σας ασφαλιστήριο", "Add your first policy")
                         : profileIncomplete
                             ? t("Οι προτάσεις σας ετοιμάζονται", "Your recommendations are on the way")
                             : t("Φαίνεστε καλά καλυμμένος/η", "You look well covered")
                 }
                 description={
                     !hasPolicies
-                        ? t("Προσθέστε ένα συμβόλαιο για να λάβετε εξατομικευμένες προτάσεις.", "Add a policy to get personalized recommendations.")
+                        ? t("Προσθέστε ένα ασφαλιστήριο για να λάβετε εξατομικευμένες προτάσεις.", "Add a policy to get personalized recommendations.")
                         : profileIncomplete
-                            ? t("Όσο πληρέστερο το προφίλ και τα συμβόλαιά σας, τόσο πιο εύστοχες οι προτάσεις της AI.", "The more complete your profile and policies, the sharper the AI's recommendations.")
+                            ? t("Όσο πληρέστερο το προφίλ και τα ασφαλιστήριά σας, τόσο πιο εύστοχες οι προτάσεις της AI.", "The more complete your profile and policies, the sharper the AI's recommendations.")
                             : t("Δεν υπάρχουν προτάσεις αυτή τη στιγμή. Ανανεώστε την ανάλυση για επανέλεγχο.", "No recommendations right now. Refresh the analysis to re-check.")
                 }
                 cta={
                     !hasPolicies
-                        ? { label: t("Προσθήκη συμβολαίου", "Add a policy"), href: "/wallet/add" }
+                        ? { label: t("Προσθήκη ασφαλιστηρίου", "Add a policy"), href: "/wallet/add" }
                         : profileIncomplete
                             ? {
                                   label: t("Συμπλήρωση προφίλ κινδύνου", "Complete your risk profile"),
