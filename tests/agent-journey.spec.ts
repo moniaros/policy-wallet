@@ -257,4 +257,45 @@ test.describe('MEDIC evidence ladder', () => {
             await db.$disconnect();
         }
     });
+
+    test('§F inline fields make the opportunity qualified («Πλήρης εικόνα»)', async ({ page }) => {
+        test.setTimeout(90_000);
+        // Depends on test 1 (serial): pain is now confirmed. With the € figure
+        // and an identified economic buyer added here, the transparent gate
+        // (pain≥confirmed + €metric + EB + score≥50) must flip to qualified —
+        // this state was UNREACHABLE before the patch path existed.
+        await page.goto('/opportunities');
+        await page.getByRole('button', { name: /Ενημέρωση|Update/i }).first().click();
+        await page.getByText(/Προβολή αξιολόγησης|Show qualification/i).click();
+        await expect(page.getByText(/Ελλιπής εικόνα|Incomplete picture/i).first()).toBeVisible();
+
+        // Metrics: € value-at-risk inline field.
+        await page.locator('#medic-var').fill('25000');
+        await page.locator('#medic-var-save').click();
+        await expect(page.getByText('€25000').first()).toBeVisible({ timeout: 15000 });
+
+        // Economic buyer: named by the advisor = identified.
+        await page.locator('#medic-eb-name').fill('Μαρία Ε2Ε');
+        await page.locator('#medic-eb-save').click();
+
+        // The badge flips in place (medicView refresh, no reload).
+        await expect(page.getByText(/Πλήρης εικόνα|Full picture/i).first()).toBeVisible({ timeout: 15000 });
+
+        // Observable contract in the DB: score crossed the gate + EB persisted.
+        const db = await prismaClient();
+        try {
+            await expect
+                .poll(async () => {
+                    const o = await db.opportunity.findUnique({
+                        where: { id: oppId },
+                        select: { medicScore: true, medic: true },
+                    });
+                    const eb = (o?.medic as any)?.stakeholders?.find((s: any) => s.stance === 'economic_buyer');
+                    return o?.medicScore != null && o.medicScore >= 50 && eb?.identified === true;
+                }, { timeout: 15000 })
+                .toBe(true);
+        } finally {
+            await db.$disconnect();
+        }
+    });
 });

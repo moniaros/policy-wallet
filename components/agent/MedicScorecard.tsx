@@ -180,7 +180,7 @@ export function MedicScorecard({
                                 disabled={busy}
                                 className={inputClass}
                             />
-                            <button type="button" onClick={saveValueAtRisk} disabled={busy} className={miniBtnClass}>
+                            <button type="button" id="medic-var-save" onClick={saveValueAtRisk} disabled={busy} className={miniBtnClass}>
                                 {copy.scSave}
                             </button>
                         </span>
@@ -211,7 +211,7 @@ export function MedicScorecard({
                                     disabled={busy}
                                     className={inputClass}
                                 />
-                                <button type="button" onClick={addEconomicBuyer} disabled={busy || !ebName.trim()} className={miniBtnClass}>
+                                <button type="button" id="medic-eb-save" onClick={addEconomicBuyer} disabled={busy || !ebName.trim()} className={miniBtnClass}>
                                     {copy.scSave}
                                 </button>
                             </span>
