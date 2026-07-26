@@ -43,6 +43,8 @@ export interface InsightsData {
         totalPotentialValue: number
         totalWonValue: number
     }
+    /** Manager deal-review (MEDIC §K Next): book-level qualification health. */
+    qualification: import('@/lib/medic/portfolio').QualificationHealth
     premiumSummary: {
         totalPremium: number
         avgPremiumPerCustomer: number
@@ -197,6 +199,25 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const totalWonValue = wonOpps
         .reduce((sum, o) => sum + Number(o.wonPremium ?? o.estimatedPremium ?? 0), 0)
 
+    // 4b. Manager deal-review (MEDIC): qualification health over the OPEN
+    // pipeline — same pure computation as the dashboard tile, book-level here.
+    const { computeQualificationHealth } = await import('@/lib/medic/portfolio')
+    const openPipelineRows = await db.opportunity.findMany({
+        where: {
+            relationship: { agentUserId: agentId },
+            status: { in: ['open', 'contacted', 'quoted'] },
+        },
+        select: { status: true, estimatedPremium: true, medicScore: true, medic: true },
+    })
+    const qualification = computeQualificationHealth(
+        openPipelineRows.map((o) => ({
+            status: o.status,
+            estimatedPremium: o.estimatedPremium ? Number(o.estimatedPremium) : null,
+            medicScore: o.medicScore ?? null,
+            medic: o.medic,
+        }))
+    )
+
     // 5. Premium summary
     const totalPremium = policies.reduce((sum, p) => sum + (Number(p.premiumAmount ?? 0)), 0)
     const avgPremiumPerCustomer = totalCustomers > 0 ? totalPremium / totalCustomers : 0
@@ -269,6 +290,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             totalPotentialValue: Math.round(totalPotentialValue),
             totalWonValue: Math.round(totalWonValue),
         },
+        qualification,
         premiumSummary: {
             totalPremium,
             avgPremiumPerCustomer,

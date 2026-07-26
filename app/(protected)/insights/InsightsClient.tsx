@@ -364,6 +364,48 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <span className="font-black text-foreground">{data.opportunityMetrics.total}</span>
                         </p>
 
+                        {/* Manager deal-review (MEDIC §K): how much of the open
+                            pipeline's € rests on real qualification evidence,
+                            and the two most common holes — the coaching view.
+                            Hidden with an empty pipeline. */}
+                        {data.qualification.pipelineCount > 0 && (
+                            <div className="mb-6 rounded-xl border border-black/10 bg-black/[0.02] p-3 dark:border-white/15 dark:bg-white/5">
+                                <p className="mb-2 text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                                    {t.agentUi.qualificationHealthTitle}
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                                        <div
+                                            className="h-full rounded-full bg-primary dark:bg-mint transition-all"
+                                            style={{
+                                                width: `${data.qualification.pipelineEur > 0
+                                                    ? Math.round((data.qualification.qualifiedEur / data.qualification.pipelineEur) * 100)
+                                                    : 0}%`,
+                                            }}
+                                        />
+                                    </div>
+                                    <span className="font-mono text-xs font-bold text-foreground">
+                                        {data.qualification.pipelineEur > 0
+                                            ? Math.round((data.qualification.qualifiedEur / data.qualification.pipelineEur) * 100)
+                                            : 0}%
+                                    </span>
+                                </div>
+                                <p className="mt-1 text-kicker text-neutral-500 dark:text-neutral-400">
+                                    {t.agentUi.qualificationShareDesc}
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
+                                    <span>
+                                        <b className="text-foreground">{data.qualification.missingEb}</b>{" "}
+                                        {t.agentUi.qualificationMissingEb}
+                                    </span>
+                                    <span>
+                                        <b className="text-foreground">{data.qualification.unconfirmedPain}</b>{" "}
+                                        {t.agentUi.qualificationUnconfirmedPain}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
                         {data.opportunityMetrics.total === 0 ? (
                             <EmptyState
                                 className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
