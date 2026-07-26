@@ -27,7 +27,7 @@ const COPY = {
         en: "The plan you picked is waiting for you",
     },
     body: {
-        el: "Κατά την εγγραφή διάλεξες το {plan}. Ενεργοποίησέ το για να ξεκλειδώσεις πλήρη ανάλυση AI, περισσότερα συμβόλαια και έξυπνες υπενθυμίσεις.",
+        el: "Κατά την εγγραφή διάλεξες το {plan}. Ενεργοποίησέ το για να ξεκλειδώσεις πλήρη ανάλυση AI, περισσότερα ασφαλιστήρια και έξυπνες υπενθυμίσεις.",
         en: "You chose {plan} at signup. Activate it to unlock full AI analysis, more policies and smart reminders.",
     },
     cta: { el: "Ενεργοποίηση {plan}", en: "Activate {plan}" },

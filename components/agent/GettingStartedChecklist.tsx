@@ -89,7 +89,7 @@ export function AgentGettingStartedChecklist({
             id: "analysis",
             titleEl: "Δοκιμή AI ανάλυσης",
             titleEn: "Run demo analysis",
-            descEl: "Δοκιμάστε την AI ανάλυση με ένα δοκιμαστικό συμβόλαιο.",
+            descEl: "Δοκιμάστε την AI ανάλυση με ένα δοκιμαστικό ασφαλιστήριο.",
             descEn: "Try AI analysis with a sample policy.",
             href: "/wallet/add",
             icon: Sparkles,

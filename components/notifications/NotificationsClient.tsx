@@ -49,7 +49,7 @@ interface NotificationsClientProps {
 const preferenceCatalog = [
     {
         eventType: "policy_expiring",
-        label: { el: "Λήξη συμβολαίου", en: "Policy expiring" },
+        label: { el: "Λήξη ασφαλιστηρίου", en: "Policy expiring" },
         description: {
             el: "Υπενθύμιση πριν τη λήξη για να μη χάσεις την ανανέωση.",
             en: "Reminder before expiration so you never miss renewal.",

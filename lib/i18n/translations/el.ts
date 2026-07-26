@@ -2323,7 +2323,7 @@ export const el = {
         noCrossSellDesc: "Καθώς αναλύονται τα χαρτοφυλάκια των πελατών σας, οι ευκαιρίες κάλυψης με εκτιμώμενη προμήθεια θα εμφανίζονται εδώ.",
         verifyBannerTitle: "Επιβεβαιώστε τη διεύθυνση email σας.",
         verifyBannerCheckInbox: "Ελέγξτε τα εισερχόμενά σας",
-        verifyBannerUnlock: "για να ξεκλειδώσετε την πλήρη προστασία του λογαριασμού σας.",
+        verifyBannerUnlock: "για να ολοκληρώσετε την επαλήθευση του λογαριασμού σας.",
         verifyBannerResend: "Επαναποστολή email επιβεβαίωσης",
         verifyBannerSending: "Αποστολή...",
         verifyBannerSent: "Το email επιβεβαίωσης στάλθηκε",

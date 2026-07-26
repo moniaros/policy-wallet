@@ -77,8 +77,8 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             {/* Subheadline */}
                             <p className="mb-8 max-w-[500px] text-lead leading-relaxed text-[#475569]">
                                 {t(
-                                    "Ανεβάστε τα συμβόλαιά σας. Η AI βρίσκει κενά, σας ειδοποιεί πριν τη λήξη, και σας κρατά ασφαλισμένους.",
-                                    "Upload your policies. AI finds gaps, alerts you before renewals, and keeps you fully protected."
+                                    "Ανεβάστε τα ασφαλιστήριά σας. Η AI βρίσκει κενά, σας ειδοποιεί πριν τη λήξη, και σας δίνει καθαρή εικόνα της κάλυψής σας.",
+                                    "Upload your policies. AI finds gaps, alerts you before renewals, and keeps your cover in clear view."
                                 )}
                             </p>
 

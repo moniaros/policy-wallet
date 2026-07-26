@@ -32,7 +32,7 @@ const CARDS: { featureKey: FeatureKey; title: { el: string; en: string }; Icon: 
     { featureKey: "unlimited_ai_questions", title: { el: "Ερωτήσεις στο AI", en: "Ask the AI" }, Icon: MessageCircleQuestion },
     { featureKey: "advanced_renewal_reminders", title: { el: "Έξυπνες ενέργειες πριν την ανανέωση", en: "Smart pre-renewal actions" }, Icon: BellRing },
     { featureKey: "claims_preparation_assistant", title: { el: "Οδηγός προετοιμασίας ζημιάς", en: "Claim preparation guide" }, Icon: FileText },
-    { featureKey: "multi_insurer_insights", title: { el: "Ανάλυση συμβολαίων από διαφορετικές ασφαλιστικές", en: "Multi-insurer analysis" }, Icon: Building2 },
+    { featureKey: "multi_insurer_insights", title: { el: "Ανάλυση ασφαλιστηρίων από διαφορετικές ασφαλιστικές", en: "Multi-insurer analysis" }, Icon: Building2 },
 ]
 
 interface PremiumInsightCardsProps {

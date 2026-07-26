@@ -2312,7 +2312,7 @@ export const en: TranslationKeys = {
         noCrossSellDesc: "As your clients' portfolios are analysed, missing-coverage opportunities with estimated commission appear here.",
         verifyBannerTitle: "Verify your email address.",
         verifyBannerCheckInbox: "Please check your inbox",
-        verifyBannerUnlock: "to unlock full account protection.",
+        verifyBannerUnlock: "to complete your account verification.",
         verifyBannerResend: "Resend verification email",
         verifyBannerSending: "Sending...",
         verifyBannerSent: "Verification email sent",

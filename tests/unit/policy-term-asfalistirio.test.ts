@@ -52,8 +52,17 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
                 if (statSync(p).isDirectory()) return collect(p)
                 return p.endsWith('.tsx') ? [p] : []
             })
-        const files = ['components/coverage', 'components/wallet', 'components/dashboard'].flatMap(collect)
-        expect(files.length).toBeGreaterThan(20) // the scan must actually see the tree
+        // ALL in-app component trees. Only components/landing is exempt — it
+        // renders public marketing narrative, where «συμβόλαιο» stays a ratified
+        // prose synonym. Cycle B of the enterprise loop found stragglers in
+        // onboarding/notifications/monetization/agent, so the scan covers the
+        // whole tree rather than an allowlist that goes stale.
+        const { readdirSync: rd } = require('node:fs') as typeof import('node:fs')
+        const dirs = rd('components', { withFileTypes: true })
+            .filter((d) => d.isDirectory() && d.name !== 'landing')
+            .map((d) => `components/${d.name}`)
+        const files = dirs.flatMap(collect)
+        expect(files.length).toBeGreaterThan(50) // the scan must actually see the tree
         for (const file of files) {
             const src = readFileSync(file, 'utf-8')
             expect.soft(src, file).not.toMatch(/συμβόλαι|συμβολαί/i)
