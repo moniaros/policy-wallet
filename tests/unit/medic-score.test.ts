@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { calculateMedicScore, complianceClear } from '@/lib/medic/score'
 import { gateOpportunityQualified, gateRenewalActionable, buildRenewalPain } from '@/lib/medic/gates'
 import { crossSellAdvisorReady } from '@/lib/medic/cross-sell-gate'
+import { computeQualificationHealth } from '@/lib/medic/portfolio'
 import { getMedicConfig, DEFAULT_MEDIC_CONFIG } from '@/lib/medic/config'
 import type { MedicData } from '@/lib/medic/types'
 
@@ -149,6 +150,30 @@ describe('cross-sell advisor-ready gate (§G promise 7 / §H row 3)', () => {
         const r = crossSellAdvisorReady({ gapValidationState: 'validated', extractionConfidence: 1, dismissed: true })
         expect(r.ready).toBe(false)
         expect(r.missing).toEqual(['dismissed'])
+    })
+})
+
+describe('computeQualificationHealth — dashboard tile (§F)', () => {
+    it('measures the OPEN pipeline only, splitting € by qualification score', () => {
+        const q = computeQualificationHealth([
+            { status: 'open', estimatedPremium: 1000, medicScore: 60, medic: { stakeholders: [{ name: 'x', stance: 'economic_buyer' }], pain: { validationState: 'confirmed' } } },
+            { status: 'quoted', estimatedPremium: 500, medicScore: 20, medic: {} },
+            { status: 'won', estimatedPremium: 9999, medicScore: 100, medic: {} }, // closed — excluded
+        ])
+        expect(q.pipelineCount).toBe(2)
+        expect(q.pipelineEur).toBe(1500)
+        expect(q.qualifiedEur).toBe(1000)
+        expect(q.missingEb).toBe(1)
+        expect(q.unconfirmedPain).toBe(1)
+    })
+
+    it('malformed medic JSON counts as missing evidence, never throws', () => {
+        const q = computeQualificationHealth([
+            { status: 'open', estimatedPremium: null, medicScore: null, medic: 'garbage' },
+        ])
+        expect(q.pipelineCount).toBe(1)
+        expect(q.missingEb).toBe(1)
+        expect(q.unconfirmedPain).toBe(1)
     })
 })
 

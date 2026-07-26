@@ -158,6 +158,50 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                     )
                 })}
             </div>
+
+            {/* MEDIC qualification health (blueprint §F): how much of the open
+                pipeline's € rests on a full qualification picture, and the two
+                most common holes. Hidden with an empty pipeline — no verdict
+                on nothing. */}
+            {health.qualification && health.qualification.pipelineCount > 0 && (
+                <div className="mt-5 border-t border-[var(--brand-border-subtle)] pt-4">
+                    <p className="mb-2 text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                        {t.agentUi.qualificationHealthTitle}
+                    </p>
+                    {(() => {
+                        const q = health.qualification!
+                        const share = q.pipelineEur > 0
+                            ? Math.round((q.qualifiedEur / q.pipelineEur) * 100)
+                            : 0
+                        return (
+                            <>
+                                <div className="flex items-center gap-2">
+                                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                                        <div
+                                            className="h-full rounded-full bg-primary dark:bg-mint transition-all"
+                                            style={{ width: `${share}%` }}
+                                        />
+                                    </div>
+                                    <span className="font-mono text-xs font-bold text-foreground">{share}%</span>
+                                </div>
+                                <p className="mt-1 text-kicker text-neutral-500 dark:text-neutral-400">
+                                    {t.agentUi.qualificationShareDesc}
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
+                                    <span>
+                                        <b className="text-foreground">{q.missingEb}</b>{" "}
+                                        {t.agentUi.qualificationMissingEb}
+                                    </span>
+                                    <span>
+                                        <b className="text-foreground">{q.unconfirmedPain}</b>{" "}
+                                        {t.agentUi.qualificationUnconfirmedPain}
+                                    </span>
+                                </div>
+                            </>
+                        )
+                    })()}
+                </div>
+            )}
         </BrandCard>
     )
 }

@@ -243,6 +243,14 @@ export interface PortfolioHealth {
     coverageGapPercent: number
     completeProfilePercent: number
     atRiskCount: number
+    /** MEDIC qualification health over the open pipeline (blueprint §F tile). */
+    qualification?: {
+        pipelineCount: number
+        pipelineEur: number
+        qualifiedEur: number
+        missingEb: number
+        unconfirmedPain: number
+    }
 }
 
 export interface ClientCardData {

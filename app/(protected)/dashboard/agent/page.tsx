@@ -102,6 +102,9 @@ export default async function DashboardPage() {
                 estimatedCommission: true,
                 wonPremium: true,
                 lineOfBusiness: true,
+                // MEDIC qualification-health tile inputs.
+                medicScore: true,
+                medic: true,
                 relationship: { select: { customer: { select: { id: true, name: true } } } },
             },
         }),
@@ -354,6 +357,17 @@ export default async function DashboardPage() {
     )
     const activeRelationships = relationships.filter((r) => r.status === "active")
 
+    // Qualification health over the open pipeline (MEDIC blueprint §F tile).
+    const { computeQualificationHealth } = await import("@/lib/medic/portfolio")
+    const qualificationHealth = computeQualificationHealth(
+        opportunities.map((o) => ({
+            status: o.status,
+            estimatedPremium: o.estimatedPremium ? Number(o.estimatedPremium) : null,
+            medicScore: o.medicScore ?? null,
+            medic: o.medic,
+        }))
+    )
+
     const portfolioHealth = {
         totalClients: customersNow,
         coverageGapPercent: customersNow > 0
@@ -363,6 +377,7 @@ export default async function DashboardPage() {
             ? Math.round((clientsWithPolicies.size / customersNow) * 100)
             : 0,
         atRiskCount: actionQueue.filter((i) => i.urgency === "high").length,
+        qualification: qualificationHealth,
     }
 
     // ── Protection Scores (batch fetch from cache) ──────────────
