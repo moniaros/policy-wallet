@@ -81,7 +81,7 @@ export function LocaleToggle({
                             "text-caption font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                             language === value
                                 ? "text-[#0F172A] dark:text-white"
-                                : "text-[#5B6A7A] hover:text-[#0F172A] dark:hover:text-white"
+                                : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
                         )}
                     >
                         {label}

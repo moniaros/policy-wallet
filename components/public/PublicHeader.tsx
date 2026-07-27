@@ -146,7 +146,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             <Link
                                 href={elPath}
                                 aria-current={isGreek ? "true" : undefined}
-                                className={`text-xs font-semibold transition-colors ${elActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] hover:text-[#0F172A] dark:hover:text-white"}`}
+                                className={`text-xs font-semibold transition-colors ${elActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"}`}
                             >
                                 ΕΛ
                             </Link>
@@ -154,7 +154,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             <Link
                                 href={enPath}
                                 aria-current={!isGreek ? "true" : undefined}
-                                className={`text-xs font-semibold transition-colors ${enActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] hover:text-[#0F172A] dark:hover:text-white"}`}
+                                className={`text-xs font-semibold transition-colors ${enActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"}`}
                             >
                                 EN
                             </Link>

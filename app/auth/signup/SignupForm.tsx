@@ -331,7 +331,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword((v) => !v)}
-                                    className="absolute right-2 top-2.5 rounded-md p-1.5 text-[#5B6A7A] transition hover:bg-[#F1F5F9] dark:hover:bg-white/10"
+                                    className="absolute right-2 top-2.5 rounded-md p-1.5 text-[#5B6A7A] dark:text-slate-400 transition hover:bg-[#F1F5F9] dark:hover:bg-white/10"
                                     aria-label={showPassword ? t("Απόκρυψη κωδικού", "Hide password") : t("Εμφάνιση κωδικού", "Show password")}
                                 >
                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
