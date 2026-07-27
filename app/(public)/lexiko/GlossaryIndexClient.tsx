@@ -41,17 +41,17 @@ export default function GlossaryIndexClient() {
                             href={localizeHref(`/lexiko/${entry.slug}`, language)}
                             className="group rounded-2xl border border-[#E2E8F0] bg-white p-7 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] dark:border-slate-800 dark:bg-slate-900"
                         >
-                            <div className="mb-3 inline-flex items-center gap-1.5 text-body-sm text-[#5B6A7A]">
-                                <BookOpen className="h-4 w-4 text-[#29685B]" />
+                            <div className="mb-3 inline-flex items-center gap-1.5 text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                                <BookOpen className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
                                 {t("Ορισμός", "Definition")}
                             </div>
-                            <h2 className="mb-2 text-title font-semibold leading-snug tracking-tight text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B] dark:text-white">
+                            <h2 className="mb-2 text-title font-semibold leading-snug tracking-tight text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B] dark:text-white dark:group-hover:text-[#A7F3D0]">
                                 {entry.term[lang]}
                             </h2>
-                            <p className="mb-4 line-clamp-3 text-body leading-relaxed text-[#475569] dark:text-slate-400">
+                            <p className="mb-4 line-clamp-3 text-body leading-relaxed text-[#475569] dark:text-slate-300">
                                 {entry.shortDefinition[lang]}
                             </p>
-                            <span className="inline-flex items-center gap-1.5 text-body font-semibold text-[#29685B] transition-all duration-150 group-hover:gap-2.5">
+                            <span className="inline-flex items-center gap-1.5 text-body font-semibold text-[#29685B] transition-all duration-150 group-hover:gap-2.5 dark:text-[#A7F3D0]">
                                 {t("Διαβάστε τον ορισμό", "Read the definition")}
                                 <ArrowRight className="h-4 w-4" />
                             </span>

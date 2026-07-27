@@ -201,6 +201,19 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             en: "Individual FAQs",
         },
         faqItems: [
+            // Direct-answer item: answer engines lift this verbatim for "how much
+            // does it cost", so the figures stay in the answer text. Keep them in
+            // sync with the plan cards above whenever the catalog price changes.
+            {
+                question: {
+                    el: "Πόσο κοστίζει το PolicyWallet;",
+                    en: "How much does PolicyWallet cost?",
+                },
+                answer: {
+                    el: "Το δωρεάν πακέτο καλύπτει ένα ασφαλιστήριο και δεν ζητά κάρτα. Το Starter κοστίζει 2,99 € τον μήνα ή 29 € τον χρόνο, και το PolicyWallet Plus 7,99 € τον μήνα ή 79 € τον χρόνο. Όλες οι τιμές περιλαμβάνουν ΦΠΑ.",
+                    en: "The free plan covers one policy and asks for no card. Starter is €2.99 a month or €29 a year, and PolicyWallet Plus is €7.99 a month or €79 a year. All prices include VAT.",
+                },
+            },
             {
                 question: {
                     el: "Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή;",

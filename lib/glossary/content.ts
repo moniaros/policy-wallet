@@ -97,6 +97,10 @@ export const glossaryTerms: GlossaryTerm[] = [
         related: [
             { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
             { label: { el: "Εξαίρεση", en: "Exclusion" }, href: "/lexiko/exairesi" },
+            {
+                label: { el: "Διαχείριση ασφαλιστηρίων online", en: "Managing policies online" },
+                href: "/guides/diaxeirisi-asfalistirion-se-ena-simeio",
+            },
             { label: { el: "Ανάλυση ασφαλιστηρίου με AI", en: "AI policy analysis" }, href: "/product" },
         ],
         dateModified: "2026-07-21",
@@ -317,6 +321,10 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         related: [
             { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
+            {
+                label: { el: "Πληρωμή ασφαλίστρων ψηφιακά", en: "Paying premiums digitally" },
+                href: "/guides/pliromi-asfalistron-psifiaka",
+            },
             { label: { el: "Τιμολόγηση PolicyWallet", en: "PolicyWallet pricing" }, href: "/pricing" },
         ],
         dateModified: "2026-07-21",
@@ -911,6 +919,10 @@ export const glossaryTerms: GlossaryTerm[] = [
             { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Insured amount" }, href: "/lexiko/asfalismeno-kefalaio" },
             { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
             { label: { el: "Υπασφάλιση", en: "Underinsurance" }, href: "/lexiko/ypasfalisi" },
+            {
+                label: { el: "Εφαρμογές για ασφαλιστήρια και ζημιές", en: "Apps for policies and claims" },
+                href: "/guides/efarmoges-asfalistirion-apozimioseis",
+            },
         ],
         dateModified: "2026-07-26",
     },
