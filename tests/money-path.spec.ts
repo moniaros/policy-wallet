@@ -104,8 +104,22 @@ test.describe('Feature gates on the policy page (free tier)', () => {
 
     let policyId: string
 
-    test.beforeAll(async () => {
+    test.beforeAll(async ({ browser }) => {
         policyId = await fixturePolicyId()
+
+        // Warm /wallet/[id] before any timed assertion runs. The webServer is
+        // `npm run dev`, so the FIRST request to a route pays on-demand
+        // compilation — which landed inside the first test's 20s waits and made
+        // the opening tests of this serial block flake (fail once, pass on
+        // retry). Paying that cost here removes the cause rather than papering
+        // over it with longer timeouts.
+        const page = await browser.newPage()
+        try {
+            await page.goto(`/wallet/${policyId}`, { waitUntil: 'domcontentloaded' })
+            await page.waitForLoadState('networkidle', { timeout: 60_000 }).catch(() => {})
+        } finally {
+            await page.close()
+        }
     })
 
     test('savings-report export is locked behind Pro and opens the upgrade modal', async ({ page }) => {
