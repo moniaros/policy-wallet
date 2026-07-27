@@ -112,6 +112,9 @@ export function PolicyTable({
                             return (
                                 <tr
                                     key={policy.id}
+                                    // Same hook as PolicyCard: the wallet defaults to LIST view, so
+                                    // tagging only the grid card left the audit finding no policy at all.
+                                    data-testid="policy-card"
                                     onClick={() => onViewPolicy?.(policy.id)}
                                     className="cursor-pointer border-b border-black/[0.05] transition-colors last:border-0 hover:bg-black/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.03]"
                                 >

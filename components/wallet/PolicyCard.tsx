@@ -103,7 +103,10 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
     const hasActions = Boolean(onRunAnalysis || onViewDocuments || onShare || onDelete)
 
     return (
-        <div className="group pw-card pw-pad-tight transition-all">
+        // data-testid is the stable hook the UX-audit suite selects on; without
+        // it those checks could not find a card at all and reported the wallet
+        // as missing features it has rendered all along.
+        <div data-testid="policy-card" className="group pw-card pw-pad-tight transition-all">
             <button
                 type="button"
                 id={id}

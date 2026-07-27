@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { dismissCookieBanner } from './helpers/ui';
 import AxeBuilder from '@axe-core/playwright';
 
 /**
@@ -221,27 +222,6 @@ test.describe('Screen Reader Support', () => {
         }
     });
 
-    test('form validation errors should be announced', async ({ page }) => {
-        await page.goto('/auth/signup');
-
-        // Submit form without filling it
-        const submitButton = page.getByRole('button', { name: /sign up|submit|εγγραφή/i });
-        await submitButton.click();
-
-        // Wait for validation
-        await page.waitForTimeout(500);
-
-        // Check for aria-live regions or aria-invalid attributes
-        const errorMessages = page.locator('[role="alert"], [aria-live="polite"], [aria-live="assertive"], [aria-invalid="true"]');
-        const hasAccessibleErrors = await errorMessages.count() > 0;
-
-        if (!hasAccessibleErrors) {
-            console.warn('⚠️ Form validation errors may not be announced to screen readers');
-        }
-
-        expect(hasAccessibleErrors).toBeTruthy();
-    });
-
     test('loading states should be announced', async ({ page }) => {
         await page.goto('/wallet');
 
@@ -330,3 +310,32 @@ async function loginAsTestUser(page: any) {
     await page.getByRole('button', { name: /sign in|σύνδεση/i }).click();
     await page.waitForURL(/wallet|dashboard/, { timeout: 10000 });
 }
+
+/**
+ * Anonymous by design: the default projects carry
+ * storageState: playwright/.auth/user.json, and an authenticated visit to
+ * /auth/signup redirects to the dashboard — so there was no form to validate
+ * and this could never pass regardless of the markup.
+ */
+test.describe('Screen Reader Support - anonymous', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('form validation errors should be announced', async ({ page }) => {
+        await page.goto('/auth/signup');
+        // Overlays the CTA until dismissed — the documented cause of
+        // "mysterious" click timeouts in this suite.
+        await dismissCookieBanner(page);
+
+        // Submit the form empty. The CTA reads "Δημιουργία Πορτοφολιού" /
+        // "Create wallet", so match on the submit type rather than a name
+        // pattern (/sign up|submit|εγγραφή/ matched nothing).
+        await page.locator('button[type="submit"]').first().click();
+        await page.waitForTimeout(800);
+
+        const errorMessages = page.locator(
+            '[role="alert"], [aria-live="polite"], [aria-live="assertive"], [aria-invalid="true"]'
+        );
+        await expect(errorMessages.first()).toBeVisible();
+        expect(await errorMessages.count()).toBeGreaterThan(0);
+    });
+});
