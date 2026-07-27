@@ -33,7 +33,12 @@ const STATE_STYLES: Record<BranchTileState, { pill: string; dot: string }> = {
         dot: 'bg-rose-500',
     },
     neutral: {
-        pill: 'bg-black/5 text-black/55 dark:bg-white/10 dark:text-white/60',
+        // Pixel audit measured the old text-black/55/text-white/60 at 3.15:1 in
+        // light and 3.92:1 in dark — under the 4.5 floor in BOTH themes, on the
+        // tiles a policyholder most needs to read: the branches they hold no
+        // cover in. De-emphasis belongs to the surface and the dot, not to the
+        // legibility of the label.
+        pill: 'bg-black/5 text-black/70 dark:bg-white/10 dark:text-white/85',
         dot: 'bg-black/30 dark:bg-white/30',
     },
 }

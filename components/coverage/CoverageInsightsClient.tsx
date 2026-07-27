@@ -164,7 +164,10 @@ export function CoverageInsightsClient({
                         el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`,
                         en: `${visibleGaps.length} points to review across your policies.`,
                     },
-                    color: 'text-red-700',
+                    // The BACKGROUND flipped to dark while the text stayed
+                    // red-700 — measured 2.83:1 by the pixel audit. Exactly the
+                    // "text keeps the previous theme's colour" class.
+                    color: 'text-red-700 dark:text-red-300',
                     bg: 'bg-red-100 dark:bg-red-900/30',
                 }
                 : {
@@ -177,7 +180,8 @@ export function CoverageInsightsClient({
                         el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα ασφαλιστήριά σας.`,
                         en: `${visibleGaps.length} points to review across your policies.`,
                     },
-                    color: 'text-amber-700',
+                    // Same defect as the red variant above.
+                    color: 'text-amber-700 dark:text-amber-300',
                     bg: 'bg-amber-100 dark:bg-amber-900/30',
                 }
 
