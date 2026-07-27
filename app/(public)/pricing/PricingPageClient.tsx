@@ -267,7 +267,7 @@ export default function PricingPage({
                                 }`}
                             >
                                 {labels.annual[language]}
-                                <span className="absolute -right-2 -top-3 rounded-full bg-[#89D9B2] px-2 py-0.5 text-kicker font-bold uppercase tracking-wide text-[#0F172A]">
+                                <span className="absolute -right-2 -top-3 rounded-full bg-[#89D9B2] px-2 py-0.5 text-kicker font-bold uppercase tracking-wide text-[#0F172A] dark:text-white">
                                     {labels.annualSavings[language]}
                                 </span>
                             </button>

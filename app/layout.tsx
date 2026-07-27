@@ -59,6 +59,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="el" suppressHydrationWarning className={inter.variable}>
+      <head>
+        {/*
+         * Stamp <html lang="en"> for /en/* BEFORE first paint.
+         *
+         * The root layout serves one shared shell for every route and cannot
+         * read the pathname without headers(), which would force the whole
+         * tree dynamic and kill static generation of the marketing pages. So
+         * SSR emits the Greek default and this blocking script corrects it
+         * from location.pathname on the very first parse.
+         *
+         * HtmlLang (client leaf) still handles client-side NAVIGATION between
+         * the /en and Greek trees; this only fixes the initial document, which
+         * is what a screen reader announces on load (WCAG 3.1.1) — previously
+         * English pages were voiced with Greek phonology until hydration.
+         *
+         * NOTE: this does not help crawlers that never execute JS; those still
+         * read lang="el" on /en/*. The complete fix is per-locale root layouts
+         * (Next.js multiple root layouts), which is a structural change to the
+         * whole app/ tree — tracked separately, deliberately not done here.
+         */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=location.pathname;if(p==="/en"||p.indexOf("/en/")===0){var e=document.documentElement;e.setAttribute("lang","en");e.setAttribute("data-locale","en-GB");e.dataset.htmlLangEnRoute="true";}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="antialiased min-h-screen bg-background text-foreground">
         <NextTopLoader
           color="#29685B"

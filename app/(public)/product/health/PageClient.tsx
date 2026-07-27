@@ -14,13 +14,13 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Λύσεις Ζωής & Υγείας", "Life & Health Solutions")}
                     </span>
-                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
+                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8">
                         {t("Νοσήλια, δίκτυα, συμμετοχές — σε απλά ελληνικά.", "Hospital cover, networks, out-of-pocket — in plain language.")}
                     </h1>
-                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Ελέγξτε τις εξωνοσοκομειακές δαπάνες σας (Out-of-Pocket Max), επαληθεύστε τα κέντρα συντονισμού και μειώστε το ιατρικό σας ρίσκο αυτόματα.", "Manage your out-of-pocket maximums, verify direct-billing coordination centers, and minimize medical exposure automatically.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -32,42 +32,42 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
             </section>
 
             {/* FEATURE DEEP DIVE */}
-            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
+            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white">
                             {t("Τι καλύπτει το συμβόλαιο υγείας σας;", "What does your health policy cover?")}
                         </h2>
-                        <p className="text-[#475569] text-lead leading-relaxed mb-8">
+                        <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
                             {t("Μεταφράζουμε τα ψιλά γράμματα των συμβολαίων Υγείας σε ξεκάθαρα, γραφικά όρια κάλυψης (Radial Charts). Δεν αναρωτιέστε πια τι καλύπτεται.", "We translate deeply complex life and health condition clauses into visual radial boundaries, eliminating second-guessing.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h4 className="text-lead font-semibold text-[#0F172A]">{t("Κέντρα Συντονισμού", "Coordination Centers")}</h4>
-                                    <p className="text-[#475569]">{t("Άμεση πρόσβαση στο δίκτυο απευθείας χρέωσης (Direct Billing) για το νοσοκομείο σας. Τέλος τα τηλέφωνα έκτακτης ανάγκης.", "Instant access links to your specific hospital direct-billing networks so your admission triggers no out-of-pocket holds.")}</p>
+                                    <h4 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κέντρα Συντονισμού", "Coordination Centers")}</h4>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Άμεση πρόσβαση στο δίκτυο απευθείας χρέωσης (Direct Billing) για το νοσοκομείο σας. Τέλος τα τηλέφωνα έκτακτης ανάγκης.", "Instant access links to your specific hospital direct-billing networks so your admission triggers no out-of-pocket holds.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h4 className="text-lead font-semibold text-[#0F172A]">{t("Μέγιστο Ποσό Ιδίας Συμμετοχής", "Out-of-Pocket Trackers")}</h4>
-                                    <p className="text-[#475569]">{t("Οπτικοποιήστε το Max Out-of-Pocket του πακέτου σας για να ελέγχετε με ακρίβεια τον προϋπολογισμό των δαπανών υγείας σας.", "Visualize your Max Out-of-Pocket boundaries cleanly so you know exactly when 100% network coverage initiates.")}</p>
+                                    <h4 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Μέγιστο Ποσό Ιδίας Συμμετοχής", "Out-of-Pocket Trackers")}</h4>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Οπτικοποιήστε το Max Out-of-Pocket του πακέτου σας για να ελέγχετε με ακρίβεια τον προϋπολογισμό των δαπανών υγείας σας.", "Visualize your Max Out-of-Pocket boundaries cleanly so you know exactly when 100% network coverage initiates.")}</p>
                                 </div>
                             </li>
                         </ul>
                     </div>
 
                     {/* Mock UI */}
-                    <div className="bg-white p-8 rounded-[12px] border border-[#E2E8F0] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-body font-bold text-[#0F172A] uppercase tracking-wider">Premium Health</h3>
-                                <p className="text-body-sm text-[#166534] font-medium mt-1">Active</p>
+                                <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Premium Health</h3>
+                                <p className="text-body-sm text-[#166534] dark:text-[#A7F3D0] font-medium mt-1">Active</p>
                             </div>
                             <div className="text-right">
-                                <div className="text-title font-medium text-[#0F172A]">€1M</div>
+                                <div className="text-title font-medium text-[#0F172A] dark:text-white">€1M</div>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">Annual Limit</p>
                             </div>
                         </div>

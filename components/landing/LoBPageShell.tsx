@@ -45,7 +45,7 @@ export function LoBPageShell({ children, locale }: LoBPageShellProps) {
                 {/* Pricing funnel — every LoB page routes to /pricing from the body, not only the nav */}
                 <section className="border-t border-[#E2E8F0] bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
                     <div className="mx-auto max-w-[760px]">
-                        <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
+                        <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                             {t("Τιμολόγηση", "Pricing")}
                         </p>
                         <h2 className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white">

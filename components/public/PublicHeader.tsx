@@ -119,7 +119,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                 >
                     <Link href={l("/")} className="inline-flex items-center text-title font-bold tracking-tight">
                         <span className="text-[#0F172A] dark:text-white">Policy</span>
-                        <span className="text-[#5B6A7A]">Wallet</span>
+                        <span className="text-[#5B6A7A] dark:text-slate-400">Wallet</span>
                     </Link>
 
                     <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 text-body font-medium text-[#475569] md:flex dark:text-slate-300">

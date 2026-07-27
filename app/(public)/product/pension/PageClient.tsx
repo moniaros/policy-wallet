@@ -14,13 +14,13 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Σύνταξη & Αποταμίευση", "Pension & Savings")}
                     </span>
-                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
+                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8">
                         {t("Ξέρετε τι υπογράψατε για τη σύνταξή σας;", "Do you know what you signed for your retirement?")}
                     </h1>
-                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Τα αποταμιευτικά και συνταξιοδοτικά προγράμματα είναι δεσμεύσεις δεκαετιών με εισφορές, όρους ωρίμανσης και ρήτρες εξαγοράς. Η AI τα μεταφράζει σε καθαρή εικόνα: τι πληρώνετε, τι χτίζετε, τι χάνετε αν σταματήσετε.", "Savings and pension plans are decade-long commitments with contributions, maturity terms and surrender clauses. Our AI turns them into a clear picture: what you pay, what you build, and what you lose if you stop.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -32,29 +32,29 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
             </section>
 
             {/* FEATURE DEEP DIVE */}
-            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
+            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     {/* Mock UI — left on desktop */}
-                    <div className="order-last md:order-first bg-white p-8 rounded-[12px] border border-[#E2E8F0] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="order-last md:order-first bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-body font-bold text-[#0F172A] uppercase tracking-wider">Savings Plan</h3>
+                                <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Savings Plan</h3>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">Monthly Contributions · Year 8 of 25</p>
                             </div>
-                            <PiggyBank className="w-6 h-6 text-[#29685B]" />
+                            <PiggyBank className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" />
                         </div>
                         <div className="space-y-5">
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
-                                    <span className="text-[#475569]">Progress to Maturity</span>
+                                    <span className="text-[#475569] dark:text-slate-300">Progress to Maturity</span>
                                     <span className="font-medium">32%</span>
                                 </div>
                                 <div className="w-full bg-gray-100 h-2 rounded-full">
                                     <div className="bg-[#29685B] w-[32%] h-2 rounded-full" />
                                 </div>
                             </div>
-                            <div className="p-4 bg-[#F0FDF4] rounded-lg border border-[#29685B]/20">
-                                <p className="font-medium text-[#166534] text-sm">Maturity Options: Lump Sum / Annuity</p>
+                            <div className="p-4 bg-[#F0FDF4] dark:bg-[#29685B]/15 rounded-lg border border-[#29685B]/20">
+                                <p className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">Maturity Options: Lump Sum / Annuity</p>
                             </div>
                             <div className="p-4 bg-amber-50 rounded-lg border border-amber-100 flex gap-3">
                                 <AlertTriangle className="w-5 h-5 text-amber-700 flex-shrink-0" />
@@ -67,32 +67,32 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                     </div>
 
                     <div>
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white">
                             {t("Η δημόσια σύνταξη είναι το ένα σκέλος. Το δικό σας πρόγραμμα είναι το άλλο.", "The state pension is one leg. Your own plan is the other.")}
                         </h2>
-                        <p className="text-[#475569] text-lead leading-relaxed mb-8">
+                        <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-8">
                             {t("Όσοι χτίζουν συμπληρωματικό εισόδημα για τη σύνταξη πρέπει να ξέρουν ακριβώς πώς δουλεύει το πρόγραμμά τους — γιατί οι όροι που θα κρίνουν το αποτέλεσμα γράφτηκαν την ημέρα της υπογραφής.", "If you are building supplementary retirement income, you need to know exactly how your plan works — because the terms that decide the outcome were written on signing day.")}
                         </p>
                         <ul className="space-y-6">
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h4 className="text-lead font-semibold text-[#0F172A]">{t("Εφάπαξ ή σύνταξη;", "Lump sum or annuity?")}</h4>
-                                    <p className="text-[#475569]">{t("Οι επιλογές ωρίμανσης καθορίζουν αν στη λήξη παίρνετε ένα ποσό ή μηνιαίο εισόδημα. Δείτε τις δικές σας πριν πλησιάσει η ημερομηνία.", "Maturity options decide whether you receive a single amount or monthly income at term. See yours long before the date approaches.")}</p>
+                                    <h4 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Εφάπαξ ή σύνταξη;", "Lump sum or annuity?")}</h4>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Οι επιλογές ωρίμανσης καθορίζουν αν στη λήξη παίρνετε ένα ποσό ή μηνιαίο εισόδημα. Δείτε τις δικές σας πριν πλησιάσει η ημερομηνία.", "Maturity options decide whether you receive a single amount or monthly income at term. See yours long before the date approaches.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h4 className="text-lead font-semibold text-[#0F172A]">{t("Όροι εξαγοράς στο φως", "Surrender terms in the open")}</h4>
-                                    <p className="text-[#475569]">{t("Η πρόωρη διακοπή έχει κόστος που ελάχιστοι έχουν διαβάσει. Η AI εντοπίζει τη ρήτρα εξαγοράς και σας δείχνει τι σημαίνει στην πράξη.", "Stopping early has a cost that few people have actually read. The AI locates the surrender clause and shows what it means in practice.")}</p>
+                                    <h4 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Όροι εξαγοράς στο φως", "Surrender terms in the open")}</h4>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Η πρόωρη διακοπή έχει κόστος που ελάχιστοι έχουν διαβάσει. Η AI εντοπίζει τη ρήτρα εξαγοράς και σας δείχνει τι σημαίνει στην πράξη.", "Stopping early has a cost that few people have actually read. The AI locates the surrender clause and shows what it means in practice.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
-                                    <h4 className="text-lead font-semibold text-[#0F172A]">{t("Εγγυημένο ή επενδυτικό σκέλος", "Guaranteed vs investment component")}</h4>
-                                    <p className="text-[#475569]">{t("Ποιο μέρος της αποταμίευσής σας είναι εγγυημένο και ποιο ακολουθεί την αγορά; Η διάκριση είναι κρίσιμη — και συχνά ασαφής στο συμβόλαιο.", "Which part of your savings is guaranteed and which follows the market? The distinction is critical — and often unclear in the contract.")}</p>
+                                    <h4 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Εγγυημένο ή επενδυτικό σκέλος", "Guaranteed vs investment component")}</h4>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Ποιο μέρος της αποταμίευσής σας είναι εγγυημένο και ποιο ακολουθεί την αγορά; Η διάκριση είναι κρίσιμη — και συχνά ασαφής στο συμβόλαιο.", "Which part of your savings is guaranteed and which follows the market? The distinction is critical — and often unclear in the contract.")}</p>
                                 </div>
                             </li>
                         </ul>

@@ -23,7 +23,7 @@ export default function GuidesIndexClient() {
     return (
         <LoBPageShell activeNav="none" locale={language}>
             <section className="mx-auto max-w-[860px] px-6 pb-16 text-center md:px-12">
-                <p className="mb-4 text-body-sm font-semibold uppercase tracking-widest text-[#29685B]">
+                <p className="mb-4 text-body-sm font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                     {t("Οδηγοί", "Guides")}
                 </p>
                 <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-display dark:text-white">

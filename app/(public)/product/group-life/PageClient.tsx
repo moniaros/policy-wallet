@@ -43,13 +43,13 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Ομαδική Ζωή", "Group Life Insurance")}
                     </span>
-                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
+                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8">
                         {t("Η παροχή που λέει «σε καλύπτουμε» στην πράξη.", "The benefit that says “we've got you” — and means it.")}
                     </h1>
-                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Η ομαδική ασφάλιση ζωής δίνει σε κάθε εργαζόμενο κεφάλαιο ζωής και ανικανότητας με έξοδα εργοδότη. Οργανώστε το συμβόλαιο, δείτε ποιος καλύπτεται και με πόσα — χωρίς να ψάχνετε πίνακες σε PDF.", "Group life insurance gives every employee life and disability capital at the employer's expense. Organize the policy and see who is covered and for how much — without digging through PDF tables.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -64,13 +64,13 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             </section>
 
             {/* BENEFITS TRIAD */}
-            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
+            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white">
                             {t("Το ένα τρίτο του πακέτου παροχών που ξεχνιέται.", "The forgotten third of the benefits package.")}
                         </h2>
-                        <p className="text-[#475569] text-lead leading-relaxed">
+                        <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Υγεία, σύνταξη, ζωή: τα ομαδικά προγράμματα συνήθως έρχονται πακέτο, αλλά μόνο τα δύο πρώτα συζητιούνται. Δείτε και τα τρία μαζί, ανά εργαζόμενο.", "Health, pension, life: group plans usually arrive as a package, but only the first two get discussed. See all three together, per employee.")}
                         </p>
                     </div>
@@ -79,21 +79,21 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                         {triad.map((pillar) => {
                             const Icon = pillar.icon
                             const card = (
-                                <div className={`h-full rounded-[16px] border p-7 ${pillar.current ? "border-[#29685B]/30 bg-white shadow-[0_20px_40px_rgba(0,0,0,0.04)]" : "border-[#E2E8F0] bg-white"}`}>
+                                <div className={`h-full rounded-[16px] border p-7 ${pillar.current ? "border-[#29685B]/30 bg-white dark:bg-slate-900 shadow-[0_20px_40px_rgba(0,0,0,0.04)]" : "border-[#E2E8F0] dark:border-slate-800 bg-white"}`}>
                                     <div className="mb-5 flex items-center justify-between">
-                                        <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA]">
-                                            <Icon className="h-5 w-5 text-[#0F172A]" />
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
+                                            <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
                                         </div>
                                         {pillar.current ? (
-                                            <span className="rounded-full bg-[#F0FDF4] px-2 py-1 text-micro font-semibold uppercase tracking-wider text-[#166534]">
+                                            <span className="rounded-full bg-[#F0FDF4] dark:bg-[#29685B]/15 px-2 py-1 text-micro font-semibold uppercase tracking-wider text-[#166534] dark:text-[#A7F3D0]">
                                                 {t("Αυτή η σελίδα", "This page")}
                                             </span>
                                         ) : (
-                                            <ArrowRight className="h-4 w-4 text-[#5B6A7A]" />
+                                            <ArrowRight className="h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
                                         )}
                                     </div>
-                                    <h3 className="text-title font-semibold text-[#0F172A] mb-3">{t(pillar.titleEl, pillar.titleEn)}</h3>
-                                    <p className="text-body leading-relaxed text-[#475569]">{t(pillar.descEl, pillar.descEn)}</p>
+                                    <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t(pillar.titleEl, pillar.titleEn)}</h3>
+                                    <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">{t(pillar.descEl, pillar.descEn)}</p>
                                 </div>
                             )
                             return pillar.href ? (
@@ -112,18 +112,18 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             <section className="px-6 lg:px-12 py-24">
                 <div className="mx-auto max-w-page grid gap-16 md:grid-cols-2">
                     <div>
-                        <h2 className="text-h3 font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#0F172A]">
+                        <h2 className="text-h3 font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#0F172A] dark:text-white">
                             {t("Για HR και ιδιοκτήτες επιχειρήσεων", "For HR and business owners")}
                         </h2>
-                        <p className="text-[#475569] text-lead leading-relaxed">
+                        <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Ανεβάστε το ομαδικό συμβόλαιο και δείτε τις παροχές του χαρτογραφημένες: κεφάλαια ανά εργαζόμενο, συμπληρωματικές καλύψεις, ημερομηνία ανανέωσης. Όταν έρθει η στιγμή της διαπραγμάτευσης, ξέρετε τι ακριβώς πληρώνετε.", "Upload the group policy and see its benefits mapped: capital per employee, supplementary covers, renewal date. When negotiation time comes, you know exactly what you are paying for.")}
                         </p>
                     </div>
                     <div>
-                        <h2 className="text-h3 font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#0F172A]">
+                        <h2 className="text-h3 font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#0F172A] dark:text-white">
                             {t("Για εργαζομένους", "For employees")}
                         </h2>
-                        <p className="text-[#475569] text-lead leading-relaxed">
+                        <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Το ομαδικό κεφάλαιο ζωής μετράει στον οικογενειακό σας σχεδιασμό: αν το ατομικό σας συμβόλαιο το αγνοεί, ίσως πληρώνετε για κάλυψη που ήδη έχετε — ή στηρίζεστε σε κεφάλαιο μικρότερο απ' όσο νομίζετε.", "Your group life capital counts in your family planning: if your personal policy ignores it, you may be paying for cover you already have — or relying on a smaller sum than you think.")}
                         </p>
                     </div>

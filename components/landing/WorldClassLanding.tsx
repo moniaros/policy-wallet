@@ -38,7 +38,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
 
     return (
         <div
-            className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A]`}
+            className={`${inter.className} min-h-screen bg-white dark:bg-slate-900 text-[#0F172A] dark:text-white selection:bg-[#29685B]/20 selection:text-[#0F172A]`}
         >
             <LandingHeader locale={locale} showPerksLink={partnerOffers.length > 0} />
 
@@ -49,9 +49,9 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                         {/* Copy */}
                         <div>
                             {/* Badge */}
-                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3.5 py-1.5">
+                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#A7F3D0] dark:border-[#29685B]/50 bg-[#ECFDF5] dark:bg-[#29685B]/15 px-3.5 py-1.5">
                                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#29685B]" />
-                                <span className="text-body-sm font-medium text-[#166534]">
+                                <span className="text-body-sm font-medium text-[#166534] dark:text-[#A7F3D0]">
                                     {t(
                                         "Gap Engine — AI ανάλυση κενών κάλυψης",
                                         "Gap Engine — AI coverage gap analysis"
@@ -60,22 +60,22 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             </div>
 
                             {/* Headline */}
-                            <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-[-0.04em] text-[#0F172A] lg:text-display">
+                            <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-[-0.04em] text-[#0F172A] dark:text-white lg:text-display">
                                 {isGreek ? (
                                     <>
                                         Ξέρετε τι σας καλύπτει{" "}
-                                        <span className="text-[#29685B]">κάθε ασφαλιστήριο</span>;
+                                        <span className="text-[#29685B] dark:text-[#A7F3D0]">κάθε ασφαλιστήριο</span>;
                                     </>
                                 ) : (
                                     <>
                                         Do you know what each{" "}
-                                        <span className="text-[#29685B]">policy covers</span>?
+                                        <span className="text-[#29685B] dark:text-[#A7F3D0]">policy covers</span>?
                                     </>
                                 )}
                             </h1>
 
                             {/* Subheadline */}
-                            <p className="mb-8 max-w-[500px] text-lead leading-relaxed text-[#475569]">
+                            <p className="mb-8 max-w-[500px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
                                     "Ανεβάστε τα ασφαλιστήριά σας. Η AI βρίσκει κενά, σας ειδοποιεί πριν τη λήξη, και σας δίνει καθαρή εικόνα της κάλυψής σας.",
                                     "Upload your policies. AI finds gaps, alerts you before renewals, and keeps your cover in clear view."
@@ -102,8 +102,8 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#29685B] text-kicker font-bold text-white">
                                     20
                                 </div>
-                                <p className="text-body-sm text-[#5B6A7A]">
-                                    <span className="font-semibold text-[#0F172A]">
+                                <p className="text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                                    <span className="font-semibold text-[#0F172A] dark:text-white">
                                         {t("ασφαλιστικοί κλάδοι", "insurance branches")}
                                     </span>{" "}
                                     {t(
@@ -120,9 +120,9 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                 </section>
 
                 {/* ── 2. TRUST BAR ─────────────────────────────────── */}
-                <div className="border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-10 lg:px-12">
+                <div className="border-y border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 px-6 py-10 lg:px-12">
                     <div className="mx-auto max-w-page space-y-6 text-center">
-                        <p className="text-caption font-semibold uppercase tracking-widest text-[#5B6A7A]">
+                        <p className="text-caption font-semibold uppercase tracking-widest text-[#5B6A7A] dark:text-slate-400">
                             {t(
                                 "Αναγνωρίζει συμβόλαια από όλες τις ασφαλιστικές",
                                 "Works with every Greek insurer"
@@ -143,16 +143,16 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                 <section id="services" className="px-6 py-20 lg:px-12 lg:py-28">
                     <div className="mx-auto max-w-page">
                         <div className="mb-12 max-w-[560px]">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
+                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                                 {t("Υπηρεσίες", "Services")}
                             </p>
-                            <h2 className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1">
+                            <h2 className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
                                 {t(
                                     "Ό,τι χρειάζεστε για τα ασφαλιστήριά σας",
                                     "Everything you need for your policies"
                                 )}
                             </h2>
-                            <p className="text-lead leading-relaxed text-[#475569]">
+                            <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
                                     "Από το upload μέχρι την ανάλυση AI — το PolicyWallet αυτοματοποιεί κάθε βήμα.",
                                     "From upload to AI analysis — PolicyWallet automates every step."
@@ -164,16 +164,16 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                 </section>
 
                 {/* ── 4. AUDIENCE TABS ─────────────────────────────── */}
-                <section id="solutions" className="bg-[#F8FAFC] px-6 py-20 lg:px-12 lg:py-28">
+                <section id="solutions" className="bg-[#F8FAFC] dark:bg-slate-900 px-6 py-20 lg:px-12 lg:py-28">
                     <div className="mx-auto max-w-page">
                         <div className="mb-12 text-center">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
+                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                                 {t("Για εσάς", "For you")}
                             </p>
-                            <h2 className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1">
+                            <h2 className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
                                 {t("Ιδιώτης ή ασφαλιστής;", "Individual or insurance agent?")}
                             </h2>
-                            <p className="mx-auto max-w-[500px] text-lead leading-relaxed text-[#475569]">
+                            <p className="mx-auto max-w-[500px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
                                     "Δύο διαφορετικές εμπειρίες, σχεδιασμένες για τις ανάγκες σας.",
                                     "Two distinct experiences, built around your needs."
@@ -188,7 +188,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                 <PartnerPerksSection offers={partnerOffers} isGreek={isGreek} />
 
                 {/* ── 5. STATS ─────────────────────────────────────── */}
-                <section className="border-y border-[#E2E8F0] px-6 py-16 lg:px-12">
+                <section className="border-y border-[#E2E8F0] dark:border-slate-800 px-6 py-16 lg:px-12">
                     <div className="mx-auto grid max-w-page grid-cols-2 gap-8 text-center lg:grid-cols-4">
                         {[
                             {
@@ -213,10 +213,10 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             },
                         ].map((stat) => (
                             <div key={stat.value}>
-                                <p className="text-h2 font-bold tracking-tight text-[#29685B] lg:text-h1">
+                                <p className="text-h2 font-bold tracking-tight text-[#29685B] dark:text-[#A7F3D0] lg:text-h1">
                                     {stat.value}
                                 </p>
-                                <p className="mt-1 text-body text-[#5B6A7A]">
+                                <p className="mt-1 text-body text-[#5B6A7A] dark:text-slate-400">
                                     {t(stat.labelEl, stat.labelEn)}
                                 </p>
                             </div>
@@ -228,10 +228,10 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                 <section id="how-it-works" className="px-6 py-20 lg:px-12 lg:py-28">
                     <div className="mx-auto max-w-page">
                         <div className="mb-14 text-center">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
+                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                                 {t("Πώς λειτουργεί", "How it works")}
                             </p>
-                            <h2 className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1">
+                            <h2 className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
                                 {t("Τρία βήματα. Πλήρης έλεγχος.", "Three steps. Full control.")}
                             </h2>
                         </div>
@@ -266,17 +266,17 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                 <div key={item.step} className="flex flex-1 items-start md:flex-col">
                                     <div className="flex flex-col items-center md:flex-row md:items-start md:w-full">
                                         <div className="flex flex-col items-center md:flex-1">
-                                            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-[#ECFDF5] md:mb-6">
-                                                <item.Icon className="h-6 w-6 text-[#29685B]" />
+                                            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-[#ECFDF5] dark:bg-[#29685B]/15 md:mb-6">
+                                                <item.Icon className="h-6 w-6 text-[#29685B] dark:text-[#A7F3D0]" />
                                             </div>
                                             <div className="ml-5 md:ml-0 md:text-center">
-                                                <p className="mb-0.5 text-micro font-bold tracking-widest text-[#29685B]">
+                                                <p className="mb-0.5 text-micro font-bold tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                                                     {item.step}
                                                 </p>
-                                                <h3 className="mb-2 text-lead font-semibold text-[#0F172A]">
+                                                <h3 className="mb-2 text-lead font-semibold text-[#0F172A] dark:text-white">
                                                     {t(item.titleEl, item.titleEn)}
                                                 </h3>
-                                                <p className="text-body leading-relaxed text-[#475569] md:max-w-[220px]">
+                                                <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300 md:max-w-[220px]">
                                                     {t(item.descEl, item.descEn)}
                                                 </p>
                                             </div>

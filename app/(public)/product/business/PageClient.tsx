@@ -59,13 +59,13 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
-                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
                         {t("Ασφάλεια Επιχείρησης", "Business Insurance")}
                     </span>
-                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
+                    <h1 className="text-h1 lg:text-display leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8">
                         {t("Έξι κίνδυνοι, ένα πολυασφαλιστήριο, μηδέν ασάφεια.", "Six risks, one multi-risk policy, zero ambiguity.")}
                     </h1>
-                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Το πολυασφαλιστήριο μιας μικρής επιχείρησης καλύπτει στέγη, εξοπλισμό, εμπορεύματα, διακοπή εργασιών και ευθύνες — αλλά όχι πάντα όλα μαζί. Η AI δείχνει ποια σκέλη έχετε αγοράσει και ποια λείπουν.", "A small business multi-risk policy covers premises, equipment, stock, interruption and liabilities — but rarely all of them at once. Our AI shows which sections you actually bought and which are missing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -77,13 +77,13 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
             </section>
 
             {/* MULTI-RISK GRID */}
-            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
+            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white">
                             {t("Τα σκέλη που πρέπει να ξέρει κάθε ΜμΕ.", "The sections every SME should know.")}
                         </h2>
-                        <p className="text-[#475569] text-lead leading-relaxed">
+                        <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Ανεβάστε το συμβόλαιο της επιχείρησης και δείτε το χαρτογραφημένο σε αυτές τις κατηγορίες — με τα όρια, τις απαλλαγές και τα κενά ανά σκέλος.", "Upload your business policy and see it mapped across these categories — with limits, deductibles and gaps per section.")}
                         </p>
                     </div>
@@ -92,12 +92,12 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
                         {riskSections.map((section) => {
                             const Icon = section.icon
                             return (
-                                <div key={section.titleEn} className="rounded-[16px] border border-[#E2E8F0] bg-white p-7">
-                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA]">
-                                        <Icon className="h-5 w-5 text-[#0F172A]" />
+                                <div key={section.titleEn} className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
+                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
+                                        <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
                                     </div>
-                                    <h3 className="text-title font-semibold text-[#0F172A] mb-3">{t(section.titleEl, section.titleEn)}</h3>
-                                    <p className="text-body leading-relaxed text-[#475569]">{t(section.descEl, section.descEn)}</p>
+                                    <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t(section.titleEl, section.titleEn)}</h3>
+                                    <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">{t(section.descEl, section.descEn)}</p>
                                 </div>
                             )
                         })}

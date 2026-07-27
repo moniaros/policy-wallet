@@ -27,10 +27,10 @@ import { ProductScrollButton } from "./ProductScrollButton"
 function StatItem({ value, label }: { value: string; label: string }) {
     return (
         <div className="text-center">
-            <div className="mb-2 text-h2 font-semibold leading-none tracking-tight text-[#0F172A] lg:text-h1">
+            <div className="mb-2 text-h2 font-semibold leading-none tracking-tight text-[#0F172A] dark:text-white lg:text-h1">
                 {value}
             </div>
-            <div className="mx-auto max-w-[180px] text-body leading-snug text-[#475569]">{label}</div>
+            <div className="mx-auto max-w-[180px] text-body leading-snug text-[#475569] dark:text-slate-300">{label}</div>
         </div>
     )
 }
@@ -56,19 +56,19 @@ export function ProductSections({ language }: { language: Language }) {
 
             <section className="px-6 text-center md:px-12">
                 <div className="mx-auto max-w-[860px]">
-                    <div className="mb-8 inline-flex select-none items-center gap-2 rounded-full bg-[#DCEBDA] px-3 py-1.5 text-caption font-semibold uppercase tracking-wide text-[#166534]">
+                    <div className="mb-8 inline-flex select-none items-center gap-2 rounded-full bg-[#DCEBDA] dark:bg-[#29685B]/30 px-3 py-1.5 text-caption font-semibold uppercase tracking-wide text-[#166534] dark:text-[#A7F3D0]">
                         <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
                         {t("Διαθέσιμο τώρα", "Available now")}
                     </div>
 
-                    <h1 className="mb-6 text-h1 font-semibold leading-[1.02] tracking-[-0.045em] text-[#0F172A] md:text-display">
+                    <h1 className="mb-6 text-h1 font-semibold leading-[1.02] tracking-[-0.045em] text-[#0F172A] dark:text-white md:text-display">
                         {t(
                             "Όλες οι ασφαλίσεις σας. Ένα έξυπνο πορτοφόλι.",
                             "All your insurance. One intelligent wallet."
                         )}
                     </h1>
 
-                    <p className="mx-auto mb-10 max-w-[640px] text-lead leading-[1.55] text-[#475569] md:text-title">
+                    <p className="mx-auto mb-10 max-w-[640px] text-lead leading-[1.55] text-[#475569] dark:text-slate-300 md:text-title">
                         {t(
                             "Δείτε τι καλύπτει κάθε συμβόλαιο, τι δεν καλύπτει — και τι να κάνετε γι' αυτό.",
                             "See what every policy covers, what it doesn't, and what to do about it."
@@ -85,13 +85,13 @@ export function ProductSections({ language }: { language: Language }) {
                             headingId="how-it-works-heading"
                             className="pw-secondary-button pw-btn-lg w-full cursor-pointer sm:w-auto"
                         >
-                            <ChevronDown className="h-4 w-4 text-[#29685B]" />
+                            <ChevronDown className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
                             {t("Πώς λειτουργεί", "See how it works")}
                         </ProductScrollButton>
                     </div>
 
-                    <p className="mt-4 flex items-center justify-center gap-2 text-body text-[#5B6A7A]">
-                        <ChevronDown className="h-4 w-4 text-[#29685B]" />
+                    <p className="mt-4 flex items-center justify-center gap-2 text-body text-[#5B6A7A] dark:text-slate-400">
+                        <ChevronDown className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
                         {t(
                             "Κύλιση στην ίδια σελίδα για τα 3 βήματα.",
                             "Scroll on this page to the 3-step walkthrough."
@@ -103,16 +103,16 @@ export function ProductSections({ language }: { language: Language }) {
             <section className="mx-auto max-w-page px-6 py-20 md:px-12 lg:py-28">
                 <div className="grid items-center gap-16 md:grid-cols-2 lg:gap-24">
                     <div>
-                        <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
+                        <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                             {t("Το Πορτοφόλι σας", "Your wallet")}
                         </p>
-                        <h2 className="mb-6 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1">
+                        <h2 className="mb-6 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
                             {t(
                                 "Τα απαραίτητα για να διαχειρίζεστε τις ασφαλίσεις σας αβίαστα.",
                                 "The essentials to manage your insurance effortlessly."
                             )}
                         </h2>
-                        <p className="mb-8 text-lead leading-relaxed text-[#475569]">
+                        <p className="mb-8 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
                                 "Αποκτήστε εξατομικευμένες συστάσεις για να βελτιστοποιήσετε τις καλύψεις σας, να κλείσετε κενά και να εξοικονομήσετε χρήματα.",
                                 "Get personalized recommendations to optimize your coverage, close dangerous gaps, and save money on premiums."
@@ -125,8 +125,8 @@ export function ProductSections({ language }: { language: Language }) {
                                 t("Υπενθυμίσεις ανανέωσης και ειδοποιήσεις", "Renewal reminders and alerts"),
                                 t("Κοινοποίηση με ασφαλιστές και μεσίτες", "Sharing with insurers and brokers"),
                             ].map((item) => (
-                                <li key={item} className="flex items-start gap-3 text-body-lg text-[#0F172A]">
-                                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B]" />
+                                <li key={item} className="flex items-start gap-3 text-body-lg text-[#0F172A] dark:text-white">
+                                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
                                     {item}
                                 </li>
                             ))}
@@ -134,13 +134,13 @@ export function ProductSections({ language }: { language: Language }) {
                     </div>
 
                     <div className="relative">
-                        <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
-                            <div className="mb-6 flex items-center justify-between border-b border-[#E2E8F0] pb-4">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
+                            <div className="mb-6 flex items-center justify-between border-b border-[#E2E8F0] dark:border-slate-800 pb-4">
                                 <div>
-                                    <p className="mb-1 text-micro font-semibold uppercase tracking-wider text-[#5B6A7A]">
+                                    <p className="mb-1 text-micro font-semibold uppercase tracking-wider text-[#5B6A7A] dark:text-slate-400">
                                         {t("Πύλη Ασφάλισης", "Insurance Hub")}
                                     </p>
-                                    <p className="text-lead font-semibold text-[#0F172A]">
+                                    <p className="text-lead font-semibold text-[#0F172A] dark:text-white">
                                         {t("Γεια σου, Νίκο", "Welcome back, Nick")}
                                     </p>
                                 </div>
@@ -178,20 +178,20 @@ export function ProductSections({ language }: { language: Language }) {
                                 ].map(({ icon: Icon, nameEl, nameEn, status, expEl, expEn }) => (
                                     <div
                                         key={nameEn}
-                                        className={`flex items-center gap-3 rounded-[12px] border p-3.5 ${status === "warn" ? "border-amber-100 bg-amber-50" : "border-transparent bg-[#F8FAFC]"}`}
+                                        className={`flex items-center gap-3 rounded-[12px] border p-3.5 ${status === "warn" ? "border-amber-100 bg-amber-50" : "border-transparent bg-[#F8FAFC] dark:bg-slate-900"}`}
                                     >
                                         <div
-                                            className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] ${status === "warn" ? "bg-amber-100" : "bg-[#DCEBDA]"}`}
+                                            className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] ${status === "warn" ? "bg-amber-100" : "bg-[#DCEBDA] dark:bg-[#29685B]/30"}`}
                                         >
                                             <Icon
-                                                className={`h-4.5 w-4.5 ${status === "warn" ? "text-amber-700" : "text-[#29685B]"}`}
+                                                className={`h-4.5 w-4.5 ${status === "warn" ? "text-amber-700" : "text-[#29685B] dark:text-[#A7F3D0]"}`}
                                             />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <p className="truncate text-body font-medium text-[#0F172A]">
+                                            <p className="truncate text-body font-medium text-[#0F172A] dark:text-white">
                                                 {t(nameEl, nameEn)}
                                             </p>
-                                            <p className={`text-caption ${status === "warn" ? "text-amber-700" : "text-[#5B6A7A]"}`}>
+                                            <p className={`text-caption ${status === "warn" ? "text-amber-700" : "text-[#5B6A7A] dark:text-slate-400"}`}>
                                                 {t(expEl, expEn)}
                                             </p>
                                         </div>
@@ -220,7 +220,7 @@ export function ProductSections({ language }: { language: Language }) {
                 </div>
             </section>
 
-            <section className="border-y border-[#E2E8F0] bg-white px-6 py-16 md:px-12">
+            <section className="border-y border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-16 md:px-12">
                 <div className="mx-auto grid max-w-[1040px] gap-10 md:grid-cols-3">
                     {STATS.map((stat) => (
                         <StatItem
@@ -232,17 +232,17 @@ export function ProductSections({ language }: { language: Language }) {
                 </div>
             </section>
 
-            <section id="product-categories" className="scroll-mt-32 bg-[#F8FAFC] px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
+            <section id="product-categories" className="scroll-mt-32 bg-[#F8FAFC] dark:bg-slate-900 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mx-auto max-w-page">
                     <div className="mb-14">
-                        <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
+                        <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                             {t("Κατηγορίες", "Categories")}
                         </p>
                         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                             <h2
                                 id="product-categories-heading"
                                 tabIndex={-1}
-                                className="max-w-[500px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-h1"
+                                className="max-w-[500px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white focus:outline-none lg:text-h1"
                             >
                                 {t(
                                     "Κάθε ασφάλεια που χρειάζεστε, αναλυμένη για εσάς.",
@@ -252,7 +252,7 @@ export function ProductSections({ language }: { language: Language }) {
                             <ProductScrollButton
                                 targetId="product-categories"
                                 headingId="product-categories-heading"
-                                className="inline-flex flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-body font-semibold text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
+                                className="inline-flex flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-body font-semibold text-[#29685B] dark:text-[#A7F3D0] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
                             >
                                 {t("Δείτε όλα", "Explore all")}
                                 <ChevronDown className="h-4 w-4" />
@@ -272,24 +272,24 @@ export function ProductSections({ language }: { language: Language }) {
                                 >
                                     <div className="mb-6 flex items-start justify-between">
                                         <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/80 shadow-sm backdrop-blur-sm">
-                                            <Icon className="h-5 w-5 text-[#0F172A]" />
+                                            <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
                                         </div>
                                         <span className={`rounded-full px-2.5 py-1 text-micro font-semibold uppercase tracking-wide ${category.tagBg}`}>
                                             {t(category.tagEl, category.tagEn)}
                                         </span>
                                     </div>
 
-                                    <h3 className="mb-3 text-title font-semibold leading-[1.2] tracking-tight text-[#0F172A]">
+                                    <h3 className="mb-3 text-title font-semibold leading-[1.2] tracking-tight text-[#0F172A] dark:text-white">
                                         {t(category.labelEl, category.labelEn)}
                                     </h3>
-                                    <p className="mb-3 text-body font-semibold leading-snug text-[#0F172A]">
+                                    <p className="mb-3 text-body font-semibold leading-snug text-[#0F172A] dark:text-white">
                                         {t(category.headlineEl, category.headlineEn)}
                                     </p>
-                                    <p className="mb-6 flex-1 text-body leading-relaxed text-[#475569]">
+                                    <p className="mb-6 flex-1 text-body leading-relaxed text-[#475569] dark:text-slate-300">
                                         {t(category.descEl, category.descEn)}
                                     </p>
 
-                                    <div className="flex items-center gap-1.5 text-body font-semibold text-[#0F172A] transition-all duration-150 group-hover:gap-2.5">
+                                    <div className="flex items-center gap-1.5 text-body font-semibold text-[#0F172A] dark:text-white transition-all duration-150 group-hover:gap-2.5">
                                         {t("Δείτε τι αναλύουμε", "See what we analyze")}
                                         <ArrowRight className="h-4 w-4" />
                                     </div>
@@ -302,13 +302,13 @@ export function ProductSections({ language }: { language: Language }) {
 
             <section id="how-it-works" className="mx-auto max-w-page scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-16 text-center">
-                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
+                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                         {t("Η Διαδικασία", "The process")}
                     </p>
                     <h2
                         id="how-it-works-heading"
                         tabIndex={-1}
-                        className="mx-auto max-w-[560px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-h1"
+                        className="mx-auto max-w-[560px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white focus:outline-none lg:text-h1"
                     >
                         {t(
                             "Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων.",
@@ -324,18 +324,18 @@ export function ProductSections({ language }: { language: Language }) {
                         return (
                             <div key={step.n} className="relative flex flex-col">
                                 <div className="mb-6 flex items-center gap-3">
-                                    <span className="rounded-full bg-[#DCEBDA] px-2.5 py-1 text-micro font-bold tracking-widest text-[#29685B]">
+                                    <span className="rounded-full bg-[#DCEBDA] dark:bg-[#29685B]/30 px-2.5 py-1 text-micro font-bold tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                                         {step.n}
                                     </span>
-                                    <div className="h-px flex-1 bg-[#E2E8F0]" />
+                                    <div className="h-px flex-1 bg-[#E2E8F0] dark:bg-slate-800" />
                                 </div>
-                                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] shadow-sm">
-                                    <Icon className="h-5 w-5 text-[#29685B]" />
+                                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 shadow-sm">
+                                    <Icon className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                                 </div>
-                                <h3 className="mb-3 text-title font-semibold leading-snug tracking-tight text-[#0F172A]">
+                                <h3 className="mb-3 text-title font-semibold leading-snug tracking-tight text-[#0F172A] dark:text-white">
                                     {t(step.titleEl, step.titleEn)}
                                 </h3>
-                                <p className="text-body leading-relaxed text-[#475569]">
+                                <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
                                     {t(step.descEl, step.descEn)}
                                 </p>
                             </div>
@@ -349,10 +349,10 @@ export function ProductSections({ language }: { language: Language }) {
 
             <section id="product-faq" className="mx-auto max-w-[860px] scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-12 text-center">
-                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B]">
+                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
                         {t("Ερωτήσεις", "FAQs")}
                     </p>
-                    <h2 className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1">
+                    <h2 className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
                         {t("Συχνές ερωτήσεις", "Frequently asked questions")}
                     </h2>
                 </div>

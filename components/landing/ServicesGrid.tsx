@@ -67,17 +67,17 @@ function ServiceCard({
 }) {
     const t = (el: string, en: string) => (isGreek ? el : en)
     return (
-        <div className="group flex flex-col rounded-2xl border border-[#E2E8F0] bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#A7F3D0] hover:shadow-[0_8px_24px_rgba(41,104,91,0.08)]">
-            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#ECFDF5]">
-                <s.Icon className="h-5 w-5 text-[#29685B]" />
+        <div className="group flex flex-col rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#A7F3D0] hover:shadow-[0_8px_24px_rgba(41,104,91,0.08)]">
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#ECFDF5] dark:bg-[#29685B]/15">
+                <s.Icon className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
             </div>
-            <h3 className="mb-2 text-body-lg font-semibold tracking-tight text-[#0F172A]">
+            <h3 className="mb-2 text-body-lg font-semibold tracking-tight text-[#0F172A] dark:text-white">
                 {t(s.titleEl, s.titleEn)}
             </h3>
-            <p className="mb-5 flex-1 text-body leading-relaxed text-[#475569]">
+            <p className="mb-5 flex-1 text-body leading-relaxed text-[#475569] dark:text-slate-300">
                 {t(s.descEl, s.descEn)}
             </p>
-            <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0FDF4] px-3 py-1 text-caption font-semibold text-[#29685B]">
+            <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0FDF4] dark:bg-[#29685B]/15 px-3 py-1 text-caption font-semibold text-[#29685B] dark:text-[#A7F3D0]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#29685B]" />
                 {t(s.benefitEl, s.benefitEn)}
             </div>

@@ -138,17 +138,17 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
             <section className="px-6 pb-20 md:px-12">
                 <div className="mx-auto max-w-page">
                     <div className="mb-10">
-                        <p className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-[#29685B]">Επικοινωνία</p>
-                        <h1 className="mb-4 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-display">
+                        <p className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-[#29685B] dark:text-[#A7F3D0]">Επικοινωνία</p>
+                        <h1 className="mb-4 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] dark:text-white md:text-display">
                             Πείτε μας πώς μπορούμε να βοηθήσουμε.
                         </h1>
-                        <p className="max-w-[720px] text-lead text-[#475569]">
+                        <p className="max-w-[720px] text-lead text-[#475569] dark:text-slate-300">
                             Συμπληρώστε τη φόρμα και η ομάδα μας θα επικοινωνήσει μαζί σας με τα επόμενα βήματα.
                         </p>
                     </div>
 
                     <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
-                        <form onSubmit={onSubmit} className="rounded-[14px] border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+                        <form onSubmit={onSubmit} className="rounded-[14px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm md:p-8">
                             {/* Honeypot: "website_url" is not a browser-autofill
                                 token (unlike the old name="company", which
                                 autofill profiles silently filled, getting real
@@ -166,40 +166,40 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
 
                             <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <label className="block">
-                                    <span className="mb-2 block text-sm font-medium text-[#0F172A]">Ονοματεπώνυμο</span>
+                                    <span className="mb-2 block text-sm font-medium text-[#0F172A] dark:text-white">Ονοματεπώνυμο</span>
                                     <input
                                         type="text"
                                         autoComplete="name"
                                         value={form.name}
                                         onChange={(event) => setField("name", event.target.value)}
                                         className={`w-full rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
-                                            errors.name ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
+                                            errors.name ? "border-[#DC2626]" : "border-[#CBD5E1] dark:border-slate-700 focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.name)}
                                         aria-describedby={errors.name ? "contact-name-error" : undefined}
                                     />
                                     {errors.name ? (
-                                        <p id="contact-name-error" className="mt-1 text-sm text-[#B91C1C]">
+                                        <p id="contact-name-error" className="mt-1 text-sm text-[#B91C1C] dark:text-red-300">
                                             {errors.name}
                                         </p>
                                     ) : null}
                                 </label>
 
                                 <label className="block">
-                                    <span className="mb-2 block text-sm font-medium text-[#0F172A]">Email</span>
+                                    <span className="mb-2 block text-sm font-medium text-[#0F172A] dark:text-white">Email</span>
                                     <input
                                         type="email"
                                         autoComplete="email"
                                         value={form.email}
                                         onChange={(event) => setField("email", event.target.value)}
                                         className={`w-full rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
-                                            errors.email ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
+                                            errors.email ? "border-[#DC2626]" : "border-[#CBD5E1] dark:border-slate-700 focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.email)}
                                         aria-describedby={errors.email ? "contact-email-error" : undefined}
                                     />
                                     {errors.email ? (
-                                        <p id="contact-email-error" className="mt-1 text-sm text-[#B91C1C]">
+                                        <p id="contact-email-error" className="mt-1 text-sm text-[#B91C1C] dark:text-red-300">
                                             {errors.email}
                                         </p>
                                     ) : null}
@@ -208,32 +208,32 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
 
                             <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <label className="block">
-                                    <span className="mb-2 block text-sm font-medium text-[#0F172A]">Τηλέφωνο (προαιρετικό)</span>
+                                    <span className="mb-2 block text-sm font-medium text-[#0F172A] dark:text-white">Τηλέφωνο (προαιρετικό)</span>
                                     <input
                                         type="tel"
                                         autoComplete="tel"
                                         value={form.phone}
                                         onChange={(event) => setField("phone", event.target.value)}
                                         className={`w-full rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
-                                            errors.phone ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
+                                            errors.phone ? "border-[#DC2626]" : "border-[#CBD5E1] dark:border-slate-700 focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.phone)}
                                         aria-describedby={errors.phone ? "contact-phone-error" : undefined}
                                     />
                                     {errors.phone ? (
-                                        <p id="contact-phone-error" className="mt-1 text-sm text-[#B91C1C]">
+                                        <p id="contact-phone-error" className="mt-1 text-sm text-[#B91C1C] dark:text-red-300">
                                             {errors.phone}
                                         </p>
                                     ) : null}
                                 </label>
 
                                 <label className="block">
-                                    <span className="mb-2 block text-sm font-medium text-[#0F172A]">Θέμα</span>
+                                    <span className="mb-2 block text-sm font-medium text-[#0F172A] dark:text-white">Θέμα</span>
                                     <select
                                         value={form.subject}
                                         onChange={(event) => setField("subject", event.target.value as SubjectOption | "")}
                                         className={`w-full rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
-                                            errors.subject ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
+                                            errors.subject ? "border-[#DC2626]" : "border-[#CBD5E1] dark:border-slate-700 focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.subject)}
                                         aria-describedby={errors.subject ? "contact-subject-error" : undefined}
@@ -246,7 +246,7 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                         ))}
                                     </select>
                                     {errors.subject ? (
-                                        <p id="contact-subject-error" className="mt-1 text-sm text-[#B91C1C]">
+                                        <p id="contact-subject-error" className="mt-1 text-sm text-[#B91C1C] dark:text-red-300">
                                             {errors.subject}
                                         </p>
                                     ) : null}
@@ -254,19 +254,19 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                             </div>
 
                             <label className="mb-6 block">
-                                <span className="mb-2 block text-sm font-medium text-[#0F172A]">Μήνυμα</span>
+                                <span className="mb-2 block text-sm font-medium text-[#0F172A] dark:text-white">Μήνυμα</span>
                                 <textarea
                                     value={form.message}
                                     onChange={(event) => setField("message", event.target.value)}
                                     rows={7}
                                     className={`w-full resize-y rounded-[10px] border px-4 py-3 text-body outline-none transition-colors ${
-                                        errors.message ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
+                                        errors.message ? "border-[#DC2626]" : "border-[#CBD5E1] dark:border-slate-700 focus:border-[#29685B]"
                                     }`}
                                     aria-invalid={Boolean(errors.message)}
                                     aria-describedby={errors.message ? "contact-message-error" : undefined}
                                 />
                                 {errors.message ? (
-                                    <p id="contact-message-error" className="mt-1 text-sm text-[#B91C1C]">
+                                    <p id="contact-message-error" className="mt-1 text-sm text-[#B91C1C] dark:text-red-300">
                                         {errors.message}
                                     </p>
                                 ) : null}
@@ -282,20 +282,20 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                     {isSubmitting ? "Αποστολή..." : "Αποστολή μηνύματος"}
                                 </button>
                                 {successMessage ? (
-                                    <p className="text-sm text-[#166534]">{successMessage}</p>
+                                    <p className="text-sm text-[#166534] dark:text-[#A7F3D0]">{successMessage}</p>
                                 ) : null}
-                                {submitError ? <p className="text-sm text-[#B91C1C]">{submitError}</p> : null}
+                                {submitError ? <p className="text-sm text-[#B91C1C] dark:text-red-300">{submitError}</p> : null}
                             </div>
                         </form>
 
-                        <aside className="rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] p-6 shadow-sm md:p-8">
-                            <h2 className="mb-6 text-h3 font-semibold text-[#0F172A]">Στοιχεία εταιρείας</h2>
+                        <aside className="rounded-[14px] border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-6 shadow-sm md:p-8">
+                            <h2 className="mb-6 text-h3 font-semibold text-[#0F172A] dark:text-white">Στοιχεία εταιρείας</h2>
 
-                            <div className="space-y-5 text-body text-[#334155]">
+                            <div className="space-y-5 text-body text-[#334155] dark:text-slate-300">
                                 <div className="flex items-start gap-3">
-                                    <Mail className="mt-0.5 h-5 w-5 text-[#29685B]" />
+                                    <Mail className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                                     <div>
-                                        <p className="font-medium text-[#0F172A]">Email</p>
+                                        <p className="font-medium text-[#0F172A] dark:text-white">Email</p>
                                         {/* Plain-text address so AI crawlers and answer engines
                                             can read it (Cloudflare obfuscation hides mailto). */}
                                         <p>{siteConfig.contactEmail}</p>
@@ -304,9 +304,9 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
 
                                 {siteConfig.contactPhone ? (
                                     <div className="flex items-start gap-3">
-                                        <Phone className="mt-0.5 h-5 w-5 text-[#29685B]" />
+                                        <Phone className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                                         <div>
-                                            <p className="font-medium text-[#0F172A]">Τηλέφωνο</p>
+                                            <p className="font-medium text-[#0F172A] dark:text-white">Τηλέφωνο</p>
                                             <p>{siteConfig.contactPhone}</p>
                                         </div>
                                     </div>
@@ -314,9 +314,9 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
 
                                 {hasCompleteAddress() ? (
                                     <div className="flex items-start gap-3">
-                                        <MapPin className="mt-0.5 h-5 w-5 text-[#29685B]" />
+                                        <MapPin className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                                         <div>
-                                            <p className="font-medium text-[#0F172A]">Διεύθυνση</p>
+                                            <p className="font-medium text-[#0F172A] dark:text-white">Διεύθυνση</p>
                                             <p>
                                                 {siteConfig.address.streetAddress},{" "}
                                                 {siteConfig.address.postalCode}{" "}
@@ -327,9 +327,9 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
                                 ) : null}
 
                                 <div className="flex items-start gap-3">
-                                    <Clock3 className="mt-0.5 h-5 w-5 text-[#29685B]" />
+                                    <Clock3 className="mt-0.5 h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                                     <div>
-                                        <p className="font-medium text-[#0F172A]">Ώρες λειτουργίας</p>
+                                        <p className="font-medium text-[#0F172A] dark:text-white">Ώρες λειτουργίας</p>
                                         <p>Δευτέρα - Παρασκευή, 09:00 - 18:00</p>
                                     </div>
                                 </div>

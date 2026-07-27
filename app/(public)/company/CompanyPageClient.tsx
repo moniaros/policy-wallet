@@ -20,7 +20,7 @@ export default function CompanyPage() {
                     <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-tight md:text-display">
                         {t("Καινοτομώντας στην ψηφιακή ασφάλεια.", "Innovating digital trust.")}
                     </h1>
-                    <p className="mx-auto max-w-2xl text-lead leading-relaxed text-[#475569] md:text-title">
+                    <p className="mx-auto max-w-2xl text-lead leading-relaxed text-[#475569] dark:text-slate-300 md:text-title">
                         {t(
                             "Η PolicyWallet δημιουργήθηκε για να κάνει τη διαχείριση ασφαλιστηρίων απλή, διαφανή και προσβάσιμη.",
                             "PolicyWallet was built to make insurance management simple, transparent, and accessible."
@@ -31,11 +31,11 @@ export default function CompanyPage() {
                 {/* Definitional block — the "PolicyWallet is..." sentence answer
                     engines extract, followed by concrete company facts. */}
                 <section className="mx-auto mb-20 max-w-4xl px-6 lg:px-12">
-                    <div className="rounded-2xl border border-[#DCEBDA] bg-[#F0FDF4] p-8 md:p-10">
-                        <h2 className="mb-4 text-h3 font-semibold tracking-tight text-[#0F172A]">
+                    <div className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-8 md:p-10">
+                        <h2 className="mb-4 text-h3 font-semibold tracking-tight text-[#0F172A] dark:text-white">
                             {t("Τι είναι το PolicyWallet;", "What is PolicyWallet?")}
                         </h2>
-                        <p className="mb-6 text-lead leading-relaxed text-[#334155]">
+                        <p className="mb-6 text-lead leading-relaxed text-[#334155] dark:text-slate-300">
                             {siteConfig.definition[lang]}
                         </p>
                         <ul className="space-y-3">
@@ -57,8 +57,8 @@ export default function CompanyPage() {
                                     en: "Data is hosted encrypted on EU servers, fully GDPR-compliant.",
                                 },
                             ].map((item) => (
-                                <li key={item.en} className="flex items-start gap-3 text-body-lg leading-relaxed text-[#0F172A]">
-                                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B]" />
+                                <li key={item.en} className="flex items-start gap-3 text-body-lg leading-relaxed text-[#0F172A] dark:text-white">
+                                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
                                     {t(item.el, item.en)}
                                 </li>
                             ))}
@@ -68,12 +68,12 @@ export default function CompanyPage() {
 
                 <section className="mx-auto mb-24 max-w-page-wide px-6 lg:px-12">
                     <div className="grid gap-8 md:grid-cols-3">
-                        <article className="rounded-2xl border border-[#DCEBDA] bg-[#F0FDF4] p-10">
-                            <Shield className="mb-6 h-8 w-8 text-[#0F172A]" />
+                        <article className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-10">
+                            <Shield className="mb-6 h-8 w-8 text-[#0F172A] dark:text-white" />
                             <h3 className="mb-3 text-h3 font-semibold tracking-tight">
                                 {t("Ασφάλεια Πρώτα", "Security First")}
                             </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569]">
+                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
                                     "Κρυπτογράφηση enterprise επιπέδου και αρχιτεκτονική privacy-by-design.",
                                     "Enterprise-grade encryption and privacy-by-design architecture."
@@ -81,12 +81,12 @@ export default function CompanyPage() {
                             </p>
                         </article>
 
-                        <article className="rounded-2xl border border-[#DCEBDA] bg-[#F0FDF4] p-10">
-                            <Globe className="mb-6 h-8 w-8 text-[#0F172A]" />
+                        <article className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-10">
+                            <Globe className="mb-6 h-8 w-8 text-[#0F172A] dark:text-white" />
                             <h3 className="mb-3 text-h3 font-semibold tracking-tight">
                                 {t("Διαφάνεια", "Transparency")}
                             </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569]">
+                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
                                     "Ο χρήστης βλέπει καθαρά καλύψεις, εξαιρέσεις και ενέργειες χωρίς κρυφές πολυπλοκότητες.",
                                     "Users get clear visibility across coverage, exclusions, and actions without hidden complexity."
@@ -94,12 +94,12 @@ export default function CompanyPage() {
                             </p>
                         </article>
 
-                        <article className="rounded-2xl border border-[#DCEBDA] bg-[#F0FDF4] p-10">
-                            <Users className="mb-6 h-8 w-8 text-[#0F172A]" />
+                        <article className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-10">
+                            <Users className="mb-6 h-8 w-8 text-[#0F172A] dark:text-white" />
                             <h3 className="mb-3 text-h3 font-semibold tracking-tight">
                                 {t("Πελατοκεντρική Προσέγγιση", "Customer Obsessed")}
                             </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569]">
+                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
                                     "Κάθε ροή και κάθε οθόνη βελτιώνεται με πραγματικά σενάρια χρήσης από πελάτες και συνεργάτες.",
                                     "Every workflow and screen is refined with real customer and advisor usage patterns."
@@ -110,10 +110,10 @@ export default function CompanyPage() {
                 </section>
 
                 <section className="mx-auto mb-24 max-w-4xl px-6 lg:px-12">
-                    <h2 className="mb-6 text-h2 font-semibold tracking-tight text-[#0F172A] md:text-h1">
+                    <h2 className="mb-6 text-h2 font-semibold tracking-tight text-[#0F172A] dark:text-white md:text-h1">
                         {t("Γιατί το φτιάξαμε;", "Why did we build it?")}
                     </h2>
-                    <div className="space-y-5 text-lead leading-[1.75] text-[#334155]">
+                    <div className="space-y-5 text-lead leading-[1.75] text-[#334155] dark:text-slate-300">
                         <p>
                             {t(
                                 "Η Ελλάδα έχει από τα χαμηλότερα ποσοστά ιδιωτικής ασφάλισης στην Ευρώπη — και όσοι ασφαλίζονται, σπάνια γνωρίζουν τι ακριβώς καλύπτει το συμβόλαιό τους. Οι όροι είναι μακροσκελείς, οι εξαιρέσεις κρυμμένες και η σύγκριση σχεδόν αδύνατη για έναν μη ειδικό.",
@@ -139,7 +139,7 @@ export default function CompanyPage() {
                     in lib/seo/team.ts (paired with Person JSON-LD on the page). */}
                 {teamMembers.length > 0 && (
                     <section className="mx-auto mb-24 max-w-4xl px-6 lg:px-12">
-                        <h2 className="mb-6 text-h2 font-semibold tracking-tight text-[#0F172A] md:text-h1">
+                        <h2 className="mb-6 text-h2 font-semibold tracking-tight text-[#0F172A] dark:text-white md:text-h1">
                             {t("Η ομάδα", "The team")}
                         </h2>
                         <div className="grid gap-6 sm:grid-cols-2">
@@ -147,17 +147,17 @@ export default function CompanyPage() {
                                 <article
                                     key={member.slug}
                                     id={member.slug}
-                                    className="rounded-2xl border border-[#E2E8F0] bg-white p-6"
+                                    className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6"
                                 >
-                                    <h3 className="text-title font-semibold text-[#0F172A]">{member.name}</h3>
-                                    <p className="mt-1 text-body font-medium uppercase tracking-wider text-[#5B6A7A]">
+                                    <h3 className="text-title font-semibold text-[#0F172A] dark:text-white">{member.name}</h3>
+                                    <p className="mt-1 text-body font-medium uppercase tracking-wider text-[#5B6A7A] dark:text-slate-400">
                                         {isGreek ? member.role.el : member.role.en}
                                     </p>
-                                    <p className="mt-3 text-body leading-relaxed text-[#334155]">
+                                    <p className="mt-3 text-body leading-relaxed text-[#334155] dark:text-slate-300">
                                         {isGreek ? member.bio.el : member.bio.en}
                                     </p>
                                     {member.credentials && (
-                                        <p className="mt-2 text-body-sm text-[#5B6A7A]">
+                                        <p className="mt-2 text-body-sm text-[#5B6A7A] dark:text-slate-400">
                                             {isGreek ? member.credentials.el : member.credentials.en}
                                         </p>
                                     )}
@@ -166,7 +166,7 @@ export default function CompanyPage() {
                                             href={member.profileUrl}
                                             target="_blank"
                                             rel="noreferrer noopener"
-                                            className="mt-3 inline-block text-body font-semibold text-[#0F172A] underline underline-offset-4"
+                                            className="mt-3 inline-block text-body font-semibold text-[#0F172A] dark:text-white underline underline-offset-4"
                                         >
                                             LinkedIn
                                         </a>
@@ -184,7 +184,7 @@ export default function CompanyPage() {
                             <h2 className="mb-6 text-h2 font-semibold tracking-tight md:text-h1">
                                 {t("Ελάτε στην ομάδα μας", "Join our mission")}
                             </h2>
-                            <p className="mb-10 text-lead leading-relaxed text-[#5B6A7A]">
+                            <p className="mb-10 text-lead leading-relaxed text-[#5B6A7A] dark:text-slate-400">
                                 {t(
                                     "Αναζητούμε ανθρώπους που θέλουν να εξελίξουν την εμπειρία ασφάλισης στην Ελλάδα και διεθνώς.",
                                     "We are hiring people who want to modernize insurance experiences in Greece and beyond."
@@ -198,7 +198,7 @@ export default function CompanyPage() {
                             </Link>
                             {/* Plain-text address so crawlers can read it despite
                                 CDN-level email obfuscation of mailto links. */}
-                            <p className="mt-6 text-body text-[#5B6A7A]">{siteConfig.careersEmail}</p>
+                            <p className="mt-6 text-body text-[#5B6A7A] dark:text-slate-400">{siteConfig.careersEmail}</p>
                         </div>
                     </div>
                 </section>
