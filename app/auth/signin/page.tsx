@@ -194,7 +194,7 @@ export default function SignInPage() {
 
                     {/* Error */}
                     {error && (
-                        <div className="mb-4 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+                        <div role="alert" className="mb-4 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
                             <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                             {error}
                         </div>
@@ -209,7 +209,7 @@ export default function SignInPage() {
                             {resending ? (copy.sending) : (copy.resendVerification)}
                         </button>
                     )}
-                    {resendMessage && <p className="mb-4 text-body-sm text-[#475569] dark:text-white/65">{resendMessage}</p>}
+                    {resendMessage && <p role="status" className="mb-4 text-body-sm text-[#475569] dark:text-white/65">{resendMessage}</p>}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Email / Phone toggle */}
@@ -308,8 +308,8 @@ export default function SignInPage() {
                                 : (copy.resetStepVerify)}
                         </p>
 
-                        {resetError && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{resetError}</p>}
-                        {resetNotice && <p className="mb-3 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2 text-body-sm text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">{resetNotice}</p>}
+                        {resetError && <p role="alert" className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{resetError}</p>}
+                        {resetNotice && <p role="status" className="mb-3 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2 text-body-sm text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">{resetNotice}</p>}
 
                         {resetStep === "request" && (
                             <div className="space-y-3">

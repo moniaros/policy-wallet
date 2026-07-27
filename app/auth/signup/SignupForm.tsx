@@ -289,11 +289,13 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                     placeholder="+30 69X XXX XXXX"
                                     {...register("mobileNumber")}
                                     onChange={(e) => setValue("mobileNumber", formatPhoneInput(e.target.value), { shouldValidate: true })}
+                                    aria-invalid={errors.mobileNumber ? true : undefined}
+                                    aria-describedby={errors.mobileNumber ? "signup-mobile-error" : undefined}
                                     className={`${inputBase} ${errors.mobileNumber ? "border-rose-300" : ""}`}
                                 />
                                 {isMobileValid && <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-primary" />}
                             </div>
-                            {errors.mobileNumber && <p className="mt-1 text-caption text-rose-600">{getZodError(errors.mobileNumber.message, language)}</p>}
+                            {errors.mobileNumber && <p id="signup-mobile-error" role="alert" className="mt-1 text-caption text-rose-600">{getZodError(errors.mobileNumber.message, language)}</p>}
                         </div>
 
                         {/* Email */}
@@ -302,13 +304,13 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                 {role === "agent" ? t("Email", "Email") : t("Email (προαιρετικό)", "Email (optional)")}
                             </label>
                             <div className="relative">
-                                <input id="signup-email" type="email" placeholder="name@example.com" {...register("email")} className={`${inputBase} ${errors.email ? "border-rose-300" : ""}`} />
+                                <input id="signup-email" type="email" placeholder="name@example.com" {...register("email")} aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? "signup-email-error" : undefined} className={`${inputBase} ${errors.email ? "border-rose-300" : ""}`} />
                                 {isEmailValid && <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-primary" />}
                             </div>
                             <p className="mt-1 text-micro text-[#5B6A7A] dark:text-white/60">
                                 {t("Για ανάκτηση λογαριασμού και ειδοποιήσεις.", "For account recovery and alerts.")}
                             </p>
-                            {errors.email && <p className="mt-1 text-caption text-rose-600">{getZodError(errors.email.message, language)}</p>}
+                            {errors.email && <p id="signup-email-error" role="alert" className="mt-1 text-caption text-rose-600">{getZodError(errors.email.message, language)}</p>}
                         </div>
 
                         {/* Password */}
@@ -322,6 +324,8 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                     type={showPassword ? "text" : "password"}
                                     placeholder={t("Δημιουργία κωδικού", "Create password")}
                                     {...register("password")}
+                                    aria-invalid={errors.password ? true : undefined}
+                                    aria-describedby={errors.password ? "signup-password-error" : undefined}
                                     className={`${inputBase} pr-11 ${errors.password ? "border-rose-300" : ""}`}
                                 />
                                 <button
@@ -342,7 +346,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                 </div>
                                 {strengthLabel && <span className={`text-micro font-semibold ${strength === 1 ? "text-rose-500" : strength === 2 ? "text-amber-500" : "text-primary"}`}>{strengthLabel}</span>}
                             </div>
-                            {errors.password && <p className="mt-1 text-caption text-rose-600">{getZodError(errors.password.message, language)}</p>}
+                            {errors.password && <p id="signup-password-error" role="alert" className="mt-1 text-caption text-rose-600">{getZodError(errors.password.message, language)}</p>}
                         </div>
 
                         {/* Terms */}
@@ -352,7 +356,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                 {t("Αποδέχομαι τους ", "I agree to ")}<Link href="/terms" className="font-semibold text-primary hover:underline">{t("Όρους", "Terms")}</Link>{t(" και το ", " and ")}<Link href="/privacy" className="font-semibold text-primary hover:underline">{t("Απόρρητο", "Privacy")}</Link>
                             </span>
                         </label>
-                        {errors.termsAccepted && <p className="-mt-2 text-caption text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p>}
+                        {errors.termsAccepted && <p role="alert" className="-mt-2 text-caption text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p>}
 
                         {/* A "Use FaceID after first signup" hint used to sit here. It
                             promised a capability the product does not have: there is no
