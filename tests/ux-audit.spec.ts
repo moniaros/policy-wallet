@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { dismissCookieBanner } from './helpers/ui';
 
 // Audit checklist, not a regression suite: many assertions encode desired UX
 // that is intentionally not (yet) built. Failures here are findings for a UX
@@ -78,12 +79,16 @@ test.describe('UX Audit - Authentication & Onboarding', () => {
 
 test.describe('UX Audit - Wallet/Dashboard', () => {
     test.beforeEach(async ({ page }) => {
-        // This assumes test users exist - adapt to your auth setup
-        await page.goto('/auth/signin');
-        await page.getByLabel(/email/i).fill('test@example.com');
-        await page.getByLabel(/password/i).fill('testpassword123');
-        await page.getByRole('button', { name: /sign in|σύνδεση/i }).click();
-        await page.waitForURL(/wallet|dashboard/);
+        // The project already runs authenticated via
+        // storageState: playwright/.auth/user.json, so no sign-in step is
+        // needed here. The original block was scaffolding ("adapt to your auth
+        // setup") that logged in as a hardcoded test@example.com which never
+        // existed — and because an authenticated visit to /auth/signin
+        // redirects straight to the dashboard, the email field was never on
+        // the page. Every test in this describe failed in beforeEach, so none
+        // of them had ever actually asserted anything about the wallet.
+        await page.goto('/wallet');
+        await dismissCookieBanner(page);
     });
 
     test('should display KPI cards with key metrics', async ({ page }) => {
