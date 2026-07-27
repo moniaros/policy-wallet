@@ -1074,6 +1074,7 @@ export const el = {
     },
 
     notifications: {
+        markAllReadFailed: 'Τα μηνύματα δεν σημάνθηκαν ως αναγνωσμένα. Δοκιμάστε ξανά.',
         catSystemConfirmation: 'Επιβεβαιώσεις συστήματος',
         catSystemConfirmationDesc: 'Αποστέλλονται πάντα — δεν απενεργοποιούνται.',
         catReminder: 'Υπενθυμίσεις',
@@ -2115,6 +2116,7 @@ export const el = {
             supportDescription: 'Η ομάδα υποστήριξης μπορεί να σε καθοδηγήσει στο επόμενο βήμα, με βάση το προφίλ και τις καλύψεις σου.',
             contactSupport: 'Επικοινωνία με υποστήριξη',
             linkCopied: 'Ο σύνδεσμος αντιγράφηκε.',
+            linkCopyFailed: 'Η αντιγραφή του συνδέσμου απέτυχε.',
         },
         categories: {
             gettingStarted: 'Ξεκινώντας',

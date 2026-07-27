@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useMemo, useState } from "react"
+import { useId, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
     CalendarClock,
@@ -195,17 +195,37 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
     const [isSaving, setIsSaving] = useState(false)
     const [isSending, setIsSending] = useState(false)
 
+    /**
+     * Sequence number for the in-flight filter fetch. Switching filters quickly
+     * fired overlapping requests and whichever RESOLVED last won — so a slow
+     * response for an abandoned filter could overwrite the list the user is
+     * actually looking at. Only the newest request may commit its result.
+     */
+    const filterRequestRef = useRef(0)
+    const [isFiltering, setIsFiltering] = useState(false)
+
     const handleFilterChange = async (newStatus: string, newTimeframe?: typeof timeframe) => {
         const s = newStatus
         const tf = newTimeframe ?? timeframe
         setStatusFilter(s)
         if (newTimeframe) setTimeframe(tf)
 
-        const result = await getAgentRenewals({
-            status: s === "all" ? undefined : s,
-            timeframe: tf,
-        })
-        setRenewals(result)
+        const requestId = ++filterRequestRef.current
+        setIsFiltering(true)
+        try {
+            const result = await getAgentRenewals({
+                status: s === "all" ? undefined : s,
+                timeframe: tf,
+            })
+            if (requestId !== filterRequestRef.current) return // superseded
+            setRenewals(result)
+        } catch (error) {
+            if (requestId !== filterRequestRef.current) return
+            console.error("[RenewalsClient] filter fetch failed", error)
+            toast.error(t.actionFailed)
+        } finally {
+            if (requestId === filterRequestRef.current) setIsFiltering(false)
+        }
     }
 
     const handleOutcomeSave = async () => {
@@ -335,7 +355,9 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                         <button
                             key={s}
                             onClick={() => handleFilterChange(s)}
-                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                            disabled={isFiltering}
+                            aria-busy={isFiltering}
+                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all disabled:cursor-progress ${
                                 statusFilter === s
                                     ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
                                     : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
@@ -350,6 +372,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             aria-label={gt.a11yLabels.timeframeFilter}
                             value={timeframe}
                             onChange={(e) => handleFilterChange(statusFilter, e.target.value as typeof timeframe)}
+                            disabled={isFiltering}
                             className="pw-input pw-input-sm"
                         >
                             <option value="all">{t.all}</option>

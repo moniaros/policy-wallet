@@ -3,10 +3,11 @@
 import { useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { EmptyState } from "@/components/ui/EmptyState"
+import { toast } from "sonner"
 import {
     Users, UserPlus, Crown, Shield, User, ArrowRightLeft,
     TrendingUp, Euro, Briefcase, Building2, MoreVertical,
-    ChevronDown, X, AlertCircle
+    ChevronDown, X, AlertCircle, Loader2
 } from "lucide-react"
 import type { TeamOverview } from "@/lib/services/team.service"
 import { TableShell } from "@/components/ui/TableShell"
@@ -44,6 +45,7 @@ const copy = {
         won: "Won",
         remove: "Remove",
         changeRole: "Change Role",
+        actionFailed: "That didn't go through. Please try again.",
         teamStats: "Team Overview",
         totalMembers: "Total Members",
         totalCustomers: "Total Customers",
@@ -92,6 +94,7 @@ const copy = {
         won: "Κερδ.",
         remove: "Αφαίρεση",
         changeRole: "Αλλαγή ρόλου",
+        actionFailed: "Η ενέργεια δεν ολοκληρώθηκε. Δοκιμάστε ξανά.",
         teamStats: "Επισκόπηση ομάδας",
         totalMembers: "Σύνολο μελών",
         totalCustomers: "Σύνολο πελατών",
@@ -244,6 +247,24 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
     const [inviteLoading, setInviteLoading] = useState(false)
     const [inviteError, setInviteError] = useState("")
     const [menuOpen, setMenuOpen] = useState<string | null>(null)
+    // Which member row has a role change / removal in flight. Both are
+    // destructive server actions with no optimistic UI, so without this the
+    // menu sat inert after the click and a second click fired them twice.
+    const [memberBusy, setMemberBusy] = useState<string | null>(null)
+
+    /** Runs a member mutation with a busy guard and a surfaced failure. */
+    const runMemberAction = async (userId: string, action: () => Promise<unknown>) => {
+        if (memberBusy) return
+        setMemberBusy(userId)
+        try {
+            await action()
+            setMenuOpen(null)
+        } catch {
+            toast.error(t.actionFailed)
+        } finally {
+            setMemberBusy(null)
+        }
+    }
 
     const handleInvite = async () => {
         if (!inviteEmail) return
@@ -380,24 +401,34 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         {menuOpen === m.id && (
                             <div className="absolute right-0 top-full z-10 mt-1 w-44 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden">
                                 <button
-                                    onClick={async () => {
-                                        const newRole = m.role === "manager" ? "member" : "manager"
-                                        await updateRoleAction(m.userId, newRole)
-                                        setMenuOpen(null)
-                                    }}
-                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center gap-2"
+                                    onClick={() =>
+                                        runMemberAction(m.userId, () =>
+                                            updateRoleAction(
+                                                m.userId,
+                                                m.role === "manager" ? "member" : "manager"
+                                            )
+                                        )
+                                    }
+                                    disabled={memberBusy === m.userId}
+                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <ArrowRightLeft className="w-3.5 h-3.5" />
+                                    {memberBusy === m.userId ? (
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                        <ArrowRightLeft className="w-3.5 h-3.5" />
+                                    )}
                                     {t.changeRole}
                                 </button>
                                 <button
-                                    onClick={async () => {
-                                        await removeMemberAction(m.userId)
-                                        setMenuOpen(null)
-                                    }}
-                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                    onClick={() => runMemberAction(m.userId, () => removeMemberAction(m.userId))}
+                                    disabled={memberBusy === m.userId}
+                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <X className="w-3.5 h-3.5" />
+                                    {memberBusy === m.userId ? (
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                        <X className="w-3.5 h-3.5" />
+                                    )}
                                     {t.remove}
                                 </button>
                             </div>

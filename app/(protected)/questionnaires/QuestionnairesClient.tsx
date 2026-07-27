@@ -11,6 +11,8 @@ import {
 import type { TemplateData, InstanceData, TemplateQuestion } from "./actions"
 import { createTemplate, updateTemplate, deleteTemplate, analyzeQuestionnaireResponse } from "./actions"
 import { EmptyState } from "@/components/ui/EmptyState"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
+import { toast } from "sonner"
 import { useDialog } from "@/hooks/useDialog"
 import { TableShell } from "@/components/ui/TableShell"
 
@@ -29,6 +31,9 @@ const copy = {
         sentCount: "sent",
         editTemplate: "Edit",
         deleteTemplate: "Delete",
+        deleteTemplateTitle: "Delete this template?",
+        deleteTemplateBody: "The template is removed from your library. Questionnaires already sent keep their answers.",
+        deleteTemplateFailed: "The template could not be deleted. Please try again.",
         templateName: "Template Name",
         lob: "Line of Business",
         addQuestion: "Add Question",
@@ -79,6 +84,9 @@ const copy = {
         sentCount: "αποστολές",
         editTemplate: "Επεξεργασία",
         deleteTemplate: "Διαγραφή",
+        deleteTemplateTitle: "Διαγραφή του προτύπου;",
+        deleteTemplateBody: "Το πρότυπο αφαιρείται από τη βιβλιοθήκη σας. Τα ερωτηματολόγια που έχουν ήδη σταλεί διατηρούν τις απαντήσεις τους.",
+        deleteTemplateFailed: "Το πρότυπο δεν διαγράφηκε. Δοκιμάστε ξανά.",
         templateName: "Όνομα προτύπου",
         lob: "Κλάδος ασφάλισης",
         addQuestion: "Προσθήκη ερώτησης",
@@ -224,8 +232,19 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
     onEdit: (id: string) => void
     onCreate: () => void
 }) {
+    // Deleting a template used to be a single unconfirmed click with no pending
+    // state and no error surface — irreversible and silent on failure. Routed
+    // through the shared ConfirmDialog, which owns the pending state and blocks
+    // a double-fire while the action is in flight.
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+
     const handleDelete = async (id: string) => {
-        await deleteTemplate(id)
+        try {
+            await deleteTemplate(id)
+            setPendingDeleteId(null)
+        } catch {
+            toast.error(t.deleteTemplateFailed)
+        }
     }
 
     if (templates.length === 0) {
@@ -261,7 +280,8 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                                     <Eye className="w-3.5 h-3.5" />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(tpl.id)}
+                                    onClick={() => setPendingDeleteId(tpl.id)}
+                                    aria-label={`${t.deleteTemplate}: ${tpl.name}`}
                                     className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-500 dark:text-slate-400 hover:text-red-700"
                                 >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -291,6 +311,15 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
                     </div>
                 </div>
             ))}
+            <ConfirmDialog
+                open={pendingDeleteId !== null}
+                onOpenChange={(open) => { if (!open) setPendingDeleteId(null) }}
+                title={t.deleteTemplateTitle}
+                description={t.deleteTemplateBody}
+                confirmLabel={t.deleteTemplate}
+                destructive
+                onConfirm={() => handleDelete(pendingDeleteId!)}
+            />
         </div>
     )
 }

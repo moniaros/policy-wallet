@@ -61,6 +61,9 @@ export default function UsersClient({
     const [tokenAmount, setTokenAmount] = useState("")
     const [tokenReason, setTokenReason] = useState("")
     const [tokenBusy, setTokenBusy] = useState(false)
+    // Approve / reject / role-change had no in-flight guard while the token
+    // grant right below them did — same modal pattern, so they follow it now.
+    const [actionBusy, setActionBusy] = useState(false)
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
@@ -371,19 +374,25 @@ export default function UsersClient({
                             </button>
                             <button
                                 onClick={async () => {
-                                    if (!selectedUser.agentProfile) return
-                                    const res = await approveAgent(selectedUser.agentProfile.id, verificationReason)
-                                    if (res?.success) {
-                                        toast.success("Agent approved") // i18n-hardcoded-ignore
-                                        setShowApproveModal(false)
-                                        router.refresh()
-                                    } else {
-                                        toast.error("Failed to approve") // i18n-hardcoded-ignore
+                                    if (!selectedUser.agentProfile || actionBusy) return
+                                    setActionBusy(true)
+                                    try {
+                                        const res = await approveAgent(selectedUser.agentProfile.id, verificationReason)
+                                        if (res?.success) {
+                                            toast.success("Agent approved") // i18n-hardcoded-ignore
+                                            setShowApproveModal(false)
+                                            router.refresh()
+                                        } else {
+                                            toast.error("Failed to approve") // i18n-hardcoded-ignore
+                                        }
+                                    } finally {
+                                        setActionBusy(false)
                                     }
                                 }}
-                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover"
+                                disabled={actionBusy}
+                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Approve
+                                {actionBusy ? "Working…" : "Approve"}
                             </button>
                         </div>
                 </AdminDialog>
@@ -411,19 +420,25 @@ export default function UsersClient({
                             <button
                                 onClick={async () => {
                                     if (!verificationReason) return toast.error("Reason is required") // i18n-hardcoded-ignore
-                                    if (!selectedUser.agentProfile) return
-                                    const res = await rejectAgent(selectedUser.agentProfile.id, verificationReason)
-                                    if (res?.success) {
-                                        toast.success("Agent rejected") // i18n-hardcoded-ignore
-                                        setShowRejectModal(false)
-                                        router.refresh()
-                                    } else {
-                                        toast.error("Failed to reject") // i18n-hardcoded-ignore
+                                    if (!selectedUser.agentProfile || actionBusy) return
+                                    setActionBusy(true)
+                                    try {
+                                        const res = await rejectAgent(selectedUser.agentProfile.id, verificationReason)
+                                        if (res?.success) {
+                                            toast.success("Agent rejected") // i18n-hardcoded-ignore
+                                            setShowRejectModal(false)
+                                            router.refresh()
+                                        } else {
+                                            toast.error("Failed to reject") // i18n-hardcoded-ignore
+                                        }
+                                    } finally {
+                                        setActionBusy(false)
                                     }
                                 }}
-                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                                disabled={actionBusy}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Reject
+                                {actionBusy ? "Working…" : "Reject"}
                             </button>
                         </div>
                 </AdminDialog>
@@ -460,6 +475,9 @@ export default function UsersClient({
                             </button>
                             <button
                                 onClick={async () => {
+                                    if (actionBusy) return
+                                    setActionBusy(true)
+                                    try {
                                     const res = await changeUserRole(selectedUser.id, roleSelection)
                                     if (res.ok) {
                                         toast.success("Role updated") // i18n-hardcoded-ignore
@@ -472,10 +490,14 @@ export default function UsersClient({
                                     } else {
                                         toast.error("Failed to change role") // i18n-hardcoded-ignore
                                     }
+                                    } finally {
+                                        setActionBusy(false)
+                                    }
                                 }}
-                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover"
+                                disabled={actionBusy}
+                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Save
+                                {actionBusy ? "Working…" : "Save"}
                             </button>
                         </div>
                 </AdminDialog>

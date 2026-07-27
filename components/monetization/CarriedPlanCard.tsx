@@ -9,6 +9,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Crown } from "lucide-react"
+import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { getUpgradeCopy } from "@/lib/monetization"
@@ -22,6 +23,10 @@ const PLAN_LABEL: Record<string, string> = {
 }
 
 const COPY = {
+    checkoutFailed: {
+        el: "Δεν ήταν δυνατή η έναρξη της πληρωμής. Δοκιμάστε ξανά.",
+        en: "We couldn't start the checkout. Please try again.",
+    },
     headline: {
         el: "Το πλάνο που επέλεξες σε περιμένει",
         en: "The plan you picked is waiting for you",
@@ -96,9 +101,13 @@ export function CarriedPlanCard({ planId, billingPeriod, className = "" }: Carri
                 window.location.href = url
                 return
             }
-        } catch {
-            // fall through to re-enable the button
+        } catch (error) {
+            console.error("[CarriedPlanCard] checkout failed", error)
         }
+        // Reached on both a thrown request AND a non-ok/urlless response: the
+        // button re-enabled silently, so a failed checkout was indistinguishable
+        // from a slow one and the user just clicked again.
+        toast.error(pick(COPY.checkoutFailed, language))
         setStarting(false)
     }
 

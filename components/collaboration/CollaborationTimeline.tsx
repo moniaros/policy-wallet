@@ -92,6 +92,24 @@ export function CollaborationTimeline({
     const [actionTitle, setActionTitle] = useState("")
     const [actionDueDate, setActionDueDate] = useState("")
     const [actionAssigneeId, setActionAssigneeId] = useState("")
+    /**
+     * In-flight guard for every mutation in this panel. These POST user-visible
+     * content (threads, messages, actions) and none of them had one, so a
+     * double-click posted the same message twice. A single flag is correct here
+     * because the actions are mutually exclusive — you cannot be sending a
+     * message and closing the thread at the same moment.
+     */
+    const [busy, setBusy] = useState(false)
+
+    const runMutation = async (fn: () => Promise<void>) => {
+        if (busy) return
+        setBusy(true)
+        try {
+            await fn()
+        } finally {
+            setBusy(false)
+        }
+    }
 
     const query = useMemo(() => {
         const params = new URLSearchParams()
@@ -300,7 +318,8 @@ export function CollaborationTimeline({
                         <option value="questionnaire">{t.collaboration.timeline.category.questionnaire}</option>
                     </select>
                     <button
-                        onClick={createThread}
+                        onClick={() => runMutation(createThread)}
+                        disabled={busy || !threadSubject.trim()}
                         className="pw-primary-button"
                     >
                         {t.collaboration.timeline.create}
@@ -363,9 +382,9 @@ export function CollaborationTimeline({
                             <div className="flex items-center justify-between gap-2">
                                 <h4 className="text-sm font-bold text-foreground">{selected.subject}</h4>
                                 <div className="flex gap-2">
-                                    <button onClick={() => patchThreadStatus("open")} className="text-xs px-2 py-1 rounded border border-neutral-300 dark:border-neutral-600">{t.collaboration.timeline.statusOpen}</button>
-                                    <button onClick={() => patchThreadStatus("resolved")} className="text-xs px-2 py-1 rounded border border-primary text-primary dark:text-mint">{t.collaboration.timeline.statusResolve}</button>
-                                    <button onClick={() => patchThreadStatus("closed")} className="text-xs px-2 py-1 rounded border border-neutral-400">{t.collaboration.timeline.statusClose}</button>
+                                    <button onClick={() => runMutation(() => patchThreadStatus("open"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-neutral-300 disabled:opacity-50 dark:border-neutral-600">{t.collaboration.timeline.statusOpen}</button>
+                                    <button onClick={() => runMutation(() => patchThreadStatus("resolved"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-primary text-primary disabled:opacity-50 dark:text-mint">{t.collaboration.timeline.statusResolve}</button>
+                                    <button onClick={() => runMutation(() => patchThreadStatus("closed"))} disabled={busy} className="text-xs px-2 py-1 rounded border border-neutral-400 disabled:opacity-50">{t.collaboration.timeline.statusClose}</button>
                                 </div>
                             </div>
 
@@ -454,7 +473,7 @@ export function CollaborationTimeline({
                                         <textarea
                                             value={message}
                                             onChange={(e) => setMessage(e.target.value)}
-                                            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); addMessage() } }}
+                                            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void runMutation(addMessage) } }}
                                             rows={2}
                                             placeholder={isPrivateMessage ? t.collaboration.timeline.privateNotePlaceholder : t.collaboration.timeline.postUpdatePlaceholder}
                                             className={`pw-input pw-input-sm min-h-0 resize-y ${
@@ -485,7 +504,7 @@ export function CollaborationTimeline({
                                             </div>
                                         )}
                                     </div>
-                                    <button type="button" onClick={addMessage} className="pw-primary-button pw-btn-sm self-start">{t.collaboration.timeline.send}</button>
+                                    <button type="button" onClick={() => runMutation(addMessage)} disabled={busy || !message.trim()} className="pw-primary-button pw-btn-sm self-start">{t.collaboration.timeline.send}</button>
                                 </div>
                             </div>
 
@@ -539,7 +558,7 @@ export function CollaborationTimeline({
                                         className="pw-input pw-input-sm"
                                     />
                                 </div>
-                                <button onClick={addAction} className="pw-primary-button mt-2">
+                                <button onClick={() => runMutation(addAction)} disabled={busy || !actionTitle.trim() || !actionAssigneeId} className="pw-primary-button mt-2">
                                     {t.collaboration.timeline.addAction}
                                 </button>
                             </div>

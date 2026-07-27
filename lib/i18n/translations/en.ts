@@ -1073,6 +1073,7 @@ export const en: TranslationKeys = {
     },
 
     notifications: {
+        markAllReadFailed: 'Could not mark everything as read. Please try again.',
         catSystemConfirmation: 'System confirmations',
         catSystemConfirmationDesc: 'Always sent — cannot be turned off.',
         catReminder: 'Reminders',
@@ -2103,6 +2104,7 @@ export const en: TranslationKeys = {
             supportDescription: 'Our support team can guide your next step based on your profile and coverage.',
             contactSupport: 'Contact support',
             linkCopied: 'Link copied.',
+            linkCopyFailed: 'Could not copy the link.',
         },
         categories: {
             gettingStarted: 'Getting Started',

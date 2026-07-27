@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { formatDate } from '@/lib/i18n/format'
 
@@ -111,12 +112,21 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
     }
 
     const handleMarkAllRead = async () => {
+        // Optimistic, but reverted on failure. This used to swallow the error
+        // AND keep the optimistic state, so a failed request looked like a
+        // success until the badge reappeared on the next refresh.
+        const previous = notifications
+        const previousUnread = unreadCount
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+        setUnreadCount(0)
         try {
-            await fetch('/api/notifications/mark-all-read', { method: 'POST' })
-            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
-            setUnreadCount(0)
-        } catch (e) {
-            // Silently fail
+            const res = await fetch('/api/notifications/mark-all-read', { method: 'POST' })
+            if (!res.ok) throw new Error('MARK_ALL_READ_FAILED')
+        } catch (error) {
+            console.error('[NotificationBell] mark-all-read failed', error)
+            setNotifications(previous)
+            setUnreadCount(previousUnread)
+            toast.error(t.notifications.markAllReadFailed)
         }
     }
 
@@ -145,7 +155,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                 <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-stone-900 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* Header */}
                     <div className="px-4 py-3 border-b border-stone-100 dark:border-stone-800 flex items-center justify-between">
-                        <h3 className="font-bold text-stone-900 dark:text-white">Notifications</h3>
+                        <h3 className="font-bold text-stone-900 dark:text-white">{t.nav.notifications}</h3>
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllRead}

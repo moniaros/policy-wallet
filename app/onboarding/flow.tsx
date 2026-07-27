@@ -188,7 +188,10 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     }
 
     const handleRedeemInvite = async () => {
-        if (!inviteCode.trim()) return
+        // `busy` guard matters for the Enter-key path: the button is disabled
+        // while in flight, but the input's onKeyDown calls this directly, so a
+        // repeated Enter would redeem the same code twice.
+        if (!inviteCode.trim() || busy) return
         setBusy(true)
         setInviteError(null)
         try {

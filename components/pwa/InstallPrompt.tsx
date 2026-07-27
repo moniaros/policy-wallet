@@ -33,6 +33,7 @@ export function InstallPrompt() {
     const { t } = useLanguage()
     const pathname = usePathname()
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
+    const [installing, setInstalling] = useState(false)
     const [showPrompt, setShowPrompt] = useState(false)
     const [isIOS, setIsIOS] = useState(false)
 
@@ -95,10 +96,19 @@ export function InstallPrompt() {
     }
 
     const handleInstall = async () => {
-        if (!deferredPrompt) return
+        if (!deferredPrompt || installing) return
+        setInstalling(true)
 
-        deferredPrompt.prompt()
-        await deferredPrompt.userChoice
+        try {
+            await deferredPrompt.prompt()
+            await deferredPrompt.userChoice
+        } catch (error) {
+            // prompt() rejects if it has already been consumed. Nothing to tell
+            // the user — just stop, and let the banner fall through to dismiss.
+            console.error('[InstallPrompt] install prompt failed', error)
+        } finally {
+            setInstalling(false)
+        }
 
         // Persist regardless of outcome so an install attempt (accepted, or the
         // native dialog cancelled) doesn't leave the banner re-appearing.
@@ -143,6 +153,7 @@ export function InstallPrompt() {
                     ) : (
                         <Button
                             onClick={handleInstall}
+                            disabled={installing}
                             className="w-full mt-3 gap-2 h-9 text-sm font-semibold"
                         >
                             <Download className="w-4 h-4" />

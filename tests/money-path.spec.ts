@@ -217,17 +217,30 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         await page.goto(`/wallet/${policyId}`)
         await dismissCookieBanner(page)
 
-        const unlockCta = page.getByRole('button', { name: /Ξεκλείδωμα|Unlock report/i })
+        // Full label, not a loose /Ξεκλείδωμα|Unlock report/ prefix: several
+        // locked-feature cards carry an "Unlock …" CTA in their accessible name,
+        // so the short pattern matched two elements and tripped strict mode.
+        // This is the report-EXPORT gate (PolicyDetailsClientView `unlockCta`),
+        // the one that opens the upgrade modal.
+        const unlockCta = page.getByRole('button', {
+            name: /Ξεκλείδωμα εξαγωγής αναφοράς|Unlock report export/i,
+        })
         await expect(unlockCta).toBeVisible({ timeout: 20000 })
         await unlockCta.click()
         await expectUpgradeModalOpen(page)
 
         await page.getByRole('radio', { name: /Ετήσια|Annual|Yearly/i }).click()
-        await page.getByRole('button', { name: /Συνέχεια στην πληρωμή|Continue to payment/i }).click()
+        // The modal's primary CTA is "Συνέχεια με Plus — €x,xx/μήνα" (MODAL_COPY
+        // .plusPrefix + price). The old /Συνέχεια στην πληρωμή/ label no longer
+        // exists anywhere in the copy, so this never matched.
+        await page.getByRole('button', { name: /Συνέχεια με Plus|Continue with Plus/i }).click()
 
         await expect.poll(() => checkoutBody?.billingPeriod, { timeout: 15000 }).toBe('annual')
         // The gate that triggered the upgrade rides along for the success page.
-        expect(checkoutBody.featureKey).toBeTruthy()
+        // Field is `feature` — that is what UpgradeModal sends and what the
+        // checkout route's zod schema accepts; `featureKey` never existed on
+        // the wire, so this assertion could only ever have read undefined.
+        expect(checkoutBody.feature).toBeTruthy()
     })
 })
 

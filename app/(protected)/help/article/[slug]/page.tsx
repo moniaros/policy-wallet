@@ -31,17 +31,34 @@ export default function ArticlePage() {
         const url = typeof window !== 'undefined' ? window.location.href : ''
 
         if (typeof navigator !== 'undefined' && navigator.share) {
-            await navigator.share({
-                title: resolved?.title,
-                text: resolved?.subtitle,
-                url,
-            })
+            try {
+                await navigator.share({
+                    title: resolved?.title,
+                    text: resolved?.subtitle,
+                    url,
+                })
+            } catch (error) {
+                // Dismissing the native share sheet rejects with AbortError.
+                // Unhandled, that surfaced as a console error on every cancel —
+                // a normal user action is not a failure, so it stays silent;
+                // anything else falls through to the clipboard path below.
+                if ((error as Error)?.name === 'AbortError') return
+                if (navigator.clipboard && url) {
+                    await navigator.clipboard.writeText(url)
+                    toast.success(copy.linkCopied)
+                }
+            }
             return
         }
 
         if (typeof navigator !== 'undefined' && navigator.clipboard && url) {
-            await navigator.clipboard.writeText(url)
-            toast.success(copy.linkCopied)
+            try {
+                await navigator.clipboard.writeText(url)
+                toast.success(copy.linkCopied)
+            } catch (error) {
+                console.error('[help/article] copy link failed', error)
+                toast.error(copy.linkCopyFailed)
+            }
         }
     }
 

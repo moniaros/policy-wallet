@@ -200,7 +200,12 @@ export default function SignInPage() {
                         </div>
                     )}
                     {showResend && (
-                        <button type="button" onClick={resendVerification} className="pw-secondary-button mb-4 w-full">
+                        <button
+                            type="button"
+                            onClick={resendVerification}
+                            disabled={resending}
+                            className="pw-secondary-button mb-4 w-full"
+                        >
                             {resending ? (copy.sending) : (copy.resendVerification)}
                         </button>
                     )}

@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { ThemeToggle } from "@/components/ThemeToggle"
@@ -46,6 +47,10 @@ export default function PricingPage({
     const l = (href: string) => localizeHref(href, language)
 
     const labels = {
+        checkoutFailed: {
+            el: "Δεν ήταν δυνατή η έναρξη της πληρωμής. Δοκιμάστε ξανά.",
+            en: "We couldn't start the checkout. Please try again.",
+        },
         heading: {
             el: "Επιλέξτε το πλάνο που ταιριάζει σε εσάς",
             en: "Choose the plan that fits your needs",
@@ -196,7 +201,10 @@ export default function PricingPage({
 
             window.location.href = checkoutUrl
         } catch (error) {
+            // The spinner used to just stop with no explanation, so a failed
+            // checkout looked identical to a slow one and users re-clicked.
             console.error("Failed to create checkout session:", error)
+            toast.error(labels.checkoutFailed[language])
         } finally {
             setLoadingPlanKey(null)
         }

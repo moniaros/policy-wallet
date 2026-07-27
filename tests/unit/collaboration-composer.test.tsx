@@ -20,12 +20,18 @@ describe('collaboration composer', () => {
 
     it('routes the message field through pw-input', () => {
         const idx = SRC.indexOf('onKeyDown={(e) => { if (e.key === "Enter"')
-        const around = SRC.slice(idx - 200, idx + 400)
+        // Window is generous on purpose: it only needs to span the textarea's
+        // own attributes. A tight bound made this fail whenever an attribute
+        // above className grew, which says nothing about the styling it pins.
+        const around = SRC.slice(idx - 200, idx + 900)
         expect(around).toContain('pw-input')
     })
 
     it('uses the shared primary button to send, not a hand-rolled dark button', () => {
-        expect(SRC).toMatch(/onClick=\{addMessage\}[^>]*pw-primary-button/)
+        // The send control may wrap addMessage in the panel's in-flight guard
+        // (runMutation) — what this pins is that it IS the send handler and it
+        // uses the shared primary button, not a hand-rolled dark one.
+        expect(SRC).toMatch(/onClick=\{[^}]*addMessage[^}]*\}[^>]*pw-primary-button/)
         expect(SRC).not.toContain('bg-neutral-800 hover:bg-neutral-900 text-white text-sm px-3 py-2')
     })
 

@@ -69,6 +69,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     const [phase, setPhase] = useState<Phase>('form')
     const [createdPolicyId, setCreatedPolicyId] = useState<string | null>(null)
     const [reviewData, setReviewData] = useState<PolicyReviewData | null>(null)
+    // Re-analysis is a metered AI job — without this the retry button stayed
+    // live during the round-trip and a second click billed the user twice.
+    const [retryingAnalysis, setRetryingAnalysis] = useState(false)
     const pollingStartRef = useRef<number>(0)
 
     const removeFile = (index: number) => {
@@ -245,19 +248,25 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <button
                                         type="button"
                                         onClick={async () => {
-                                            if (!createdPolicyId) return
-                                            const result = await retryPolicyAnalysis(createdPolicyId)
-                                            if ('error' in result) {
-                                                toast.error(mapWalletErrorToMessage(result.error, t, 'analysis'))
-                                                return
+                                            if (!createdPolicyId || retryingAnalysis) return
+                                            setRetryingAnalysis(true)
+                                            try {
+                                                const result = await retryPolicyAnalysis(createdPolicyId)
+                                                if ('error' in result) {
+                                                    toast.error(mapWalletErrorToMessage(result.error, t, 'analysis'))
+                                                    return
+                                                }
+                                                setReviewData(null)
+                                                pollingStartRef.current = Date.now()
+                                            } finally {
+                                                setRetryingAnalysis(false)
                                             }
-                                            setReviewData(null)
-                                            pollingStartRef.current = Date.now()
                                         }}
-                                        className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                        disabled={retryingAnalysis}
+                                        className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                                     >
                                         <span className="flex items-center justify-center gap-2">
-                                            <RefreshCw className="w-5 h-5" />
+                                            <RefreshCw className={`w-5 h-5 ${retryingAnalysis ? 'animate-spin' : ''}`} />
                                             {reviewCopy.tryAgain}
                                         </span>
                                     </button>

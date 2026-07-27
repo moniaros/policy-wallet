@@ -240,6 +240,11 @@ export function AnalysisCard({
     }, [analysisInProgress, analysisPipeline, statusCopy.completedWithWarningsHint])
 
     const handleAnalyze = async () => {
+        // Re-entrancy guard: this runs a metered AI job, so a double-fire costs
+        // the user tokens twice. Guarding here covers EVERY call site (the
+        // header button, both retry buttons, and the consent-modal callback)
+        // rather than relying on each one remembering to disable itself.
+        if (analysisInProgress) return
         setAnalysisError(null)
         setAnalysisWarning(null)
         setMissingArtifacts([])
@@ -685,9 +690,10 @@ export function AnalysisCard({
                                 )}
                                 <button
                                     onClick={handleAnalyze}
+                                    disabled={analysisInProgress || retryingMissing}
                                     className="pw-secondary-button border-amber-400/60 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100"
                                 >
-                                    <RefreshCw className="h-3 w-3" />
+                                    <RefreshCw className={`h-3 w-3 ${analysisInProgress ? "animate-spin" : ""}`} />
                                     {statusCopy.retryFull || statusCopy.retry}
                                 </button>
                             </div>
@@ -752,9 +758,10 @@ export function AnalysisCard({
                             ) : (
                                 <button
                                     onClick={handleAnalyze}
+                                    disabled={analysisInProgress}
                                     className="pw-secondary-button border-amber-400/60 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100"
                                 >
-                                    <RefreshCw className="h-3 w-3" />
+                                    <RefreshCw className={`h-3 w-3 ${analysisInProgress ? "animate-spin" : ""}`} />
                                     {statusCopy.retry}
                                 </button>
                             )}
