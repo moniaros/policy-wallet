@@ -275,7 +275,10 @@ export default function PricingPage({
                                 }`}
                             >
                                 {labels.annual[language]}
-                                <span className="absolute -right-2 -top-3 rounded-full bg-[#89D9B2] px-2 py-0.5 text-kicker font-bold uppercase tracking-wide text-[#0F172A] dark:text-white">
+                                {/* The mint chip is a fixed brand accent in BOTH themes, so its
+                                    label must stay dark. A dark:text-white here put white on
+                                    #89D9B2 — 1.66:1, effectively unreadable. */}
+                                <span className="absolute -right-2 -top-3 rounded-full bg-[#89D9B2] px-2 py-0.5 text-kicker font-bold uppercase tracking-wide text-[#0F172A]">
                                     {labels.annualSavings[language]}
                                 </span>
                             </button>
