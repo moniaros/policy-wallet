@@ -74,7 +74,9 @@ export function ProductBranchCard({
             </div>
             <div>
                 <h3 className="text-sm font-black text-black dark:text-white">{title}</h3>
-                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-black/55 dark:text-white/60">{tagline}</p>
+                {/* /55 measured 3.25:1 on the card surface — same shortfall as the
+                    neutral pill above. Body copy needs the 4.5 floor. */}
+                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-black/70 dark:text-white/75">{tagline}</p>
             </div>
             {policyCount > 0 && (
                 <p className="mt-auto text-xs font-bold text-black/70 dark:text-white/75">{policyCountLabel}</p>

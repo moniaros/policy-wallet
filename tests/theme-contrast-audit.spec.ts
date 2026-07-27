@@ -47,6 +47,14 @@ const COLLECT = `(() => {
     if (el.closest('[disabled],[aria-disabled="true"]')) return;
     const r = el.getBoundingClientRect();
     if (r.width < 4 || r.height < 4) return;
+    // Must actually be the top layer where we intend to sample. An element
+    // clipped inside an overflow-hidden container still reports a box, but the
+    // pixels there belong to whatever is painted on top — sampling it compares
+    // that surface with itself and yields a ~1:1 ratio on healthy markup.
+    const cx = Math.min(Math.max(r.left + r.width / 2, 1), window.innerWidth - 2);
+    const cy = Math.min(Math.max(r.top + r.height / 2, 1), window.innerHeight - 2);
+    const top = document.elementFromPoint(cx, cy);
+    if (!top || (top !== el && !el.contains(top) && !top.contains(el))) return;
     const size = parseFloat(cs.fontSize), bold = parseInt(cs.fontWeight) >= 700;
     out.push({ x: Math.round(r.left + window.scrollX), y: Math.round(r.top + window.scrollY),
       w: Math.round(r.width), h: Math.round(r.height), t: txt.slice(0, 40),
@@ -73,7 +81,18 @@ const hex = (v: number) => '#' + v.toString(16).padStart(6, '0')
 async function audit(page: Page, path: string): Promise<string[]> {
     await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
     await dismissCookieBanner(page)
-    await page.waitForTimeout(900)
+    // Freeze motion before capturing. Mid-transition elements measured ~1.1:1
+    // because a fading container renders text and surface at nearly the same
+    // value — an artifact of WHEN the shot was taken, not a real defect.
+    await page.addStyleTag({
+        content: `*, *::before, *::after {
+            animation: none !important;
+            transition: none !important;
+            animation-duration: 0s !important;
+            transition-duration: 0s !important;
+        }`,
+    })
+    await page.waitForTimeout(1200)
 
     const applied = await page.evaluate(() => document.documentElement.className)
     expect(applied.includes('light') && applied.includes('dark'), `hybrid theme on ${path}`).toBe(false)
