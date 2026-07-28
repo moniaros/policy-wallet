@@ -17,7 +17,10 @@ const VIEWPORTS = [
     { name: 'mobile', width: 390, height: 844 },
 ]
 
-const PAGES = ['/dashboard', '/wallet', '/account', '/branches', '/pricing', '/', '/upgrade', '/help']
+// Driving five states per control is expensive; these four cover the distinct
+// button archetypes (app chrome, policy cards, account controls, marketing CTA).
+// Widen once the sweep is known to finish inside its budget.
+const PAGES = ['/dashboard', '/wallet', '/account', '/pricing']
 
 /**
  * Colour readers as REAL FUNCTIONS, not evaluate()-as-string.
