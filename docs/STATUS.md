@@ -85,6 +85,17 @@ execution context under the scanner's style injection and had been taking the
 whole sweep down. Per-route try/catch + a 75% coverage floor fixed that — the
 sweep was never timing out, and raising the budget could never have helped.
 
+### One open UI defect
+
+`/product/business` scrolls horizontally at 390px: `documentElement.scrollWidth`
+is 428 against a 390px viewport. Reproduced directly. Note that **no element's
+bounding rect exceeds the viewport** — the extra 38px comes from a pseudo-element
+or similar, so the usual "find the wide child" approach returns nothing. Only
+surfaced once the sweep went from 22 to 108 routes.
+
+Deliberately NOT fixed with `overflow-x: hidden`: that hides the symptom and
+would make the layout audit go quiet about a real defect.
+
 ### The lesson that cost the most
 
 Four of the last five "defects" were the AUDIT failing, not the UI, and every one
