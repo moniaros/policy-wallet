@@ -61,7 +61,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
 
                     {/* Mock UI */}
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Cyber Enterprise</h3>
                                 <p className="text-body-sm text-[#166534] dark:text-[#A7F3D0] font-medium mt-1">Active</p>
@@ -72,10 +72,10 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                         </div>
                         <div className="space-y-6">
-                            <div className="p-4 bg-purple-50 rounded-lg flex justify-between items-center border border-purple-100">
-                                <div className="font-medium text-purple-900 text-sm">Extortion Limit: €500k</div>
+                            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex justify-between items-center border border-purple-100 dark:border-purple-800/40">
+                                <div className="font-medium text-purple-900 dark:text-purple-200 text-sm">Extortion Limit: €500k</div>
                             </div>
-                            <div className="p-4 bg-slate-50 text-slate-800 rounded-lg text-sm border border-slate-200">
+                            <div className="p-4 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-lg text-sm border border-slate-200 dark:border-white/10">
                                 <p className="font-bold flex items-center gap-2 mb-2"><Shield className="w-4 h-4" /> Incident Team: Deloitte Sec</p>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">Waiting period: 12 Hours</p>
                             </div>

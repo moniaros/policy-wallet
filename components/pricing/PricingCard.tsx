@@ -37,8 +37,8 @@ export function PricingCard({
         <div
             className={`relative rounded-2xl p-8 transition-all duration-300 ${
                 plan.isHighlighted
-                    ? "scale-105 border-2 border-[#29685B] bg-[#F0FDF4] shadow-xl shadow-[#29685B]/10 dark:border-[#89D9B2]/60 dark:bg-slate-900"
-                    : "border border-slate-200 bg-white hover:border-[#A7F3D0] hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:hover:border-[#89D9B2]/50"
+                    ? "scale-105 border-2 border-[#29685B] bg-[#F0FDF4] dark:bg-emerald-900/20 shadow-xl shadow-[#29685B]/10 dark:border-[#89D9B2]/60 dark:bg-slate-900"
+                    : "border border-slate-200 dark:border-white/10 bg-white hover:border-[#A7F3D0] hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:hover:border-[#89D9B2]/50"
             } ${className}`}
         >
             {plan.badge && !isLoading && (

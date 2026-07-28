@@ -112,7 +112,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                             <ul className="space-y-6">
                                 {typicallyExcluded.map((item) => (
                                     <li key={item.titleEn} className="flex gap-4">
-                                        <div className="flex-shrink-0 mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100">
+                                        <div className="flex-shrink-0 mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10">
                                             <X className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                                         </div>
                                         <div>

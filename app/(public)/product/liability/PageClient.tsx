@@ -101,7 +101,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
 
                     {/* Mock UI */}
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Liability Check</h3>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">2 policies scanned</p>
@@ -115,20 +115,20 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                                 </div>
                                 <ShieldCheck className="w-5 h-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             </div>
-                            <div className="p-4 bg-amber-50 rounded-lg flex justify-between border border-amber-100">
+                            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex justify-between border border-amber-100 dark:border-amber-800/40">
                                 <div>
-                                    <p className="font-medium text-amber-900 text-sm flex items-center gap-2">
+                                    <p className="font-medium text-amber-900 dark:text-amber-200 text-sm flex items-center gap-2">
                                         <Copy className="w-4 h-4" /> Possible duplicate
                                     </p>
-                                    <p className="text-xs text-amber-700 mt-1">Standalone liability policy overlaps Section D</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">Standalone liability policy overlaps Section D</p>
                                 </div>
                             </div>
-                            <div className="p-4 bg-slate-50 rounded-lg text-sm border border-slate-200">
+                            <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg text-sm border border-slate-200 dark:border-white/10">
                                 <div className="flex justify-between mb-2">
                                     <span className="text-[#475569] dark:text-slate-300">Pet incidents</span>
-                                    <span className="font-medium text-slate-700">Not covered</span>
+                                    <span className="font-medium text-slate-700 dark:text-slate-200">Not covered</span>
                                 </div>
-                                <div className="w-full bg-gray-100 h-2 rounded-full">
+                                <div className="w-full bg-gray-100 dark:bg-white/10 h-2 rounded-full">
                                     <div className="bg-slate-400 w-[0%] h-2 rounded-full" />
                                 </div>
                             </div>

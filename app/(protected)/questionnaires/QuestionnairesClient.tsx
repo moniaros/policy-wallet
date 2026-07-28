@@ -459,7 +459,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     <button
                                         onClick={() => updateQuestion(i, "required", !q.required)}
                                         className={`px-2 py-1 rounded-lg text-kicker font-black uppercase tracking-widest ${q.required
-                                            ? "bg-amber-50 text-amber-700 dark:bg-amber-900/20"
+                                            ? "bg-amber-50 text-amber-700 dark:text-amber-200 dark:bg-amber-900/20"
                                             : "bg-slate-100 text-slate-600 dark:bg-slate-700"
                                             }`}
                                     >
@@ -634,7 +634,7 @@ function SentList({ instances, t, language }: {
                                             <CheckCircle2 className="w-3 h-3" /> {t.completed}
                                         </span>
                                     ) : (
-                                        <span className="inline-flex items-center gap-1 text-kicker font-black text-amber-700 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
+                                        <span className="inline-flex items-center gap-1 text-kicker font-black text-amber-700 dark:text-amber-200 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
                                             <Clock className="w-3 h-3" /> {t.pending}
                                         </span>
                                     )}
@@ -703,7 +703,7 @@ function SentList({ instances, t, language }: {
 
                             {/* Needs */}
                             <div className="mb-6">
-                                <h4 className="text-kicker font-black text-amber-700 uppercase tracking-widest mb-3">{t.needs}</h4>
+                                <h4 className="text-kicker font-black text-amber-700 dark:text-amber-200 uppercase tracking-widest mb-3">{t.needs}</h4>
                                 <div className="space-y-2">
                                     {analysisData.needsIdentified.map((n: string, i: number) => (
                                         <div key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
@@ -730,7 +730,7 @@ function SentList({ instances, t, language }: {
                             {/* Missing coverage */}
                             {analysisData.missingCoverage.length > 0 && (
                                 <div>
-                                    <h4 className="text-kicker font-black text-red-700 uppercase tracking-widest mb-3">{t.missingCoverage}</h4>
+                                    <h4 className="text-kicker font-black text-red-700 dark:text-rose-200 uppercase tracking-widest mb-3">{t.missingCoverage}</h4>
                                     <div className="flex flex-wrap gap-2">
                                         {analysisData.missingCoverage.map((mc: any, i: number) => (
                                             <span key={i} className={`px-3 py-1.5 rounded-full text-xs font-bold ${mc.essential

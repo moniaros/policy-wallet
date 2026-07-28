@@ -61,7 +61,7 @@ export default function GroupHealthProductPage({ locale }: { locale: "el" | "en"
 
                     {/* Mock UI */}
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Corporate Health</h3>
                                 <p className="text-body-sm text-[#166534] dark:text-[#A7F3D0] font-medium mt-1">Acme Corp Ltd</p>
@@ -72,11 +72,11 @@ export default function GroupHealthProductPage({ locale }: { locale: "el" | "en"
                             </div>
                         </div>
                         <div className="space-y-6">
-                            <div className="p-4 bg-red-50 rounded-lg flex justify-between items-center border border-red-100">
-                                <div className="font-medium text-red-900 text-sm">Dependent Covered: Emma</div>
+                            <div className="p-4 bg-red-50 dark:bg-rose-900/20 rounded-lg flex justify-between items-center border border-red-100 dark:border-rose-800/40">
+                                <div className="font-medium text-red-900 dark:text-rose-200 text-sm">Dependent Covered: Emma</div>
                                 <Users className="w-5 h-5 text-red-400" />
                             </div>
-                            <div className="p-4 bg-slate-50 text-slate-800 rounded-lg text-sm border border-slate-200">
+                            <div className="p-4 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-lg text-sm border border-slate-200 dark:border-white/10">
                                 <p className="font-bold flex items-center gap-2 mb-2"><Activity className="w-4 h-4" /> Personal Deductible Absorbed</p>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">Group covers €1,500 / €1,500 of personal plan</p>
                             </div>

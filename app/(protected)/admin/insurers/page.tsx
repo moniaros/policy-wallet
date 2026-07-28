@@ -39,7 +39,7 @@ export default async function AdminInsurersPage() {
                         {insurers.map(i => (
                             <li key={i.id} className="py-3 flex justify-between items-center">
                                 <span className="text-stone-900 dark:text-stone-100 font-medium">{i.name}</span>
-                                <span className={`text-xs px-2 py-0.5 rounded-full ${i.isActive ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' : 'bg-red-100 text-red-700'}`}>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${i.isActive ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' : 'bg-red-100 dark:bg-rose-900/40 text-red-700 dark:text-rose-200'}`}>
                                     {i.isActive ? 'Active' : 'Inactive'}
                                 </span>
                             </li>

@@ -148,12 +148,43 @@ async function audit(page: Page, path: string): Promise<string[]> {
         const y1 = Math.min(H, box.y + box.h)
         if (x1 - x0 < 2 || y1 - y0 < 2) continue
 
-        // Background = the most common pixel in the text-free render of this box.
+        // Locate the glyph run FIRST: the pixels that changed when text was
+        // hidden. Sampling the background across the element's whole box made a
+        // full-width, mostly-empty heading pick up a neighbouring band instead of
+        // the surface behind its letters — that produced every ~1.0:1 phantom.
+        let gx0 = x1, gy0 = y1, gx1 = x0, gy1 = y0, glyphs = 0
+        for (let y = y0; y < y1; y++) {
+            for (let x = x0; x < x1; x++) {
+                const i = (y * W + x) * 4
+                if (
+                    Math.abs(a.data[i] - b.data[i]) < 8 &&
+                    Math.abs(a.data[i + 1] - b.data[i + 1]) < 8 &&
+                    Math.abs(a.data[i + 2] - b.data[i + 2]) < 8
+                )
+                    continue
+                glyphs++
+                if (x < gx0) gx0 = x
+                if (x > gx1) gx1 = x
+                if (y < gy0) gy0 = y
+                if (y > gy1) gy1 = y
+            }
+        }
+        if (glyphs < 4) continue // nothing legible resolved — claim nothing
+
+        // Pad by a couple of pixels so the sample sits on the surface the glyphs
+        // actually rest on, then clamp back inside the element.
+        const bx0 = Math.max(x0, gx0 - 2)
+        const by0 = Math.max(y0, gy0 - 2)
+        const bx1 = Math.min(x1, gx1 + 3)
+        const by1 = Math.min(y1, gy1 + 3)
+
+        // Background = the most common pixel of the text-free render, within the
+        // glyph run's own neighbourhood.
         const counts = new Map<number, number>()
         let bgKey = -1
         let bgN = 0
-        for (let y = y0; y < y1; y++) {
-            for (let x = x0; x < x1; x++) {
+        for (let y = by0; y < by1; y++) {
+            for (let x = bx0; x < bx1; x++) {
                 const i = (y * W + x) * 4
                 const k = (b.data[i] << 16) | (b.data[i + 1] << 8) | b.data[i + 2]
                 const n = (counts.get(k) || 0) + 1
@@ -172,8 +203,8 @@ async function audit(page: Page, path: string): Promise<string[]> {
         // glyph core — the colour a reader actually perceives.
         let best = -1
         let bestD = 0
-        for (let y = y0; y < y1; y++) {
-            for (let x = x0; x < x1; x++) {
+        for (let y = by0; y < by1; y++) {
+            for (let x = bx0; x < bx1; x++) {
                 const i = (y * W + x) * 4
                 if (
                     Math.abs(a.data[i] - b.data[i]) < 8 &&
@@ -269,8 +300,13 @@ const LAYOUT_SCAN = `(() => {
     }
 
     // Text wider than its box with no ellipsis and no wrapping = silently cut.
+    // Visually-hidden nodes (skip links, screen-reader labels) are clipped to a
+    // 1px box on purpose — that is the technique, not a defect.
+    const srOnly = el.clientWidth <= 2 || el.clientHeight <= 2 ||
+                   cs.clip === 'rect(0px, 0px, 0px, 0px)' ||
+                   String(el.className || '').split(/\s+/).includes('sr-only');
     const txt = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join('').trim();
-    if (txt.length > 3 && el.scrollWidth > el.clientWidth + 2 && cs.overflow !== 'visible'
+    if (!srOnly && txt.length > 3 && el.scrollWidth > el.clientWidth + 2 && cs.overflow !== 'visible'
         && cs.textOverflow !== 'ellipsis' && cs.overflowX !== 'auto' && cs.overflowX !== 'scroll'
         && out.clipped.length < 6) {
       out.clipped.push({ tag: el.tagName, cls: String(el.className || '').slice(0, 60),
@@ -334,9 +370,17 @@ for (const viewport of VIEWPORTS) {
  * ancestor) rather than the single node.
  */
 const SNAP = `(el) => {
-  const cs = getComputedStyle(el);
-  return [cs.color, cs.backgroundColor, cs.borderColor, cs.outlineStyle, cs.outlineWidth,
-          cs.boxShadow, cs.opacity, cs.textDecorationLine, cs.transform].join('|');
+  // group-hover: restyles a CHILD, and some controls are styled from an
+  // ancestor wrapper — reading only this node reported "no hover feedback" for
+  // controls that visibly respond. Snapshot the nearest .group ancestor plus
+  // the element's own subtree.
+  const root = el.closest('.group') || el;
+  const nodes = [root, ...root.querySelectorAll('*')].slice(0, 24);
+  return nodes.map((n) => {
+    const cs = getComputedStyle(n);
+    return [cs.color, cs.backgroundColor, cs.borderColor, cs.outlineStyle, cs.outlineWidth,
+            cs.boxShadow, cs.opacity, cs.textDecorationLine, cs.transform, cs.gap].join('|');
+  }).join('#');
 }`
 
 for (const theme of ['light', 'dark'] as const) {

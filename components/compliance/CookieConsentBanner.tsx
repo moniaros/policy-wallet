@@ -96,7 +96,7 @@ export function CookieConsentBanner() {
                         <button
                             type="button"
                             onClick={() => setExpanded((current) => !current)}
-                            className="rounded-full border border-slate-300 px-3 py-1.5 font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                            className="rounded-full border border-slate-300 px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
                             {expanded ? copy.hidePreferences : copy.managePreferences}
                         </button>
@@ -164,7 +164,7 @@ export function CookieConsentBanner() {
                                     "banner_necessary_only"
                                 )
                             }
-                            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
                             {copy.necessaryOnly}
                         </button>

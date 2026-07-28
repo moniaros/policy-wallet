@@ -141,7 +141,7 @@ export function DashboardClient({
                             <button
                                 onClick={handleResendVerification}
                                 disabled={isResending}
-                                className="pw-secondary-button border-amber-300 text-amber-800 dark:bg-amber-900/10 dark:text-amber-200"
+                                className="pw-secondary-button border-amber-300 dark:border-amber-800/40 text-amber-800 dark:bg-amber-900/10 dark:text-amber-200"
                             >
                                 {isResending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                                 {isResending ? tb.verifyBannerSending : tb.verifyBannerResend}

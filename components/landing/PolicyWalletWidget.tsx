@@ -92,7 +92,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                             >
                                 <div
                                     className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
-                                        p.type === "expiring" ? "bg-[#FEF3C7]" : "bg-[#F0FDF4] dark:bg-[#29685B]/15"
+                                        p.type === "expiring" ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-[#F0FDF4] dark:bg-[#29685B]/15"
                                     }`}
                                 >
                                     <p.Icon
@@ -109,7 +109,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                         <span
                                             className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
                                                 p.type === "expiring"
-                                                    ? "bg-[#FEF3C7] dark:bg-amber-500/15 text-[#92400E] dark:text-amber-200"
+                                                    ? "bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-500/15 text-[#92400E] dark:text-amber-200"
                                                     : "bg-[#F0FDF4] dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0]"
                                             }`}
                                         >

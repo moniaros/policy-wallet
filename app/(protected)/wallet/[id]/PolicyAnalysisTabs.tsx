@@ -78,7 +78,7 @@ export function PolicyAnalysisTabs({
                 >
                     {t.wallet.aiAnalysis}
                     {gapBadgeCount > 0 && (
-                        <span className="ml-2 px-2 py-0.5 text-kicker bg-red-100 text-red-700 rounded-full">
+                        <span className="ml-2 px-2 py-0.5 text-kicker bg-red-100 dark:bg-rose-900/40 text-red-700 dark:text-rose-200 rounded-full">
                             {gapBadgeCount}
                         </span>
                     )}

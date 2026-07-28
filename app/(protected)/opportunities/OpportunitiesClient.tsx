@@ -113,7 +113,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                             onClick={() => setFilter(key)}
                             className={`px-5 py-2.5 rounded-full font-bold text-sm tracking-wide whitespace-nowrap transition-all duration-300 ${filter === key
                                 ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-xl shadow-neutral-900/10'
-                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900/50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white shadow-sm'
+                                : 'bg-white text-neutral-600 border border-neutral-200 dark:border-white/10 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900/50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white shadow-sm'
                                 }`}
                         >
                             {statusLabel(key)} {count > 0 && <span className="ml-1.5 opacity-60 text-xs">({count})</span>}

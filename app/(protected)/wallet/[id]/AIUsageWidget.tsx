@@ -37,7 +37,7 @@ export function AIUsageWidget({ count, limit, t, reportUnlock }: AIUsageWidgetPr
                 </p>
                 <a
                     href="#gap-unlock"
-                    className="w-full py-3 bg-white text-black rounded-xl font-bold hover:bg-black/5 transition-colors flex items-center justify-center gap-2 text-sm"
+                    className="w-full py-3 bg-white dark:bg-slate-800 text-black dark:text-white rounded-xl font-bold hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-sm"
                 >
                     <Sparkles className="w-4 h-4 text-primary" />
                     {t.wallet.reportUnlockWidgetCta}
@@ -77,7 +77,7 @@ export function AIUsageWidget({ count, limit, t, reportUnlock }: AIUsageWidgetPr
 
             <a
                 href="/upgrade?reason=ai_analysis_limit"
-                className="w-full py-3 bg-white text-black rounded-xl font-bold hover:bg-black/5 transition-colors flex items-center justify-center gap-2 text-sm"
+                className="w-full py-3 bg-white dark:bg-slate-800 text-black dark:text-white rounded-xl font-bold hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-sm"
             >
                 <svg className="w-4 h-4 text-primary dark:text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 {t.wallet.upgradePlan}

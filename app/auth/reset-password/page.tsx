@@ -151,7 +151,7 @@ function ResetPasswordContent() {
                 {!canSubmit ? (
                     <div className="space-y-4">
                         <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{copy.invalidLink}</div>
-                        <Link href="/auth/forgot-password" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
+                        <Link href="/auth/forgot-password" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
                             <ArrowLeft className="h-4 w-4" />
                             {COPY.requestNewLink[lang]}
                         </Link>
@@ -188,7 +188,7 @@ function ResetPasswordContent() {
                                     type={showPassword ? "text" : "password"}
                                     autoComplete="new-password"
                                     {...register("password")}
-                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-11 text-sm text-slate-900 outline-none transition focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-black dark:text-white ${errors.password ? "border-rose-300" : "border-slate-300 dark:border-white/15"}`}
+                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-11 text-sm text-slate-900 dark:text-slate-200 outline-none transition focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-black dark:text-white ${errors.password ? "border-rose-300" : "border-slate-300 dark:border-white/15"}`}
                                 />
                                 <button type="button" onClick={() => setShowPassword((prev) => !prev)} className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-white/10" aria-label={showPassword ? "Hide password" : "Show password"}>
                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -210,7 +210,7 @@ function ResetPasswordContent() {
                                     type={showConfirmPassword ? "text" : "password"}
                                     autoComplete="new-password"
                                     {...register("confirmPassword")}
-                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-11 text-sm text-slate-900 outline-none transition focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-black dark:text-white ${errors.confirmPassword ? "border-rose-300" : "border-slate-300 dark:border-white/15"}`}
+                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-11 text-sm text-slate-900 dark:text-slate-200 outline-none transition focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-black dark:text-white ${errors.confirmPassword ? "border-rose-300" : "border-slate-300 dark:border-white/15"}`}
                                 />
                                 <button type="button" onClick={() => setShowConfirmPassword((prev) => !prev)} className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-white/10" aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
                                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -224,7 +224,7 @@ function ResetPasswordContent() {
                             {submitting ? copy.submitting : copy.submit}
                         </button>
 
-                        <Link href="/auth/signin" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
+                        <Link href="/auth/signin" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
                             <ArrowLeft className="h-4 w-4" />
                             {copy.backToSignIn}
                         </Link>

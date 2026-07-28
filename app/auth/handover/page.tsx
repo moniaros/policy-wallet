@@ -84,7 +84,7 @@ function HandoverContent() {
                     <button
                         onClick={handleContinueWeb}
                         className={`w-full py-3.5 rounded-full font-bold transition-all active:scale-[0.98] hover:-translate-y-0.5 ${isMobile
-                            ? "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-slate-300"
+                            ? "border border-slate-300 bg-white text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-slate-300"
                             : "bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover hover:shadow-lg"
                             }`}
                     >

@@ -36,7 +36,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     {/* Mock UI — left on desktop */}
                     <div className="order-last md:order-first bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Savings Plan</h3>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">Monthly Contributions · Year 8 of 25</p>
@@ -49,18 +49,18 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                                     <span className="text-[#475569] dark:text-slate-300">Progress to Maturity</span>
                                     <span className="font-medium">32%</span>
                                 </div>
-                                <div className="w-full bg-gray-100 h-2 rounded-full">
+                                <div className="w-full bg-gray-100 dark:bg-white/10 h-2 rounded-full">
                                     <div className="bg-[#29685B] w-[32%] h-2 rounded-full" />
                                 </div>
                             </div>
                             <div className="p-4 bg-[#F0FDF4] dark:bg-[#29685B]/15 rounded-lg border border-[#29685B]/20">
                                 <p className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">Maturity Options: Lump Sum / Annuity</p>
                             </div>
-                            <div className="p-4 bg-amber-50 rounded-lg border border-amber-100 flex gap-3">
-                                <AlertTriangle className="w-5 h-5 text-amber-700 flex-shrink-0" />
+                            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800/40 flex gap-3">
+                                <AlertTriangle className="w-5 h-5 text-amber-700 dark:text-amber-200 flex-shrink-0" />
                                 <div>
-                                    <p className="font-medium text-amber-900 text-sm">Early Surrender Penalty</p>
-                                    <p className="text-xs text-amber-700 mt-1">Applies before year 10 — see terms</p>
+                                    <p className="font-medium text-amber-900 dark:text-amber-200 text-sm">Early Surrender Penalty</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">Applies before year 10 — see terms</p>
                                 </div>
                             </div>
                         </div>

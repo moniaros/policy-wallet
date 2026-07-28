@@ -61,7 +61,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
 
                     {/* Mock UI */}
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Tesla Model 3</h3>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">Exp. 14 Days</p>
@@ -77,7 +77,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                                     <span className="text-[#475569] dark:text-slate-300">Market Value Meter</span>
                                     <span className="font-medium">98% Match</span>
                                 </div>
-                                <div className="w-full bg-gray-100 h-2 rounded-full">
+                                <div className="w-full bg-gray-100 dark:bg-white/10 h-2 rounded-full">
                                     <div className="bg-[#29685B] w-[98%] h-2 rounded-full" />
                                 </div>
                             </div>

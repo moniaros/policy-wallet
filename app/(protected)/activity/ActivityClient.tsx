@@ -139,7 +139,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                     className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
                                         filter === tab.id
                                             ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-sm"
-                                            : "bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                                            : "bg-white text-neutral-600 border border-neutral-200 dark:border-white/10 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                                     }`}
                                 >
                                     {tab.label}

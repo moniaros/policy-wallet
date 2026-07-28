@@ -145,7 +145,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                 </header>
 
                 {/* Direct-answer opening paragraph (featured-snippet shape). */}
-                <p className="mb-12 rounded-[14px] border border-[#DCEBDA] bg-[#F0FDF4] p-6 text-lead font-medium leading-relaxed text-[#0F172A] dark:border-[#29685B]/40 dark:bg-[#29685B]/15 dark:text-slate-100">
+                <p className="mb-12 rounded-[14px] border border-[#DCEBDA] bg-[#F0FDF4] dark:bg-emerald-900/20 p-6 text-lead font-medium leading-relaxed text-[#0F172A] dark:border-[#29685B]/40 dark:bg-[#29685B]/15 dark:text-slate-100">
                     {guide.summary[lang]}
                 </p>
 

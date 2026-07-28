@@ -195,7 +195,7 @@ export default function ForgotPasswordPage() {
                                         autoComplete="email"
                                         placeholder={copy.emailPlaceholder}
                                         {...register("email")}
-                                        className={`${inputBase} pl-9 ${errors.email ? "border-rose-300 focus-visible:border-rose-400 focus-visible:ring-rose-200" : ""}`}
+                                        className={`${inputBase} pl-9 ${errors.email ? "border-rose-300 dark:border-rose-800/40 focus-visible:border-rose-400 focus-visible:ring-rose-200" : ""}`}
                                     />
                                 </div>
                                 {errors.email ? (

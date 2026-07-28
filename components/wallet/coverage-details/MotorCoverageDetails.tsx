@@ -147,7 +147,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             </div>
             <div>
               <span className="text-sm font-bold text-red-700 dark:text-red-300">{motorCopy.accidentDeclaration}</span>
-              <p className="text-xs text-red-700 dark:text-red-300/80 dark:text-red-400/80">{copy.call}</p>
+              <p className="text-xs text-red-700 dark:text-red-400/80">{copy.call}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">

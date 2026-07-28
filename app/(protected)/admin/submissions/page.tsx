@@ -48,7 +48,7 @@ export default async function AdminSubmissionsPage({ searchParams }: { searchPar
             </div>
 
             {unsentCount > 0 ? (
-                <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+                <div className="mb-6 rounded-xl border border-amber-300 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-900/20 p-4 text-sm text-amber-900 dark:text-amber-200">
                     {unsentCount} υποβολές αποθηκεύτηκαν αλλά η ειδοποίηση email δεν στάλθηκε. Ελέγξτε το{" "}
                     <code className="font-mono">ADMIN_NOTIFICATION_EMAIL</code> και το{" "}
                     <code className="font-mono">BREVO_API_KEY</code>.
@@ -99,7 +99,7 @@ export default async function AdminSubmissionsPage({ searchParams }: { searchPar
                                     {formatDate(submission.createdAt)}
                                 </span>
                                 {!submission.emailSent ? (
-                                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-900">
+                                    <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2.5 py-0.5 text-xs font-medium text-amber-900 dark:text-amber-200">
                                         Δεν στάλθηκε ειδοποίηση
                                     </span>
                                 ) : null}

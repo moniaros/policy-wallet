@@ -166,7 +166,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">
                         {t("Τα συμβόλαιά μου", "My Policies")}
                     </p>
-                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-500/15 px-2.5 py-1 text-micro font-semibold text-[#92400E] dark:text-amber-200">
+                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-500/15 px-2.5 py-1 text-micro font-semibold text-[#92400E] dark:text-amber-200">
                         1 {t("κενό", "gap")}
                     </span>
                 </div>
@@ -178,7 +178,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                         >
                             <div
                                 className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${
-                                    p.type === "warn" ? "bg-[#FEF3C7]" : "bg-[#F0FDF4] dark:bg-[#29685B]/15"
+                                    p.type === "warn" ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-[#F0FDF4] dark:bg-[#29685B]/15"
                                 }`}
                             >
                                 <p.Icon
@@ -312,7 +312,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                                 {c.name}
                             </span>
                             {c.alert ? (
-                                <span className="flex items-center gap-1 rounded-full bg-[#FEF3C7] dark:bg-amber-500/15 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:text-amber-200">
+                                <span className="flex items-center gap-1 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-500/15 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:text-amber-200">
                                     <AlertTriangle className="h-2.5 w-2.5" />
                                     {c.renewal}d
                                 </span>

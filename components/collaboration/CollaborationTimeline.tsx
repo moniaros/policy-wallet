@@ -361,10 +361,10 @@ export function CollaborationTimeline({
                                             <span className={`text-kicker px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-muted`}>{t.collaboration.timeline.threadType[threadTypeKey]}</span>
                                             <span className="text-xs text-neutral-500 dark:text-neutral-400">{threadStatusLabel(thread.status)[language]}</span>
                                             {waitingOnYou ? (
-                                                <span className="text-kicker px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">{t.collaboration.timeline.waitingOnYou}</span>
+                                                <span className="text-kicker px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-200 font-bold">{t.collaboration.timeline.waitingOnYou}</span>
                                             ) : null}
                                             {overdue ? (
-                                                <span className="text-kicker px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">{t.collaboration.timeline.overdue}</span>
+                                                <span className="text-kicker px-2 py-0.5 rounded-full bg-red-100 dark:bg-rose-900/40 text-red-700 dark:text-rose-200 font-bold">{t.collaboration.timeline.overdue}</span>
                                             ) : null}
                                         </div>
                                     </button>

@@ -68,7 +68,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
 
                     {/* Mock UI */}
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Family Protection</h3>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">Term Life · 2 Dependents</p>
@@ -80,7 +80,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                                     <span className="text-[#475569] dark:text-slate-300">Coverage vs Mortgage Balance</span>
                                     <span className="font-medium text-amber-700 dark:text-amber-300">Gap Detected</span>
                                 </div>
-                                <div className="w-full bg-gray-100 h-2 rounded-full">
+                                <div className="w-full bg-gray-100 dark:bg-white/10 h-2 rounded-full">
                                     <div className="bg-amber-500 w-[72%] h-2 rounded-full" />
                                 </div>
                             </div>
@@ -88,12 +88,12 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">Critical Illness Included</div>
                                 <HeartHandshake className="w-5 h-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             </div>
-                            <div className="p-4 bg-rose-50 rounded-lg flex justify-between border border-rose-100">
+                            <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg flex justify-between border border-rose-100 dark:border-rose-800/40">
                                 <div>
-                                    <p className="font-medium text-rose-900 text-sm flex items-center gap-2">
+                                    <p className="font-medium text-rose-900 dark:text-rose-200 text-sm flex items-center gap-2">
                                         <ShieldAlert className="w-4 h-4" /> Missing Cover
                                     </p>
-                                    <p className="text-xs text-rose-700 mt-1">- Permanent Disability Rider</p>
+                                    <p className="text-xs text-rose-700 dark:text-rose-200 mt-1">- Permanent Disability Rider</p>
                                 </div>
                             </div>
                         </div>

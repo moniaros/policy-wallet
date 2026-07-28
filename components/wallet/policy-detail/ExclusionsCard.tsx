@@ -185,7 +185,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                                         </span>
                                                     )}
                                                     {condition.userActionRequired && (
-                                                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300">
+                                                        <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300">
                                                             {copy.actionRequiredChip}
                                                         </span>
                                                     )}

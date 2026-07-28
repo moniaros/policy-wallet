@@ -298,7 +298,7 @@ export function CustomerList({
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-1.5">
                                                 <span className="font-semibold text-foreground text-body-sm">{customer.name} {customer.surname}</span>
-                                                <span className="inline-flex items-center rounded-md bg-neutral-100 px-1.5 py-0.5 text-kicker font-bold uppercase tracking-wider text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                                                <span className="inline-flex items-center rounded-md bg-neutral-100 dark:bg-white/10 px-1.5 py-0.5 text-kicker font-bold uppercase tracking-wider text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
                                                     {roleCopy.customerList[customer.activationStatus]}
                                                 </span>
                                             </div>

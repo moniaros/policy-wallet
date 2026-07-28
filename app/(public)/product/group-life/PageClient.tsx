@@ -79,7 +79,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                         {triad.map((pillar) => {
                             const Icon = pillar.icon
                             const card = (
-                                <div className={`h-full rounded-[16px] border p-7 ${pillar.current ? "border-[#29685B]/30 bg-white dark:bg-slate-900 shadow-[0_20px_40px_rgba(0,0,0,0.04)]" : "border-[#E2E8F0] dark:border-slate-800 bg-white"}`}>
+                                <div className={`h-full rounded-[16px] border p-7 ${pillar.current ? "border-[#29685B]/30 bg-white dark:bg-slate-900 shadow-[0_20px_40px_rgba(0,0,0,0.04)]" : "border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900"}`}>
                                     <div className="mb-5 flex items-center justify-between">
                                         <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                             <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />

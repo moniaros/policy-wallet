@@ -36,7 +36,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     {/* Mock UI — left on desktop */}
                     <div className="order-last md:order-first bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Primary Residence</h3>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">120 sq.m — Athens</p>
@@ -48,14 +48,14 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                                     <span className="text-[#475569] dark:text-slate-300">Rebuild Cost Threshold</span>
                                     <span className="font-medium text-amber-700 dark:text-amber-300">Underinsured by 15%</span>
                                 </div>
-                                <div className="w-full bg-gray-100 h-2 rounded-full">
+                                <div className="w-full bg-gray-100 dark:bg-white/10 h-2 rounded-full">
                                     <div className="bg-amber-500 w-[85%] h-2 rounded-full" />
                                 </div>
                             </div>
-                            <div className="p-4 bg-purple-50 rounded-lg border border-purple-100 flex justify-between items-center">
+                            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800/40 flex justify-between items-center">
                                 <div>
-                                    <p className="font-bold text-purple-900 text-sm">ENFIA discount</p>
-                                    <p className="text-xs text-purple-700 mt-1">Missing Flood Coverage</p>
+                                    <p className="font-bold text-purple-900 dark:text-purple-200 text-sm">ENFIA discount</p>
+                                    <p className="text-xs text-purple-700 dark:text-purple-200 mt-1">Missing Flood Coverage</p>
                                 </div>
                                 <Shield className="w-6 h-6 text-purple-500" />
                             </div>

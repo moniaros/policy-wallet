@@ -77,7 +77,7 @@ export function AiConsentModal({ isOpen, onClose, onConsented, source = "ai_cons
                         type="button"
                         onClick={onClose}
                         disabled={saving}
-                        className="rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                        className="rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 disabled:opacity-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
                     >
                         {t.common.aiConsentCancel}
                     </button>

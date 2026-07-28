@@ -81,7 +81,7 @@ export function MergeRequestBanner({
                             type="button"
                             onClick={() => decide("rejected")}
                             disabled={pending !== null}
-                            className="inline-flex min-h-9 items-center gap-2 rounded-full border border-amber-400/60 bg-white px-4 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 disabled:opacity-60 dark:border-amber-700/60 dark:bg-amber-900/40 dark:text-amber-200"
+                            className="inline-flex min-h-9 items-center gap-2 rounded-full border border-amber-400/60 bg-white px-4 text-xs font-bold text-amber-900 dark:text-amber-200 transition-colors hover:bg-amber-100 disabled:opacity-60 dark:border-amber-700/60 dark:bg-amber-900/40 dark:text-amber-200"
                         >
                             {pending === "rejected" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                             {copy.reject}

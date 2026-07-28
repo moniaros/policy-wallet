@@ -30,7 +30,7 @@ function InsurerLogo({ insurer }: { insurer: InsurerBadge }) {
                 className="h-2.5 w-2.5 rounded-full transition-transform duration-300 group-hover:scale-125"
                 style={{ backgroundColor: insurer.color }}
             />
-            <span className="text-xs font-bold tracking-wide text-slate-700 transition-colors duration-300 group-hover:text-slate-900">
+            <span className="text-xs font-bold tracking-wide text-slate-700 dark:text-slate-200 transition-colors duration-300 group-hover:text-slate-900">
                 {insurer.name}
             </span>
             {/* Subtle color bar on hover */}

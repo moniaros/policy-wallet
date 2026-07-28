@@ -84,7 +84,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         role="menuitem"
                         href={localizeHref("/product", language)}
                         onClick={() => setIsOpen(false)}
-                        className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
+                        className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         {individualsLabel}
                     </Link>
@@ -92,7 +92,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         role="menuitem"
                         href={localizeHref("/solutions/agents", language)}
                         onClick={() => setIsOpen(false)}
-                        className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
+                        className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         {agentsLabel}
                     </Link>

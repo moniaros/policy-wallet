@@ -446,7 +446,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     {selectedFiles.map((file, idx) => (
                                         <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-xl border border-border animate-in fade-in slide-in-from-bottom-2">
                                             <div className="flex items-center gap-3 overflow-hidden">
-                                                <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 text-red-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-rose-200 rounded-lg flex items-center justify-center flex-shrink-0">
                                                     <FileText className="w-4 h-4" />
                                                 </div>
                                                 <div className="truncate">

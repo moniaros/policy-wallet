@@ -86,7 +86,7 @@ export function PerksCard({ perks, lang, copy }: PerksCardProps) {
                                                 </span>
                                             )}
                                             {perk.reminderRecommended && (
-                                                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300">
+                                                <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300">
                                                     {copy.dontForgetChip}
                                                 </span>
                                             )}

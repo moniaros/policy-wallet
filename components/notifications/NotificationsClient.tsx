@@ -386,7 +386,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                             className={`cursor-pointer rounded-2xl border p-4 shadow-sm transition ${
                                                 isRead
                                                     ? "border-black/10 dark:border-white/15 bg-white dark:bg-black"
-                                                    : "border-l-[3px] border-l-primary border-t-black/10 border-r-black/10 border-b-black/10 dark:border-t-white/15 dark:border-r-white/15 dark:border-b-white/15 bg-primary/5 dark:bg-primary/10"
+                                                    : "border-l-[3px] border-l-primary border-t-black/10 border-r-black/10 border-b-black/10 dark:border-r-white/15 dark:border-b-white/15 bg-primary/5 dark:bg-primary/10"
                                             }`}
                                         >
                                             <div className="flex items-start justify-between gap-3">

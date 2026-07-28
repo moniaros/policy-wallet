@@ -239,7 +239,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                     {request.status}
                                                 </span>
                                                 {request.errorMessage && (
-                                                    <div className="mt-1 text-xs text-red-700 dark:text-red-300 dark:text-red-400">{request.errorMessage}</div>
+                                                    <div className="mt-1 text-xs text-red-700 dark:text-red-400">{request.errorMessage}</div>
                                                 )}
                                             </td>
                                             <td className="px-4 py-4 text-xs text-stone-600 dark:text-stone-400">{formatDate(request.requestedAt)}</td>
@@ -319,7 +319,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                     {request.status}
                                                 </span>
                                                 {request.errorMessage && (
-                                                    <div className="mt-1 text-xs text-red-700 dark:text-red-300 dark:text-red-400">{request.errorMessage}</div>
+                                                    <div className="mt-1 text-xs text-red-700 dark:text-red-400">{request.errorMessage}</div>
                                                 )}
                                             </td>
                                             <td className="px-4 py-4 text-xs text-stone-600 dark:text-stone-400">

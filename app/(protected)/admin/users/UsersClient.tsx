@@ -106,7 +106,7 @@ export default function UsersClient({
                     <Filter className="w-3 h-3" /> Pending
                 </span>
             case "rejected":
-                return <span className="flex items-center gap-1 text-xs text-red-700 dark:text-red-300 dark:text-red-400">
+                return <span className="flex items-center gap-1 text-xs text-red-700 dark:text-red-400">
                     <XCircle className="w-3 h-3" /> Rejected
                 </span>
             default:

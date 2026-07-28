@@ -751,7 +751,7 @@ export function AnalysisCard({
                                         setRequestingConsent(false)
                                     }}
                                     disabled={requestingConsent}
-                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 disabled:opacity-50 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 dark:text-amber-200 transition-colors hover:bg-amber-100 disabled:opacity-50 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
                                 >
                                     {t.common.aiConsentRequestAction}
                                 </button>

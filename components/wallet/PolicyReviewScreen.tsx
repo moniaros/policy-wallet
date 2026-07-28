@@ -286,7 +286,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         </p>
                         {CHIP_FIELDS.includes(field) && !isDirty && (
                             fieldFlagged ? (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300">
                                     <AlertTriangle className="h-3 w-3" />
                                     {reviewCopy.confidenceInvalidated}
                                 </span>
@@ -301,7 +301,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                             </span>
                         )}
                         {fieldFlagged && isSkipped && !isDirty && (
-                            <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-kicker font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                                 {reviewCopy.skippedChip}
                             </span>
                         )}
@@ -416,7 +416,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         <p className="text-sm text-slate-500 dark:text-slate-400">
                             {lobLabel(data.lineOfBusiness)}
                         </p>
-                        <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                        <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                             {statusLabel}
                         </span>
                     </div>
@@ -536,7 +536,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                                     </span>
                                 )}
                                 {condition.userActionRequired && (
-                                    <span className="rounded-full bg-[#FEF3C7] px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:bg-amber-900/30 dark:text-amber-400">
+                                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:bg-amber-900/30 dark:text-amber-400">
                                         {reviewCopy.actionRequired}
                                     </span>
                                 )}
@@ -618,7 +618,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                     <button
                         type="button"
                         onClick={() => setFlagOpen(true)}
-                        className="w-full rounded-2xl border border-slate-200 py-3.5 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                        className="w-full rounded-2xl border border-slate-200 dark:border-white/10 py-3.5 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                     >
                         <span className="flex items-center justify-center gap-2">
                             <Flag className="h-4 w-4" />

@@ -232,7 +232,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                     </div>
 
                     {/* Role cross-link: two dedicated forms, one per audience */}
-                    <p className="mb-5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-center text-caption text-[#5B6A7A] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
+                    <p className="mb-5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] dark:bg-slate-950 px-4 py-3 text-center text-caption text-[#5B6A7A] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
                         {role === "policyholder" ? (
                             <>
                                 {t("Είστε ασφαλιστικός σύμβουλος;", "Are you an insurance agent?")}{" "}
@@ -253,7 +253,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <AnimatePresence>
                             {serverError && (
-                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300" role="alert">
+                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-2 rounded-xl border border-rose-200 dark:border-rose-800/40 bg-rose-50 dark:bg-rose-900/20 p-3 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300" role="alert">
                                     <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                                     <span>{serverError}</span>
                                 </motion.div>
@@ -291,7 +291,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                     onChange={(e) => setValue("mobileNumber", formatPhoneInput(e.target.value), { shouldValidate: true })}
                                     aria-invalid={errors.mobileNumber ? true : undefined}
                                     aria-describedby={errors.mobileNumber ? "signup-mobile-error" : undefined}
-                                    className={`${inputBase} ${errors.mobileNumber ? "border-rose-300" : ""}`}
+                                    className={`${inputBase} ${errors.mobileNumber ? "border-rose-300 dark:border-rose-800/40" : ""}`}
                                 />
                                 {isMobileValid && <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-primary" />}
                             </div>
@@ -304,7 +304,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                 {role === "agent" ? t("Email", "Email") : t("Email (προαιρετικό)", "Email (optional)")}
                             </label>
                             <div className="relative">
-                                <input id="signup-email" type="email" placeholder="name@example.com" {...register("email")} aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? "signup-email-error" : undefined} className={`${inputBase} ${errors.email ? "border-rose-300" : ""}`} />
+                                <input id="signup-email" type="email" placeholder="name@example.com" {...register("email")} aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? "signup-email-error" : undefined} className={`${inputBase} ${errors.email ? "border-rose-300 dark:border-rose-800/40" : ""}`} />
                                 {isEmailValid && <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-primary" />}
                             </div>
                             <p className="mt-1 text-micro text-[#5B6A7A] dark:text-white/60">
@@ -326,7 +326,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                                     {...register("password")}
                                     aria-invalid={errors.password ? true : undefined}
                                     aria-describedby={errors.password ? "signup-password-error" : undefined}
-                                    className={`${inputBase} pr-11 ${errors.password ? "border-rose-300" : ""}`}
+                                    className={`${inputBase} pr-11 ${errors.password ? "border-rose-300 dark:border-rose-800/40" : ""}`}
                                 />
                                 <button
                                     type="button"
@@ -350,7 +350,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                         </div>
 
                         {/* Terms */}
-                        <label htmlFor="signup-terms" className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-body-sm text-[#475569] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
+                        <label htmlFor="signup-terms" className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] dark:bg-slate-950 px-3 py-2.5 text-body-sm text-[#475569] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
                             <input id="signup-terms" type="checkbox" {...register("termsAccepted")} className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-primary" />
                             <span>
                                 {t("Αποδέχομαι τους ", "I agree to ")}<Link href="/terms" className="font-semibold text-primary hover:underline">{t("Όρους", "Terms")}</Link>{t(" και το ", " and ")}<Link href="/privacy" className="font-semibold text-primary hover:underline">{t("Απόρρητο", "Privacy")}</Link>

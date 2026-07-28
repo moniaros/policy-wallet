@@ -75,7 +75,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
 
                     {/* Mock UI */}
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Sailing Yacht 9.8m</h3>
                                 <p className="text-body-sm text-gray-500 dark:text-gray-400">Alimos Marina · In Force</p>
@@ -91,9 +91,9 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">Hull & Machinery Included</div>
                                 <Anchor className="w-5 h-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             </div>
-                            <div className="p-4 bg-rose-50 rounded-lg border border-rose-100">
-                                <p className="font-medium text-rose-900 text-sm">Not Covered</p>
-                                <p className="text-xs text-rose-700 mt-1">- Wreck Removal — check clause 7.2</p>
+                            <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg border border-rose-100 dark:border-rose-800/40">
+                                <p className="font-medium text-rose-900 dark:text-rose-200 text-sm">Not Covered</p>
+                                <p className="text-xs text-rose-700 dark:text-rose-200 mt-1">- Wreck Removal — check clause 7.2</p>
                             </div>
                         </div>
                     </div>

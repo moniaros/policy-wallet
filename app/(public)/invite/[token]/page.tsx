@@ -16,7 +16,7 @@ export default async function InviteRedeemPage({ params }: { params: Promise<{ t
         return (
             <div className="min-h-screen flex items-center justify-center bg-background p-4">
                 <div className="bg-card border border-border p-8 rounded-2xl shadow-xl text-center max-w-md">
-                    <h1 className="text-xl font-bold text-red-700 mb-2">Invalid or Expired Link</h1>
+                    <h1 className="text-xl font-bold text-red-700 dark:text-rose-200 mb-2">Invalid or Expired Link</h1>
                     <p className="text-muted-foreground">This invitation link is invalid or has already been used.</p>
                 </div>
             </div>
