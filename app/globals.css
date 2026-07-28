@@ -296,6 +296,42 @@ pre {
     padding-bottom: env(safe-area-inset-bottom);
   }
 
+  /* Greek compounds — «ασφαλιστήριο», «πολυασφαλιστήριο» — are single words
+     long enough that at 320-414px their MIN-CONTENT width exceeds the viewport.
+     A flex or grid child then cannot shrink below them and the page scrolls
+     sideways, even though every box looks correctly sized. Three separate
+     defects traced back to this (/, /product, /product/business).
+
+     Scoped to text blocks and to narrow viewports only: nothing at >=431px is
+     affected, and words break only where they would otherwise overflow. */
+  @media (max-width: 430px) {
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    li,
+    dt,
+    dd,
+    figcaption,
+    blockquote {
+      overflow-wrap: anywhere;
+    }
+
+    /* Grid and flex children default to `min-width: auto`, so they refuse to
+       shrink below their content's min-content width. At 320px that let a
+       decorative mock — a 36px icon tile plus a label — set the width of the
+       whole column, and the page scrolled sideways while every individual box
+       still measured "correctly". Bisecting / and /product both landed here.
+
+       min-width: 0 is what almost every such child actually wants; scoped to
+       narrow viewports so no wider layout changes. */
+    .grid > *,
+    .flex > * {
+      min-width: 0;
+    }
+  }
+
   .pw-app-canvas {
     @apply bg-[radial-gradient(circle_at_top_right,_rgba(41,104,91,0.06),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
   }

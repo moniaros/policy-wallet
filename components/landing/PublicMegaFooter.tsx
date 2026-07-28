@@ -323,13 +323,13 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 </a>
                             )
                         })}
-                        <Link href={l("/privacy")} className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/privacy")} className="inline-flex min-h-[24px] items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
                             {t("Privacy", "Privacy")}
                         </Link>
-                        <Link href={l("/terms")} className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/terms")} className="inline-flex min-h-[24px] items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
                             {t("Terms", "Terms")}
                         </Link>
-                        <Link href={l("/contact")} className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/contact")} className="inline-flex min-h-[24px] items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
                             {t("Επικοινωνία", "Contact")}
                         </Link>
                         <span className="inline-flex items-center gap-1.5 text-[#29685B] dark:text-[#A7F3D0]">

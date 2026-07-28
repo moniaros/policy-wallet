@@ -8,7 +8,9 @@ import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { SKIP_LINK_TARGET_ID } from "@/lib/nav/public-nav"
 
 export const metadata: Metadata = {
-    title: "Παροχές Συνεργατών | PolicyWallet",
+    // The root layout applies `template: "%s | PolicyWallet"` — repeating the
+    // suffix here rendered "Παροχές Συνεργατών | PolicyWallet | PolicyWallet".
+    title: "Παροχές Συνεργατών",
     description:
         "Υπηρεσίες πρόληψης και προνόμια από επιλεγμένους συνεργάτες, μέρος των πληρωμένων πλάνων του PolicyWallet.",
     // Deliberately NOT in lib/seo/marketing-pages.ts yet: that registry drives

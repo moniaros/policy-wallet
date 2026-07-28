@@ -56,7 +56,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                         <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                     </div>
-                    <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1 font-mono text-micro text-[#5B6A7A] dark:text-slate-400">
+                    <div className="ml-3 min-w-0 flex-1 truncate rounded-md border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1 font-mono text-micro text-[#5B6A7A] dark:text-slate-400">
                         {`${PRODUCT_DISPLAY_HOST}/wallet`}
                     </div>
                 </div>
