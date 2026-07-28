@@ -359,7 +359,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                             )}
                             {historyItems.length === 0 ? (
                                 <div className="rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-6 text-center shadow-sm">
-                                    <Settings2 className="mx-auto h-5 w-5 text-black/55 dark:text-white/50" />
+                                    <Settings2 className="mx-auto h-5 w-5 text-muted-foreground" />
                                     <p className="mt-2 text-sm text-black/65 dark:text-white/70">{tr("Δεν υπάρχουν πρόσφατες ειδοποιήσεις.", "No recent notification activity.")}</p>
                                 </div>
                             ) : (

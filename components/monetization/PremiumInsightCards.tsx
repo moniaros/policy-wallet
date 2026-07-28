@@ -80,7 +80,7 @@ export function PremiumInsightCards({
                     <Lock className="h-4 w-4 text-primary dark:text-mint" />
                     {pick(SECTION.heading, language)}
                 </h3>
-                <p className="mt-1 text-sm text-black/55 dark:text-white/60">{pick(SECTION.sub, language)}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{pick(SECTION.sub, language)}</p>
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -101,7 +101,7 @@ export function PremiumInsightCards({
                                 <Lock className="h-3.5 w-3.5 flex-shrink-0 text-black/30 dark:text-white/35" />
                             </div>
                             <h4 className="mt-3 text-sm font-bold text-black dark:text-white">{pick(card.title, language)}</h4>
-                            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-black/55 dark:text-white/60">{copy.body}</p>
+                            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{copy.body}</p>
                             <span className="mt-3 text-xs font-bold text-primary dark:text-mint">{copy.primaryCta} →</span>
                         </button>
                     )

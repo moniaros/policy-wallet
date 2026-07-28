@@ -111,14 +111,14 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
     return (
         <div className="pw-card pw-pad sm:p-7">
             <div className="mb-1 flex items-center gap-2">
-                <ShieldOff className="h-4 w-4 text-black/55 dark:text-white/50" />
+                <ShieldOff className="h-4 w-4 text-muted-foreground" />
                 <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                     {/* The heading itself explains the term — "Εξαίρεση" decides
                         what does NOT get paid, and was shown as a bare label. */}
                     {termHint ? <GlossaryHint hint={termHint} /> : copy.exclusionsTitle}
                 </h2>
             </div>
-            <p className="mb-5 text-xs text-black/55 dark:text-white/60">{copy.exclusionsSubtitle}</p>
+            <p className="mb-5 text-xs text-muted-foreground">{copy.exclusionsSubtitle}</p>
 
             {!hasAnyContent ? (
                 <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-4 dark:border-white/15 dark:bg-white/5">
@@ -140,7 +140,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                         key={i}
                                         className="flex items-start gap-2.5 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2.5 dark:border-white/15 dark:bg-white/5"
                                     >
-                                        <MinusCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-black/55 dark:text-white/60" />
+                                        <MinusCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
                                         <p className="text-sm font-medium text-black/80 dark:text-white/85">{exclusion}</p>
                                     </li>
                                 ))}
@@ -214,7 +214,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                                 <span className={`rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-wider ${styles.badge}`}>
                                                     {riskLabel}
                                                 </span>
-                                                <span className="text-kicker font-semibold text-black/55 dark:text-white/50">{clause.section}</span>
+                                                <span className="text-kicker font-semibold text-muted-foreground">{clause.section}</span>
                                             </div>
                                             <p className={`mt-1 text-sm ${styles.text}`}>{pickLang(clause.impactSummary, lang)}</p>
                                         </li>

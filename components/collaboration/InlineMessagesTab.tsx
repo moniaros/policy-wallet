@@ -174,17 +174,17 @@ export function InlineMessagesTab({
             >
                 {loading && (
                     <div className="flex items-center justify-center py-6">
-                        <Loader2 className="h-4 w-4 animate-spin text-black/55 dark:text-white/60" />
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                     </div>
                 )}
 
                 {!loading && messages.length === 0 && (
                     <div className="flex flex-col items-center gap-2 py-8 text-center">
                         <MessageSquare className="h-6 w-6 text-black/20 dark:text-white/20" />
-                        <p className="text-xs text-black/55 dark:text-white/60">
+                        <p className="text-xs text-muted-foreground">
                             {t("Δεν υπάρχουν μηνύματα ακόμα.", "No messages yet.")}
                         </p>
-                        <p className="text-micro text-black/55 dark:text-white/60">
+                        <p className="text-micro text-muted-foreground">
                             {t("Στείλτε ένα μήνυμα για να ξεκινήσετε.", "Send a message to get started.")}
                         </p>
                     </div>

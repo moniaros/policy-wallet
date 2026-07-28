@@ -32,10 +32,15 @@ describe('the type scale means what it says', () => {
         ]
         for (const file of surfaces) {
             const src = readFileSync(file, 'utf-8')
+            // This guards the TYPE SCALE (caption, not micro), so it must not
+            // also pin the colour: the muted colour moved from the ad-hoc
+            // text-black/55 pair to the text-muted-foreground token, which is
+            // the same intent at a better contrast ratio.
+            const MUTED = String.raw`(text-black\/55|text-muted-foreground)`
             expect(src, `${file}: qualifier must not be micro`)
-                .not.toMatch(/text-micro leading-snug text-black\/55/)
+                .not.toMatch(new RegExp(`text-micro leading-snug ${MUTED}`))
             expect(src, `${file}: qualifier at caption`)
-                .toMatch(/text-caption leading-snug text-black\/55/)
+                .toMatch(new RegExp(`text-caption leading-snug ${MUTED}`))
         }
     })
 

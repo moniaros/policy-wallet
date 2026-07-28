@@ -249,7 +249,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                             <label htmlFor={`sug-s${i}`} className="min-w-0 flex-1 cursor-pointer">
                                                 <span className="font-semibold text-black dark:text-white">{s.name}</span>{" "}
                                                 <span className="text-black/60 dark:text-white/60">— {stanceLabel[s.stance] ?? s.stance}</span>
-                                                <span className="mt-0.5 block text-black/55 dark:text-white/55">
+                                                <span className="mt-0.5 block text-muted-foreground">
                                                     {tt.suggestEvidence}: «{s.evidenceSnippet}»
                                                 </span>
                                             </label>
@@ -272,7 +272,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                             <label htmlFor={`sug-c${i}`} className="min-w-0 flex-1 cursor-pointer">
                                                 <span className="font-semibold text-black dark:text-white">{tt.suggestCriterionLabel}:</span>{" "}
                                                 <span className="text-black/70 dark:text-white/70">{c.label}</span>
-                                                <span className="mt-0.5 block text-black/55 dark:text-white/55">
+                                                <span className="mt-0.5 block text-muted-foreground">
                                                     {tt.suggestEvidence}: «{c.evidenceSnippet}»
                                                 </span>
                                             </label>
@@ -295,7 +295,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                             <label htmlFor="sug-pain" className="min-w-0 flex-1 cursor-pointer">
                                                 <span className="font-semibold text-black dark:text-white">{tt.suggestPainLabel}:</span>{" "}
                                                 <span className="text-black/70 dark:text-white/70">{suggestions.pain.summary}</span>
-                                                <span className="mt-0.5 block text-black/55 dark:text-white/55">
+                                                <span className="mt-0.5 block text-muted-foreground">
                                                     {tt.suggestEvidence}: «{suggestions.pain.evidenceSnippet}»
                                                 </span>
                                             </label>

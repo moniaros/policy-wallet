@@ -128,11 +128,11 @@ export function BranchActionsCard({
             item.ctaType === "askAi" ? (
                 <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-mint" aria-hidden />
             ) : item.ctaType === "askAgent" ? (
-                <MessageSquarePlus className="h-3.5 w-3.5 flex-shrink-0 text-black/55 dark:text-white/60" aria-hidden />
+                <MessageSquarePlus className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" aria-hidden />
             ) : item.ctaType === "task" ? (
-                <Plus className="h-3.5 w-3.5 flex-shrink-0 text-black/55 dark:text-white/60" aria-hidden />
+                <Plus className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" aria-hidden />
             ) : (
-                <ArrowUpRight className="h-3.5 w-3.5 flex-shrink-0 text-black/55 dark:text-white/60" aria-hidden />
+                <ArrowUpRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" aria-hidden />
             )
 
         // askAgent — open (or reuse) the advisor thread. On the free tier the

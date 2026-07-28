@@ -295,7 +295,7 @@ export function PolicyTable({
                 <div className="px-6 py-10 text-center">
                     <AlertCircle className="mx-auto mb-2 h-6 w-6 text-black/30 dark:text-white/30" />
                     <h3 className="text-body-sm font-semibold text-black dark:text-white">{t.dashboard.noPolicies}</h3>
-                    <p className="mt-0.5 text-caption text-black/55 dark:text-white/55">{t.dashboard.addFirstPolicy}</p>
+                    <p className="mt-0.5 text-caption text-muted-foreground">{t.dashboard.addFirstPolicy}</p>
                 </div>
             )}
 

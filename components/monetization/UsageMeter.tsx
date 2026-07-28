@@ -65,7 +65,7 @@ export function UsageMeter({ label, used, limit, hint, className = "" }: UsageMe
                 policies") — functional, so text-caption, the design system's
                 smallest FUNCTIONAL size. The label above stays text-micro: a short
                 uppercase eyebrow is exactly what micro is documented for. */}
-            {hint && <p className="mt-1.5 text-caption text-black/55 dark:text-white/50">{hint}</p>}
+            {hint && <p className="mt-1.5 text-caption text-muted-foreground">{hint}</p>}
         </div>
     )
 }

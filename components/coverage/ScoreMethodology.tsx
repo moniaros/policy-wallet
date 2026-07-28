@@ -41,7 +41,7 @@ export function ScoreMethodology({
             <div className="mt-2 space-y-2 border-l-2 border-black/10 pl-3 text-caption leading-relaxed text-black/70 dark:border-white/15 dark:text-white/70">
                 <p>{copy.body}</p>
                 <p>{copy.limits}</p>
-                <p className="text-black/55 dark:text-white/55">{copy.notAdvice}</p>
+                <p className="text-muted-foreground">{copy.notAdvice}</p>
             </div>
         </details>
     )

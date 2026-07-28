@@ -101,7 +101,7 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                             already loads uploadedAt and orders newest first, but
                                             the card showed only the filename and format, so the
                                             reader could not tell which one is current. */}
-                                        <p className="text-xs text-black/55 dark:text-white/60">
+                                        <p className="text-xs text-muted-foreground">
                                             {isPdf ? copy.documentFormatPdf : isImage ? copy.documentFormatImage : copy.documentFormatOther}
                                             {doc.uploadedAt && (
                                                 <>
@@ -116,7 +116,7 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                             )}
                                         </p>
                                     </div>
-                                    <Download className="h-4 w-4 shrink-0 text-black/55 dark:text-white/55" />
+                                    <Download className="h-4 w-4 shrink-0 text-muted-foreground" />
                                 </a>
                                 {/* The preview control is a real <button>, so it must be a SIBLING
                                     of the download <a> — never a child. A <button> nested inside an

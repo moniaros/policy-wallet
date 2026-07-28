@@ -114,7 +114,7 @@ export function StatTiles({
                                 </>
                             )}
                             {subLine && (
-                                <p className="mt-0.5 text-xs text-black/55 dark:text-white/60">{subLine}</p>
+                                <p className="mt-0.5 text-xs text-muted-foreground">{subLine}</p>
                             )}
                         </div>
                     </div>

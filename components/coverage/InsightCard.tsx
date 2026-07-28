@@ -142,7 +142,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                         </div>
 
                         <div>
-                            <span className="text-kicker font-semibold text-black/55 dark:text-white/55 uppercase tracking-widest block mb-2">
+                            <span className="text-kicker font-semibold text-muted-foreground uppercase tracking-widest block mb-2">
                                 {COPY.whatWeChecked[language]}
                             </span>
                             <div className="space-y-2">
@@ -184,7 +184,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
 
                         {insight.microcopy && (
                             <div className="flex justify-center">
-                                <span className="text-kicker font-medium text-black/55 dark:text-white/55 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
+                                <span className="text-kicker font-medium text-muted-foreground bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
                                     <Shield className="w-3 h-3" />
                                     {insight.microcopy}
                                 </span>
@@ -196,7 +196,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
 
             {insight.isPlusFeature && (
                 <div className="bg-black/5 dark:bg-white/10 px-5 py-2 border-t border-black/10 dark:border-white/15 flex justify-center">
-                    <span className="text-kicker font-semibold text-black/55 dark:text-white/55">
+                    <span className="text-kicker font-semibold text-muted-foreground">
                         {COPY.plusFeature[language]}
                     </span>
                 </div>

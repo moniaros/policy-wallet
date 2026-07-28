@@ -234,7 +234,7 @@ export function RecommendationCards({
                     <h2 className="text-lg font-semibold text-black dark:text-white">
                         {t("Προτάσεις κάλυψης", "Coverage Recommendations")}
                     </h2>
-                    <p className="text-xs text-black/55 dark:text-white/60">
+                    <p className="text-xs text-muted-foreground">
                         {t(
                             `${visible.length} προτάσεις βασισμένες στο προφίλ σας`,
                             `${visible.length} recommendation${visible.length !== 1 ? "s" : ""} based on your profile`
@@ -248,7 +248,7 @@ export function RecommendationCards({
                 one, where the user comes to act — showed the same badges bare, so
                 "Κρίσιμη προτεραιότητα" read as a verdict on their risk. Same
                 sentence, same meaning, on both surfaces. */}
-            <p className="mb-3 text-caption leading-snug text-black/55 dark:text-white/60">
+            <p className="mb-3 text-caption leading-snug text-muted-foreground">
                 {home.recPriorityNote}
             </p>
 
@@ -316,7 +316,7 @@ export function RecommendationCards({
                                             className="mt-2.5"
                                         >
                                             <div className="rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/50">
+                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-muted-foreground">
                                                     <FileSearch className="h-3 w-3" />
                                                     {t("Από τα στοιχεία σας", "From your policy data")}
                                                 </p>
@@ -335,7 +335,7 @@ export function RecommendationCards({
                                     ) : smart ? (
                                         <>
                                             <div className="mt-2.5 rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/50">
+                                                <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-muted-foreground">
                                                     <FileSearch className="h-3 w-3" />
                                                     {t("Από τα στοιχεία σας", "From your policy data")}
                                                 </p>
@@ -361,7 +361,7 @@ export function RecommendationCards({
                                             </p>
                                             {rec.matchedProduct && (
                                                 <div className="rounded-lg bg-black/[0.03] dark:bg-white/[0.04] p-2.5 space-y-1.5">
-                                                    <p className="text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/60">
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
                                                         {t("Ενδεικτική επιλογή στην αγορά", "One option on the market")}
                                                     </p>
                                                     <p className="text-xs font-semibold text-black/80 dark:text-white/80">
@@ -376,7 +376,7 @@ export function RecommendationCards({
                                                         </p>
                                                     )}
                                                     {rec.matchedProduct.keyBenefits && rec.matchedProduct.keyBenefits.length > 0 && (
-                                                        <ul className="text-micro text-black/55 dark:text-white/55 space-y-0.5">
+                                                        <ul className="text-micro text-muted-foreground space-y-0.5">
                                                             {rec.matchedProduct.keyBenefits.slice(0, 3).map((b, i) => (
                                                                 <li key={i} className="flex items-center gap-1.5">
                                                                     <span className="h-1 w-1 rounded-full bg-primary dark:bg-mint flex-shrink-0" />
@@ -399,7 +399,7 @@ export function RecommendationCards({
                                                         ~{formatCurrency(rec.estimatedCostEur, lang, { decimals: 0 })}
                                                         {t("/έτος", "/year")}
                                                     </span>
-                                                    <span className="block text-black/55 dark:text-white/55">
+                                                    <span className="block text-muted-foreground">
                                                         {t(
                                                             "Το πραγματικό ασφάλιστρο εξαρτάται από τα δικά σας στοιχεία (ηλικία, ασφαλιζόμενο κεφάλαιο, ιστορικό).",
                                                             "Your actual premium depends on your own details (age, sum insured, history)."

@@ -86,7 +86,7 @@ export function ClaimsGuidanceCard({
                 <LifeBuoy className="h-4 w-4 text-primary dark:text-mint" />
                 <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">{copy.claimsTitle}</h2>
             </div>
-            <p className="mb-5 text-xs text-black/55 dark:text-white/60">{copy.claimsSubtitle}</p>
+            <p className="mb-5 text-xs text-muted-foreground">{copy.claimsSubtitle}</p>
 
             <ol className="space-y-4">
                 {steps.map((step, i) => (
@@ -185,7 +185,7 @@ export function ClaimsGuidanceCard({
                         {hasAgent ? copy.claimAskAgentCta : copy.claimFindAgentCta}
                     </Link>
                 </div>
-                <p className="mt-3 text-micro text-black/55 dark:text-white/50">{copy.claimsDisclaimer}</p>
+                <p className="mt-3 text-micro text-muted-foreground">{copy.claimsDisclaimer}</p>
             </div>
         </div>
     )

@@ -72,7 +72,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
             </div>
             <span className="text-xl font-black text-primary dark:text-mint">{fmt0(life.deathBenefit)}</span>
           </div>
-          <p className="mt-1.5 ml-12.5 text-xs leading-relaxed text-black/55 dark:text-white/60">{lifeCopy.deathBenefitHint}</p>
+          <p className="mt-1.5 ml-12.5 text-xs leading-relaxed text-muted-foreground">{lifeCopy.deathBenefitHint}</p>
         </div>
       )}
 
@@ -121,13 +121,13 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
               <span className={`text-sm font-bold ${life.ytdGrowth >= 0 ? "text-[#166534] dark:text-mint" : "text-red-500 dark:text-red-400"}`}>
                 {life.ytdGrowth > 0 ? "+" : ""}{life.ytdGrowth.toFixed(2)}%
               </span>
-              <span className="text-xs text-black/55 dark:text-white/60">{lifeCopy.ytdGrowth}</span>
+              <span className="text-xs text-muted-foreground">{lifeCopy.ytdGrowth}</span>
             </div>
           )}
           {/* A retail investment return shown to a policyholder without this is
               a disclosure gap, not a styling choice. */}
           {life.ytdGrowth !== undefined && (
-            <p className="mt-1.5 ml-12.5 text-xs leading-relaxed text-black/55 dark:text-white/60">
+            <p className="mt-1.5 ml-12.5 text-xs leading-relaxed text-muted-foreground">
               {lifeCopy.pastPerformanceNote}
             </p>
           )}
@@ -156,7 +156,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
           {/* Greek life-policy taxation at maturity turns on the contract type,
               the holding period and the law in force years from now. Stating it
               as a settled product benefit is tax advice this product cannot give. */}
-          <p className="mt-2 text-xs leading-relaxed text-black/55 dark:text-white/60">{lifeCopy.taxNote}</p>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{lifeCopy.taxNote}</p>
         </div>
       )}
 
@@ -187,7 +187,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
               <span className="text-primary dark:text-mint">
                 {lifeCopy.guaranteed}: {life.guaranteedPercentage ?? 0}%
               </span>
-              <span className="text-black/55 dark:text-white/60">
+              <span className="text-muted-foreground">
                 {lifeCopy.unitLinked}: {life.unitLinkedPercentage ?? 0}%
               </span>
             </div>
@@ -195,7 +195,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
                 the unit-linked share in neutral grey, which reads as "mostly
                 fine" — the inverse of where the risk actually sits. */}
             {life.unitLinkedPercentage !== undefined && life.unitLinkedPercentage > 0 && (
-              <p className="mt-1.5 text-xs leading-relaxed text-black/55 dark:text-white/60">
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
                 {lifeCopy.unitLinkedRiskNote}
               </p>
             )}
@@ -217,7 +217,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
                 <span className="text-black dark:text-white font-medium">{ben.name || "-"}</span>
                 <div className="flex items-center gap-2">
                   {ben.relationship && (
-                    <span className="text-xs text-black/55 dark:text-white/60">{ben.relationship}</span>
+                    <span className="text-xs text-muted-foreground">{ben.relationship}</span>
                   )}
                   {ben.percentage !== undefined && (
                     <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#EFF6FF] dark:bg-blue-900/30 text-[#1E40AF] dark:text-blue-300 border border-blue-200 dark:border-blue-800">
@@ -231,7 +231,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
           {/* Servicing nudge (guidance, not extracted data): beneficiary
               designations go stale after life events and are among the most
               costly things a policyholder forgets to update. */}
-          <p className="ml-10.5 mt-2.5 flex items-start gap-1.5 text-xs leading-relaxed text-black/55 dark:text-white/60">
+          <p className="ml-10.5 mt-2.5 flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
             <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-mint" />
             {lifeCopy.beneficiaryReviewNote}
           </p>
@@ -283,7 +283,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
             </div>
             <div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.lastPremiumDate}</span>
-              <p className="text-xs text-black/55 dark:text-white/60">
+              <p className="text-xs text-muted-foreground">
                 {lifeCopy.paidOn} {formatPolicyDate(life.lastPremiumDate, language === "el" ? "el-GR" : "en-GB")}
               </p>
             </div>

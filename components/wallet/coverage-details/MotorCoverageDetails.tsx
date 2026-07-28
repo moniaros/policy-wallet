@@ -120,7 +120,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             </div>
             <span className="text-sm font-bold text-black dark:text-white">{fmtMoney(motor.deductible)}</span>
           </div>
-          <p className="mt-1.5 ml-10.5 text-xs leading-relaxed text-black/55 dark:text-white/60">{motorCopy.deductibleHint}</p>
+          <p className="mt-1.5 ml-10.5 text-xs leading-relaxed text-muted-foreground">{motorCopy.deductibleHint}</p>
         </div>
       )}
 
@@ -191,7 +191,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
               <div key={i} className="flex items-center justify-between text-sm">
                 <span className="text-black dark:text-white font-medium">{driver.name || "-"}</span>
                 {driver.licenseNumber && (
-                  <span className="text-xs text-black/55 dark:text-white/60 font-mono">
+                  <span className="text-xs text-muted-foreground font-mono">
                     {motorCopy.license}: {driver.licenseNumber}
                   </span>
                 )}
@@ -209,7 +209,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             </div>
             <div>
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{hints?.greenCard ? <GlossaryHint hint={hints.greenCard} /> : motorCopy.greenCard}</span>
-              <p className="text-xs text-black/55 dark:text-white/60">
+              <p className="text-xs text-muted-foreground">
                 {copy.expires}: {formatPolicyDate(motor.greenCardExpiry, language === "el" ? "el-GR" : "en-GB")}
               </p>
             </div>
@@ -239,7 +239,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-black/55 dark:text-white/50">
+            <span className="flex items-center gap-1 text-xs font-bold text-muted-foreground">
               <XCircle className="w-4 h-4" /> {copy.notCovered}
             </span>
           )}
@@ -259,7 +259,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-black/55 dark:text-white/50">
+            <span className="flex items-center gap-1 text-xs font-bold text-muted-foreground">
               <XCircle className="w-4 h-4" /> {copy.notCovered}
             </span>
           )}

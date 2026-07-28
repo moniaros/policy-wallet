@@ -180,7 +180,7 @@ export function PolicyWallet({
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pw-input pw-input-sm pl-10 pr-4 border-black/10"
                         />
-                        <svg className="w-4 h-4 text-black/55 dark:text-white/55 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
@@ -283,7 +283,7 @@ export function PolicyWallet({
             {filteredPolicies.length === 0 && policies.length > 0 && (
                 <div className="py-20 text-center">
                     <div className="w-20 h-20 bg-black/5 dark:bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Search className="w-10 h-10 text-black/55 dark:text-white/55" />
+                        <Search className="w-10 h-10 text-muted-foreground" />
                     </div>
                     <h3 className="text-xl font-black text-black dark:text-white">{t.wallet.noPoliciesFound}</h3>
                     <p className="text-black/60 dark:text-white/60 mt-2 font-medium">{t.wallet.noPoliciesFoundDesc}</p>

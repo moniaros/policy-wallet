@@ -197,10 +197,10 @@ export function Settings({
         switch (eventType) {
             case 'login': return { Icon: LogIn, color: 'text-primary dark:text-mint bg-primary-soft dark:bg-primary/15' }
             case 'login_failed': return { Icon: AlertTriangle, color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20' }
-            case 'logout': return { Icon: LogOut, color: 'text-black/55 dark:text-white/60 bg-black/5 dark:bg-black' }
+            case 'logout': return { Icon: LogOut, color: 'text-muted-foreground bg-black/5 dark:bg-black' }
             case 'password_change': return { Icon: KeyRound, color: 'text-black/70 dark:text-white/70 bg-black/5 dark:bg-white/10' }
             case 'email_change': return { Icon: Mail, color: 'text-black/70 dark:text-white/70 bg-black/5 dark:bg-white/10' }
-            default: return { Icon: Bell, color: 'text-black/55 dark:text-white/60 bg-black/5 dark:bg-black' }
+            default: return { Icon: Bell, color: 'text-muted-foreground bg-black/5 dark:bg-black' }
         }
     }
 
@@ -234,7 +234,7 @@ export function Settings({
                         <div className="space-y-6">
                             {/* Name Edit */}
                             <div className="group">
-                                <label htmlFor="settings-name" className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
+                                <label htmlFor="settings-name" className="text-kicker font-black text-muted-foreground uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
                                 {isEditingName ? (
                                     <div className="flex items-center gap-2">
                                         <input
@@ -262,7 +262,7 @@ export function Settings({
 
                             {/* Email Edit */}
                             <div className="group">
-                                <label htmlFor="settings-email" className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
+                                <label htmlFor="settings-email" className="text-kicker font-black text-muted-foreground uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
                                 {isEditingEmail ? (
                                     <>
                                     <div className="flex items-center gap-2">
@@ -298,19 +298,19 @@ export function Settings({
 
                             {/* Language Matrix */}
                             <div className="group pt-6 border-t border-black/10 dark:border-white/15">
-                                <label className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-[0.2em] block mb-4">{t.settings.preferredLanguage}</label>
+                                <label className="text-kicker font-black text-muted-foreground uppercase tracking-[0.2em] block mb-4">{t.settings.preferredLanguage}</label>
                                 <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl">
                                     <button
                                         onClick={() => handleLanguageUpdate('el')}
                                         aria-pressed={currentUser.preferred_language === 'el'}
-                                        className={`py-3 rounded-xl text-kicker font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/55 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
+                                        className={`py-3 rounded-xl text-kicker font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-muted-foreground hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.greek}
                                     </button>
                                     <button
                                         onClick={() => handleLanguageUpdate('en')}
                                         aria-pressed={currentUser.preferred_language === 'en'}
-                                        className={`py-3 rounded-xl text-kicker font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/55 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
+                                        className={`py-3 rounded-xl text-kicker font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-muted-foreground hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.english}
                                     </button>
@@ -346,7 +346,7 @@ export function Settings({
                             })).map(pref => (
                                 <div key={pref.id} className="flex items-center justify-between group p-3 hover:bg-black/5 dark:hover:bg-black/80 rounded-2xl transition-all">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 flex items-center justify-center text-black/55 dark:text-white/60 group-hover:text-primary dark:group-hover:text-mint transition-all">
+                                        <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 flex items-center justify-center text-muted-foreground group-hover:text-primary dark:group-hover:text-mint transition-all">
                                             <pref.icon className="w-4 h-4" />
                                         </div>
                                         <span className="text-micro font-bold text-black/80 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors">{pref.label}</span>
@@ -401,7 +401,7 @@ export function Settings({
                     >
                         <div className="px-6 py-5 border-b border-black/10 dark:border-white/15 flex items-center justify-between bg-black/5 dark:bg-black/50">
                             <div className="flex items-center gap-3">
-                                <Smartphone className="w-4 h-4 text-black/55 dark:text-white/60" />
+                                <Smartphone className="w-4 h-4 text-muted-foreground" />
                                 <h3 className="text-kicker font-black uppercase tracking-widest text-black dark:text-white">{t.settings.activeSessions}</h3>
                             </div>
                             <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-kicker font-black uppercase tracking-widest rounded-full">{activeSessions.length} {t.settings.total}</span>
@@ -411,7 +411,7 @@ export function Settings({
                             {activeSessions.map((session) => (
                                 <div key={session.session_id} className="px-6 py-5 group hover:bg-black/5 dark:hover:bg-black/80 transition-all">
                                     <div className="flex items-start gap-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/55 dark:text-white/60 group-hover:text-primary dark:group-hover:text-mint transition-all border border-transparent group-hover:border-primary/20">
+                                        <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-muted-foreground group-hover:text-primary dark:group-hover:text-mint transition-all border border-transparent group-hover:border-primary/20">
                                             {getDeviceIcon(session.device_type)}
                                         </div>
                                         <div className="flex-1">
@@ -425,12 +425,12 @@ export function Settings({
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="text-kicker font-bold text-black/55 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
+                                            <div className="text-kicker font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                                 <span>{session.location}</span>
                                                 <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/10" />
                                                 <span className="font-mono">{session.ip_address}</span>
                                             </div>
-                                            <div className="text-kicker font-medium text-black/55 dark:text-white/60 mt-2 italic flex items-center gap-1.5">
+                                            <div className="text-kicker font-medium text-muted-foreground mt-2 italic flex items-center gap-1.5">
                                                 <Globe className="w-3 h-3" />
                                                 {t.settings.since} {formatDateTime(session.last_active_at)}
                                             </div>
@@ -438,7 +438,7 @@ export function Settings({
                                         {!session.is_current && (
                                             <button
                                                 onClick={() => withProcessing(t.settings.revokeAccess + "...", async () => { await onLogoutSession?.(session.session_id) })}
-                                                className="text-kicker font-black uppercase tracking-widest text-black/55 dark:text-white/60 hover:text-red-500 hover:scale-105 transition-all pt-2"
+                                                className="text-kicker font-black uppercase tracking-widest text-muted-foreground hover:text-red-500 hover:scale-105 transition-all pt-2"
                                             >
                                                 {t.settings.revokeAccess}
                                             </button>
@@ -458,7 +458,7 @@ export function Settings({
                     >
                         <div className="px-6 py-5 border-b border-black/10 dark:border-white/15 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <Lock className="w-4 h-4 text-black/55 dark:text-white/60" />
+                                <Lock className="w-4 h-4 text-muted-foreground" />
                                 <h3 className="text-kicker font-black uppercase tracking-widest text-black dark:text-white">{t.settings.auditTrail}</h3>
                             </div>
                             <button className="text-kicker font-black text-primary dark:text-mint uppercase tracking-widest hover:underline">{t.settings.downloadReport}</button>
@@ -484,7 +484,7 @@ export function Settings({
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="text-kicker font-bold text-black/55 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
+                                                <div className="text-kicker font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                                     <span>{event.device_name}</span>
                                                     <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/10" />
                                                     <span>{formatDateTime(event.created_at)}</span>
@@ -492,7 +492,7 @@ export function Settings({
                                             </div>
                                             <div className="text-right flex flex-col items-end">
                                                 <div className="text-kicker font-black text-black dark:text-white tracking-widest font-mono">{event.ip_address}</div>
-                                                <div className="text-kicker text-black/55 dark:text-white/60 font-bold uppercase tracking-widest">{event.location}</div>
+                                                <div className="text-kicker text-muted-foreground font-bold uppercase tracking-widest">{event.location}</div>
                                             </div>
                                         </div>
                                     </div>

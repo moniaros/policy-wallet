@@ -57,7 +57,7 @@ export function EmptyState({ onAddManually, onUploadDocument }: EmptyStateProps)
                     trust={copy.trust}
                     secondary={
                         <div className="pt-2">
-                            <p className="mb-4 text-kicker font-black uppercase tracking-widest text-black/55 dark:text-white/55">
+                            <p className="mb-4 text-kicker font-black uppercase tracking-widest text-muted-foreground">
                                 {copy.supportedCategories}
                             </p>
                             <div className="flex flex-wrap justify-center gap-5 opacity-60 grayscale transition-all duration-700 hover:grayscale-0">

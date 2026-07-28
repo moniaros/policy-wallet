@@ -183,7 +183,7 @@ export function KeyDatesCard({
                             style={{ width: `${elapsedPct}%` }}
                         />
                     </div>
-                    <p className="mt-2 text-xs text-black/55 dark:text-white/60">
+                    <p className="mt-2 text-xs text-muted-foreground">
                         {elapsedPct}% {copy.periodProgress}
                     </p>
                 </div>
@@ -199,13 +199,13 @@ export function KeyDatesCard({
             {/* Branch-specific renewal context — editorial, hedged, and kept
                 plain so it never reads as an extracted date. */}
             {renewalNote && (
-                <p className="mt-4 text-xs leading-relaxed text-black/55 dark:text-white/60">{renewalNote}</p>
+                <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{renewalNote}</p>
             )}
 
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
                 <h3 className="mb-3 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">{copy.renewalHistory}</h3>
                 {renewalHistory.length === 0 ? (
-                    <p className="text-xs text-black/55 dark:text-white/60">{copy.noRenewalHistory}</p>
+                    <p className="text-xs text-muted-foreground">{copy.noRenewalHistory}</p>
                 ) : (
                     <ul className="space-y-2">
                         {renewalHistory.map((entry) => (
@@ -217,7 +217,7 @@ export function KeyDatesCard({
                                     {formatPolicyDate(entry.startDate, locale)} - {formatPolicyDate(entry.endDate, locale)}
                                 </p>
                                 {entry.sourceDocumentName ? (
-                                    <p className="mt-0.5 text-xs text-black/55 dark:text-white/60">{entry.sourceDocumentName}</p>
+                                    <p className="mt-0.5 text-xs text-muted-foreground">{entry.sourceDocumentName}</p>
                                 ) : null}
                             </li>
                         ))}

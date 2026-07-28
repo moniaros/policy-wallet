@@ -140,7 +140,7 @@ export function MedicScorecard({
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <span className="font-mono text-lg font-black text-black dark:text-white">{result.score}</span>
-                    <span className="text-kicker text-black/55 dark:text-white/55">/100</span>
+                    <span className="text-kicker text-muted-foreground">/100</span>
                     <span className={`rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-wider ${result.qualified ? RATING_STYLE[2] : RATING_STYLE[0]}`}>
                         {result.qualified ? copy.qualifiedYes : copy.qualifiedNo}
                     </span>
@@ -155,7 +155,7 @@ export function MedicScorecard({
                         <span className="text-black/70 dark:text-white/70">{row.label}</span>
                         <span className="flex min-w-0 items-center gap-1.5">
                             {row.detail && (
-                                <span className="max-w-[160px] truncate text-black/55 dark:text-white/55">{row.detail}</span>
+                                <span className="max-w-[160px] truncate text-muted-foreground">{row.detail}</span>
                             )}
                             <span className={`rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-wider ${RATING_STYLE[row.rating]}`}>
                                 {ratingLabel(row.rating)}
@@ -229,7 +229,7 @@ export function MedicScorecard({
                     )}
                 </div>
             )}
-            <p className="mt-2 text-micro leading-snug text-black/55 dark:text-white/55">{copy.scorecardHint}</p>
+            <p className="mt-2 text-micro leading-snug text-muted-foreground">{copy.scorecardHint}</p>
         </div>
     )
 }

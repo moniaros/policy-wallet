@@ -146,7 +146,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
               <CheckCircle2 className="w-4 h-4" /> {copy.included}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-black/55 dark:text-white/50">
+            <span className="flex items-center gap-1 text-xs font-bold text-muted-foreground">
               <XCircle className="w-4 h-4" /> {copy.notIncluded}
             </span>
           )}
@@ -166,7 +166,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
               <CheckCircle2 className="w-4 h-4" /> {copy.available}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-black/55 dark:text-white/50">
+            <span className="flex items-center gap-1 text-xs font-bold text-muted-foreground">
               <XCircle className="w-4 h-4" /> {copy.notAvailable}
             </span>
           )}

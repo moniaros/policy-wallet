@@ -183,7 +183,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                             <p className="truncate text-sm font-bold text-black dark:text-white">
                                                 {policy.insurerName || "—"}
                                             </p>
-                                            <p className="truncate text-xs text-black/55 dark:text-white/60">
+                                            <p className="truncate text-xs text-muted-foreground">
                                                 {policy.policyNumber || "—"}
                                             </p>
                                         </div>
@@ -191,7 +191,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                             <span className="rounded-full bg-black/5 px-2.5 py-1 text-kicker font-bold text-black/60 dark:bg-white/10 dark:text-white/65">
                                                 {statusLabel}
                                             </span>
-                                            <ArrowRight className="h-4 w-4 text-black/55 dark:text-white/60" aria-hidden />
+                                            <ArrowRight className="h-4 w-4 text-muted-foreground" aria-hidden />
                                         </div>
                                     </Link>
                                 )
@@ -277,7 +277,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                 {/* Upcoming renewals */}
                 <SectionCard icon={CalendarClock} title={t.branches.upcomingRenewals}>
                     {renewals.length === 0 ? (
-                        <p className="text-sm text-black/55 dark:text-white/60">{t.branches.noRenewalsSoon}</p>
+                        <p className="text-sm text-muted-foreground">{t.branches.noRenewalsSoon}</p>
                     ) : (
                         <div className="space-y-2">
                             {renewals.map((policy) => {

@@ -77,12 +77,12 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
             </div>
             <div className="text-left">
               <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.microchipNumber}</span>
-              <p className="text-xs text-black/55 dark:text-white/60">{copy.tapToCopy}</p>
+              <p className="text-xs text-muted-foreground">{copy.tapToCopy}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-mono font-bold text-black dark:text-white">{pet.microchipNumber}</span>
-            <Copy className="w-3.5 h-3.5 text-black/55 dark:text-white/50" />
+            <Copy className="w-3.5 h-3.5 text-muted-foreground" />
           </div>
         </button>
       )}
@@ -106,7 +106,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               />
             </div>
             <div className="flex justify-between mt-1 text-xs">
-              <span className="text-black/55 dark:text-white/60">
+              <span className="text-muted-foreground">
                 {copy.used}: {fmt(pet.annualLimitUsed ?? 0)}
               </span>
               <span className="font-semibold text-[#166534] dark:text-mint">
@@ -180,7 +180,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               <CheckCircle2 className="w-4 h-4" /> {copy.available}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-black/55 dark:text-white/50">
+            <span className="flex items-center gap-1 text-xs font-bold text-muted-foreground">
               <XCircle className="w-4 h-4" /> {copy.notAvailable}
             </span>
           )}

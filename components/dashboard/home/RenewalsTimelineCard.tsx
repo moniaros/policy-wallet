@@ -43,7 +43,7 @@ export function RenewalsTimelineCard({
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 {items.length > 0 && (
-                    <p className="text-micro font-semibold text-black/55 dark:text-white/55">
+                    <p className="text-micro font-semibold text-muted-foreground">
                         {items.length} {labels.policiesSuffix}
                     </p>
                 )}
@@ -58,7 +58,7 @@ export function RenewalsTimelineCard({
                             {!hasPolicies ? (
                                 <>
                                     <p className="text-sm font-semibold text-black/75 dark:text-white/85">{labels.trackExpirationsTitle}</p>
-                                    <p className="mt-0.5 text-xs text-black/55 dark:text-white/65">{labels.trackExpirationsBody}</p>
+                                    <p className="mt-0.5 text-xs text-muted-foreground">{labels.trackExpirationsBody}</p>
                                     <Link
                                         href="/wallet/add"
                                         className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
@@ -70,7 +70,7 @@ export function RenewalsTimelineCard({
                             ) : (
                                 <>
                                     <p className="text-sm font-semibold text-black/75 dark:text-white/85">{labels.noExpirationsTitle}</p>
-                                    <p className="mt-0.5 text-xs text-black/55 dark:text-white/65">{labels.noExpirationsBody}</p>
+                                    <p className="mt-0.5 text-xs text-muted-foreground">{labels.noExpirationsBody}</p>
                                 </>
                             )}
                         </div>

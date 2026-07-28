@@ -163,14 +163,14 @@ export function ProtectionScoreCard({
                     <p className={`text-sm font-medium ${scoreColor} mb-1`}>
                         {tier.label[lang]}
                         {profileCompleteness < 80 && (
-                            <span className="ml-1.5 text-xs font-normal text-black/55 dark:text-white/50">· {copy.provisional}</span>
+                            <span className="ml-1.5 text-xs font-normal text-muted-foreground">· {copy.provisional}</span>
                         )}
                     </p>
                     <p className="text-sm text-black/60 dark:text-white/60 mb-2">
                         {copy.subtitle}
                     </p>
                     {analyzedAt && (
-                        <p className="text-xs text-black/55 dark:text-white/55 mb-2">
+                        <p className="text-xs text-muted-foreground mb-2">
                             {copy.analyzedOn} {formatDate(analyzedAt, lang)}
                         </p>
                     )}

@@ -63,7 +63,7 @@ export function AccountOverview({
 
         return (
             <div key={key} className="flex items-center justify-between py-3 border-b border-black/10 dark:border-white/15 last:border-0">
-                <span className="text-xs font-black uppercase tracking-widest text-black/55 dark:text-white/60">{t.account.entitlements[key as keyof typeof t.account.entitlements] || label}</span>
+                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.account.entitlements[key as keyof typeof t.account.entitlements] || label}</span>
                 <span className="text-sm font-black text-black dark:text-white">{displayValue}</span>
             </div>
         )
@@ -183,7 +183,7 @@ export function AccountOverview({
                                     <div className="text-3xl font-black text-black dark:text-white tracking-tight">
                                         {formatPrice(currentPlan.price)}
                                     </div>
-                                    <div className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-widest mt-1">
+                                    <div className="text-kicker font-black text-muted-foreground uppercase tracking-widest mt-1">
                                         {currentPlan.billing_interval === 'month' ? t.account.perMonth : t.account.perYear}
                                     </div>
                                 </div>
@@ -191,7 +191,7 @@ export function AccountOverview({
                         </div>
 
                         <div className="p-8">
-                            <h3 className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-[0.2em] mb-6">
+                            <h3 className="text-kicker font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">
                                 {t.account.includedPrivileges}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
@@ -226,7 +226,7 @@ export function AccountOverview({
 
                     {/* Metrics Card */}
                     <div className="pw-card pw-pad-roomy">
-                        <h3 className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-[0.2em] mb-8">
+                        <h3 className="text-kicker font-black text-muted-foreground uppercase tracking-[0.2em] mb-8">
                             {t.account.cycleMetrics}
                         </h3>
                         <div className="space-y-8">
@@ -242,7 +242,7 @@ export function AccountOverview({
                                                 {metric.usage_type === 'customer_count' && t.account.activeRelationships}
                                                 {metric.usage_type === 'customer_invite' && t.account.networkGrowth}
                                             </span>
-                                            <span className="text-kicker font-bold text-black/55 dark:text-white/60">
+                                            <span className="text-kicker font-bold text-muted-foreground">
                                                 {metric.amount_used} / {isUnlimited ? "∞" : metric.amount_limit}
                                             </span>
                                         </div>
@@ -306,7 +306,7 @@ export function AccountOverview({
                                 <span className="text-kicker font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{t.account.expandCapabilities}</span>
                             </div>
                             <h2 className="text-4xl font-black text-black dark:text-white tracking-tighter">
-                                {t.account.scalingTitle} <span className="text-black/55 dark:text-white/60 italic">{t.account.scalingSubtitle}</span>
+                                {t.account.scalingTitle} <span className="text-muted-foreground italic">{t.account.scalingSubtitle}</span>
                             </h2>
                         </div>
                     </div>
@@ -337,7 +337,7 @@ export function AccountOverview({
                                             </h4>
                                             <div className="flex items-end gap-1">
                                                 <span className="text-3xl font-black text-black dark:text-white">{formatPrice(plan.price)}</span>
-                                                <span className="text-kicker font-black text-black/55 dark:text-white/60 uppercase tracking-widest pb-1">{t.account.perMonth} · {t.account.inclVat}</span>
+                                                <span className="text-kicker font-black text-muted-foreground uppercase tracking-widest pb-1">{t.account.perMonth} · {t.account.inclVat}</span>
                                             </div>
                                         </div>
 

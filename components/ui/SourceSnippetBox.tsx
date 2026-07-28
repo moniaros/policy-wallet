@@ -27,7 +27,7 @@ export function SourceSnippetBox({
                 className
             )}
         >
-            <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-black/55 dark:text-white/50">
+            <p className="flex items-center gap-1.5 text-kicker font-bold uppercase tracking-wider text-muted-foreground">
                 <Quote className="h-3 w-3 text-primary dark:text-mint" aria-hidden />
                 {labels.fromDocument}
                 {page !== undefined && <span>· {labels.pageAbbrev} {page}</span>}

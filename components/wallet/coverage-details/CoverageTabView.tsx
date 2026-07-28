@@ -65,7 +65,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             activeTab === "covered"
               ? "bg-white dark:bg-white/10 text-primary dark:text-mint shadow-sm"
-              : "text-black/55 dark:text-white/60 hover:text-black/75 dark:hover:text-white/80"
+              : "text-muted-foreground hover:text-black/75 dark:hover:text-white/80"
           }`}
         >
           <ShieldCheck className="w-4 h-4" aria-hidden="true" />
@@ -76,7 +76,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             activeTab === "not_covered"
               ? "bg-white dark:bg-white/10 text-red-700 dark:text-red-400 shadow-sm"
-              : "text-black/55 dark:text-white/60 hover:text-black/75 dark:hover:text-white/80"
+              : "text-muted-foreground hover:text-black/75 dark:hover:text-white/80"
           }`}
         >
           <ShieldOff className="w-4 h-4" aria-hidden="true" />
@@ -113,10 +113,10 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-black dark:text-white">{coverage.name}</p>
                       {coverage.description && (
-                        <p className="text-xs text-black/55 dark:text-white/60 mt-0.5">{coverage.description}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{coverage.description}</p>
                       )}
                       {coverage.explanation && (
-                        <p className="text-xs text-black/55 dark:text-white/60 mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           {language === "el" ? coverage.explanation.el : coverage.explanation.en}
                         </p>
                       )}
@@ -144,10 +144,10 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
           {!hasCoveredContent && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center mb-3">
-                <ShieldCheck className="w-6 h-6 text-black/55 dark:text-white/50" />
+                <ShieldCheck className="w-6 h-6 text-muted-foreground" />
               </div>
               <p className="text-sm font-semibold text-black/60 dark:text-white/65">{copy.noCoverageData}</p>
-              <p className="text-xs text-black/55 dark:text-white/50 mt-1">{copy.noCoverageDataDesc}</p>
+              <p className="text-xs text-muted-foreground mt-1">{copy.noCoverageDataDesc}</p>
             </div>
           )}
         </div>
@@ -168,7 +168,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
                   className="flex items-start gap-2.5 p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15"
                 >
                   <div className="w-6 h-6 rounded-md bg-black/5 dark:bg-white/10 flex items-center justify-center mt-0.5 flex-shrink-0">
-                    <MinusCircle className="w-3.5 h-3.5 text-black/55 dark:text-white/60" />
+                    <MinusCircle className="w-3.5 h-3.5 text-muted-foreground" />
                   </div>
                   <p className="text-sm text-black/80 dark:text-white/85 font-medium">{exclusion}</p>
                 </div>
@@ -181,10 +181,10 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center mb-3">
-                <ShieldOff className="w-6 h-6 text-black/55 dark:text-white/50" />
+                <ShieldOff className="w-6 h-6 text-muted-foreground" />
               </div>
               <p className="text-sm font-semibold text-black/60 dark:text-white/65">{copy.noExclusions}</p>
-              <p className="text-xs text-black/55 dark:text-white/50 mt-1">{copy.noExclusionsDesc}</p>
+              <p className="text-xs text-muted-foreground mt-1">{copy.noExclusionsDesc}</p>
             </div>
           )}
         </div>

@@ -125,7 +125,7 @@ export function AgentGettingStartedChecklist({
                     <p className="pw-kicker">
                         {t("Ξεκινώντας", "Getting started")}
                     </p>
-                    <p className="mt-1 text-xs text-black/55 dark:text-white/60">
+                    <p className="mt-1 text-xs text-muted-foreground">
                         {completedCount}/{items.length} {t("ολοκληρωμένα", "completed")}
                     </p>
                 </div>

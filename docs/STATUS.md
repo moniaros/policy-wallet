@@ -16,6 +16,11 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 
 ## Done — this branch (newest first, grouped)
 
+- **183 ad-hoc muted-text sites migrated to the `text-muted-foreground` token (2026-07-28).** The systemic finding this program kept circling back to, now resolved. Every `text-black/55 dark:text-white/{50,55,60,65}` pair — **183 occurrences across 58 files** — now uses the semantic token. Contrast goes from ≈4.2:1 on the tinted surfaces these sit on to ≈**5.5:1**, and the colour derives from the active theme instead of an ad-hoc opacity pair. Three separate defects earlier in this program traced to that one value.
+  - **Why this was safe to sweep when the earlier codemod was not:** the scope was verified first — **zero** bare `text-black/55` without a dark partner, so every instance already adapted; only the contrast *level* was wrong. It is a semantically identical substitution to a token that is already contrast-corrected, not a colour redesign. Verified after: 2469 unit tests, build, contrast audit and theme-switch audit all clean.
+  - `tests/unit/typography-scale.test.ts` pinned the old colour inside a rule that guards the **type scale**; made colour-agnostic so it still enforces caption-not-micro while accepting either muted value.
+  - The 18 remaining `text-black/55` occurrences interleave other classes before their dark partner (e.g. `text-black/55 dark:border-white/10 dark:text-white/50`) — they adapt correctly and were left alone rather than risk a looser pattern.
+
 - **BUTTON STATES, CARD SURFACES and TYPOGRAPHY audited — all clean by construction (2026-07-28).** The last three open categories, closed by static analysis (the most reliable signal in this program):
   - **Buttons:** all six `buttonVariants` (default/destructive/outline/secondary/ghost/link) contain **zero hardcoded hex** — every one resolves through semantic tokens, so default/hover/focus/disabled adapt automatically in both themes.
   - **Selected / pressed states:** 15 files drive styling from `aria-pressed` / `aria-selected` / `data-[state=…]`, with **zero hardcoded hex** among them.

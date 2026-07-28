@@ -64,7 +64,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                         <p className="text-sm font-semibold text-black dark:text-white">
                             {t("Ευχαριστούμε πολύ!", "Thank you!")}
                         </p>
-                        <p className="text-xs text-black/55 dark:text-white/60">
+                        <p className="text-xs text-muted-foreground">
                             {t("Η γνώμη σας μας βοηθά να βελτιωνόμαστε.", "Your feedback helps us improve.")}
                         </p>
                     </motion.div>

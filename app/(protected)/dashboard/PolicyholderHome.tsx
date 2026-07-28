@@ -500,7 +500,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             <CircleHelp className="h-5 w-5 text-black/60 dark:text-white/65" />
                             <p className="text-sm font-semibold text-black dark:text-white">{home.helpTitle}</p>
                         </div>
-                        <p className="text-xs text-black/55 dark:text-white/65">{home.helpOpen}</p>
+                        <p className="text-xs text-muted-foreground">{home.helpOpen}</p>
                     </Link>
                 </div>
             </div>

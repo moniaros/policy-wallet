@@ -53,7 +53,7 @@ export function PerksCard({ perks, lang, copy }: PerksCardProps) {
                 <Gift className="h-4 w-4 text-primary dark:text-mint" />
                 <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">{copy.perksTitle}</h2>
             </div>
-            <p className="mb-5 text-xs text-black/55 dark:text-white/60">{copy.perksSubtitle}</p>
+            <p className="mb-5 text-xs text-muted-foreground">{copy.perksSubtitle}</p>
 
             {perks.length === 0 ? (
                 <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-4 dark:border-white/15 dark:bg-white/5">

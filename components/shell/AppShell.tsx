@@ -377,7 +377,7 @@ export function AppShell({
                                         onClick={() => handleNavigate(item.href, 'mobile_nav', item.id)}
                                         className={`min-h-[44px] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
                                             ? 'text-primary dark:text-mint bg-primary/15 dark:bg-primary/15'
-                                            : 'text-black/55 dark:text-white/60 hover:text-black dark:hover:text-white'
+                                            : 'text-muted-foreground hover:text-black dark:hover:text-white'
                                             }`}
                                         /* The badge is purely visual, so fold the count into
                                            the accessible name — otherwise a screen-reader

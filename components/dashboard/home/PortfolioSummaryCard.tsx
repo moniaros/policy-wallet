@@ -25,9 +25,9 @@ export function PortfolioSummaryCard({
             <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <p className="text-3xl font-semibold text-black dark:text-white">{totalLabel}</p>
-                    <p className="mt-1 text-xs text-black/55 dark:text-white/60">{labels.totalAnnualPremium}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{labels.totalAnnualPremium}</p>
                     {excludedNote && (
-                        <p className="mt-1 text-kicker text-black/55 dark:text-white/60">{excludedNote}</p>
+                        <p className="mt-1 text-kicker text-muted-foreground">{excludedNote}</p>
                     )}
                 </div>
                 <div className="flex flex-wrap gap-2">

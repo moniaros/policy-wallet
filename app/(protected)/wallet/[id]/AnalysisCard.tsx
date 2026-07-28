@@ -839,7 +839,7 @@ export function AnalysisCard({
                                     <div className="flex gap-4">
                                         <div className="shrink-0">
                                             <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center">
-                                                <AlertTriangle className="w-5 h-5 text-black/55 dark:text-white/60" />
+                                                <AlertTriangle className="w-5 h-5 text-muted-foreground" />
                                             </div>
                                         </div>
                                         <div className="flex-1">

@@ -187,7 +187,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
                                     ${activeTab === tab.id
                                         ? 'text-black dark:text-mint'
-                                        : 'text-black/55 dark:text-white/60 hover:text-black dark:hover:text-white'
+                                        : 'text-muted-foreground hover:text-black dark:hover:text-white'
                                     }
                                 `}
                             >

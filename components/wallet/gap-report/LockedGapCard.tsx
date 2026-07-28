@@ -42,7 +42,7 @@ export function LockedGapCard({ item, lang, copy }: LockedGapCardProps) {
                         aria-hidden="true"
                         className="pointer-events-none mt-2 select-none blur-[6px]"
                     >
-                        <p className="line-clamp-2 text-xs leading-relaxed text-black/55 dark:text-white/60">
+                        <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
                             {explanation}
                         </p>
                     </div>

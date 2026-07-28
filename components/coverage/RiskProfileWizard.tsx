@@ -228,7 +228,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                     <h2 className="text-lg font-semibold text-black dark:text-white">
                         {t("Προφίλ κινδύνου", "Risk Profile")}
                     </h2>
-                    <p className="text-xs text-black/55 dark:text-white/60">
+                    <p className="text-xs text-muted-foreground">
                         {t(
                             "Βοηθήστε μας να κατανοήσουμε τις ανάγκες σας για καλύτερη ανίχνευση κενών.",
                             "Help us understand your needs for better gap detection."
@@ -371,7 +371,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 placeholder="75"
                             />
                             {heightCm !== "" && weightKg !== "" && (
-                                <p className="text-xs text-black/55 dark:text-white/60 mt-1">
+                                <p className="text-xs text-muted-foreground mt-1">
                                     {t("ΔΜΣ", "BMI")}: {(Number(weightKg) / ((Number(heightCm) / 100) ** 2)).toFixed(1)}
                                 </p>
                             )}
@@ -407,7 +407,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 )
                             })}
                         </div>
-                        <p className="text-xs text-black/55 dark:text-white/60 mt-1.5">
+                        <p className="text-xs text-muted-foreground mt-1.5">
                             {t("Επιλέξτε όλα όσα ισχύουν. Αφήστε κενό εάν δεν υπάρχουν.", "Select all that apply. Leave blank if none.")}
                         </p>
                     </div>
@@ -440,7 +440,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                                 )
                             })}
                         </div>
-                        <p className="text-xs text-black/55 dark:text-white/60 mt-1.5">
+                        <p className="text-xs text-muted-foreground mt-1.5">
                             {t("Κληρονομικές παθήσεις σε γονείς ή αδέλφια.", "Hereditary conditions in parents or siblings.")}
                         </p>
                     </div>
@@ -597,14 +597,14 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                             <button type="button" onClick={addLifeEvent} className="pw-primary-button">
                                 {t("OK", "OK")}
                             </button>
-                            <button type="button" onClick={() => setShowAddEvent(false)} aria-label={t("Ακύρωση", "Cancel")} className="p-2.5 text-black/55 dark:text-white/60 hover:text-black dark:hover:text-white cursor-pointer">
+                            <button type="button" onClick={() => setShowAddEvent(false)} aria-label={t("Ακύρωση", "Cancel")} className="p-2.5 text-muted-foreground hover:text-black dark:hover:text-white cursor-pointer">
                                 <X className="h-4 w-4" />
                             </button>
                         </div>
                     )}
 
                     {lifeEvents.length === 0 && !showAddEvent && (
-                        <p className="text-xs text-black/55 dark:text-white/60">
+                        <p className="text-xs text-muted-foreground">
                             {t(
                                 "Προσθέστε σημαντικά γεγονότα ζωής για ακριβέστερη ανίχνευση κενών.",
                                 "Add major life events for more accurate gap detection."

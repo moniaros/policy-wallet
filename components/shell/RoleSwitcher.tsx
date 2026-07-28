@@ -42,7 +42,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                 className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 hover:bg-black/10 dark:hover:bg-white/10 transition-all group"
             >
                 <div className="flex flex-col items-start min-w-0">
-                    <span className="text-kicker font-bold uppercase tracking-widest text-black/55 dark:text-white/50 group-hover:text-black/65 dark:group-hover:text-white/75 transition-colors">
+                    <span className="text-kicker font-bold uppercase tracking-widest text-muted-foreground group-hover:text-black/65 dark:group-hover:text-white/75 transition-colors">
                         {roleCopy.shell.roleViewingAsLabel}
                     </span>
                     <span className="text-xs font-semibold text-black dark:text-white truncate tracking-tight">

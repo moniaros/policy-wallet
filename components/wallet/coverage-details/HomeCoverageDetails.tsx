@@ -78,7 +78,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
               <CheckCircle2 className="w-3.5 h-3.5" /> {copy.eligible}
             </span>
           ) : (
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-black/5 dark:bg-white/10 text-black/55 dark:text-white/60 border border-black/10 dark:border-white/15">
+            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-black/5 dark:bg-white/10 text-muted-foreground border border-black/10 dark:border-white/15">
               <XCircle className="w-3.5 h-3.5" /> {copy.notEligible}
             </span>
           )}

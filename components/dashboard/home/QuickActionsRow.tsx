@@ -55,7 +55,7 @@ export function QuickActionsRow({
                 <p className="pw-kicker">{labels.recentDocuments}</p>
                 <div className="mt-3">
                     {recentDocuments.length === 0 ? (
-                        <p className="text-sm text-black/55 dark:text-white/65">{labels.noDocuments}</p>
+                        <p className="text-sm text-muted-foreground">{labels.noDocuments}</p>
                     ) : (
                         <div className="-mx-2 flex snap-x gap-2 overflow-x-auto px-2 pb-1">
                             {recentDocuments.map((document) => (
@@ -66,9 +66,9 @@ export function QuickActionsRow({
                                 >
                                     <div className="flex items-center justify-between gap-2">
                                         <span className="truncate text-xs font-semibold text-black dark:text-white">{document.fileName}</span>
-                                        <FileText className="h-4 w-4 flex-shrink-0 text-black/55 dark:text-white/55" />
+                                        <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                                     </div>
-                                    <p className="mt-2 truncate text-micro text-black/55 dark:text-white/60">
+                                    <p className="mt-2 truncate text-micro text-muted-foreground">
                                         {document.insurerName}
                                     </p>
                                 </Link>

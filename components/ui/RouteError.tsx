@@ -67,7 +67,7 @@ export function RouteError({
                     boundary happened to fire decided whether a policyholder ringing
                     their advisor had a reference to quote. */}
                 {error.digest && (
-                    <p className="mt-10 font-mono text-micro text-black/55 dark:text-white/55">
+                    <p className="mt-10 font-mono text-micro text-muted-foreground">
                         {t.errors.incidentId}: {error.digest}
                     </p>
                 )}

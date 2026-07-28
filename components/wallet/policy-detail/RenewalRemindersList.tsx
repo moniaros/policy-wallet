@@ -58,7 +58,7 @@ export function RenewalRemindersList({ renewals, locale, copy }: RenewalReminder
                                     {renewal.remindersSent.map((reminder, i) => (
                                         <li
                                             key={i}
-                                            className="flex items-center gap-1.5 text-xs text-black/55 dark:text-white/60"
+                                            className="flex items-center gap-1.5 text-xs text-muted-foreground"
                                         >
                                             <Bell className="h-3 w-3 flex-shrink-0 text-primary dark:text-mint" />
                                             {reminder.milestone} {copy.daysBeforeExpiry} · {formatPolicyDate(reminder.sentAt, locale)}

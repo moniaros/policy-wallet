@@ -85,7 +85,7 @@ export function BranchGuideCard({
                     </h2>
                     <p className="mt-1.5 text-sm font-semibold text-black dark:text-white">{tagline}</p>
                     {!open && (
-                        <p className="mt-1 text-xs leading-relaxed text-black/55 dark:text-white/60">{shortDescription}</p>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{shortDescription}</p>
                     )}
                 </div>
                 <ChevronDown

@@ -79,7 +79,7 @@ export function GapCard({ item, lang, copy, onIgnore, onNotify, ignoring, notify
                         )}
                     </div>
                     {!expanded && explanation && (
-                        <p className="mt-1 text-xs leading-relaxed text-black/55 dark:text-white/60">
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                             {firstSentence(explanation)}
                         </p>
                     )}
