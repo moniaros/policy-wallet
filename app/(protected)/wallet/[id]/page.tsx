@@ -3,7 +3,7 @@ export const runtime = 'nodejs'
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
-import { getStatusColor, getStatusLabel, resolvePolicyLifecycle } from "@/lib/policy-status"
+import { getStatusColor, getStatusColorOnDark, getStatusLabel, resolvePolicyLifecycle } from "@/lib/policy-status"
 import { getPolicyShares } from "../actions"
 import { getTranslations } from "@/lib/i18n"
 import { getAIUsageStats } from "../actions"
@@ -122,6 +122,8 @@ export default async function PolicyDetailPage({
     const lifecycle = resolvePolicyLifecycle(policy)
     const status = lifecycle.status
     const statusColor = getStatusColor(status)
+    // The hero is dark in both themes; its chip needs the on-dark palette.
+    const statusColorOnDark = getStatusColorOnDark(status)
     const statusLabel = getStatusLabel(status, language)
     const daysLeft = lifecycle.daysUntilExpiry
 
@@ -293,6 +295,7 @@ export default async function PolicyDetailPage({
             aiUsageStats={aiUsageStats}
             statusLabel={statusLabel}
             statusColor={statusColor}
+            statusColorOnDark={statusColorOnDark}
             daysLeft={daysLeft}
             isOwner={isOwner}
             canReviewExtraction={isAgentRole(dbUser.roles) && access.canWrite}

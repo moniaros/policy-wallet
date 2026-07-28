@@ -333,6 +333,36 @@ export function getStatusLabel(status: PolicyStatus, language: 'el' | 'en' = 'el
 /**
  * Get status color for UI
  */
+/**
+ * Status chip colours for a surface that is ALWAYS dark, regardless of theme.
+ *
+ * `getStatusColor` below returns light/dark PAIRS, which is right for a themed
+ * page surface (`pw-card`, `bg-white dark:bg-neutral-800`). PolicyHero is not
+ * one of those: it is a deliberately dark hero (`bg-[#111111]`, `text-white`,
+ * `border-white/15`) in BOTH themes. Feeding it the paired palette put a
+ * `bg-green-50` / `text-green-700` chip — styling meant for a white page — onto
+ * a black slab whenever the app was in light mode.
+ *
+ * These values follow the on-dark chip idiom the hero already uses for its
+ * renewal and gap badges, so every chip in that hero now matches.
+ */
+export function getStatusColorOnDark(status: PolicyStatus): {
+    bg: string
+    text: string
+    border: string
+} {
+    const colors = {
+        active: { bg: 'bg-mint/15', text: 'text-mint', border: 'border-mint/35' },
+        expiring_soon: { bg: 'bg-amber-100/10', text: 'text-amber-200', border: 'border-amber-300/60' },
+        // Expired is a fact of the calendar, not an alarm — amber, not red.
+        expired: { bg: 'bg-amber-100/15', text: 'text-amber-200', border: 'border-amber-300/50' },
+        unknown_duration: { bg: 'bg-white/10', text: 'text-white/80', border: 'border-white/25' },
+        action_needed: { bg: 'bg-orange-100/10', text: 'text-orange-200', border: 'border-orange-300/60' },
+        cancelled: { bg: 'bg-white/5', text: 'text-white/65', border: 'border-white/15' },
+    }
+    return colors[status] ?? colors.unknown_duration
+}
+
 export function getStatusColor(status: PolicyStatus): {
     bg: string
     text: string

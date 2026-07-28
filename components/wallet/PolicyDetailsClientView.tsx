@@ -85,6 +85,7 @@ interface PolicyDetailsClientProps {
     }
     statusLabel: string
     statusColor: any
+    statusColorOnDark: any
     daysLeft: number | null
     isOwner: boolean
     relationshipId?: string | null
@@ -118,6 +119,7 @@ export function PolicyDetailsClient({
     aiUsageStats,
     statusLabel,
     statusColor,
+    statusColorOnDark,
     daysLeft,
     isOwner,
     relationshipId,
@@ -575,7 +577,7 @@ export function PolicyDetailsClient({
                     premiumCurrency={getPremiumCurrency()}
                     premiumFrequency={premiumFrequency}
                     statusLabel={statusLabel}
-                    statusColor={statusColor}
+                    statusColor={statusColorOnDark}
                     daysLeft={computedDaysLeft}
                     expiredNotice={isExpiredPolicy && !isAnalyzing ? detailsCopy.expiredBanner : null}
                     isAnalyzing={isAnalyzing}

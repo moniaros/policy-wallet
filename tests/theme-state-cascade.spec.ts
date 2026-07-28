@@ -29,6 +29,40 @@ const PAGES = [
 ]
 
 /** Runs in the page. Returns one finding per illegible state. */
+
+/** See theme-contrast-audit.spec.ts — dynamic routes were audited nowhere. */
+const DYNAMIC_SEEDS: { list: string; pattern: RegExp }[] = [
+    { list: '/wallet', pattern: /^\/wallet\/[a-z0-9]{8,}$/ },
+    { list: '/branches', pattern: /^\/branches\/[a-z-]+$/ },
+    { list: '/guides', pattern: /^\/guides\/[a-z0-9-]+$/ },
+    { list: '/lexiko', pattern: /^\/lexiko\/[a-z0-9-]+$/ },
+    { list: '/customers', pattern: /^\/customers\/[a-z0-9]{8,}$/ },
+    { list: '/tasks', pattern: /^\/tasks\/[a-z0-9]{8,}$/ },
+]
+
+async function discoverDynamicRoutes(page: import('@playwright/test').Page): Promise<string[]> {
+    const found: string[] = []
+    for (const seed of DYNAMIC_SEEDS) {
+        try {
+            await page.goto(seed.list, { waitUntil: 'domcontentloaded', timeout: 45_000 })
+            await page.waitForTimeout(600)
+            const hrefs = (await page.evaluate(() =>
+                Array.from(document.querySelectorAll('a[href]')).map((a) => a.getAttribute('href') || '')
+            )) as string[]
+            const matches = Array.from(new Set(hrefs.filter((h) => seed.pattern.test(h)))).slice(0, 2)
+            if (!matches.length) {
+                // Say so. A seed that silently yields nothing is exactly how
+                // /wallet/[id] went unaudited while the suite reported green.
+                console.log(`[dynamic routes] ${seed.list} yielded no detail links — that route family is NOT covered`)
+            }
+            found.push(...matches)
+        } catch {
+            /* nothing to harvest */
+        }
+    }
+    return Array.from(new Set(found))
+}
+
 function auditStates() {
     const lum = (r: number, g: number, b: number) => {
         const f = (v: number) => {
@@ -248,7 +282,8 @@ for (const theme of THEMES) {
             const problems: string[] = []
             let pagesScanned = 0
 
-            for (const path of PAGES) {
+            const routes = [...PAGES, ...(await discoverDynamicRoutes(page))]
+            for (const path of routes) {
                 try {
                     await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 })
                 } catch {
@@ -266,7 +301,7 @@ for (const theme of THEMES) {
                 }
             }
 
-            console.log(`[state cascade — ${theme}] ${pagesScanned}/${PAGES.length} pages scanned`)
+            console.log(`[state cascade — ${theme}] ${pagesScanned}/${routes.length} pages scanned`)
             expect(pagesScanned, 'no pages scanned — would pass vacuously').toBeGreaterThan(10)
             expect(problems.join('\n'), `state problems — ${theme}:\n${problems.slice(0, 40).join('\n')}`).toBe('')
         })
@@ -290,7 +325,8 @@ for (const viewport of VIEWPORTS) {
             const problems: string[] = []
             let checked = 0
 
-            for (const path of PAGES) {
+            const routes = [...PAGES, ...(await discoverDynamicRoutes(page))]
+            for (const path of routes) {
                 try {
                     await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 })
                 } catch {
@@ -306,7 +342,7 @@ for (const viewport of VIEWPORTS) {
                 }
             }
 
-            console.log(`[surfaces — ${viewport.name}] ${checked} surfaces measured`)
+            console.log(`[surfaces — ${viewport.name}] ${checked} surfaces measured across ${routes.length} routes`)
             expect(checked, 'no surfaces measured — would pass vacuously').toBeGreaterThan(30)
             expect(problems.join('\n'), `surface problems — ${viewport.name}:\n${problems.slice(0, 30).join('\n')}`).toBe('')
         })

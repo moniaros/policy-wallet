@@ -139,6 +139,51 @@ const PAGES = [
     '/wallet/add',
 ]
 
+
+/**
+ * Dynamic routes were EXCLUDED from this audit ("covered by the journey specs"),
+ * and they were not covered anywhere. That is how PolicyHero shipped feeding a
+ * light-theme status chip onto a permanently dark hero: /wallet/[id] was never
+ * once rendered by any audit.
+ *
+ * Rather than hardcode ids that rot, harvest real ones from the list pages at
+ * run time. Anything found here goes through exactly the same contrast, layout
+ * and state checks as a static route.
+ */
+const DYNAMIC_SEEDS: { list: string; pattern: RegExp }[] = [
+    { list: '/wallet', pattern: /^\/wallet\/[a-z0-9]{8,}$/ },
+    { list: '/branches', pattern: /^\/branches\/[a-z-]+$/ },
+    { list: '/guides', pattern: /^\/guides\/[a-z0-9-]+$/ },
+    { list: '/lexiko', pattern: /^\/lexiko\/[a-z0-9-]+$/ },
+    { list: '/customers', pattern: /^\/customers\/[a-z0-9]{8,}$/ },
+    { list: '/tasks', pattern: /^\/tasks\/[a-z0-9]{8,}$/ },
+    { list: '/help', pattern: /^\/help\/article\/[a-z0-9-]+$/ },
+    { list: '/collaboration', pattern: /^\/collaboration\/threads\/[a-z0-9]{8,}$/ },
+]
+
+async function discoverDynamicRoutes(page: import('@playwright/test').Page): Promise<string[]> {
+    const found: string[] = []
+    for (const seed of DYNAMIC_SEEDS) {
+        try {
+            await page.goto(seed.list, { waitUntil: 'domcontentloaded', timeout: 45_000 })
+            await page.waitForTimeout(600)
+            const hrefs = (await page.evaluate(() =>
+                Array.from(document.querySelectorAll('a[href]')).map((a) => a.getAttribute('href') || '')
+            )) as string[]
+            const matches = Array.from(new Set(hrefs.filter((h) => seed.pattern.test(h)))).slice(0, 2)
+            if (!matches.length) {
+                // Say so. A seed that silently yields nothing is exactly how
+                // /wallet/[id] went unaudited while the suite reported green.
+                console.log(`[dynamic routes] ${seed.list} yielded no detail links — that route family is NOT covered`)
+            }
+            found.push(...matches)
+        } catch {
+            /* list page unavailable for this fixture — nothing to harvest */
+        }
+    }
+    return Array.from(new Set(found))
+}
+
 const VIEWPORTS = [
     { name: 'desktop', width: 1440, height: 900 },
     { name: 'tablet', width: 834, height: 1112 },
@@ -337,9 +382,15 @@ for (const viewport of VIEWPORTS) {
                     }
                 }, theme)
 
+                const dynamic = await discoverDynamicRoutes(page)
+                const routes = [...PAGES, ...dynamic]
+                console.log(
+                    `[theme audit — ${theme}/${viewport.name}] +${dynamic.length} dynamic route(s): ${dynamic.join(', ') || 'none'}`
+                )
+
                 const all: string[] = []
                 const skipped: string[] = []
-                for (const path of PAGES) {
+                for (const path of routes) {
                     try {
                         all.push(...(await audit(page, path)))
                     } catch (err) {
@@ -353,13 +404,13 @@ for (const viewport of VIEWPORTS) {
                 }
 
                 console.log(
-                    `[theme audit — ${theme}/${viewport.name}] ${PAGES.length - skipped.length}/${PAGES.length} routes audited`
+                    `[theme audit — ${theme}/${viewport.name}] ${routes.length - skipped.length}/${routes.length} routes audited`
                 )
                 if (skipped.length) console.log('  skipped: ' + skipped.join('\n  skipped: '))
                 expect(
-                    PAGES.length - skipped.length,
+                    routes.length - skipped.length,
                     'too few routes audited — the sweep would pass vacuously'
-                ).toBeGreaterThan(PAGES.length * 0.75)
+                ).toBeGreaterThan(routes.length * 0.75)
                 expect(
                     all.join('\n'),
                     `contrast failures — ${theme}/${viewport.name}:\n${all.join('\n')}`
@@ -439,7 +490,8 @@ for (const viewport of VIEWPORTS) {
                 }
             })
             const problems: string[] = []
-            for (const path of PAGES) {
+            const routes = [...PAGES, ...(await discoverDynamicRoutes(page))]
+            for (const path of routes) {
                 await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
                 await dismissCookieBanner(page)
                 await page.waitForTimeout(450)
