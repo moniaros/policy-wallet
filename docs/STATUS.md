@@ -1,5 +1,80 @@
 # PolicyWallet — Project Status
 
+## Product UI/UX + responsive + a11y audit — 2026-07-29 — DEPLOYED
+
+Reported from production: the `/wallet/[id]` header looked wrong in light mode.
+It did, and the reason matters more than the fix.
+
+**Why no audit caught it.** Every sweep enumerated static routes from
+`app/**/page.tsx` and explicitly skipped the 17 dynamic ones as "covered by the
+journey specs" — which do not check theming. `/wallet/[id]` had never been
+rendered by any audit, so a 100%-green suite said nothing about it.
+
+**The defect.** `PolicyHero` is dark in BOTH themes (`bg-[#111111]`,
+`text-white`, `border-white/15`; not one `dark:` variant in the file). Its status
+chip came from `getStatusColor()`, which returns light/dark PAIRS — correct for
+a themed surface like `KeyDatesCard`'s `pw-card`, wrong here: in light mode the
+light half won and rendered a `bg-green-50` / `text-green-700` chip, styling
+meant for a white page, onto a black slab. Added `getStatusColorOnDark()`
+following the on-dark idiom the hero already used for its renewal and gap
+badges. Pinned with 5 unit tests.
+
+**Coverage fix.** Both audits now DISCOVER dynamic routes at run time by
+harvesting real detail hrefs from list pages. Live for `/branches/*`,
+`/guides/*`, `/lexiko/*` (18 -> 24 routes, 90 -> 115 surfaces). `/wallet`,
+`/customers` and `/tasks` yield nothing locally because the dev DB is
+unreachable so no fixture policy exists — those now LOG "that route family is
+NOT covered" instead of passing silently.
+
+### New: responsive + a11y + runtime audit — 30 routes x 9 widths
+
+320/360/390/414/768/1024/1280/1440/1920, loading each route once and resizing.
+The old sweep's narrowest width was 390px, so 320 and 360 had never rendered.
+
+| | before | after |
+|---|---|---|
+| horizontal overflow | 191 | **0** |
+| accessibility | 18 | **0** |
+| runtime/console | 121 | **1** (dev-only warning on a 404) |
+| touch targets | 498 | 93 |
+
+Two structural root causes, not per-page bugs:
+
+1. **Greek compounds.** «ασφαλιστήριο» / «πολυασφαλιστήριο» are single words
+   whose MIN-CONTENT width exceeds 320px, so a flex/grid child cannot shrink
+   below them. Bisecting `/`, `/product` and `/product/business` all landed on
+   nodes whose own boxes measured fine.
+2. **Automatic minimum size.** Grid and flex children default to
+   `min-width: auto`. On `/product` a decorative mock — a 36px icon tile and a
+   label — set the width of the whole column while every box measured
+   "correctly".
+
+Both fixed in `globals.css` under `@media (max-width: 430px)`:
+`overflow-wrap: anywhere` on text blocks, `min-width: 0` on grid/flex children.
+Nothing at >=431px changes. **Verified on the live site**: 0 overflow at 320px.
+
+Also fixed: `not-found.tsx` had no `<main>` landmark (every 404 in the app);
+`/perks` repeated `| PolicyWallet` over the root layout's own title template;
+the fake browser bar's unbreakable mono URL (`min-w-0 flex-1 truncate`);
+`LegalDocumentPage`'s light-only hover.
+
+### Remaining low-priority debt
+
+- **93 touch findings** at the 22-24px boundary (WCAG 2.5.8 AA wants 24x24) on
+  secondary text controls. Not a blocker; listed in the audit output.
+- `/perks` 404s by design (empty partner catalog) and nothing links to it. Its
+  React "script tag while rendering" warning is on the 404 render path.
+- The state-cascade audit covers 24 routes, not all 108.
+
+### Checker corrections (each reported correct code as broken)
+
+Left-edge overflow does not scroll in LTR, so a closed off-canvas drawer at
+-272..0 is the pattern working; wide content inside its own `overflow-x` scroller
+is deliberate; an `aria-hidden` off-screen honeypot needs no label; `sr-only`
+skip links are not touch targets. The placeholder Sentry DSN and CSP-blocked
+`va.vercel-scripts` are dev-only — **verified prod injects same-origin
+`/_vercel/insights/script.js` (200), so the CSP was NOT loosened.**
+
 ## Theme & UI consistency audit — 2026-07-28 — MERGED + DEPLOYED
 
 **Live in production.** `origin/NEW-UI` fast-forwarded `17a1b3f..e780e89` (18
