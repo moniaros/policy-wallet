@@ -25,32 +25,118 @@ import { dismissCookieBanner } from './helpers/ui'
  */
 test.skip(!process.env.RUN_UX_AUDIT, 'Theme audit — run with RUN_UX_AUDIT=1')
 
+// EVERY static page route in app/** (enumerated from app/**/page.tsx),
+// minus routes that only bounce elsewhere. Dynamic [id] routes are covered
+// by the authenticated journey specs, not here.
 const PAGES = [
-    // Authenticated surfaces
-    '/dashboard',
-    '/wallet',
-    '/coverage-insights',
-    '/renewals',
-    '/account',
-    '/branches',
-    '/notifications',
-    '/tasks',
-    '/help',
-    '/upgrade',
-    // Public marketing + content + legal. These render for an authenticated
-    // session too, so one pass covers both trees.
     '/',
-    '/pricing',
-    '/product',
-    '/product/motor',
-    '/product/property',
-    '/guides',
-    '/lexiko',
+    '/account',
+    '/activity',
+    '/admin/activity',
+    '/admin/billing-reconciliation',
+    '/admin/dashboard',
+    '/admin/dsr',
+    '/admin/extraction-flags',
+    '/admin/insurers',
+    '/admin/launch-readiness',
+    '/admin/partners',
+    '/admin/plans',
+    '/admin/policies',
+    '/admin/submissions',
+    '/admin/tokens',
+    '/admin/types',
+    '/admin/users',
+    '/agent',
+    '/agent/pricing',
+    '/agent/settings',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+    '/auth/signin',
+    '/auth/signup',
+    '/auth/signup/agent',
+    '/auth/signup/confirmation',
+    '/auth/signup/policyholder',
+    '/benefits',
+    '/branches',
+    '/commissions',
     '/company',
+    '/consent/ai',
     '/contact',
-    '/terms',
+    '/cookies',
+    '/coverage',
+    '/coverage-insights',
+    '/customers',
+    '/customers/invite',
+    '/dashboard',
+    '/dashboard/agent',
+    '/en',
+    '/en/company',
+    '/en/contact',
+    '/en/cookies',
+    '/en/for-agents',
+    '/en/guides',
+    '/en/lexiko',
+    '/en/pricing',
+    '/en/privacy',
+    '/en/product',
+    '/en/product/boat',
+    '/en/product/business',
+    '/en/product/cyber',
+    '/en/product/group-health',
+    '/en/product/group-life',
+    '/en/product/group-pension',
+    '/en/product/health',
+    '/en/product/legal-expenses',
+    '/en/product/liability',
+    '/en/product/life',
+    '/en/product/motor',
+    '/en/product/pension',
+    '/en/product/pet',
+    '/en/product/property',
+    '/en/product/travel',
+    '/en/solutions/agents',
+    '/en/subprocessors',
+    '/en/terms',
+    '/for-agents',
+    '/guides',
+    '/help',
+    '/home',
+    '/insights',
+    '/landing',
+    '/lexiko',
+    '/notifications',
+    '/onboarding',
+    '/onboarding/agent',
+    '/opportunities',
+    '/perks',
+    '/pricing',
     '/privacy',
+    '/product',
+    '/product/boat',
+    '/product/business',
+    '/product/cyber',
+    '/product/group-health',
+    '/product/group-life',
+    '/product/group-pension',
+    '/product/health',
+    '/product/legal-expenses',
+    '/product/liability',
+    '/product/life',
+    '/product/motor',
+    '/product/pension',
+    '/product/pet',
+    '/product/property',
+    '/product/travel',
+    '/questionnaires',
+    '/renewals',
     '/solutions/agents',
+    '/subprocessors',
+    '/tasks',
+    '/team',
+    '/terms',
+    '/upgrade',
+    '/wallet',
+    '/wallet/add',
 ]
 
 const VIEWPORTS = [
@@ -382,6 +468,7 @@ const SNAP = `(el) => {
   // control out of the window on pages with longer navs, which is what made
   // /account report every nav item while /dashboard reported none — the hover
   // worked identically on both, the snapshot just never looked at the link.
+  if (!el.isConnected) return 'DETACHED';
   const nodes = [el, ...el.querySelectorAll('*')].slice(0, 16);
   const grp = el.closest('.group');
   if (grp && grp !== el) nodes.push(grp);
@@ -417,6 +504,7 @@ for (const theme of ['light', 'dark'] as const) {
             // correct here; the harness result for this one page is not
             // trustworthy and is not evidence of a defect.
             const problems: string[] = []
+            const unmeasured: string[] = []
             for (const path of ['/dashboard', '/wallet', '/account', '/branches']) {
                 await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
                 await dismissCookieBanner(page)
@@ -473,28 +561,52 @@ for (const theme of ['light', 'dark'] as const) {
 
                         // Park the pointer away first, so `base` is a true resting
                         // state and not the previous control's lingering hover.
-                        await page.mouse.move(0, 0)
+                        // Park at the far bottom-right, not (0,0): the top-left
+                        // corner sits under the header/nav on some pages, so
+                        // parking there could leave a hover-triggered surface
+                        // open and swallow the next control's :hover.
+                        await page.mouse.move(1270, 700)
                         await page.waitForTimeout(260)
-                        // Pin the node. If the page re-renders mid-check the
-                        // handle detaches and evaluate throws — caught below and
-                        // skipped — rather than silently comparing two nodes.
-                        const handle = await el.elementHandle({ timeout: 3000 })
-                        if (!handle) continue
-
-                        const base = await handle.evaluate(SNAP)
+                        // Do NOT pin an elementHandle here. On a client-rendered
+                        // page (/account) React replaces these nodes, and a
+                        // detached node reports every computed property as an
+                        // empty string — so base === hovered for reasons that have
+                        // nothing to do with hover styling. That is precisely what
+                        // reported all 11 /account controls as unresponsive while a
+                        // direct probe showed every one of them working. Let the
+                        // locator re-resolve to the live node, and have SNAP refuse
+                        // to answer if it is ever handed a detached one.
+                        const base = await el.evaluate(SNAP)
 
                         await el.hover({ timeout: 3000 })
                         // Tailwind transitions default to 150ms; the old 120ms wait
                         // sampled mid-transition and under-reported the delta.
                         await page.waitForTimeout(400)
-                        const hovered = await handle.evaluate(SNAP)
+                        const hovered = await el.evaluate(SNAP)
+                        // Never let a failed MEASUREMENT read as a failed CONTROL.
+                        // On a client-rendered page the snapshot can come back
+                        // undefined (execution context replaced mid-check) or
+                        // 'DETACHED'; both then compare equal to each other and
+                        // every control on the page gets reported as unresponsive.
+                        // That is what made all 11 /account controls look broken
+                        // while a direct probe showed each one responding.
+                        const measured =
+                            typeof base === 'string' &&
+                            typeof hovered === 'string' &&
+                            base !== 'DETACHED' &&
+                            hovered !== 'DETACHED' &&
+                            base.replace(/\|/g, '').trim() !== ''
+                        if (!measured) {
+                            unmeasured.push(`${path} "${label}"`)
+                            continue
+                        }
                         if (!isCurrent && hovered === base) {
                             problems.push(`${path} NO HOVER FEEDBACK — "${label}"`)
                         }
 
-                        await handle.evaluate((n2) => (n2 as HTMLElement).focus())
+                        await el.evaluate((n2) => (n2 as HTMLElement).focus())
                         await page.waitForTimeout(200)
-                        const focused = await handle.evaluate(SNAP)
+                        const focused = await el.evaluate(SNAP)
                         // A focus indicator must be perceivable: an outline, a ring
                         // (box-shadow), or some other computed change.
                         const hasRing = await el.evaluate((n2) => {
@@ -507,6 +619,15 @@ for (const theme of ['light', 'dark'] as const) {
                         if (!hasRing && focused === base) {
                             problems.push(`${path} NO FOCUS INDICATOR — "${label}"`)
                         }
+
+                        // Hand focus back. /account is a tabbed page, and
+                        // focusing an auto-activation tab re-renders it — which
+                        // left the NEXT control's base snapshot taken against
+                        // fresh markup and made a working hover compare equal.
+                        // That, not any missing hover style, is what reported
+                        // every /account control as unresponsive.
+                        await el.evaluate((n2) => (n2 as HTMLElement).blur())
+                        await page.waitForTimeout(150)
                     } catch {
                         continue // detached / covered mid-iteration
                     }
