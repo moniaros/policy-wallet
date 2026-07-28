@@ -58,13 +58,38 @@ Also fixed: `not-found.tsx` had no `<main>` landmark (every 404 in the app);
 the fake browser bar's unbreakable mono URL (`min-w-0 flex-1 truncate`);
 `LegalDocumentPage`'s light-only hover.
 
+### Full-application coverage — 108 routes
+
+Both sweeps were expanded from a "representative" subset to **all 108 static
+routes** (responsive: 30 -> 108; state cascade: 24 -> 108). Narrowing to a subset
+is exactly what let the `/wallet/[id]` header defect ship green.
+
+**108/108 routes fully scanned x 9 widths (320-1920): horizontal overflow = 0.**
+
+The first 108-route attempt died on `page.evaluate: Execution context was
+destroyed` — an admin route bouncing a policyholder killed the whole sweep. Each
+scan is now guarded, and a route that does not complete all 9 widths counts as
+incomplete rather than scanned, so coverage cannot silently shrink.
+
+The 78 newly-covered routes carried real semantic defects no earlier sweep could
+have seen: `/onboarding` and `/onboarding/agent` had no `<main>` landmark (the
+first screen a new user meets, with no skip-link destination), and
+`/auth/signup/confirmation` likewise. Both fixed.
+
 ### Remaining low-priority debt
 
-- **93 touch findings** at the 22-24px boundary (WCAG 2.5.8 AA wants 24x24) on
-  secondary text controls. Not a blocker; listed in the audit output.
-- `/perks` 404s by design (empty partner catalog) and nothing links to it. Its
-  React "script tag while rendering" warning is on the 404 render path.
-- The state-cascade audit covers 24 routes, not all 108.
+- **Touch targets** at the 22-24px WCAG 2.5.8 boundary on secondary text
+  controls. The public-route set is fixed; some authenticated-tree links
+  (`Όλοι οι κλάδοι`, `Όλες`, `Όχι τώρα` at 16px) remain.
+- **Missing `<h1>`** on `/consent/ai` and `/wallet/add`; `/onboarding/agent`
+  renders two `<h1>` elements; unlabelled inputs on `/agent/settings` and
+  `/onboarding/agent`.
+- `/perks` 404s by design (empty partner catalog); nothing links to it. Its
+  React "script tag while rendering" notice comes from the root layout's
+  pre-paint `lang` script — correctly placed in `<head>`, verified working.
+- `/wallet/[id]`, `/customers/[id]`, `/tasks/[id]` cannot be rendered locally
+  (dev DB unreachable, so no fixture policy). The audits LOG this rather than
+  passing silently.
 
 ### Checker corrections (each reported correct code as broken)
 
