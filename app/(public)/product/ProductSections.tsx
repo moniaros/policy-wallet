@@ -364,7 +364,7 @@ export function ProductSections({ language }: { language: Language }) {
 
             <section className="bg-[#1A2420] px-6 py-20 text-white md:px-12 lg:py-28">
                 <div className="mx-auto max-w-[860px] text-center">
-                    <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white md:text-h1 lg:text-display">
+                    <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white md:text-h1 lg:text-display [overflow-wrap:anywhere]">
                         {t(
                             "Αποκτήστε πρόσβαση στο PolicyWallet για ιδιώτες, ομάδες και επαγγελματίες.",
                             "Get access to the PolicyWallet platform for individuals, teams, and professionals."
