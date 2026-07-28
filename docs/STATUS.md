@@ -1,6 +1,25 @@
 # PolicyWallet — Project Status
 
-## Theme & UI consistency audit — 2026-07-28
+## Theme & UI consistency audit — 2026-07-28 — MERGED + DEPLOYED
+
+**Live in production.** `origin/NEW-UI` fast-forwarded `17a1b3f..e780e89` (18
+commits, 72 files) and deployed via `vercel --prod`:
+`dpl_Ab5iDG7KC9pEH2v9DqiMuAxD7DQr` (`kgk3zfa2p`), Ready, all 5 aliases moved
+including apex + `www.policywallet.gr`. No DB work — zero `prisma/` changes in
+the batch.
+
+Post-deploy verification: 12 public routes 200, 4 protected 307, apex 308. All
+three headline fixes confirmed in the shipped assets, not just the build:
+`overflow-wrap:anywhere` on `/product/business`; `bg-amber-50
+dark:bg-amber-900/20` and `text-amber-700 dark:text-amber-300` on `/product`;
+and in the CSS bundle
+`.dark .pw-app-canvas{background-image:radial-gradient(...),linear-gradient(to bottom right,#000,#111)}`.
+
+Note: `verify:migrations` fails locally with `Environment variable not found:
+DIRECT_URL` — the shell had not loaded `.env.local`. With it loaded,
+`prisma validate` reports the schema valid. Environmental, not a defect.
+
+
 
 **Full matrix green.** Theme audit (every route x desktop/tablet/mobile x
 light/dark) plus theme-switch/stale-styles: **8/8 passed, 0 contrast findings**.
