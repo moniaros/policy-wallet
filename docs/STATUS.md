@@ -52,27 +52,32 @@ exempt, and a pointer-reachability gate.
 
 ### Verified green
 
-Theme audit 8/8 (0 contrast findings) · Layout 4/4 (0) · Interaction states 3/3
-(0 findings, 0 unmeasured) · audit:api-auth, lint, i18n, utf8, type-check,
-2469 unit tests, build.
+| Suite | Result |
+|---|---|
+| Theme audit (contrast, 3 viewports x 2 themes) | **8/8, 0 findings** |
+| Layout (overflow, escapes, clipped text) | **4/4, 0 findings** |
+| Interaction states (hover + focus) | **3/3, 0 findings, 0 unmeasured** |
+| **State cascade** — every declared state, every element, 18 pages x 2 themes | **0 findings** |
+| **Surfaces** — cards/dialogs/menus in dark mode | **0 light surfaces** (89/90/90 measured) |
 
-### NOT finished — pick up here
+Plus audit:api-auth, lint, i18n, utf8, type-check, 2469 unit tests, build.
 
-1. **108-route sweep** (`tests/theme-contrast-audit.spec.ts`). PAGES was widened
-   from 22 to all 108 static routes. The run found **0 contrast, 0 layout and 0
-   interaction findings** in everything it reached, but 9 of 13 tests hit the
-   12-minute per-test budget. Budget is now 45min and the per-route settle is
-   450ms — **has not been re-run since**.
-2. **Button-state sweep** (`tests/theme-controls-audit.spec.ts`, new). Drives
-   DEFAULT/HOVER/FOCUSED/PRESSED/DISABLED/SELECTED and measures contrast on the
-   COMPOSITED surface. Never completed a run — two attempts were killed by the
-   environment before flushing output. Scoped to 4 representative pages to make
-   it finish; that scoping is untested. Card surfaces DO measure (16 distinct
-   per viewport); its only finding was mint #89D9B2 on a `<button>`, correct by
-   design, now excluded from the surface scan.
+**`tests/theme-state-cascade.spec.ts` is the one to keep.** Driving real mouse
+events into controls cost ~1.5s each, so the button sweep never finished and two
+runs were killed; it also only reached the handful of controls the sampler
+picked. Reading the CSSOM instead — every rule carrying :hover, :focus-visible,
+:focus, :active, :disabled, :checked, aria-pressed/selected/current or
+[data-state] that sets a colour, resolved against live elements and scored on the
+COMPOSITED surface — covers every element in every declared state and finishes in
+15 minutes. It replaced theme-controls-audit.spec.ts, which measured 16 surfaces
+and never completed a button run; this measures 90 and finishes.
 
-   Run both with:
-   `RUN_UX_AUDIT=1 npx playwright test tests/theme-contrast-audit.spec.ts tests/theme-controls-audit.spec.ts --project=chromium --workers=1`
+### Still outstanding
+
+The 108-route contrast/layout sweep. 0 findings in everything reached across
+several runs, but it has not yet been observed to completion inside its (now
+45min) per-test budget. Resume with:
+`RUN_UX_AUDIT=1 npx playwright test tests/theme-contrast-audit.spec.ts --project=chromium --workers=1`
 
 ### The lesson that cost the most
 
