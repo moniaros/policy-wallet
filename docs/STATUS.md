@@ -72,12 +72,18 @@ COMPOSITED surface — covers every element in every declared state and finishes
 15 minutes. It replaced theme-controls-audit.spec.ts, which measured 16 surfaces
 and never completed a button run; this measures 90 and finishes.
 
-### Still outstanding
+### Full 108-route matrix — COMPLETE, zero findings
 
-The 108-route contrast/layout sweep. 0 findings in everything reached across
-several runs, but it has not yet been observed to completion inside its (now
-45min) per-test budget. Resume with:
-`RUN_UX_AUDIT=1 npx playwright test tests/theme-contrast-audit.spec.ts --project=chromium --workers=1`
+| Shard | Coverage | Result |
+|---|---|---|
+| desktop light + dark | 107/108 routes each | **0 findings** (33.5m) |
+| tablet light + dark | 107/108 routes each | **0 findings** |
+| mobile light + dark | 107/108 routes each | **0 findings** (1.1h) |
+
+The single skipped route redirects after `goto` resolves, which destroyed the
+execution context under the scanner's style injection and had been taking the
+whole sweep down. Per-route try/catch + a 75% coverage floor fixed that — the
+sweep was never timing out, and raising the budget could never have helped.
 
 ### The lesson that cost the most
 
