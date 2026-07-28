@@ -207,7 +207,7 @@ export function PolicyQA({
                             onChange={(e) => setQuestion(e.target.value)}
                             placeholder={t.wallet.askAiPlaceholder}
                             disabled={isAsking}
-                            className="pw-input pr-12 border-black/10 text-black dark:focus:border-mint"
+                            className="pw-input pr-12 border-black/10 text-black dark:text-white dark:focus:border-mint"
                         />
                         <button
                             type="submit"

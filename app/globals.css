@@ -300,6 +300,17 @@ pre {
     @apply bg-[radial-gradient(circle_at_top_right,_rgba(41,104,91,0.06),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
   }
 
+  /* The canvas under every authenticated page painted a white gradient in BOTH
+     themes — its sibling .pw-page-shell already had a .dark override, this one
+     was simply missed. A gradient paints via background-image, so a computed
+     backgroundColor check reports "transparent" and never sees it; only a
+     composited pixel does. Anything translucent stacked on top (a /10 or /15
+     wash) blended against white and lost its contrast in dark mode. */
+  .dark .pw-app-canvas {
+    background-image: radial-gradient(circle at top right, rgba(41, 104, 91, 0.14), transparent 40%),
+      linear-gradient(to bottom right, #000000, #111111);
+  }
+
   .pw-page-shell {
     @apply min-h-screen pb-24;
     background: linear-gradient(140deg, #f8fafc 0%, #ffffff 50%, #f9fafb 100%);

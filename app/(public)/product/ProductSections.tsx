@@ -178,20 +178,20 @@ export function ProductSections({ language }: { language: Language }) {
                                 ].map(({ icon: Icon, nameEl, nameEn, status, expEl, expEn }) => (
                                     <div
                                         key={nameEn}
-                                        className={`flex items-center gap-3 rounded-[12px] border p-3.5 ${status === "warn" ? "border-amber-100 dark:border-amber-800/40 bg-amber-50" : "border-transparent bg-[#F8FAFC] dark:bg-slate-900"}`}
+                                        className={`flex items-center gap-3 rounded-[12px] border p-3.5 ${status === "warn" ? "border-amber-100 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-900/20" : "border-transparent bg-[#F8FAFC] dark:bg-slate-900"}`}
                                     >
                                         <div
                                             className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] ${status === "warn" ? "bg-amber-100 dark:bg-amber-900/40" : "bg-[#DCEBDA] dark:bg-[#29685B]/30"}`}
                                         >
                                             <Icon
-                                                className={`h-4.5 w-4.5 ${status === "warn" ? "text-amber-700" : "text-[#29685B] dark:text-[#A7F3D0]"}`}
+                                                className={`h-4.5 w-4.5 ${status === "warn" ? "text-amber-700 dark:text-amber-300" : "text-[#29685B] dark:text-[#A7F3D0]"}`}
                                             />
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <p className="truncate text-body font-medium text-[#0F172A] dark:text-white">
                                                 {t(nameEl, nameEn)}
                                             </p>
-                                            <p className={`text-caption ${status === "warn" ? "text-amber-700" : "text-[#5B6A7A] dark:text-slate-400"}`}>
+                                            <p className={`text-caption ${status === "warn" ? "text-amber-700 dark:text-amber-300" : "text-[#5B6A7A] dark:text-slate-400"}`}>
                                                 {t(expEl, expEn)}
                                             </p>
                                         </div>

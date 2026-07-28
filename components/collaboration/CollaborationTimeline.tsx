@@ -477,7 +477,7 @@ export function CollaborationTimeline({
                                             rows={2}
                                             placeholder={isPrivateMessage ? t.collaboration.timeline.privateNotePlaceholder : t.collaboration.timeline.postUpdatePlaceholder}
                                             className={`pw-input pw-input-sm min-h-0 resize-y ${
-                                                isPrivateMessage ? "!border !border-amber-300 dark:!border-amber-700" : ""
+                                                isPrivateMessage ? "!border !border-amber-300 dark:border-amber-800/40 dark:!border-amber-700" : ""
                                             }`}
                                         />
                                         {viewerRole === "agent" && (

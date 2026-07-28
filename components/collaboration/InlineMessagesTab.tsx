@@ -255,7 +255,7 @@ export function InlineMessagesTab({
                         onKeyDown={handleKeyDown}
                         placeholder={t("Γράψτε μήνυμα...", "Write a message...")}
                         rows={1}
-                        className="pw-input pw-input-sm flex-1 resize-none border-black/10 bg-black/[0.02] text-black dark:focus:border-white/20"
+                        className="pw-input pw-input-sm flex-1 resize-none border-black/10 bg-black/[0.02] text-black dark:text-white dark:focus:border-white/20"
                         style={{ maxHeight: 80 }}
                     />
                     <button

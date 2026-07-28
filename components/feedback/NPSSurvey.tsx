@@ -109,7 +109,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                     placeholder={t("Γράψτε εδώ (προαιρετικό)...", "Write here (optional)...")}
-                                    className="pw-input pw-input-sm resize-none border-black/10 bg-black/[0.02] text-black dark:focus:border-mint"
+                                    className="pw-input pw-input-sm resize-none border-black/10 bg-black/[0.02] text-black dark:text-white dark:focus:border-mint"
                                     rows={2}
                                 />
                             </motion.div>

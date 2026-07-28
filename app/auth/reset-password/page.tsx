@@ -188,7 +188,7 @@ function ResetPasswordContent() {
                                     type={showPassword ? "text" : "password"}
                                     autoComplete="new-password"
                                     {...register("password")}
-                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-11 text-sm text-slate-900 dark:text-slate-200 outline-none transition focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-black dark:text-white ${errors.password ? "border-rose-300" : "border-slate-300 dark:border-white/15"}`}
+                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-11 text-sm text-slate-900 dark:text-slate-200 outline-none transition focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-black dark:text-white ${errors.password ? "border-rose-300 dark:border-rose-800/40" : "border-slate-300 dark:border-white/15"}`}
                                 />
                                 <button type="button" onClick={() => setShowPassword((prev) => !prev)} className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-white/10" aria-label={showPassword ? "Hide password" : "Show password"}>
                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -210,7 +210,7 @@ function ResetPasswordContent() {
                                     type={showConfirmPassword ? "text" : "password"}
                                     autoComplete="new-password"
                                     {...register("confirmPassword")}
-                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-11 text-sm text-slate-900 dark:text-slate-200 outline-none transition focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-black dark:text-white ${errors.confirmPassword ? "border-rose-300" : "border-slate-300 dark:border-white/15"}`}
+                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-11 text-sm text-slate-900 dark:text-slate-200 outline-none transition focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-black dark:text-white ${errors.confirmPassword ? "border-rose-300 dark:border-rose-800/40" : "border-slate-300 dark:border-white/15"}`}
                                 />
                                 <button type="button" onClick={() => setShowConfirmPassword((prev) => !prev)} className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-white/10" aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
                                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
