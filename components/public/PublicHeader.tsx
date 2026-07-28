@@ -122,7 +122,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                         <span className="text-[#5B6A7A] dark:text-slate-400">Wallet</span>
                     </Link>
 
-                    <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 text-body font-medium text-[#475569] md:flex dark:text-slate-300">
+                    <nav aria-label={t("Κύρια πλοήγηση", "Main navigation")} className="hidden items-center gap-8 text-body font-medium text-[#475569] lg:flex dark:text-slate-300">
                         {PUBLIC_NAV_ITEMS.map((item) =>
                             item.kind === "dropdown" ? (
                                 <SolutionsDropdown key={item.key} language={locale} />
@@ -141,7 +141,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                         )}
                     </nav>
 
-                    <div className="hidden items-center gap-5 md:flex">
+                    <div className="hidden items-center gap-5 lg:flex">
                         <div className="flex items-center gap-1.5" role="group" aria-label={t("Γλώσσα", "Language")}>
                             <Link
                                 href={elPath}
@@ -174,7 +174,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                     <button
                         ref={triggerRef}
                         type="button"
-                        className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full text-[#0F172A] transition-colors hover:bg-gray-100 md:hidden dark:text-white dark:hover:bg-slate-800"
+                        className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full text-[#0F172A] transition-colors hover:bg-gray-100 lg:hidden dark:text-white dark:hover:bg-slate-800"
                         onClick={() => setOpen(true)}
                         aria-label={t("Άνοιγμα μενού", "Open menu")}
                         aria-expanded={open}
