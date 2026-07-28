@@ -11,12 +11,118 @@ import { dismissCookieBanner } from './helpers/ui'
 
 const WIDTHS = [320, 360, 390, 414, 768, 1024, 1280, 1440, 1920]
 
+// Every static route in app/**/page.tsx. Narrowing this to a
+// "representative" subset is what let the /wallet/[id] header defect
+// ship while every suite reported green.
 const ROUTES = [
-    '/', '/pricing', '/product', '/product/business', '/product/motor', '/product/property',
-    '/guides', '/lexiko', '/company', '/contact', '/terms', '/privacy', '/solutions/agents',
-    '/for-agents', '/benefits', '/help', '/en', '/en/pricing',
-    '/dashboard', '/wallet', '/account', '/branches', '/notifications', '/tasks',
-    '/upgrade', '/coverage-insights', '/renewals', '/questionnaires', '/activity', '/perks',
+    '/',
+    '/account',
+    '/activity',
+    '/admin/activity',
+    '/admin/billing-reconciliation',
+    '/admin/dashboard',
+    '/admin/dsr',
+    '/admin/extraction-flags',
+    '/admin/insurers',
+    '/admin/launch-readiness',
+    '/admin/partners',
+    '/admin/plans',
+    '/admin/policies',
+    '/admin/submissions',
+    '/admin/tokens',
+    '/admin/types',
+    '/admin/users',
+    '/agent',
+    '/agent/pricing',
+    '/agent/settings',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+    '/auth/signin',
+    '/auth/signup',
+    '/auth/signup/agent',
+    '/auth/signup/confirmation',
+    '/auth/signup/policyholder',
+    '/benefits',
+    '/branches',
+    '/commissions',
+    '/company',
+    '/consent/ai',
+    '/contact',
+    '/cookies',
+    '/coverage',
+    '/coverage-insights',
+    '/customers',
+    '/customers/invite',
+    '/dashboard',
+    '/dashboard/agent',
+    '/en',
+    '/en/company',
+    '/en/contact',
+    '/en/cookies',
+    '/en/for-agents',
+    '/en/guides',
+    '/en/lexiko',
+    '/en/pricing',
+    '/en/privacy',
+    '/en/product',
+    '/en/product/boat',
+    '/en/product/business',
+    '/en/product/cyber',
+    '/en/product/group-health',
+    '/en/product/group-life',
+    '/en/product/group-pension',
+    '/en/product/health',
+    '/en/product/legal-expenses',
+    '/en/product/liability',
+    '/en/product/life',
+    '/en/product/motor',
+    '/en/product/pension',
+    '/en/product/pet',
+    '/en/product/property',
+    '/en/product/travel',
+    '/en/solutions/agents',
+    '/en/subprocessors',
+    '/en/terms',
+    '/for-agents',
+    '/guides',
+    '/help',
+    '/home',
+    '/insights',
+    '/landing',
+    '/lexiko',
+    '/notifications',
+    '/onboarding',
+    '/onboarding/agent',
+    '/opportunities',
+    '/perks',
+    '/pricing',
+    '/privacy',
+    '/product',
+    '/product/boat',
+    '/product/business',
+    '/product/cyber',
+    '/product/group-health',
+    '/product/group-life',
+    '/product/group-pension',
+    '/product/health',
+    '/product/legal-expenses',
+    '/product/liability',
+    '/product/life',
+    '/product/motor',
+    '/product/pension',
+    '/product/pet',
+    '/product/property',
+    '/product/travel',
+    '/questionnaires',
+    '/renewals',
+    '/solutions/agents',
+    '/subprocessors',
+    '/tasks',
+    '/team',
+    '/terms',
+    '/upgrade',
+    '/wallet',
+    '/wallet/add',
 ]
 
 /** Overflow + touch targets at the CURRENT viewport. */
@@ -142,6 +248,7 @@ test.describe('responsive, accessibility and runtime quality', () => {
         const a11y: string[] = []
         const runtime: string[] = []
         let scanned = 0
+        const skipped: string[] = []
 
         page.on('pageerror', (e) => runtime.push(`PAGE ERROR ${page.url()}: ${String(e).slice(0, 110)}`))
         page.on('console', (m) => {
@@ -164,23 +271,37 @@ test.describe('responsive, accessibility and runtime quality', () => {
             } catch {
                 continue
             }
-            scanned++
-
-            for (const p of (await page.evaluate(scanA11y)) as string[]) a11y.push(`${route} ${p}`)
-
-            for (const width of WIDTHS) {
-                await page.setViewportSize({ width, height: width < 500 ? 844 : 900 })
-                await page.waitForTimeout(160) // let CSS settle
-                const r = (await page.evaluate(scanViewport)) as any
-                if (r.scrollW > r.vw + 2) {
-                    overflow.push(`${route} @${width}px scrolls horizontally: ${r.scrollW}px in ${r.vw}px`)
-                }
-                for (const e of r.escapes) overflow.push(`${route} @${width}px escapes: ${e}`)
-                for (const t of r.smallTargets) targets.push(`${route} @${width}px ${t}`)
+            // A route that redirects AFTER goto resolves — an admin page bouncing
+            // a policyholder — destroys the execution context mid-evaluate and
+            // previously took the whole 108-route sweep down. Guard each scan.
+            try {
+                for (const p of (await page.evaluate(scanA11y)) as string[]) a11y.push(`${route} ${p}`)
+            } catch {
+                skipped.push(`${route} (a11y scan interrupted)`)
             }
+
+            let widthsDone = 0
+            for (const width of WIDTHS) {
+                try {
+                    await page.setViewportSize({ width, height: width < 500 ? 844 : 900 })
+                    await page.waitForTimeout(160) // let CSS settle
+                    const r = (await page.evaluate(scanViewport)) as any
+                    widthsDone++
+                    if (r.scrollW > r.vw + 2) {
+                        overflow.push(`${route} @${width}px scrolls horizontally: ${r.scrollW}px in ${r.vw}px`)
+                    }
+                    for (const e of r.escapes) overflow.push(`${route} @${width}px escapes: ${e}`)
+                    for (const t of r.smallTargets) targets.push(`${route} @${width}px ${t}`)
+                } catch {
+                    /* navigated mid-scan; recorded via widthsDone below */
+                }
+            }
+            if (widthsDone === WIDTHS.length) scanned++
+            else skipped.push(`${route} (${widthsDone}/${WIDTHS.length} widths)`)
         }
 
-        console.log(`[ui quality] ${scanned}/${ROUTES.length} routes x ${WIDTHS.length} widths`)
+        console.log(`[ui quality] ${scanned}/${ROUTES.length} routes fully scanned x ${WIDTHS.length} widths`)
+        if (skipped.length) console.log(`[ui quality] ${skipped.length} incomplete: ` + skipped.slice(0, 10).join(', '))
         console.log(`[ui quality] overflow=${overflow.length} touch=${targets.length} a11y=${a11y.length} runtime=${runtime.length}`)
         for (const [name, list] of [
             ['OVERFLOW', overflow],

@@ -335,7 +335,7 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
                                 </div>
                                 <button
                                     onClick={() => setSent((prev) => ({ ...prev, [i]: true }))}
-                                    className={`flex flex-shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-kicker font-semibold transition-all ${
+                                    className={`flex min-h-[24px] flex-shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-kicker font-semibold transition-all ${
                                         isSent
                                             ? "bg-[#F0FDF4] dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0]"
                                             : "bg-[#29685B] text-white hover:bg-[#1C4E44]"
