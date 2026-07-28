@@ -255,8 +255,9 @@ function SignupConfirmationContent() {
                 <LocaleToggle ariaLabel={uiText.userMenu.language} />
             </header>
 
-            {/* Card */}
-            <div className="flex flex-1 items-center justify-center px-4 py-10">
+            {/* Card — a <main> landmark, not a div: this page has a header above
+                it, so without one there is nothing to skip to. */}
+            <main className="flex flex-1 items-center justify-center px-4 py-10">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -417,7 +418,7 @@ function SignupConfirmationContent() {
                         </div>
                     ) : null}
                 </motion.div>
-            </div>
+            </main>
         </div>
     )
 }

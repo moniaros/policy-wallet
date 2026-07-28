@@ -271,6 +271,14 @@ test.describe('responsive, accessibility and runtime quality', () => {
             } catch {
                 continue
             }
+            // A route that only redirects (e.g. /coverage -> /coverage-insights)
+            // renders no content of its own; auditing it audits the destination
+            // twice and reports the redirect stub as having no <h1>.
+            if (!page.url().endsWith(route) && !page.url().includes(route + '?')) {
+                skipped.push(`${route} (redirects to ${new URL(page.url()).pathname})`)
+                continue
+            }
+
             // A route that redirects AFTER goto resolves — an admin page bouncing
             // a policyholder — destroys the execution context mid-evaluate and
             // previously took the whole 108-route sweep down. Guard each scan.

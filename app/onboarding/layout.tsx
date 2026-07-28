@@ -18,9 +18,11 @@ export default async function OnboardingLayout({
     return (
         // AiConsentModal (shared with the protected tree) reads `t`.
         <TranslationsProvider>
-            <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col">
+            {/* A landmark, not a plain div: onboarding is the first screen a
+                new user meets, and it had no skip-link destination. */}
+            <main className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col">
                 {children}
-            </div>
+            </main>
         </TranslationsProvider>
     )
 }
