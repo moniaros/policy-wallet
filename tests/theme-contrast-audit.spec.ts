@@ -384,3 +384,95 @@ for (const theme of ['light', 'dark'] as const) {
         })
     })
 }
+
+/**
+ * THEME SWITCHING: repeatedly toggling, refreshing and navigating must never
+ * leave a surface painted in the previous theme.
+ *
+ * Compares a computed-style fingerprint for INEQUALITY, so colour-space
+ * serialisation is irrelevant — a surface that did not repaint is one whose
+ * fingerprint failed to change when the theme did.
+ */
+const FINGERPRINT = `(() => {
+  const pick = ['body', 'main', 'aside', 'header', 'h1', 'table', '[role="dialog"]'];
+  const parts = [];
+  for (const sel of pick) {
+    const el = document.querySelector(sel);
+    if (!el) { parts.push(sel + ':absent'); continue }
+    const cs = getComputedStyle(el);
+    parts.push(sel + ':' + cs.color + '/' + cs.backgroundColor + '/' + cs.borderColor);
+  }
+  return parts.join(' ~ ');
+})()`
+
+async function setThemeLive(page: Page, theme: 'light' | 'dark') {
+    await page.evaluate((t) => {
+        window.localStorage.setItem('theme', t)
+        const r = document.documentElement
+        r.classList.remove('light', 'dark')
+        r.classList.add(t)
+    }, theme)
+    await page.waitForTimeout(400)
+}
+
+test.describe('theme switching leaves no stale styles', () => {
+    test('toggle, refresh and navigate all repaint correctly', async ({ page }) => {
+        test.setTimeout(12 * 60_000)
+        const problems: string[] = []
+        const routes = ['/dashboard', '/wallet', '/account']
+
+        for (const path of routes) {
+            await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
+            await dismissCookieBanner(page)
+            await page.waitForTimeout(600)
+
+            // Toggle repeatedly — a surface that only repaints on first switch
+            // shows up as an unchanged fingerprint on a later pass.
+            let prevLight = ''
+            let prevDark = ''
+            for (let round = 0; round < 3; round++) {
+                await setThemeLive(page, 'light')
+                const light = (await page.evaluate(FINGERPRINT)) as string
+                await setThemeLive(page, 'dark')
+                const dark = (await page.evaluate(FINGERPRINT)) as string
+
+                if (light === dark) {
+                    problems.push(`${path} round ${round}: fingerprint IDENTICAL in both themes — nothing repainted`)
+                }
+                if (round > 0 && light !== prevLight) {
+                    problems.push(`${path} round ${round}: light differs from the previous light pass — stale style`)
+                }
+                if (round > 0 && dark !== prevDark) {
+                    problems.push(`${path} round ${round}: dark differs from the previous dark pass — stale style`)
+                }
+                prevLight = light
+                prevDark = dark
+            }
+
+            // Refresh must reproduce the dark fingerprint exactly.
+            await page.reload({ waitUntil: 'domcontentloaded', timeout: 90_000 })
+            await dismissCookieBanner(page)
+            await page.waitForTimeout(700)
+            const afterReload = (await page.evaluate(FINGERPRINT)) as string
+            if (afterReload !== prevDark) {
+                problems.push(`${path}: dark fingerprint changed across a refresh — theme did not persist cleanly`)
+            }
+        }
+
+        // Navigate between pages and return: the fingerprint must match a fresh load.
+        await page.goto(routes[0], { waitUntil: 'domcontentloaded', timeout: 90_000 })
+        await dismissCookieBanner(page)
+        await page.waitForTimeout(700)
+        const fresh = (await page.evaluate(FINGERPRINT)) as string
+        await page.goto(routes[1], { waitUntil: 'domcontentloaded', timeout: 90_000 })
+        await page.waitForTimeout(500)
+        await page.goto(routes[0], { waitUntil: 'domcontentloaded', timeout: 90_000 })
+        await page.waitForTimeout(700)
+        const returned = (await page.evaluate(FINGERPRINT)) as string
+        if (returned !== fresh) {
+            problems.push(`${routes[0]}: fingerprint differs after navigating away and back — stale style carried over`)
+        }
+
+        expect(problems.join('\n'), `theme-switch problems:\n${problems.join('\n')}`).toBe('')
+    })
+})
