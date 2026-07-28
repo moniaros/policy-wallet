@@ -38,7 +38,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                     <p className="text-sm font-semibold text-foreground">{agent.name}</p>
                     <div className="flex items-center gap-1">
                         {isAgentVerified(agent.verificationStatus) && (
-                            <ShieldCheck className="h-3 w-3 text-[#22C55E]" />
+                            <ShieldCheck className="h-3 w-3 text-green-500 dark:text-green-400" />
                         )}
                         <span className="text-kicker text-muted-foreground">
                             {t.agentUi.licensedAgent}

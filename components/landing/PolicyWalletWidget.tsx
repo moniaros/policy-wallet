@@ -160,7 +160,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <Link
                             href="/auth/signup?role=policyholder&source=widget_gap_fix"
                             aria-label={t("Διόρθωση κενού κάλυψης κατοικίας", "Fix home coverage gap")}
-                            className="flex-shrink-0 rounded-full bg-[#ECFDF5] dark:bg-[#29685B]/15 px-2.5 py-1 text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0] hover:bg-[#D1FAE5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B]"
+                            className="flex-shrink-0 rounded-full bg-[#ECFDF5] dark:bg-[#29685B]/15 px-2.5 py-1 text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0] hover:bg-[#D1FAE5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                         >
                             {t("Διόρθωση →", "Fix →")}
                         </Link>

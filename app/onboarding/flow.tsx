@@ -427,7 +427,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 ) : (
                                     <div className="space-y-3 text-sm text-stone-700">
                                         <div className="flex items-center gap-2">
-                                            <Sparkles className="h-4 w-4 text-[#4F46E5]" />
+                                            <Sparkles className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                                             <span>
                                                 {uploadedPolicyId && analysisResult?.status === "completed"
                                                     ? t("Η ανάλυση AI ολοκληρώθηκε!", "AI analysis completed!")

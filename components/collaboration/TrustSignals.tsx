@@ -81,7 +81,7 @@ export function VerifiedInsurerBadge({ insurerName, verified = true }: VerifiedI
 
     return (
         <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-neutral-700 dark:text-neutral-300">
-            {verified && <ShieldCheck className="h-3 w-3 text-[#22C55E]" />}
+            {verified && <ShieldCheck className="h-3 w-3 text-green-500 dark:text-green-400" />}
             {insurerName}
         </span>
     )

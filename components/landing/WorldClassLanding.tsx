@@ -284,7 +284,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                         {/* Connector arrow (desktop only, between steps) */}
                                         {i < arr.length - 1 && (
                                             <div className="hidden items-center px-6 pt-7 md:flex">
-                                                <ArrowRight className="h-5 w-5 text-[#CBD5E1]" />
+                                                <ArrowRight className="h-5 w-5 text-slate-300 dark:text-slate-500" />
                                             </div>
                                         )}
                                     </div>

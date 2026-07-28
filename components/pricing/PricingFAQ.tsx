@@ -35,7 +35,7 @@ export function PricingFAQ({ language, items, className = "" }: PricingFAQProps)
                                 onClick={() => setOpenIndex(isOpen ? null : idx)}
                                 aria-expanded={isOpen ? "true" : "false"}
                                 aria-controls={panelId}
-                                className="flex w-full cursor-pointer items-center justify-between px-6 py-4 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B]/40 dark:hover:bg-slate-800"
+                                className="flex w-full cursor-pointer items-center justify-between px-6 py-4 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:hover:bg-slate-800"
                             >
                                 <span className="pr-4 font-bold text-slate-900 dark:text-white">{item.question[language]}</span>
                                 <span
