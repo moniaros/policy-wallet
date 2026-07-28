@@ -85,16 +85,24 @@ execution context under the scanner's style injection and had been taking the
 whole sweep down. Per-route try/catch + a 75% coverage floor fixed that — the
 sweep was never timing out, and raising the budget could never have helped.
 
-### One open UI defect
+### Layout — COMPLETE, zero findings
 
-`/product/business` scrolls horizontally at 390px: `documentElement.scrollWidth`
-is 428 against a 390px viewport. Reproduced directly. Note that **no element's
-bounding rect exceeds the viewport** — the extra 38px comes from a pseudo-element
-or similar, so the usual "find the wide child" approach returns nothing. Only
-surfaced once the sweep went from 22 to 108 routes.
+108 routes x desktop/tablet/mobile: **4/4 passed, 0 findings** (43m). Covers
+horizontal overflow, elements escaping the viewport, and text clipped without
+an ellipsis.
 
-Deliberately NOT fixed with `overflow-x: hidden`: that hides the symptom and
-would make the layout audit go quiet about a real defect.
+The last open defect is FIXED. `/product/business` scrolled sideways at 390px
+(scrollWidth 428). No element's rect exceeded the viewport, so the usual "find
+the wide child" probe returned nothing. Bisecting — hide each subtree, watch
+scrollWidth — found the hero `<h1>`: its box measures 342px and fits, but its
+MIN-CONTENT width overflows, because «πολυασφαλιστήριο» is a single unbreakable
+17-character word wider than the viewport at `text-h1`.
+
+`overflow-wrap:anywhere` is the one value that shrinks intrinsic min-content
+width (`break-word` does not). Applied to all 16 hero headings sharing the
+pattern, since every LoB page carries Greek compounds of the same shape.
+NOT fixed with `overflow-x:hidden`, which hides the symptom and silences the
+audit.
 
 ### The lesson that cost the most
 
