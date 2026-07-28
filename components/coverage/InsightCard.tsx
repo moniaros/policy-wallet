@@ -121,7 +121,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                 {insight.isPlusFeature ? (
                     <div className="rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 px-4 py-5 text-center space-y-3">
                         <Lock className="w-6 h-6 mx-auto text-black/35 dark:text-white/60" />
-                        <p className="text-sm text-black/55 dark:text-white/60">
+                        <p className="text-sm text-black/70 dark:text-white/75">
                             {language === 'el'
                                 ? 'Αναβάθμισε για να δεις ανάλυση και προτεινόμενες ενέργειες.'
                                 : 'Upgrade to see the full analysis and recommended actions.'}
@@ -131,9 +131,9 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                     <div className="space-y-4">
                         <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/10 dark:border-white/15">
                             <div className="flex gap-2.5">
-                                <Info className="w-4 h-4 text-black/55 dark:text-white/55 mt-0.5 flex-shrink-0" />
+                                <Info className="w-4 h-4 text-black/70 dark:text-white/70 mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <span className="text-kicker font-semibold text-black/55 dark:text-white/55 uppercase tracking-widest block mb-1">
+                                    <span className="text-kicker font-semibold text-black/70 dark:text-white/70 uppercase tracking-widest block mb-1">
                                         {COPY.whyItMatters[language]}
                                     </span>
                                     <p className="text-black/80 dark:text-white/80 text-sm leading-relaxed">{insight.whyItMatters}</p>
