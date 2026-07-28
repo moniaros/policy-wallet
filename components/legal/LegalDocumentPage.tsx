@@ -126,13 +126,13 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                             <Link
                                 key={link.kind}
                                 href={link.href}
-                                className="text-sm font-semibold text-primary hover:text-primary-hover"
+                                className="inline-flex min-h-[24px] items-center text-sm font-semibold text-primary hover:text-primary-hover"
                             >
                                 {link.label}
                             </Link>
                         ))}
                         <span className="text-stone-300 dark:text-slate-600">|</span>
-                        <Link href="/" className="text-sm font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900">
+                        <Link href="/" className="inline-flex min-h-[24px] items-center text-sm font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white">
                             {content.ui.backToHome}
                         </Link>
                     </div>

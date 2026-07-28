@@ -182,7 +182,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-[24px] items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>
@@ -200,7 +200,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-[24px] items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>
@@ -224,7 +224,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-[24px] items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>

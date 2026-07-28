@@ -332,6 +332,7 @@ pre {
     }
   }
 
+
   .pw-app-canvas {
     @apply bg-[radial-gradient(circle_at_top_right,_rgba(41,104,91,0.06),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
   }

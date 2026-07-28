@@ -178,7 +178,7 @@ export default function AgentSolutionsPage() {
                             )}
                         </p>
                         <Link href={localizeHref("/pricing?audience=agent", language)} className="inline-flex items-center gap-1.5 text-body font-semibold text-[#0F172A] dark:text-white hover:underline">
-                            {t("Μετάβαση στα πλάνα ασφαλιστών", "Go to agent plans")} <ArrowRight className="h-4 w-4" />
+                            {t("Μετάβαση στα πλάνα ασφαλιστών", "Go to agent plans")} <ArrowRight className="inline-flex min-h-[24px] items-center h-4 w-4" />
                         </Link>
                     </div>
 

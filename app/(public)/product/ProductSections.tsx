@@ -252,7 +252,7 @@ export function ProductSections({ language }: { language: Language }) {
                             <ProductScrollButton
                                 targetId="product-categories"
                                 headingId="product-categories-heading"
-                                className="inline-flex flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-body font-semibold text-[#29685B] dark:text-[#A7F3D0] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
+                                className="min-h-[24px] inline-flex flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-body font-semibold text-[#29685B] dark:text-[#A7F3D0] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
                             >
                                 {t("Δείτε όλα", "Explore all")}
                                 <ChevronDown className="h-4 w-4" />

@@ -150,7 +150,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                             <p className="text-caption font-semibold text-[#92400E] dark:text-amber-200">
                                 {t("Κενό κάλυψης εντοπίστηκε", "Coverage gap detected")}
                             </p>
-                            <p className="text-micro text-[#92400E] dark:text-amber-200">
+                            <p className="inline-flex min-h-[24px] items-center text-micro text-[#92400E] dark:text-amber-200">
                                 {t(
                                     "Κατοικία — λείπει κάλυψη πλημμύρας",
                                     "Home — missing flood coverage"
