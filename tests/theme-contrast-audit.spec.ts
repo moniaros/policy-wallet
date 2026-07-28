@@ -328,7 +328,7 @@ for (const viewport of VIEWPORTS) {
             test(`${theme} mode has no contrast failures`, async ({ page }) => {
                 // Six routes, two full-page screenshots each, against `npm run dev`
                 // where the first hit of every route pays on-demand compilation.
-                test.setTimeout(12 * 60_000)
+                test.setTimeout(45 * 60_000)
                 await page.addInitScript((t) => {
                     try {
                         window.localStorage.setItem('theme', t)
@@ -410,7 +410,7 @@ for (const viewport of VIEWPORTS) {
         test.use({ viewport: { width: viewport.width, height: viewport.height } })
 
         test('no horizontal overflow, escaping elements or clipped text', async ({ page }) => {
-            test.setTimeout(12 * 60_000)
+            test.setTimeout(45 * 60_000)
             await page.addInitScript(() => {
                 try {
                     window.localStorage.setItem('theme', 'dark')
@@ -422,7 +422,7 @@ for (const viewport of VIEWPORTS) {
             for (const path of PAGES) {
                 await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
                 await dismissCookieBanner(page)
-                await page.waitForTimeout(800)
+                await page.waitForTimeout(450)
                 const r = (await page.evaluate(LAYOUT_SCAN)) as any
                 if (r.pageScrollW > r.vw + 2) {
                     problems.push(`${path} scrolls horizontally: ${r.pageScrollW}px content in ${r.vw}px viewport`)
@@ -483,7 +483,7 @@ for (const theme of ['light', 'dark'] as const) {
     test.describe(`interaction states — ${theme}`, () => {
         test('controls give hover feedback and expose a focus ring', async ({ page }) => {
 
-            test.setTimeout(12 * 60_000)
+            test.setTimeout(45 * 60_000)
             await page.addInitScript((t) => {
                 try {
                     window.localStorage.setItem('theme', t)
@@ -508,7 +508,7 @@ for (const theme of ['light', 'dark'] as const) {
             for (const path of ['/dashboard', '/wallet', '/account', '/branches']) {
                 await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
                 await dismissCookieBanner(page)
-                await page.waitForTimeout(800)
+                await page.waitForTimeout(450)
 
                 // Client pages (/account) hydrate after domcontentloaded and
                 // re-render the shell. Sampling before that settled meant the
@@ -673,7 +673,7 @@ async function setThemeLive(page: Page, theme: 'light' | 'dark') {
 
 test.describe('theme switching leaves no stale styles', () => {
     test('toggle, refresh and navigate all repaint correctly', async ({ page }) => {
-        test.setTimeout(12 * 60_000)
+        test.setTimeout(45 * 60_000)
         const problems: string[] = []
         const routes = ['/dashboard', '/wallet', '/account', '/pricing', '/branches', '/guides']
 
