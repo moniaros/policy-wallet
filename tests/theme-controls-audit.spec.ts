@@ -19,87 +19,119 @@ const VIEWPORTS = [
 
 const PAGES = ['/dashboard', '/wallet', '/account', '/branches', '/pricing', '/', '/upgrade', '/help']
 
-/** sRGB relative luminance + WCAG contrast, on composited pixels. */
-const HELPERS = `
-const lum = (r, g, b) => {
-  const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4) }
-  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
-}
-const parse = (s) => {
-  const m = String(s).match(/-?[0-9.]+/g)
-  if (!m || m.length < 3) return null
-  return [Math.round(+m[0]), Math.round(+m[1]), Math.round(+m[2]), m.length > 3 ? +m[3] : 1]
-}
-const over = (fg, bg) => {
-  const a = fg[3]
-  return [fg[0] * a + bg[0] * (1 - a), fg[1] * a + bg[1] * (1 - a), fg[2] * a + bg[2] * (1 - a), 1]
-}
-/** Walk up until an opaque background is found, compositing translucent ones. */
-const surface = (el) => {
-  let acc = null
-  for (let n = el; n; n = n.parentElement) {
-    const c = parse(getComputedStyle(n).backgroundColor)
-    if (!c || c[3] === 0) continue
-    acc = acc ? over(acc, c) : c
-    if (acc[3] >= 0.999) return acc
-  }
-  return acc || [255, 255, 255, 1]
-}
-const ratio = (a, b) => {
-  const l1 = lum(a[0], a[1], a[2]), l2 = lum(b[0], b[1], b[2])
-  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)
-}
-`
+/**
+ * Colour readers as REAL FUNCTIONS, not evaluate()-as-string.
+ *
+ * The string form is what made the contrast audit's SNAP return `undefined` on
+ * /account, and it made every one of the 74 buttons here unmeasurable. Playwright
+ * parses a string pageFunction in its own way; a function reference does not go
+ * through that path at all. Helpers are nested so each reader is self-contained.
+ */
+function readState(el: Element) {
+    const lum = (r: number, g: number, b: number) => {
+        const f = (v: number) => {
+            v /= 255
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+    }
+    const parse = (str: string): number[] | null => {
+        const m = String(str).match(/-?[0-9.]+/g)
+        if (!m || m.length < 3) return null
+        return [Math.round(+m[0]), Math.round(+m[1]), Math.round(+m[2]), m.length > 3 ? +m[3] : 1]
+    }
+    const over = (fg: number[], bg: number[]) => {
+        const a2 = fg[3]
+        return [fg[0] * a2 + bg[0] * (1 - a2), fg[1] * a2 + bg[1] * (1 - a2), fg[2] * a2 + bg[2] * (1 - a2), 1]
+    }
+    // Walk up compositing translucent backgrounds until an opaque one is found —
+    // a /10 wash is not the colour its token names.
+    const surface = (node: Element): number[] => {
+        let acc: number[] | null = null
+        for (let n: Element | null = node; n; n = n.parentElement) {
+            const c = parse(getComputedStyle(n).backgroundColor)
+            if (!c || c[3] === 0) continue
+            acc = acc ? over(acc, c) : c
+            if (acc[3] >= 0.999) return acc
+        }
+        return acc || [255, 255, 255, 1]
+    }
+    const ratio = (x: number[], y: number[]) => {
+        const l1 = lum(x[0], x[1], x[2])
+        const l2 = lum(y[0], y[1], y[2])
+        return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)
+    }
 
-/** Read a control's colours in its CURRENT state. */
-const READ_STATE = `(el) => {
-${HELPERS}
-  if (!el.isConnected) return null
-  const cs = getComputedStyle(el)
-  const bg = surface(el)
-  let fg = parse(cs.color)
-  if (!fg) return null
-  if (fg[3] < 1) fg = over(fg, bg)
-  const r = el.getBoundingClientRect()
-  return {
-    cr: Math.round(ratio(fg, bg) * 100) / 100,
-    fg: 'rgb(' + fg.slice(0, 3).map(Math.round).join(',') + ')',
-    bg: 'rgb(' + bg.slice(0, 3).map(Math.round).join(',') + ')',
-    opacity: cs.opacity,
-    outline: cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0,
-    shadow: cs.boxShadow !== 'none' && cs.boxShadow !== '',
-    fontPx: parseFloat(cs.fontSize),
-    bold: parseInt(cs.fontWeight, 10) >= 700,
-    w: Math.round(r.width),
-    h: Math.round(r.height),
-    text: (el.textContent || '').trim().slice(0, 24),
-  }
-}`
-
-/** A surface (card/dialog/menu) must not be a light island in dark mode. */
-const READ_SURFACES = `(() => {
-${HELPERS}
-  const out = []
-  const sel = '.pw-card, [role=dialog], [role=menu], [role=listbox], [role=tooltip], aside, dialog, [class*=card], [class*=modal], [class*=dropdown], [class*=panel]'
-  const seen = new Set()
-  for (const el of Array.from(document.querySelectorAll(sel)).slice(0, 60)) {
-    const r = el.getBoundingClientRect()
-    if (r.width < 40 || r.height < 24) continue
+    if (!el.isConnected) return null
     const cs = getComputedStyle(el)
-    if (cs.visibility === 'hidden' || cs.display === 'none') continue
     const bg = surface(el)
-    const key = bg.slice(0, 3).map(Math.round).join(',')
-    if (seen.has(key)) continue
-    seen.add(key)
-    out.push({
-      bg: 'rgb(' + key + ')',
-      L: Math.round(lum(bg[0], bg[1], bg[2]) * 1000) / 1000,
-      cls: String(el.className || '').slice(0, 60),
-      tag: el.tagName,
-    })
-  }
-  return out
-})()`
+    let fg = parse(cs.color)
+    if (!fg) return null
+    if (fg[3] < 1) fg = over(fg, bg)
+    const r = el.getBoundingClientRect()
+    return {
+        cr: Math.round(ratio(fg, bg) * 100) / 100,
+        fg: 'rgb(' + fg.slice(0, 3).map(Math.round).join(',') + ')',
+        bg: 'rgb(' + bg.slice(0, 3).map(Math.round).join(',') + ')',
+        outline: cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0,
+        shadow: cs.boxShadow !== 'none' && cs.boxShadow !== '',
+        fontPx: parseFloat(cs.fontSize),
+        bold: parseInt(cs.fontWeight, 10) >= 700,
+        w: Math.round(r.width),
+        h: Math.round(r.height),
+    }
+}
+
+function readSurfaces() {
+    const lum = (r: number, g: number, b: number) => {
+        const f = (v: number) => {
+            v /= 255
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+    }
+    const parse = (str: string): number[] | null => {
+        const m = String(str).match(/-?[0-9.]+/g)
+        if (!m || m.length < 3) return null
+        return [Math.round(+m[0]), Math.round(+m[1]), Math.round(+m[2]), m.length > 3 ? +m[3] : 1]
+    }
+    const over = (fg: number[], bg: number[]) => {
+        const a2 = fg[3]
+        return [fg[0] * a2 + bg[0] * (1 - a2), fg[1] * a2 + bg[1] * (1 - a2), fg[2] * a2 + bg[2] * (1 - a2), 1]
+    }
+    const surface = (node: Element): number[] => {
+        let acc: number[] | null = null
+        for (let n: Element | null = node; n; n = n.parentElement) {
+            const c = parse(getComputedStyle(n).backgroundColor)
+            if (!c || c[3] === 0) continue
+            acc = acc ? over(acc, c) : c
+            if (acc[3] >= 0.999) return acc
+        }
+        return acc || [255, 255, 255, 1]
+    }
+
+    const out: { bg: string; L: number; cls: string; tag: string }[] = []
+    const sel =
+        '.pw-card, [role=dialog], [role=menu], [role=listbox], [role=tooltip], aside, dialog, [class*=card], [class*=modal], [class*=dropdown], [class*=panel]'
+    const seen = new Set<string>()
+    for (const el of Array.from(document.querySelectorAll(sel)).slice(0, 60)) {
+        const r = el.getBoundingClientRect()
+        if (r.width < 40 || r.height < 24) continue
+        const cs = getComputedStyle(el)
+        if (cs.visibility === 'hidden' || cs.display === 'none') continue
+        const bg = surface(el)
+        const key = bg.slice(0, 3).map(Math.round).join(',')
+        if (seen.has(key)) continue
+        seen.add(key)
+        out.push({
+            bg: 'rgb(' + key + ')',
+            L: Math.round(lum(bg[0], bg[1], bg[2]) * 1000) / 1000,
+            cls: String(el.className || '').slice(0, 60),
+            tag: el.tagName,
+        })
+    }
+    return out
+}
 
 for (const theme of THEMES) {
     test.describe(`button states — ${theme}`, () => {
@@ -149,7 +181,7 @@ for (const theme of THEMES) {
                         // DEFAULT
                         await page.mouse.move(2, 2)
                         await page.waitForTimeout(180)
-                        const def = (await el.evaluate(READ_STATE)) as any
+                        const def = (await el.evaluate(readState)) as any
                         if (!def) {
                             unmeasured.push(`${path} "${label}"`)
                             continue
@@ -182,7 +214,7 @@ for (const theme of THEMES) {
                         // FOCUSED — a visible indicator is required (WCAG 2.4.7).
                         await el.evaluate((b) => (b as HTMLElement).focus())
                         await page.waitForTimeout(220)
-                        const foc = (await el.evaluate(READ_STATE)) as any
+                        const foc = (await el.evaluate(readState)) as any
                         if (foc && !foc.outline && !foc.shadow && foc.fg === def.fg && foc.bg === def.bg) {
                             problems.push(`${path} [${theme}] NO FOCUS INDICATOR — "${label}"`)
                         }
@@ -195,7 +227,7 @@ for (const theme of THEMES) {
                         // by the interaction-states check).
                         await el.hover({ timeout: 2500 })
                         await page.waitForTimeout(320)
-                        const hov = (await el.evaluate(READ_STATE)) as any
+                        const hov = (await el.evaluate(readState)) as any
                         if (hov && hov.cr < need) {
                             problems.push(`${path} [${theme}] HOVER unreadable "${label}" ${hov.cr}:1 fg=${hov.fg} bg=${hov.bg}`)
                         }
@@ -206,7 +238,7 @@ for (const theme of THEMES) {
                             await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
                             await page.mouse.down()
                             await page.waitForTimeout(220)
-                            const pressed = (await el.evaluate(READ_STATE)) as any
+                            const pressed = (await el.evaluate(readState)) as any
                             await page.mouse.up()
                             await page.waitForTimeout(120)
                             if (pressed && pressed.cr < need) {
@@ -250,7 +282,7 @@ for (const viewport of VIEWPORTS) {
                 await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
                 await dismissCookieBanner(page)
                 await page.waitForTimeout(900)
-                const surfaces = (await page.evaluate(READ_SURFACES)) as any[]
+                const surfaces = (await page.evaluate(readSurfaces)) as any[]
                 for (const s of surfaces) {
                     checked++
                     // In dark mode a card/dialog/menu surface must not be light.
