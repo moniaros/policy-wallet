@@ -271,7 +271,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                         {sending ? NO_AGENT_COPY.sending[lang] : NO_AGENT_COPY.sendInvite[lang]}
                                     </button>
                                 </div>
-                                {emailError && <p className="mt-2 text-xs text-red-700">{emailError}</p>}
+                                {emailError && <p className="mt-2 text-xs text-red-700 dark:text-red-300">{emailError}</p>}
 
                                 <button
                                     type="button"
@@ -304,7 +304,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                                                 {redeeming ? NO_AGENT_COPY.submitting[lang] : NO_AGENT_COPY.submit[lang]}
                                             </button>
                                         </div>
-                                        {codeError && <p className="mt-2 text-xs text-red-700">{codeError}</p>}
+                                        {codeError && <p className="mt-2 text-xs text-red-700 dark:text-red-300">{codeError}</p>}
                                     </div>
                                 )}
                             </>

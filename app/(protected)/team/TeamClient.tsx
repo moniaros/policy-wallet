@@ -340,7 +340,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         <option value="manager">{t.manager}</option>
                     </select>
                     {inviteError && (
-                        <p className="text-xs text-red-700 font-bold flex items-center gap-1">
+                        <p className="text-xs text-red-700 dark:text-red-300 font-bold flex items-center gap-1">
                             <AlertCircle className="w-3 h-3" /> {inviteError}
                         </p>
                     )}
@@ -628,7 +628,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                     </div>
 
                     {error && (
-                        <p className="mt-4 text-xs text-red-700 font-bold flex items-center justify-center gap-1">
+                        <p className="mt-4 text-xs text-red-700 dark:text-red-300 font-bold flex items-center justify-center gap-1">
                             <AlertCircle className="w-3 h-3" /> {error}
                         </p>
                     )}

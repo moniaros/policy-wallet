@@ -52,20 +52,22 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
     ]
 
     return (
-        <div className="min-h-screen bg-stone-50">
+        <div className="min-h-screen bg-stone-50 dark:bg-slate-950">
             <PublicHeader locale={language} />
 
             <main id={SKIP_LINK_TARGET_ID} tabIndex={-1} className="px-4 pb-12 pt-28 sm:px-6 lg:px-8 lg:pt-32">
-                <div className="mx-auto max-w-3xl rounded-2xl border border-stone-100 bg-white p-8 shadow-sm">
-                    <div className="mb-8 border-b border-stone-100 pb-4">
-                        <h1 className="text-3xl font-bold text-stone-900">{document.title}</h1>
+                {/* The card had NO dark variants while its muted line did (dark:text-stone-400),
+                    so the background stayed white and the text lightened onto it — 2.59:1. */}
+                <div className="mx-auto max-w-3xl rounded-2xl border border-stone-100 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div className="mb-8 border-b border-stone-100 pb-4 dark:border-slate-800">
+                        <h1 className="text-3xl font-bold text-stone-900 dark:text-white">{document.title}</h1>
                         <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-stone-500 dark:text-stone-400">
                             <span>{content.ui.lastUpdatedLabel}: {lastUpdatedDisplay}</span>
                             <span>{content.ui.versionLabel}: {versionDisplay}</span>
                         </div>
                     </div>
 
-                    <div className="prose prose-stone max-w-none text-stone-700">
+                    <div className="prose prose-stone max-w-none text-stone-700 dark:prose-invert dark:text-slate-300">
                         {document.intro.map((paragraph, index) => (
                             <p key={`intro-${index}`}>{paragraph}</p>
                         ))}
@@ -119,7 +121,7 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                         ))}
                     </div>
 
-                    <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-stone-100 pt-6">
+                    <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-stone-100 pt-6 dark:border-slate-800">
                         {legalNavLinks.map((link) => (
                             <Link
                                 key={link.kind}
@@ -129,7 +131,7 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                                 {link.label}
                             </Link>
                         ))}
-                        <span className="text-stone-300">|</span>
+                        <span className="text-stone-300 dark:text-slate-600">|</span>
                         <Link href="/" className="text-sm font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900">
                             {content.ui.backToHome}
                         </Link>

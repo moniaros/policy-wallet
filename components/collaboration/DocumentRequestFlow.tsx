@@ -215,7 +215,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             {/* Urgency badge */}
             {request.urgency === "urgent" && (
                 <div className="flex items-center gap-1.5 mb-3">
-                    <AlertTriangle className="h-4 w-4 text-red-700" />
+                    <AlertTriangle className="h-4 w-4 text-red-700 dark:text-red-300" />
                     <span className="text-xs font-bold text-red-700 dark:text-red-400 uppercase">
                         {t.collaboration.documentRequests.urgent}
                     </span>
@@ -246,7 +246,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             {error && (
                 <div className="flex items-center gap-2 mt-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 px-3 py-2">
                     <AlertTriangle className="h-4 w-4 text-red-700 dark:text-red-400 shrink-0" />
-                    <p className="text-xs text-red-700 dark:text-red-400">{error}</p>
+                    <p className="text-xs text-red-700 dark:text-red-300 dark:text-red-400">{error}</p>
                     <button
                         type="button"
                         onClick={() => setError(null)}

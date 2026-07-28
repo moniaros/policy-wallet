@@ -253,7 +253,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <AnimatePresence>
                             {serverError && (
-                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-body-sm text-rose-700" role="alert">
+                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300" role="alert">
                                     <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                                     <span>{serverError}</span>
                                 </motion.div>

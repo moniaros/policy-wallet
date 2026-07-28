@@ -290,7 +290,7 @@ function SignupConfirmationContent() {
 
                     {!loadingState && !isAuthenticated ? (
                         <div className="space-y-4">
-                            <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+                            <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
                                 {copy.authMissing}
                             </div>
                             <Link

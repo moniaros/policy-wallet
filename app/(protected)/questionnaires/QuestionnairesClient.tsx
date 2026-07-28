@@ -534,7 +534,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                     </button>
 
                     {error && (
-                        <p className="mt-4 text-xs text-red-700 font-bold flex items-center gap-1">
+                        <p className="mt-4 text-xs text-red-700 dark:text-red-300 font-bold flex items-center gap-1">
                             <AlertCircle className="w-3 h-3" /> {error}
                         </p>
                     )}

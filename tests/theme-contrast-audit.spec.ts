@@ -25,7 +25,33 @@ import { dismissCookieBanner } from './helpers/ui'
  */
 test.skip(!process.env.RUN_UX_AUDIT, 'Theme audit — run with RUN_UX_AUDIT=1')
 
-const PAGES = ['/dashboard', '/wallet', '/coverage-insights', '/renewals', '/account', '/branches']
+const PAGES = [
+    // Authenticated surfaces
+    '/dashboard',
+    '/wallet',
+    '/coverage-insights',
+    '/renewals',
+    '/account',
+    '/branches',
+    '/notifications',
+    '/tasks',
+    '/help',
+    '/upgrade',
+    // Public marketing + content + legal. These render for an authenticated
+    // session too, so one pass covers both trees.
+    '/',
+    '/pricing',
+    '/product',
+    '/product/motor',
+    '/product/property',
+    '/guides',
+    '/lexiko',
+    '/company',
+    '/contact',
+    '/terms',
+    '/privacy',
+    '/solutions/agents',
+]
 
 const VIEWPORTS = [
     { name: 'desktop', width: 1440, height: 900 },
@@ -419,7 +445,7 @@ test.describe('theme switching leaves no stale styles', () => {
     test('toggle, refresh and navigate all repaint correctly', async ({ page }) => {
         test.setTimeout(12 * 60_000)
         const problems: string[] = []
-        const routes = ['/dashboard', '/wallet', '/account']
+        const routes = ['/dashboard', '/wallet', '/account', '/pricing', '/branches', '/guides']
 
         for (const path of routes) {
             await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })

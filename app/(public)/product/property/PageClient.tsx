@@ -46,7 +46,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
                                     <span className="text-[#475569] dark:text-slate-300">Rebuild Cost Threshold</span>
-                                    <span className="font-medium text-amber-700">Underinsured by 15%</span>
+                                    <span className="font-medium text-amber-700 dark:text-amber-300">Underinsured by 15%</span>
                                 </div>
                                 <div className="w-full bg-gray-100 h-2 rounded-full">
                                     <div className="bg-amber-500 w-[85%] h-2 rounded-full" />
