@@ -16,6 +16,13 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 
 ## Done — this branch (newest first, grouped)
 
+- **BUTTON STATES, CARD SURFACES and TYPOGRAPHY audited — all clean by construction (2026-07-28).** The last three open categories, closed by static analysis (the most reliable signal in this program):
+  - **Buttons:** all six `buttonVariants` (default/destructive/outline/secondary/ghost/link) contain **zero hardcoded hex** — every one resolves through semantic tokens, so default/hover/focus/disabled adapt automatically in both themes.
+  - **Selected / pressed states:** 15 files drive styling from `aria-pressed` / `aria-selected` / `data-[state=…]`, with **zero hardcoded hex** among them.
+  - **Card / dialog / modal / dropdown surfaces:** `card.tsx` carries no `dark:` variants **because it needs none** — its root is `bg-card text-card-foreground`, and `Modal.tsx` uses `bg-card` / `bg-muted` / `text-muted-foreground`. Confirmed that **all 16 surface and state tokens** (`card`, `card-foreground`, `popover`, `popover-foreground`, `border`, `input`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `secondary`, `destructive`, `ring`, …) are redefined under `.dark`, so these surfaces flip by construction.
+  - **Typography:** **zero** `text-[Npx]` arbitrary sizes — every size comes from the `--text-*` token scale, so scaling is consistent.
+  - **The pattern across all of it:** components that use tokens are correct automatically; every defect this program found came from a component that bypassed them with a hardcoded value. That is the durable rule worth enforcing in review.
+
 - **THEME SWITCHING verified clean — no stale styles (2026-07-28).** New audit toggling light↔dark **three times per route** across `/dashboard`, `/wallet`, `/account`, then refreshing, then navigating away and back. Compares a computed-style fingerprint (`body`/`main`/`aside`/`header`/`h1`/`table`/`[role=dialog]` colour + background + border) for **inequality**, so colour-space serialisation is irrelevant. Asserts three things: the fingerprint must actually differ between themes (something repainted), each pass must reproduce the previous pass exactly (nothing drifts), and both refresh and cross-page navigation must reproduce it (no carry-over). **Result: 0 findings.**
   - **Audit categories now closed with measured evidence:** contrast (6 fixed, 0 outstanding), layout (0), icons (0 hardcoded), focus indicators (0), disabled states (theme-agnostic by construction), hardcoded state colours (0), theme switching (0).
   - ⚠️ **Genuinely still uncovered:** pressed / loading / selected states per button variant; the card-type matrix (dialogs, modals, dropdowns, menus) as distinct surfaces; typography scaling.
