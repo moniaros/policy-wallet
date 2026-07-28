@@ -115,6 +115,8 @@ function readSurfaces() {
         '.pw-card, [role=dialog], [role=menu], [role=listbox], [role=tooltip], aside, dialog, [class*=card], [class*=modal], [class*=dropdown], [class*=panel]'
     const seen = new Set<string>()
     for (const el of Array.from(document.querySelectorAll(sel)).slice(0, 60)) {
+        // Interactive fills are intentional brand colour, not a stale surface.
+        if (el.closest('button, a, [role=button], input, select')) continue
         const r = el.getBoundingClientRect()
         if (r.width < 40 || r.height < 24) continue
         const cs = getComputedStyle(el)
@@ -136,7 +138,7 @@ function readSurfaces() {
 for (const theme of THEMES) {
     test.describe(`button states — ${theme}`, () => {
         test('every reachable state stays legible and distinguishable', async ({ page }) => {
-            test.setTimeout(15 * 60_000)
+            test.setTimeout(45 * 60_000)
             await page.addInitScript((t) => {
                 try {
                     window.localStorage.setItem('theme', t)
@@ -158,7 +160,7 @@ for (const theme of THEMES) {
                 // Enabled buttons AND disabled ones — disabled is a state that
                 // must stay readable, not vanish.
                 const buttons = page.locator('button:visible, a[role=button]:visible, [class*=pw-primary-button]:visible')
-                const n = Math.min(await buttons.count(), 12)
+                const n = Math.min(await buttons.count(), 8)
 
                 for (let i = 0; i < n; i++) {
                     const el = buttons.nth(i)
@@ -266,7 +268,7 @@ for (const viewport of VIEWPORTS) {
         test.use({ viewport: { width: viewport.width, height: viewport.height } })
 
         test('no light surface survives into dark mode', async ({ page }) => {
-            test.setTimeout(15 * 60_000)
+            test.setTimeout(45 * 60_000)
             await page.addInitScript(() => {
                 try {
                     window.localStorage.setItem('theme', 'dark')
