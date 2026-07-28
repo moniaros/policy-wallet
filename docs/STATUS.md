@@ -1,5 +1,66 @@
 # PolicyWallet — Project Status
 
+## Theme & UI consistency audit — 2026-07-28
+
+**Full matrix green.** Theme audit (every route x desktop/tablet/mobile x
+light/dark) plus theme-switch/stale-styles: **8/8 passed, 0 contrast findings**.
+Layout audit (overflow, viewport escapes, clipped text): **4/4 passed, 0
+findings**.
+
+### Two "false positives" were real
+
+The scanner fix that exposed them — sampling the background beside the glyph run
+instead of across the whole element box — kept both alive, which forced a second
+look at findings I had dismissed:
+
+1. `ProductSections` warn branch: `border-amber-100 bg-amber-50` with no dark
+   variant, beside an ok branch that correctly carried `dark:bg-slate-900`.
+   Child text `text-[#0F172A] dark:text-white`. **White on amber-50, 1.04:1.**
+2. `.pw-app-canvas` — the canvas under every authenticated page — painted
+   `linear-gradient(..., #f8fafc, #ffffff)` with no `.dark` override, while its
+   sibling `.pw-page-shell` had had one all along.
+
+### Why every earlier sweep missed them — the durable lesson
+
+- The static theme-pair audit reads a whole `className` body as ONE string. In
+  `${warn ? "bg-amber-50" : "... dark:bg-slate-900"}` it sees both tokens and
+  calls it covered. Those are two mutually exclusive elements: a dark variant on
+  one branch masks its absence on the other. Making the audit **branch-aware**
+  immediately surfaced 56 more. The same blind spot was in the *fixer*, whose
+  "already paired?" lookahead read across the ternary boundary.
+- A gradient paints via `background-image`, so a computed `backgroundColor`
+  check reports `transparent` and never sees it. Only a composited pixel does.
+  Anything translucent above it (a `/10` or `/15` wash) blended toward white and
+  lost contrast in dark mode.
+
+### Fixed
+
+- 140 light-only surfaces paired with dark partners across 53 files
+- `.dark .pw-app-canvas`; swept globals.css for other light gradients: none
+- Tablet header overflow: PublicHeader showed nav + actions from `md:` but they
+  need ~1024px; at 834px the CTA ran 84px off-screen on `/` and `/company`.
+  Moved to `lg:`, keeping the hamburger that already existed.
+
+### Scanner defects corrected
+
+Background now sampled beside the glyph run. `sr-only` skip links no longer read
+as truncated text — that guard's regex sat inside a template literal and reached
+the browser with its escape stripped, so it split on the letter "s" and could
+never match. Hover compared at 400ms rather than 120ms against 150ms
+transitions, with the pointer parked between controls, `aria-current` items
+exempt, and a pointer-reachability gate.
+
+### Open
+
+`interaction states` reports every `/account` control as lacking hover feedback.
+A direct probe shows all of them responding (logo opacity 1 -> 0.8; nav items
+`oklab(0 0 0 / 0.6)` -> `rgb(0, 0, 0)`). Ruled out: transition timing, pointer
+reachability, stale locators, late hydration, snapshot window, test timeout.
+**The product is correct here; this one page's harness result is not
+trustworthy.** Documented at the check.
+
+**Not deployed** — 4 commits on `NEW-UI` awaiting go-ahead.
+
 _Living dashboard — not a log. Updated at the end of each session with meaningful work. Keep it under one screen._
 
 **Last updated:** 2026-07-26 — **MERGED + DEPLOYED.** The `claude/ui-foundation-audit-gtm05i` audit branch (381 commits) was fast-forward-merged into `NEW-UI` (`65183b7..702b3a8`, pushed) and deployed to production via `vercel --prod` (`dpl_5b9WXjU522u8vhLgytsHNbjDBnS1`, READY; all 5 aliases incl. apex + `www.policywallet.gr` moved; www 200 / apex 308 apex→www redirect). No DB migration (zero schema/migration changes across the branch). Full guardrail gate green pre-merge: api-auth, tsc, lint, i18n/utf8/encoding, 2385 unit tests, prod build (`verify:migrations` schema-validates; only the unreachable dev-DB probe fails — environmental). Prior: insurance-correctness audit on the branch. Latest: verified the wallet un-fork plan (audit-map Phases 2 & 3) is complete and removed the last dead leftover (`hooks/useResponsive.ts`, all 5 exports 0-importer); re-confirmed `components/wallet/EmptyState.tsx` is LIVE (rendered by `PolicyWallet.tsx` via relative import) — the plan's "delete as 0-importer" was wrong and correctly not done. Prior: PolicyAnalysisTabs (policy-detail Analysis/Insights toggle) refactored to the shared `useTabs` hook for real tab semantics, guarded; raw contractual-date-render class verified CLOSED tree-wide. Prior: wallet policy-table UTC-vs-Athens date + `scope="col"`; agent-inbox unread-badge aria-label; CoverageTabView tab semantics. Prior: Pet card SOUND (branch family complete); Life/Home cards SOUND; policyholder home dashboard SOUND. **Convergence note:** the customer-facing insurance-content surfaces are auditing consistently SOUND; genuinely-unaudited areas left are largely environment-gated (mobile-viewport/E2E need Playwright) or intentionally out of insurance-correctness scope (admin console, English by design). Older detail in [status-archive-2026-07.md](status-archive-2026-07.md).
