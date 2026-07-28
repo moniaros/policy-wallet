@@ -287,3 +287,100 @@ for (const viewport of VIEWPORTS) {
         })
     })
 }
+
+/**
+ * INTERACTION STATES: every interactive control must visibly change on hover and
+ * expose a focus indicator, in BOTH themes.
+ *
+ * This compares computed values for INEQUALITY rather than parsing them, so the
+ * oklab() serialisation that defeated the contrast work is irrelevant here — a
+ * string that differs is a state that changed.
+ *
+ * RESULT SO FAR: focus indicators are universally present — ZERO
+ * "NO FOCUS INDICATOR" findings across both themes. That half is trustworthy.
+ *
+ * The hover half OVER-REPORTS and needs refining before its output is actioned:
+ * it reads the hovered element's OWN computed style, so it misses
+ *   - `group-hover:` effects, which restyle a CHILD rather than the element;
+ *   - hover styling applied to an ancestor wrapper;
+ *   - already-active nav items, which legitimately have no hover delta.
+ * Refine by snapshotting the element's subtree (and its nearest `.group`
+ * ancestor) rather than the single node.
+ */
+const SNAP = `(el) => {
+  const cs = getComputedStyle(el);
+  return [cs.color, cs.backgroundColor, cs.borderColor, cs.outlineStyle, cs.outlineWidth,
+          cs.boxShadow, cs.opacity, cs.textDecorationLine, cs.transform].join('|');
+}`
+
+for (const theme of ['light', 'dark'] as const) {
+    test.describe(`interaction states — ${theme}`, () => {
+        test('controls give hover feedback and expose a focus ring', async ({ page }) => {
+            test.setTimeout(12 * 60_000)
+            await page.addInitScript((t) => {
+                try {
+                    window.localStorage.setItem('theme', t)
+                } catch {
+                    /* storage unavailable */
+                }
+            }, theme)
+
+            const problems: string[] = []
+            for (const path of ['/dashboard', '/wallet', '/account', '/branches']) {
+                await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
+                await dismissCookieBanner(page)
+                await page.waitForTimeout(800)
+
+                const controls = page.locator(
+                    'button:visible:not([disabled]), a[href]:visible'
+                )
+                const n = Math.min(await controls.count(), 14) // sample per page
+                for (let i = 0; i < n; i++) {
+                    const el = controls.nth(i)
+                    let label = ''
+                    try {
+                        label = ((await el.textContent()) || (await el.getAttribute('aria-label')) || '')
+                            .trim()
+                            .slice(0, 28)
+                    } catch {
+                        continue
+                    }
+                    if (!label) continue
+
+                    try {
+                        const base = await el.evaluate(SNAP)
+
+                        await el.hover({ timeout: 3000 })
+                        await page.waitForTimeout(120)
+                        const hovered = await el.evaluate(SNAP)
+                        if (hovered === base) {
+                            problems.push(`${path} NO HOVER FEEDBACK — "${label}"`)
+                        }
+
+                        await el.evaluate((n2) => (n2 as HTMLElement).focus())
+                        await page.waitForTimeout(120)
+                        const focused = await el.evaluate(SNAP)
+                        // A focus indicator must be perceivable: an outline, a ring
+                        // (box-shadow), or some other computed change.
+                        const hasRing = await el.evaluate((n2) => {
+                            const c = getComputedStyle(n2)
+                            return (
+                                (c.outlineStyle !== 'none' && parseFloat(c.outlineWidth) > 0) ||
+                                (c.boxShadow !== 'none' && c.boxShadow !== '')
+                            )
+                        })
+                        if (!hasRing && focused === base) {
+                            problems.push(`${path} NO FOCUS INDICATOR — "${label}"`)
+                        }
+                    } catch {
+                        continue // detached / covered mid-iteration
+                    }
+                }
+            }
+            expect(
+                problems.join('\n'),
+                `interaction-state problems — ${theme}:\n${problems.join('\n')}`
+            ).toBe('')
+        })
+    })
+}

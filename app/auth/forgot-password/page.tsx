@@ -188,7 +188,7 @@ export default function ForgotPasswordPage() {
                                     {copy.emailLabel}
                                 </label>
                                 <div className="relative">
-                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A]" />
+                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
                                     <input
                                         id="forgot-email"
                                         type="email"

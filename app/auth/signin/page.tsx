@@ -227,7 +227,7 @@ export default function SignInPage() {
                             <div>
                                 <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">Email</label>
                                 <div className="relative">
-                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A]" />
+                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
                                     <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputBase} pl-9`} placeholder="name@example.com" />
                                 </div>
                             </div>
@@ -235,7 +235,7 @@ export default function SignInPage() {
                             <div>
                                 <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.phonePlaceholder}</label>
                                 <div className="relative">
-                                    <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A]" />
+                                    <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
                                     <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className={`${inputBase} pl-9`} placeholder="+30 69X XXX XXXX" />
                                 </div>
                             </div>
@@ -245,7 +245,7 @@ export default function SignInPage() {
                         <div>
                             <label htmlFor="signin-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.passwordLabel}</label>
                             <div className="relative">
-                                <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A]" />
+                                <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
                                 <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={`${inputBase} pl-9`} />
                             </div>
                         </div>
