@@ -205,3 +205,85 @@ for (const viewport of VIEWPORTS) {
         }
     })
 }
+
+/**
+ * LAYOUT: horizontal overflow, elements escaping the viewport, and text clipped
+ * without an ellipsis. All three are mechanically detectable and are the layout
+ * faults that actually reach users — a page that scrolls sideways on a phone, a
+ * control pushed off-screen, a label cut mid-word with no affordance.
+ */
+const LAYOUT_SCAN = `(() => {
+  const vw = document.documentElement.clientWidth;
+  const out = { pageScrollW: document.documentElement.scrollWidth, vw, escapes: [], clipped: [] };
+  document.querySelectorAll('body *').forEach(el => {
+    const cs = getComputedStyle(el);
+    if (cs.visibility === 'hidden' || cs.display === 'none' || cs.position === 'fixed') return;
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return;
+
+    // Escapes the viewport horizontally. Ignore deliberately scrollable strips.
+    if (r.right > vw + 2 || r.left < -2) {
+      let scrollable = false;
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        const pcs = getComputedStyle(p);
+        if (pcs.overflowX === 'auto' || pcs.overflowX === 'scroll') { scrollable = true; break }
+      }
+      // Two legitimate patterns look like escapes and are not:
+      //  - the off-canvas nav drawer, parked fully outside the viewport
+      //    (identical bounds on every page at tablet width);
+      //  - decorative blur/gradient blobs, which carry no text.
+      // Only content the user is meant to read counts.
+      const fullyOffCanvas = r.right <= 0 || r.left >= vw;
+      const hasText = (el.textContent || '').trim().length > 0;
+      if (!scrollable && !fullyOffCanvas && hasText && out.escapes.length < 6) {
+        out.escapes.push({ tag: el.tagName, cls: String(el.className || '').slice(0, 60),
+          left: Math.round(r.left), right: Math.round(r.right),
+          txt: (el.textContent || '').trim().slice(0, 30) });
+      }
+    }
+
+    // Text wider than its box with no ellipsis and no wrapping = silently cut.
+    const txt = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join('').trim();
+    if (txt.length > 3 && el.scrollWidth > el.clientWidth + 2 && cs.overflow !== 'visible'
+        && cs.textOverflow !== 'ellipsis' && cs.overflowX !== 'auto' && cs.overflowX !== 'scroll'
+        && out.clipped.length < 6) {
+      out.clipped.push({ tag: el.tagName, cls: String(el.className || '').slice(0, 60),
+        scrollW: el.scrollWidth, clientW: el.clientWidth, txt: txt.slice(0, 30) });
+    }
+  });
+  return out;
+})()`
+
+for (const viewport of VIEWPORTS) {
+    test.describe(`layout audit — ${viewport.name}`, () => {
+        test.use({ viewport: { width: viewport.width, height: viewport.height } })
+
+        test('no horizontal overflow, escaping elements or clipped text', async ({ page }) => {
+            test.setTimeout(12 * 60_000)
+            await page.addInitScript(() => {
+                try {
+                    window.localStorage.setItem('theme', 'dark')
+                } catch {
+                    /* storage unavailable */
+                }
+            })
+            const problems: string[] = []
+            for (const path of PAGES) {
+                await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
+                await dismissCookieBanner(page)
+                await page.waitForTimeout(800)
+                const r = (await page.evaluate(LAYOUT_SCAN)) as any
+                if (r.pageScrollW > r.vw + 2) {
+                    problems.push(`${path} scrolls horizontally: ${r.pageScrollW}px content in ${r.vw}px viewport`)
+                }
+                for (const e of r.escapes) {
+                    problems.push(`${path} escapes viewport [${e.left}..${e.right} of ${r.vw}] <${e.tag}> "${e.txt}" ${e.cls}`)
+                }
+                for (const c of r.clipped) {
+                    problems.push(`${path} clipped without ellipsis (${c.scrollW}>${c.clientW}) <${c.tag}> "${c.txt}" ${c.cls}`)
+                }
+            }
+            expect(problems.join('\n'), `layout problems — ${viewport.name}:\n${problems.join('\n')}`).toBe('')
+        })
+    })
+}
