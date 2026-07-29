@@ -575,8 +575,8 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
 
                     <div className="space-y-3 text-left">
                         <div>
-                            <label className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
-                            <input
+                            <label htmlFor="team-name" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
+                            <input id="team-name"
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
