@@ -61,7 +61,7 @@ export function ProductSections({ language }: { language: Language }) {
                         {t("Διαθέσιμο τώρα", "Available now")}
                     </div>
 
-                    <h1 className="mb-6 text-h1 font-semibold leading-[1.02] tracking-[-0.045em] text-[#0F172A] dark:text-white md:text-display">
+                    <h1 className="inline-flex min-h-[24px] items-center mb-6 text-h1 font-semibold leading-[1.02] tracking-[-0.045em] text-[#0F172A] dark:text-white md:text-display">
                         {t(
                             "Όλες οι ασφαλίσεις σας. Ένα έξυπνο πορτοφόλι.",
                             "All your insurance. One intelligent wallet."

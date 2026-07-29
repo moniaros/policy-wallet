@@ -41,7 +41,7 @@ export function BranchCoverageMap({
                 <p className="pw-kicker">{labels.kicker}</p>
                 <Link
                     href="/branches"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                    className="inline-flex min-h-[24px] items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {labels.viewAll}
                     <ArrowRight className="h-3 w-3" aria-hidden />

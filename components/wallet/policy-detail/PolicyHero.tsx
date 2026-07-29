@@ -122,7 +122,12 @@ export function PolicyHero({
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                        {/* -inverse, NOT .pw-secondary-button. The plain class sets
+                        color: var(--pw-text-primary-light) and only flips via
+                        `.dark .pw-secondary-button` — but this hero is #111111 in
+                        BOTH themes, so in light mode it rendered dark text on a
+                        near-black surface and the three actions were invisible. */}
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                             {displayPolicyNumber && (
                                 <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
                                     <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.policyId}</p>
@@ -193,7 +198,7 @@ export function PolicyHero({
 
                         <button
                             onClick={onShare}
-                            className="pw-secondary-button min-h-12 bg-white/5"
+                            className="pw-secondary-button-inverse min-h-12 bg-white/5"
                         >
                             <Share2 className="h-4 w-4" />
                             {copy.sharePolicy}
@@ -201,7 +206,7 @@ export function PolicyHero({
 
                         <button
                             onClick={onDownload}
-                            className="pw-secondary-button min-h-12 bg-white/5"
+                            className="pw-secondary-button-inverse min-h-12 bg-white/5"
                         >
                             <Download className="h-4 w-4" />
                             {copy.downloadContract}
@@ -209,7 +214,7 @@ export function PolicyHero({
 
                         <button
                             onClick={onCallInsurer}
-                            className="pw-secondary-button min-h-12 bg-white/5"
+                            className="pw-secondary-button-inverse min-h-12 bg-white/5"
                         >
                             <Phone className="h-4 w-4" />
                             {copy.contactInsurer}

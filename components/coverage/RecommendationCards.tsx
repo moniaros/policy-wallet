@@ -437,7 +437,7 @@ export function RecommendationCards({
                                                 href="/agent"
                                                 className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                                             >
-                                                <MessageCircle className="h-3 w-3" />
+                                                <MessageCircle className="inline-flex min-h-[24px] items-center h-3 w-3" />
                                                 {t("Ρωτήστε τον σύμβουλό μου", "Ask my agent")}
                                             </Link>
                                         )}
@@ -445,7 +445,7 @@ export function RecommendationCards({
                                         <button
                                             type="button"
                                             onClick={() => handleDismiss(rec.id, "not_relevant")}
-                                            className="text-xs text-black/55 hover:text-black/70 hover:underline cursor-pointer dark:text-white/60 dark:hover:text-white/70"
+                                            className="inline-flex min-h-[24px] items-center text-xs text-black/55 hover:text-black/70 hover:underline cursor-pointer dark:text-white/60 dark:hover:text-white/70"
                                         >
                                             {t("Μη σχετικό για εμένα", "Mark as not relevant")}
                                         </button>

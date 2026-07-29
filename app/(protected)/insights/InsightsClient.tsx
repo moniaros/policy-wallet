@@ -508,7 +508,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             </h2>
                             <Link
                                 href="/renewals"
-                                className="text-xs font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint/80 transition-colors"
+                                className="inline-flex min-h-[24px] items-center text-xs font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint/80 transition-colors"
                             >
                                 {p.manageRenewals}
                             </Link>
