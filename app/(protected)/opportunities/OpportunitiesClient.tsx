@@ -269,6 +269,17 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         medic: selectedOpp.medic,
                     }}
                     onUpdate={handleUpdate}
+                    // Without this, a € / EB patch left the row's score stale AND
+                    // reopening the modal re-seeded from the stale row — the
+                    // advisor's saved edits looked lost.
+                    onMedicChange={(opportunityId, medic, medicScore) => {
+                        setOpportunities(opps =>
+                            opps.map(o => o.id === opportunityId ? { ...o, medic, medicScore } : o)
+                        )
+                        setSelectedOpp(prev =>
+                            prev && prev.id === opportunityId ? { ...prev, medic, medicScore } : prev
+                        )
+                    }}
                 />
             )}
         </div>

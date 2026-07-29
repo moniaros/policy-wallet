@@ -29,9 +29,12 @@ interface OpportunityUpdateModalProps {
         medic?: MedicData | null
     }
     onUpdate: (opportunityId: string, status: string, notes: string, nextActionDate?: string) => Promise<void>
+    /** Reports persisted medic changes (patch / apply-suggestions) so the list
+     *  row doesn't go stale — the modal re-seeds from the row on every open. */
+    onMedicChange?: (opportunityId: string, medic: MedicData, medicScore: number) => void
 }
 
-export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate }: OpportunityUpdateModalProps) {
+export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate, onMedicChange }: OpportunityUpdateModalProps) {
     const { t } = useLanguage()
     const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
     const tt = t.agentModals.opportunityUpdate
@@ -106,6 +109,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
         if (res && 'success' in res && res.success) {
             setSuggestions(null)
             setMedicView(res.medic as MedicData)
+            onMedicChange?.(opportunity.id, res.medic as MedicData, res.medicScore)
             toast.success(tt.suggestApplied)
         } else {
             toast.error(tt.suggestError)
@@ -117,6 +121,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
         const res = await patchOpportunityMedic(opportunity.id, patch)
         if (res && 'success' in res && res.success) {
             setMedicView(res.medic as MedicData)
+            onMedicChange?.(opportunity.id, res.medic as MedicData, res.medicScore)
         } else {
             toast.error(tt.scPatchError)
         }

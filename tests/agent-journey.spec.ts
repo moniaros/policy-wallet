@@ -281,6 +281,17 @@ test.describe('MEDIC evidence ladder', () => {
         // The badge flips in place (medicView refresh, no reload).
         await expect(page.getByText(/Πλήρης εικόνα|Full picture/i).first()).toBeVisible({ timeout: 15000 });
 
+        // Staleness guard: closing and reopening must NOT resurrect pre-patch
+        // data — the modal re-seeds from the list row, so the row must have
+        // been updated too (onMedicChange). Regression: saved € and EB looked
+        // lost on reopen.
+        await page.getByRole('dialog').getByRole('button', { name: /Κλείσιμο|Close/i }).click();
+        await expect(page.getByRole('dialog')).toHaveCount(0);
+        await page.getByRole('button', { name: /Ενημέρωση|Update/i }).first().click();
+        await page.getByText(/Προβολή αξιολόγησης|Show qualification/i).click();
+        await expect(page.getByText(/Πλήρης εικόνα|Full picture/i).first()).toBeVisible({ timeout: 15000 });
+        await expect(page.getByText('€25000').first()).toBeVisible();
+
         // Observable contract in the DB: score crossed the gate + EB persisted.
         const db = await prismaClient();
         try {
