@@ -97,6 +97,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                             <input
                                 type="file"
                                 accept="image/*"
+                                aria-label={t("Ανεβάστε λογότυπο", "Upload logo")}
                                 onChange={handleLogoUpload}
                                 className="absolute inset-0 opacity-0 cursor-pointer"
                                 title={t("Ανεβάστε λογότυπο", "Upload logo")}
@@ -108,6 +109,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                                 <input
                                     type="file"
                                     accept="image/*"
+                                    aria-label={t("Ανεβάστε λογότυπο", "Upload logo")}
                                     onChange={handleLogoUpload}
                                     className="hidden"
                                 />

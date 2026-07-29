@@ -18,7 +18,9 @@ export default function AgentOnboardingPage() {
                 </div>
 
                 <div className="relative z-10">
-                    <h1 className="text-2xl font-bold tracking-tight">PolicyWallet <span className="text-mint">Pro</span></h1>
+                    {/* A brand mark, not the page heading — each onboarding step renders its
+                        own <h1>, so marking the logo up as one produced two per page. */}
+                    <p className="text-2xl font-bold tracking-tight">PolicyWallet <span className="text-mint">Pro</span></p>
                 </div>
 
                 <div className="relative z-10 max-w-lg">

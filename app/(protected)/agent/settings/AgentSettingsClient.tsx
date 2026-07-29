@@ -151,8 +151,8 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         <div className="pw-card pw-pad-roomy space-y-8 border-t-4 border-t-primary">
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.agencyName}</label>
-                                    <input
+                                    <label htmlFor="agent-settings-agency-name" className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.agencyName}</label>
+                                    <input id="agent-settings-agency-name"
                                         type="text"
                                         value={agencyName}
                                         onChange={(e) => setAgencyName(e.target.value)}
@@ -162,8 +162,8 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.licenseNumber}</label>
-                                    <input
+                                    <label htmlFor="agent-settings-license-number" className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.licenseNumber}</label>
+                                    <input id="agent-settings-license-number"
                                         type="text"
                                         value={licenseNumber}
                                         onChange={(e) => setLicenseNumber(e.target.value)}
@@ -206,8 +206,12 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                             {language === "el" ? lob.el : lob.en}
                                         </span>
                                         <div className="flex items-center gap-1">
+                                            {/* Named only by an adjacent span: a screen reader
+                                                announced an unlabelled number field with no idea
+                                                which branch it belonged to. */}
                                             <input
                                                 type="number"
+                                                aria-label={`${language === "el" ? lob.el : lob.en} %`}
                                                 min={0}
                                                 max={100}
                                                 step={0.5}
@@ -276,7 +280,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
                                 <Link
                                     href="/agent/pricing"
-                                    className="inline-flex items-center gap-2 text-sm font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
+                                    className="inline-flex min-h-[24px] items-center gap-2 text-sm font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
                                 >
                                     {pick(SETTINGS_COPY.upgradePlan, language)}
                                     <ArrowUpRight className="w-4 h-4" />

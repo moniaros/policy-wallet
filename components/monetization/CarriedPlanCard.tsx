@@ -154,7 +154,7 @@ export function CarriedPlanCard({ planId, billingPeriod, className = "" }: Carri
                     <button
                         type="button"
                         onClick={dismiss}
-                        className="text-xs font-semibold text-black/60 hover:text-black/70 dark:text-white/55 dark:hover:text-white/75"
+                        className="inline-flex min-h-[24px] items-center text-xs font-semibold text-black/60 hover:text-black/70 dark:text-white/55 dark:hover:text-white/75"
                     >
                         {pick(COPY.dismiss, language)}
                     </button>

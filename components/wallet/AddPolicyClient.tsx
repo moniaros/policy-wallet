@@ -225,6 +225,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 </div>
 
                 <div className="max-w-3xl mx-auto px-4 py-8">
+                    {/* The route had no <h1>: screen-reader users landed on a form
+                        with no page heading to orient them. Visually hidden because
+                        the sticky bar above already names the page on screen. */}
+                    <h1 className="sr-only">{t.wallet?.addPolicy ?? "Add policy"}</h1>
                     <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
 
                         {reviewData?.status === 'action_needed' ? (
