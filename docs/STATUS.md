@@ -6,6 +6,27 @@
 > my own tooling was wrong rather than the product.
 
 
+## MEDIC concurrency (CAS) + 320px edit strip — 2026-07-29 — MERGED + DEPLOYED
+
+`NEW-UI` @ `39cf907`, deploy `dpl_2RMcYZ34…` (`nuh9ww1nf`), Ready, apex+www
+verified. Sweep's last two angles closed:
+
+- **Concurrent medic writers silently overwrote each other.** All four
+  writers (€/EB patch, apply-suggestions, confirmGap sync, proposal-validate
+  sync) did read→merge→write-whole-JSON unguarded: a patch could regress the
+  pain-ladder mirror; a sync could drop a just-saved € figure. Fix:
+  `lib/medic/cas.ts` — optimistic compare-and-swap on the existing
+  `medicUpdatedAt` stamp (conditional updateMany; lost race → re-read,
+  re-merge, 3 attempts; IO injected so the loop is pure). No schema change.
+  5 unit tests incl. a race simulation proving both writes survive.
+- **§F edit strip verified at 320px** (never rendered at phone widths before):
+  no overflow, controls in-viewport, 24px tap floor — pinned as ladder E2E
+  test 5 (5/5). 2484 unit tests + full gate green.
+
+MEDIC issue-sweep tally so far: mirror desync, scorecard-empty, unreachable
+`qualified`, row/reopen staleness, concurrent lost-updates — all fixed,
+each with a regression guard. Next round must come up clean to close the goal.
+
 ## MEDIC row-staleness fix + audit's touch-target rule — 2026-07-29 — MERGED + DEPLOYED
 
 `NEW-UI` @ `6dc2136`, deploy `dpl_EHqyAUaK…` (`7v2cgne0v`), Ready, apex+www
