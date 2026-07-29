@@ -126,7 +126,7 @@ export function PolicyPreviewRow({
             <div
                 className={`grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] ${warn ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-primary-soft dark:bg-primary/15"}`}
             >
-                <Icon className={`h-4 w-4 ${warn ? "text-[#92400E]" : "text-primary dark:text-mint"}`} />
+                <Icon className={`h-4 w-4 ${warn ? "text-[#92400E] dark:text-amber-200" : "text-primary dark:text-mint"}`} />
             </div>
             <div className="min-w-0 flex-1 text-left">
                 <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
@@ -135,7 +135,7 @@ export function PolicyPreviewRow({
             <span
                 className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-bold uppercase tracking-widest ${
                     warn
-                        ? "bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-900/30 text-[#92400E]"
+                        ? "bg-[#FEF3C7] dark:bg-amber-900/30 text-[#92400E] dark:text-amber-200"
                         : "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
                 }`}
             >
@@ -190,7 +190,7 @@ export function RenewalPreviewRow({
                 <p className="truncate text-body-sm font-semibold text-foreground">{name}</p>
                 <p className="text-micro text-[var(--pw-text-muted)] dark:text-white/55">{meta}</p>
             </div>
-            <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#92400E]">
+            <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#92400E] dark:text-amber-200">
                 {daysLabel}
             </span>
         </div>
@@ -211,7 +211,7 @@ export function RecommendationPreviewCard({
             <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
                 <p className="flex-1 truncate text-body-sm font-semibold text-foreground">{title}</p>
-                <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#92400E]">
+                <span className="flex-shrink-0 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-widest text-[#92400E] dark:text-amber-200">
                     {urgencyLabel}
                 </span>
             </div>

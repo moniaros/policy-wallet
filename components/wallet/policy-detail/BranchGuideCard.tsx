@@ -121,7 +121,7 @@ export function BranchGuideCard({
                                         <div className="flex flex-wrap items-center gap-2">
                                             <p className="text-xs font-bold text-black dark:text-white">{gap.title}</p>
                                             {gap.detected && (
-                                                <span className="inline-flex items-center rounded-full border border-amber-300 dark:border-amber-800/40 bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-black uppercase tracking-widest text-[#92400E] dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
+                                                <span className="inline-flex items-center rounded-full border border-amber-300 dark:border-amber-800/40 bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-black uppercase tracking-widest text-[#92400E] dark:text-amber-200 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
                                                     {copy.guideDetectedChip}
                                                 </span>
                                             )}

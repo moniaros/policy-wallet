@@ -267,7 +267,7 @@ export function LifeCoverageDetails({ acordData, language, hints }: LifeCoverage
               </div>
               <div>
                 <span className="text-sm font-semibold text-[#92400E] dark:text-amber-300">{hints?.surrender ? <GlossaryHint hint={hints.surrender} /> : lifeCopy.surrenderValue}</span>
-                <p className="text-xs text-[#92400E]/80 dark:text-amber-400/80">{lifeCopy.surrenderWarning}</p>
+                <p className="text-xs text-[#92400E] dark:text-amber-400/80">{lifeCopy.surrenderWarning}</p>
               </div>
             </div>
             <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{fmt(life.surrenderValue)}</span>

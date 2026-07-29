@@ -589,7 +589,7 @@ export function AnalysisCard({
                                 <p className="text-sm font-bold text-[#92400E] dark:text-amber-400">
                                     {t.analysis.errors.agentUpgradeRequired}
                                 </p>
-                                <p className="mt-1 text-xs text-[#92400E]/80 dark:text-amber-400/80">
+                                <p className="mt-1 text-xs text-[#92400E] dark:text-amber-400/80">
                                     {t.analysis.errors.agentUpgradeRequiredHint}
                                 </p>
                                 <Link

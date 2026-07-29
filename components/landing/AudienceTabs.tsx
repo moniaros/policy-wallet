@@ -166,7 +166,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">
                         {t("Τα συμβόλαιά μου", "My Policies")}
                     </p>
-                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-500/15 px-2.5 py-1 text-micro font-semibold text-[#92400E] dark:text-amber-200">
+                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-500/15 px-2.5 py-1 text-micro font-semibold text-[#92400E] dark:text-amber-200">
                         1 {t("κενό", "gap")}
                     </span>
                 </div>
@@ -183,7 +183,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                             >
                                 <p.Icon
                                     className={`h-4 w-4 ${
-                                        p.type === "warn" ? "text-[#92400E]" : "text-[#29685B] dark:text-[#A7F3D0]"
+                                        p.type === "warn" ? "text-[#92400E] dark:text-amber-200" : "text-[#29685B] dark:text-[#A7F3D0]"
                                     }`}
                                 />
                             </div>
@@ -312,7 +312,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                                 {c.name}
                             </span>
                             {c.alert ? (
-                                <span className="flex items-center gap-1 rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-500/15 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:text-amber-200">
+                                <span className="flex items-center gap-1 rounded-full bg-[#FEF3C7] dark:bg-amber-500/15 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:text-amber-200">
                                     <AlertTriangle className="h-2.5 w-2.5" />
                                     {c.renewal}d
                                 </span>

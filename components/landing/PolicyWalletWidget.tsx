@@ -97,7 +97,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                 >
                                     <p.Icon
                                         className={`h-5 w-5 ${
-                                            p.type === "expiring" ? "text-[#92400E]" : "text-[#29685B] dark:text-[#A7F3D0]"
+                                            p.type === "expiring" ? "text-[#92400E] dark:text-amber-200" : "text-[#29685B] dark:text-[#A7F3D0]"
                                         }`}
                                     />
                                 </div>
@@ -109,7 +109,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                         <span
                                             className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
                                                 p.type === "expiring"
-                                                    ? "bg-[#FEF3C7] dark:bg-amber-900/30 dark:bg-amber-500/15 text-[#92400E] dark:text-amber-200"
+                                                    ? "bg-[#FEF3C7] dark:bg-amber-500/15 text-[#92400E] dark:text-amber-200"
                                                     : "bg-[#F0FDF4] dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0]"
                                             }`}
                                         >

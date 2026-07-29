@@ -168,7 +168,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             </div>
             <div>
               <span className="text-sm font-bold text-[#92400E] dark:text-amber-300">{hints?.roadside ? <GlossaryHint hint={hints.roadside} /> : motorCopy.roadsideAssistance}</span>
-              <p className="text-xs text-[#92400E]/80 dark:text-amber-400/80">{copy.call}</p>
+              <p className="text-xs text-[#92400E] dark:text-amber-400/80">{copy.call}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">

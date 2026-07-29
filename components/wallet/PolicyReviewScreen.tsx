@@ -286,7 +286,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         </p>
                         {CHIP_FIELDS.includes(field) && !isDirty && (
                             fieldFlagged ? (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:bg-amber-900/30 dark:text-amber-300">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-300">
                                     <AlertTriangle className="h-3 w-3" />
                                     {reviewCopy.confidenceInvalidated}
                                 </span>
@@ -351,7 +351,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                         aria-label={`${reviewCopy.editField}: ${label}`}
                         className={`flex-shrink-0 rounded-lg p-1.5 transition-colors ${
                             fieldFlagged
-                                ? "bg-amber-100 text-[#92400E] hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-900/50"
+                                ? "bg-amber-100 text-[#92400E] dark:text-amber-200 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-900/50"
                                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                         }`}
                     >
@@ -536,7 +536,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
                                     </span>
                                 )}
                                 {condition.userActionRequired && (
-                                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:bg-amber-900/30 dark:text-amber-400">
+                                    <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-900/30 px-2 py-0.5 text-kicker font-bold uppercase tracking-wider text-[#92400E] dark:text-amber-200 dark:bg-amber-900/30 dark:text-amber-400">
                                         {reviewCopy.actionRequired}
                                     </span>
                                 )}
