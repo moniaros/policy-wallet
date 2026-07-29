@@ -17,3 +17,16 @@ export const E2E_AGENT = {
     name: 'E2E Agent',
     role: 'agent' as const,
 }
+
+/**
+ * Admin fixture. Without it, the 14 /admin/* routes were audited no further
+ * than their redirect — 29 of 108 routes covered only as a bounce. Admin is
+ * gated by BOTH the JWT metadata role and the DB roles column, and
+ * provisionUser writes both, so this is enough to reach them.
+ */
+export const E2E_ADMIN = {
+    email: 'e2e-admin@policywallet.test',
+    password: 'E2eAdmin!2026',
+    name: 'E2E Admin',
+    role: 'admin' as const,
+}

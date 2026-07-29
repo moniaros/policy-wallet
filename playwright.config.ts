@@ -12,6 +12,7 @@ const policyholderIgnores = [
     '**/sentry-*.spec.ts',
     '**/agent-journey.spec.ts',
     '**/agent-viewport-overflow.spec.ts',
+    '**/admin-auth.setup.ts',
 ];
 
 export default defineConfig({
@@ -43,6 +44,11 @@ export default defineConfig({
         {
             name: 'agent-setup',
             testMatch: /agent-auth\.setup\.ts/,
+            use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
+        },
+        {
+            name: 'admin-setup',
+            testMatch: /admin-auth\.setup\.ts/,
             use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
         },
         {
@@ -105,6 +111,19 @@ export default defineConfig({
                 launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
             dependencies: ['agent-setup'],
+        },
+        {
+            name: 'admin-chromium',
+            // The 14 /admin/* routes only ever redirected for the policyholder
+            // and agent fixtures, so 29 of 108 routes were covered no further
+            // than that bounce. This session reaches them.
+            testMatch: /ui-quality-audit\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: 'playwright/.auth/admin.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+            dependencies: ['admin-setup'],
         },
         {
             name: 'sentry',

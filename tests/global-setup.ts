@@ -12,7 +12,7 @@
 
 import { readFileSync } from 'fs'
 import path from 'path'
-import { E2E_POLICYHOLDER, E2E_AGENT } from './e2e-users'
+import { E2E_POLICYHOLDER, E2E_AGENT, E2E_ADMIN } from './e2e-users'
 
 function loadEnvFromDotenvFiles() {
     for (const file of ['.env.local', '.env']) {
@@ -32,7 +32,7 @@ function loadEnvFromDotenvFiles() {
 
 async function provisionUser(
     db: any,
-    user: { email: string; password: string; name: string; role: 'policyholder' | 'agent' }
+    user: { email: string; password: string; name: string; role: 'policyholder' | 'agent' | 'admin' }
 ) {
     // ── Supabase auth side (GoTrue schema verified 2026-07-11:
     //    confirmed_at is GENERATED — never insert it; token varchars must be
@@ -194,6 +194,7 @@ export default async function globalSetup() {
     try {
         const policyholder = await provisionUser(db, E2E_POLICYHOLDER)
         await provisionUser(db, E2E_AGENT)
+        await provisionUser(db, E2E_ADMIN)
         await provisionFixturePolicy(db, policyholder.id)
 
         // Deterministic usage-state reset: the free-tier gates are LIFETIME
