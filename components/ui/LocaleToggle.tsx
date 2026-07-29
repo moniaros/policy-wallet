@@ -78,7 +78,7 @@ export function LocaleToggle({
                         onClick={() => setLanguage(value)}
                         aria-pressed={language === value}
                         className={cn(
-                            "text-caption font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                            "inline-flex min-w-[24px] min-h-[24px] items-center justify-center text-caption font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                             language === value
                                 ? "text-[#0F172A] dark:text-white"
                                 : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"

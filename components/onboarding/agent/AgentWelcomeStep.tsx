@@ -51,10 +51,17 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm space-y-4">
                 <div className="flex gap-4">
                     <div className="flex-1">
-                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
+                        {/* The label was adjacent but not associated: no htmlFor and
+                            the input was not nested, so a screen reader announced an
+                            unnamed edit field on the agent's very first screen. */}
+                        <label
+                            htmlFor="agent-onboarding-agency-name"
+                            className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1"
+                        >
                             {t("Επωνυμία Γραφείου", "Agency Name")}
                         </label>
                         <input
+                            id="agent-onboarding-agency-name"
                             type="text"
                             placeholder={t("π.χ. Ασφαλιστικό Γραφείο Παπαδόπουλος", "e.g. Papadopoulos Insurance Agency")}
                             value={agencyName}

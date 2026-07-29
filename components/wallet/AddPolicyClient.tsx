@@ -215,6 +215,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
         return (
             <div className="min-h-screen bg-background pb-20">
+                {/* Hoisted out of a conditional branch: the route rendered no
+                    <h1> at all in some states, so a screen-reader user landed on
+                    a form with nothing naming the page. Visually hidden because
+                    the sticky bar already names it on screen. */}
+                <h1 className="sr-only">{t.wallet?.addPolicy ?? "Add policy"}</h1>
                 {/* Header */}
                 <div className="bg-card border-b border-border sticky top-0 z-30">
                     <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-center">
@@ -225,10 +230,6 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 </div>
 
                 <div className="max-w-3xl mx-auto px-4 py-8">
-                    {/* The route had no <h1>: screen-reader users landed on a form
-                        with no page heading to orient them. Visually hidden because
-                        the sticky bar above already names the page on screen. */}
-                    <h1 className="sr-only">{t.wallet?.addPolicy ?? "Add policy"}</h1>
                     <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
 
                         {reviewData?.status === 'action_needed' ? (

@@ -326,8 +326,11 @@ pre {
 
        min-width: 0 is what almost every such child actually wants; scoped to
        narrow viewports so no wider layout changes. */
-    .grid > *,
-    .flex > * {
+    /* :where() so this contributes ZERO specificity. Written as a plain
+       selector it beat legitimate min-w-* utilities — the language toggle set
+       min-w-[24px] for its pointer target and this silently clamped it back to
+       21px. A safety net must never outrank an explicit intent. */
+    :where(.grid, .flex) > * {
       min-width: 0;
     }
   }
