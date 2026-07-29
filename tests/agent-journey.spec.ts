@@ -309,4 +309,31 @@ test.describe('MEDIC evidence ladder', () => {
             await db.$disconnect();
         }
     });
+
+    test('scorecard edit strip fits a 320px phone', async ({ page }) => {
+        test.setTimeout(90_000);
+        // The audit's viewport spec covers agent LIST pages at >=375px; the
+        // modal's §F edit strip had never rendered at phone widths. 320 is the
+        // narrowest supported width and the one Greek compounds break first.
+        await page.setViewportSize({ width: 320, height: 700 });
+        await page.goto('/opportunities');
+        await page.getByRole('button', { name: /Ενημέρωση|Update/i }).first().click();
+        await page.getByText(/Προβολή αξιολόγησης|Show qualification/i).click();
+        await expect(page.locator('#medic-var')).toBeVisible();
+
+        // No sideways scroll with the modal + scorecard open.
+        const overflow = await page.evaluate(() => ({
+            scrollW: document.documentElement.scrollWidth,
+            clientW: document.documentElement.clientWidth,
+        }));
+        expect(overflow.scrollW, 'horizontal overflow with edit strip open').toBeLessThanOrEqual(overflow.clientW + 1);
+
+        // The controls sit inside the viewport and meet the 24px tap floor.
+        const input = await page.locator('#medic-var').boundingBox();
+        const save = await page.locator('#medic-var-save').boundingBox();
+        expect(input && save).toBeTruthy();
+        expect(input!.x + input!.width).toBeLessThanOrEqual(320);
+        expect(save!.x + save!.width).toBeLessThanOrEqual(320);
+        expect(save!.height).toBeGreaterThanOrEqual(24);
+    });
 });

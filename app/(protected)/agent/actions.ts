@@ -405,20 +405,20 @@ export async function applyQualificationSuggestions(opportunityId: string, accep
 
     const { validateAcceptedSuggestions, filterByEvidence, mergeAcceptedSuggestions } =
         await import("@/lib/medic/suggest")
-    const { calculateMedicScore } = await import("@/lib/medic/score")
+    const { casUpdateOpportunityMedic, medicIoFor } = await import("@/lib/medic/cas")
 
     const validated = validateAcceptedSuggestions(accepted)
     if (!validated) return { error: "INVALID_SUGGESTIONS" }
     const notesText = loaded.notes.map((n) => n.body).join("\n")
     const evidenced = filterByEvidence(validated, notesText)
 
-    const medic = mergeAcceptedSuggestions(loaded.opp.medic as any, evidenced)
-    const score = calculateMedicScore(medic)
-
-    await db.opportunity.update({
-        where: { id: opportunityId },
-        data: { medic: medic as any, medicScore: score.score, medicUpdatedAt: new Date() },
-    })
+    // CAS: merge against the freshest snapshot so a concurrent € patch or
+    // confirm-sync between our read and write is never overwritten wholesale.
+    const result = await casUpdateOpportunityMedic(medicIoFor(db), opportunityId, (medic) =>
+        mergeAcceptedSuggestions(medic, evidenced)
+    )
+    if (result.status !== 'applied') return { error: "CONFLICT" }
+    const { medic, medicScore } = result
 
     // Audit trail (§I): what was applied, on the opportunity's own thread.
     if (loaded.thread) {
@@ -428,12 +428,12 @@ export async function applyQualificationSuggestions(opportunityId: string, accep
                 senderUserId: authResult.dbUser.id,
                 messageType: "system_event",
                 isPrivate: true,
-                body: `Qualification updated from notes: ${evidenced.stakeholders.length} stakeholder(s), ${evidenced.criteria.length} criteria${evidenced.pain ? ", pain summary" : ""}. Score → ${score.score}.`,
+                body: `Qualification updated from notes: ${evidenced.stakeholders.length} stakeholder(s), ${evidenced.criteria.length} criteria${evidenced.pain ? ", pain summary" : ""}. Score → ${medicScore}.`,
             },
         })
     }
 
-    return { success: true, medic, medicScore: score.score }
+    return { success: true, medic, medicScore }
 }
 
 /**
@@ -449,25 +449,25 @@ export async function patchOpportunityMedic(opportunityId: string, patch: unknow
 
     const opp = await db.opportunity.findUnique({
         where: { id: opportunityId },
-        select: { medic: true, relationship: { select: { agentUserId: true } } },
+        select: { relationship: { select: { agentUserId: true } } },
     })
     if (!opp || opp.relationship?.agentUserId !== authResult.dbUser.id) {
         return { error: "Opportunity not found or access denied" }
     }
 
     const { validateMedicPatch, applyMedicPatch } = await import("@/lib/medic/patch")
-    const { calculateMedicScore } = await import("@/lib/medic/score")
+    const { casUpdateOpportunityMedic, medicIoFor } = await import("@/lib/medic/cas")
 
     const validated = validateMedicPatch(patch)
     if (!validated) return { error: "INVALID_PATCH" }
 
-    const medic = applyMedicPatch(opp.medic as any, validated)
-    const score = calculateMedicScore(medic)
-    await db.opportunity.update({
-        where: { id: opportunityId },
-        data: { medic: medic as any, medicScore: score.score, medicUpdatedAt: new Date() },
-    })
-    return { success: true, medic, medicScore: score.score }
+    // CAS: a concurrent writer (confirm-sync, apply-suggestions) between our
+    // read and write would otherwise have its fields overwritten wholesale.
+    const result = await casUpdateOpportunityMedic(medicIoFor(db), opportunityId, (medic) =>
+        applyMedicPatch(medic, validated)
+    )
+    if (result.status !== 'applied') return { error: "CONFLICT" }
+    return { success: true, medic: result.medic, medicScore: result.medicScore }
 }
 
 export async function updateOpportunityStatus(

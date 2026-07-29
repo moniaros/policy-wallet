@@ -1443,23 +1443,17 @@ export async function confirmGap(gapId: string) {
         // ladder — otherwise the scorecard keeps showing "probable" pain and a
         // stale score after the advisor confirmed.
         const { advancePainValidation } = await import("@/lib/medic/seed")
-        const { calculateMedicScore } = await import("@/lib/medic/score")
+        const { casUpdateOpportunityMedic, medicIoFor } = await import("@/lib/medic/cas")
         const linkedOpps = await db.opportunity.findMany({
             where: { gapInstanceId: gapId },
-            select: { id: true, medic: true },
+            select: { id: true },
         })
         for (const opp of linkedOpps) {
-            const advanced = advancePainValidation(opp.medic, gapId, 'confirmed')
-            if (advanced) {
-                await db.opportunity.update({
-                    where: { id: opp.id },
-                    data: {
-                        medic: advanced as any,
-                        medicScore: calculateMedicScore(advanced).score,
-                        medicUpdatedAt: new Date(),
-                    },
-                })
-            }
+            // CAS: never overwrite a concurrent € patch / suggestion apply
+            // wholesale; advancePainValidation returning null = noop.
+            await casUpdateOpportunityMedic(medicIoFor(db), opp.id, (medic) =>
+                advancePainValidation(medic, gapId, 'confirmed')
+            )
         }
     }
 

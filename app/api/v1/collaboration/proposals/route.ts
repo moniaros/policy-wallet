@@ -152,23 +152,17 @@ export const POST = withApiGuard(
                 // Sync linked opportunities' medic mirror + score with the
                 // ladder (same discipline as confirmGap).
                 const { advancePainValidation } = await import("@/lib/medic/seed")
-                const { calculateMedicScore } = await import("@/lib/medic/score")
+                const { casUpdateOpportunityMedic, medicIoFor } = await import("@/lib/medic/cas")
                 const linkedOpps = await tx.opportunity.findMany({
                     where: { gapInstanceId },
-                    select: { id: true, medic: true },
+                    select: { id: true },
                 })
                 for (const opp of linkedOpps) {
-                    const advanced = advancePainValidation(opp.medic, gapInstanceId, 'validated')
-                    if (advanced) {
-                        await tx.opportunity.update({
-                            where: { id: opp.id },
-                            data: {
-                                medic: advanced as any,
-                                medicScore: calculateMedicScore(advanced).score,
-                                medicUpdatedAt: new Date(),
-                            },
-                        })
-                    }
+                    // CAS bound to the tx client: never overwrite a concurrent
+                    // € patch / suggestion apply wholesale.
+                    await casUpdateOpportunityMedic(medicIoFor(tx), opp.id, (medic) =>
+                        advancePainValidation(medic, gapInstanceId, 'validated')
+                    )
                 }
             }
 
