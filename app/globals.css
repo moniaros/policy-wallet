@@ -292,10 +292,26 @@ pre {
     min-height: 1.25rem;
   }
 
-  @media (pointer: coarse) {
+  @media (pointer: coarse), (max-width: 768px) {
     input[type='checkbox'],
     input[type='radio'] {
       min-width: 1.5rem;
+      min-height: 1.5rem;
+    }
+  }
+
+  /* WCAG 2.5.8 is about POINTER targets, so scope the floor to coarse pointers
+     — phones and tablets — where it actually matters. A standalone control gets
+     a 24px minimum box; the visual is untouched because only min-height grows.
+
+     `:where()` keeps specificity at zero, so any component that deliberately
+     sizes a control still wins. That matters: an earlier attempt here was
+     written as a plain selector, outranked a deliberate `min-w-[24px]`, and
+     silently clamped it back to 21px.
+
+     Inline links inside prose are exempt under 2.5.8 and are excluded. */
+  @media (pointer: coarse), (max-width: 768px) {
+    :where(button, [role='button'], a[href]):not(:where(p, li, td) *) {
       min-height: 1.5rem;
     }
   }
