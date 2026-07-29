@@ -326,6 +326,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                 <div className="mb-5 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 space-y-3">
                     <input
                         type="email"
+                        aria-label={t.email}
                         placeholder={t.email}
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
