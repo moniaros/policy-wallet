@@ -50,7 +50,7 @@ export function ProductCategoryExplorer({
 
                     <Link
                         href={localizeHref("/product", locale)}
-                        className="inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-3 text-body font-semibold text-[#0F172A] dark:text-white transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
+                        className="inline-flex min-h-[24px] items-center inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-3 text-body font-semibold text-[#0F172A] dark:text-white transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
                     >
                         {t("Όλες οι κατηγορίες", "All categories")}
                         <ArrowRight className="h-4 w-4" />

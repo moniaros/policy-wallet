@@ -259,6 +259,9 @@ test.describe('responsive, accessibility and runtime quality', () => {
             // Local-only: placeholder DSN in .env, and va.vercel-scripts is not
             // served in dev so CSP blocks it. Neither exists in production.
             if (/Invalid Sentry Dsn|va\.vercel-scripts\.com/i.test(t)) return
+            // `next start` does not serve /_vercel/* — those endpoints exist only
+            // on Vercel's edge. Verified 200 in production; local-only noise.
+            if (/_vercel\/(insights|speed-insights)/i.test(t)) return
             runtime.push(`CONSOLE ${page.url()}: ${t.slice(0, 110)}`)
         })
 

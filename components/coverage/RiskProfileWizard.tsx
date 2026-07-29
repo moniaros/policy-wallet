@@ -518,7 +518,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                             onClick={() => setShowAddEvent(true)}
                             className="text-xs font-semibold text-primary dark:text-mint hover:underline flex items-center gap-1 cursor-pointer"
                         >
-                            <Plus className="h-3 w-3" />
+                            <Plus className="inline-flex min-h-[24px] items-center h-3 w-3" />
                             {t("Προσθήκη", "Add event")}
                         </button>
                     </div>
