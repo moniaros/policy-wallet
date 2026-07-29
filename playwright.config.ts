@@ -94,7 +94,11 @@ export default defineConfig({
         },
         {
             name: 'agent-chromium',
-            testMatch: /(agent-journey|agent-viewport-overflow)\.spec\.ts/,
+            // ui-quality runs here too: ~10 agent-tree routes (/agent, /customers,
+            // /commissions, /team, /opportunities) only redirect for the
+            // policyholder fixture, so they were audited no further than their
+            // redirect. The agent session reaches them.
+            testMatch: /(agent-journey|agent-viewport-overflow|ui-quality-audit)\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/agent.json',

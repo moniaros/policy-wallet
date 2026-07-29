@@ -215,6 +215,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
         return (
             <div className="min-h-screen bg-background pb-20">
+            {/* Every top-level branch needs the heading: the component returns
+                from more than one place and the default state had none, so the
+                route reported no <h1> even after the polling branch got one. */}
+            <h1 className="sr-only">{t.wallet?.addPolicy ?? "Add policy"}</h1>
                 {/* Hoisted out of a conditional branch: the route rendered no
                     <h1> at all in some states, so a screen-reader user landed on
                     a form with nothing naming the page. Visually hidden because
