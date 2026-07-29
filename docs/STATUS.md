@@ -76,20 +76,40 @@ have seen: `/onboarding` and `/onboarding/agent` had no `<main>` landmark (the
 first screen a new user meets, with no skip-link destination), and
 `/auth/signup/confirmation` likewise. Both fixed.
 
+### Accessibility — 18 findings down to 1
+
+Fixed on routes no earlier audit had rendered:
+
+- `/agent/settings` had `<label>` elements with no `htmlFor` and inputs not
+  nested inside them — visually labelled, programmatically anonymous. Commission
+  inputs were named only by an adjacent `<span>`, so the announcement never said
+  which branch a rate belonged to.
+- `/onboarding/agent` rendered TWO `<h1>`: the brand mark was one, and each step
+  renders its own. Logo demoted to `<p>`.
+- `/consent/ai` and `/wallet/add` had no `<h1>` at all — given sr-only headings,
+  visible design unchanged.
+- `<main>` landmarks added to `/onboarding`, `/onboarding/agent`,
+  `/auth/signup/confirmation` and `not-found.tsx` (every 404 in the app).
+
+**Final across 108 routes x 9 widths: overflow 0, a11y 1, touch 53.**
+
+The 33 "incomplete" routes are admin pages correctly redirecting a policyholder
+— detected and logged, never silently counted as passing.
+
 ### Remaining low-priority debt
 
-- **Touch targets** at the 22-24px WCAG 2.5.8 boundary on secondary text
-  controls. The public-route set is fixed; some authenticated-tree links
-  (`Όλοι οι κλάδοι`, `Όλες`, `Όχι τώρα` at 16px) remain.
-- **Missing `<h1>`** on `/consent/ai` and `/wallet/add`; `/onboarding/agent`
-  renders two `<h1>` elements; unlabelled inputs on `/agent/settings` and
-  `/onboarding/agent`.
+- **1 a11y finding**: an unlabelled form field on `/onboarding/agent` that is
+  not either of the two logo file inputs (those now carry explicit names).
+- **53 touch findings** at the 16-24px WCAG 2.5.8 boundary, all in the
+  authenticated tree.
 - `/perks` 404s by design (empty partner catalog); nothing links to it. Its
   React "script tag while rendering" notice comes from the root layout's
   pre-paint `lang` script — correctly placed in `<head>`, verified working.
-- `/wallet/[id]`, `/customers/[id]`, `/tasks/[id]` cannot be rendered locally
-  (dev DB unreachable, so no fixture policy). The audits LOG this rather than
-  passing silently.
+- `/wallet/[id]`, `/customers/[id]`, `/tasks/[id]` cannot render locally (dev DB
+  unreachable, so no fixture policy). The audits LOG this rather than passing
+  silently.
+- Admin routes are unreachable for the policyholder fixture, so they are audited
+  only via their redirect. Auditing them needs an admin storageState.
 
 ### Checker corrections (each reported correct code as broken)
 
