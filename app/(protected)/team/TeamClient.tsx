@@ -566,9 +566,13 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                     <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-6">
                         <Building2 className="w-8 h-8 text-primary dark:text-mint" />
                     </div>
-                    <h2 className="text-2xl font-black text-foreground mb-2">
+                    {/* This branch is a whole PAGE, not a card inside one — it is
+                        what an agent or admin without a team lands on. Its title
+                        was an <h2>, so the route rendered no <h1> at all and a
+                        screen-reader user had nothing naming the page. */}
+                    <h1 className="text-2xl font-black text-foreground mb-2">
                         {t.noTeam}
-                    </h2>
+                    </h1>
                     <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
                         {t.noTeamDesc}
                     </p>
