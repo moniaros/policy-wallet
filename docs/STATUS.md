@@ -175,20 +175,22 @@ zero identical-fingerprint surfaces, theme persists cleanly across reloads.**
 ### Remaining low-priority debt
 
 - **91 touch findings** at the 13-24px WCAG 2.5.8 boundary (44 admin, 39
-  policyholder, 8 agent). The checkbox/radio cluster is fixed; the rest are 20px
-  text links and inputs carrying explicit `w-3` utilities — per-component work.
+  policyholder, 8 agent). The checkbox/radio cluster is fixed globally; the rest
+  are 20px text links and inputs with explicit `w-3` utilities that correctly
+  beat a base-layer rule — per-component work.
 - **67 off-scale border radii** (10, 14, 20, 28, 32, 40, 48px). The 44 exact
-  matches were collapsed onto the scale with no visual change; these seven
-  values are genuinely off-scale, so renaming them alters the design. Needs a
-  human call on what the scale should contain.
-- `/dashboard`, `/agent`, `/team`, `/wallet/add` report no `<h1>` **under the
-  admin session** — admins get a different view that lacks the heading.
-- An unlabelled input on `/customers` comes from a shared component.
+  matches were collapsed onto the scale with no visual change; these seven are
+  genuinely off-scale, so renaming them alters the design. **Needs a human
+  decision on what the scale should contain** — a codemod would be guessing.
+- `/team` reports no `<h1>` under the agent and admin sessions although
+  `TeamClient` renders one unconditionally at line 165 — so those roles see a
+  different view. Same for `/dashboard`, `/agent`, `/wallet/add` under admin.
+  Not run to ground.
 - `/tasks/[id]`, `/customers/[id]`: same `router.push()` navigation as the
   wallet; the API discovery fallback is wallet-specific and could be generalised.
 - **No automation exists for UX journey review or performance** (re-renders,
-  layout shift, duplicate CSS). Those two brief dimensions were not done, and
-  are not claimed.
+  layout shift, duplicate CSS). Those two brief dimensions were not done and are
+  not claimed.
 
 ### Checker corrections (each reported correct code as broken)
 
