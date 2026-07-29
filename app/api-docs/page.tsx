@@ -72,7 +72,7 @@ export default function ApiDocsPage() {
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                <section className="rounded-[24px] bg-black text-white p-6 sm:p-8 shadow-2xl">
+                <section className="rounded-3xl bg-black text-white p-6 sm:p-8 shadow-2xl">
                     <p className="pw-kicker text-white/60">PolicyWallet Developer Surface</p>
                     <h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight">Policyholder API Routes & Menu Coverage</h1>
                     <p className="mt-3 text-sm sm:text-base text-white/75 max-w-3xl">

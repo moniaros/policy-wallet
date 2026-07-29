@@ -80,7 +80,7 @@ export function AccountOverview({
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full -mr-32 -mt-32 transition-colors group-hover:bg-primary/10" />
 
                 <div className="relative">
-                <div className="w-28 h-28 rounded-[24px] overflow-hidden bg-black/5 dark:bg-black border-4 border-white dark:border-white/15 shadow-2xl transition-transform active:scale-95 group-hover:scale-105 duration-500">
+                <div className="w-28 h-28 rounded-3xl overflow-hidden bg-black/5 dark:bg-black border-4 border-white dark:border-white/15 shadow-2xl transition-transform active:scale-95 group-hover:scale-105 duration-500">
                         {currentUser.image ? (
                             <img
                                 src={currentUser.image}

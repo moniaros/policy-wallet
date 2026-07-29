@@ -102,7 +102,7 @@ export function InviteModal({
                         <div className="pt-4 flex gap-4">
                             <button
                                 onClick={onClose}
-                                className="flex-1 px-8 py-5 bg-muted text-foreground rounded-[24px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all font-mono"
+                                className="flex-1 px-8 py-5 bg-muted text-foreground rounded-3xl text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all font-mono"
                             >
                                 {t.invite.cancel}
                             </button>

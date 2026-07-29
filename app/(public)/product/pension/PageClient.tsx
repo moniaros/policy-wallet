@@ -35,7 +35,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     {/* Mock UI — left on desktop */}
-                    <div className="order-last md:order-first bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="order-last md:order-first bg-white dark:bg-slate-900 p-8 rounded-xl border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Savings Plan</h3>

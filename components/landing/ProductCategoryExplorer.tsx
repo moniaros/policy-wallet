@@ -73,7 +73,7 @@ export function ProductCategoryExplorer({
                                     className={`flex min-h-[220px] flex-col rounded-2xl border p-6 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ${category.surface} ${category.border}`}
                                 >
                                     <div className="mb-5 flex items-start justify-between gap-3">
-                                        <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/85 shadow-sm">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
                                             <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
                                         </div>
                                         <span className="rounded-full bg-[#29685B] px-3 py-1 text-micro font-semibold uppercase tracking-wide text-white">
@@ -104,7 +104,7 @@ export function ProductCategoryExplorer({
                                 className={`group flex min-h-[220px] flex-col rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] ${category.surface} ${category.border}`}
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">
-                                    <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/85 shadow-sm">
+                                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
                                         <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
                                     </div>
                                     <span className={`rounded-full px-2.5 py-1 text-micro font-semibold uppercase tracking-wide ${category.tagBg}`}>

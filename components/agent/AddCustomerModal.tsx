@@ -343,7 +343,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 <button
                                     type="button"
                                     onClick={() => { reset(); onClose(); }}
-                                    className="flex-1 px-8 py-5 bg-muted text-foreground rounded-[24px] text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all"
+                                    className="flex-1 px-8 py-5 bg-muted text-foreground rounded-3xl text-kicker font-black uppercase tracking-widest hover:bg-neutral-200 transition-all"
                                 >
                                     {t.agentModals.addCustomer.cancel}
                                 </button>
@@ -367,7 +367,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                             <p className="text-muted-foreground font-medium mb-12 max-w-sm mx-auto">{t.agentModals.addCustomer.successDesc}</p>
                             <button
                                 onClick={() => { reset(); onClose(); }}
-                                className="px-12 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-kicker font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all"
+                                className="px-12 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-3xl text-kicker font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all"
                             >
                                 {t.agentModals.addCustomer.continueToCrm}
                             </button>

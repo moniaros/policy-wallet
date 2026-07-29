@@ -60,7 +60,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                     </div>
 
                     {/* Mock UI */}
-                    <div className="bg-white dark:bg-slate-900 p-8 rounded-[12px] border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="bg-white dark:bg-slate-900 p-8 rounded-xl border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Tesla Model 3</h3>
@@ -103,8 +103,8 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                         </p>
                     </div>
                     <div className="grid gap-6 md:grid-cols-2">
-                        <div className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
-                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
+                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                 <Bike className="h-5 w-5 text-[#0F172A] dark:text-white" />
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Μοτοσικλέτα", "Motorbike")}</h3>
@@ -112,8 +112,8 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                                 {t("Το συμβόλαιο της μοτοσικλέτας αναλύεται όπως και του αυτοκινήτου: αστική ευθύνη, ίδιες ζημιές, εξαιρέσεις — και κοινές ημερομηνίες ανανέωσης σε ένα ημερολόγιο.", "Your motorbike policy is analyzed just like your car's: liability, own damage, exclusions — with all renewal dates in one calendar.")}
                             </p>
                         </div>
-                        <div className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
-                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
+                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                 <Wrench className="h-5 w-5 text-[#0F172A] dark:text-white" />
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Οδική Βοήθεια", "Roadside Assistance")}</h3>

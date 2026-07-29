@@ -92,8 +92,8 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
                         {riskSections.map((section) => {
                             const Icon = section.icon
                             return (
-                                <div key={section.titleEn} className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
-                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
+                                <div key={section.titleEn} className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
+                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                         <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
                                     </div>
                                     <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t(section.titleEl, section.titleEn)}</h3>

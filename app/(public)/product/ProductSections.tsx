@@ -178,7 +178,7 @@ export function ProductSections({ language }: { language: Language }) {
                                 ].map(({ icon: Icon, nameEl, nameEn, status, expEl, expEn }) => (
                                     <div
                                         key={nameEn}
-                                        className={`flex items-center gap-3 rounded-[12px] border p-3.5 ${status === "warn" ? "border-amber-100 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-900/20" : "border-transparent bg-[#F8FAFC] dark:bg-slate-900"}`}
+                                        className={`flex items-center gap-3 rounded-xl border p-3.5 ${status === "warn" ? "border-amber-100 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-900/20" : "border-transparent bg-[#F8FAFC] dark:bg-slate-900"}`}
                                     >
                                         <div
                                             className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] ${status === "warn" ? "bg-amber-100 dark:bg-amber-900/40" : "bg-[#DCEBDA] dark:bg-[#29685B]/30"}`}
@@ -202,7 +202,7 @@ export function ProductSections({ language }: { language: Language }) {
                                 ))}
                             </div>
 
-                            <div className="rounded-[12px] bg-[#29685B] px-4 py-3.5 text-body-sm leading-snug text-white">
+                            <div className="rounded-xl bg-[#29685B] px-4 py-3.5 text-body-sm leading-snug text-white">
                                 <p className="mb-0.5 flex items-center gap-2 font-bold">
                                     <Sparkles className="h-3.5 w-3.5" />
                                     {t("AI Σύσταση", "AI Recommendation")}
@@ -271,7 +271,7 @@ export function ProductSections({ language }: { language: Language }) {
                                     className={`group flex flex-col rounded-2xl border p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] ${category.surface} ${category.border}`}
                                 >
                                     <div className="mb-6 flex items-start justify-between">
-                                        <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/80 shadow-sm backdrop-blur-sm">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 shadow-sm backdrop-blur-sm">
                                             <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
                                         </div>
                                         <span className={`rounded-full px-2.5 py-1 text-micro font-semibold uppercase tracking-wide ${category.tagBg}`}>

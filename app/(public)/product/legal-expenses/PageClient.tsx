@@ -86,7 +86,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                     </div>
 
                     <div className="grid gap-8 lg:grid-cols-2">
-                        <div className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
                             <h3 className="text-body font-bold text-[#166534] dark:text-[#A7F3D0] uppercase tracking-wider mb-6">
                                 {t("Συνήθως καλύπτεται", "Typically covered")}
                             </h3>
@@ -105,7 +105,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                             </ul>
                         </div>
 
-                        <div className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8">
                             <h3 className="text-body font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-6">
                                 {t("Συχνές εξαιρέσεις", "Common exclusions")}
                             </h3>

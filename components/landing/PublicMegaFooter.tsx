@@ -132,7 +132,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     return (
         <footer className="border-t border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900">
             <div className="px-6 pb-14 pt-12 lg:px-12">
-                <div className="mx-auto max-w-page-wide rounded-[24px] border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 px-6 py-7 md:px-8">
+                <div className="mx-auto max-w-page-wide rounded-3xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 px-6 py-7 md:px-8">
                     <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                         <div>
                             <p className="mb-1 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
@@ -270,7 +270,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <button
                                     type="submit"
                                     disabled={status === "loading"}
-                                    className="inline-flex items-center justify-center gap-1.5 rounded-[12px] bg-[#29685B] px-4 py-2.5 text-body font-semibold text-white transition-colors hover:bg-[#1C4E44] disabled:cursor-not-allowed disabled:opacity-70"
+                                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#29685B] px-4 py-2.5 text-body font-semibold text-white transition-colors hover:bg-[#1C4E44] disabled:cursor-not-allowed disabled:opacity-70"
                                 >
                                     <Mail className="h-4 w-4" />
                                     {status === "loading" ? t("Αποστολή...", "Submitting...") : t("Εγγραφή", "Subscribe")}

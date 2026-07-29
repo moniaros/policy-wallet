@@ -96,7 +96,7 @@ export function DashboardSkeleton() {
                         <Skeleton className="h-6 w-48" />
                     </div>
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-32 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm rounded-[24px] border border-stone-200 dark:border-stone-800 p-6">
+                        <div key={i} className="h-32 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm rounded-3xl border border-stone-200 dark:border-stone-800 p-6">
                             <div className="flex justify-between items-center h-full">
                                 <div className="flex gap-4 items-center">
                                     <Skeleton className="h-12 w-12 rounded-xl" />
@@ -257,7 +257,7 @@ export function QuestionnaireSkeleton() {
 
                 <div className="pt-10 border-t border-stone-100 dark:border-stone-700 flex flex-col md:flex-row items-center justify-between gap-8">
                     <Skeleton className="h-8 w-32" />
-                    <Skeleton className="h-16 w-full md:w-64 rounded-[24px]" />
+                    <Skeleton className="h-16 w-full md:w-64 rounded-3xl" />
                 </div>
             </div>
         </div>

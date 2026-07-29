@@ -410,7 +410,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                 <div className="p-8 pt-0 flex gap-4">
                     <button
                         onClick={handleClose}
-                        className="flex-1 px-8 py-5 bg-muted text-foreground rounded-[24px] text-kicker font-black uppercase tracking-widest hover:bg-muted/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="flex-1 px-8 py-5 bg-muted text-foreground rounded-3xl text-kicker font-black uppercase tracking-widest hover:bg-muted/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                         {copy.cancel}
                     </button>

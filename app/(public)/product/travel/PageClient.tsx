@@ -44,8 +44,8 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                     </div>
 
                     <div className="grid gap-6 md:grid-cols-3">
-                        <div className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
-                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
+                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                 <Stethoscope className="h-5 w-5 text-[#0F172A] dark:text-white" />
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Ιατρικά έκτακτα & Σένγκεν", "Emergency medical & Schengen")}</h3>
@@ -53,8 +53,8 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                                 {t("Πόσο είναι το όριο ιατρικής κάλυψης στο εξωτερικό; Αν φιλοξενείτε ταξιδιώτη που χρειάζεται βίζα Σένγκεν, η αίτηση απαιτεί ταξιδιωτική ιατρική ασφάλιση με ελάχιστη κάλυψη 30.000 €.", "What is your emergency medical limit abroad? If you host a traveler who needs a Schengen visa, the application requires travel medical insurance with at least €30,000 of coverage.")}
                             </p>
                         </div>
-                        <div className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
-                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
+                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                 <CalendarX2 className="h-5 w-5 text-[#0F172A] dark:text-white" />
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Ακύρωση ταξιδιού", "Trip cancellation")}</h3>
@@ -62,8 +62,8 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                                 {t("Για ποιους λόγους αποζημιώνεστε αν ακυρώσετε — ασθένεια, ατύχημα, κάτι άλλο; Μέχρι ποιο ποσό και με ποια δικαιολογητικά; Οι όροι διαφέρουν πολύ από πρόγραμμα σε πρόγραμμα.", "Which cancellation reasons are actually reimbursed — illness, accident, anything else? Up to what amount and with what proof? Terms vary widely between plans.")}
                             </p>
                         </div>
-                        <div className="rounded-[16px] border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
-                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA] dark:bg-[#29685B]/30">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-7">
+                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-[#DCEBDA] dark:bg-[#29685B]/30">
                                 <Luggage className="h-5 w-5 text-[#0F172A] dark:text-white" />
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Αποσκευές & επαναπατρισμός", "Luggage & repatriation")}</h3>
