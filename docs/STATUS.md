@@ -1,5 +1,11 @@
 # PolicyWallet — Project Status
 
+> **Full record of the 2026-07-28/29 UI audit:**
+> [audits/UI_AUDIT_2026-07-29.md](audits/UI_AUDIT_2026-07-29.md) — what was
+> found, what was fixed, what still needs doing, and the five corrections where
+> my own tooling was wrong rather than the product.
+
+
 ## Product UI/UX + responsive + a11y audit — 2026-07-29 — DEPLOYED
 
 Reported from production: the `/wallet/[id]` header looked wrong in light mode.
