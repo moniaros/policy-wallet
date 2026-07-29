@@ -122,22 +122,46 @@ Prisma `roles` column (admin is gated on both).
 | horizontal overflow | 191 | **0** (incl. the admin console) |
 | runtime/console | 121 | **1** (dev-only) |
 
+### /wallet/[id] is now audited — the route that carried the defect
+
+The wallet list navigates with `router.push()` on a card click, not an `<a href>`.
+Discovery harvested hrefs, found none, and logged "/wallet ... NOT covered".
+**That is exactly why the PolicyHero light-mode defect shipped while every suite
+reported green.** Discovery now falls back to the app's own API with the session
+cookie (plus a click-through). `/wallet` no longer appears in the NOT-covered
+log.
+
+**Two corrections to earlier entries in this file — both were my errors, not the
+environment's:**
+
+1. "Dev DB unreachable" — it was a missing `DIRECT_URL` in the shell. With
+   `.env.local` loaded the DB answers fine. This had me record the admin fixture
+   as impossible for several rounds.
+2. "No fixture policy exists" — two exist. I queried `Policy.userId`; the column
+   is `ownerUserId`. The query errored and I read that as "none".
+
+Both times I treated a self-inflicted failure as a hard environmental limit.
+Worth remembering: when a probe fails, check the probe before believing its
+verdict.
+
 ### Remaining low-priority debt
 
-- **Admin console, newly visible**: 44 touch findings and (after the label fixes
-  just shipped) ~7 a11y findings. `/dashboard`, `/agent`, `/team` and
-  `/wallet/add` report no `<h1>` **under the admin session specifically** —
-  those routes render a different view for an admin, and that view lacks the
-  heading. Not yet run to ground.
-- **39 touch findings** in the policyholder tree at the 13-24px WCAG 2.5.8
-  boundary; 8 in the agent tree.
+- **Admin console** (audited for the first time this session): 44 touch findings
+  and ~7 a11y. `/dashboard`, `/agent`, `/team`, `/wallet/add` report no `<h1>`
+  **under the admin session specifically** — admins get a different view that
+  lacks the heading.
+- **39 touch findings** (policyholder) and **8** (agent) at the 13-24px WCAG
+  2.5.8 boundary.
 - An unlabelled input on `/customers` comes from a shared component, not
   `CustomersClient`.
+- `/tasks/[id]` and `/customers/[id]` still yield no detail links — same
+  router.push() pattern; the API fallback is wallet-specific and could be
+  generalised.
 - `/perks` 404s by design (empty partner catalog); nothing links to it.
-- `/wallet/[id]`, `/customers/[id]`, `/tasks/[id]` have no fixture policy, so
-  the dynamic-route discovery finds nothing to audit. Now that the DB is known
-  reachable, seeding one is straightforward and is the highest-value next step —
-  it is the exact route that carried the reported defect.
+- **Not yet done from the brief**: exhaustive design-token standardisation
+  (spacing/radius/shadow scales), UX journey review, and performance work
+  (re-renders, layout shift). The theme, contrast, responsive, a11y and
+  interaction-state dimensions are covered by automation; these three are not.
 
 ### Checker corrections (each reported correct code as broken)
 
