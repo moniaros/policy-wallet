@@ -134,6 +134,7 @@ export default function UsersClient({
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                             <input
+                                aria-label="Search users"
                                 type="text"
                                 placeholder="Search by name or email..."
                                 value={search}
@@ -523,7 +524,8 @@ export default function UsersClient({
                         <label htmlFor="usersclient-f3" className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">
                             Reason
                         </label>
-                        <input id="usersclient-f3"
+                        <input
+                                aria-label="Adjustment reason" id="usersclient-f3"
                             className="pw-input mb-6"
                             placeholder="e.g. goodwill / support comp"
                             value={tokenReason}
