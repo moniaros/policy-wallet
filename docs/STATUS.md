@@ -96,43 +96,48 @@ Fixed on routes no earlier audit had rendered:
 The 33 "incomplete" routes are admin pages correctly redirecting a policyholder
 — detected and logged, never silently counted as passing.
 
-### Final figures — 108 routes x 9 widths (320-1920), two sessions
+### Coverage — three sessions, 95/108 routes
 
-| | start | policyholder | agent |
-|---|---|---|---|
-| routes fully scanned | 30 | 73/108 | **80/108** |
-| horizontal overflow | 191 | **0** | **0** |
-| accessibility | 18 | **1** | 3 |
-| runtime/console | 121 | **1** (dev-only) | 1 |
-| touch targets | 498 | 39 | **8** |
+The audit runs under policyholder, agent AND admin sessions:
 
-The audit now runs under BOTH the policyholder and agent sessions. ~10 agent-tree
-routes (`/agent`, `/agent/settings`, `/customers`, `/commissions`, `/team`,
-`/opportunities`) previously only redirected for the policyholder fixture, so
-they were audited no further than that redirect.
+| session | routes fully scanned |
+|---|---|
+| policyholder | 73/108 |
+| agent | 80/108 |
+| **admin** | **95/108** |
 
-A regression I introduced and then caught: the narrow-viewport safety net
-`.grid > *, .flex > * { min-width: 0 }` was a plain selector and outranked
-legitimate `min-w-*` utilities, silently clamping the language toggle's
-deliberate `min-w-[24px]` to 21px. Rewritten as `:where(.grid, .flex) > *` —
-zero specificity. **A safety net must never outrank a deliberate value.**
+The remaining 13 are genuine redirects (auth pages bounce a signed-in admin,
+`/coverage` -> `/coverage-insights`, `/en/for-agents` -> `/en/solutions/agents`).
+
+**I had recorded the dev DB as unreachable and the admin fixture as therefore
+impossible. That was wrong** — the failure was a missing `DIRECT_URL` in the
+shell, not connectivity. `E2E_ADMIN` is now provisioned by the existing
+`provisionUser`, which writes the role into BOTH `raw_user_meta_data` and the
+Prisma `roles` column (admin is gated on both).
+
+### Results
+
+| | start | now |
+|---|---|---|
+| horizontal overflow | 191 | **0** (incl. the admin console) |
+| runtime/console | 121 | **1** (dev-only) |
 
 ### Remaining low-priority debt
 
-- **29 admin routes covered only as far as their redirect.** There is no admin
-  fixture — only policyholder and agent storageStates — and creating one needs
-  the dev DB, which is unreachable here. This is the single largest remaining
-  coverage gap and the same class of blind spot that produced the reported
-  `/wallet/[id]` defect.
-- **Agent tree: 3 a11y, 8 touch findings.** `/team` reports no `<h1>` although
-  one exists unconditionally in `TeamClient` — so that route renders something
-  else in the audited state; not run to ground. An unlabelled input on
-  `/customers` comes from a shared component, not `CustomersClient`.
+- **Admin console, newly visible**: 44 touch findings and (after the label fixes
+  just shipped) ~7 a11y findings. `/dashboard`, `/agent`, `/team` and
+  `/wallet/add` report no `<h1>` **under the admin session specifically** —
+  those routes render a different view for an admin, and that view lacks the
+  heading. Not yet run to ground.
 - **39 touch findings** in the policyholder tree at the 13-24px WCAG 2.5.8
-  boundary.
+  boundary; 8 in the agent tree.
+- An unlabelled input on `/customers` comes from a shared component, not
+  `CustomersClient`.
 - `/perks` 404s by design (empty partner catalog); nothing links to it.
-- `/wallet/[id]`, `/customers/[id]`, `/tasks/[id]` cannot render locally (no
-  fixture policy). The audits LOG this rather than passing silently.
+- `/wallet/[id]`, `/customers/[id]`, `/tasks/[id]` have no fixture policy, so
+  the dynamic-route discovery finds nothing to audit. Now that the DB is known
+  reachable, seeding one is straightforward and is the highest-value next step —
+  it is the exact route that carried the reported defect.
 
 ### Checker corrections (each reported correct code as broken)
 
