@@ -6,6 +6,24 @@
 > my own tooling was wrong rather than the product.
 
 
+## MEDIC row-staleness fix + audit's touch-target rule — 2026-07-29 — MERGED + DEPLOYED
+
+`NEW-UI` @ `6dc2136`, deploy `dpl_EHqyAUaK…` (`7v2cgne0v`), Ready, apex+www
+verified (www 200 / apex 308). Two commits:
+
+- **fix(medic) `675ed8f`:** after saving € value-at-risk, an economic buyer, or
+  applied AI suggestions, the opportunities row kept the OLD qualification
+  score — and the modal re-seeds from the row on open, so close→reopen showed
+  pre-save data (advisor's edits looked lost; affected apply-suggestions since
+  it shipped). Modal now reports persisted medic changes via `onMedicChange`;
+  row + selection update in place. Ladder E2E extended with a close→reopen
+  guard (9/9). 2479 unit tests + full gate green. Swept and CLEARED:
+  apply-suggestions cannot downgrade an advisor-identified stakeholder
+  (append-only merge, name+stance dedupe).
+- **fix(a11y) `6dc2136`:** committed the UI-audit session's uncommitted
+  `globals.css` WCAG 2.5.8 touch-target floor (owner-approved) — the rule its
+  recorded 498→~28 end state was measured with; git and prod are in sync again.
+
 ## Product UI/UX + responsive + a11y audit — 2026-07-29 — DEPLOYED
 
 Reported from production: the `/wallet/[id]` header looked wrong in light mode.
