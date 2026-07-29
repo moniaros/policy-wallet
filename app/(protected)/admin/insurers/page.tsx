@@ -18,8 +18,9 @@ export default async function AdminInsurersPage() {
                     <h2 className="text-lg font-semibold mb-4 text-stone-800 dark:text-stone-200">Add New Insurer</h2>
                     <form action={createInsurer} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Insurer Name</label>
+                            <label htmlFor="admin-insurer-name" className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Insurer Name</label>
                             <input
+                                id="admin-insurer-name"
                                 name="name"
                                 type="text"
                                 required

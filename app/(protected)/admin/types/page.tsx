@@ -18,8 +18,9 @@ export default async function AdminTypesPage() {
                     <h2 className="text-lg font-semibold mb-4 text-stone-800 dark:text-stone-200">Add New Type</h2>
                     <form action={createInsuranceType} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Display Name</label>
+                            <label htmlFor="admin-type-name" className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Display Name</label>
                             <input
+                                id="admin-type-name"
                                 name="name"
                                 type="text"
                                 required
@@ -28,8 +29,9 @@ export default async function AdminTypesPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Slug (Internal)</label>
+                            <label htmlFor="admin-type-slug" className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Slug (Internal)</label>
                             <input
+                                id="admin-type-slug"
                                 name="slug"
                                 type="text"
                                 required
