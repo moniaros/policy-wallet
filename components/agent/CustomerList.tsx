@@ -138,6 +138,7 @@ export function CustomerList({
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 dark:text-neutral-400" />
                     <input
                         type="search"
+                        aria-label={roleCopy.customerList.searchPlaceholder}
                         placeholder={roleCopy.customerList.searchPlaceholder}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
