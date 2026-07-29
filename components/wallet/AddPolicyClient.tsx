@@ -218,12 +218,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
             {/* Every top-level branch needs the heading: the component returns
                 from more than one place and the default state had none, so the
                 route reported no <h1> even after the polling branch got one. */}
-            <h1 className="sr-only">{t.wallet?.addPolicy ?? "Add policy"}</h1>
                 {/* Hoisted out of a conditional branch: the route rendered no
                     <h1> at all in some states, so a screen-reader user landed on
                     a form with nothing naming the page. Visually hidden because
                     the sticky bar already names it on screen. */}
-                <h1 className="sr-only">{t.wallet?.addPolicy ?? "Add policy"}</h1>
                 {/* Header */}
                 <div className="bg-card border-b border-border sticky top-0 z-30">
                     <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-center">
@@ -430,9 +428,14 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 <div className="w-10 h-10 bg-primary-soft dark:bg-primary/15 rounded-xl flex items-center justify-center text-primary dark:text-mint">
                                     <UploadCloud className="w-5 h-5" />
                                 </div>
-                                <h2 className="text-xl font-black text-foreground">
+                                {/* This is the page's primary heading in the state
+                                    users actually land on — AddPolicyClient returns
+                                    from several places and the sr-only headings added
+                                    earlier both landed in a branch that never renders,
+                                    so the route reported no <h1> at all. */}
+                                <h1 className="text-xl font-black text-foreground">
                                     {t.wallet.uploadDocument}
-                                </h2>
+                                </h1>
                             </div>
 
                             <UploadDropzone
