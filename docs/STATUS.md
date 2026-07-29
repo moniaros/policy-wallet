@@ -96,20 +96,37 @@ Fixed on routes no earlier audit had rendered:
 The 33 "incomplete" routes are admin pages correctly redirecting a policyholder
 — detected and logged, never silently counted as passing.
 
+### Final figures — 108 routes x 9 widths (320-1920)
+
+| | start | now |
+|---|---|---|
+| horizontal overflow | 191 | **0** |
+| accessibility | 18 | **1** |
+| runtime/console | 121 | **1** (dev-only) |
+| touch targets | 498 | **39** |
+
+A regression I introduced and then caught: the narrow-viewport safety net
+`.grid > *, .flex > * { min-width: 0 }` was a plain selector, so it outranked
+legitimate `min-w-*` utilities and silently clamped the language toggle's
+deliberate `min-w-[24px]` back to 21px. Rewritten as
+`:where(.grid, .flex) > *` — zero specificity. **A safety net must never
+outrank a deliberate value.**
+
 ### Remaining low-priority debt
 
-- **1 a11y finding**: an unlabelled form field on `/onboarding/agent` that is
-  not either of the two logo file inputs (those now carry explicit names).
-- **53 touch findings** at the 16-24px WCAG 2.5.8 boundary, all in the
-  authenticated tree.
-- `/perks` 404s by design (empty partner catalog); nothing links to it. Its
-  React "script tag while rendering" notice comes from the root layout's
-  pre-paint `lang` script — correctly placed in `<head>`, verified working.
-- `/wallet/[id]`, `/customers/[id]`, `/tasks/[id]` cannot render locally (dev DB
-  unreachable, so no fixture policy). The audits LOG this rather than passing
-  silently.
-- Admin routes are unreachable for the policyholder fixture, so they are audited
-  only via their redirect. Auditing them needs an admin storageState.
+- **`/wallet/add` still reports no `<h1>`.** An sr-only heading was added at the
+  component's top level and the source is correct, so the route is rendering
+  something other than `AddPolicyClient` in the audited state. Not yet run to
+  ground.
+- **39 touch findings** at the 13-24px WCAG 2.5.8 boundary, authenticated tree
+  (e.g. `/coverage-insights` advisor link, a 13px checkbox).
+- **Admin routes are audited only via their redirect.** There is no admin
+  fixture — only policyholder and agent storageStates — and creating one needs
+  the dev DB, which is unreachable here. 35 of 108 routes are therefore covered
+  only as far as their redirect.
+- `/perks` 404s by design (empty partner catalog); nothing links to it.
+- `/wallet/[id]`, `/customers/[id]`, `/tasks/[id]` cannot render locally (no
+  fixture policy). The audits LOG this rather than passing silently.
 
 ### Checker corrections (each reported correct code as broken)
 
