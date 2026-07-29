@@ -171,9 +171,45 @@ async function discoverDynamicRoutes(page: import('@playwright/test').Page): Pro
                 Array.from(document.querySelectorAll('a[href]')).map((a) => a.getAttribute('href') || '')
             )) as string[]
             const matches = Array.from(new Set(hrefs.filter((h) => seed.pattern.test(h)))).slice(0, 2)
-            if (!matches.length) {
-                // Say so. A seed that silently yields nothing is exactly how
+            if (!matches.length && seed.list === '/wallet') {
+                // The wallet navigates with router.push() on click, not <a href>,
+                // so harvesting hrefs finds nothing — which is exactly how
                 // /wallet/[id] went unaudited while the suite reported green.
+                // Ask the app's own API with the session cookie instead.
+                try {
+                    const ids = (await page.evaluate(async () => {
+                        const res = await fetch('/api/v1/policies', { credentials: 'include' })
+                        if (!res.ok) return []
+                        const body = await res.json()
+                        const rows = body?.data?.policies ?? body?.policies ?? body?.data ?? body
+                        return Array.isArray(rows) ? rows.map((r: any) => r?.id).filter(Boolean) : []
+                    })) as string[]
+                    for (const id of ids.slice(0, 2)) found.push(`/wallet/${id}`)
+                    if (ids.length) continue
+                } catch {
+                    /* fall through to the log */
+                }
+            }
+            if (!matches.length) {
+                // Some lists navigate with router.push() on click rather than an
+                // <a href> — the wallet does. Harvesting hrefs finds nothing
+                // there, which is exactly why /wallet/[id] went unaudited while
+                // the suite reported green. Click the first card and see where
+                // it lands.
+                try {
+                    const card = page.locator('[data-testid="policy-card"], article, li, .pw-card').first()
+                    if (await card.count()) {
+                        await card.click({ timeout: 4000 })
+                        await page.waitForTimeout(900)
+                        const landed = new URL(page.url()).pathname
+                        if (seed.pattern.test(landed)) {
+                            found.push(landed)
+                            continue
+                        }
+                    }
+                } catch {
+                    /* not clickable — fall through to the log below */
+                }
                 console.log(`[dynamic routes] ${seed.list} yielded no detail links — that route family is NOT covered`)
             }
             found.push(...matches)
