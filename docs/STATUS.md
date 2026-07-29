@@ -144,24 +144,41 @@ Both times I treated a self-inflicted failure as a hard environmental limit.
 Worth remembering: when a probe fails, check the probe before believing its
 verdict.
 
+### Design-system audit — every className in app/ and components/
+
+Mostly consistent. Shadows use 6 standard values; icon sizes sit on the standard
+scale; there are exactly **2** arbitrary spacing values in the whole codebase.
+
+Two real problems, both fixed:
+
+1. `text-[#92400E]` (amber-800) appeared **21 times with no dark partner**,
+   several on `dark:bg-amber-900/30` — dark text on a dark surface, the same
+   defect class as the reported PolicyHero header.
+2. **Duplicate and conflicting `dark:` classes** left by an earlier codemod pass
+   in this same session: 3 exact duplicates plus 6 files carrying two different
+   values for one property (`dark:bg-amber-900/30 dark:bg-amber-500/15`), where
+   the later silently won.
+
+**Deliberately not changed:** 94 hex values without a dark partner are brand and
+semantic FILLS that are correct in both themes — `bg-[#29685B]` with white text,
+the fake browser chrome's traffic-light dots, status colours. The pixel contrast
+audit across 108 routes x 2 themes reports 0 findings, and that is the ground
+truth that matters. Converting them to tokens would be churn, not a fix.
+
 ### Remaining low-priority debt
 
-- **Admin console** (audited for the first time this session): 44 touch findings
-  and ~7 a11y. `/dashboard`, `/agent`, `/team`, `/wallet/add` report no `<h1>`
-  **under the admin session specifically** — admins get a different view that
-  lacks the heading.
-- **39 touch findings** (policyholder) and **8** (agent) at the 13-24px WCAG
-  2.5.8 boundary.
-- An unlabelled input on `/customers` comes from a shared component, not
-  `CustomersClient`.
-- `/tasks/[id]` and `/customers/[id]` still yield no detail links — same
-  router.push() pattern; the API fallback is wallet-specific and could be
-  generalised.
-- `/perks` 404s by design (empty partner catalog); nothing links to it.
-- **Not yet done from the brief**: exhaustive design-token standardisation
-  (spacing/radius/shadow scales), UX journey review, and performance work
-  (re-renders, layout shift). The theme, contrast, responsive, a11y and
-  interaction-state dimensions are covered by automation; these three are not.
+- **~11 arbitrary border radii** (`rounded-[12px]`, `[14px]`, `[16px]`, `[28px]`,
+  `[32px]`) that should collapse onto the scale. Cosmetic consistency, no defect.
+- **Touch targets**: 44 admin, 39 policyholder, 8 agent at the 13-24px WCAG 2.5.8
+  boundary. The checkbox/radio cluster is fixed; the rest are 20px text links and
+  inputs with explicit `w-3` utilities, needing per-component work.
+- `/dashboard`, `/agent`, `/team`, `/wallet/add` report no `<h1>` **under the
+  admin session** — admins get a different view that lacks the heading.
+- An unlabelled input on `/customers` comes from a shared component.
+- `/tasks/[id]`, `/customers/[id]`: same `router.push()` pattern as the wallet;
+  the API discovery fallback is wallet-specific and could be generalised.
+- **No automation exists for**: UX journey review, and performance (re-renders,
+  layout shift, duplicate CSS). Those two brief dimensions were not done.
 
 ### Checker corrections (each reported correct code as broken)
 
