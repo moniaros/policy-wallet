@@ -788,7 +788,17 @@ test.describe('theme switching leaves no stale styles', () => {
     test('toggle, refresh and navigate all repaint correctly', async ({ page }) => {
         test.setTimeout(45 * 60_000)
         const problems: string[] = []
-        const routes = ['/dashboard', '/wallet', '/account', '/pricing', '/branches', '/guides']
+        // Widened from 6 to a cross-section of every tree — public marketing,
+        // content, legal, and the authenticated app — plus whatever dynamic
+        // routes discovery turns up, so "switch themes while navigating" is
+        // exercised over the real surface area rather than a sample.
+        const routes = [
+            '/dashboard', '/wallet', '/account', '/branches', '/notifications', '/tasks',
+            '/coverage-insights', '/renewals', '/questionnaires', '/help', '/upgrade', '/activity',
+            '/', '/pricing', '/product', '/product/motor', '/product/business',
+            '/guides', '/lexiko', '/company', '/contact', '/terms', '/privacy', '/solutions/agents',
+            ...(await discoverDynamicRoutes(page)),
+        ]
 
         for (const path of routes) {
             await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 90_000 })
