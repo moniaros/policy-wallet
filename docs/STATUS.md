@@ -165,20 +165,30 @@ the fake browser chrome's traffic-light dots, status colours. The pixel contrast
 audit across 108 routes x 2 themes reports 0 findings, and that is the ground
 truth that matters. Converting them to tokens would be churn, not a fix.
 
+### Theme switching — verified across 24+ routes
+
+Three full light/dark toggle rounds per route (a surface that repaints only on
+the FIRST switch shows as an unchanged fingerprint on a later pass), then a
+refresh, then cross-page navigation and a return. **Passes: zero stale styles,
+zero identical-fingerprint surfaces, theme persists cleanly across reloads.**
+
 ### Remaining low-priority debt
 
-- **~11 arbitrary border radii** (`rounded-[12px]`, `[14px]`, `[16px]`, `[28px]`,
-  `[32px]`) that should collapse onto the scale. Cosmetic consistency, no defect.
-- **Touch targets**: 44 admin, 39 policyholder, 8 agent at the 13-24px WCAG 2.5.8
-  boundary. The checkbox/radio cluster is fixed; the rest are 20px text links and
-  inputs with explicit `w-3` utilities, needing per-component work.
+- **91 touch findings** at the 13-24px WCAG 2.5.8 boundary (44 admin, 39
+  policyholder, 8 agent). The checkbox/radio cluster is fixed; the rest are 20px
+  text links and inputs carrying explicit `w-3` utilities — per-component work.
+- **67 off-scale border radii** (10, 14, 20, 28, 32, 40, 48px). The 44 exact
+  matches were collapsed onto the scale with no visual change; these seven
+  values are genuinely off-scale, so renaming them alters the design. Needs a
+  human call on what the scale should contain.
 - `/dashboard`, `/agent`, `/team`, `/wallet/add` report no `<h1>` **under the
   admin session** — admins get a different view that lacks the heading.
 - An unlabelled input on `/customers` comes from a shared component.
-- `/tasks/[id]`, `/customers/[id]`: same `router.push()` pattern as the wallet;
-  the API discovery fallback is wallet-specific and could be generalised.
-- **No automation exists for**: UX journey review, and performance (re-renders,
-  layout shift, duplicate CSS). Those two brief dimensions were not done.
+- `/tasks/[id]`, `/customers/[id]`: same `router.push()` navigation as the
+  wallet; the API discovery fallback is wallet-specific and could be generalised.
+- **No automation exists for UX journey review or performance** (re-renders,
+  layout shift, duplicate CSS). Those two brief dimensions were not done, and
+  are not claimed.
 
 ### Checker corrections (each reported correct code as broken)
 
