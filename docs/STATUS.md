@@ -5,6 +5,17 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## Ethniki «Πάμε Απλά» — readiness matrix + συνεχές dev plan — 2026-07-30
+
+Νέο: [planning/ETHNIKI_READINESS_AND_DEV_PLAN.md](planning/ETHNIKI_READINESS_AND_DEV_PLAN.md)
+— ποιοι ισχυρισμοί της φόρμας προς την Εθνική αποδεικνύονται live σήμερα
+(πίνακας με τεκμήρια αρχείων) και 11 WPs σε 5 φάσεις για ό,τι λείπει, γραμμένο
+ώστε κάθε επόμενο session να αυτοεκκινεί από το doc (session prompt,
+checkboxes, καταγεγραμμένες παγίδες περιβάλλοντος). Επανέλεγχος των ευρημάτων
+του motor-demo-path (2026-06): το agent-visibility του dashboard έχει
+διορθωθεί (grant-based), τα υπόλοιπα ισχύουν. Docs-only αλλαγή — branch
+`claude/policywallet-ethniki-0r0bai`.
+
 ## Insurer reference data + admin editing — 2026-07-30 — MERGED + DEPLOYED
 
 `NEW-UI` @ `c225fe9`, deploy `dpl_CSjERdp7…` (`f76d9eglm`), Ready, apex+www.
