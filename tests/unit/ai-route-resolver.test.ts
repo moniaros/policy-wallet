@@ -26,6 +26,8 @@ vi.mock("@/lib/env", () => ({
         CLAUDE_MODEL_GAP_ANALYSIS: "claude-sonnet-5",
         CLAUDE_MODEL_CLARITY_ANALYSIS: "claude-sonnet-5",
         CLAUDE_MODEL_QA: "claude-haiku-4-5",
+        CLAUDE_MODEL_FALLBACK: "claude-haiku-4-5",
+        OPENAI_MODEL_FALLBACK: "gpt-4.1-mini",
         GEMINI_API_KEY: "test-key",
     },
 }))
@@ -88,9 +90,10 @@ describe("resolveRoute — model selection", () => {
         expect(small).toBe("gemini-3.1-flash-lite")
     })
 
-    it("carries the per-provider fallback model (gemini only for now)", () => {
+    it("carries a per-provider fallback model for each real provider", () => {
         expect(resolveRoute({ operation: "askQuestion", provider: "gemini" }).fallbackModel).toBe("gemini-3.5-flash")
-        expect(resolveRoute({ operation: "askQuestion", provider: "anthropic" }).fallbackModel).toBeUndefined()
+        expect(resolveRoute({ operation: "askQuestion", provider: "anthropic" }).fallbackModel).toBe("claude-haiku-4-5")
+        expect(resolveRoute({ operation: "askQuestion", provider: "openai" }).fallbackModel).toBe("gpt-4.1-mini")
     })
 
     it("orders providers with the chosen primary first, deduped", () => {
@@ -124,9 +127,10 @@ describe("selectPrimaryProvider", () => {
 })
 
 describe("fallbackModelFor", () => {
-    it("returns the gemini fallback and nothing for others (Phase 3 adds the rest)", () => {
+    it("returns a per-provider fallback for gemini, anthropic, and openai", () => {
         expect(fallbackModelFor("gemini")).toBe("gemini-3.5-flash")
-        expect(fallbackModelFor("anthropic")).toBeUndefined()
-        expect(fallbackModelFor("openai")).toBeUndefined()
+        expect(fallbackModelFor("anthropic")).toBe("claude-haiku-4-5")
+        expect(fallbackModelFor("openai")).toBe("gpt-4.1-mini")
+        expect(fallbackModelFor("mock")).toBeUndefined()
     })
 })

@@ -313,8 +313,11 @@ export function fallbackModelFor(provider: AIServiceType): string | undefined {
     switch (provider) {
         case "gemini":
             return env.GEMINI_MODEL_FALLBACK
+        case "anthropic":
+            return env.CLAUDE_MODEL_FALLBACK
+        case "openai":
+            return env.OPENAI_MODEL_FALLBACK
         default:
-            // Anthropic/OpenAI fallback models are added in Phase 3.
             return undefined
     }
 }

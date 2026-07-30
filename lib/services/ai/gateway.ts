@@ -22,6 +22,8 @@
 
 import { logger } from "@/lib/logger"
 import { getAIService } from "./ai-service.factory"
+import { isTransientError } from "./shared-utils"
+import { recordFailure, recordSuccess, type ProviderId } from "./provider-health"
 import { resolveRoute, type RouteRequest, type UserTier } from "./model-router"
 import type {
     AITrackingOptions,
@@ -44,6 +46,24 @@ function logCall(operation: string, decision: { provider: string; model: string;
         model: decision.model,
         tier: decision.tier,
     })
+}
+
+/**
+ * Run a provider call under the circuit breaker: a success closes the breaker,
+ * a transient failure trips it (so the same provider isn't preferred on the very
+ * next call). Non-transient failures (bad request, schema) don't reflect on the
+ * provider's health. The error is always rethrown — the breaker observes, it
+ * does not swallow.
+ */
+async function withHealthTracking<T>(provider: ProviderId, fn: () => Promise<T>): Promise<T> {
+    try {
+        const result = await fn()
+        recordSuccess(provider)
+        return result
+    } catch (err) {
+        if (isTransientError(err)) recordFailure(provider, "transient")
+        throw err
+    }
 }
 
 function trackingFor(
@@ -74,10 +94,12 @@ export const aiGateway = {
         const route = resolveRoute({ operation: "askQuestion", userTier: ctx.userTier })
         logCall("askQuestion", route)
         const service = getAIService(route.provider)
-        return service.askQuestion(null, metadata, question, {
-            ...trackingFor(route, ctx),
-            structuredContext: ctx.structuredContext,
-        })
+        return withHealthTracking(route.provider, () =>
+            service.askQuestion(null, metadata, question, {
+                ...trackingFor(route, ctx),
+                structuredContext: ctx.structuredContext,
+            })
+        )
     },
 
     /** Analyze a risk profile against the current portfolio. */
@@ -93,7 +115,9 @@ export const aiGateway = {
         })
         logCall("analyzeRiskProfile", route)
         const service = getAIService(route.provider)
-        return service.analyzeRiskProfile(profile, existingPolicies, trackingFor(route, ctx))
+        return withHealthTracking(route.provider, () =>
+            service.analyzeRiskProfile(profile, existingPolicies, trackingFor(route, ctx))
+        )
     },
 }
 

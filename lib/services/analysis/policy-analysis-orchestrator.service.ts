@@ -50,7 +50,7 @@ import {
     estimatePolicyAnalysisTokenBudget,
     type PolicyAnalysisStepKey,
 } from "./token-budget-estimator"
-import { getModelForStep, selectPrimaryProvider } from "@/lib/services/ai/model-router"
+import { getModelForStep, selectPrimaryProvider, fallbackModelFor } from "@/lib/services/ai/model-router"
 import { detectDeterministicSavings } from "./deterministic-savings"
 import { resolveUserEntitlements, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import {
@@ -220,8 +220,10 @@ function getDefaultModelForStep(provider: AIServiceType, stepKey: PolicyAnalysis
 }
 
 function fallbackModelForProvider(provider: AIServiceType): string | undefined {
-    if (provider === "gemini") return env.GEMINI_MODEL_FALLBACK
-    return undefined
+    // Delegate to the router so the model-fallback branch works for every
+    // provider (Claude/OpenAI previously had no fallback model and skipped the
+    // cheaper same-provider retry). Gemini's fallback is unchanged.
+    return fallbackModelFor(provider)
 }
 
 function mapMissingArtifacts(stepKey: PolicyAnalysisStepKey): string[] {

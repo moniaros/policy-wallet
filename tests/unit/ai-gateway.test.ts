@@ -29,9 +29,9 @@ vi.mock("@/lib/env", () => ({
 }))
 vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
 
-const askQuestion = vi.fn(async () => "answer")
-const analyzeRiskProfile = vi.fn(async () => ({ riskLevel: "low" }))
-const getAIService = vi.fn(() => ({ askQuestion, analyzeRiskProfile }))
+const askQuestion = vi.fn(async (..._args: any[]) => "answer")
+const analyzeRiskProfile = vi.fn(async (..._args: any[]) => ({ riskLevel: "low" }))
+const getAIService = vi.fn((_p?: string) => ({ askQuestion, analyzeRiskProfile }))
 
 vi.mock("@/lib/services/ai/ai-service.factory", () => ({
     getAIService: (p?: string) => getAIService(p),

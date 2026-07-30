@@ -33,6 +33,12 @@ const envSchema = z.object({
     CLAUDE_MODEL_GAP_ANALYSIS: z.string().default("claude-sonnet-5"),
     CLAUDE_MODEL_CLARITY_ANALYSIS: z.string().default("claude-sonnet-5"),
     CLAUDE_MODEL_QA: z.string().default("claude-haiku-4-5"),
+    // Per-provider model-fallback targets (the router's model-fallback branch).
+    // Before this, only Gemini had a fallback model — a transient failure on
+    // Claude/OpenAI skipped the cheaper same-provider retry. Haiku / gpt-4.1-mini
+    // are the stable, cheap landing spots for their family.
+    CLAUDE_MODEL_FALLBACK: z.string().default("claude-haiku-4-5"),
+    OPENAI_MODEL_FALLBACK: z.string().default("gpt-4.1-mini"),
     FF_AI_FAILOVER_OPENAI: z.string().default("false"),
     FF_AI_DEGRADED_COMPLETION: z.string().default("true"),
     FF_AI_REMEDIATION_ALERTS: z.string().default("false"),
