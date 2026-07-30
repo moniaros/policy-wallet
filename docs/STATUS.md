@@ -6,7 +6,12 @@
 > my own tooling was wrong rather than the product.
 
 
-## MEDIC suggest metering + admin visibility review — 2026-07-30
+## MEDIC suggest metering + admin visibility review — 2026-07-30 — MERGED + DEPLOYED
+
+`NEW-UI` @ `c00ce21`, deploy `dpl_9rNz7GMk…` (`btlnbkp8f`), Ready, apex+www
+verified. Final E2E: **16/16** (5 agent surfaces + full journey + 5 ladder
+tests incl. the modal console check and the 320px strip), zero Chrome console
+errors. 2498 unit tests + full gate green.
 
 **Metering — one real defect, fixed.** The suggest button was a real, billable
 LLM call (up to 80K chars of notes, re-runnable forever) with **none** of the
