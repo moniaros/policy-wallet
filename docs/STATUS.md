@@ -120,6 +120,14 @@ edits stamp changed fields `admin_edited`, provenance preserved).
   route. So `verify:migrations` cannot pass locally on this network **by
   construction**, not by outage; the MCP path is the correct one and both DBs
   are confirmed at the same migration state. `prisma validate` green.
+  - *Refinement from two independent runs (other session, 2026-07-30):* it does
+    not actually wait forever — left alone it ends in **`Error: P1017: Server
+    has closed the connection`** against `aws-1-eu-west-3.pooler…:6543` after
+    several minutes. Same root cause, but worth knowing when diagnosing: the
+    pooler drops the connection rather than the client hanging indefinitely, so
+    the right move is to let it return and read P1017 rather than kill it and
+    guess. Note the script also **exits 0 through a pipe** while printing
+    "Migration verification failed" — check its output, not its exit code.
 
 
 ## /agent had no h1 for anyone without an advisor — 2026-07-30 — MERGED + DEPLOYED
