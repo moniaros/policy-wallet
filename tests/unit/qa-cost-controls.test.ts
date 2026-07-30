@@ -40,8 +40,9 @@ describe("askPolicyQuestion cost + safety controls", () => {
 
     it("runs the guard and the backstop BEFORE the AI call, not after", () => {
         const body = askBody()
-        const call = body.indexOf("aiService.askQuestion(")
-        expect(call, "askQuestion call site not found — test is stale").toBeGreaterThan(-1)
+        // Q&A now dispatches through the AI gateway (per-call routing).
+        const call = body.indexOf("aiGateway.askQuestion(")
+        expect(call, "aiGateway.askQuestion call site not found — test is stale").toBeGreaterThan(-1)
         expect(body.indexOf("guardUserText(")).toBeLessThan(call)
         expect(body.indexOf("enforceBillableCallPolicy(")).toBeLessThan(call)
     })

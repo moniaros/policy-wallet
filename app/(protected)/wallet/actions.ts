@@ -1290,8 +1290,10 @@ export async function askPolicyQuestion(policyId: string, question: string) {
               } as import("@/lib/services/ai/ai-service.interface").AIPolicyExtractionResponse
             : undefined
 
-        const answer = await aiService.askQuestion(
-            null,
+        // Route through the AI gateway: it resolves provider + model + the
+        // output-token cap for this call (per-call routing) before dispatching.
+        const { aiGateway } = await import("@/lib/services/ai/gateway")
+        const answer = await aiGateway.askQuestion(
             {
                 insurerName: policy.insurerName,
                 policyNumber: policy.policyNumber,
@@ -1305,6 +1307,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
             {
                 userId: authResult.dbUser.id,
                 policyId: policy.id,
+                userTier: tier,
                 structuredContext,
             }
         )

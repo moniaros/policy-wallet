@@ -489,7 +489,8 @@ export class AnthropicAIService implements IAIService {
     ): Promise<AIRiskProfileAnalysisResponse> {
         if (!this.aiProvider) throw new Error("Anthropic service not available")
 
-        const modelName = env.CLAUDE_MODEL_QA as string
+        // Honor a router-supplied modelOverride (previously ignored on this path).
+        const modelName = (options?.modelOverride || env.CLAUDE_MODEL_QA) as string
 
         const RiskProfileAnalysisSchema = z.object({
             riskSummary: z.object({

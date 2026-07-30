@@ -205,6 +205,10 @@ export interface AITrackingOptions {
     userId?: string
     policyId?: string
     modelOverride?: string
+    /** Output-token cap for this call (from the route decision). Undefined =
+     *  provider default. Interactive answers are short, so a cap protects
+     *  against runaway output cost without truncating a real answer. */
+    maxOutputTokens?: number
     provider?: "gemini" | "openai" | "anthropic" | "mock"
     remediationAttempt?: number
     fallbackType?: "model_fallback" | "provider_failover"

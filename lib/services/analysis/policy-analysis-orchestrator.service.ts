@@ -50,7 +50,7 @@ import {
     estimatePolicyAnalysisTokenBudget,
     type PolicyAnalysisStepKey,
 } from "./token-budget-estimator"
-import { getModelForStep } from "@/lib/services/ai/model-router"
+import { getModelForStep, selectPrimaryProvider } from "@/lib/services/ai/model-router"
 import { detectDeterministicSavings } from "./deterministic-savings"
 import { resolveUserEntitlements, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import {
@@ -372,6 +372,16 @@ export class PolicyAnalysisOrchestratorService {
     async createRun(policyId: string, userId: string) {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
 
+        // Primary provider comes from the router (AI_SERVICE_TYPE -> key priority),
+        // not a hardcoded "gemini". Under the default env this resolves to gemini
+        // with the same clarity model as before, so run rows are unchanged; setting
+        // AI_SERVICE_TYPE=anthropic now makes Claude a first-class primary instead
+        // of being reachable only via the failover branch.
+        const primaryProvider = selectPrimaryProvider()
+        const primaryRunModel =
+            getModelForStep(primaryProvider, "plain_language_translation") ??
+            env.GEMINI_MODEL_CLARITY_ANALYSIS
+
         // GDPR Art. 9 gate: the policy OWNER (the data subject — documents can
         // carry special-category health data) must have granted explicit AI-processing
         // consent before any document bytes reach an LLM provider. Checked before any
@@ -385,8 +395,8 @@ export class PolicyAnalysisOrchestratorService {
                 data: {
                     policyId,
                     userId,
-                    provider: "gemini",
-                    model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
+                    provider: primaryProvider,
+                    model: primaryRunModel,
                     status: "blocked",
                     blockedReason: "ai_consent_missing",
                     failureCode: "AI_CONSENT_REQUIRED",
@@ -416,8 +426,8 @@ export class PolicyAnalysisOrchestratorService {
                 data: {
                     policyId,
                     userId,
-                    provider: "gemini",
-                    model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
+                    provider: primaryProvider,
+                    model: primaryRunModel,
                     status: "blocked",
                     blockedReason: "free_tier_ai_locked",
                     failureCode: "UPGRADE_REQUIRED",
@@ -456,8 +466,8 @@ export class PolicyAnalysisOrchestratorService {
             data: {
                 policyId,
                 userId,
-                provider: "gemini",
-                model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
+                provider: primaryProvider,
+                model: primaryRunModel,
                 status: "queued",
                 priority: queuePriority,
                 estimatedTokens: estimation.totalEstimatedTokens,
@@ -500,7 +510,7 @@ export class PolicyAnalysisOrchestratorService {
                             pipeline: {
                                 ...(((policy.acordData as any)?.analysis?.pipeline as Record<string, unknown>) || {}),
                                 runId: run.id,
-                                provider: "gemini",
+                                provider: primaryProvider,
                                 status: "blocked",
                                 missingSections: [],
                                 lastFailureCode: "TOKEN_LIMIT_BLOCKED",
@@ -1000,7 +1010,10 @@ export class PolicyAnalysisOrchestratorService {
         const policy = run.policy
         const userRoles = run.user?.roles
         const primaryProvider: AIServiceType =
-            run.provider === "gemini" || run.provider === "openai" || run.provider === "mock"
+            run.provider === "gemini" ||
+            run.provider === "openai" ||
+            run.provider === "anthropic" ||
+            run.provider === "mock"
                 ? (run.provider as AIServiceType)
                 : "gemini"
 

@@ -501,7 +501,10 @@ async function runAiRiskAnalysis(
             coverageSummary: p.coverageSummary,
         }))
 
-        return await aiService.analyzeRiskProfile(
+        // Route through the AI gateway so the model + output cap come from the
+        // per-call route decision (portfolio size escalates the tier).
+        const { aiGateway } = await import("@/lib/services/ai/gateway")
+        return await aiGateway.analyzeRiskProfile(
             {
                 maritalStatus: profile.maritalStatus,
                 dependentsCount: profile.dependentsCount,

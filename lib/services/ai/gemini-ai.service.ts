@@ -578,7 +578,9 @@ ${schemaPromptBlock(ExtractionSchema)}`
         throw new Error('Gemini AI service is not available')
       }
 
-      const model = this.aiProvider(env.GEMINI_MODEL_QA as string)
+      // Honor the router's model + output cap (this path read the env model
+      // directly and set no cap, so the gateway's route decision was ignored).
+      const model = this.aiProvider((options?.modelOverride || env.GEMINI_MODEL_QA) as string)
 
       const parts: any[] = [
         { type: 'text', text: buildQaPrompt(metadata, question, options?.structuredContext?.acordData) },
@@ -601,7 +603,8 @@ ${schemaPromptBlock(ExtractionSchema)}`
           maxRetries: 0,
           model,
           messages: [{ role: 'user', content: parts }],
-          temperature: 0.3
+          temperature: 0.3,
+          ...(options?.maxOutputTokens ? { maxOutputTokens: options.maxOutputTokens } : {}),
         }),
         'Gemini Q&A'
       )
@@ -643,7 +646,9 @@ ${schemaPromptBlock(ExtractionSchema)}`
       throw new Error('Gemini AI service is not available')
     }
 
-    const modelName = env.GEMINI_MODEL_QA as string // Flash model for fast, cost-effective analysis
+    // Honor a router-supplied modelOverride (this path ignored it before, so the
+    // gateway's route decision could never reach the risk-profile call).
+    const modelName = (options?.modelOverride || env.GEMINI_MODEL_QA) as string
 
     const RiskProfileAnalysisSchema = z.object({
       riskSummary: z.object({
@@ -688,6 +693,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
           schema: RiskProfileAnalysisSchema,
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.3,
+          ...(options?.maxOutputTokens ? { maxOutputTokens: options.maxOutputTokens } : {}),
         }),
         'Gemini risk profile analysis'
       )
