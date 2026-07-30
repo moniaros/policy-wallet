@@ -5,6 +5,38 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## Insurer reference data + admin editing — 2026-07-30 — MERGED + DEPLOYED
+
+`NEW-UI` @ `c225fe9`, deploy `dpl_CSjERdp7…` (`f76d9eglm`), Ready, apex+www.
+The 29-record Greek-insurer research dataset now lives at
+`prisma/greek-insurers.json`; **27 records imported to PROD and dev** (the two
+`status='merged'` historic entities — AXA, Ευρωπαϊκή Πίστη — skipped by
+design). Insurer model enriched (slug join key, bilingual/legal names, market
+status, group parent, free-text contact channels, HQ address JSON, roadside
+partner, 22-value LoB vocab, per-field confidence map); `/admin/insurers` is
+now a full CRUD surface (list + `[insurerId]` edit page with confidence badges;
+edits stamp changed fields `admin_edited`, provenance preserved).
+
+- **Prod pre-check paid off:** prod did NOT hold the 5 dev-seed rows but 5
+  admin-created ones (`Groupama`, `NN`, canonical «Εθνική Ασφαλιστική»…). The
+  generator's claim pass was generalized to claim-by-canonical-name for every
+  record, killing the unique(name) collision class; `Groupama`/`NN` added to
+  the legacy-merge map. End state verified: prod 27/27 slugged, 0 orphans; dev
+  28 rows (27 + inactive legacy AXA).
+- Migration `20260730120000_insurer_reference_enrichment` (additive DDL)
+  applied to BOTH DBs via Supabase MCP + `_prisma_migrations` rows with the
+  file's real sha256. Seed SQL from `scripts/gen-insurer-seed-sql.ts`
+  (idempotent; re-runs clobber dataset-owned fields, never is_active/logo).
+- Verified live: list (27, status chips), ERGO edit page (stale/verified
+  badges), no-op save → `UPDATE_INSURER` audit row + badges preserved,
+  add-policy dropdown shows the canonical Greek names.
+- 47 new unit tests incl. dataset-conformance (every imported row re-savable —
+  URL/phone validation deliberately lenient: http:// sites and Greek short-code
+  phones are real data). 2545 total green + full gate.
+- Environmental: local pooler connectivity was dead this session —
+  `migrate deploy`/`migrate status` hang; MCP path used for both DBs.
+  `prisma validate` green; re-run `verify:migrations` when the network returns.
+
 
 ## MEDIC suggest metering + admin visibility review — 2026-07-30 — MERGED + DEPLOYED
 
