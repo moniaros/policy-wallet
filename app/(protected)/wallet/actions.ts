@@ -16,6 +16,7 @@ import { hasAnyRole } from "@/lib/api-auth"
 import fs from "fs/promises"
 import path from "path"
 import { getAIService } from "@/lib/services/ai"
+import { guardUserText, enforceBillableCallPolicy } from "@/lib/services/ai/guard"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { AppError } from "@/lib/errors/app-error"
 import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
@@ -1147,6 +1148,32 @@ export async function askPolicyQuestion(policyId: string, question: string) {
         return { error: "Please enter a valid question" }
     }
 
+    // Zero-cost guardrail: length cap + prompt-injection scoring BEFORE any
+    // billable AI call. A blocked question never reaches a provider. High-
+    // confidence injections get an auditable row (metadata only — no raw text,
+    // no email, GDPR M3) that the /admin/ai dashboard counts as attack pressure.
+    const guard = guardUserText(question, { maxChars: 2000, field: "question" })
+    if (!guard.ok) {
+        if (guard.code === "INPUT_REJECTED") {
+            try {
+                await db.activityLog.create({
+                    data: {
+                        adminUserId: authResult.dbUser.id,
+                        adminEmail: "",
+                        actionType: "AI_INPUT_REJECTED",
+                        description: `Blocked Q&A input on policy ${policyId}`,
+                        metadata: { surface: "policy_qa", patternIds: guard.flags, score: guard.score },
+                    },
+                })
+            } catch { /* never fail the request on a logging error */ }
+            return { error: "INPUT_REJECTED" }
+        }
+        return { error: "QUESTION_TOO_LONG" }
+    }
+    // The sanitized question (control/zero-width/bidi stripped) is what reaches
+    // the model and the audit metadata from here on.
+    const safeQuestion = guard.sanitized
+
     // Fetch policy with documents and ACORD data for Q&A context
     const policy = await db.policy.findUnique({
         where: { id: policyId },
@@ -1223,6 +1250,24 @@ export async function askPolicyQuestion(policyId: string, question: string) {
         return { error: "TOKEN_LIMIT_BLOCKED" }
     }
 
+    // Abuse/cost backstop for the billable call. The daily tier limit above is a
+    // product cap; this is the anti-hammering guard the Q&A path never had. The
+    // DB-backed count is instance-independent (prod runs RATELIMIT_ALLOW_LOCAL=1
+    // with no Upstash), counting the POLICY_QUESTION_ASKED rows this action
+    // writes below. Admins are exempt, matching the gates above.
+    if (!hasAnyRole(authResult.dbUser.roles, ['admin'])) {
+        const gate = await enforceBillableCallPolicy({
+            userId: authResult.dbUser.id,
+            actionType: "POLICY_QUESTION_ASKED",
+            redisBucket: `policy-qa:${authResult.dbUser.id}`,
+            redisLimit: 20,
+            redisWindowMs: 60 * 60 * 1000,
+            dbLimit: 30,
+            dbWindowMs: 60 * 60 * 1000,
+        })
+        if (!gate.allowed) return { error: "RATE_LIMITED" }
+    }
+
     // Use centralized AI service
     const aiService = getAIService()
     if (!aiService.isAvailable()) {
@@ -1256,7 +1301,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
                 premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
                 coverageSummary: policy.coverageSummary
             },
-            question,
+            safeQuestion,
             {
                 userId: authResult.dbUser.id,
                 policyId: policy.id,
@@ -1275,7 +1320,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
                     description: `Asked question about policy ${policy.policyNumber}`,
                     metadata: {
                         policyId,
-                        question: question.substring(0, 100),
+                        question: safeQuestion.substring(0, 100),
                         answerLength: answer.length
                     }
                 }

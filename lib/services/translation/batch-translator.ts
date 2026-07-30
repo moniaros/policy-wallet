@@ -10,11 +10,12 @@
  */
 
 import { generateObject } from "ai"
-import { withTimeoutAndRetry } from "@/lib/services/ai/shared-utils"
+import { withTimeoutAndRetry, parseUsage } from "@/lib/services/ai/shared-utils"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { z } from "zod"
 import { env } from "@/lib/env"
 import { logger } from "@/lib/logger"
+import { trackTokenUsage } from "@/lib/token-tracking"
 import {
     getCachedTranslations,
     setCachedTranslations,
@@ -23,12 +24,23 @@ import {
 const BATCH_SIZE = 40
 
 /**
+ * Optional metering context. When provided, each translation batch records a
+ * TokenUsage row against the user — otherwise the post-analysis translation
+ * pass (a real, billable Gemini call) spends provider money off the books.
+ */
+export interface TranslationTracking {
+    userId: string
+    policyId?: string
+}
+
+/**
  * Translates an array of Greek strings to English.
  * Returns an array of the same length with English translations.
  * Uses cache for previously translated strings.
  */
 export async function batchTranslateToEnglish(
-    greekTexts: string[]
+    greekTexts: string[],
+    tracking?: TranslationTracking
 ): Promise<string[]> {
     if (greekTexts.length === 0) return []
 
@@ -60,7 +72,7 @@ export async function batchTranslateToEnglish(
         const batchTexts = batchIndices.map((i) => greekTexts[i])
 
         try {
-            const translations = await translateBatch(batchTexts)
+            const translations = await translateBatch(batchTexts, tracking)
 
             const cachePairs: Array<{ source: string; translated: string }> = []
             for (let j = 0; j < batchIndices.length; j++) {
@@ -96,7 +108,7 @@ export async function batchTranslateToEnglish(
     return results
 }
 
-async function translateBatch(texts: string[]): Promise<string[]> {
+async function translateBatch(texts: string[], tracking?: TranslationTracking): Promise<string[]> {
     if (!env.GEMINI_API_KEY) {
         throw new Error("No GEMINI_API_KEY available for batch translation")
     }
@@ -106,7 +118,7 @@ async function translateBatch(texts: string[]): Promise<string[]> {
     // Same timeout/abort/retry-ownership hygiene as every other AI call site —
     // this was the one bare generateObject with no abort path (a hung
     // connection ate the whole serverless budget) and SDK-internal retries.
-    const { object } = await withTimeoutAndRetry(
+    const { object, usage } = await withTimeoutAndRetry(
         (signal) => generateObject({
         abortSignal: signal,
         maxRetries: 0,
@@ -127,6 +139,20 @@ Keep translations concise — do not add explanations.`,
         }),
         'Gemini batch translation'
     )
+
+    // Meter the spend when a user context is supplied. trackTokenUsage never
+    // throws (it logs + Sentry on failure), so metering can't break translation.
+    if (tracking?.userId) {
+        const parsed = parseUsage(usage, env.GEMINI_MODEL_TRANSLATION, 'gemini')
+        await trackTokenUsage({
+            userId: tracking.userId,
+            operationType: 'other',
+            policyId: tracking.policyId,
+            inputTokens: parsed.inputTokens,
+            outputTokens: parsed.outputTokens,
+            model: env.GEMINI_MODEL_TRANSLATION as Parameters<typeof trackTokenUsage>[0]['model'],
+        })
+    }
 
     if (object.translations.length !== texts.length) {
         logger("warn", "Translation count mismatch", {

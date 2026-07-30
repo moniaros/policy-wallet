@@ -1056,11 +1056,39 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     // Abuse/cost cap: this is a real, billable AI extraction. Without a limit an
     // agent could scan unbounded PDFs and never create a policy, running up cost
     // outside the analysis-quota gate that addPolicyForCustomer enforces.
-    const { rateLimit } = await import("@/lib/rate-limit")
-    const scan = await rateLimit(authResult.dbUser.id, 30, 60 * 60 * 1000, `agent-scan:${authResult.dbUser.id}`)
-    if (!scan.success) {
+    //
+    // The Redis 30/hr limiter is per-instance in production (RATELIMIT_ALLOW_LOCAL
+    // with no Upstash), so the scan had no durable cap — STATUS.md flags it as the
+    // live money exposure. enforceBillableCallPolicy adds a DB-backed backstop
+    // (45/hr, instance-independent) that counts the AGENT_POLICY_SCANNED rows this
+    // function writes, closing that hole.
+    const { enforceBillableCallPolicy } = await import("@/lib/services/ai/guard")
+    const scanGate = await enforceBillableCallPolicy({
+        userId: authResult.dbUser.id,
+        actionType: "AGENT_POLICY_SCANNED",
+        redisBucket: `agent-scan:${authResult.dbUser.id}`,
+        redisLimit: 30,
+        redisWindowMs: 60 * 60 * 1000,
+        dbLimit: 45,
+        dbWindowMs: 60 * 60 * 1000,
+    })
+    if (!scanGate.allowed) {
         return { error: "Too many scans. Please wait a bit and try again." }
     }
+
+    // Auditable spend, written BEFORE the billable call so every committed
+    // attempt (success or failure) counts toward the DB backstop above. userId
+    // only — no email, no customer identifiers in the row (GDPR audit M3).
+    try {
+        await db.activityLog.create({
+            data: {
+                adminUserId: authResult.dbUser.id,
+                adminEmail: "",
+                actionType: "AGENT_POLICY_SCANNED",
+                description: "Agent scanned a policy PDF for extraction",
+            },
+        })
+    } catch { /* never fail the scan on a logging error */ }
 
     try {
         const aiService = getAIService();

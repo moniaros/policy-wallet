@@ -315,7 +315,9 @@ export class PolicyAnalysisOrchestratorService {
         try {
             const prepared = await this.prepareDocument(policyId)
             const service = getAIService()
-            const extraction = await service.extractPolicyData(prepared.document)
+            // Meter the spend: without userId the provider records no TokenUsage
+            // row, so this free/Starter parse ran entirely off the books.
+            const extraction = await service.extractPolicyData(prepared.document, { userId, policyId })
             const metadata = this.buildMetadata(policy, extraction)
 
             await db.policy.update({
@@ -1598,7 +1600,11 @@ export class PolicyAnalysisOrchestratorService {
 
             const allGreekTexts = [...clarityCollection.texts, ...gapCollection.texts]
             if (allGreekTexts.length > 0) {
-                const allEnglish = await batchTranslateToEnglish(allGreekTexts)
+                // Meter the billable translation pass against the run's user.
+                const allEnglish = await batchTranslateToEnglish(allGreekTexts, {
+                    userId: run.userId,
+                    policyId: run.policyId,
+                })
                 const clarityEnglish = allEnglish.slice(0, clarityCollection.texts.length)
                 const gapEnglish = allEnglish.slice(clarityCollection.texts.length)
 

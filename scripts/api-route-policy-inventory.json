@@ -192,8 +192,8 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
-          "profile": "none"
+          "required": true,
+          "profile": "ai-inference"
         },
         "validation": {
           "required": false,

@@ -42,6 +42,21 @@ export function mapWalletErrorToMessage(
         return t?.common?.aiConsentRequired || byContext(context, t)
     }
 
+    // Zero-cost guardrail rejections on the Q&A path (guardUserText).
+    if (upper.includes("QUESTION_TOO_LONG")) {
+        return t?.wallet?.errors?.questionTooLong || byContext(context, t)
+    }
+
+    if (upper.includes("INPUT_REJECTED")) {
+        return t?.wallet?.errors?.inputRejected || byContext(context, t)
+    }
+
+    // Anti-hammering backstop (enforceBillableCallPolicy). Kept before the
+    // generic LIMIT checks — "RATE_LIMITED" must not fall through to them.
+    if (upper.includes("RATE_LIMITED") || upper.includes("TOO_MANY_REQUESTS")) {
+        return t?.wallet?.errors?.rateLimited || byContext(context, t)
+    }
+
     // Check before the generic UPGRADE_REQUIRED — "AGENT_UPGRADE_REQUIRED"
     // contains that substring but needs the agent-plan message.
     if (upper.includes("AGENT_UPGRADE_REQUIRED")) {
