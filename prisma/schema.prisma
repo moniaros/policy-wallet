@@ -249,12 +249,28 @@ model PolicyholderProfile {
 }
 
 model Insurer {
-  id        String   @id @default(cuid()) @map("insurer_id")
-  name      String   @unique
-  logoUrl   String?  @map("logo_url")
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                         String   @id @default(cuid()) @map("insurer_id")
+  name                       String   @unique // Greek commercial name; Policy.insurerName references it as a free string
+  slug                       String?  @unique // reference-dataset id (prisma/greek-insurers.json); NULL for admin-created rows
+  nameEn                     String?  @map("name_en")
+  legalNameEl                String?  @map("legal_name_el")
+  status                     String   @default("active") // active | merged | rebranded | branch | run_off (INSURER_STATUS_VALUES)
+  groupParent                String?  @map("group_parent")
+  logoUrl                    String?  @map("logo_url")
+  website                    String?
+  callCenter                 String?  @map("call_center") // free text incl. short codes (e.g. "18189")
+  claimsPhone                String?  @map("claims_phone")
+  roadsidePhone              String?  @map("roadside_phone") // may embed two numbers (domestic / from abroad)
+  paymentGatewayUrl          String?  @map("payment_gateway_url")
+  contactEmail               String?  @map("contact_email")
+  hqAddress                  Json?    @map("hq_address") // { street, city, postalCode, country }
+  roadsideAssistanceProvider String?  @map("roadside_assistance_provider")
+  linesOfBusiness            String[] @default([]) @map("lines_of_business") // INSURER_LOB_VALUES vocabulary
+  fieldConfidence            Json?    @map("field_confidence") // per-field: verified_2026|stale|unverified|not_applicable|admin_edited
+  notes                      String?
+  isActive                   Boolean  @default(true) @map("is_active")
+  createdAt                  DateTime @default(now()) @map("created_at")
+  updatedAt                  DateTime @updatedAt @map("updated_at")
 
   @@map("insurers")
 }

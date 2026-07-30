@@ -687,8 +687,11 @@ export async function uploadPolicyDocument(formData: FormData) {
 }
 
 export async function getInsurers() {
+    // Explicit select: the enriched reference row (contacts, address, notes)
+    // must not ship to the client for a dropdown that only needs the name.
     return db.insurer.findMany({
         where: { isActive: true },
+        select: { id: true, name: true },
         orderBy: { name: 'asc' }
     })
 }

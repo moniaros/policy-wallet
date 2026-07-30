@@ -22,31 +22,34 @@ async function main() {
         )
     }
 
-    // 0. Lookup Tables
+    // 0. Lookup Tables — canonical Greek names matching the reference dataset
+    // (prisma/greek-insurers.json; full enrichment comes from
+    // scripts/gen-insurer-seed-sql.ts). AXA is historic: kept for legacy
+    // policy strings but never listed in dropdowns.
     await prisma.insurer.upsert({
         where: { name: 'Interamerican' },
         update: {},
-        create: { name: 'Interamerican' }
+        create: { name: 'Interamerican', slug: 'interamerican' }
     })
     await prisma.insurer.upsert({
-        where: { name: 'Generali' },
+        where: { name: 'Generali Hellas' },
         update: {},
-        create: { name: 'Generali' }
+        create: { name: 'Generali Hellas', slug: 'generali-hellas' }
     })
     await prisma.insurer.upsert({
-        where: { name: 'Allianz' },
+        where: { name: 'Allianz Ευρωπαϊκή Πίστη' },
         update: {},
-        create: { name: 'Allianz' }
+        create: { name: 'Allianz Ευρωπαϊκή Πίστη', slug: 'allianz-europaiki-pisti' }
     })
     await prisma.insurer.upsert({
         where: { name: 'AXA' },
         update: {},
-        create: { name: 'AXA' }
+        create: { name: 'AXA', isActive: false }
     })
     await prisma.insurer.upsert({
-        where: { name: 'Ergo' },
+        where: { name: 'ERGO Ασφαλιστική' },
         update: {},
-        create: { name: 'Ergo' }
+        create: { name: 'ERGO Ασφαλιστική', slug: 'ergo' }
     })
 
     // One InsuranceType row per write-enabled taxonomy branch — this table

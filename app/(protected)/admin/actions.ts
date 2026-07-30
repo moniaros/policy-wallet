@@ -1343,28 +1343,8 @@ export async function getLaunchReadiness(windowHours: number = 24) {
 
 /**
  * MASTER DATA MANAGEMENT (existing functions)
+ * Insurer actions live in app/(protected)/admin/insurers/actions.ts.
  */
-export async function createInsurer(formData: FormData) {
-    const admin = await verifyAdminRole()
-
-    const name = formData.get("name") as string
-    if (!name) return
-
-    await db.insurer.create({
-        data: { name }
-    })
-
-    await logAdminAction(
-        admin.id,
-        admin.email,
-        "CREATE_INSURER",
-        `Created insurer: ${name}`,
-        { insurerName: name }
-    )
-
-    revalidatePath("/admin/insurers")
-}
-
 export async function createInsuranceType(formData: FormData) {
     const admin = await verifyAdminRole()
 

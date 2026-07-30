@@ -1,0 +1,1273 @@
+{
+  "_meta": {
+    "dataset_name": "Greek Insurance Market — Insurer Reference Dataset",
+    "version": "0.1-draft",
+    "compiled_on": "2026-07-30",
+    "record_count": 29,
+    "important_caveat": "This is a research draft, NOT an authoritative registry. Every value tagged in 'field_confidence' as 'unverified' or 'stale' must be re-checked before this dataset is used for anything operational. The authoritative sources are the Bank of Greece (Τράπεζα της Ελλάδος) private insurance supervision registry and the EAEE (Ένωση Ασφαλιστικών Εταιριών Ελλάδος) member list.",
+    "market_size_note": "Greece does not have 100 insurers. Greek-domiciled licensed insurance undertakings number roughly 35-40; the EAEE has ~45 members representing >95% of premiums. Beyond that there are ~90+ EEA insurers operating via Freedom of Services (ΕΠΥ) or branch, most of which are shells represented by a local claims agent and have no Greek call centre, payment gateway or roadside partner. Any list of '100 Greek insurers' would be padded with those.",
+    "known_data_gaps": [
+      "payment_gateway_url: most insurers route card payments through bank-hosted gateways (Eurobank LivePay, Piraeus winbank easypay/Paycenter, Alpha, NBG) or through an authenticated customer portal with no stable public URL. Where a public URL exists it is given; several were last published 2016-2024 and are marked stale.",
+      "roadside_assistance_provider: this is a commercial contract that is retendered every few years and is rarely announced. The Greek assistance market consolidated sharply between 2020 and 2025 — MAPFRE Asistencia and Inter Partner Assistance exited, and Europ Assistance Greece wound down at the end of 2024 with Interamerican Βοηθείας acquiring its fleet and facilities. Several pairings below therefore reflect the last publicly reported arrangement and may no longer hold.",
+      "logo_url: deliberately omitted. Insurer logos are trademarked assets served from CDN paths that change without notice; scraping them produces links that rot and creates an IP question. Recommend sourcing logos directly from each insurer's press/brand kit.",
+      "name_en: many Greek insurers have no registered English trading name. Where none exists, a transliteration is given and flagged."
+    ],
+    "field_definitions": {
+      "id": "stable slug for joining",
+      "name_el": "Greek commercial name",
+      "name_en": "English commercial name or transliteration",
+      "legal_name_el": "registered legal entity name where established",
+      "status": "active | merged | rebranded | branch | run_off",
+      "group_parent": "ultimate owner / group",
+      "website": "primary public site",
+      "call_center": "main customer service number",
+      "claims_phone": "claims / accident notification line where distinct",
+      "roadside_phone": "24h roadside assistance line where distinct",
+      "payment_gateway_url": "public URL where a policyholder can pay a premium by card",
+      "contact_email": "general customer contact mailbox",
+      "hq_address": "registered head office",
+      "roadside_assistance_provider": "assistance undertaking servicing motor policies",
+      "lines_of_business": "controlled vocabulary, see lob_vocabulary",
+      "field_confidence": "per-field verification state"
+    },
+    "lob_vocabulary": [
+      "motor",
+      "motorcycle",
+      "commercial_vehicle",
+      "marine_hull",
+      "marine_cargo",
+      "property_fire",
+      "household",
+      "engineering",
+      "general_liability",
+      "professional_liability",
+      "credit_surety",
+      "legal_protection",
+      "personal_accident",
+      "health",
+      "life",
+      "pensions_savings",
+      "group_employee_benefits",
+      "travel",
+      "roadside_assistance",
+      "agricultural",
+      "aviation",
+      "cyber"
+    ],
+    "confidence_levels": {
+      "verified_2026": "confirmed against a source retrieved during compilation, July 2026",
+      "stale": "sourced from a publication that predates 2025 and may have changed",
+      "unverified": "not established — treat as missing, not as empty"
+    }
+  },
+  "insurers": [
+    {
+      "id": "ethniki-asfalistiki",
+      "name_el": "Εθνική Ασφαλιστική",
+      "name_en": "Ethniki Insurance",
+      "legal_name_el": "Η ΕΘΝΙΚΗ Α.Ε.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": "Piraeus Financial Holdings",
+      "website": "https://www.ethniki-asfalistiki.gr",
+      "call_center": "+30 210 909 9000",
+      "claims_phone": "18189",
+      "roadside_phone": "+30 210 909 9999",
+      "payment_gateway_url": null,
+      "contact_email": "contact@ethnikiasfalistiki.gr",
+      "hq_address": {
+        "street": "Λ. Συγγρού 103-105",
+        "city": "Αθήνα",
+        "postal_code": "117 45",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Mondial Assistance (Allianz Partners)",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "engineering",
+        "general_liability",
+        "marine_hull",
+        "marine_cargo",
+        "personal_accident",
+        "health",
+        "life",
+        "pensions_savings",
+        "group_employee_benefits",
+        "agricultural"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
+        "roadside_phone": "verified_2026",
+        "roadside_assistance_provider": "stale",
+        "payment_gateway_url": "unverified",
+        "lines_of_business": "stale"
+      },
+      "notes": "Market leader by GWP. Ownership moved from CVC Capital Partners to Piraeus; NBG retained a minority stake. A second contact address, ethniki@insurance.nbg.gr, is also in circulation from the NBG bancassurance period."
+    },
+    {
+      "id": "interamerican",
+      "name_el": "Interamerican",
+      "name_en": "Interamerican",
+      "legal_name_el": "INTERAMERICAN Ελληνική Ασφαλιστική Εταιρία Ζημιών Α.Ε. / Ζωής Α.Ε.",
+      "status": "active",
+      "group_parent": "Achmea (NL)",
+      "website": "https://www.interamerican.gr",
+      "call_center": "+30 210 946 2000",
+      "claims_phone": "1158",
+      "roadside_phone": "1158 (from Greece) / +30 210 946 1333 (from abroad)",
+      "payment_gateway_url": null,
+      "contact_email": "custserv@interamerican.gr",
+      "hq_address": {
+        "street": "Λεωφόρος Συγγρού 124-126",
+        "city": "Αθήνα",
+        "postal_code": "117 45",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Interamerican Βοηθείας (in-house)",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident",
+        "health",
+        "life",
+        "pensions_savings",
+        "group_employee_benefits",
+        "travel",
+        "roadside_assistance"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "stale",
+        "hq_address": "verified_2026",
+        "roadside_phone": "verified_2026",
+        "roadside_assistance_provider": "verified_2026",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Operates the largest owned roadside fleet in Greece (~300 vehicles after absorbing Europ Assistance Greece's fleet in Dec 2024). Also runs the 1010 immediate medical assistance line and the Drive On app. Payment is offered via Piraeus and Eurobank web banking and the DIAS interbank system rather than a single public gateway URL. A second registered address, Λ. Συγγρού 350 (Interamerican Tower, Καλλιθέα), appears in older records."
+    },
+    {
+      "id": "anytime",
+      "name_el": "Anytime",
+      "name_en": "Anytime",
+      "legal_name_el": "εμπορικό σήμα της INTERAMERICAN",
+      "status": "active",
+      "group_parent": "Achmea (NL) via Interamerican",
+      "website": "https://www.anytime.gr",
+      "call_center": null,
+      "claims_phone": "1158",
+      "roadside_phone": "1158",
+      "payment_gateway_url": null,
+      "contact_email": null,
+      "hq_address": {
+        "street": "Λεωφόρος Συγγρού 124-126",
+        "city": "Αθήνα",
+        "postal_code": "117 45",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Interamerican Βοηθείας (in-house)",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "household",
+        "travel",
+        "roadside_assistance"
+      ],
+      "field_confidence": {
+        "call_center": "unverified",
+        "contact_email": "unverified",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "verified_2026"
+      },
+      "notes": "Direct/online distribution brand of Interamerican, not a separate licensed undertaking. Treat as a channel, not an insurer, for regulatory reporting."
+    },
+    {
+      "id": "generali-hellas",
+      "name_el": "Generali Hellas",
+      "name_en": "Generali Hellas",
+      "legal_name_el": "Generali Hellas Ανώνυμος Ασφαλιστική Εταιρία",
+      "status": "active",
+      "group_parent": "Assicurazioni Generali (IT)",
+      "website": "https://www.generali.gr",
+      "call_center": "+30 210 809 6100",
+      "claims_phone": "18112",
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@generali.gr",
+      "hq_address": {
+        "street": "Ηλία Ηλιού 35-37 & Πυθέου",
+        "city": "Αθήνα",
+        "postal_code": "117 43",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Europ Assistance",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "engineering",
+        "general_liability",
+        "marine_cargo",
+        "personal_accident",
+        "health",
+        "life",
+        "pensions_savings",
+        "group_employee_benefits"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
+        "claims_phone": "verified_2026",
+        "roadside_assistance_provider": "stale",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Absorbed AXA Ασφαλιστική's Greek portfolio (acquisition completed 2021), which is why AXA no longer appears as a separate insurer. Switchboard 210 809 6400 also in use. Roadside partner needs re-verification given the Europ Assistance Greece wind-down."
+    },
+    {
+      "id": "allianz-europaiki-pisti",
+      "name_el": "Allianz Ευρωπαϊκή Πίστη",
+      "name_en": "Allianz Europaiki Pisti",
+      "legal_name_el": "Allianz Ευρωπαϊκή Πίστη Μονοπρόσωπη Α.Α.Ε.",
+      "status": "active",
+      "group_parent": "Allianz SE (DE)",
+      "website": "https://www.allianz.com.gr",
+      "call_center": "+30 210 699 9999",
+      "claims_phone": null,
+      "roadside_phone": "+30 211 990 9000",
+      "payment_gateway_url": null,
+      "contact_email": "customercontact@allianz.gr",
+      "hq_address": {
+        "street": "Λ. Κηφισίας 274",
+        "city": "Χαλάνδρι, Αθήνα",
+        "postal_code": "152 32",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Allianz Partners / AWP P&C S.A. — Ελληνικό Υποκατάστημα (Allianz Global Assistance)",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "engineering",
+        "general_liability",
+        "professional_liability",
+        "personal_accident",
+        "health",
+        "life",
+        "pensions_savings",
+        "group_employee_benefits",
+        "travel"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
+        "roadside_phone": "verified_2026",
+        "roadside_assistance_provider": "verified_2026",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Result of the Allianz Ελλάς / Ευρωπαϊκή Πίστη merger. Registered seat moved to the former Ευρωπαϊκή Πίστη building at Λ. Κηφισίας 274, Χαλάνδρι; the older Allianz Ελλάς HQ at Λ. Αθηνών 110, Κτίριο Γ, 104 42 Αθήνα still appears in many directories and in Allianz ΑΕΔΑΚ records. Complaints function: complaints@allianz.gr."
+    },
+    {
+      "id": "nn-hellas",
+      "name_el": "NN Hellas",
+      "name_en": "NN Hellas",
+      "legal_name_el": "ΝΝ Ελληνική Μονοπρόσωπη Ανώνυμη Ασφαλιστική Εταιρία Ζωής",
+      "status": "active",
+      "group_parent": "NN Group (NL)",
+      "website": "https://www.nnhellas.gr",
+      "call_center": "+30 210 950 6000",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": "https://my.nnhellas.gr",
+      "contact_email": null,
+      "hq_address": {
+        "street": "Λ. Συγγρού 198",
+        "city": "Καλλιθέα",
+        "postal_code": "176 71",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "life",
+        "health",
+        "personal_accident",
+        "pensions_savings",
+        "group_employee_benefits"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "hq_address": "verified_2026",
+        "contact_email": "unverified",
+        "payment_gateway_url": "stale",
+        "roadside_assistance_provider": "not_applicable"
+      },
+      "notes": "Life and health only — no motor book, hence no roadside partner. Absorbed MetLife's Greek operations. Successor entity to ING Greece at the same address. myNN is a policyholder portal that includes payment, not a standalone gateway."
+    },
+    {
+      "id": "eurolife-ffh",
+      "name_el": "Eurolife FFH",
+      "name_en": "Eurolife FFH",
+      "legal_name_el": "Eurolife FFH Α.Ε.Α. Ζωής / Eurolife FFH Α.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": "Fairfax Financial Holdings (CA) / Eurobank",
+      "website": "https://www.eurolife.gr",
+      "call_center": "+30 210 930 3800",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@eurolife.gr",
+      "hq_address": {
+        "street": "Πανεπιστημίου 33-35 & Κοραή",
+        "city": "Αθήνα",
+        "postal_code": "105 64",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "motor",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident",
+        "health",
+        "life",
+        "pensions_savings",
+        "group_employee_benefits"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
+        "roadside_assistance_provider": "unverified",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Two licensed undertakings (life and non-life) under a common holding. Primary distribution is bancassurance through Eurobank. Historically serviced by MAPFRE Asistencia; current partner not established."
+    },
+    {
+      "id": "groupama",
+      "name_el": "Groupama Ασφαλιστική",
+      "name_en": "Groupama Insurance",
+      "legal_name_el": "Groupama Ασφαλιστική Α.Ε.",
+      "status": "active",
+      "group_parent": "Groupama (FR)",
+      "website": "https://www.groupama.gr",
+      "call_center": "+30 210 329 5111",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@groupama-phoenix.com",
+      "hq_address": {
+        "street": "Λ. Συγγρού 213",
+        "city": "Νέα Σμύρνη",
+        "postal_code": "171 21",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident",
+        "health",
+        "life",
+        "pensions_savings",
+        "agricultural"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "unverified",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Formerly Groupama Φοίνιξ. The groupama-phoenix.com domain and matching email are legacy — verify current mailbox before use."
+    },
+    {
+      "id": "ergo",
+      "name_el": "ERGO Ασφαλιστική",
+      "name_en": "ERGO Hellas",
+      "legal_name_el": "ERGO Ανώνυμη Ασφαλιστική Εταιρία Ζημιών",
+      "status": "active",
+      "group_parent": "ERGO Group / Munich Re (DE)",
+      "website": "https://www.ergohellas.gr",
+      "call_center": "+30 210 370 5300",
+      "claims_phone": "+30 210 650 4022",
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "ergo@ergohellas.gr",
+      "hq_address": {
+        "street": "Λ. Συγγρού 173",
+        "city": "Νέα Σμύρνη",
+        "postal_code": "171 21",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Eurosos Assistance",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "engineering",
+        "general_liability",
+        "professional_liability",
+        "personal_accident",
+        "health",
+        "legal_protection"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "verified_2026",
+        "claims_phone": "stale",
+        "roadside_assistance_provider": "verified_2026"
+      },
+      "notes": "ERGO holds a majority stake in Eurosos Assistance (acquired from MAPFRE Asistencia), so the roadside relationship is intra-group and stable. Customer service line 210 370 5325 also published."
+    },
+    {
+      "id": "interasco",
+      "name_el": "INTERASCO",
+      "name_en": "Interasco",
+      "legal_name_el": "INTERASCO Α.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://www.interasco.gr",
+      "call_center": "+30 210 679 3100",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": "https://transaction.interasco.gr/card_payment.aspx",
+      "contact_email": "info@interasco.gr",
+      "hq_address": {
+        "street": "Βασ. Γεωργίου 44 & Κάλβου",
+        "city": "Χαλάνδρι",
+        "postal_code": "152 33",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Europ Assistance",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "marine_hull",
+        "personal_accident",
+        "health"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "payment_gateway_url": "stale",
+        "roadside_assistance_provider": "stale"
+      },
+      "notes": "Moved to Europ Assistance in 2021, replacing Inter Partner Assistance and MAPFRE Asistencia. Given the Europ Assistance Greece wind-down at end-2024 this pairing is the single most likely to have changed. Card payment supports up to 12 interest-free instalments."
+    },
+    {
+      "id": "interlife",
+      "name_el": "INTERLIFE Ασφαλιστική",
+      "name_en": "Interlife Insurance",
+      "legal_name_el": "ΙΝΤΕΡΛΑΪΦ Α.Α.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://www.interlife.gr",
+      "call_center": "+30 2310 499 000",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": "http://www.interlife.gr/Payments/Pages/ValidatePayment.aspx",
+      "contact_email": "info.thes@interlife.gr",
+      "hq_address": {
+        "street": "14ο χλμ. Ε.Ο. Θεσσαλονίκης — Πολυγύρου",
+        "city": "Θέρμη, Θεσσαλονίκη",
+        "postal_code": "570 01",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "commercial_vehicle",
+        "property_fire",
+        "household",
+        "engineering",
+        "general_liability",
+        "marine_hull",
+        "personal_accident",
+        "health"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "payment_gateway_url": "stale",
+        "roadside_assistance_provider": "unverified"
+      },
+      "notes": "Thessaloniki-headquartered, listed on the Athens and Cyprus exchanges. Athens office line 210 933 4994 also published. The ePay URL above dates from an older site structure — confirm it still resolves."
+    },
+    {
+      "id": "ydrogios",
+      "name_el": "ΥΔΡΟΓΕΙΟΣ Ασφαλιστική",
+      "name_en": "Ydrogios Insurance",
+      "legal_name_el": "ΥΔΡΟΓΕΙΟΣ Ανώνυμος Ασφαλιστική και Αντασφαλιστική Εταιρεία",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://ydrogios.gr",
+      "call_center": "+30 210 947 7200",
+      "claims_phone": "+30 210 650 4046",
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "ydrogios@ydrogios.gr",
+      "hq_address": {
+        "street": "Λεωφ. Συγγρού 254-258",
+        "city": "Καλλιθέα",
+        "postal_code": "176 72",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Eurosos Assistance",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "commercial_vehicle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "marine_hull",
+        "marine_cargo",
+        "personal_accident",
+        "travel"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "stale",
+        "hq_address": "verified_2026",
+        "roadside_assistance_provider": "verified_2026",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Wholly private Greek insurer, active since 1973, strong in transport and commercial motor. Card payment runs through a service branded YdrogiosPayOnline, keyed by payment code or ΑΦΜ + plate number; no stable public entry URL captured."
+    },
+    {
+      "id": "minetta",
+      "name_el": "ΜΙΝΕΤΤΑ Ασφαλιστική",
+      "name_en": "Minetta Insurance",
+      "legal_name_el": "ΕΥΡΩΠΑΪΚΗ ΕΝΩΣΙΣ Α.Ε.Ε.Γ.Α. — Ασφάλειαι ΜΙΝΕΤΤΑ",
+      "status": "active",
+      "group_parent": "Theocharakis family",
+      "website": "https://www.minetta.gr",
+      "call_center": "+30 210 930 9500",
+      "claims_phone": "+30 210 931 0807",
+      "roadside_phone": null,
+      "payment_gateway_url": "https://pay.minetta.gr",
+      "contact_email": "info@minetta.gr",
+      "hq_address": {
+        "street": "Λεωφ. Συγγρού 193-195 & Χρ. Σμύρνης 2",
+        "city": "Νέα Σμύρνη",
+        "postal_code": "171 21",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "commercial_vehicle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "marine_hull",
+        "personal_accident",
+        "health"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
+        "payment_gateway_url": "stale",
+        "roadside_assistance_provider": "unverified"
+      },
+      "notes": "Founded 1973. Alternative switchboard 210 930 9400. Payment gateway accepts policy number or payment code. Historically serviced by MAPFRE Asistencia; current partner not established."
+    },
+    {
+      "id": "atlantiki-enosis",
+      "name_el": "Ατλαντική Ένωσις",
+      "name_en": "Atlantiki Enosis (Atlantic Union)",
+      "legal_name_el": "ΑΤΛΑΝΤΙΚΗ ΕΝΩΣΙΣ Α.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://www.atlantiki.gr",
+      "call_center": "+30 210 745 4000",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": "https://www.atlantiki.gr/online-pliromi",
+      "contact_email": "atlantiki@atlantiki.gr",
+      "hq_address": {
+        "street": "Μεσογείων 71 & Ήλιδος",
+        "city": "Αθήνα",
+        "postal_code": null,
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Mondial Assistance (Allianz Partners)",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "engineering",
+        "general_liability",
+        "marine_hull",
+        "personal_accident",
+        "health"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "payment_gateway_url": "verified_2026",
+        "roadside_assistance_provider": "stale"
+      },
+      "notes": "Runs an 'Emergency Service' technical assistance offering alongside motor roadside. Also accepts ΕΛΤΑ Ταχυπληρωμή against a mailed premium notice."
+    },
+    {
+      "id": "dynamis",
+      "name_el": "ΔΥΝΑΜΙΣ Ασφαλιστική",
+      "name_en": "Dynamis Insurance",
+      "legal_name_el": "ΔΥΝΑΜΙΣ Α.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://dynamis.gr",
+      "call_center": "+30 210 900 6900",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@dynamis.gr",
+      "hq_address": {
+        "street": "Λεωφ. Συγγρού 320",
+        "city": "Καλλιθέα",
+        "postal_code": "176 73",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
+        "roadside_assistance_provider": "unverified",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Alternative switchboard 210 925 0110-20-30."
+    },
+    {
+      "id": "intersalonica",
+      "name_el": "ΙΝΤΕΡΣΑΛΟΝΙΚΑ",
+      "name_en": "Intersalonica",
+      "legal_name_el": "ΙΝΤΕΡΣΑΛΟΝΙΚΑ Α.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://www.intersalonica.gr",
+      "call_center": "+30 2310 492 100",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "company@intersalonica.gr",
+      "hq_address": {
+        "street": "15ο χλμ Θεσσαλονίκης — Περαίας, Τ.Θ. 22402",
+        "city": "Θεσσαλονίκη",
+        "postal_code": "551 02",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Ιντερσαλόνικα Βοηθείας (in-house)",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "commercial_vehicle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident",
+        "health",
+        "life",
+        "roadside_assistance"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "verified_2026",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "One of the few Greek insurers running its own assistance undertaking rather than outsourcing. Does not participate in the φιλικός διακανονισμός (direct settlement) agreement."
+    },
+    {
+      "id": "hellas-direct",
+      "name_el": "Hellas Direct",
+      "name_en": "Hellas Direct",
+      "legal_name_el": "HD Insurance PLC — Ελληνικό Υποκατάστημα",
+      "status": "branch",
+      "group_parent": "HD Insurance PLC (CY)",
+      "website": "https://www.hellasdirect.gr",
+      "call_center": "+30 212 222 9999",
+      "claims_phone": "+30 212 222 9900",
+      "roadside_phone": "+30 212 222 9900",
+      "payment_gateway_url": null,
+      "contact_email": "help@hellasdirect.gr",
+      "hq_address": {
+        "street": "Σωρού 18",
+        "city": "Μαρούσι",
+        "postal_code": "151 25",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Hellas Direct (in-house, following acquisition of Inter Partner Assistance Greece)",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "household"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
+        "roadside_phone": "verified_2026",
+        "roadside_assistance_provider": "stale",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Cyprus-licensed non-life insurer operating in Greece through a branch; supervised by the Cyprus Superintendent of Insurance with complementary Bank of Greece oversight. Digital-first, quote-and-buy on site. Alternative mailboxes support@hellasdirect.gr and info@hellasdirect.gr are also published; general line 210 222 2222 appears in partner directories."
+    },
+    {
+      "id": "syneteristiki",
+      "name_el": "Συνεταιριστική Ασφαλιστική",
+      "name_en": "Syneteristiki Insurance (SYNDEA)",
+      "legal_name_el": "ΣΥΝΕΤΑΙΡΙΣΤΙΚΗ Α.Ε.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://www.syneteristiki.gr",
+      "call_center": "+30 210 949 1280",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@syneteristiki.gr",
+      "hq_address": {
+        "street": "Λεωφ. Συγγρού 367",
+        "city": "Παλαιό Φάληρο",
+        "postal_code": "175 64",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Interamerican Βοηθείας",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident",
+        "health",
+        "agricultural"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "stale",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Card payment historically routed through Piraeus winbank easypay rather than an own-brand gateway."
+    },
+    {
+      "id": "orizon",
+      "name_el": "ΟΡΙΖΩΝ Ασφαλιστική",
+      "name_en": "Orizon Insurance",
+      "legal_name_el": "ΟΡΙΖΩΝ Α.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://www.orizonins.gr",
+      "call_center": "+30 210 322 7932",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@orizonins.gr",
+      "hq_address": {
+        "street": null,
+        "city": "Αθήνα",
+        "postal_code": null,
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Mondial Assistance (Allianz Partners)",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident"
+      ],
+      "field_confidence": {
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "unverified",
+        "roadside_assistance_provider": "stale",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Regional offices: Θεσσαλονίκη 231 128 8000 / thess@orizonins.gr, Λάρισα 241 041 9410 / larisa@orizonins.gr. Street address not captured."
+    },
+    {
+      "id": "evropi",
+      "name_el": "ΕΥΡΩΠΗ Ασφαλιστική",
+      "name_en": "Evropi (Europe) Insurance",
+      "legal_name_el": "ΕΥΡΩΠΗ Ανώνυμος Εταιρία Γενικών Ασφαλειών",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://europe-asfalistiki.gr",
+      "call_center": "+30 210 323 0707",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@europe-asfalistiki.gr",
+      "hq_address": {
+        "street": "Φιλελλήνων 25",
+        "city": "Αθήνα",
+        "postal_code": "105 57",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Europ Assistance",
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "stale",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Do not confuse the insurer (Ευρώπη Α.Ε.Γ.Α.) with its assistance partner Europ Assistance — different entities, similar names."
+    },
+    {
+      "id": "np-insurance",
+      "name_el": "NP Insurance — Νέος Ποσειδών",
+      "name_en": "NP Insurance",
+      "legal_name_el": "ΝΕΟΣ ΠΟΣΕΙΔΩΝ Α.Ε.Α.Ε.",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://www.npasfalistiki.gr",
+      "call_center": null,
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": "https://www.livepay.gr/npinsurance.aspx",
+      "contact_email": null,
+      "hq_address": {
+        "street": null,
+        "city": null,
+        "postal_code": null,
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Europ Assistance",
+      "lines_of_business": [
+        "motor",
+        "marine_hull",
+        "marine_cargo",
+        "property_fire",
+        "general_liability"
+      ],
+      "field_confidence": {
+        "website": "unverified",
+        "call_center": "unverified",
+        "contact_email": "unverified",
+        "hq_address": "unverified",
+        "payment_gateway_url": "stale",
+        "roadside_assistance_provider": "stale"
+      },
+      "notes": "Sparse record — needs a direct pass. Payment gateway is a Eurobank LivePay hosted page, published 2016; verify it still resolves. Marine heritage."
+    },
+    {
+      "id": "personal-insurance",
+      "name_el": "Personal Insurance",
+      "name_en": "Personal Insurance",
+      "legal_name_el": "Personal Insurance Α.Ε.Γ.Α.",
+      "status": "active",
+      "group_parent": null,
+      "website": null,
+      "call_center": null,
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": null,
+      "hq_address": {
+        "street": null,
+        "city": null,
+        "postal_code": null,
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Europ Assistance",
+      "lines_of_business": [
+        "motor",
+        "property_fire",
+        "household",
+        "general_liability"
+      ],
+      "field_confidence": {
+        "website": "unverified",
+        "call_center": "unverified",
+        "contact_email": "unverified",
+        "hq_address": "unverified",
+        "roadside_assistance_provider": "stale"
+      },
+      "notes": "Placeholder record — only the assistance relationship was established. Requires a dedicated lookup."
+    },
+    {
+      "id": "prime-insurance",
+      "name_el": "Prime Insurance",
+      "name_en": "Prime Insurance",
+      "legal_name_el": "Prime Insurance Company Ltd — Ελληνικό Υποκατάστημα",
+      "status": "branch",
+      "group_parent": null,
+      "website": "https://www.primeins.gr",
+      "call_center": "+30 212 212 7800",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@primeins.gr",
+      "hq_address": {
+        "street": "Λεωφ. Μεσογείων 299 & Αιτωλίας 2",
+        "city": "Χαλάνδρι",
+        "postal_code": "152 31",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "motor",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "unverified",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Historically serviced by MAPFRE Asistencia. Card payment offered as a standing mandate in 2-3 interest-free instalments rather than a public gateway."
+    },
+    {
+      "id": "aig-greece",
+      "name_el": "AIG Ελλάδος",
+      "name_en": "AIG Europe S.A. — Greek Branch",
+      "legal_name_el": "AIG Europe S.A. — Ελληνικό Υποκατάστημα",
+      "status": "branch",
+      "group_parent": "American International Group (US), EU entity domiciled in Luxembourg",
+      "website": "https://www.aig.com.gr",
+      "call_center": "+30 210 812 7600",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": null,
+      "hq_address": {
+        "street": "Λεωφ. Κηφισίας 119",
+        "city": "Μαρούσι",
+        "postal_code": null,
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Europ Assistance",
+      "lines_of_business": [
+        "property_fire",
+        "engineering",
+        "general_liability",
+        "professional_liability",
+        "marine_cargo",
+        "personal_accident",
+        "health",
+        "travel",
+        "cyber",
+        "credit_surety",
+        "motor"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "hq_address": "stale",
+        "contact_email": "unverified",
+        "roadside_assistance_provider": "stale",
+        "payment_gateway_url": "unverified"
+      },
+      "notes": "Predominantly commercial and specialty lines; personal motor is a small book. Previously serviced by Inter Partner Assistance, later Europ Assistance."
+    },
+    {
+      "id": "geniki-panelladiki",
+      "name_el": "Γενική Πανελλαδική Συν.Π.Ε.",
+      "name_en": "Geniki Panelladiki Mutual Insurance Cooperative",
+      "legal_name_el": "ΓΕΝΙΚΗ ΠΑΝΕΛΛΑΔΙΚΗ Συν.Π.Ε. Αλληλασφάλισης Ιδιοκτητών Λεωφορείων",
+      "status": "active",
+      "group_parent": null,
+      "website": "https://www.genikipanelladiki.gr",
+      "call_center": "+30 2310 474 422",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": null,
+      "hq_address": {
+        "street": "Αντύπα 42",
+        "city": "Πυλαία, Θεσσαλονίκη",
+        "postal_code": "570 01",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "commercial_vehicle",
+        "motor",
+        "general_liability",
+        "roadside_assistance"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "hq_address": "stale",
+        "contact_email": "unverified",
+        "roadside_assistance_provider": "unverified"
+      },
+      "notes": "Mutual cooperative specialising in third-party liability for public-use buses and coaches. Roadside is bundled into the motor product; the servicing partner was not established."
+    },
+    {
+      "id": "deuteros-allilasfalistikos",
+      "name_el": "2ος Αλληλασφαλιστικός Συνεταιρισμός",
+      "name_en": "Second Mutual Insurance Cooperative",
+      "legal_name_el": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινητιστών Δ.Χ. Ελλάδος και Θεσσαλίας",
+      "status": "active",
+      "group_parent": null,
+      "website": "http://2alsyn.gr",
+      "call_center": "+30 2310 595 502",
+      "claims_phone": "+30 210 747 3050",
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@2alsyn.gr",
+      "hq_address": {
+        "street": "Γιαννιτσών 244",
+        "city": "Θεσσαλονίκη",
+        "postal_code": "546 28",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "commercial_vehicle",
+        "general_liability"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "unverified"
+      },
+      "notes": "Mutual, operating since 1986. Third-party liability for public-use trucks and buses only."
+    },
+    {
+      "id": "euroins-greece",
+      "name_el": "EUROINS — Υποκατάστημα Ελλάδας",
+      "name_en": "Euroins Insurance PLC — Greek Branch",
+      "legal_name_el": "EUROINS INSURANCE PLC — Υποκατάστημα Ελλάδας",
+      "status": "branch",
+      "group_parent": "Eurohold Bulgaria",
+      "website": "https://www.glig.gr",
+      "call_center": "+30 210 976 4307",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@glig.gr",
+      "hq_address": {
+        "street": "Λεωφ. Βάρης-Κορωπίου & Ηφαίστου 2",
+        "city": "Κορωπί",
+        "postal_code": "194 00",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "motor",
+        "motorcycle"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "unverified"
+      },
+      "notes": "Bulgarian insurer operating in Greece through a branch represented locally. Does not participate in the direct settlement agreement."
+    },
+    {
+      "id": "axa-asfalistiki",
+      "name_el": "AXA Ασφαλιστική",
+      "name_en": "AXA Insurance Greece",
+      "legal_name_el": "AXA Ασφαλιστική Α.Ε.",
+      "status": "merged",
+      "group_parent": "acquired by Generali (IT)",
+      "website": null,
+      "call_center": null,
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": null,
+      "hq_address": {
+        "street": "Μιχαλακοπούλου 48",
+        "city": "Αθήνα",
+        "postal_code": null,
+        "country": "GR"
+      },
+      "roadside_assistance_provider": "Inter Partner Assistance (historic)",
+      "lines_of_business": [
+        "motor",
+        "property_fire",
+        "household",
+        "general_liability",
+        "health",
+        "life"
+      ],
+      "field_confidence": {
+        "hq_address": "stale",
+        "roadside_assistance_provider": "stale"
+      },
+      "notes": "HISTORIC RECORD — not a live insurer. Greek portfolio absorbed by Generali Hellas (acquisition completed 2021). Retained here because legacy policy and claims data still carries this counterparty."
+    },
+    {
+      "id": "europaiki-pisti",
+      "name_el": "Ευρωπαϊκή Πίστη",
+      "name_en": "Europaiki Pisti",
+      "legal_name_el": "ΕΥΡΩΠΑΪΚΗ ΠΙΣΤΗ Α.Ε.Γ.Α.",
+      "status": "merged",
+      "group_parent": "acquired by Allianz SE (DE)",
+      "website": null,
+      "call_center": "+30 210 682 9601",
+      "claims_phone": null,
+      "roadside_phone": null,
+      "payment_gateway_url": null,
+      "contact_email": "info@europisti.gr",
+      "hq_address": {
+        "street": "Λεωφ. Κηφισίας 274",
+        "city": "Χαλάνδρι",
+        "postal_code": "152 32",
+        "country": "GR"
+      },
+      "roadside_assistance_provider": null,
+      "lines_of_business": [
+        "motor",
+        "motorcycle",
+        "property_fire",
+        "household",
+        "general_liability",
+        "personal_accident",
+        "health",
+        "life",
+        "pensions_savings"
+      ],
+      "field_confidence": {
+        "call_center": "stale",
+        "contact_email": "stale",
+        "hq_address": "stale",
+        "roadside_assistance_provider": "unverified"
+      },
+      "notes": "HISTORIC RECORD — merged into Allianz to form Allianz Ευρωπαϊκή Πίστη Μ.Α.Α.Ε. Its Χαλάνδρι building became the merged entity's registered seat. Retained for legacy data lineage."
+    }
+  ],
+  "assistance_providers": [
+    {
+      "name": "Interamerican Βοηθείας",
+      "status": "active",
+      "ownership": "Interamerican / Achmea",
+      "phone": "1158",
+      "note": "Largest owned fleet in Greece (~300 vehicles, ~140 stations). Acquired the fleet and facilities of Europ Assistance Greece in December 2024. ISO 39001 certified."
+    },
+    {
+      "name": "Eurosos Assistance",
+      "status": "active",
+      "ownership": "majority acquired by ERGO from MAPFRE Asistencia",
+      "phone": null,
+      "note": "Operating in Greece since 1994. Services ERGO and Υδρόγειος, plus Pricefox and dealer programmes."
+    },
+    {
+      "name": "Mondial Assistance / Allianz Partners (AWP P&C S.A. — Greek Branch)",
+      "status": "active",
+      "ownership": "Allianz SE",
+      "phone": "+30 211 990 9000",
+      "note": "Large OEM/importer footprint — reportedly covers roughly half of newly registered vehicles in Greece through manufacturer programmes."
+    },
+    {
+      "name": "Ιντερσαλόνικα Βοηθείας",
+      "status": "active",
+      "ownership": "Intersalonica",
+      "phone": null,
+      "note": "In-house assistance arm."
+    },
+    {
+      "name": "Europ Assistance Greece",
+      "status": "wound_down",
+      "ownership": "Europ Assistance / Generali",
+      "phone": null,
+      "note": "CRITICAL FOR THIS DATASET: exited the Greek market at the end of 2024; Interamerican acquired the fleet and facilities. Every insurer still recorded above as an Europ Assistance client (Generali, AIG, Interasco, NP Insurance, Personal, Ευρώπη) must be re-checked."
+    },
+    {
+      "name": "MAPFRE Asistencia",
+      "status": "exited",
+      "ownership": "MAPFRE",
+      "phone": null,
+      "note": "Exited Greece; sold its majority holding in Eurosos Assistance to ERGO."
+    },
+    {
+      "name": "Inter Partner Assistance Greece",
+      "status": "acquired",
+      "ownership": "acquired by Hellas Direct from AXA",
+      "phone": null,
+      "note": "No longer an independent third-party provider."
+    },
+    {
+      "name": "Extra Assistance",
+      "status": "active",
+      "ownership": null,
+      "phone": null,
+      "note": "Independent provider sold standalone through brokers."
+    },
+    {
+      "name": "ΕΛΠΑ (Ελληνική Λέσχη Αυτοκινήτου και Περιηγήσεων)",
+      "status": "active",
+      "ownership": "automobile club",
+      "phone": null,
+      "note": "Membership-based roadside, distributed alongside insurance."
+    }
+  ],
+  "recommended_authoritative_sources": [
+    {
+      "source": "Τράπεζα της Ελλάδος — Διεύθυνση Εποπτείας Ιδιωτικής Ασφάλισης",
+      "why": "The legally authoritative register of licensed undertakings, branches and Freedom of Services notifications. Definitive for legal name, licence status and permitted classes (κλάδοι) under Ν.4364/2016 — which is the correct backbone for a lines_of_business field, rather than marketing copy."
+    },
+    {
+      "source": "ΕΑΕΕ (Ένωση Ασφαλιστικών Εταιριών Ελλάδος) member list and Annual Statistical Report",
+      "why": "Member roster with standardised contact details plus GWP by class, which gives you a defensible ranking rather than a directory ordering."
+    },
+    {
+      "source": "Επικουρικό Κεφάλαιο Ασφάλισης Ευθύνης από Ατυχήματα Αυτοκινήτων",
+      "why": "Membership is mandatory for any insurer writing Greek motor. The best single filter for 'who actually writes motor here', and therefore for which records genuinely need a roadside_assistance_provider value."
+    },
+    {
+      "source": "Γραφείο Διεθνούς Ασφάλισης (Green Card Bureau)",
+      "why": "Its ~94 members include the EEA insurers operating via ΕΠΥ with their local claims representatives — the right source if you do want to extend the dataset past the Greek-domiciled undertakings."
+    },
+    {
+      "source": "Each insurer's Solvency and Financial Condition Report (SFCR)",
+      "why": "Published annually, states the registered seat and the classes actually written. Slower to collect but the only way to get lines_of_business right at scale."
+    }
+  ]
+}
