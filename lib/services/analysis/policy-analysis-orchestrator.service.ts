@@ -10,6 +10,7 @@ import { canUserUseTokens, reserveTokens, releaseTokenReservation } from "@/lib/
 import { getAIService, type AIServiceType } from "@/lib/services/ai"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
 import { parseDocumentDate } from "@/lib/dates/document-date"
+import { resolveCanonicalGapSlug } from "@/lib/wallet/gap-report"
 import { downloadPolicyDocument } from "@/lib/supabase/storage-download"
 import type {
     AIDocument,
@@ -2520,9 +2521,17 @@ export class PolicyAnalysisOrchestratorService {
             }
         >()
 
+        // Canonicalize AI-emitted slugs before keying the map — otherwise each
+        // spelling variant upserts a duplicate gapDefinition and instance (see
+        // resolveCanonicalGapSlug). The known set is the per-LOB definitions the
+        // model was handed.
+        const knownSlugs = gapDefinitions.map((item) => item.slug)
+        const canonicalSlugFor = (rawSlug: string): string =>
+            resolveCanonicalGapSlug(rawSlug, knownSlugs)
+
         for (const gap of gapAnalysis.gapResults) {
             if (!gap.isDetected) continue
-            detectedGaps.set(gap.slug, {
+            detectedGaps.set(canonicalSlugFor(gap.slug), {
                 severity: "medium",
                 explanationEn:
                     typeof gap.explanation === "string" ? gap.explanation : gap.explanation.en,
@@ -2536,8 +2545,9 @@ export class PolicyAnalysisOrchestratorService {
         }
 
         for (const gap of clarity.coverageGaps) {
-            if (detectedGaps.has(gap.slug)) continue
-            detectedGaps.set(gap.slug, {
+            const canonicalSlug = canonicalSlugFor(gap.slug)
+            if (detectedGaps.has(canonicalSlug)) continue
+            detectedGaps.set(canonicalSlug, {
                 severity: gap.severity,
                 explanationEn: gap.evidence.en,
                 explanationEl: gap.evidence.el,

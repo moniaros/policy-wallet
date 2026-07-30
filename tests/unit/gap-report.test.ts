@@ -13,6 +13,7 @@ import {
     firstSentence,
     groupGapsByCoverageArea,
     normalizeGapSlug,
+    resolveCanonicalGapSlug,
     resolveGapContent,
     summarizeGaps,
     type GapReportItem,
@@ -47,6 +48,29 @@ describe('normalizeGapSlug', () => {
         expect(normalizeGapSlug('  High__Deductible ')).toBe('high-deductible')
         expect(normalizeGapSlug('usa--copayment-')).toBe('usa-copayment')
         expect(normalizeGapSlug('Usa Copayment')).toBe('usa-copayment')
+    })
+})
+
+describe('resolveCanonicalGapSlug (write-path dedupe)', () => {
+    // The DB seed mixes conventions: hyphen (home-earthquake) and underscore
+    // (green_card_expiring). An AI variant must join the EXISTING row, not spawn
+    // a second definition.
+    const known = ['home-earthquake', 'green_card_expiring', 'missing_leishmaniasis']
+
+    it('maps an AI variant back to the existing hyphen-seeded slug', () => {
+        expect(resolveCanonicalGapSlug('home_earthquake', known)).toBe('home-earthquake')
+        expect(resolveCanonicalGapSlug('Home Earthquake', known)).toBe('home-earthquake')
+    })
+
+    it('maps an AI variant back to the existing underscore-seeded slug', () => {
+        // normalized form matches the seed → the seed's real slug wins, so the
+        // upsert joins green_card_expiring instead of creating green-card-expiring
+        expect(resolveCanonicalGapSlug('green-card-expiring', known)).toBe('green_card_expiring')
+    })
+
+    it('collapses two novel variants of an unknown gap to one key', () => {
+        expect(resolveCanonicalGapSlug('mental_health_exclusion', known)).toBe('mental-health-exclusion')
+        expect(resolveCanonicalGapSlug('mental-health-exclusion', known)).toBe('mental-health-exclusion')
     })
 })
 

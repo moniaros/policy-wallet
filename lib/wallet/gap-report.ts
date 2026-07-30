@@ -110,6 +110,22 @@ export function normalizeGapSlug(raw: string): string {
         .replace(/^-|-$/g, "")
 }
 
+/**
+ * Map an AI-emitted gap slug back to a canonical one before it is written to
+ * the DB. The analysis model does not reliably echo the exact slug it was
+ * handed (mental_health_exclusion vs mental-health-exclusion), and the DB seed
+ * itself mixes hyphen and underscore conventions — so without this every
+ * spelling variant upserts a NEW gapDefinition and the same finding accrues
+ * duplicates. When a known definition matches by normalized form, its real
+ * slug wins (so we join the existing row); otherwise the normalized form is
+ * returned so two novel-but-identical variants still collapse to one.
+ */
+export function resolveCanonicalGapSlug(rawSlug: string, knownSlugs: string[]): string {
+    const norm = normalizeGapSlug(rawSlug)
+    const match = knownSlugs.find((slug) => normalizeGapSlug(slug) === norm)
+    return match ?? norm
+}
+
 type GapContentEntry = Omit<GapContent, "known" | "concept"> & {
     /** Defaults to the map key. Set it when several slugs are ONE finding. */
     concept?: string

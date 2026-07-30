@@ -1,0 +1,12 @@
+{
+  "insurerName": "Εθνική Ασφαλιστική",
+  "policyNumber": "1651622",
+  "lineOfBusiness": "motor",
+  "startDate": "2024-05-22",
+  "endDate": "2025-05-22",
+  "premiumAmount": 452.30,
+  "premiumFrequency": "annual",
+  "minExclusions": 2,
+  "minFinePrintClauses": 1,
+  "minAccuracyPct": 0
+}

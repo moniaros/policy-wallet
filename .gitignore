@@ -77,3 +77,7 @@ ds-bundle/
 .design-sync/.cache/
 .design-sync/learnings/
 .design-sync/node_modules
+
+# Extraction eval — never commit real/redacted policy PDFs or the generated report
+tests/eval/fixtures/*.pdf
+tests/eval/report.json

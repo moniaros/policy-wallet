@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server"
-import { GoogleGenerativeAI } from "@google/generative-ai"
-import { env } from "@/lib/env"
-import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
+import { getAIService } from "@/lib/services/ai/ai-service.factory"
 import { MAX_UPLOAD_SIZE_BYTES } from "@/lib/constants/time"
 import { validateUploadFile, REJECTION_MESSAGES } from "@/lib/security/file-upload"
 import { withApiGuard } from "@/lib/api-guard"
@@ -57,89 +55,21 @@ export const POST = withApiGuard(
             return NextResponse.json({ error: "AI service unavailable" }, { status: 503 })
         }
 
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-        const model = genAI.getGenerativeModel({
-            model: env.GEMINI_MODEL_EXTRACTION,
-            generationConfig: { responseMimeType: "application/json" }
-        })
-
+        // Route the upload preview through the SAME extraction path the analysis
+        // pipeline uses — one prompt (buildExtractionPrompt), one schema, one
+        // JSON-mode contract — instead of a divergent inline prompt. No userId is
+        // passed, so this preview stays unmetered exactly as before; the
+        // orchestrator meters its own extraction later.
         const arrayBuffer = await file.arrayBuffer()
         const base64Data = Buffer.from(arrayBuffer).toString("base64")
 
-        const prompt = `
-        Analyze this insurance policy document and extract the following information.
-        
-        Fields:
-        - insurerName (string): The insurance company name
-        - policyNumber (string): The policy number
-        - lineOfBusiness (one of: motor, health, home, life, travel, liability)
-        - startDate (YYYY-MM-DD format)
-        - endDate (YYYY-MM-DD format)
-        - premiumAmount (number): Annual premium amount
-        - coverageSummary (string): Brief summary of main coverages (max 200 chars)
-        - exclusions (array of strings): top exclusions/limitations found in the text
-        - extractionConfidence (object): {
-            overall: 0-100,
-            requiresReview: boolean,
-            fields: {
-              insurerName: 0-100,
-              policyNumber: 0-100,
-              lineOfBusiness: 0-100,
-              startDate: 0-100,
-              endDate: 0-100,
-              premiumAmount: 0-100
-            }
-          }
-        
-        If a field cannot be determined, use null.
-        `
-
-        const imagePart = {
-            inlineData: {
-                data: base64Data,
-                mimeType: file.type === "application/pdf" ? "application/pdf" : file.type,
-            },
-        }
-
-        const result = await model.generateContent([prompt, imagePart])
-        const response = await result.response
-        const text = response.text()
-
-        // Clean up markdown code blocks if present (just in case model ignores responseMimeType)
-        const cleanText = text.replace(/```json\n?|\n?```/g, '').trim()
-
-        // Extract JSON
-        let extracted;
-        try {
-            extracted = JSON.parse(cleanText);
-        } catch (e) {
-            const jsonMatch = cleanText.match(/\{[\s\S]*\}/)
-            if (!jsonMatch) {
-                console.error("Failed to parse AI response:", text)
-                return NextResponse.json({
-                    error: "Could not extract policy data from document"
-                }, { status: 422 })
-            }
-            extracted = JSON.parse(jsonMatch[0])
-        }
-        const enriched = enrichExtractionPayload(extracted, undefined, 'gemini')
-
-        return NextResponse.json({
-            success: true,
-            data: {
-                insurerName: extracted.insurerName || "Unknown Insurer",
-                policyNumber: extracted.policyNumber || `TEMP-${Date.now()}`,
-                lineOfBusiness: extracted.lineOfBusiness || "motor",
-                // Missing dates stay empty — no fabricated 'today' (data integrity).
-            startDate: extracted.startDate || '',
-                endDate: extracted.endDate || '',
-                premiumAmount: extracted.premiumAmount || null,
-                coverageSummary: extracted.coverageSummary || null,
-                exclusions: enriched.exclusions,
-                extractionMeta: enriched.extractionMeta,
-                acordData: enriched.acordData
-            }
+        const data = await getAIService("gemini").extractPolicyData({
+            data: base64Data,
+            mimeType: file.type === "application/pdf" ? "application/pdf" : file.type,
+            fileName: file.name,
         })
+
+        return NextResponse.json({ success: true, data })
 
     } catch (error) {
         // Log the real error server-side; never echo internals (AI provider /

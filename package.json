@@ -15,6 +15,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
+    "eval:extraction": "RUN_EVAL=1 vitest --run tests/eval",
     "type-check": "tsc --noEmit",
     "lint:utf8": "node scripts/check-utf8.js",
     "lint:encoding": "node scripts/check-mojibake.js",
