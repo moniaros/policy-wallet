@@ -8,7 +8,7 @@
     "market_size_note": "Greece does not have 100 insurers. Greek-domiciled licensed insurance undertakings number roughly 35-40; the EAEE has ~45 members representing >95% of premiums. Beyond that there are ~90+ EEA insurers operating via Freedom of Services (ΕΠΥ) or branch, most of which are shells represented by a local claims agent and have no Greek call centre, payment gateway or roadside partner. Any list of '100 Greek insurers' would be padded with those.",
     "known_data_gaps": [
       "payment_gateway_url: most insurers route card payments through bank-hosted gateways (Eurobank LivePay, Piraeus winbank easypay/Paycenter, Alpha, NBG) or through an authenticated customer portal with no stable public URL. Where a public URL exists it is given; several were last published 2016-2024 and are marked stale.",
-      "roadside_assistance_provider: this is a commercial contract that is retendered every few years and is rarely announced. The Greek assistance market consolidated sharply between 2020 and 2025 — MAPFRE Asistencia and Inter Partner Assistance exited, and Europ Assistance Greece wound down at the end of 2024 with Interamerican Βοηθείας acquiring its fleet and facilities. Several pairings below therefore reflect the last publicly reported arrangement and may no longer hold.",
+      "roadside_assistance_provider: a commercial contract, retendered every few years and rarely announced. The Bank of Greece register can confirm whether a named provider is still licensed to operate in Greece (see assistance_providers), but it CANNOT confirm which insurer contracts whom — that needs the insurer directly. As of 2026-07-30 the six insurers previously recorded as Europ Assistance clients are flagged unverified, because that provider has ceased.",
       "logo_url: deliberately omitted. Insurer logos are trademarked assets served from CDN paths that change without notice; scraping them produces links that rot and creates an IP question. Recommend sourcing logos directly from each insurer's press/brand kit.",
       "name_en: many Greek insurers have no registered English trading name. Where none exists, a transliteration is given and flagged."
     ],
@@ -226,10 +226,10 @@
         "contact_email": "verified_2026",
         "hq_address": "verified_2026",
         "claims_phone": "verified_2026",
-        "roadside_assistance_provider": "stale",
+        "roadside_assistance_provider": "unverified",
         "payment_gateway_url": "unverified"
       },
-      "notes": "Absorbed AXA Ασφαλιστική's Greek portfolio (acquisition completed 2021), which is why AXA no longer appears as a separate insurer. Switchboard 210 809 6400 also in use. Roadside partner needs re-verification given the Europ Assistance Greece wind-down."
+      "notes": "Absorbed AXA Ασφαλιστική's Greek portfolio (acquisition completed 2021), which is why AXA no longer appears as a separate insurer. Switchboard 210 809 6400 also in use. Roadside partner needs re-verification given the Europ Assistance Greece wind-down. ROADSIDE PARTNER CANNOT BE CURRENT: Europ Assistance shows Ceased on all three Greek registrations in the Bank of Greece register (checked 2026-07-30) — branch and freedom-of-services, plus Europ Assistance Holding. The replacement was not established; treat this field as missing until re-sourced from the insurer."
     },
     {
       "id": "allianz-europaiki-pisti",
@@ -469,9 +469,9 @@
         "contact_email": "verified_2026",
         "hq_address": "verified_2026",
         "payment_gateway_url": "stale",
-        "roadside_assistance_provider": "stale"
+        "roadside_assistance_provider": "unverified"
       },
-      "notes": "Moved to Europ Assistance in 2021, replacing Inter Partner Assistance and MAPFRE Asistencia. Given the Europ Assistance Greece wind-down at end-2024 this pairing is the single most likely to have changed. Card payment supports up to 12 interest-free instalments."
+      "notes": "Moved to Europ Assistance in 2021, replacing Inter Partner Assistance and MAPFRE Asistencia. Given the Europ Assistance Greece wind-down at end-2024 this pairing is the single most likely to have changed. Card payment supports up to 12 interest-free instalments. ROADSIDE PARTNER CANNOT BE CURRENT: Europ Assistance shows Ceased on all three Greek registrations in the Bank of Greece register (checked 2026-07-30) — branch and freedom-of-services, plus Europ Assistance Holding. The replacement was not established; treat this field as missing until re-sourced from the insurer."
     },
     {
       "id": "interlife",
@@ -856,10 +856,10 @@
         "call_center": "verified_2026",
         "contact_email": "verified_2026",
         "hq_address": "verified_2026",
-        "roadside_assistance_provider": "stale",
+        "roadside_assistance_provider": "unverified",
         "payment_gateway_url": "unverified"
       },
-      "notes": "Do not confuse the insurer (Ευρώπη Α.Ε.Γ.Α.) with its assistance partner Europ Assistance — different entities, similar names. Moved from Φιλελλήνων 25, Αθήνα to Κηφισίας 340, Νέο Ψυχικό."
+      "notes": "Do not confuse the insurer (Ευρώπη Α.Ε.Γ.Α.) with its assistance partner Europ Assistance — different entities, similar names. Moved from Φιλελλήνων 25, Αθήνα to Κηφισίας 340, Νέο Ψυχικό. ROADSIDE PARTNER CANNOT BE CURRENT: Europ Assistance shows Ceased on all three Greek registrations in the Bank of Greece register (checked 2026-07-30) — branch and freedom-of-services, plus Europ Assistance Holding. The replacement was not established; treat this field as missing until re-sourced from the insurer."
     },
     {
       "id": "np-insurance",
@@ -894,9 +894,9 @@
         "contact_email": "unverified",
         "hq_address": "unverified",
         "payment_gateway_url": "stale",
-        "roadside_assistance_provider": "stale"
+        "roadside_assistance_provider": "unverified"
       },
-      "notes": "Sparse record — needs a direct pass. Payment gateway is a Eurobank LivePay hosted page, published 2016; verify it still resolves. Marine heritage."
+      "notes": "Sparse record — needs a direct pass. Payment gateway is a Eurobank LivePay hosted page, published 2016; verify it still resolves. Marine heritage. ROADSIDE PARTNER CANNOT BE CURRENT: Europ Assistance shows Ceased on all three Greek registrations in the Bank of Greece register (checked 2026-07-30) — branch and freedom-of-services, plus Europ Assistance Holding. The replacement was not established; treat this field as missing until re-sourced from the insurer."
     },
     {
       "id": "personal-insurance",
@@ -929,9 +929,9 @@
         "call_center": "unverified",
         "contact_email": "unverified",
         "hq_address": "unverified",
-        "roadside_assistance_provider": "stale"
+        "roadside_assistance_provider": "unverified"
       },
-      "notes": "Placeholder record — only the assistance relationship was established. Requires a dedicated lookup."
+      "notes": "Placeholder record — only the assistance relationship was established. Requires a dedicated lookup. ROADSIDE PARTNER CANNOT BE CURRENT: Europ Assistance shows Ceased on all three Greek registrations in the Bank of Greece register (checked 2026-07-30) — branch and freedom-of-services, plus Europ Assistance Holding. The replacement was not established; treat this field as missing until re-sourced from the insurer."
     },
     {
       "id": "prime-insurance",
@@ -1006,10 +1006,10 @@
         "call_center": "stale",
         "hq_address": "stale",
         "contact_email": "unverified",
-        "roadside_assistance_provider": "stale",
+        "roadside_assistance_provider": "unverified",
         "payment_gateway_url": "unverified"
       },
-      "notes": "Predominantly commercial and specialty lines; personal motor is a small book. Previously serviced by Inter Partner Assistance, later Europ Assistance."
+      "notes": "Predominantly commercial and specialty lines; personal motor is a small book. Previously serviced by Inter Partner Assistance, later Europ Assistance. ROADSIDE PARTNER CANNOT BE CURRENT: Europ Assistance shows Ceased on all three Greek registrations in the Bank of Greece register (checked 2026-07-30) — branch and freedom-of-services, plus Europ Assistance Holding. The replacement was not established; treat this field as missing until re-sourced from the insurer."
     },
     {
       "id": "geniki-panelladiki",
@@ -1186,24 +1186,24 @@
   "assistance_providers": [
     {
       "name": "Interamerican Βοηθείας",
-      "status": "active",
+      "status": "active_bog_register",
       "ownership": "Interamerican / Achmea",
       "phone": "1158",
-      "note": "Largest owned fleet in Greece (~300 vehicles, ~140 stations). Acquired the fleet and facilities of Europ Assistance Greece in December 2024. ISO 39001 certified."
+      "note": "CONFIRMED active in the Bank of Greece register 2026-07-30 as ΙΝΤΕΡΑΜΕΡΙΚΑΝ ΒΟΗΘΕΙΑΣ ΜΟΝΟΠΡΟΣΩΠΗ ΑΝΩΝΥΜΟΣ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ — a licensed Greek undertaking in its own right, not merely a service company. Acquired the fleet and facilities of Europ Assistance Greece in December 2024."
     },
     {
       "name": "Eurosos Assistance",
       "status": "active",
       "ownership": "majority acquired by ERGO from MAPFRE Asistencia",
       "phone": null,
-      "note": "Operating in Greece since 1994. Services ERGO and Υδρόγειος, plus Pricefox and dealer programmes."
+      "note": "Not in the Bank of Greece register (checked 2026-07-30) and that is expected: Eurosos is a roadside SERVICE operator, not a licensed insurance undertaking — the cover is written under the insurer's own class-18 licence. Absence from the register is therefore not evidence against it. Majority acquired by ERGO from MAPFRE Asistencia; services ERGO and Υδρόγειος."
     },
     {
       "name": "Mondial Assistance / Allianz Partners (AWP P&C S.A. — Greek Branch)",
-      "status": "active",
+      "status": "active_bog_register",
       "ownership": "Allianz SE",
       "phone": "+30 211 990 9000",
-      "note": "Large OEM/importer footprint — reportedly covers roughly half of newly registered vehicles in Greece through manufacturer programmes."
+      "note": "CONFIRMED active in the Bank of Greece register 2026-07-30 as AWP P&C (France), both as a Greek branch and under freedom of services. Large OEM/importer footprint through manufacturer programmes."
     },
     {
       "name": "Ιντερσαλόνικα Βοηθείας",
@@ -1214,24 +1214,24 @@
     },
     {
       "name": "Europ Assistance Greece",
-      "status": "wound_down",
+      "status": "ceased_bog_register",
       "ownership": "Europ Assistance / Generali",
       "phone": null,
-      "note": "CRITICAL FOR THIS DATASET: exited the Greek market at the end of 2024; Interamerican acquired the fleet and facilities. Every insurer still recorded above as an Europ Assistance client (Generali, AIG, Interasco, NP Insurance, Personal, Ευρώπη) must be re-checked."
+      "note": "CONFIRMED against the Bank of Greece register 2026-07-30: all three registrations — Europ Assistance SA (branch), EUROP ASSISTANCE HOLDING (branch) and (freedom of services) — show status Ceased. Exited the Greek market at the end of 2024; Interamerican acquired the fleet and facilities. Any insurer still recorded as an Europ Assistance client is wrong."
     },
     {
       "name": "MAPFRE Asistencia",
-      "status": "exited",
+      "status": "ceased_bog_register",
       "ownership": "MAPFRE",
       "phone": null,
-      "note": "Exited Greece; sold its majority holding in Eurosos Assistance to ERGO."
+      "note": "CONFIRMED ceased in the Bank of Greece register 2026-07-30 (Spain, branch). Sold its majority holding in Eurosos Assistance to ERGO."
     },
     {
       "name": "Inter Partner Assistance Greece",
-      "status": "acquired",
+      "status": "branch_ceased_fos_active",
       "ownership": "acquired by Hellas Direct from AXA",
       "phone": null,
-      "note": "No longer an independent third-party provider."
+      "note": "Bank of Greece register 2026-07-30: the France branch registration shows Ceased, but the freedom-of-services registration is still Active. Its Greek operation was acquired by Hellas Direct, so it is no longer an independent third-party provider here."
     },
     {
       "name": "Extra Assistance",
