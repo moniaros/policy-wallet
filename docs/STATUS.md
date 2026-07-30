@@ -6,6 +6,31 @@
 > my own tooling was wrong rather than the product.
 
 
+## ⚠️ OWNER ACTION: production rate limiting is per-instance only
+
+**Found 2026-07-30 while auditing MEDIC cost behaviour. Not fixable in code —
+needs credentials.** Production has **no** `UPSTASH_REDIS_REST_URL` /
+`UPSTASH_REDIS_REST_TOKEN` (0 of 59 env vars) and runs with
+`RATELIMIT_ALLOW_LOCAL=1`, the escape hatch
+[DEMO_DEPLOY_RUNBOOK](operations/DEMO_DEPLOY_RUNBOOK.md) documents for "a
+single-instance demo". Vercel is not single-instance, so `lib/env.ts`'s own
+warning applies verbatim: *"each serverless instance keeps its own in-memory
+counter, so the effective limit multiplies by the instance count (near
+fail-open at scale)"*.
+
+This weakens **every** limit in the app, not just MEDIC's: auth endpoints,
+contact/lead forms, agent invites, billable AI scans. Broken/insecure bucket —
+not a preference item.
+
+**To fix:** provision an Upstash Redis instance, set both env vars in
+Production (and Preview), then remove `RATELIMIT_ALLOW_LOCAL`. `lib/env.ts`
+already refuses to boot production without them once the override is gone, so
+the guard verifies itself. I did not create credentials or change production
+env on your behalf.
+
+Mitigated meanwhile for the AI spend path: the MEDIC suggest cap is now
+DB-backed (counts its own audit rows) and therefore instance-independent.
+
 ## MEDIC subject-access gap (GDPR Art. 15) — 2026-07-30 — MERGED + DEPLOYED
 
 `NEW-UI` @ `94270ec`, deploy `dpl_6EYcNhMq…` (`oqqu31pau`), Ready, apex+www
