@@ -1,0 +1,3 @@
+# Eval outputs are not committed — they are per-run reports.
+*
+!.gitignore

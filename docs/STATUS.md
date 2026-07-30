@@ -5,6 +5,68 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## Multi-model AI system: guardrails, routing, fallbacks, observability, evals — 2026-07-30 — branch `claude/nifty-tesla-m80f2p`
+
+Built the multi-model AI system in five CI-green commits. Each phase passes the
+full gate (audit:api-auth, lint, i18n, utf8, encoding, type-check, unit tests,
+build). Not yet deployed.
+
+- **Broken/insecure (now closed):**
+  - **Zero-cost input guard** (`lib/services/ai/guard.ts` + `guard-patterns.ts`):
+    deterministic, pre-LLM length caps + bilingual (EL/EN) prompt-injection
+    scoring + control/zero-width/bidi sanitation. High-confidence injections
+    block for €0 and write an `AI_INPUT_REJECTED` audit row (metadata only — no
+    raw text, no email); medium signals flag-and-log (`AI_INPUT_FLAGGED`).
+  - **Metering/backstop parity on every billable path.** Closed the three
+    off-the-books spenders (`extractBasicSummary`, the legacy
+    `/api/policies/extract` route — now migrated onto `getAIService()`, and the
+    batch translator). Q&A gained a length cap + injection guard + rate limit;
+    the agent scan gained an `AGENT_POLICY_SCANNED` audit row + DB backstop
+    (the STATUS-flagged live money exposure). Every backstop is DB-count-based,
+    so it holds even with prod's `RATELIMIT_ALLOW_LOCAL` / no Upstash.
+  - **Prompt spotlighting**: extracted policy data is fenced in
+    `<untrusted_policy_data>` with a "data, not instructions" directive and
+    forged delimiters stripped — closes the poisoned-PDF indirect-injection
+    channel. Scoped to document data only, to keep the MEDIC reuse of
+    `buildQaPrompt` working.
+- **Routing:** `lib/services/ai/model-router.ts` reworked into a per-call
+  `resolveRoute` (deterministic tier table → provider + model + output cap) +
+  `selectPrimaryProvider`; a new `gateway.ts` is the chokepoint for the
+  interactive paths (Q&A, risk). Fixed the dead code: `analyzeRiskProfile`
+  ignored `modelOverride` in all three providers; Gemini Q&A ignored it too and
+  set no output cap; the orchestrator hardcoded `provider:"gemini"` and coerced
+  Anthropic back to Gemini. **Behavior-neutral under the default env** — the two
+  wired paths resolve to today's models at every tier; pro-tier deep-pipeline
+  upgrades are tested but deferred until evals can validate them.
+- **Fallbacks:** per-provider fallback models (`CLAUDE_MODEL_FALLBACK`,
+  `OPENAI_MODEL_FALLBACK`) — Claude/OpenAI previously had none. In-process
+  circuit breaker (`provider-health.ts`, per-instance, same serverless caveat as
+  the incident cooldown). Anthropic is now a first-class primary via
+  `AI_SERVICE_TYPE`. The remediation ladder itself is untouched.
+- **Observability:** `/admin/ai` performance dashboard + snapshot service
+  (`lib/services/ops/ai-performance.service.ts`) + guarded API
+  (`/api/admin/ai-performance`). Success rate, degraded/failed/blocked, failure
+  and remediation mix, p50/p95 step latency, cost/operation, **routing
+  distribution** (truthful now the model field is real), and **blocked-attack
+  counts** from the Phase-1 audit rows. All from already-persisted data; no
+  migration. Aggregate ops metrics, not an advice surface (no AiDisclaimer).
+- **Evaluation:** `evals/` — TS golden datasets (extraction/gaps/qa), pure
+  scorers (field accuracy / gap recall+precision / Q&A compliance incl. an
+  advice-language ban), and `evals/run.ts` (`npm run eval`). **CI runs only the
+  deterministic pieces**: `tests/unit/eval-scorers.test.ts` (in the unit suite)
+  and the mock harness (`npm run eval:ci`). Real providers are **refused unless
+  `EVAL_ALLOW_PAID=1`**, so CI can never spend money.
+- **Standing owner dependency (unchanged, not code):** production Upstash Redis
+  is still unprovisioned (`RATELIMIT_ALLOW_LOCAL=1`), so Redis limits remain
+  per-instance. The new DB-count backstops make every billable AI path
+  instance-independent regardless; non-AI limits (auth, contact, invites) stay
+  weakened until Upstash lands.
+- **Deliberately deferred (not broken):** enabling pro-tier premium models on
+  the deep pipeline (extraction/gaps/clarity) — the router supports it and it is
+  unit-tested, but flipping it in production should wait for a golden-set eval
+  run on real providers. An optional LLM-judge for clarity/QA quality is noted
+  but not built.
+
 ## Insurer data verified against the Bank of Greece register — 2026-07-30
 
 Checked the catalog against the BoG register of (re)insurance undertakings
