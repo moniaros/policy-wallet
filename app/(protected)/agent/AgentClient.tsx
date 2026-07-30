@@ -202,6 +202,10 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
             <p className="pw-kicker mb-4">{PAGE_COPY.kicker[lang]}</p>
             <SharedEmptyState
                 icon={Handshake}
+                // This empty state IS the page for anyone without a linked
+                // advisor — the default for every new policyholder — so its
+                // headline has to be the route's h1.
+                headingLevel="h1"
                 headline={NO_AGENT_COPY.headline[lang]}
                 description={NO_AGENT_COPY.benefit[lang]}
                 previewLabel={NO_AGENT_COPY.previewLabel[lang]}

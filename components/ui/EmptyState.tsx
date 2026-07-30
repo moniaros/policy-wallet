@@ -31,6 +31,14 @@ export interface EmptyStateProps {
     trust?: string
     /** Extra content below everything (e.g. an inline input flow). */
     secondary?: React.ReactNode
+    /**
+     * Heading level for the headline. Defaults to `h3`, which is right when the
+     * empty state sits inside a page that already has its own `<h1>` — the
+     * common case. Pass `h1` when the empty state IS the whole page, otherwise
+     * that route ships with no `<h1>` and its first heading at level 3.
+     * Purely semantic: the visual styling is identical at every level.
+     */
+    headingLevel?: "h1" | "h2" | "h3"
     className?: string
 }
 
@@ -43,6 +51,7 @@ export function EmptyState({
     previewLabel,
     trust,
     secondary,
+    headingLevel: Heading = "h3",
     className = "",
 }: EmptyStateProps) {
     const ctaClasses =
@@ -56,9 +65,9 @@ export function EmptyState({
                 <Icon className="h-7 w-7 text-primary dark:text-mint" />
             </div>
 
-            <h3 className="mt-5 text-xl font-semibold tracking-tight text-foreground">
+            <Heading className="mt-5 text-xl font-semibold tracking-tight text-foreground">
                 {headline}
-            </h3>
+            </Heading>
             <p className="mt-2 max-w-md text-body leading-relaxed text-[var(--pw-text-muted)] dark:text-white/65">
                 {description}
             </p>
