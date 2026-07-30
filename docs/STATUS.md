@@ -122,9 +122,14 @@ edits stamp changed fields `admin_edited`, provenance preserved).
   are confirmed at the same migration state. `prisma validate` green.
 
 
-## /agent had no h1 for anyone without an advisor — 2026-07-30 — MERGED
+## /agent had no h1 for anyone without an advisor — 2026-07-30 — MERGED + DEPLOYED
 
-`NEW-UI` @ `ef0b191`. Closed the UI audit's open item **"/dashboard and /agent
+`NEW-UI` @ `ef0b191`, deploy `dpl_cesmHnRh…` (`bfn4yguyn`), Ready, all 5 aliases
++ apex/www verified. **Note for the next deploy:** `vercel --prod` exited
+non-zero with `Not authorized` while the deployment itself built and went Ready
+normally — `vercel whoami` was fine throughout. The CLI's exit code was not
+trustworthy here; the deployment was confirmed via `vercel inspect` and live
+liveness checks rather than by the command's status. Closed the UI audit's open item **"/dashboard and /agent
 report no `<h1>` under the ADMIN session"** — whose diagnosis was wrong on both
 counts, which is why it was right to leave it flagged rather than patched:
 
