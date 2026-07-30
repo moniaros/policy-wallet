@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { toSubjectQualificationView } from "@/lib/medic/subject-view"
 
 function toIso(value: Date | null | undefined) {
     return value ? value.toISOString() : null
@@ -19,6 +20,7 @@ export async function buildUserDataExportPayload(userId: string) {
         advisorRelationships,
         accessGrants,
         analysisRuns,
+        advisorOpportunities,
     ] = await Promise.all([
         db.user.findUnique({
             where: { id: userId },
@@ -259,6 +261,30 @@ export async function buildUserDataExportPayload(userId: string) {
             orderBy: { createdAt: "desc" },
             take: 100,
         }),
+        // What an advisor concluded about this person's needs: the opportunity
+        // pipeline and its MEDIC qualification snapshot. Personal data about the
+        // subject (need, € at risk, how far the decision has got), so Art. 15(1)
+        // covers it — the fact that the agent may RETAIN it under their own IDD
+        // basis (erasure decision, audit H1) is a separate right. Reached via
+        // the relationship, since Opportunity carries no userId of its own.
+        db.opportunity.findMany({
+            where: { relationship: { policyholderUserId: userId } },
+            select: {
+                id: true,
+                status: true,
+                lineOfBusiness: true,
+                estimatedPremium: true,
+                quotedPremium: true,
+                wonPremium: true,
+                currency: true,
+                medic: true,
+                medicScore: true,
+                medicUpdatedAt: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 200,
+        }),
     ])
 
     if (!user) {
@@ -326,6 +352,21 @@ export async function buildUserDataExportPayload(userId: string) {
             startedAt: toIso(run.startedAt),
             finishedAt: toIso(run.finishedAt),
             createdAt: toIso(run.createdAt),
+        })),
+        // Art. 15(4): the qualification snapshot's third-party names (spouse,
+        // accountant…) are withheld; everything about the subject is disclosed.
+        advisorOpportunities: advisorOpportunities.map((opp) => ({
+            id: opp.id,
+            status: opp.status,
+            lineOfBusiness: opp.lineOfBusiness,
+            estimatedPremium: opp.estimatedPremium ? opp.estimatedPremium.toString() : null,
+            quotedPremium: opp.quotedPremium ? opp.quotedPremium.toString() : null,
+            wonPremium: opp.wonPremium ? opp.wonPremium.toString() : null,
+            currency: opp.currency,
+            qualificationScore: opp.medicScore,
+            qualificationUpdatedAt: toIso(opp.medicUpdatedAt),
+            qualification: toSubjectQualificationView(opp.medic),
+            createdAt: toIso(opp.createdAt),
         })),
         billing: {
             subscriptions: subscriptions.map((subscription) => ({

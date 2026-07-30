@@ -117,6 +117,17 @@
 11. **Relationship terminations** (`RELATIONSHIP_TERMINATED` in activity logs)
     are user/agent-initiated status flips, not deletions, and are NOT DSR
     events — they need no queue entry or notification handling.
+12. **Advisor qualification data (MEDIC) is in scope for EXPORT** (added
+    2026-07-30). The `Opportunity.medic` snapshot — what the advisor concluded
+    the customer's need is, the € at risk, decision criteria, the qualification
+    score — is personal data about the customer, so the export now carries it
+    as `advisorOpportunities[].qualification`. Retaining it after an erasure
+    (item 10, the agent's own basis) does **not** exempt it from a subject
+    access request; these are different rights. Third-party names inside the
+    stakeholder map (spouse, accountant) are withheld under Art. 15(4) — the
+    payload flags this as `thirdPartyNamesWithheld: true`. If a requester
+    challenges that withholding, escalate to the compliance lead rather than
+    releasing names of people who are not the requester.
 
 ## Sign-Off
 | Role | Name | Decision | Date (YYYY-MM-DD) | Notes |
