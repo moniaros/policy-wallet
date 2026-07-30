@@ -28,13 +28,20 @@ function isReal(text: string) {
 }
 
 /**
- * Next.js prefetches route payloads (`?_rsc=`) on hover/viewport and aborts
- * them when the navigation doesn't happen; a document request superseded by a
- * client-side navigation aborts the same way. Neither is a resource failure.
+ * Next prefetches route payloads on hover/viewport and aborts them when the
+ * navigation doesn't happen — sometimes as `?_rsc=`, sometimes as a bare
+ * same-origin `fetch` for the route itself (observed on /dashboard/agent and
+ * /customers). A document request superseded by a client-side navigation
+ * aborts the same way. None of these is a resource failure.
+ *
+ * Scoped deliberately: only ERR_ABORTED, and only for page routes — a failed
+ * `/api/*` call still reports, because that WOULD be a real defect.
  */
 function isExpectedAbort(url: string, resourceType: string, failure: string) {
     if (!failure.includes('ERR_ABORTED')) return false
-    return url.includes('?_rsc=') || resourceType === 'document'
+    if (url.includes('/api/')) return false
+    if (url.includes('?_rsc=') || resourceType === 'document') return true
+    return resourceType === 'fetch'
 }
 
 /** A bare "Failed to load resource" console line carries no URL — the response
