@@ -91,6 +91,10 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
             }
         } else if (res && 'error' in res && res.error === 'NO_NOTES') {
             toast.info(tt.suggestNoNotes)
+        } else if (res && 'error' in res && res.error === 'RATE_LIMITED') {
+            toast.info(tt.suggestRateLimited)
+        } else if (res && 'error' in res && res.error === 'TOKEN_LIMIT_BLOCKED') {
+            toast.info(tt.suggestBudgetBlocked)
         } else {
             toast.error(tt.suggestError)
         }

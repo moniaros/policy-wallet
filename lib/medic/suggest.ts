@@ -181,3 +181,15 @@ export function mergeAcceptedSuggestions(
 
     return base
 }
+
+/**
+ * Token estimate for the budget gate. The suggest call is billable and its
+ * size is driven by the advisor's own notes (up to 20 × 4000 chars), so a flat
+ * guess would either under-gate a huge payload or block a tiny one. ~4 chars
+ * per token plus a fixed allowance for the model's JSON reply.
+ */
+export const SUGGEST_OUTPUT_TOKEN_ALLOWANCE = 4000
+
+export function estimateSuggestTokens(prompt: string): number {
+    return Math.ceil(prompt.length / 4) + SUGGEST_OUTPUT_TOKEN_ALLOWANCE
+}

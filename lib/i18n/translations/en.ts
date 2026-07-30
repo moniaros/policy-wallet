@@ -1879,6 +1879,8 @@ export const en: TranslationKeys = {
             stanceBlocker: 'Blocker',
             suggestCriterionLabel: 'Criterion',
             suggestPainLabel: 'Need',
+            suggestRateLimited: 'Too many suggestions in a row. Try again shortly.',
+            suggestBudgetBlocked: 'Your plan\'s AI usage allowance is exhausted.',
             scValueAtRisk: 'Value at risk (€)',
             scSave: 'Save',
             scAddEb: 'Add economic buyer',

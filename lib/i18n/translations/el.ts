@@ -1889,6 +1889,8 @@ export const el = {
             stanceBlocker: 'Αντιτίθεται',
             suggestCriterionLabel: 'Κριτήριο',
             suggestPainLabel: 'Ανάγκη',
+            suggestRateLimited: 'Πολλές διαδοχικές προτάσεις. Δοκιμάστε ξανά σε λίγο.',
+            suggestBudgetBlocked: 'Εξαντλήθηκε το όριο χρήσης AI του πλάνου σας.',
             scValueAtRisk: 'Αξία σε κίνδυνο (€)',
             scSave: 'Αποθήκευση',
             scAddEb: 'Προσθήκη αποφασίζοντα',

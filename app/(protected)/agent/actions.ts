@@ -30,6 +30,7 @@ import { absoluteUrl } from "@/lib/seo/site";
 import { getTranslations } from "@/lib/i18n";
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time";
 import { isAgentRole } from "@/lib/auth/require-agent";
+import { hasAnyRole } from "@/lib/api-auth";
 import { validateUploadFile, sanitizeDisplayName, REJECTION_MESSAGES } from "@/lib/security/file-upload";
 
 const customerService = new CustomerService(db);
@@ -307,7 +308,7 @@ async function loadOpportunityNotes(opportunityId: string, agentUserId: string) 
             relationshipId: true,
             policyId: true,
             medic: true,
-            relationship: { select: { agentUserId: true } },
+            relationship: { select: { agentUserId: true, policyholderUserId: true } },
             policy: {
                 select: {
                     insurerName: true, policyNumber: true, lineOfBusiness: true,
@@ -354,12 +355,48 @@ export async function suggestQualificationFromNotes(opportunityId: string) {
     const aiService = getAIService()
     if (!aiService.isAvailable()) return { error: "AI service is not configured" }
 
-    const { buildSuggestQualificationPrompt, parseSuggestions, filterByEvidence } =
+    const { buildSuggestQualificationPrompt, parseSuggestions, filterByEvidence, estimateSuggestTokens } =
         await import("@/lib/medic/suggest")
 
     // Cap the notes payload — 20 notes × 4000 chars is already generous.
     const notes = loaded.notes.map((n) => ({ id: n.id, body: n.body.slice(0, 4000) }))
     const prompt = buildSuggestQualificationPrompt(notes)
+
+    // Abuse/cost cap: this is a real, billable LLM call over up to 80K chars of
+    // notes, and it can be re-run on the same opportunity forever. Same policy
+    // as scanPolicyDocument — the button was previously unlimited.
+    const { rateLimit } = await import("@/lib/rate-limit")
+    const suggestLimit = await rateLimit(
+        authResult.dbUser.id,
+        20,
+        60 * 60 * 1000,
+        `medic-suggest:${authResult.dbUser.id}`
+    )
+    if (!suggestLimit.success) return { error: "RATE_LIMITED" }
+
+    // Durable backstop. Production runs with RATELIMIT_ALLOW_LOCAL=1 and no
+    // Upstash credentials, so the limiter above is per-instance in-memory and
+    // multiplies by the instance count on Vercel. Counting our own audit rows
+    // is instance-independent — the same trick the B2C Q&A daily limit uses.
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    const recentSuggestions = await db.activityLog.count({
+        where: {
+            adminUserId: authResult.dbUser.id,
+            actionType: "MEDIC_SUGGESTION_REQUESTED",
+            timestamp: { gte: hourAgo },
+        },
+    })
+    if (recentSuggestions >= 20) return { error: "RATE_LIMITED" }
+
+    // Budget gate: reusing the metered askQuestion path RECORDS usage, it does
+    // not GATE it — so without this an agent past their token budget kept
+    // spending. Estimate from the real payload rather than a flat guess.
+    const { canUserUseTokens } = await import("@/lib/token-tracking")
+    const estimatedTokens = estimateSuggestTokens(prompt)
+    const budget = await canUserUseTokens(authResult.dbUser.id, estimatedTokens)
+    if (!budget.allowed && !hasAnyRole(authResult.dbUser.roles, ["admin"])) {
+        return { error: "TOKEN_LIMIT_BLOCKED" }
+    }
 
     // Reuse the metered Q&A path. Metadata comes from the linked policy when
     // present; placeholder metadata otherwise — the prompt is self-contained
@@ -381,6 +418,22 @@ export async function suggestQualificationFromNotes(opportunityId: string) {
     } catch {
         return { error: "SUGGESTION_FAILED" }
     }
+
+    // Auditable spend: without this the call was invisible — no activity row,
+    // so "who ran this and how often" had no answer. userId only, no email
+    // (GDPR audit M3: stop putting identifiers in log descriptions).
+    try {
+        await db.activityLog.create({
+            data: {
+                adminUserId: authResult.dbUser.id,
+                adminEmail: "",
+                actionType: "MEDIC_SUGGESTION_REQUESTED",
+                description: `Qualification suggestion generated for opportunity ${opportunityId}`,
+                targetUserId: loaded.opp.relationship?.policyholderUserId ?? null,
+                metadata: { opportunityId, noteCount: notes.length, estimatedTokens },
+            },
+        })
+    } catch { /* never fail the action on a logging error */ }
 
     const parsed = parseSuggestions(raw)
     if (!parsed) return { error: "SUGGESTION_UNPARSEABLE" }

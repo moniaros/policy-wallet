@@ -104,7 +104,7 @@ export default defineConfig({
             // /commissions, /team, /opportunities) only redirect for the
             // policyholder fixture, so they were audited no further than their
             // redirect. The agent session reaches them.
-            testMatch: /(agent-journey|agent-viewport-overflow|ui-quality-audit)\.spec\.ts/,
+            testMatch: /(agent-journey|agent-viewport-overflow|agent-console-clean|ui-quality-audit)\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/agent.json',
