@@ -6,6 +6,37 @@
 > my own tooling was wrong rather than the product.
 
 
+## MEDIC suggest metering + admin visibility review — 2026-07-30
+
+**Metering — one real defect, fixed.** The suggest button was a real, billable
+LLM call (up to 80K chars of notes, re-runnable forever) with **none** of the
+four controls the B2C Q&A path enforces and no audit trail. "Reuses the metered
+askQuestion path" was true and misleading: that helper RECORDS usage, it does
+not GATE it. Now: 20/hour rate limit, a DB-backed hourly backstop that does not
+depend on Redis, a token-budget check before spending (estimated from the real
+payload), and a `MEDIC_SUGGESTION_REQUESTED` audit row with `targetUserId` —
+userId only, no email (GDPR audit M3). Both refusals surface as advisor-readable
+toasts. 8 unit tests pin the gates at source level incl. ordering; mutation-
+tested by deleting the rate limit.
+
+**Admin visibility — clean, no fix needed.** Every qualification surface scopes
+by ownership (`ownerAgentUserId` / `relationship.agentUserId`) derived from the
+session, never from a parameter and never by role; the admin console has no
+opportunity surface at all; `isAgentRole` admits admins to the agent actions but
+the ownership check still blocks any admin who is not the owning agent. The new
+Art. 15 export section is scoped to the requesting policyholder.
+
+**Chrome consoles.** New `tests/agent-console-clean.spec.ts` — console, page
+errors and HTTP ≥400 across the five agent surfaces; the modal + edit-strip
+check lives in the ladder block where a fixture exists (placed in the console
+spec it would have silently skipped). Local-only noise is filtered by explicit
+rule, each verified rather than assumed: the placeholder Sentry DSN (prod ships
+a real encrypted one and serves no placeholder), `_vercel/*` scripts (absent
+locally), and Next's `?_rsc=` prefetch aborts. Four probe defects were found and
+fixed before any product conclusion was drawn — a filter that missed
+`speed-insights`, `networkidle` hanging, a 404 reported without its URL, and an
+assertion that matched the word "askQuestion" inside a comment.
+
 ## ⚠️ OWNER ACTION: production rate limiting is per-instance only
 
 **Found 2026-07-30 while auditing MEDIC cost behaviour. Not fixable in code —
