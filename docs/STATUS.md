@@ -37,11 +37,25 @@ the fixes rather than reverting them. **Stale values 57 → 32.**
   registered 210 690 5500) and Interamerican (210 946 2000 vs 210 946 1111)
   read like published customer lines vs registered switchboards — a phone call
   settles it, not a database write.
-- **Out of the register's scope entirely:** the 11 stale
-  `roadsideAssistanceProvider` and 5 stale `paymentGatewayUrl` values are
-  commercial contracts and bank-hosted gateways. The dataset's warning that
-  Europ Assistance Greece wound down at end-2024 — leaving six insurers
-  pointing at a departed provider — still stands and needs a different source.
+- **Roadside partners — I was half wrong about the register's scope.** It
+  cannot say who contracts whom, but assistance is a licensed class, so it
+  *can* say whether a named provider still operates here. **Europ Assistance
+  shows Ceased on all three Greek registrations** (branch, freedom of
+  services, and Europ Assistance Holding), which means the six insurers
+  recorded as its clients — Generali, AIG, Interasco, NP Insurance, Personal
+  and ΕΥΡΩΠΗ — **cannot** be current. Those dropped from `stale` to
+  `unverified` ("treat as missing") with a note; no replacement was invented,
+  because none could be sourced. The provider roster is now sourced rather
+  than asserted: MAPFRE Asistencia also Ceased; Inter Partner Assistance
+  branch Ceased but freedom-of-services still Active; **AWP P&C (Mondial /
+  Allianz Partners) Active**; **Interamerican Βοηθείας Active and a licensed
+  Greek undertaking in its own right**. Eurosos is absent from the register
+  and that is *expected, not damning* — it is a roadside service operator, not
+  an insurer, so the cover is written under the insurer's own class-18 licence.
+- **Still genuinely out of scope:** `paymentGatewayUrl` (5 stale, 15
+  unverified) — bank-hosted gateways the register has no view of.
+- Net across both passes: **stale 57 → 26**, verified 66, and the remaining
+  unverified values now mean "known missing" rather than "never looked".
 - Context worth keeping: the register holds 73 Greek-authorised undertakings
   of which only **34 are in force** (34 in liquidation, 5 licence withdrawn),
   so a catalog built from marketing sources rather than the register carries
