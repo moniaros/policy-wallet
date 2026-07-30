@@ -1,10 +1,10 @@
 {
   "_meta": {
     "dataset_name": "Greek Insurance Market — Insurer Reference Dataset",
-    "version": "0.1-draft",
+    "version": "0.2-bog-verified",
     "compiled_on": "2026-07-30",
     "record_count": 29,
-    "important_caveat": "This is a research draft, NOT an authoritative registry. Every value tagged in 'field_confidence' as 'unverified' or 'stale' must be re-checked before this dataset is used for anything operational. The authoritative sources are the Bank of Greece (Τράπεζα της Ελλάδος) private insurance supervision registry and the EAEE (Ένωση Ασφαλιστικών Εταιριών Ελλάδος) member list.",
+    "important_caveat": "This is a research draft, NOT an authoritative registry. Values tagged 'verified_2026' for call_center, contact_email and hq_address were confirmed against the Bank of Greece register of (re)insurance undertakings on 2026-07-30. Values still tagged 'unverified' or 'stale' must be re-checked before operational use; note the register does NOT cover roadside_assistance_provider or payment_gateway_url, so those cannot be verified from it. The authoritative sources are the Bank of Greece (Τράπεζα της Ελλάδος) private insurance supervision registry and the EAEE (Ένωση Ασφαλιστικών Εταιριών Ελλάδος) member list.",
     "market_size_note": "Greece does not have 100 insurers. Greek-domiciled licensed insurance undertakings number roughly 35-40; the EAEE has ~45 members representing >95% of premiums. Beyond that there are ~90+ EEA insurers operating via Freedom of Services (ΕΠΥ) or branch, most of which are shells represented by a local claims agent and have no Greek call centre, payment gateway or roadside partner. Any list of '100 Greek insurers' would be padded with those.",
     "known_data_gaps": [
       "payment_gateway_url: most insurers route card payments through bank-hosted gateways (Eurobank LivePay, Piraeus winbank easypay/Paycenter, Alpha, NBG) or through an authenticated customer portal with no stable public URL. Where a public URL exists it is given; several were last published 2016-2024 and are marked stale.",
@@ -144,7 +144,7 @@
       ],
       "field_confidence": {
         "call_center": "verified_2026",
-        "contact_email": "stale",
+        "contact_email": "verified_2026",
         "hq_address": "verified_2026",
         "roadside_phone": "verified_2026",
         "roadside_assistance_provider": "verified_2026",
@@ -356,7 +356,7 @@
       "id": "groupama",
       "name_el": "Groupama Ασφαλιστική",
       "name_en": "Groupama Insurance",
-      "legal_name_el": "Groupama Ασφαλιστική Α.Ε.",
+      "legal_name_el": "GROUPAMA ΦΟΙΝΙΞ ΑΝΩΝΥΜΗ ΕΛΛΗΝΙΚΗ ΑΣΦΑΛΙΣΤΙΚΗ ΕΤΑΙΡΙΑ",
       "status": "active",
       "group_parent": "Groupama (FR)",
       "website": "https://www.groupama.gr",
@@ -364,9 +364,9 @@
       "claims_phone": null,
       "roadside_phone": null,
       "payment_gateway_url": null,
-      "contact_email": "info@groupama-phoenix.com",
+      "contact_email": "info@groupama.gr",
       "hq_address": {
-        "street": "Λ. Συγγρού 213",
+        "street": "Λ. Συγγρού 213-215",
         "city": "Νέα Σμύρνη",
         "postal_code": "171 21",
         "country": "GR"
@@ -385,19 +385,19 @@
         "agricultural"
       ],
       "field_confidence": {
-        "call_center": "stale",
-        "contact_email": "stale",
-        "hq_address": "stale",
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
         "roadside_assistance_provider": "unverified",
         "payment_gateway_url": "unverified"
       },
-      "notes": "Formerly Groupama Φοίνιξ. The groupama-phoenix.com domain and matching email are legacy — verify current mailbox before use."
+      "notes": "Registered name is still GROUPAMA ΦΟΙΝΙΞ — «Groupama Φοίνιξ» is current, not former. The groupama-phoenix.com mailbox is dead; the Bank of Greece register gives info@groupama.gr."
     },
     {
       "id": "ergo",
       "name_el": "ERGO Ασφαλιστική",
       "name_en": "ERGO Hellas",
-      "legal_name_el": "ERGO Ανώνυμη Ασφαλιστική Εταιρία Ζημιών",
+      "legal_name_el": "ERGO ΑΣΦΑΛΙΣΤΙΚΗ ΜΟΝΟΠΡΟΣΩΠΗ ΑΝΩΝΥΜΗ ΕΤΑΙΡΕΙΑ",
       "status": "active",
       "group_parent": "ERGO Group / Munich Re (DE)",
       "website": "https://www.ergohellas.gr",
@@ -426,8 +426,8 @@
         "legal_protection"
       ],
       "field_confidence": {
-        "call_center": "stale",
-        "contact_email": "stale",
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
         "hq_address": "verified_2026",
         "claims_phone": "stale",
         "roadside_assistance_provider": "verified_2026"
@@ -465,9 +465,9 @@
         "health"
       ],
       "field_confidence": {
-        "call_center": "stale",
-        "contact_email": "stale",
-        "hq_address": "stale",
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
         "payment_gateway_url": "stale",
         "roadside_assistance_provider": "stale"
       },
@@ -506,9 +506,9 @@
         "health"
       ],
       "field_confidence": {
-        "call_center": "stale",
-        "contact_email": "stale",
-        "hq_address": "stale",
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
         "payment_gateway_url": "stale",
         "roadside_assistance_provider": "unverified"
       },
@@ -548,7 +548,7 @@
       ],
       "field_confidence": {
         "call_center": "verified_2026",
-        "contact_email": "stale",
+        "contact_email": "verified_2026",
         "hq_address": "verified_2026",
         "roadside_assistance_provider": "verified_2026",
         "payment_gateway_url": "unverified"
@@ -559,7 +559,7 @@
       "id": "minetta",
       "name_el": "ΜΙΝΕΤΤΑ Ασφαλιστική",
       "name_en": "Minetta Insurance",
-      "legal_name_el": "ΕΥΡΩΠΑΪΚΗ ΕΝΩΣΙΣ Α.Ε.Ε.Γ.Α. — Ασφάλειαι ΜΙΝΕΤΤΑ",
+      "legal_name_el": "ΜΙΝΕΤΤΑ ΑΝΩΝΥΜΗ ΑΣΦΑΛΙΣΤΙΚΗ ΕΤΑΙΡΕΙΑ",
       "status": "active",
       "group_parent": "Theocharakis family",
       "website": "https://www.minetta.gr",
@@ -599,7 +599,7 @@
       "id": "atlantiki-enosis",
       "name_el": "Ατλαντική Ένωσις",
       "name_en": "Atlantiki Enosis (Atlantic Union)",
-      "legal_name_el": "ΑΤΛΑΝΤΙΚΗ ΕΝΩΣΙΣ Α.Ε.Γ.Α.",
+      "legal_name_el": "ΑΤΛΑΝΤΙΚΗ ΕΝΩΣΗ Α.Ε. ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ",
       "status": "active",
       "group_parent": null,
       "website": "https://www.atlantiki.gr",
@@ -607,11 +607,11 @@
       "claims_phone": null,
       "roadside_phone": null,
       "payment_gateway_url": "https://www.atlantiki.gr/online-pliromi",
-      "contact_email": "atlantiki@atlantiki.gr",
+      "contact_email": "genman@atlantiki.gr",
       "hq_address": {
         "street": "Μεσογείων 71 & Ήλιδος",
         "city": "Αθήνα",
-        "postal_code": null,
+        "postal_code": "115 26",
         "country": "GR"
       },
       "roadside_assistance_provider": "Mondial Assistance (Allianz Partners)",
@@ -627,9 +627,9 @@
         "health"
       ],
       "field_confidence": {
-        "call_center": "stale",
-        "contact_email": "stale",
-        "hq_address": "stale",
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
         "payment_gateway_url": "verified_2026",
         "roadside_assistance_provider": "stale"
       },
@@ -676,7 +676,7 @@
       "id": "intersalonica",
       "name_el": "ΙΝΤΕΡΣΑΛΟΝΙΚΑ",
       "name_en": "Intersalonica",
-      "legal_name_el": "ΙΝΤΕΡΣΑΛΟΝΙΚΑ Α.Ε.Γ.Α.",
+      "legal_name_el": "ΙΝΤΕΡΣΑΛΟΝΙΚΑ ΑΝΩΝΥΜΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΙΣΕΩΝ",
       "status": "active",
       "group_parent": null,
       "website": "https://www.intersalonica.gr",
@@ -684,7 +684,7 @@
       "claims_phone": null,
       "roadside_phone": null,
       "payment_gateway_url": null,
-      "contact_email": "company@intersalonica.gr",
+      "contact_email": "intersalonica@intersalonica.gr",
       "hq_address": {
         "street": "15ο χλμ Θεσσαλονίκης — Περαίας, Τ.Θ. 22402",
         "city": "Θεσσαλονίκη",
@@ -705,9 +705,9 @@
         "roadside_assistance"
       ],
       "field_confidence": {
-        "call_center": "stale",
-        "contact_email": "stale",
-        "hq_address": "stale",
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
         "roadside_assistance_provider": "verified_2026",
         "payment_gateway_url": "unverified"
       },
@@ -779,9 +779,9 @@
         "agricultural"
       ],
       "field_confidence": {
-        "call_center": "stale",
-        "contact_email": "stale",
-        "hq_address": "stale",
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
         "roadside_assistance_provider": "stale",
         "payment_gateway_url": "unverified"
       },
@@ -791,7 +791,7 @@
       "id": "orizon",
       "name_el": "ΟΡΙΖΩΝ Ασφαλιστική",
       "name_en": "Orizon Insurance",
-      "legal_name_el": "ΟΡΙΖΩΝ Α.Ε.Γ.Α.",
+      "legal_name_el": "ΟΡΙΖΩΝ 1964 ΑΝΩΝΥΜΗ ΑΣΦΑΛΙΣΤΙΚΗ ΕΤΑΙΡΕΙΑ ΖΗΜΙΩΝ",
       "status": "active",
       "group_parent": null,
       "website": "https://www.orizonins.gr",
@@ -828,7 +828,7 @@
       "id": "evropi",
       "name_el": "ΕΥΡΩΠΗ Ασφαλιστική",
       "name_en": "Evropi (Europe) Insurance",
-      "legal_name_el": "ΕΥΡΩΠΗ Ανώνυμος Εταιρία Γενικών Ασφαλειών",
+      "legal_name_el": "ΕΥΡΩΠΗ ΜΟΝΟΠΡΟΣΩΠΗ ΑΝΩΝΥΜΗ ΕΤΑΙΡΕΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ",
       "status": "active",
       "group_parent": null,
       "website": "https://europe-asfalistiki.gr",
@@ -836,11 +836,11 @@
       "claims_phone": null,
       "roadside_phone": null,
       "payment_gateway_url": null,
-      "contact_email": "info@europe-asfalistiki.gr",
+      "contact_email": "info@europe-aega.gr",
       "hq_address": {
-        "street": "Φιλελλήνων 25",
-        "city": "Αθήνα",
-        "postal_code": "105 57",
+        "street": "Κηφισίας 340",
+        "city": "Νέο Ψυχικό",
+        "postal_code": "154 51",
         "country": "GR"
       },
       "roadside_assistance_provider": "Europ Assistance",
@@ -853,13 +853,13 @@
         "personal_accident"
       ],
       "field_confidence": {
-        "call_center": "stale",
-        "contact_email": "stale",
-        "hq_address": "stale",
+        "call_center": "verified_2026",
+        "contact_email": "verified_2026",
+        "hq_address": "verified_2026",
         "roadside_assistance_provider": "stale",
         "payment_gateway_url": "unverified"
       },
-      "notes": "Do not confuse the insurer (Ευρώπη Α.Ε.Γ.Α.) with its assistance partner Europ Assistance — different entities, similar names."
+      "notes": "Do not confuse the insurer (Ευρώπη Α.Ε.Γ.Α.) with its assistance partner Europ Assistance — different entities, similar names. Moved from Φιλελλήνων 25, Αθήνα to Κηφισίας 340, Νέο Ψυχικό."
     },
     {
       "id": "np-insurance",
@@ -967,7 +967,7 @@
         "roadside_assistance_provider": "unverified",
         "payment_gateway_url": "unverified"
       },
-      "notes": "Historically serviced by MAPFRE Asistencia. Card payment offered as a standing mandate in 2-3 interest-free instalments rather than a public gateway."
+      "notes": "NOT FOUND in the Bank of Greece register (checked 2026-07-30, all 988 entries): not Greek-authorised, not among the Cyprus branches operating in Greece, and no freedom-of-services entry. Licence status unconfirmed — verify before relying on this record. Historically serviced by MAPFRE Asistencia; card payment offered as a standing mandate in 2-3 interest-free instalments rather than a public gateway."
     },
     {
       "id": "aig-greece",
@@ -1043,13 +1043,13 @@
         "contact_email": "unverified",
         "roadside_assistance_provider": "unverified"
       },
-      "notes": "Mutual cooperative specialising in third-party liability for public-use buses and coaches. Roadside is bundled into the motor product; the servicing partner was not established."
+      "notes": "CONFLICTED against the Bank of Greece register (2026-07-30). The register lists «ΓΕΝΙΚΗ ΠΑΝΕΛΛΑΔΙΚΗ ΑΝΩΝΥΜΗ ΕΤΑΙΡΕΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ» — an Α.Ε., not a Συν.Π.Ε. — at Βουλής 7, 10562 Αθήνα, tel 210 321 7801. This record describes a bus-owners mutual cooperative in Πυλαία, Θεσσαλονίκη; legal form, city, address and phone all disagree, so it may fuse two different organisations. Needs a human decision before use."
     },
     {
       "id": "deuteros-allilasfalistikos",
       "name_el": "2ος Αλληλασφαλιστικός Συνεταιρισμός",
       "name_en": "Second Mutual Insurance Cooperative",
-      "legal_name_el": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινητιστών Δ.Χ. Ελλάδος και Θεσσαλίας",
+      "legal_name_el": "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε.",
       "status": "active",
       "group_parent": null,
       "website": "http://2alsyn.gr",

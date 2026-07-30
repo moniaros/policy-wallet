@@ -92,9 +92,12 @@ describe('buildInsurerSeedStatements on the real dataset', () => {
         const ethniki = inserts.find((s) => s.includes("'seed_ethniki-asfalistiki'"))!
         expect(ethniki).toContain('"postalCode":"117 45"')
         expect(ethniki).not.toContain('postal_code')
-        // atlantiki-enosis has postal_code: null — the key must be absent, not null
-        const atlantiki = inserts.find((s) => s.includes("'seed_atlantiki-enosis'"))!
-        expect(atlantiki).not.toContain('postalCode')
+        // aig-greece has postal_code: null — the key must be absent, not null.
+        // (Ατλαντική used to be the example here; its postcode was filled in
+        // from the Bank of Greece register, so it no longer demonstrates this.)
+        const aig = inserts.find((s) => s.includes("'seed_aig-greece'"))!
+        expect(aig).toContain('"street"')
+        expect(aig).not.toContain('postalCode')
     })
 
     it('maps field_confidence keys to the camelCase Prisma field names', () => {

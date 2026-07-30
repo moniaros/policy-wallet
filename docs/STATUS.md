@@ -5,6 +5,49 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## Insurer data verified against the Bank of Greece register — 2026-07-30
+
+Checked the catalog against the BoG register of (re)insurance undertakings
+(all 988 entries; the per-undertaking record carries registered seat,
+telephone, email, website, LEI and licence status — it verifies far more than
+the "legal name and classes" I assumed). Applied to prod AND dev; the source
+dataset `prisma/greek-insurers.json` was corrected too, so a re-import keeps
+the fixes rather than reverting them. **Stale values 57 → 32.**
+
+- **Two records are wrong, not merely stale — both left flagged, not
+  rewritten, because each needs a human decision.** `prime-insurance` does not
+  appear in the register at all (not Greek-authorised, not among the five
+  Cyprus branches, no freedom-of-services entry). `geniki-panelladiki`
+  conflicts on every identifying field: the register has an **Α.Ε.**, not a
+  Συν.Π.Ε., at Βουλής 7 Αθήνα on 210 321 7801, while our record describes a
+  bus-owners mutual in Πυλαία Θεσσαλονίκη on 2310 474 422 — it appears to fuse
+  two different organisations.
+- **Corrected:** Groupama's mailbox (`info@groupama-phoenix.com` was dead →
+  `info@groupama.gr`, as the dataset itself suspected); ΕΥΡΩΠΗ has **moved**
+  (Φιλελλήνων 25 Αθήνα → Κηφισίας 340 Ν. Ψυχικό) and changed mailbox; wrong
+  emails for Ατλαντική and Ιντερσαλόνικα; Ατλαντική's missing postcode
+  (115 26); and four stale legal names — ERGO, ΜΙΝΕΤΤΑ (the «Ευρωπαϊκή Ένωσις»
+  name is gone), ΟΡΙΖΩΝ (now **ΟΡΙΖΩΝ 1964**) and the 2ος Συνεταιρισμός
+  (missing «Βορείου»). Groupama's note was wrong in the other direction:
+  ΦΟΙΝΙΞ is the *current* registered name, not a former one.
+- **16 stale values were right all along** and are now `verified_2026`
+  (INTERLIFE, INTERASCO and Συνεταιριστική on all three of phone/email/
+  address; ERGO's phone+email; Υδρόγειος's and Interamerican's email; etc.).
+- **Left as ambiguous rather than overwritten:** Allianz (ours 210 699 9999 vs
+  registered 210 690 5500) and Interamerican (210 946 2000 vs 210 946 1111)
+  read like published customer lines vs registered switchboards — a phone call
+  settles it, not a database write.
+- **Out of the register's scope entirely:** the 11 stale
+  `roadsideAssistanceProvider` and 5 stale `paymentGatewayUrl` values are
+  commercial contracts and bank-hosted gateways. The dataset's warning that
+  Europ Assistance Greece wound down at end-2024 — leaving six insurers
+  pointing at a departed provider — still stands and needs a different source.
+- Context worth keeping: the register holds 73 Greek-authorised undertakings
+  of which only **34 are in force** (34 in liquidation, 5 licence withdrawn),
+  so a catalog built from marketing sources rather than the register carries
+  dead companies very easily. `anytime` is correctly absent — it is an
+  Interamerican brand, not an undertaking, exactly as our record says.
+
 ## Insurer reference data + admin editing — 2026-07-30 — MERGED + DEPLOYED
 
 `NEW-UI` @ `c225fe9`, deploy `dpl_CSjERdp7…` (`f76d9eglm`), Ready, apex+www.
