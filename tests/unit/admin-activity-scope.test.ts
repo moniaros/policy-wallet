@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, globSync } from 'node:fs'
+import { readFileSync } from "node:fs"
+import { globSync } from "../helpers/glob"
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 const ACTIONS = strip(readFileSync('app/(protected)/admin/actions.ts', 'utf-8'))

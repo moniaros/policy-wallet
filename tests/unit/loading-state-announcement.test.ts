@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, existsSync, globSync } from 'node:fs'
+import { readFileSync, existsSync } from "node:fs"
+import { globSync } from "../helpers/glob"
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, globSync } from 'node:fs'
+import { readFileSync } from "node:fs"
+import { globSync } from "../helpers/glob"
 
 const css = readFileSync('app/globals.css', 'utf-8')
 

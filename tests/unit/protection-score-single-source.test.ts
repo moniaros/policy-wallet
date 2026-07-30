@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, globSync } from 'node:fs'
+import { readFileSync } from "node:fs"
+import { globSync } from "../helpers/glob"
 import { provisionalProtectionScore } from '@/lib/services/gap-engine/protection-score'
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, globSync } from 'node:fs'
+import { readFileSync } from "node:fs"
+import { globSync } from "../helpers/glob"
 import { NOTIFICATION_PREFERENCE_GROUPS, eventTypesFor } from '@/lib/notifications/preference-registry'
 import { el } from '@/lib/i18n/translations/el'
 import { en } from '@/lib/i18n/translations/en'

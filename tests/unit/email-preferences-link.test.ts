@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, globSync } from 'node:fs'
+import { readFileSync } from "node:fs"
+import { globSync } from "../helpers/glob"
 import { getBaseEmailTemplate } from '@/lib/email/templates/base-template'
 import { getLegalContent } from '@/lib/legal/legal-content'
 

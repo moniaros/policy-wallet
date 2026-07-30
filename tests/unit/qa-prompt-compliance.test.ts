@@ -104,7 +104,7 @@ describe('metered allowances reset on the reader clock, not the server clock', (
         // the agent's due-today widget, the weekly digest's Monday check and
         // already-sent guard, and the collaboration digest's once-a-day guard.
         // policy-status owns the boundaries now, so nobody else needs setHours.
-        const { globSync } = await import('node:fs')
+        const { globSync } = await import("../helpers/glob")
         const offenders: string[] = []
         for (const f of [...globSync('lib/**/*.ts'), ...globSync('app/**/*.ts'), ...globSync('app/**/*.tsx')]) {
             if (f.endsWith('lib/policy-status.ts')) continue
