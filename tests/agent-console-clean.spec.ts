@@ -61,7 +61,7 @@ for (const path of SURFACES) {
         page.on('requestfailed', (req) => {
             const failure = req.failure()?.errorText ?? 'failed'
             if (isReal(req.url()) && !isExpectedAbort(req.url(), req.resourceType(), failure)) {
-                problems.push(`[requestfailed] ${req.url()} — ${failure}`)
+                problems.push(`[requestfailed:${req.resourceType()}] ${req.url()} — ${failure}`)
             }
         })
         // The bare console message for a 404 carries no URL, which makes it
@@ -81,30 +81,6 @@ for (const path of SURFACES) {
     })
 }
 
-test('opportunity modal + scorecard edit strip open with a clean console', async ({ page }) => {
-    const problems: string[] = []
-    page.on('console', (msg) => {
-        if ((msg.type() === 'error' || msg.type() === 'warning') && isReal(msg.text())) {
-            problems.push(`[${msg.type()}] ${msg.text()}`)
-        }
-    })
-    page.on('pageerror', (err) => problems.push(`[pageerror] ${err.message}`))
-
-    await page.goto('/opportunities')
-    await page.waitForLoadState('domcontentloaded')
-    await page.waitForTimeout(2500)
-
-    const update = page.getByRole('button', { name: /Ενημέρωση|Update/i }).first()
-    if ((await update.count()) === 0) {
-        test.skip(true, 'no opportunity fixture in this environment')
-    }
-    await update.click()
-    await page.getByText(/Προβολή αξιολόγησης|Show qualification/i).click()
-    await expect(page.locator('#medic-var')).toBeVisible()
-
-    // Typing into the controlled inputs is where a React warning would surface.
-    await page.locator('#medic-var').fill('1234')
-    await page.waitForTimeout(300)
-
-    expect(problems, `console problems in the modal:\n${problems.join('\n')}`).toEqual([])
-})
+// The modal + scorecard console check lives in agent-journey.spec.ts's MEDIC
+// ladder block, which creates its own opportunity fixture. Placing it here
+// would have found an empty list and skipped — a silent non-check.

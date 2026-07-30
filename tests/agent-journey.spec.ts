@@ -310,6 +310,33 @@ test.describe('MEDIC evidence ladder', () => {
         }
     });
 
+    test('opening the modal + edit strip logs nothing to the console', async ({ page }) => {
+        test.setTimeout(90_000);
+        // Lives here rather than in agent-console-clean.spec.ts because that
+        // spec has no opportunity fixture and would silently SKIP — a check
+        // that stops measuring must not look like a pass.
+        const problems: string[] = [];
+        const ignorable = [/_vercel\//i, /va\.vercel-scripts/i, /Invalid Sentry Dsn/i, /Download the React DevTools/i];
+        const real = (t: string) => !ignorable.some((re) => re.test(t));
+        page.on('console', (msg) => {
+            if ((msg.type() === 'error' || msg.type() === 'warning') && real(msg.text())) {
+                problems.push(`[${msg.type()}] ${msg.text()}`);
+            }
+        });
+        page.on('pageerror', (err) => problems.push(`[pageerror] ${err.message}`));
+
+        await page.goto('/opportunities');
+        await page.getByRole('button', { name: /Ενημέρωση|Update/i }).first().click();
+        await page.getByText(/Προβολή αξιολόγησης|Show qualification/i).click();
+        await expect(page.locator('#medic-var')).toBeVisible();
+        // Typing into the controlled inputs is where a React warning surfaces.
+        await page.locator('#medic-var').fill('4321');
+        await page.locator('#medic-eb-name').count();
+        await page.waitForTimeout(500);
+
+        expect(problems, `console problems:\n${problems.join('\n')}`).toEqual([]);
+    });
+
     test('scorecard edit strip fits a 320px phone', async ({ page }) => {
         test.setTimeout(90_000);
         // The audit's viewport spec covers agent LIST pages at >=375px; the
