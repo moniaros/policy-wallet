@@ -316,7 +316,14 @@ test.describe('MEDIC evidence ladder', () => {
         // spec has no opportunity fixture and would silently SKIP — a check
         // that stops measuring must not look like a pass.
         const problems: string[] = [];
-        const ignorable = [/_vercel\//i, /va\.vercel-scripts/i, /Invalid Sentry Dsn/i, /Download the React DevTools/i];
+        const ignorable = [
+            /_vercel\//i,
+            /va\.vercel-scripts/i,
+            /Invalid Sentry Dsn/i,
+            /Download the React DevTools/i,
+            // Reported with its URL by the response listener below instead.
+            /Failed to load resource/i,
+        ];
         const real = (t: string) => !ignorable.some((re) => re.test(t));
         page.on('console', (msg) => {
             if ((msg.type() === 'error' || msg.type() === 'warning') && real(msg.text())) {
@@ -324,6 +331,11 @@ test.describe('MEDIC evidence ladder', () => {
             }
         });
         page.on('pageerror', (err) => problems.push(`[pageerror] ${err.message}`));
+        page.on('response', (res) => {
+            if (res.status() >= 400 && real(res.url())) {
+                problems.push(`[http ${res.status()}] ${res.request().method()} ${res.url()}`);
+            }
+        });
 
         await page.goto('/opportunities');
         await page.getByRole('button', { name: /Ενημέρωση|Update/i }).first().click();
