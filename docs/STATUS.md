@@ -30,12 +30,39 @@ edits stamp changed fields `admin_edited`, provenance preserved).
 - Verified live: list (27, status chips), ERGO edit page (stale/verified
   badges), no-op save → `UPDATE_INSURER` audit row + badges preserved,
   add-policy dropdown shows the canonical Greek names.
+- **Re-import no longer destroys admin corrections — found from real prod
+  data, not theory.** Minutes after deploy an admin filled in AIG's missing
+  contact email, logo and postcode; the confidence map stamped exactly those
+  `admin_edited`. The upsert as first written would have silently erased the
+  email and postcode on the next seed run (the logo was already safe). Now
+  every dataset-owned column is `CASE WHEN field_confidence->>'<field>' =
+  'admin_edited' THEN <live> ELSE <dataset> END`, and the confidence map is
+  merged so the stamps survive and keep protecting their fields. The dataset
+  stays canonical for everything nobody has touched. Proven against a live DB
+  (dev, then restored), not just asserted on the generated string — a
+  string-level test would pass on SQL that does the wrong thing.
+- **E2E added: `tests/admin-insurers.spec.ts`** (runs in `admin-chromium`,
+  5/5 green). The `[insurerId]` route is invisible to every audit sweep —
+  static-route enumeration never sees it and dynamic discovery only harvests
+  hrefs from lists it already knows — so it is checked explicitly: console
+  hygiene on both surfaces, all five sections + 22 LoB checkboxes present,
+  **320px with no horizontal overflow** (the densest new layout in the app),
+  and a full save round-trip asserting persistence, the `admin_edited` stamp,
+  and that untouched dataset provenance survives the same save.
 - 47 new unit tests incl. dataset-conformance (every imported row re-savable —
   URL/phone validation deliberately lenient: http:// sites and Greek short-code
   phones are real data). 2545 total green + full gate.
-- Environmental: local pooler connectivity was dead this session —
-  `migrate deploy`/`migrate status` hang; MCP path used for both DBs.
-  `prisma validate` green; re-run `verify:migrations` when the network returns.
+- **Correction to my own first note here.** I wrote "local pooler connectivity
+  was dead". It was not: `db.insurer.count()` through the app's own Prisma
+  client answers instantly (28 rows). What hangs is only the **migrate
+  engine** (`migrate deploy` / `migrate status`, and therefore
+  `verify:migrations`) — it takes a session-level advisory lock, which
+  transaction-mode pgbouncer cannot hold, so it waits forever instead of
+  erroring. `.env.local` points `DIRECT_URL` at the `:6543?pgbouncer=true`
+  pooler because the direct host is IPv6-only and this machine has no IPv6
+  route. So `verify:migrations` cannot pass locally on this network **by
+  construction**, not by outage; the MCP path is the correct one and both DBs
+  are confirmed at the same migration state. `prisma validate` green.
 
 
 ## MEDIC suggest metering + admin visibility review — 2026-07-30 — MERGED + DEPLOYED

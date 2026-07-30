@@ -16,9 +16,10 @@
  *      "seed_<slug>" ids). Historic status='merged' entities are skipped.
  *   D. Deactivate the legacy AXA row — the ONLY statement touching is_active.
  *
- * Re-running the output overwrites admin edits to dataset-owned fields
- * (canonical reference data wins, same semantics as gen-lookup-seed-sql.ts);
- * is_active, logo_url and insurer_id are never clobbered on conflict.
+ * Re-running the output refreshes dataset-owned fields from the dataset, EXCEPT
+ * where an admin has corrected the value in /admin/insurers (field stamped
+ * admin_edited): those survive, as do is_active, logo_url and insurer_id, which
+ * the upsert never writes at all.
  */
 import dataset from "../prisma/greek-insurers.json"
 
@@ -105,6 +106,50 @@ function mapAddress(address: Record<string, string | null> | null): Record<strin
     return Object.keys(mapped).length > 0 ? mapped : null
 }
 
+/**
+ * Dataset-owned columns, paired with the camelCase key the confidence map and
+ * the admin form use for the same field.
+ */
+const UPSERT_FIELDS: { column: string; confidenceKey: string }[] = [
+    { column: "name", confidenceKey: "name" },
+    { column: "name_en", confidenceKey: "nameEn" },
+    { column: "legal_name_el", confidenceKey: "legalNameEl" },
+    { column: "status", confidenceKey: "status" },
+    { column: "group_parent", confidenceKey: "groupParent" },
+    { column: "website", confidenceKey: "website" },
+    { column: "call_center", confidenceKey: "callCenter" },
+    { column: "claims_phone", confidenceKey: "claimsPhone" },
+    { column: "roadside_phone", confidenceKey: "roadsidePhone" },
+    { column: "payment_gateway_url", confidenceKey: "paymentGatewayUrl" },
+    { column: "contact_email", confidenceKey: "contactEmail" },
+    { column: "hq_address", confidenceKey: "hqAddress" },
+    { column: "roadside_assistance_provider", confidenceKey: "roadsideAssistanceProvider" },
+    { column: "lines_of_business", confidenceKey: "linesOfBusiness" },
+    { column: "notes", confidenceKey: "notes" },
+]
+
+/**
+ * A field an admin has explicitly corrected in /admin/insurers is stamped
+ * admin_edited in field_confidence; a re-import must NOT throw that work away.
+ * So each dataset-owned column keeps the live value where the admin edited it
+ * and takes the dataset value everywhere else — the dataset stays canonical
+ * for everything nobody has touched. field_confidence is merged the same way
+ * so the admin_edited stamps survive and keep protecting their fields.
+ *
+ * is_active, logo_url and insurer_id are never in this list: they are
+ * admin-owned outright and the upsert never writes them.
+ */
+const CONFLICT_UPDATE_ASSIGNMENTS = [
+    ...UPSERT_FIELDS.map(
+        ({ column, confidenceKey }) =>
+            `${column} = CASE WHEN insurers.field_confidence->>'${confidenceKey}' = 'admin_edited' ` +
+            `THEN insurers.${column} ELSE EXCLUDED.${column} END`
+    ),
+    `field_confidence = COALESCE(EXCLUDED.field_confidence, '{}'::jsonb) || COALESCE(` +
+        `(SELECT jsonb_object_agg(key, value) FROM jsonb_each_text(insurers.field_confidence) ` +
+        `WHERE value = 'admin_edited'), '{}'::jsonb)`,
+].join(", ")
+
 export function buildInsurerSeedStatements(records: GreekInsurerRecord[]): string[] {
     const bySlug = new Map(records.map((r) => [r.id, r]))
     const statements: string[] = []
@@ -167,14 +212,8 @@ export function buildInsurerSeedStatements(records: GreekInsurerRecord[]): strin
                     "now()",
                 ].join(", ") +
                 `) ON CONFLICT (slug) DO UPDATE SET ` +
-                `name = EXCLUDED.name, name_en = EXCLUDED.name_en, legal_name_el = EXCLUDED.legal_name_el, ` +
-                `status = EXCLUDED.status, group_parent = EXCLUDED.group_parent, website = EXCLUDED.website, ` +
-                `call_center = EXCLUDED.call_center, claims_phone = EXCLUDED.claims_phone, ` +
-                `roadside_phone = EXCLUDED.roadside_phone, payment_gateway_url = EXCLUDED.payment_gateway_url, ` +
-                `contact_email = EXCLUDED.contact_email, hq_address = EXCLUDED.hq_address, ` +
-                `roadside_assistance_provider = EXCLUDED.roadside_assistance_provider, ` +
-                `lines_of_business = EXCLUDED.lines_of_business, field_confidence = EXCLUDED.field_confidence, ` +
-                `notes = EXCLUDED.notes, updated_at = now();`
+                CONFLICT_UPDATE_ASSIGNMENTS +
+                `, updated_at = now();`
         )
     }
 

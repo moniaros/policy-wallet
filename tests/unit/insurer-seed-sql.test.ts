@@ -53,6 +53,29 @@ describe('buildInsurerSeedStatements on the real dataset', () => {
         }
     })
 
+    it('preserves admin-corrected fields on re-import instead of clobbering them', () => {
+        // Real prod case that motivated this: an admin filled in AIG's missing
+        // contact email, logo and postcode; a naive re-run would erase them.
+        const doUpdate = inserts[0].slice(inserts[0].indexOf('DO UPDATE SET'))
+        for (const column of [
+            'name',
+            'contact_email',
+            'hq_address',
+            'call_center',
+            'lines_of_business',
+            'notes',
+        ]) {
+            expect(doUpdate, `${column} must respect an admin_edited stamp`).toContain(
+                `${column} = CASE WHEN insurers.field_confidence->>`
+            )
+        }
+        // No dataset-owned column may still assign EXCLUDED unconditionally.
+        expect(doUpdate).not.toMatch(/(^|[\s,])[a-z_]+ = EXCLUDED\./)
+        // The admin_edited stamps themselves survive the merge, so they keep
+        // protecting their fields on every subsequent run.
+        expect(doUpdate).toContain("WHERE value = 'admin_edited'")
+    })
+
     it('uses deterministic seed_<slug> ids', () => {
         for (const record of records.filter((r) => r.status !== 'merged')) {
             const insert = inserts.find((s) => s.includes(`'seed_${record.id}'`))
