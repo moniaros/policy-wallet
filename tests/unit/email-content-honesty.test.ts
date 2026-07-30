@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, globSync } from 'node:fs'
+import { readFileSync } from "node:fs"
+import { globSync } from "../helpers/glob"
 import { counted, daysToExpiryPhrase, greeting } from '@/lib/email/templates/phrases'
 import { getWeeklyDigestEmail } from '@/lib/email/templates/weekly-digest'
 import { getChurnDay7Email } from '@/lib/email/templates/churn-prevention'

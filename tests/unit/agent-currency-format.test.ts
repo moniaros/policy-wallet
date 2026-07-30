@@ -45,7 +45,7 @@ describe('agent currency formatting', () => {
  */
 describe('no money is formatted outside the app formatters', () => {
     it('has no `€${...toLocaleString()}` renders left', async () => {
-        const { globSync } = await import('node:fs')
+        const { globSync } = await import("../helpers/glob")
         const { readFileSync } = await import('node:fs')
         const offenders: string[] = []
         for (const file of globSync('{components,app}/**/*.tsx')) {

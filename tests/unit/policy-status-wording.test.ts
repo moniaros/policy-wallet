@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, globSync } from 'node:fs'
+import { readFileSync } from "node:fs"
+import { globSync } from "../helpers/glob"
 import { getStatusLabel } from '@/lib/policy-status'
 import { el } from '@/lib/i18n/translations/el'
 

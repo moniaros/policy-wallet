@@ -65,7 +65,8 @@ describe('expiry is judged on the Athens calendar', () => {
  */
 describe('one clock answers "how many days until this date"', () => {
     it('is the only implementation left', async () => {
-        const { readFileSync, globSync } = await import('node:fs')
+        const { readFileSync } = await import("node:fs")
+        const { globSync } = await import("../helpers/glob")
         const offenders: string[] = []
         // components/** was outside the original sweep, and the policy-comparison
         // dialog was still dividing milliseconds — so a policy expiring TODAY

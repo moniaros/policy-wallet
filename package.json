@@ -91,6 +91,7 @@
     "playwright": "^1.58.0",
     "prisma": "^5.22.0",
     "tailwindcss": "^4",
+    "tinyglobby": "0.2.15",
     "ts-node": "^10.9.2",
     "typescript": "^5",
     "vitest": "^4.0.18"
