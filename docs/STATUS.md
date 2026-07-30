@@ -122,6 +122,34 @@ edits stamp changed fields `admin_edited`, provenance preserved).
   are confirmed at the same migration state. `prisma validate` green.
 
 
+## /agent had no h1 for anyone without an advisor — 2026-07-30 — MERGED
+
+`NEW-UI` @ `ef0b191`. Closed the UI audit's open item **"/dashboard and /agent
+report no `<h1>` under the ADMIN session"** — whose diagnosis was wrong on both
+counts, which is why it was right to leave it flagged rather than patched:
+
+- `/dashboard` under an admin **redirects** to `/admin/dashboard`, which does
+  have an h1. The sweep was measuring the redirect, not `DashboardClient`.
+- `/agent` is the policyholder's "my advisor" page and early-returns
+  `NoAgentEmptyState` when there is no linked advisor. That is **data**-gated,
+  not role-gated — the admin fixture simply has zero advisor relationships
+  (verified in the DB). So this hit **every new policyholder**, not admins.
+- `/team`'s equivalent branch had already been fixed in an earlier pass.
+
+Root cause: shared `components/ui/EmptyState` headlines at `h3` — correct when
+nested under a page that owns an h1 (all 12 other consumers, checked
+individually), wrong when the empty state IS the page. Added an optional
+`headingLevel` (default `h3`, so nothing else moves) and `/agent` passes `h1`.
+Styling identical at every level; the change is purely semantic.
+
+**Checked and deliberately NOT changed:** `/wallet`'s empty state, which looks
+like the same bug but takes its h1 from `PageHeader` above the early return.
+The two h1s in `AgentClient` are in mutually exclusive branches, so this adds
+no duplicate — the defect the audit fixed on `/onboarding/agent`.
+
+4 unit tests (render-level + call-site), mutation-tested; E2E asserts exactly
+one h1 on `/agent` under the no-advisor fixture — never zero, never two.
+
 ## MEDIC suggest metering + admin visibility review — 2026-07-30 — MERGED + DEPLOYED
 
 `NEW-UI` @ `c00ce21`, deploy `dpl_9rNz7GMk…` (`btlnbkp8f`), Ready, apex+www
