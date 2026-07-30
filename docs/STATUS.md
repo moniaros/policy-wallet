@@ -127,7 +127,19 @@ edits stamp changed fields `admin_edited`, provenance preserved).
 `NEW-UI` @ `c00ce21`, deploy `dpl_9rNz7GMk…` (`btlnbkp8f`), Ready, apex+www
 verified. Final E2E: **16/16** (5 agent surfaces + full journey + 5 ladder
 tests incl. the modal console check and the 320px strip), zero Chrome console
-errors. 2498 unit tests + full gate green.
+errors. 2498 unit tests + full gate green. **Re-verified after the insurer
+batch landed** (head `8be0c15`): 16/16 again, zero console errors, 2546 unit
+tests + full gate.
+
+**Second pass over both areas came up clean** — the bar for closing this out.
+Admin visibility: no impersonation feature exists anywhere, and `isBreakGlass`
+is only an audit flag on deletion requests, not an access bypass — so neither
+opens a route to qualification data. Metering: the token estimate was checked
+against what is actually sent (the Q&A framing adds ~500 tokens and this path
+passes no ACORD payload, so the 4000-token allowance covers framing plus the
+size-capped JSON reply); the audit row is written whenever the billable call
+succeeded, including when parsing later fails, so cost incurred always leaves
+a trace.
 
 **Metering — one real defect, fixed.** The suggest button was a real, billable
 LLM call (up to 80K chars of notes, re-runnable forever) with **none** of the
@@ -182,6 +194,14 @@ env on your behalf.
 
 Mitigated meanwhile for the AI spend path: the MEDIC suggest cap is now
 DB-backed (counts its own audit rows) and therefore instance-independent.
+
+**The concrete money exposure until then** is `scanPolicyDocument`
+(`app/(protected)/agent/actions.ts`) — a real billable AI extraction whose
+30/hour cap is Redis-only, so it is currently per-instance. Deliberately left
+as-is rather than given the same DB-backed backstop: it writes no audit row to
+count, so that change is larger than it looks, and provisioning Upstash fixes
+it properly along with every other limit. Worth revisiting only if the Upstash
+work is postponed.
 
 ## MEDIC subject-access gap (GDPR Art. 15) — 2026-07-30 — MERGED + DEPLOYED
 
