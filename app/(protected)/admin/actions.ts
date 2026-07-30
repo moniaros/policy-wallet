@@ -1341,6 +1341,18 @@ export async function getLaunchReadiness(windowHours: number = 24) {
     }
 }
 
+export async function getAiPerformance(windowHours: number = 24, trendDays: number = 30) {
+    await verifyAdminRole()
+
+    try {
+        const { getAiPerformanceSnapshot } = await import("@/lib/services/ops/ai-performance.service")
+        return await getAiPerformanceSnapshot({ windowHours, trendDays })
+    } catch (error) {
+        Sentry.captureException(error)
+        throw new Error("Failed to fetch AI performance snapshot")
+    }
+}
+
 /**
  * MASTER DATA MANAGEMENT (existing functions)
  * Insurer actions live in app/(protected)/admin/insurers/actions.ts.

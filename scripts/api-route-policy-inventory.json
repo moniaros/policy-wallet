@@ -3,6 +3,28 @@
   "description": "Full API route policy inventory. Required controls are enforced by scripts/audit-api-auth.js.",
   "routes": [
     {
+      "route": "admin/ai-performance/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
       "route": "admin/tokens/analytics/route.ts",
       "methods": [
         "GET"
