@@ -6,6 +6,30 @@
 > my own tooling was wrong rather than the product.
 
 
+## MEDIC subject-access gap (GDPR Art. 15) — 2026-07-30 — MERGED + DEPLOYED
+
+`NEW-UI` @ `94270ec`, deploy `dpl_6EYcNhMq…` (`oqqu31pau`), Ready, apex+www
+verified. **The sweep's "clean round" did NOT come up clean** — this round
+found a sixth real defect, so the goal's completion bar is not yet met.
+
+- **MEDIC data was invisible to a subject-access request.** The Art. 15 export
+  builds 14 sections keyed by `userId`; `Opportunity` links to the policyholder
+  only via `relationship.policyholderUserId`, so it was never queried. The
+  profile the feature builds ABOUT a customer (need + severity, € at risk,
+  decision criteria, qualification score) has been outside every DSR surface
+  since 2026-07-26. Retention under the agent's IDD basis (erasure decision,
+  audit H1) covers the ERASURE right and does not exempt the same data from
+  ACCESS — different rights.
+- Fix: `lib/medic/subject-view.ts` (subject-safe projection) + new
+  `advisorOpportunities` export section + DSR runbook amendment 12. Third-party
+  names in the stakeholder map (spouse, accountant — not the requester) are
+  withheld under Art. 15(4) with the structure still disclosed and the
+  withholding flagged in the payload. 6 unit tests; the no-name-leak property
+  is mutation-tested. 2490 unit tests + full gate green.
+- **Open for counsel:** the Art. 15(4) withholding is a judgement call, and
+  whether free-text `Opportunity.notes` should also be disclosed was left
+  undecided rather than guessed.
+
 ## MEDIC concurrency (CAS) + 320px edit strip — 2026-07-29 — MERGED + DEPLOYED
 
 `NEW-UI` @ `39cf907`, deploy `dpl_2RMcYZ34…` (`nuh9ww1nf`), Ready, apex+www
