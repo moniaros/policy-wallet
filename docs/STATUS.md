@@ -5,6 +5,22 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## Scale-readiness plan (50–100K → εκατομμύρια) — 2026-07-30
+
+Νέο: [planning/SCALE_READINESS_PLAN.md](planning/SCALE_READINESS_PLAN.md) —
+WP-12..WP-27 σε 5 φάσεις (A stop-the-bleeding security/timeouts/abuse, B
+perf+ops+honest feedback, C CI gates, D μεγαλύτερες ηλικίες/a11y/trust/
+εντιμότητα, E load rehearsal + πρόληψη), πάνω σε 3 εξερευνήσεις κώδικα + πλήρη
+συμφιλίωση με τα audits (Gen-1 docs = παγωμένα· τα fixed/decided ΔΕΝ
+ξαναπροτείνονται). Κορυφαία ανοιχτά που τεκμηριώθηκαν: πρώτες αναλύσεις inline
+σε after() εκτός QStash· B2C upload παρακάμπτει magic-bytes/AV (direct-to-
+storage, H2 ανοιχτό)· createPolicy χωρίς rate limit· default reading size
+12–14px χωρίς large-text mode· κανένα perf/a11y gate στο CI· κανένα load
+test/DR/SLO πουθενά· ~13 sold-but-unbuilt agent features· revoke UI
+paywalled (Art. 7(3)). Ενιαίο session prompt και για τα δύο plan docs στην
+κεφαλίδα του νέου. Docs-only αλλαγή — branch
+`claude/policywallet-ethniki-0r0bai`.
+
 ## Ethniki «Πάμε Απλά» — readiness matrix + συνεχές dev plan — 2026-07-30
 
 Νέο: [planning/ETHNIKI_READINESS_AND_DEV_PLAN.md](planning/ETHNIKI_READINESS_AND_DEV_PLAN.md)
