@@ -5,6 +5,20 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-14 συμπλήρωμα — η constant-time διόρθωση δεν κάλυπτε κανένα cron — 2026-07-30
+
+PR #225. 2676/2676 unit tests, 6/6 gates.
+
+Στο WP-14 σκλήρυνα τον `authorizeCronRequest` σε constant-time σύγκριση. Βρέθηκε
+τώρα ότι **12 job routes δεν τον καλούσαν καν**: inline-άρανε το ίδιο μπλοκ με
+`===`. Η διόρθωση ίσχυε στη θεωρία και σε **κανένα** από τα routes που έχουν
+σημασία — privacy-retention, dsr-evidence-snapshot, billing-reconciliation,
+renewal-check και τα υπόλοιπα. Και τα 12 μεταφέρθηκαν στον κοινό helper.
+
+Δύο νέα guards. Το δεύτερο ξαναγράφτηκε επειδή η πρώτη εκδοχή **σήμανε λάθος**:
+το `process-policy` ζει στο `/jobs/` αλλά το ενεργοποιεί χρήστης και σωστά
+χρησιμοποιεί `requireApiUser`.
+
 ## WP-07 (μερικώς) — gaps now become opportunities by themselves — 2026-07-30
 
 PR #225. 2674/2674 unit tests, 6/6 gates.

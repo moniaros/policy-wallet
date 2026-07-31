@@ -28,7 +28,7 @@
  *    month windows, so a 12-month floor does not affect them.
  */
 
-import { requireApiUser } from "@/lib/api-auth"
+import { authorizeCronRequest } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
@@ -43,25 +43,13 @@ const USER_ACTIVITY_RETENTION_DAYS = 365
 const DAY_MS = 24 * 60 * 60 * 1000
 
 export async function POST(req: Request) {
-    const cronSecret = process.env.CRON_SECRET
-    const headerSecret = req.headers.get("x-cron-secret")
-    const authHeader = req.headers.get("authorization")
-    const bearerSecret = authHeader?.startsWith("Bearer ")
-        ? authHeader.slice("Bearer ".length)
-        : null
-
-    const isCronAuthorized = Boolean(
-        cronSecret &&
-        (
-            (headerSecret && headerSecret === cronSecret) ||
-            (bearerSecret && bearerSecret === cronSecret)
-        )
-    )
-
-    if (!isCronAuthorized) {
-        const authCheck = await requireApiUser({ roles: ["admin"] })
-        if ("error" in authCheck) return authCheck.error
-    }
+    // Delegates to the shared guard, which compares the secret in constant
+    // time. Twelve job routes inlined this block with `===`, which
+    // short-circuits at the first differing byte and leaks a prefix oracle
+    // through response timing — and they bypassed the helper, so hardening it
+    // alone changed nothing here.
+    const authError = await authorizeCronRequest(req)
+    if (authError) return authError
 
     try {
         const now = new Date()

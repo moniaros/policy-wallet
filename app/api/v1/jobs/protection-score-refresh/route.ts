@@ -1,4 +1,4 @@
-import { requireApiUser } from "@/lib/api-auth"
+import { authorizeCronRequest } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { db } from "@/lib/db"
 import { runGapEngine } from "@/lib/services/gap-engine"
@@ -14,24 +14,9 @@ import { logger } from "@/lib/logger"
  * Auth: CRON_SECRET header or admin Bearer token.
  */
 export async function POST(req: Request) {
-    const cronSecret = process.env.CRON_SECRET
-    const headerSecret = req.headers.get("x-cron-secret")
-    const authHeader = req.headers.get("authorization")
-    const bearerSecret = authHeader?.startsWith("Bearer ")
-        ? authHeader.slice("Bearer ".length)
-        : null
-    const isCronAuthorized = Boolean(
-        cronSecret &&
-        (
-            (headerSecret && headerSecret === cronSecret) ||
-            (bearerSecret && bearerSecret === cronSecret)
-        )
-    )
-
-    if (!isCronAuthorized) {
-        const authCheck = await requireApiUser({ roles: ["admin"] })
-        if ("error" in authCheck) return authCheck.error
-    }
+    // Shared guard: constant-time secret comparison (see api-auth).
+    const authError = await authorizeCronRequest(req)
+    if (authError) return authError
 
     try {
         // Drive off the STALEST scores first, not "the first 1000 active users":

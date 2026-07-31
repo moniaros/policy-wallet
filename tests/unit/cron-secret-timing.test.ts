@@ -68,6 +68,43 @@ describe("cron secret comparison", () => {
         expect(result).not.toBeNull()
     })
 
+    it("leaves no job route comparing the secret itself", async () => {
+        // Hardening authorizeCronRequest changed nothing for the routes that
+        // did NOT use it: twelve job routes inlined the same block with `===`.
+        // A shared guard only guards what actually calls it.
+        const { globSync } = await import("glob")
+        const routes = globSync("app/api/v1/jobs/**/route.ts")
+
+        expect(routes.length).toBeGreaterThan(8) // vacuity floor
+        const inlining = routes.filter((f) =>
+            /headerSecret\s*===\s*cronSecret|bearerSecret\s*===\s*cronSecret/.test(
+                readFileSync(f, "utf-8")
+            )
+        )
+        expect(inlining).toEqual([])
+    })
+
+    it("authenticates every job route by one of the three sanctioned means", async () => {
+        // Not every route under /jobs/ is a cron: process-policy is triggered by
+        // a signed-in user and correctly uses requireApiUser. Asserting they all
+        // call authorizeCronRequest would have flagged it as unguarded when it
+        // is not — a test that reports a defect where none exists is as
+        // expensive as one that misses a real one.
+        const { globSync } = await import("glob")
+        const routes = globSync("app/api/v1/jobs/**/route.ts")
+
+        expect(routes.length).toBeGreaterThan(8) // vacuity floor
+        const unguarded = routes.filter((f) => {
+            const src = readFileSync(f, "utf-8")
+            return (
+                !src.includes("authorizeCronRequest") && // scheduler-driven
+                !src.includes("upstash-signature") && //    queue consumer
+                !src.includes("requireApiUser") //          user-triggered
+            )
+        })
+        expect(unguarded).toEqual([])
+    })
+
     it("rejects a missing secret", async () => {
         const { authorizeCronRequest } = await import("@/lib/api-auth")
         const result = await authorizeCronRequest(requestWith({}))

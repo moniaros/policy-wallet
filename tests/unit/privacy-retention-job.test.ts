@@ -23,6 +23,17 @@ vi.mock('@/lib/db', () => ({
 const requireApiUser = vi.fn(async () => ({ error: new Response('unauthorized', { status: 401 }) }))
 vi.mock('@/lib/api-auth', () => ({
     requireApiUser: (...a: unknown[]) => (requireApiUser as any)(...a),
+    // The route no longer inlines the cron-secret comparison — it delegates to
+    // the shared guard, which compares in constant time. The double reproduces
+    // that guard's contract (header secret matches CRON_SECRET, else fall back
+    // to an admin session) so these scenarios keep testing the SAME behaviour.
+    authorizeCronRequest: async (req: Request) => {
+        const secret = process.env.CRON_SECRET
+        const header = req.headers.get('x-cron-secret')
+        if (secret && header === secret) return null
+        const check = await (requireApiUser as any)({ roles: ['admin'] })
+        return 'error' in check ? check.error : null
+    },
 }))
 
 import { POST } from '@/app/api/v1/jobs/privacy-retention/route'
