@@ -23,9 +23,15 @@ export const useOffline = () => useContext(OfflineContext)
 // language (see docs/design/I18N_CONSUMER_MAP.md).
 const OFFLINE_COPY = {
     backOnline: { el: "Επανασυνδεθήκατε στο διαδίκτυο", en: "You are back online" },
+    // This used to tell the user that stored data was being displayed. Nothing
+    // was: lib/services/offline-storage.ts is a complete IndexedDB layer with
+    // ZERO importers, so the claim was false in both languages. A user who
+    // trusted it would read whatever was on screen as their own current policy
+    // figures. The copy now states only what is true — the connection is gone,
+    // and what is shown may be stale.
     offlineCached: {
-        el: "Είστε εκτός σύνδεσης. Εμφανίζονται αποθηκευμένα δεδομένα.",
-        en: "You are offline. Showing saved data.",
+        el: "Είστε εκτός σύνδεσης. Ορισμένα στοιχεία ενδέχεται να μην είναι ενημερωμένα.",
+        en: "You are offline. Some information may be out of date.",
     },
 } as const
 

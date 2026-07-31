@@ -18,7 +18,7 @@ export { Skeleton }
  * cannot know the reader's language. Greek leads — it is the product default —
  * and English follows.
  */
-function LoadingAnnouncement() {
+export function LoadingAnnouncement() {
     return <span className="sr-only">Φόρτωση… · Loading…</span>
 }
 

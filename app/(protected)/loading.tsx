@@ -1,8 +1,12 @@
-import { Skeleton } from "@/components/ui/LoadingSkeleton"
+import { Skeleton, LoadingAnnouncement } from "@/components/ui/LoadingSkeleton"
 
 export default function Loading() {
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+        // This group fallback carried no live region and no text, so a screen
+        // reader announced nothing while any uncovered protected route loaded —
+        // the exact defect the composites in LoadingSkeleton were fixed for.
+        <div role="status" aria-busy="true" className="p-6 max-w-7xl mx-auto space-y-6">
+            <LoadingAnnouncement />
             <div className="flex items-center space-x-4 mb-8">
                 <Skeleton className="h-12 w-12 rounded-full" />
                 <div className="space-y-2">

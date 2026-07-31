@@ -5,6 +5,26 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-19 (μερικώς) — route loading states + honest offline copy — 2026-07-30
+
+PR #225. 2615/2615 unit tests, 6/6 gates.
+
+Υπήρχαν 18 `loading.tsx` και **και τα 18** μέσα στο `app/(protected)`. Τα 59
+public routes, όλο το auth δέντρο και οι δύο ροές onboarding δεν είχαν κανένα —
+και οι landing σελίδες είναι επιπλέον σε `<Suspense fallback={null}>`, οπότε
+αργή πλοήγηση έδειχνε κυριολεκτικά τίποτα. Προστέθηκαν και στα τρία groups.
+Επιπλέον το ίδιο το group fallback των protected ήταν **βουβό** (σκελετοί χωρίς
+live region ή κείμενο) — ακριβώς το ελάττωμα για το οποίο είχαν διορθωθεί τα
+composites.
+
+Το offline toast υποσχόταν εμφάνιση αποθηκευμένων δεδομένων ενώ το
+`offline-storage.ts` έχει **μηδέν importers**· χρήστης που το πίστευε διάβαζε
+ό,τι υπήρχε στην οθόνη ως τρέχοντα στοιχεία του. Το test γράφτηκε στην αιτία:
+όσο ο store δεν έχει καταναλωτές, καμία δήλωση για cached δεδομένα.
+
+**Δεν έγιναν:** streaming Suspense στα βαριά pages, `/offline` route, ενοποίηση
+των 2 Skeleton implementations — θέλουν E2E για να επιβεβαιωθούν.
+
 ## WP-16 (μερικώς) — Sentry, crons, rollback/DR runbook — 2026-07-30
 
 PR #225. 2601/2601 unit tests, 6/6 gates.

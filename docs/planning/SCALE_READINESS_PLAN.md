@@ -452,7 +452,7 @@ state αξιόπιστη πηγή αλήθειας για progress UIs.*
   crons σε batch queries (όχι ανά-εγγραφή)· token-gate p95 <50ms με 10K
   TokenUsage rows· `verify:migrations` μέσω MCP· agent journey E2E πράσινο.
 
-#### ☐ WP-19 — Loading-feedback πληρότητα + έντιμο offline (M) — R7, R4, R5
+#### ◐ WP-19 — Loading-feedback πληρότητα + έντιμο offline (M) — ΜΕΡΙΚΩΣ 2026-07-30
 - **Στόχος:** κάθε route και κάθε async λειτουργία >400ms δείχνει σκόπιμο,
   προσβάσιμο feedback· η εφαρμογή σταματά να υπόσχεται offline που δεν έχει.
 - **Αρχεία:** `loading.tsx` για public/auth/onboarding groups (18 υπάρχουν,
@@ -472,6 +472,38 @@ state αξιόπιστη πηγή αλήθειας για progress UIs.*
   public· axe πράσινο στα progress components· aria attributes επιβεβαιωμένα
   σε E2E· offline E2E — airplane mode → `/offline`, χωρίς ψευδές toast·
   i18n keys και στα δύο αρχεία.
+
+> **✅ Έγινε.**
+> - **Route loading σε κάθε group.** Υπήρχαν 18 `loading.tsx` και **και τα 18**
+>   μέσα στο `app/(protected)`. Τα 59 public routes, όλο το auth δέντρο και οι
+>   δύο ροές onboarding δεν είχαν κανένα — και οι landing σελίδες είναι
+>   επιπλέον τυλιγμένες σε `<Suspense fallback={null}>`, οπότε αργή πλοήγηση
+>   έδειχνε **κυριολεκτικά τίποτα** ακριβώς εκεί που ο επισκέπτης φεύγει
+>   ευκολότερα. Προστέθηκαν `app/(public)`, `app/auth`, `app/onboarding` με
+>   σκελετούς στο σχήμα της πραγματικής σελίδας (χωρίς layout shift).
+> - **Το ίδιο το group fallback των protected ήταν βουβό**: είχε σκελετούς
+>   αλλά ούτε live region ούτε κείμενο, δηλαδή ακριβώς το ελάττωμα για το οποίο
+>   είχαν διορθωθεί τα composites. Τώρα `role="status"` + `aria-busy` + το
+>   δίγλωσσο `LoadingAnnouncement` (που έγινε exported αντί για ιδιωτικό).
+> - **Έντιμο offline.** Το toast υποσχόταν εμφάνιση αποθηκευμένων δεδομένων ενώ
+>   το `lib/services/offline-storage.ts` έχει **μηδέν importers** — ένας
+>   χρήστης που το πίστευε διάβαζε ό,τι υπήρχε στην οθόνη ως τρέχοντα στοιχεία
+>   του συμβολαίου του. Το κείμενο λέει πλέον μόνο ό,τι ισχύει, σε δύο γλώσσες.
+>   Το test γράφτηκε **στην αιτία**: όσο ο offline store δεν έχει καταναλωτές,
+>   καμία δήλωση για cached δεδομένα δεν επιτρέπεται· αν κάποιος τον συνδέσει,
+>   το test του λέει ποια δήλωση ξαναγίνεται ασφαλής.
+> - Το progress bar της ανάλυσης απέκτησε ARIA στο **WP-02**.
+>
+> **☐ Δεν έγινε:** streaming `<Suspense>` στα βαριά server pages, `/offline`
+> route με service-worker fallback, ενοποίηση των 2 Skeleton implementations +
+> 22 hand-rolled `animate-pulse`. Το πρώτο αλλάζει τη σειρά render των βαρύτερων
+> σελίδων και θέλει E2E για να επιβεβαιωθεί ότι δεν σπάει· τα άλλα δύο είναι
+> καθαρά μηχανικά και ακίνδυνα, αλλά χωρίς E2E δεν μπορώ να δω το αποτέλεσμα.
+>
+> **Σημείωση probe:** το πρώτο test μετρούσε **αναφορές** στο `offline-storage`
+> αντί για imports, οπότε μέτραγε το ίδιο του το αρχείο ως καταναλωτή· και
+> σάρωνε ολόκληρο το αρχείο, πιάνοντας σχόλια που παραθέτουν την παλιά
+> διατύπωση. Και τα δύο διορθώθηκαν πριν εξαχθεί συμπέρασμα.
 
 ### Phase C — Κλείδωμα ποιότητας στο CI
 
