@@ -5,6 +5,26 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-26 διόρθωση — το μητρώο εντιμότητας έλεγε ψέματα — 2026-07-31
+
+PR #225.
+
+Ο έλεγχος «ποια modules αυτής της συνεδρίας δεν καλεί κανείς» βρήκε το
+`lib/pricing/unbuilt-features.ts` — και μετά ότι το **περιεχόμενό** του ήταν
+λάθος στα 3 από τα 5. Το κριτήριο «κανένα αρχείο δεν αναφέρει το identifier»
+μετράει αν διαβάζεται το **flag**, όχι αν υπάρχει η **δυνατότητα**:
+`collaborationThreads`, `asyncMessaging`, `privateNotes` είναι όλα υλοποιημένα
+(μοντέλα, σελίδα threads, `isPrivate` στο timeline UI).
+
+Και επειδή ήταν όλα στην ίδια λίστα, **κρύφτηκε το ένα πραγματικό ψέμα**:
+`sharedPolicyRoom: true` σε **και τις τρεις** επί πληρωμή βαθμίδες (έως
+€99.99/μήνα) για κάτι που υπάρχει μόνο ως interface με μηδέν καταναλωτές.
+De-listed. Δύο λίστες πλέον, με **αντίθετες** θεραπείες, και το «δεν πουλάμε
+ανύπαρκτη δυνατότητα» είναι **assertion σε κάθε βαθμίδα**, όχι δήλωση.
+
+**Owner action:** οι ζωντανές τιμές είναι στη ΒΔ (`entitlements` του plan row)·
+χρειάζεται ενημέρωση από το `/admin/plans`.
+
 ## WP-05 συμπλήρωμα — το αποθηκευμένο score δεν επιβιώνει του μοντέλου του — 2026-07-31
 
 PR #225. 2716/2716 unit tests, 6/6 gates.

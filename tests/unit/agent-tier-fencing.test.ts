@@ -21,7 +21,11 @@ describe("agent tier fencing — sold-vs-enforced contract", () => {
         crossSellIntelligence: { free: false, starter: false, pro: true, agency: true },
         proposalFlow:          { free: false, starter: true, pro: true, agency: true },
         documentRequestFlow:   { free: false, starter: true, pro: true, agency: true },
-        sharedPolicyRoom:      { free: false, starter: true, pro: true, agency: true },
+        // sharedPolicyRoom is deliberately absent. It used to be pinned here as
+        // free=false / paid=true, which locked in the SALE of a capability that
+        // does not exist: `SharedPolicyRoomData` is an interface with zero
+        // consumers. It is now false on every tier, asserted by
+        // sold-feature-honesty.test.ts, until the room actually ships.
     }
 
     for (const [feature, tiers] of Object.entries(FENCED)) {

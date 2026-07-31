@@ -160,7 +160,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         crossSellIntelligence: false,
         proposalFlow: true,
         documentRequestFlow: true,
-        sharedPolicyRoom: true,
+        sharedPolicyRoom: false, // de-listed: SharedPolicyRoomData is a type with zero consumers. Re-enable when the room ships.
         asyncMessaging: true,
         privateNotes: false,
     },
@@ -186,7 +186,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         crossSellIntelligence: true,
         proposalFlow: true,
         documentRequestFlow: true,
-        sharedPolicyRoom: true,
+        sharedPolicyRoom: false, // de-listed: SharedPolicyRoomData is a type with zero consumers. Re-enable when the room ships.
         asyncMessaging: true,
         privateNotes: true,
     },
@@ -212,7 +212,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         crossSellIntelligence: true,
         proposalFlow: true,
         documentRequestFlow: true,
-        sharedPolicyRoom: true,
+        sharedPolicyRoom: false, // de-listed: SharedPolicyRoomData is a type with zero consumers. Re-enable when the room ships.
         asyncMessaging: true,
         privateNotes: true,
     },
