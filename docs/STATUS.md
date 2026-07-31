@@ -62,6 +62,18 @@ commits on top of the Phase 1–5 multi-model system. Not yet deployed.
   model pin or guidance change. ~35 new unit tests across prompt policy,
   reader/precedence contracts, admin parse rules, write-path source
   assertions, and prompt-position/wiring guarantees.
+- **Promoted to `NEW-UI` (2026-07-31):** fast-forward `09a61f6a → 86634bb`,
+  CI green on NEW-UI (run #542); the Vercel git integration built this exact
+  commit successfully as a preview. **Auto-deploy rewired:** `deploy.yml` now
+  fires on CI success on `NEW-UI` (was: the stale, diverged `main` — 5 runs,
+  all failures, none since February) and deploys the CI-validated sha via
+  `vercel --prod`. It no longer runs `prisma migrate deploy` (impossible
+  through the pooler, P1017 — schema ships via the Supabase MCP path BEFORE
+  merge, as recorded above); it preflights the `VERCEL_TOKEN` /
+  `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` secrets and fails with a named list
+  if any is missing — **owner: verify those three secrets point at the
+  `policy-wallet` project in `moniaros-projects`**. Manual redeploys:
+  workflow_dispatch from NEW-UI only.
 
 ## Multi-model AI system: guardrails, routing, fallbacks, observability, evals — 2026-07-30 — branch `claude/nifty-tesla-m80f2p`
 

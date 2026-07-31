@@ -1,41 +1,75 @@
 name: Deploy to Vercel
 
+# Auto-deploy the production branch. NEW-UI is the production line (see
+# docs/STATUS.md — every shipped deploy went out from it); `main` is a stale,
+# diverged branch and must not deploy. Fires only after the CI workflow
+# succeeds on NEW-UI, and deploys that exact CI-green commit.
+#
+# NOTE: this file is read from the DEFAULT branch (NEW-UI) for workflow_run
+# events — edits take effect once merged there.
+
 on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
-    branches: [main]
+    branches: [NEW-UI]
+  # Manual redeploy of the current NEW-UI head (e.g. after fixing Vercel
+  # secrets, or to re-ship the same commit).
+  workflow_dispatch:
+
+# Never run two production deploys at once; a newer one waits, it does not
+# cancel a deploy already uploading.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: production
-      url: https://policy-wallet.vercel.app
-    
+      url: https://www.policywallet.gr
+
     steps:
-      - name: Checkout code
+      - name: Guard — manual dispatch only from NEW-UI
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/NEW-UI' }}
+        run: |
+          echo "::error::Manual production deploys must be dispatched from NEW-UI (got ${GITHUB_REF})."
+          exit 1
+
+      - name: Preflight — Vercel secrets present
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          missing=""
+          [ -z "$VERCEL_TOKEN" ] && missing="$missing VERCEL_TOKEN"
+          [ -z "$VERCEL_ORG_ID" ] && missing="$missing VERCEL_ORG_ID"
+          [ -z "$VERCEL_PROJECT_ID" ] && missing="$missing VERCEL_PROJECT_ID"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing. Add them under Settings → Secrets and variables → Actions (token + the org/project IDs of the policy-wallet Vercel project), then re-run."
+            exit 1
+          fi
+          echo "All Vercel secrets present."
+
+      - name: Checkout the CI-green commit
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          # workflow_run → the exact sha CI validated; manual dispatch → the
+          # NEW-UI head it was dispatched on.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+      # Deliberately NO `prisma migrate deploy` here: the migrate engine cannot
+      # hold its advisory lock through the transaction-mode pooler (P1017), so
+      # migrations are applied to dev+prod via the Supabase MCP path with
+      # matching _prisma_migrations rows BEFORE the code merges — see
+      # docs/STATUS.md. Schema changes must land in the database first; this
+      # job only ships the app.
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run database migrations
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Deploy to Vercel
+      - name: Deploy to Vercel (production)
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -44,13 +78,8 @@ jobs:
           vercel-args: '--prod'
           working-directory: ./
 
-      - name: Notify deployment success
+      - name: Deployment summary
         if: success()
         run: |
-          echo "✅ Deployment to production successful!"
-          echo "URL: https://policy-wallet.vercel.app"
-
-      - name: Notify deployment failure
-        if: failure()
-        run: |
-          echo "❌ Deployment to production failed!"
+          echo "✅ Production deployment triggered for ${{ github.event.workflow_run.head_sha || github.sha }}"
+          echo "URL: https://www.policywallet.gr"
