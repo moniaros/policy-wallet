@@ -15,6 +15,30 @@ import type { AIPolicyExtractionResponse } from "../ai/ai-service.interface"
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
 
+/**
+ * Bump when extraction changes in a way that should invalidate stored results:
+ * a different model, a changed prompt, new or renamed extracted fields, a fix
+ * to how a field is parsed.
+ *
+ * The cache was keyed on document CONTENT alone. Since the same file always
+ * hashes the same, a bad first extraction was served back forever (or until the
+ * 24h TTL) — and re-uploading the identical file to "try again" returned the
+ * identical wrong answer, which is exactly what a user does when the insurer or
+ * premium on screen is wrong. Worse, improving the pipeline changed nothing for
+ * any document already cached.
+ *
+ * Entries written before versioning have no marker and are treated as stale:
+ * one extra extraction per document, once, in exchange for never serving a
+ * result produced by logic that no longer exists.
+ */
+export const EXTRACTOR_VERSION = 1
+
+/** Stored shape: the extraction plus the version that produced it. */
+type VersionedCacheEntry = {
+    __extractorVersion?: number
+    data?: AIPolicyExtractionResponse
+}
+
 export async function hashDocumentBuffer(buffer: Buffer): Promise<string> {
     const hashBuffer = await crypto.subtle.digest(
         "SHA-256",
@@ -35,8 +59,15 @@ export async function hashDocumentBuffer(buffer: Buffer): Promise<string> {
 export async function getCachedExtraction(
     policyId: string,
     documentHash: string,
-    documentId?: string
+    documentId?: string,
+    opts: { bypass?: boolean } = {}
 ): Promise<AIPolicyExtractionResponse | null> {
+    // Explicit "analyse this again from scratch". Without a way to bypass, a
+    // user faced with a wrong extraction had no action that could change it.
+    if (opts.bypass) {
+        logger("info", "Extraction cache bypassed on request", { policyId })
+        return null
+    }
     try {
         const doc = await db.policyDocument.findFirst({
             where: {
@@ -65,13 +96,23 @@ export async function getCachedExtraction(
             return null
         }
 
+        const entry = doc.extractionCache as unknown as VersionedCacheEntry
+        if (entry?.__extractorVersion !== EXTRACTOR_VERSION || !entry.data) {
+            logger("info", "Extraction cache stale: produced by a different extractor", {
+                policyId,
+                cachedVersion: entry?.__extractorVersion ?? null,
+                currentVersion: EXTRACTOR_VERSION,
+            })
+            return null
+        }
+
         logger("info", "Extraction cache hit", {
             policyId,
             documentHash: documentHash.slice(0, 12),
             ageMinutes: Math.round(age / (60 * 1000)),
         })
 
-        return doc.extractionCache as unknown as AIPolicyExtractionResponse
+        return entry.data
     } catch (error) {
         logger("warn", "Extraction cache lookup failed", {
             policyId,
@@ -96,7 +137,10 @@ export async function setCachedExtraction(
                 documentHash,
             },
             data: {
-                extractionCache: extraction as any,
+                extractionCache: {
+                    __extractorVersion: EXTRACTOR_VERSION,
+                    data: extraction,
+                } as any,
                 extractedAt: new Date(),
             },
         })

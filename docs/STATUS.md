@@ -5,6 +5,22 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-04 (μερικώς) — a bad extraction is no longer permanent — 2026-07-30
+
+PR #225. 2663/2663 unit tests, 6/6 gates.
+
+Το extraction cache ήταν κλειδωμένο **μόνο στο περιεχόμενο**: το ίδιο αρχείο
+δίνει πάντα το ίδιο hash, άρα μια λανθασμένη πρώτη εξαγωγή σερβιριζόταν για
+πάντα — και το να ξανανεβάσει ο χρήστης το ίδιο αρχείο «για να ξαναδοκιμάσει»
+επέστρεφε το ίδιο λάθος. Κάθε βελτίωση του pipeline δεν άγγιζε τα ήδη cached.
+
+Τώρα `EXTRACTOR_VERSION` ανά εγγραφή· παλαιότερες και legacy θεωρούνται stale.
+Προστέθηκε ρητό `bypass`. Ο έλεγχος μπήκε **πριν** το log «cache hit» — αλλιώς
+τα logs θα κατέγραφαν επιτυχία και θα επέστρεφαν null.
+
+**Δεν έγιναν:** κουμπί «Επανάλυση από την αρχή» στο UI και confidence badges —
+θέλουν οπτικό έλεγχο.
+
 ## WP-05 (μερικώς) — the score stopped hiding an uninsured home — 2026-07-30
 
 PR #225. 2657/2657 unit tests, 6/6 gates.
