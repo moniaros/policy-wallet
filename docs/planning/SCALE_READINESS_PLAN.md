@@ -463,7 +463,7 @@ state αξιόπιστη πηγή αλήθειας για progress UIs.*
 > component· είναι νεκρά assets στο repo, όχι πρόβλημα LCP. Και τα raw `<img>`
 > είναι **11**, όχι 13.
 
-#### ☐ WP-18 — Query scale: indexes, pagination, όρια (M) — R1, R6, R5
+#### ◐ WP-18 — Query scale: indexes, pagination, όρια (M) — ΜΕΡΙΚΩΣ 2026-07-30
 - **Στόχος:** καμία σελίδα δεν διαβάζει ολόκληρο βιβλίο πελατών unbounded· τα
   δύο πιο καυτά query shapes αποκτούν τα composites που λείπουν.
 - **Αρχεία:** `prisma/schema.prisma` + 1 additive migration:
@@ -484,6 +484,25 @@ state αξιόπιστη πηγή αλήθειας για progress UIs.*
   row counts (query-log assertion)· book 250 πελατών εμφανίζεται πλήρης·
   crons σε batch queries (όχι ανά-εγγραφή)· token-gate p95 <50ms με 10K
   TokenUsage rows· `verify:migrations` μέσω MCP· agent journey E2E πράσινο.
+
+> **✅ Έγινε — το κομμάτι που είναι ορθότητα, όχι ταχύτητα.**
+> Το `getCustomers` ζητούσε **μία σελίδα των 100** «για να μιμηθεί το all» και
+> επέστρεφε μόνο αυτήν. Ένας ασφαλιστής με 150 πελάτες έβλεπε **100**, χωρίς
+> τίποτα πουθενά να λέει ότι υπάρχουν άλλοι 50 — το χαρτοφυλάκιο απλώς
+> τελείωνε. Αυτό είναι σφάλμα **ορθότητας** πολύ πριν γίνει θέμα κλίμακας, και
+> είναι αόρατο μέχρι να μετρήσει κάποιος. Τώρα διατρέχει τις σελίδες· το
+> ανώτατο όριο ασφαλείας **καταγράφει** όταν ξεπεραστεί αντί να κόβει σιωπηλά —
+> η αποτυχία που διορθώνεται ήταν η σιωπή, οπότε ένα cap που την επαναλάμβανε
+> δεν θα ήταν διόρθωση. 5 unit tests, mutation-tested.
+>
+> **☐ Δεν έγιναν:** τα composite indexes (`Policy[ownerUserId,status]`,
+> `TokenUsage[userId,createdAt]`, `AccessGrant`) απαιτούν migration — δεν
+> υπάρχει ΒΔ εδώ και το `verify:migrations` δεν τρέχει τοπικά by construction·
+> ένα ανεφάρμοστο migration στο repo είναι χειρότερο από κανένα. Επίσης
+> εκκρεμούν: pagination στα 5 unbounded reads του agent dashboard, N+1 στα
+> `renewal.service`/`weekly-digest`, και το trimming του `acordData` από τα RSC
+> props — όλα θέλουν μέτρηση σε πραγματικό όγκο για να επιβεβαιωθεί το όφελος
+> αντί να μαντέψω.
 
 #### ◐ WP-19 — Loading-feedback πληρότητα + έντιμο offline (M) — ΜΕΡΙΚΩΣ 2026-07-30
 - **Στόχος:** κάθε route και κάθε async λειτουργία >400ms δείχνει σκόπιμο,

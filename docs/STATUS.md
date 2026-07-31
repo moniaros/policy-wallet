@@ -5,6 +5,20 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-18 (μερικώς) — an agent's customer book no longer ends at 100 — 2026-07-30
+
+PR #225. 2637/2637 unit tests, 6/6 gates.
+
+Το `getCustomers` ζητούσε μία σελίδα των 100 «για να μιμηθεί το all» και
+επέστρεφε μόνο αυτήν: ασφαλιστής με 150 πελάτες έβλεπε **100**, χωρίς τίποτα να
+λέει ότι υπάρχουν άλλοι 50. Σφάλμα **ορθότητας** πριν γίνει θέμα κλίμακας.
+Τώρα διατρέχει σελίδες· το cap ασφαλείας **καταγράφει** όταν ξεπεραστεί αντί να
+κόβει σιωπηλά — η αποτυχία που διορθώνεται ήταν η σιωπή.
+
+**Δεν έγιναν:** τα composite indexes (απαιτούν migration· δεν υπάρχει ΒΔ εδώ και
+ένα ανεφάρμοστο migration στο repo είναι χειρότερο από κανένα), pagination στα
+5 unbounded reads του agent dashboard, N+1 στα cron services, acordData trimming.
+
 ## WP-17 (μερικώς) — fonts consolidated; a CI-breaking regression of mine fixed — 2026-07-30
 
 PR #225. 2632/2632 unit tests, 6/6 gates, **production build verified**.

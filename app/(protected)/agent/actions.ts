@@ -1,6 +1,7 @@
 "use server"
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
+import { logger } from "@/lib/logger"
 import { db } from "@/lib/db"
 import { notifyCounterparty } from "@/lib/notifications"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -68,14 +69,43 @@ export async function getCustomers(query?: string): Promise<Customer[]> {
 
     const agentId = authResult.dbUser.id
 
-    // Use a large limit for now to mimic "all" without changing UI signature yet
-    const result = await customerService.getCustomers(agentId, {
-        search: query,
-        status: undefined,
-        limit: 100
-    })
+    // This asked for a single page of 100 "to mimic all", and then returned
+    // only that page. An agent with 150 clients saw 100, with nothing anywhere
+    // saying the other 50 existed — the book simply ended. Page through
+    // instead, so "all" means all.
+    //
+    // PAGE_SIZE is a query-size bound, not a result bound. MAX_PAGES exists so
+    // a pathological book cannot spin forever, and crossing it LOGS rather than
+    // truncating quietly — the failure this replaces was silence, so a cap that
+    // repeats it would be no fix at all.
+    const PAGE_SIZE = 100
+    const MAX_PAGES = 50
+    const rows: any[] = []
+    let page = 1
+    let totalPages = 1
 
-    return result.data.map((c: any) => {
+    do {
+        const result = await customerService.getCustomers(agentId, {
+            search: query,
+            status: undefined,
+            page,
+            limit: PAGE_SIZE,
+        })
+        rows.push(...result.data)
+        totalPages = result.meta?.totalPages ?? 1
+        page += 1
+    } while (page <= totalPages && page <= MAX_PAGES)
+
+    if (totalPages > MAX_PAGES) {
+        logger('warn', 'Customer book exceeded the page cap; list is incomplete', {
+            agentId,
+            totalPages,
+            maxPages: MAX_PAGES,
+            returned: rows.length,
+        })
+    }
+
+    return rows.map((c: any) => {
         const nameParts = (c.name || 'Unknown').split(' ')
         const firstName = nameParts[0]
         const lastName = nameParts.slice(1).join(' ') || ''
