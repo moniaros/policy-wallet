@@ -113,6 +113,9 @@ export async function proxy(request: NextRequest) {
         // anonymously (linked from the privacy policy and the public footer).
         "/cookies",
         "/subprocessors",
+        // Public trust/security page: it exists to be read BEFORE signing up,
+        // so a signin redirect would defeat its entire purpose.
+        "/trust",
         "/pricing",
         "/company",
         "/contact",

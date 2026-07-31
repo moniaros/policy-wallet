@@ -37,6 +37,7 @@ export type MarketingPageKey =
     | "terms"
     | "cookies"
     | "subprocessors"
+    | "trust"
 
 type MarketingPageEntry = {
     path: string
@@ -413,6 +414,19 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             description:
                 "Which cookies PolicyWallet uses, for what purpose and for how long: session cookies, consent preferences and how you can manage them at any time.",
             breadcrumb: "Cookie Policy",
+        },
+    },
+    trust: {
+        path: "/trust",
+        title: "Εμπιστοσύνη & Ασφάλεια",
+        description:
+            "Πώς προστατεύει το PolicyWallet τα δεδομένα σας: πρόσβαση ανά ασφαλιστήριο που δίνετε και ανακαλείτε εσείς, ξεχωριστή συγκατάθεση για AI, εξαγωγή και διαγραφή.",
+        breadcrumb: "Εμπιστοσύνη",
+        en: {
+            title: "Trust & Security",
+            description:
+                "How PolicyWallet protects your data: per-policy access you grant and revoke, separate consent for AI analysis, and self-service data export and erasure.",
+            breadcrumb: "Trust",
         },
     },
     subprocessors: {
