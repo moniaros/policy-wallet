@@ -22,6 +22,12 @@
 
 import { db } from "@/lib/db"
 import { getDailyUsageTrends } from "@/lib/token-tracking"
+import {
+    getAiRuntimeOverrides,
+    CONFIGURABLE_OPERATIONS,
+    PRIMARY_PROVIDER_KEY,
+} from "@/lib/services/ai/runtime-config"
+import { resolveRoute, selectPrimaryProvider } from "@/lib/services/ai/model-router"
 
 export interface AiPerformanceSnapshot {
     generatedAt: string
@@ -53,6 +59,14 @@ export interface AiPerformanceSnapshot {
         byAction: Array<{ actionType: string; count: number }>
     }
     trend: Array<{ date: string; tokens: number; cost: number; operations: number }>
+    /** The LIVE routing configuration per operation: what the next call runs on,
+     *  and whether that comes from an admin DB override or the env defaults. */
+    activeConfiguration: Array<{
+        configKey: string
+        provider: string
+        model: string | null
+        source: "db_override" | "env_default"
+    }>
 }
 
 /** actionTypes written by the Phase 1 zero-cost guardrail. */
@@ -209,5 +223,32 @@ export async function getAiPerformanceSnapshot(
             cost: t.cost,
             operations: t.operations,
         })),
+        activeConfiguration: await buildActiveConfiguration(),
     }
+}
+
+/**
+ * Resolve what the next AI call would actually run on, per operation, and
+ * whether that comes from an admin DB override (/admin/ai/settings) or the env
+ * defaults. Uses the same cached reader + pure router the live calls use, so
+ * the dashboard can never disagree with reality.
+ */
+async function buildActiveConfiguration(): Promise<AiPerformanceSnapshot["activeConfiguration"]> {
+    const overrides = await getAiRuntimeOverrides()
+    const rows: AiPerformanceSnapshot["activeConfiguration"] = CONFIGURABLE_OPERATIONS.map((op) => {
+        const decision = resolveRoute({ operation: op }, overrides)
+        return {
+            configKey: op as string,
+            provider: decision.provider,
+            model: decision.model,
+            source: overrides.operations?.[op] ? "db_override" : "env_default",
+        }
+    })
+    rows.push({
+        configKey: PRIMARY_PROVIDER_KEY,
+        provider: selectPrimaryProvider(overrides),
+        model: null,
+        source: overrides.primaryProvider ? "db_override" : "env_default",
+    })
+    return rows
 }

@@ -115,6 +115,16 @@ async function translateBatch(texts: string[], tracking?: TranslationTracking): 
 
     const google = createGoogleGenerativeAI({ apiKey: env.GEMINI_API_KEY })
 
+    // Admin runtime override for the translate operation. The translator is
+    // hardwired to the google() SDK, so only a gemini-provider pin can change
+    // the model here (save-time validation restricts the translate row to
+    // auto | gemini | mock).
+    const { getAiRuntimeOverrides } = await import("@/lib/services/ai/runtime-config")
+    const overrides = await getAiRuntimeOverrides()
+    const translateOverride = overrides.operations?.translate
+    const translationModel =
+        translateOverride?.provider === "gemini" ? translateOverride.model : env.GEMINI_MODEL_TRANSLATION
+
     // Same timeout/abort/retry-ownership hygiene as every other AI call site —
     // this was the one bare generateObject with no abort path (a hung
     // connection ate the whole serverless budget) and SDK-internal retries.
@@ -122,9 +132,10 @@ async function translateBatch(texts: string[], tracking?: TranslationTracking): 
         (signal) => generateObject({
         abortSignal: signal,
         maxRetries: 0,
-        // Env-keyed: gemini-2.0-flash was hardcoded here and is marked for
-        // shutdown by Google — the model now follows GEMINI_MODEL_TRANSLATION.
-        model: google(env.GEMINI_MODEL_TRANSLATION),
+        // Env-keyed with an admin override: gemini-2.0-flash was hardcoded here
+        // and is marked for shutdown by Google — the model follows
+        // GEMINI_MODEL_TRANSLATION unless /admin/ai/settings pins another.
+        model: google(translationModel),
         schema: z.object({
             translations: z.array(z.string()).describe(
                 "English translations in the same order as the input array"
@@ -143,14 +154,14 @@ Keep translations concise — do not add explanations.`,
     // Meter the spend when a user context is supplied. trackTokenUsage never
     // throws (it logs + Sentry on failure), so metering can't break translation.
     if (tracking?.userId) {
-        const parsed = parseUsage(usage, env.GEMINI_MODEL_TRANSLATION, 'gemini')
+        const parsed = parseUsage(usage, translationModel, 'gemini')
         await trackTokenUsage({
             userId: tracking.userId,
             operationType: 'other',
             policyId: tracking.policyId,
             inputTokens: parsed.inputTokens,
             outputTokens: parsed.outputTokens,
-            model: env.GEMINI_MODEL_TRANSLATION as Parameters<typeof trackTokenUsage>[0]['model'],
+            model: translationModel as Parameters<typeof trackTokenUsage>[0]['model'],
         })
     }
 

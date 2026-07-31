@@ -28,6 +28,10 @@ vi.mock("@/lib/env", () => ({
     },
 }))
 vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
+// The gateway pre-loads admin runtime overrides; {} = pure env behavior.
+vi.mock("@/lib/services/ai/runtime-config", () => ({
+    getAiRuntimeOverrides: vi.fn(async () => ({})),
+}))
 
 const askQuestion = vi.fn(async (..._args: any[]) => "answer")
 const analyzeRiskProfile = vi.fn(async (..._args: any[]) => ({ riskLevel: "low" }))

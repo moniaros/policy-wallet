@@ -29,6 +29,11 @@ vi.mock('@/lib/env', () => ({
 }))
 
 vi.mock('@/lib/logger', () => ({ logger: vi.fn() }))
+// createRun pre-loads admin runtime overrides (Phase 6b); unstable_cache needs
+// a Next server context, so stub the cached reader — {} = pure env behavior.
+vi.mock('@/lib/services/ai/runtime-config', () => ({
+    getAiRuntimeOverrides: vi.fn(async () => ({})),
+}))
 vi.mock('@/lib/token-tracking', () => ({
     canUserUseTokens: vi.fn(),
     reserveTokens: vi.fn(),

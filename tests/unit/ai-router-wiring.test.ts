@@ -20,7 +20,8 @@ describe("orchestrator uses the router for provider selection", () => {
         const end = src.indexOf("\n    async ", start + 1)
         const body = src.slice(start, end === -1 ? undefined : end)
         expect(body).not.toMatch(/provider:\s*"gemini"/)
-        expect(body).toMatch(/selectPrimaryProvider\(\)/)
+        // Now takes the admin runtime overrides as an argument (Phase 6b).
+        expect(body).toMatch(/selectPrimaryProvider\(/)
     })
 
     it("admits anthropic as a primary provider (not coerced back to gemini)", () => {
@@ -51,5 +52,20 @@ describe("interactive paths route through the gateway", () => {
     })
     it("risk analysis calls aiGateway.analyzeRiskProfile", () => {
         expect(read("lib/services/gap-engine/index.ts")).toMatch(/aiGateway\.analyzeRiskProfile\(/)
+    })
+})
+
+describe("admin runtime overrides reach every routing site (Phase 6b)", () => {
+    it("the gateway loads the cached overrides", () => {
+        expect(read("lib/services/ai/gateway.ts")).toMatch(/getAiRuntimeOverrides\(\)/)
+    })
+    it("the orchestrator loads the cached overrides (createRun + step attempts)", () => {
+        const src = read("lib/services/analysis/policy-analysis-orchestrator.service.ts")
+        const hits = src.match(/getAiRuntimeOverrides\(\)/g) ?? []
+        expect(hits.length).toBeGreaterThanOrEqual(2)
+    })
+    it("the quick extract route and the batch translator honor overrides", () => {
+        expect(read("app/api/policies/extract/route.ts")).toMatch(/getAiRuntimeOverrides\(\)/)
+        expect(read("lib/services/translation/batch-translator.ts")).toMatch(/getAiRuntimeOverrides\(\)/)
     })
 })

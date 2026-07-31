@@ -50,7 +50,8 @@ import {
     estimatePolicyAnalysisTokenBudget,
     type PolicyAnalysisStepKey,
 } from "./token-budget-estimator"
-import { getModelForStep, selectPrimaryProvider, fallbackModelFor } from "@/lib/services/ai/model-router"
+import { getModelForStep, selectPrimaryProvider, fallbackModelFor, type AiRuntimeOverrides } from "@/lib/services/ai/model-router"
+import { getAiRuntimeOverrides } from "@/lib/services/ai/runtime-config"
 import { detectDeterministicSavings } from "./deterministic-savings"
 import { resolveUserEntitlements, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import {
@@ -215,8 +216,12 @@ function capabilityOperationForStep(stepKey: PolicyAnalysisStepKey): AICapabilit
  * The router uses a cost-optimized routing table keyed by (operation, provider, tier).
  * Falls back to env-based defaults configured in the routing table.
  */
-function getDefaultModelForStep(provider: AIServiceType, stepKey: PolicyAnalysisStepKey): string | undefined {
-    return getModelForStep(provider, stepKey)
+function getDefaultModelForStep(
+    provider: AIServiceType,
+    stepKey: PolicyAnalysisStepKey,
+    overrides: AiRuntimeOverrides = {}
+): string | undefined {
+    return getModelForStep(provider, stepKey, "free", overrides)
 }
 
 function fallbackModelForProvider(provider: AIServiceType): string | undefined {
@@ -374,14 +379,15 @@ export class PolicyAnalysisOrchestratorService {
     async createRun(policyId: string, userId: string) {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
 
-        // Primary provider comes from the router (AI_SERVICE_TYPE -> key priority),
-        // not a hardcoded "gemini". Under the default env this resolves to gemini
-        // with the same clarity model as before, so run rows are unchanged; setting
-        // AI_SERVICE_TYPE=anthropic now makes Claude a first-class primary instead
-        // of being reachable only via the failover branch.
-        const primaryProvider = selectPrimaryProvider()
+        // Primary provider comes from the router (admin DB override ->
+        // AI_SERVICE_TYPE -> key priority), not a hardcoded "gemini". Under the
+        // default env this resolves to gemini with the same clarity model as
+        // before, so run rows are unchanged; admins can now pin the primary
+        // provider (and per-operation models) from /admin/ai/settings.
+        const runtimeOverrides = await getAiRuntimeOverrides()
+        const primaryProvider = selectPrimaryProvider(runtimeOverrides)
         const primaryRunModel =
-            getModelForStep(primaryProvider, "plain_language_translation") ??
+            getModelForStep(primaryProvider, "plain_language_translation", "free", runtimeOverrides) ??
             env.GEMINI_MODEL_CLARITY_ANALYSIS
 
         // GDPR Art. 9 gate: the policy OWNER (the data subject — documents can
@@ -1853,8 +1859,14 @@ export class PolicyAnalysisOrchestratorService {
         }): Promise<StepExecutionPayload<T> | null> => {
             stepAttemptCounter += 1
             const stepStartedAtMs = Date.now()
+            // Admin runtime overrides (cached, never throws). With no override the
+            // resolved model is the same env string the provider would fall back
+            // to, so passing it through is behavior-neutral — and it makes an
+            // admin pin actually reach the call instead of being telemetry-only.
+            const runtimeOverrides = await getAiRuntimeOverrides()
             const resolvedModel =
-                input.modelOverride || getDefaultModelForStep(input.provider, params.stepKey)
+                input.modelOverride ||
+                getDefaultModelForStep(input.provider, params.stepKey, runtimeOverrides)
 
             await this.heartbeatRunLease(params.runId, params.leaseId)
 
@@ -2019,7 +2031,9 @@ export class PolicyAnalysisOrchestratorService {
 
             try {
                 const payload = await params.execute({
-                    modelOverride: input.modelOverride,
+                    // The resolved model (admin override or the env-tier default —
+                    // identical to the provider's own fallback when no override).
+                    modelOverride: input.modelOverride ?? resolvedModel,
                     provider: input.provider,
                     service,
                     remediationType: input.remediationType,

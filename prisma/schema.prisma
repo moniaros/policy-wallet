@@ -1540,3 +1540,44 @@ model PartnerOffer {
   @@index([vendorId])
   @@map("partner_offers")
 }
+
+/// Phase 6b: admin-managed runtime AI model routing (DB override > env default).
+/// One row per config key — the six route operations plus the sentinel
+/// "primaryProvider" (provider-only). A row is either provider="auto" with a
+/// NULL model (pure env behavior, equivalent to no row) or fully pinned. The
+/// cached reader (lib/services/ai/runtime-config.ts) falls back to env defaults
+/// on any missing/invalid row or DB error — an AI call must never fail because
+/// config is unreadable.
+model AiRuntimeConfig {
+  id        String   @id @default(cuid()) @map("config_id")
+  configKey String   @unique @map("config_key")
+  provider  String   @default("auto") // auto | gemini | anthropic | openai | mock
+  model     String? // NULL iff provider = "auto"; required otherwise
+  isActive  Boolean  @default(true) @map("is_active")
+  version   Int      @default(1)
+  changedBy String?  @map("changed_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  revisions AiRuntimeConfigRevision[]
+
+  @@map("ai_runtime_config")
+}
+
+/// Immutable audit trail per AiRuntimeConfig write (PlanRevision shape):
+/// full post-change snapshot + per-field {from,to} diff + who changed it.
+model AiRuntimeConfigRevision {
+  id             String   @id @default(cuid()) @map("revision_id")
+  configId       String   @map("config_id")
+  version        Int
+  snapshot       Json
+  changes        Json
+  changedBy      String   @map("changed_by")
+  changedByEmail String   @map("changed_by_email")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  config AiRuntimeConfig @relation(fields: [configId], references: [id])
+
+  @@index([configId, createdAt])
+  @@map("ai_runtime_config_revisions")
+}

@@ -77,7 +77,14 @@ export const POST = withApiGuard(
                 return NextResponse.json({ error: "RATE_LIMITED", code: "RATE_LIMITED" }, { status: 429 })
             }
 
-            const aiService = getAIService()
+            // Admin runtime override for the extraction operation (cached read;
+            // {} = env behavior). The quick path has no line of business yet, so
+            // only the operation-level model/provider pin applies here.
+            const { getAiRuntimeOverrides } = await import("@/lib/services/ai/runtime-config")
+            const overrides = await getAiRuntimeOverrides()
+            const extractionOverride = overrides.operations?.extractPolicyData
+
+            const aiService = getAIService(extractionOverride?.provider)
             if (!aiService.isAvailable()) {
                 return NextResponse.json({ error: "AI service unavailable" }, { status: 503 })
             }
@@ -107,7 +114,7 @@ export const POST = withApiGuard(
                     // name) must not reach the third-party AI provider.
                     fileName: sanitizeDisplayName(file.name),
                 },
-                { userId: authResult.dbUser.id },
+                { userId: authResult.dbUser.id, modelOverride: extractionOverride?.model },
             )
 
             return NextResponse.json({

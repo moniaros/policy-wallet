@@ -19,6 +19,37 @@ const { groupBy, aggregate, findMany } = vi.hoisted(() => ({
     findMany: vi.fn(),
 }))
 
+// The snapshot's activeConfiguration section pulls the runtime-config reader
+// and the pure router (which reads @/lib/env at module load) — mock both so
+// the contract test stays hermetic.
+vi.mock("@/lib/env", () => ({
+    env: {
+        GEMINI_MODEL_EXTRACTION: "gemini-3-flash-preview",
+        GEMINI_MODEL_GAP_ANALYSIS: "gemini-3-flash-preview",
+        GEMINI_MODEL_CLARITY_ANALYSIS: "gemini-3.1-flash-lite",
+        GEMINI_MODEL_QA: "gemini-3.1-flash-lite",
+        GEMINI_MODEL_FALLBACK: "gemini-3.5-flash",
+        GEMINI_MODEL_TRANSLATION: "gemini-3.1-flash-lite",
+        OPENAI_MODEL_EXTRACTION: "gpt-4.1-mini",
+        OPENAI_MODEL_GAP_ANALYSIS: "gpt-4.1-mini",
+        OPENAI_MODEL_CLARITY_ANALYSIS: "gpt-4.1-mini",
+        OPENAI_MODEL_QA: "gpt-4.1-mini",
+        OPENAI_MODEL_FALLBACK: "gpt-4.1-mini",
+        CLAUDE_MODEL_EXTRACTION: "claude-sonnet-5",
+        CLAUDE_MODEL_GAP_ANALYSIS: "claude-sonnet-5",
+        CLAUDE_MODEL_CLARITY_ANALYSIS: "claude-sonnet-5",
+        CLAUDE_MODEL_QA: "claude-haiku-4-5",
+        CLAUDE_MODEL_FALLBACK: "claude-haiku-4-5",
+        GEMINI_API_KEY: "test-key",
+    },
+}))
+vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
+vi.mock("next/cache", () => ({
+    unstable_cache: (fn: (...args: unknown[]) => unknown) => fn,
+    revalidateTag: vi.fn(),
+    revalidatePath: vi.fn(),
+}))
+
 vi.mock("@/lib/db", () => ({
     db: {
         policyAnalysisRun: { groupBy, aggregate },
@@ -122,6 +153,17 @@ describe("getAiPerformanceSnapshot", () => {
         wireMocks()
         const s = await getAiPerformanceSnapshot({})
         expect(s.trend[0]).toMatchObject({ date: "2026-07-29", tokens: 1000 })
+    })
+
+    it("reports the active configuration per operation (env defaults when no DB rows)", async () => {
+        wireMocks()
+        const s = await getAiPerformanceSnapshot({})
+        // Six operations + the primaryProvider sentinel.
+        expect(s.activeConfiguration).toHaveLength(7)
+        const qa = s.activeConfiguration.find((c) => c.configKey === "askQuestion")
+        expect(qa).toMatchObject({ provider: "gemini", model: "gemini-3.1-flash-lite", source: "env_default" })
+        const primary = s.activeConfiguration.find((c) => c.configKey === "primaryProvider")
+        expect(primary).toMatchObject({ provider: "gemini", model: null, source: "env_default" })
     })
 })
 

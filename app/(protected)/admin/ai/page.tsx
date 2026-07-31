@@ -52,6 +52,9 @@ export default async function AiPerformancePage() {
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
+                    <Link href="/admin/ai/settings" className="px-3 py-2 rounded-md border border-stone-300 dark:border-stone-700 text-sm text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800">
+                        Model Settings
+                    </Link>
                     <Link href="/admin/gaps" className="px-3 py-2 rounded-md border border-stone-300 dark:border-stone-700 text-sm text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800">
                         Gap Definitions
                     </Link>
@@ -93,6 +96,45 @@ export default async function AiPerformancePage() {
                     <div className="mt-1 text-xs text-stone-500 dark:text-stone-400">zero-cost guardrail (attack pressure)</div>
                 </div>
             </div>
+
+            {/* Active configuration — what the next call runs on */}
+            <section className={card}>
+                <div className="p-4 border-b border-stone-200 dark:border-stone-700 flex items-center justify-between">
+                    <div>
+                        <h2 className="font-semibold text-stone-900 dark:text-stone-100">Active configuration</h2>
+                        <p className="text-xs text-stone-500 dark:text-stone-400">What the next AI call runs on, per operation</p>
+                    </div>
+                    <Link href="/admin/ai/settings" className="text-sm text-primary dark:text-mint hover:underline">Edit →</Link>
+                </div>
+                <div className="p-4 overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="text-left text-stone-500 dark:text-stone-400">
+                                <th className="py-2 pr-4">Operation</th>
+                                <th className="py-2 pr-4">Provider</th>
+                                <th className="py-2 pr-4">Model</th>
+                                <th className="py-2 pr-4">Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {s.activeConfiguration.map((c) => (
+                                <tr key={c.configKey} className="border-t border-stone-100 dark:border-stone-700">
+                                    <td className="py-2 pr-4 font-mono text-xs text-stone-900 dark:text-stone-100">{c.configKey}</td>
+                                    <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">{c.provider}</td>
+                                    <td className="py-2 pr-4 font-mono text-xs text-stone-700 dark:text-stone-300">{c.model ?? "—"}</td>
+                                    <td className="py-2 pr-4">
+                                        <span className={c.source === "db_override"
+                                            ? "px-1.5 py-0.5 rounded text-micro font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                                            : "px-1.5 py-0.5 rounded text-micro font-semibold bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300"}>
+                                            {c.source === "db_override" ? "admin override" : "env default"}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
             {/* Routing distribution + cost per operation */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

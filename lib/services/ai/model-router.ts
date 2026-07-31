@@ -149,14 +149,22 @@ export function stepToOperation(stepKey: PolicyAnalysisStepKey): AICapabilityOpe
 /**
  * Returns the optimal model for an orchestrator step.
  * Drop-in replacement for getDefaultModelForStep that adds tier-awareness.
+ * An admin per-operation override applies only when its provider matches the
+ * step's provider (same rule as resolveRoute — failover safety).
  */
 export function getModelForStep(
     provider: AIServiceType,
     stepKey: PolicyAnalysisStepKey,
-    userTier: UserTier = "free"
+    userTier: UserTier = "free",
+    overrides: AiRuntimeOverrides = {}
 ): string | undefined {
     const operation = stepToOperation(stepKey)
     if (!operation) return undefined
+
+    const opOverride = overrides.operations?.[operation]
+    if (opOverride && opOverride.provider === provider) {
+        return opOverride.model
+    }
 
     const route = routeModel(operation, provider, userTier)
     return route.model
@@ -191,6 +199,24 @@ export interface RouteDecision {
     fallbackModel?: string
     /** Health-ordered provider preference for the single-shot ladder. */
     providerOrder: AIServiceType[]
+}
+
+// ── Admin runtime overrides (DB config, loaded by runtime-config.ts) ──
+
+/** A fully pinned (provider, model) pair for one operation. */
+export interface AiOperationOverride {
+    provider: AIServiceType
+    model: string
+}
+
+/**
+ * Admin-configured routing overrides. The router stays pure/sync — callers
+ * pre-load these via getAiRuntimeOverrides() (cached, never throws) and pass
+ * them in. `{}` / omitted reproduces today's env-only behavior exactly.
+ */
+export interface AiRuntimeOverrides {
+    primaryProvider?: AIServiceType
+    operations?: Partial<Record<RouteOperation, AiOperationOverride>>
 }
 
 /**
@@ -295,7 +321,10 @@ export function classifyTier(req: RouteRequest): ModelTier {
  * the factory's determineServiceType so the gateway and the factory agree on the
  * primary. (Health-aware ordering is layered in by provider-health in Phase 3.)
  */
-export function selectPrimaryProvider(): AIServiceType {
+export function selectPrimaryProvider(overrides: AiRuntimeOverrides = {}): AIServiceType {
+    // Admin DB override wins over env (the /admin/ai/settings "Primary
+    // provider" row); the loader only emits providers it validated.
+    if (overrides.primaryProvider) return overrides.primaryProvider
     // AI_SERVICE_TYPE is not in the env schema (the factory reads it off
     // process.env directly); match that here so both agree on the primary.
     const envType = process.env.AI_SERVICE_TYPE?.toLowerCase()
@@ -331,13 +360,25 @@ function providerOrderFrom(primary: AIServiceType): AIServiceType[] {
 /**
  * Resolve a full routing decision for a single call: provider, concrete model,
  * tier, output-token cap, fallback model, and provider order.
+ *
+ * Precedence with admin overrides:
+ *  - provider: req.provider (explicit pin — the failover ladder keeps winning)
+ *    > per-operation override provider > primaryProvider override > env.
+ *  - model: the per-operation override model applies ONLY when its provider
+ *    matches the resolved provider. When the ladder pins a different provider
+ *    mid-incident, that provider serves its own env-configured models — never
+ *    a model name from the wrong vendor.
  */
-export function resolveRoute(req: RouteRequest): RouteDecision {
-    const provider = req.provider ?? selectPrimaryProvider()
+export function resolveRoute(req: RouteRequest, overrides: AiRuntimeOverrides = {}): RouteDecision {
+    const opOverride = overrides.operations?.[req.operation]
+    const provider =
+        req.provider ?? opOverride?.provider ?? selectPrimaryProvider(overrides)
     const tier = classifyTier(req)
 
     const perProvider = MODEL_TIERS[req.operation]?.[provider]
-    const model = perProvider?.[tier] ?? perProvider?.standard ?? perProvider?.cheap ?? "mock"
+    const tierModel = perProvider?.[tier] ?? perProvider?.standard ?? perProvider?.cheap ?? "mock"
+    const model =
+        opOverride && opOverride.provider === provider ? opOverride.model : tierModel
 
     return {
         provider,

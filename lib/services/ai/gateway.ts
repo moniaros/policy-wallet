@@ -24,6 +24,7 @@ import { logger } from "@/lib/logger"
 import { getAIService } from "./ai-service.factory"
 import { isTransientError } from "./shared-utils"
 import { recordFailure, recordSuccess, type ProviderId } from "./provider-health"
+import { getAiRuntimeOverrides } from "./runtime-config"
 import { resolveRoute, type RouteRequest, type UserTier } from "./model-router"
 import type {
     AITrackingOptions,
@@ -91,7 +92,9 @@ export const aiGateway = {
         question: string,
         ctx: GatewayContext & { structuredContext?: AIPolicyExtractionResponse }
     ): Promise<string> {
-        const route = resolveRoute({ operation: "askQuestion", userTier: ctx.userTier })
+        // Admin runtime overrides (cached; never throws — {} = env behavior).
+        const overrides = await getAiRuntimeOverrides()
+        const route = resolveRoute({ operation: "askQuestion", userTier: ctx.userTier }, overrides)
         logCall("askQuestion", route)
         const service = getAIService(route.provider)
         return withHealthTracking(route.provider, () =>
@@ -108,11 +111,12 @@ export const aiGateway = {
         existingPolicies: PolicyMetadata[],
         ctx: GatewayContext
     ): Promise<AIRiskProfileAnalysisResponse> {
+        const overrides = await getAiRuntimeOverrides()
         const route = resolveRoute({
             operation: "analyzeRiskProfile",
             userTier: ctx.userTier,
             portfolioSize: existingPolicies.length,
-        })
+        }, overrides)
         logCall("analyzeRiskProfile", route)
         const service = getAIService(route.provider)
         return withHealthTracking(route.provider, () =>
