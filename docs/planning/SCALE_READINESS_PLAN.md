@@ -100,7 +100,7 @@ gates. Ένα WP ανά session κατά κανόνα· αποκλίσεις κ�
 *Μόνο εδώ η ίδια η αύξηση χρηστών προκαλεί βλάβη: cross-tenant reads, πρώτες
 αναλύσεις που σκοτώνονται από timeout, απεριόριστη κατάχρηση, αδέσμευτη δαπάνη.*
 
-#### ☐ WP-12 — Storage tenancy + ένα validated upload path (L) — R2, R5
+#### ◐ WP-12 — Storage tenancy + ένα validated upload path (L) — ΜΕΡΙΚΩΣ 2026-07-30
 - **Στόχος:** κλείσιμο του ανοιχτού ευρήματος H2 (κάθε authenticated χρήστης
   μπορεί να διαβάσει κάθε policy PDF μέσω permissive `storage.objects` policy)
   και πέρασμα του B2C upload από τον ίδιο έλεγχο (magic bytes + AV + size) που
@@ -129,6 +129,42 @@ gates. Ένα WP ανά session κατά κανόνα· αποκλίσεις κ�
   SQL στο repo + drift probe πράσινο.
 - **Reconciliation:** επιβεβαίωσε πρώτα αν το H2 `DROP POLICY` έχει ήδη τρέξει
   out-of-band (`docs/audits/upload-pipeline-security-2026-07.md` §5).
+
+> **✅ Έγινε — η ουσία του ελέγχου περιεχομένου.**
+> Νέο `lib/security/verify-stored-upload.ts`: πριν ένα αντικείμενο γίνει
+> **persisted document**, ο server το κατεβάζει με τα δικά του credentials και
+> εφαρμόζει την **ίδια κοινή πολιτική** (magic bytes, μέγεθος, διασταύρωση
+> κατάληξης) συν τον malware scanner. Μέχρι τώρα το `isOwnedStorageUrl`
+> απεδείκνυε μόνο ότι το URL έδειχνε στο δικό μας bucket — **ποτέ τι υπήρχε
+> μέσα**· ένα μετονομασμένο εκτελέσιμο περνούσε και έφτανε ως bytes σε LLM.
+> **Fails closed**: μη αναγνώσιμο αντικείμενο ή σφάλμα scanner = απόρριψη. Το
+> μέγεθος που αποθηκεύεται είναι πλέον το **μετρημένο**, όχι ο αριθμός που
+> έστειλε ο client. 8 unit tests (incl. `MZ` renamed σε `.pdf`),
+> mutation-tested.
+>
+> **✅ Έγινε — το config βγήκε από το «out-of-band».**
+> `scripts/storage-policies.sql` (versioned, idempotent): private bucket +
+> size limit + MIME allowlist, το **H2 `DROP POLICY`**, και INSERT policy
+> περιορισμένη στο prefix του ίδιου του χρήστη. Δεν δημιουργείται νέα SELECT
+> policy σκόπιμα — οι αναγνώσεις περνούν αποκλειστικά από τον server
+> (`getPolicyAccess` + signed URL). Ρητά **owner action** να τρέξει ανά
+> περιβάλλον· ο κώδικας δεν το εφαρμόζει μόνος του.
+>
+> **☐ ΔΕΝ έγινε — και γιατί.**
+> 1. **Signed upload URLs + quarantine prefix.** Αντικαθιστά το κύριο μονοπάτι
+>    ανεβάσματος κάθε χρήστη και εξαρτάται από bucket policies που **δεν μπορώ
+>    να εφαρμόσω ούτε να επαληθεύσω** σε αυτό το περιβάλλον (χωρίς DB, χωρίς
+>    E2E). Η υλοποίηση παραπάνω κλείνει το ίδιο κενό ασφαλείας — τίποτα
+>    μη-επικυρωμένο δεν γίνεται έγγραφο — με ασύγκριτα μικρότερο ρίσκο. Το
+>    quarantine design παραμένει το σωστό τελικό σχήμα και πρέπει να γίνει σε
+>    περιβάλλον όπου μπορεί να δοκιμαστεί.
+> 2. **Drift probe** στο synthetic-launch-check και **reconciler ορφανών
+>    αρχείων** (μεταφορά από WP-02): εξαρτώνται από το (1) και από ζωντανό
+>    storage για να έχουν νόημα.
+> 3. **Κόστος:** η επικύρωση κατεβάζει το αντικείμενο στο `createPolicy` — τα
+>    bytes ξανακατεβαίνουν αργότερα στο pipeline. Αποδεκτό τώρα (ορθότητα πριν
+>    από micro-latency)· με τα signed URLs το finalize και το pipeline θα
+>    μοιράζονται ένα κατέβασμα.
 
 #### ☑ WP-13 — Queue-first analysis + κανονική ανάκαμψη (M) — ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-30
 - **Στόχος:** καμία πρώτη ανάλυση inline μέσα σε server-action `after()` με

@@ -5,6 +5,30 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-12 (μερικώς) — browser-uploaded bytes are now validated — 2026-07-30
+
+PR #225. 2601/2601 unit tests, 6/6 gates.
+
+Το B2C μονοπάτι ανεβάζει από τον browser κατευθείαν στο storage και δίνει στο
+`createPolicy` **μόνο ένα URL**, παρακάμπτοντας και τους τρεις ελέγχους του
+server path: magic bytes, malware scan, server-side όριο μεγέθους. Το
+`isOwnedStorageUrl` απεδείκνυε μόνο ότι το URL έδειχνε στο δικό μας bucket —
+**ποτέ τι υπήρχε μέσα**. Νέο `lib/security/verify-stored-upload.ts`: ο server
+διαβάζει τα bytes με δικά του credentials και εφαρμόζει την ίδια κοινή πολιτική
+πριν το αντικείμενο γίνει persisted document. Fails closed· το αποθηκευμένο
+μέγεθος είναι το μετρημένο, όχι αυτό που δήλωσε ο client.
+
+`scripts/storage-policies.sql` (versioned, idempotent) βγάζει το bucket/RLS
+config από το «out-of-band»: private bucket, size limit, MIME allowlist, το
+**H2 `DROP POLICY`** και INSERT περιορισμένο στο prefix του χρήστη. **Owner
+action** να τρέξει ανά περιβάλλον.
+
+**Δεν έγιναν:** signed upload URLs + quarantine prefix, drift probe, reconciler
+ορφανών. Αντικαθιστούν το κύριο μονοπάτι ανεβάσματος και εξαρτώνται από bucket
+policies που δεν μπορούν να εφαρμοστούν ούτε να επαληθευτούν εδώ (χωρίς DB,
+χωρίς E2E). Το κενό ασφαλείας κλείνει ήδη με τα παραπάνω· το quarantine design
+παραμένει το σωστό τελικό σχήμα για περιβάλλον όπου δοκιμάζεται.
+
 ## WP-15 — AI spend is bounded by rate, and watched — 2026-07-30
 
 PR #225. 2593/2593 unit tests, 6/6 gates. **Phase A του SCALE plan ολοκληρώθηκε

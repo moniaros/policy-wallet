@@ -12,6 +12,7 @@ import { logger } from "@/lib/logger"
 import { uploadFile, deleteFile } from "@/lib/storage"
 import { sanitizeDisplayName } from "@/lib/security/file-upload"
 import { isOwnedStorageUrl } from "@/lib/supabase/storage-download"
+import { verifyStoredUpload } from "@/lib/security/verify-stored-upload"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
 import fs from "fs/promises"
@@ -146,7 +147,21 @@ export async function createPolicy(formData: FormData) {
             continue
         }
 
-        validDocuments.push({ fileUrl, fileName, fileSize })
+        // The name checks above only ever saw client-supplied strings. The BYTES
+        // came from the browser straight to storage, so until here nothing had
+        // examined them: no magic-byte check, no malware scan, no server-side
+        // size cap. Read the object back with our own credentials and apply the
+        // same shared policy the server-side upload path enforces. Fails closed.
+        const verified = await verifyStoredUpload(fileUrl, fileName)
+        if (!verified.ok) {
+            logger('warn', 'Skipping policy document that failed server-side validation', {
+                reason: verified.reason,
+            })
+            continue
+        }
+
+        // Trust the measured size, not the number the client sent alongside it.
+        validDocuments.push({ fileUrl, fileName, fileSize: verified.sizeBytes || fileSize })
     }
     if (documentUrls.length > MAX_DOCUMENTS) {
         logger('warn', 'Policy submission exceeded the document cap; extra entries dropped', {
