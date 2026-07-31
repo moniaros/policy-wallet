@@ -68,10 +68,14 @@ describe('a child branch is cover in its parent line', () => {
         expect(gaps.map((g) => g.ruleId)).toContain('vehicles_no_motor')
     })
 
-    it('scores a motorbike as property cover, like a car', () => {
+    it('scores a motorbike as motor cover, like a car', () => {
+        // Asserted against `motor`, not `property`. Splitting Property & Motor
+        // into two categories left the old assertion comparing property 0 to
+        // property 0 — true, and no longer evidence of anything.
         const bike = calculateProtectionScore(profile({ vehiclesCount: 1 }), ['motorbike'], [], 0)
         const car = calculateProtectionScore(profile({ vehiclesCount: 1 }), ['motor'], [], 0)
-        expect(bike.categoryScores.property.score).toBe(car.categoryScores.property.score)
+        expect(bike.categoryScores.motor.score).toBe(car.categoryScores.motor.score)
+        expect(bike.categoryScores.motor.score).toBeGreaterThan(0)
         expect(bike.overallScore).toBe(car.overallScore)
     })
 
@@ -79,6 +83,7 @@ describe('a child branch is cover in its parent line', () => {
         const renter = calculateProtectionScore(profile(), ['renters'], [], 0)
         const owner = calculateProtectionScore(profile(), ['home'], [], 0)
         expect(renter.categoryScores.property.score).toBe(owner.categoryScores.property.score)
+        expect(renter.categoryScores.property.score).toBeGreaterThan(0)
     })
 })
 

@@ -28,6 +28,9 @@ import {
 import {
     calculateProtectionScore,
     getScoreTier,
+    decodeCategoryScores,
+    encodeCategoryScores,
+    isCurrentScoreModel,
     type ProtectionScoreResult,
 } from "./protection-score"
 import {
@@ -412,15 +415,23 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
  * at scale. This returns whatever is cached (even if older than a day) or null;
  * freshness is the cron / upload pipeline's job, and callers fall back to a
  * lightweight inline estimate when null.
+ *
+ * Age is tolerated; a superseded category model is not. Because this path never
+ * recomputes, a row from an older model would be shown as fact indefinitely,
+ * and its keys no longer mean what they say (see SCORE_MODEL_VERSION). Such a
+ * row is treated as absent so the caller falls back to the provisional
+ * estimate, which is labelled provisional. Showing less is the honest option;
+ * reporting «Κατοικία 100%» because someone insured a car is not.
  */
 export async function getCachedProtectionScore(
     userId: string
 ): Promise<CachedProtectionScore | null> {
     const cached = await db.protectionScore.findUnique({ where: { userId } })
     if (!cached) return null
+    if (!isCurrentScoreModel(cached.categoryScores)) return null
     return {
         overallScore: cached.overallScore,
-        categoryScores: cached.categoryScores as Record<string, any>,
+        categoryScores: decodeCategoryScores(cached.categoryScores).categories,
         gapCount: cached.gapCount,
         expectedLines: cached.expectedLines as string[],
         actualLines: cached.actualLines as string[],
@@ -440,12 +451,14 @@ export async function getProtectionScore(
         where: { userId },
     })
 
-    if (cached) {
+    // A row from a superseded category model counts as stale however recently
+    // it was written: its keys mean something else now (SCORE_MODEL_VERSION).
+    if (cached && isCurrentScoreModel(cached.categoryScores)) {
         const age = Date.now() - cached.computedAt.getTime()
         if (age < maxAgeMs) {
             return {
                 overallScore: cached.overallScore,
-                categoryScores: cached.categoryScores as Record<string, any>,
+                categoryScores: decodeCategoryScores(cached.categoryScores).categories,
                 gapCount: cached.gapCount,
                 expectedLines: cached.expectedLines as string[],
                 actualLines: cached.actualLines as string[],
@@ -548,12 +561,16 @@ async function cacheProtectionScore(
     for (const [key, val] of Object.entries(score.categoryScores)) {
         categoryScoresJson[key] = val.score
     }
+    // Stamped with the category-model revision that produced it. Without this a
+    // stored key silently changes meaning when the model changes — see
+    // SCORE_MODEL_VERSION.
+    const versioned = encodeCategoryScores(categoryScoresJson)
 
     await db.protectionScore.upsert({
         where: { userId },
         update: {
             overallScore: score.overallScore,
-            categoryScores: categoryScoresJson,
+            categoryScores: versioned,
             gapCount: score.gapCount,
             expectedLines: score.expectedLines,
             actualLines: score.actualLines,
@@ -562,7 +579,7 @@ async function cacheProtectionScore(
         create: {
             userId,
             overallScore: score.overallScore,
-            categoryScores: categoryScoresJson,
+            categoryScores: versioned,
             gapCount: score.gapCount,
             expectedLines: score.expectedLines,
             actualLines: score.actualLines,

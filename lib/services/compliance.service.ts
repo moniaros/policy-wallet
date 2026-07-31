@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { toSubjectQualificationView } from "@/lib/medic/subject-view"
+import { decodeCategoryScores } from "@/lib/services/gap-engine/protection-score"
 
 function toIso(value: Date | null | undefined) {
     return value ? value.toISOString() : null
@@ -331,8 +332,15 @@ export async function buildUserDataExportPayload(userId: string) {
             ...gap,
             detectedAt: toIso(gap.detectedAt),
         })),
+        // The stored category map carries an internal model-version envelope
+        // (SCORE_MODEL_VERSION). An Art. 15 export is for the data subject, so
+        // it gets the scores themselves rather than our storage plumbing.
         protectionScore: protectionScore
-            ? { ...protectionScore, computedAt: toIso(protectionScore.computedAt) }
+            ? {
+                  ...protectionScore,
+                  categoryScores: decodeCategoryScores(protectionScore.categoryScores).categories,
+                  computedAt: toIso(protectionScore.computedAt),
+              }
             : null,
         recommendations: recommendations.map((rec) => ({
             ...rec,

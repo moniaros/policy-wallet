@@ -44,6 +44,7 @@ const CATEGORY_ICONS: Record<string, string> = {
     health: "🏥",
     life: "🛡️",
     property: "🏠",
+    motor: "🚗",
     income: "💼",
     liability: "⚖️",
     other: "✈️",

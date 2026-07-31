@@ -16,7 +16,7 @@
 export type BranchSegment = 'b2c' | 'b2b'
 export type BranchContentTier = 'rich' | 'basic'
 /** Keys of SCORE_CATEGORIES in lib/services/gap-engine/protection-score.ts */
-export type ScoreCategoryKey = 'health' | 'life' | 'property' | 'income' | 'liability' | 'other'
+export type ScoreCategoryKey = 'health' | 'life' | 'property' | 'motor' | 'income' | 'liability' | 'other'
 
 export interface InsuranceBranch {
     /** Canonical snake_case id — what NEW policies store in lineOfBusiness */
@@ -30,7 +30,14 @@ export interface InsuranceBranch {
     genitiveEl: string
     /** Legacy / external spellings that normalize to this branch */
     aliases: string[]
-    /** Primary protection-score bucket; null for B2B lines the score ignores */
+    /**
+     * Primary protection-score bucket; null for B2B lines the score ignores.
+     *
+     * Where a category's `coveredByLobs` names this branch's effective lob
+     * (`parentId ?? id`), this MUST be one of those categories — a drift guard
+     * in tests/unit/taxonomy.test.ts enforces it. Declaring `property` for a
+     * car is not a harmless label: `property` is Κατοικία.
+     */
     scoreCategory: ScoreCategoryKey | null
     /** Appears in create/edit policy dropdown vocabularies */
     writeEnabled: boolean
@@ -46,25 +53,28 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'motor', segment: 'b2c',
         label: { el: 'Αυτοκίνητο', en: 'Motor' }, genitiveEl: 'αυτοκινήτου',
         aliases: ['auto', 'car', 'vehicle'],
-        scoreCategory: 'property', writeEnabled: true, contentTier: 'rich', marketingSlug: 'motor',
+        scoreCategory: 'motor', writeEnabled: true, contentTier: 'rich', marketingSlug: 'motor',
     },
     {
         id: 'motorbike', segment: 'b2c', parentId: 'motor',
         label: { el: 'Μοτοσικλέτα', en: 'Motorbike' }, genitiveEl: 'μοτοσικλέτας',
         aliases: ['moto', 'motorcycle'],
-        scoreCategory: 'property', writeEnabled: true, contentTier: 'basic',
+        scoreCategory: 'motor', writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'truck', segment: 'b2c', parentId: 'motor',
         label: { el: 'Φορτηγό / Αγροτικό', en: 'Truck / Agricultural' }, genitiveEl: 'φορτηγού',
         aliases: ['agricultural', 'van', 'lorry'],
-        scoreCategory: 'property', writeEnabled: false, contentTier: 'basic',
+        scoreCategory: 'motor', writeEnabled: false, contentTier: 'basic',
     },
     {
         id: 'roadside', segment: 'b2c',
         label: { el: 'Οδική Βοήθεια', en: 'Roadside Assistance' }, genitiveEl: 'οδικής βοήθειας',
         aliases: ['breakdown', 'assistance'],
-        scoreCategory: 'property', writeEnabled: true, contentTier: 'basic',
+        // Vehicle-attached cover, not household cover. The score does not count
+        // it (no category lists `roadside`), but the family it belongs to is
+        // motor — never Κατοικία.
+        scoreCategory: 'motor', writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'home', segment: 'b2c',
@@ -148,7 +158,10 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'boat', segment: 'b2c',
         label: { el: 'Σκάφος', en: 'Boat' }, genitiveEl: 'σκάφους',
         aliases: ['marine', 'yacht'],
-        scoreCategory: 'property', writeEnabled: true, contentTier: 'basic', marketingSlug: 'boat',
+        // A vessel is property in the everyday sense, but the score's `property`
+        // category is specifically the home someone lives in. Leisure asset →
+        // lifestyle.
+        scoreCategory: 'other', writeEnabled: true, contentTier: 'basic', marketingSlug: 'boat',
     },
     {
         id: 'gadget', segment: 'b2c',

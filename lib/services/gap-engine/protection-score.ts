@@ -1,7 +1,7 @@
 /**
  * Unified Protection Score Calculator
  *
- * Computes a single 0-100 protection score across 6 insurance categories.
+ * Computes a single 0-100 protection score across 7 insurance categories.
  * Replaces the ad-hoc health score calculations scattered across the codebase.
  *
  * Design:
@@ -14,6 +14,78 @@
 import type { ProfileFields, ProfileGap } from "./profile-gap-rules"
 import type { GapSeverity } from "./profile-gap-rules"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
+
+// ── Model versioning ─────────────────────────────────────────────────
+
+/**
+ * Which revision of the category model produced a stored score.
+ *
+ * The score is cached in `ProtectionScore` — an overall number plus a map keyed
+ * by category. Both are only meaningful against the category set that produced
+ * them, and splitting "Property & Motor" into separate Home and Motor
+ * categories changed what BOTH mean without changing their shape:
+ *
+ *  - `property: 100` written under v1 meant "home OR car insured". Read back
+ *    under v2 it renders as «Κατοικία 100%» — a claim that someone's house is
+ *    covered, on the evidence of a car policy.
+ *  - the overall number was a weighted average over a different category set,
+ *    so it is not comparable either.
+ *
+ * A stale row is therefore not merely old, it is wrong, and no amount of
+ * waiting fixes it: `getCachedProtectionScore` never recomputes by design.
+ * Bump this whenever SCORE_CATEGORIES changes in a way that alters what a
+ * stored key or the overall number means, and readers will discard rather than
+ * reinterpret. The version travels inside the existing JSON column, so this
+ * costs no migration.
+ *
+ * v1 — property (20) covered home+motor.
+ * v2 — property (10, Home) and motor (10) split apart.
+ */
+export const SCORE_MODEL_VERSION = 2
+
+/**
+ * What `ProtectionScore.categoryScores` holds from v2 onwards.
+ *
+ * The index signature is Prisma's requirement for a `Json` column, not an
+ * invitation to add fields: the shape is exactly these two.
+ */
+export interface VersionedCategoryScores {
+    __scoreModelVersion: number
+    categories: Record<string, number>
+    [key: string]: number | Record<string, number>
+}
+
+/** Wrap a computed score's per-category numbers for storage. */
+export function encodeCategoryScores(
+    categories: Record<string, number>
+): VersionedCategoryScores {
+    return { __scoreModelVersion: SCORE_MODEL_VERSION, categories }
+}
+
+/**
+ * Read a stored `categoryScores` value of either shape.
+ *
+ * Rows written before versioning are bare `{ property: 100, ... }` maps and are
+ * reported as v1 — which is what they are — rather than being assumed current.
+ */
+export function decodeCategoryScores(raw: unknown): {
+    version: number
+    categories: Record<string, number>
+} {
+    if (raw && typeof raw === "object" && "__scoreModelVersion" in raw) {
+        const envelope = raw as Partial<VersionedCategoryScores>
+        return {
+            version: Number(envelope.__scoreModelVersion) || 1,
+            categories: (envelope.categories ?? {}) as Record<string, number>,
+        }
+    }
+    return { version: 1, categories: (raw ?? {}) as Record<string, number> }
+}
+
+/** Whether a stored score can still be shown as fact. */
+export function isCurrentScoreModel(raw: unknown): boolean {
+    return decodeCategoryScores(raw).version === SCORE_MODEL_VERSION
+}
 
 // ── Category definitions ─────────────────────────────────────────────
 
@@ -125,10 +197,10 @@ export interface CategoryScore {
 /**
  * How much a line of business weighs in the protection model, 0 when unknown.
  *
- * The category weights (health 25, life 25, property 20, income 15, liability
- * 10, other 5) are the product's one considered statement about what matters
- * most to a household. Exported so recommendations can be ranked by that
- * judgement instead of by what the cover costs to buy.
+ * The category weights (health 25, life 25, property 10, motor 10, income 15,
+ * liability 10, other 5) are the product's one considered statement about what
+ * matters most to a household. Exported so recommendations can be ranked by
+ * that judgement instead of by what the cover costs to buy.
  */
 export function lobProtectionWeight(lob: string): number {
     const key = String(lob || "").toLowerCase()

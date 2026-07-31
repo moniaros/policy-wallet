@@ -144,6 +144,71 @@ describe('insurance taxonomy — protection-score binding', () => {
             }
         }
     })
+
+    /**
+     * The check above only asks whether the value is *a* key. That is too weak
+     * to catch the failure that actually happened: when Property & Motor was
+     * split, `property` came to mean Κατοικία alone, and every motor-family
+     * branch went on declaring `scoreCategory: 'property'`. Each value stayed a
+     * valid key, so nothing failed — the taxonomy simply filed cars under Home.
+     *
+     * The binding that matters is with `coveredByLobs`. The score aggregates a
+     * child branch under its parent (`parentId ?? id`), so where any category
+     * claims to cover that effective lob, the branch must declare one of those
+     * categories and not some other one.
+     */
+    it('a branch is filed under a category that actually covers it', () => {
+        const covering = (lob: string) =>
+            SCORE_CATEGORIES.filter((c) => c.coveredByLobs.includes(lob)).map((c) => c.key)
+
+        let checked = 0
+        for (const branch of INSURANCE_BRANCHES) {
+            const effectiveLob = branch.parentId ?? branch.id
+            const categories = covering(effectiveLob)
+            if (categories.length === 0) continue // the score ignores it — pinned below
+
+            checked += 1
+            expect(
+                branch.scoreCategory,
+                `${branch.id} (scores as "${effectiveLob}") declares "${branch.scoreCategory}" ` +
+                `but that lob is covered by: ${categories.join(', ')}`
+            ).toBeTruthy()
+            expect(categories, `${branch.id} → ${branch.scoreCategory}`).toContain(branch.scoreCategory)
+        }
+
+        // Vacuity floor: a rename in either module could make `covering()`
+        // return empty for everything, skipping every branch silently.
+        expect(checked).toBeGreaterThanOrEqual(10)
+    })
+
+    it('pins the branches the score genuinely ignores', () => {
+        // These contribute nothing to any category. That is a real product gap
+        // (a pension policy raises no score at all), but an intentional one —
+        // pinned so it cannot grow unnoticed, and so nobody reads a branch's
+        // scoreCategory as proof that it counts.
+        const ignored = INSURANCE_BRANCHES.filter(
+            (b) => !SCORE_CATEGORIES.some((c) => c.coveredByLobs.includes(b.parentId ?? b.id))
+        ).map((b) => b.id)
+
+        expect(ignored.sort()).toEqual(
+            [
+                'roadside', 'pension', 'boat', 'gadget', 'bicycle', 'other',
+                'business', 'business_property', 'equipment', 'stock', 'business_interruption',
+                'professional_liability', 'employer_liability', 'technical_works', 'energy',
+                'transports', 'guarantees', 'special_risks',
+                'group_health', 'group_life', 'group_pension',
+            ].sort()
+        )
+    })
+
+    it('no branch is filed under Κατοικία unless it is a home', () => {
+        // The specific regression, stated plainly: `property` is now the home
+        // someone lives in, and a car, motorbike, truck, boat or roadside
+        // policy is not evidence that it is insured.
+        const underProperty = INSURANCE_BRANCHES.filter((b) => b.scoreCategory === 'property').map((b) => b.id)
+
+        expect(underProperty.sort()).toEqual(['home', 'renters'])
+    })
 })
 
 describe('insurance taxonomy — i18n coverage', () => {
