@@ -5,6 +5,25 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-07 (μερικώς) — gaps now become opportunities by themselves — 2026-07-30
+
+PR #225. 2674/2674 unit tests, 6/6 gates.
+
+Τα Opportunity rows δημιουργούνταν **μόνο** από ρητό cross-sell run, οπότε η
+αξία pipeline στο agent dashboard έδειχνε **€0** όσα κενά κι αν εντόπιζε η
+ανάλυση. Νέο `gap-opportunity-sync`, καλούμενο στο ένα σημείο όπου μια ανάλυση
+είναι βέβαιο ότι τελείωσε.
+
+Τρεις κανόνες: **η συγκατάθεση ορίζει την ορατότητα, όχι η σχέση** (η σχέση
+δημιουργείται μονομερώς — δεν είναι άδεια)· **καμία κλήση LLM** (το gap έχει ήδη
+την εξήγησή του)· **dedupe στο gapInstanceId** (αλλιώς κάθε επανα-ανάλυση
+φουσκώνει το pipeline με αντίγραφα). Ειδοποίηση με userId μόνο.
+
+11 tests, mutation-tested δύο φορές (dedupe και φίλτρο ορατότητας).
+
+**Δεν έγιναν:** το συναινετικό activity stream και η επέκταση του
+`agent-journey.spec.ts` — χρειάζονται E2E.
+
 ## WP-04 (μερικώς) — a bad extraction is no longer permanent — 2026-07-30
 
 PR #225. 2663/2663 unit tests, 6/6 gates.

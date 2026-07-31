@@ -731,6 +731,20 @@ export class PolicyService extends BaseService {
                 })
             }
 
+            // Gaps become agent opportunities here, at the one point where an
+            // analysis is known to have finished. Consent-scoped and deduped by
+            // gap; never fails the analysis, which has already succeeded and
+            // whose result the user is waiting on.
+            try {
+                const { syncOpportunitiesForPolicy } = await import('./gap-engine/gap-opportunity-sync')
+                await syncOpportunitiesForPolicy(policyId)
+            } catch (syncError) {
+                logger('warn', 'Gap-to-opportunity sync failed', {
+                    policyId,
+                    error: syncError instanceof Error ? syncError.message : String(syncError),
+                })
+            }
+
             logger('info', 'Background policy analysis completed successfully', {
                 policyId,
                 durationMs: Date.now() - startTime
