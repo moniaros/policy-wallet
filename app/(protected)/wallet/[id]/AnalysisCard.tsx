@@ -634,8 +634,15 @@ export function AnalysisCard({
                 <div className="px-6 pt-5">
                     <div className="rounded-xl border border-primary/25 bg-primary-tint p-4 dark:border-primary/35 dark:bg-primary/15">
                         <div className="flex items-start gap-3">
-                            <Loader2 className="mt-0.5 h-4 w-4 animate-spin text-primary dark:text-mint" />
-                            <div className="min-w-0 flex-1">
+                            <Loader2 aria-hidden="true" className="mt-0.5 h-4 w-4 animate-spin text-primary dark:text-mint" />
+                            {/* The longest wait in the product, and it was
+                                entirely silent to a screen reader: no start, no
+                                step changes, no end. The live region wraps the
+                                STEP TEXT only — putting the percentage inside it
+                                would announce on every tick, which is worse than
+                                silence. The number is reachable on demand from
+                                the progressbar below instead. */}
+                            <div role="status" aria-live="polite" className="min-w-0 flex-1">
                                 <p className="text-sm font-bold text-[#166534] dark:text-mint">
                                     {runStepLabel || statusCopy.inProgress}
                                 </p>
@@ -643,13 +650,24 @@ export function AnalysisCard({
                                     {runStepHint || statusCopy.autoRefreshHint}
                                 </p>
                             </div>
-                            <span className="text-xs font-bold text-[#166534] dark:text-mint">
+                            <span aria-hidden="true" className="text-xs font-bold text-[#166534] dark:text-mint">
                                 {runProgress}%
                             </span>
                         </div>
-                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#F1F5F9] dark:bg-white/10">
+                        <div
+                            role="progressbar"
+                            aria-label={statusCopy.inProgress}
+                            aria-valuenow={Math.max(0, Math.min(100, runProgress))}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            className="mt-3 h-2 overflow-hidden rounded-full bg-[#F1F5F9] dark:bg-white/10"
+                        >
                             <div
                                 className="h-full rounded-full bg-primary transition-all duration-500"
+                                // The visual bar keeps an 8% floor so a run that has
+                                // just started still looks like it started; the ARIA
+                                // value above must NOT be floored, or the panel would
+                                // report 8% progress on a run that has made none.
                                 style={{ width: `${Math.max(8, Math.min(100, runProgress))}%` }}
                             />
                         </div>
