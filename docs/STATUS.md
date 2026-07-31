@@ -49,11 +49,14 @@ commits on top of the Phase 1–5 multi-model system. Not yet deployed.
   business (raw `token_usage JOIN policies` aggregate; policy-linked rows
   only). `/api/admin/ai-performance` returns the extended snapshot; no new API
   routes, so the auth inventory is unchanged.
-- **Deploy step (both migrations):** `migrate deploy` can't run against the
-  pooler (P1017 advisory-lock issue below) — apply
+- **Migrations APPLIED to both DBs (2026-07-31, Supabase MCP path):**
   `20260731090000_ai_runtime_config` and `20260731120000_ai_prompt_overrides`
-  to dev+prod via the Supabase MCP path with matching `_prisma_migrations`
-  rows, as done for `20260730120000_insurer_reference_enrichment`.
+  are live on PolicyWallet-Prod (`cquudefwfwrmvpftuhyl`) and dev
+  (`lzqvtvjggylcujenlelh`) with matching `_prisma_migrations` rows carrying the
+  migration files' real sha256 checksums. Verified on both: 4 new tables, 5 new
+  indexes (incl. the unique `(operation, line_of_business)` key), 0 rows —
+  every operation still resolves to env defaults until an admin pins one. The
+  app code itself is on branch `claude/nifty-tesla-m80f2p`, not yet deployed.
 - **Validation loop:** the admin UIs point at `npm run eval`
   (`EVAL_ALLOW_PAID=1` for real providers) to compare scores before/after a
   model pin or guidance change. ~35 new unit tests across prompt policy,
