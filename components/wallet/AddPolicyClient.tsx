@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
-import type { PolicyReviewData } from "@/lib/wallet/policy-review"
+import type { AnalysisProgress, PolicyReviewData } from "@/lib/wallet/policy-review"
 import { usePolling } from "@/hooks/usePolling"
 import {
     UploadCloud,
@@ -28,7 +28,7 @@ import {
     AlertTriangle,
     RefreshCw,
 } from 'lucide-react'
-import { acceptAttribute } from "@/lib/security/file-upload"
+import { acceptAttribute, validateUploadFile, MAX_UPLOAD_SIZE_BYTES } from "@/lib/security/file-upload"
 
 interface AddPolicyClientProps {
     insurers: { id: string, name: string }[]
@@ -38,12 +38,20 @@ interface AddPolicyClientProps {
 
 type Phase = 'form' | 'reviewing'
 
-function getAnalyzingStep(elapsed: number, t: any): string {
-    const steps = t.wallet.review
-    if (elapsed < 5) return steps.stepUploading
-    if (elapsed < 15) return steps.stepExtracting
-    if (elapsed < 40) return steps.stepAnalyzing
-    return steps.stepGenerating
+/**
+ * Label for the step the pipeline is ACTUALLY on.
+ *
+ * This used to be `getAnalyzingStep(elapsed)`, which picked a label from a
+ * stopwatch: after 15 seconds it claimed "Εξαγωγή δεδομένων…" whether or not
+ * extraction had started, and it kept cycling confidently through the list
+ * while a dead run went nowhere. Now the step comes from the run's own step
+ * rows, reusing the canonical labels the analysis card already renders.
+ * Falls back to the queued copy while the run exists but has not started.
+ */
+function getAnalyzingStep(progress: AnalysisProgress | null, t: any): string {
+    const stepKey = progress?.stepKey
+    if (stepKey && t.analysis?.steps?.[stepKey]) return t.analysis.steps[stepKey]
+    return t.wallet.review.stepUploading
 }
 
 export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClientProps) {
@@ -51,6 +59,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+    const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgress | null>(null)
     // Inline field errors. These were toast-only: the message named a problem
     // but pointed at no field, and vanished when the toast timed out.
     const [fieldErrors, setFieldErrors] = useState<{ files?: string; lineOfBusiness?: string }>({})
@@ -121,6 +130,44 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         }
 
         submitPolicy(formData)
+    }
+
+    /**
+     * Validate on selection, not on failure.
+     *
+     * The browser uploads straight to storage, so an oversized or spoofed file
+     * previously travelled the whole way and came back as a generic "Upload
+     * failed" toast naming neither the file nor the reason. This runs the same
+     * shared policy the server enforces (`validateUploadFile` — magic bytes,
+     * size, extension cross-check) against the header bytes before anything
+     * leaves the machine, and names the offending file inline.
+     *
+     * The server-side gate remains authoritative; this is fast feedback, not a
+     * security boundary — a client check can always be bypassed.
+     */
+    const handleFilesSelected = async (files: File[]) => {
+        const accepted: File[] = []
+        let rejection: string | undefined
+
+        for (const file of files) {
+            const verdict = await validateUploadFile(file, { category: "policy" })
+            if (verdict.ok) {
+                accepted.push(file)
+                continue
+            }
+            if (!rejection) {
+                const template =
+                    t.wallet.uploadRejection?.[verdict.reason] ??
+                    t.wallet.uploadRejection?.bad_extension ??
+                    ''
+                rejection = template
+                    .replace('{name}', file.name)
+                    .replace('{limit}', String(Math.floor(MAX_UPLOAD_SIZE_BYTES / (1024 * 1024))))
+            }
+        }
+
+        if (accepted.length > 0) setSelectedFiles(prev => [...prev, ...accepted])
+        setFieldErrors(prev => ({ ...prev, files: rejection }))
     }
 
     const submitPolicy = (formData: FormData) => {
@@ -194,6 +241,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
             const data = await getPolicyReviewData(createdPolicyId)
             if ('error' in data) return
 
+            // Keep the waiting screen honest even while still analyzing: the
+            // step label and counter come from this, not from a stopwatch.
+            setAnalysisProgress(data.analysisProgress ?? null)
+
             if (data.status !== 'analyzing') {
                 setReviewData(data as PolicyReviewData)
             }
@@ -211,8 +262,6 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
     // ─────────────────── POST-UPLOAD PROCESSING SCREEN ───────────────────
     if (phase === 'reviewing') {
-        const elapsedSecs = (Date.now() - pollingStartRef.current) / 1000
-
         return (
             <div className="min-h-screen bg-background pb-20">
             {/* Every top-level branch needs the heading: the component returns
@@ -312,9 +361,30 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             {reviewCopy.analyzing}
                                         </p>
                                         <p className="mt-1 text-xs text-muted-foreground animate-pulse">
-                                            {getAnalyzingStep(elapsedSecs, t)}
+                                            {getAnalyzingStep(analysisProgress, t)}
                                         </p>
                                     </div>
+                                    {/* Real completed/total from the run's own step rows.
+                                        Announced politely so the wait is legible to a
+                                        screen reader, not just visible. */}
+                                    {analysisProgress && analysisProgress.total > 0 && (
+                                        <div
+                                            role="progressbar"
+                                            aria-valuenow={analysisProgress.completed}
+                                            aria-valuemin={0}
+                                            aria-valuemax={analysisProgress.total}
+                                            aria-valuetext={getAnalyzingStep(analysisProgress, t)}
+                                            aria-live="polite"
+                                            className="w-full max-w-xs"
+                                        >
+                                            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                                                <div
+                                                    className="h-full rounded-full bg-primary transition-all duration-500"
+                                                    style={{ width: `${Math.round((analysisProgress.completed / analysisProgress.total) * 100)}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Skeleton rows */}
@@ -439,7 +509,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             </div>
 
                             <UploadDropzone
-                                onFiles={(files) => { setSelectedFiles(prev => [...prev, ...files]); setFieldErrors(prev => ({ ...prev, files: undefined })) }}
+                                onFiles={handleFilesSelected}
                                 accept={acceptAttribute("policy")}
                                 inputId="file-upload"
                                 inputName="files"

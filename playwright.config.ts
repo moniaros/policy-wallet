@@ -146,6 +146,10 @@ export default defineConfig({
             UPSTASH_REDIS_REST_URL: 'https://dummy.upstash.io',
             UPSTASH_REDIS_REST_TOKEN: 'dummy-token',
             RATELIMIT_ALLOW_LOCAL: '1',
+            // The mock AI provider is no longer a silent fallback when no
+            // provider key is set — it must be asked for. E2E wants it (no real
+            // spend, deterministic output), so it asks here explicitly.
+            AI_ALLOW_MOCK: '1',
         },
     },
 });

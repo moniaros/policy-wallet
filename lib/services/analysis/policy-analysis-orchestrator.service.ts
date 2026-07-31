@@ -7,7 +7,7 @@ import { db } from "@/lib/db"
 import { env } from "@/lib/env"
 import { logger } from "@/lib/logger"
 import { canUserUseTokens, reserveTokens, releaseTokenReservation } from "@/lib/token-tracking"
-import { getAIService, type AIServiceType } from "@/lib/services/ai"
+import { getAIService, getActiveAIProvider, type AIServiceType } from "@/lib/services/ai"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
 import { parseDocumentDate } from "@/lib/dates/document-date"
 import { downloadPolicyDocument } from "@/lib/supabase/storage-download"
@@ -370,6 +370,14 @@ export class PolicyAnalysisOrchestratorService {
     async createRun(policyId: string, userId: string) {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
 
+        // The provider this run will ACTUALLY use. This used to be hardcoded to
+        // "gemini" on every row, so a run served by the mock provider recorded
+        // itself as Gemini — the one field that could have told a user (or an
+        // auditor) the data was fabricated instead asserted the opposite.
+        // executeRun reads run.provider back to pick the service, so this is
+        // also what makes an explicit AI_SERVICE_TYPE take effect end-to-end.
+        const resolvedProvider: AIServiceType = getActiveAIProvider() ?? "gemini"
+
         // GDPR Art. 9 gate: the policy OWNER (the data subject — documents can
         // carry special-category health data) must have granted explicit AI-processing
         // consent before any document bytes reach an LLM provider. Checked before any
@@ -383,7 +391,7 @@ export class PolicyAnalysisOrchestratorService {
                 data: {
                     policyId,
                     userId,
-                    provider: "gemini",
+                    provider: resolvedProvider,
                     model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
                     status: "blocked",
                     blockedReason: "ai_consent_missing",
@@ -414,7 +422,7 @@ export class PolicyAnalysisOrchestratorService {
                 data: {
                     policyId,
                     userId,
-                    provider: "gemini",
+                    provider: resolvedProvider,
                     model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
                     status: "blocked",
                     blockedReason: "free_tier_ai_locked",
@@ -454,7 +462,7 @@ export class PolicyAnalysisOrchestratorService {
             data: {
                 policyId,
                 userId,
-                provider: "gemini",
+                provider: resolvedProvider,
                 model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
                 status: "queued",
                 priority: queuePriority,
@@ -498,7 +506,7 @@ export class PolicyAnalysisOrchestratorService {
                             pipeline: {
                                 ...(((policy.acordData as any)?.analysis?.pipeline as Record<string, unknown>) || {}),
                                 runId: run.id,
-                                provider: "gemini",
+                                provider: resolvedProvider,
                                 status: "blocked",
                                 missingSections: [],
                                 lastFailureCode: "TOKEN_LIMIT_BLOCKED",
@@ -997,8 +1005,13 @@ export class PolicyAnalysisOrchestratorService {
 
         const policy = run.policy
         const userRoles = run.user?.roles
+        // "anthropic" was missing from this list, so a run created against the
+        // Anthropic provider silently executed on Gemini instead.
         const primaryProvider: AIServiceType =
-            run.provider === "gemini" || run.provider === "openai" || run.provider === "mock"
+            run.provider === "gemini" ||
+            run.provider === "openai" ||
+            run.provider === "anthropic" ||
+            run.provider === "mock"
                 ? (run.provider as AIServiceType)
                 : "gemini"
 

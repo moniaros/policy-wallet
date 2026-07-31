@@ -5,6 +5,34 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-01 + WP-02 — mock-provider safety & honest upload lifecycle — 2026-07-30
+
+Branch `claude/policywallet-ethniki-0r0bai`, PR #225. 2563/2563 unit tests,
+6/6 gates πράσινα.
+
+**WP-01 — το mock δεν είναι πια σιωπηλό fallback.** Χωρίς provider key ο
+factory **ρίχνει** αντί να γυρίσει mock (6 πραγματικά `getAIService()` call
+sites το έφταναν)· χρειάζεται ρητό `AI_ALLOW_MOCK=1` / `AI_SERVICE_TYPE=mock` /
+`NODE_ENV=test`. Το `lib/env.ts` αρνείται production χωρίς key ούτε opt-in.
+**Δεύτερο ελάττωμα βρέθηκε επιτόπου:** το `PolicyAnalysisRun.provider` ήταν
+hardcoded `"gemini"` σε 4 σημεία — ένα run που έτρεξε σε mock κατέγραφε τον
+εαυτό του ως Gemini, δηλαδή το μόνο πεδίο που θα πρόδιδε τα πλαστά δεδομένα
+ισχυριζόταν το αντίθετο. Τώρα γράφεται ο πραγματικός provider (κάτι που κάνει
+και το `AI_SERVICE_TYPE` να ισχύει end-to-end)· επίσης το `"anthropic"`
+έλειπε από τους αποδεκτούς providers στο `executeRun`, οπότε Anthropic runs
+εκτελούνταν σιωπηλά σε Gemini. Νέο `DemoDataBanner` (`role="alert"`, δίγλωσσο)
+πάνω από το `AnalysisCard`. 13 tests, mutation-tested.
+
+**WP-02 — η οθόνη αναμονής σταμάτησε να λέει ψέματα.** Η πρόοδος βγαίνει από
+τις πραγματικές γραμμές βημάτων του run (`analysisProgress`: stepKey,
+completed/total, runStatus, failureCode) αντί από στοπερ που αφηγούνταν βήματα
+που δεν συνέβαιναν — με `role="progressbar"`/`aria-valuenow`/`aria-live` (δεν
+υπήρχε καμία προσβάσιμη ένδειξη). Η επιλογή αρχείου τρέχει τώρα την ίδια κοινή
+πολιτική με τον server (`validateUploadFile`) στον browser και κατονομάζει
+αρχείο + λόγο, αντί για γενικό «Η μεταφόρτωση απέτυχε». Ο watchdog **δεν**
+ξαναχτίστηκε — υπάρχει ως `reapStaleRuns`· μένει μόνο η συχνότητα (WP-13). Ο
+reconciler ορφανών αρχείων μεταφέρθηκε στο WP-12 (ίδιο storage μονοπάτι).
+
 ## Scale-readiness plan (50–100K → εκατομμύρια) — 2026-07-30
 
 Νέο: [planning/SCALE_READINESS_PLAN.md](planning/SCALE_READINESS_PLAN.md) —

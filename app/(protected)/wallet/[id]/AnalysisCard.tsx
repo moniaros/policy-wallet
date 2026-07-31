@@ -10,6 +10,7 @@ import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import type { FeatureKey } from "@/lib/monetization/feature-gates"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { DemoDataBanner } from "@/components/ui/DemoDataBanner"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -49,6 +50,8 @@ interface AnalysisCardProps {
     analysisPipeline?: {
         runId?: string
         status?: string
+        /** Provider that actually produced this analysis; "mock" means fabricated. */
+        provider?: string | null
         missingSections?: string[]
         lastFailureCode?: string | null
         lastFailureAt?: string | null
@@ -557,6 +560,9 @@ export function AnalysisCard({
 
     return (
         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-xl">
+            {/* Fabricated-data warning sits ABOVE the header: if the analysis is
+                mock output, that fact outranks everything else on the card. */}
+            <DemoDataBanner provider={analysisPipeline?.provider} className="m-3 mb-0" />
             <div className="bg-primary p-6 flex justify-between items-center">
                 <div className="flex items-center gap-3 text-white">
                     <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">

@@ -55,6 +55,27 @@ export interface ReviewFinePrint {
     impactSummary?: { en: string; el: string }
 }
 
+/**
+ * Live position of the analysis pipeline, for the post-upload waiting screen.
+ *
+ * The upload screen used to label its progress by guessing from elapsed time
+ * ("<5s uploading, <15s extracting…"), so it narrated steps that were not
+ * happening and kept narrating after the run had died. This carries the real
+ * run state instead, using the same canonical step keys the analysis card
+ * already renders labels for (`t.analysis.steps`).
+ */
+export interface AnalysisProgress {
+    /** Canonical pipeline step key currently running, or the last one to finish. */
+    stepKey: string | null
+    /** Steps finished out of the total planned for this run. */
+    completed: number
+    total: number
+    /** Run-level status: queued | running | completed | completed_with_warnings | failed | blocked. */
+    runStatus: string | null
+    /** Populated when the run stopped badly, so the UI can offer a retry instead of spinning. */
+    failureCode: string | null
+}
+
 export interface PolicyReviewData {
     id: string
     status: string

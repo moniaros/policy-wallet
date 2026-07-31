@@ -31,7 +31,7 @@ import { collaborationService } from "@/lib/services/collaboration.service"
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
 import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
 import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
-import { buildPolicyReviewData, sumInsuredTargetPath } from "@/lib/wallet/policy-review"
+import { buildPolicyReviewData, sumInsuredTargetPath, type AnalysisProgress } from "@/lib/wallet/policy-review"
 import { startOfAthensDay, startOfAthensMonth } from "@/lib/policy-status"
 import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
 
@@ -242,7 +242,39 @@ export async function getPolicyReviewData(policyId: string) {
 
     if (!policy) return { error: "Not found" }
 
-    return buildPolicyReviewData(policy)
+    // Real pipeline position for the waiting screen. Cheap: one indexed lookup
+    // on the newest run plus its step rows, only while the policy is actually
+    // being analyzed — the review screen itself has no use for it.
+    let analysisProgress: AnalysisProgress | null = null
+    if (policy.status === "analyzing") {
+        const run = await db.policyAnalysisRun.findFirst({
+            where: { policyId: policy.id },
+            orderBy: { createdAt: "desc" },
+            select: {
+                status: true,
+                failureCode: true,
+                steps: {
+                    select: { stepKey: true, status: true, stepOrder: true },
+                    orderBy: { stepOrder: "asc" },
+                },
+            },
+        })
+        if (run) {
+            const running = run.steps.find((step) => step.status === "running")
+            const lastFinished = [...run.steps]
+                .reverse()
+                .find((step) => step.status === "completed" || step.status === "failed")
+            analysisProgress = {
+                stepKey: running?.stepKey ?? lastFinished?.stepKey ?? null,
+                completed: run.steps.filter((step) => step.status === "completed").length,
+                total: run.steps.length,
+                runStatus: run.status,
+                failureCode: run.failureCode,
+            }
+        }
+    }
+
+    return { ...buildPolicyReviewData(policy), analysisProgress }
 }
 
 const ConfirmReviewSchema = z.object({

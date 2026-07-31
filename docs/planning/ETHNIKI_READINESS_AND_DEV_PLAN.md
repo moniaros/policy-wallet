@@ -51,7 +51,7 @@ Code session να αυτοεκκινεί από αυτό το έγγραφο** �
 
 ### Phase 0 — Ασφαλές demo
 
-#### ☐ WP-01 — Mock-provider safety (S)
+#### ☑ WP-01 — Mock-provider safety (S) — ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-30
 - **Στόχος:** να μην μπορεί ποτέ ένα demo/παραγωγή να δείξει «Mock Insurance Co.»
   χωρίς κανείς να το καταλάβει.
 - **Αρχεία:** `lib/services/ai/ai-service.factory.ts` (`determineServiceType` —
@@ -64,7 +64,27 @@ Code session να αυτοεκκινεί από αυτό το έγγραφο** �
   warn+mock μόνο σε dev· κάθε key → σωστός provider)· E2E: banner ορατό με mock.
 - **Gates:** χωρίς νέο route — δεν αγγίζει api inventory.
 
-#### ☐ WP-02 — Upload lifecycle (M)
+> **Τι έγινε.** Το mock έγινε opt-in: `AI_ALLOW_MOCK=1`, `AI_SERVICE_TYPE=mock`
+> ή `NODE_ENV=test`· αλλιώς ο factory **ρίχνει** αντί να επιστρέψει σιωπηλά
+> mock (6 πραγματικά `getAIService()` call sites το έφταναν). Το `lib/env.ts`
+> αρνείται πλέον να ξεκινήσει production χωρίς provider key ούτε ρητό opt-in.
+>
+> **Δεύτερο ελάττωμα που βρέθηκε επιτόπου, εκτός αρχικού scope:** το
+> `PolicyAnalysisRun.provider` γραφόταν **hardcoded `"gemini"` σε 4 σημεία**
+> του `createRun`, άρα ένα run που εξυπηρετήθηκε από το mock κατέγραφε τον
+> εαυτό του ως Gemini — το μόνο πεδίο που θα μπορούσε να προδώσει ότι τα
+> δεδομένα ήταν πλαστά ισχυριζόταν το αντίθετο. Τώρα καταγράφεται ο πραγματικός
+> provider (`getActiveAIProvider()`), κάτι που κάνει και το `AI_SERVICE_TYPE` να
+> ισχύει end-to-end (το `executeRun` διαβάζει πίσω το `run.provider`). Μαζί
+> διορθώθηκε ότι το `"anthropic"` **έλειπε** από τη λίστα αποδεκτών providers
+> στο `executeRun`, οπότε run με Anthropic εκτελούνταν σιωπηλά σε Gemini.
+>
+> Νέο `components/ui/DemoDataBanner.tsx` (`role="alert"`, δίγλωσσο) πάνω από
+> το `AnalysisCard` όταν ο provider είναι mock. Το `playwright.config.ts` ζητά
+> πλέον ρητά `AI_ALLOW_MOCK=1`. 13 unit tests στο selection matrix,
+> **mutation-tested** (αφαίρεση του guard → 3 αποτυχίες).
+
+#### ☑ WP-02 — Upload lifecycle (M) — ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-30 (μερικώς προϋπήρχε)
 - **Στόχος:** πραγματική, όχι σκηνοθετημένη, εικόνα προόδου και κανένα συμβόλαιο
   κολλημένο για πάντα σε `analyzing`.
 - **Αρχεία:** `components/wallet/AddPolicyClient.tsx` (fabricated βήματα από
@@ -77,6 +97,33 @@ Code session να αυτοεκκινεί από αυτό το έγγραφο** �
   αρχείων (job + εγγραφή στο `scripts/api-route-policy-inventory.json`).
 - **Acceptance:** unit στο watchdog + polling reducer· E2E: >15MB αρχείο δίνει
   σαφές μήνυμα· διακοπή ανάλυσης καταλήγει σε failed+retry, όχι αέναο spinner.
+
+> **Τι έγινε.**
+> 1. **Πραγματική πρόοδος αντί για χρονόμετρο.** Το `getAnalyzingStep(elapsed)`
+>    διάλεγε ετικέτα από στοπερ («μετά τα 15s → Εξαγωγή δεδομένων»), δηλαδή
+>    αφηγούνταν βήματα που δεν συνέβαιναν και συνέχιζε να αφηγείται ενώ το run
+>    είχε πεθάνει. Το `getPolicyReviewData` επιστρέφει τώρα `analysisProgress`
+>    (τρέχον `stepKey`, completed/total, runStatus, failureCode) από τις ίδιες
+>    τις γραμμές βημάτων του run· η οθόνη αναμονής δείχνει το πραγματικό βήμα με
+>    τα υπάρχοντα localized labels (`t.analysis.steps`) και μπάρα με
+>    `role="progressbar"` + `aria-valuenow` + `aria-live` (η οθόνη δεν είχε
+>    καμία προσβάσιμη ένδειξη προόδου).
+> 2. **Client-side επικύρωση κατά την επιλογή.** Τρέχει η ΙΔΙΑ κοινή πολιτική
+>    που επιβάλλει ο server (`validateUploadFile` — magic bytes, μέγεθος,
+>    διασταύρωση κατάληξης) πάνω στα header bytes πριν φύγει οτιδήποτε, με
+>    inline δίγλωσσο μήνυμα που **κατονομάζει το αρχείο και τον λόγο** αντί για
+>    γενικό «Η μεταφόρτωση απέτυχε». 4 unit tests καρφώνουν ότι κάθε
+>    `UploadRejectionReason` έχει μήνυμα σε el+en (νέος λόγος στον validator →
+>    κόκκινο test, όχι κενό μήνυμα στον browser).
+>
+> **Δεν ξαναχτίστηκε — προϋπήρχε:** ο watchdog για stuck runs υπάρχει ήδη ως
+> `orchestrator.reapStaleRuns` (lease + grace) με cron **και** opportunistic
+> reap στο pre-flight του `process-policy`. Το πραγματικό υπόλοιπο κενό είναι
+> μόνο η **συχνότητα** (daily στο `vercel.json`) → ανήκει στο **WP-13**.
+>
+> **Μεταφέρθηκε στο WP-12:** ο περιοδικός reconciler ορφανών αρχείων
+> (bucket ↔ `PolicyDocument.fileUrl`) — είναι δουλειά storage και το WP-12
+> ήδη ξαναγράφει αυτό το μονοπάτι· χωριστή υλοποίηση εδώ θα ήταν διπλή.
 
 ### Phase 1 — Ανθεκτική εξαγωγή
 

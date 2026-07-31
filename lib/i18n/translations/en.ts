@@ -37,6 +37,8 @@ export const en: TranslationKeys = {
         copy: 'Copy',
         needHelp: 'Need help?',
         aiAdviceDisclaimer: 'AI outputs are informational support and are not legal or insurance advice. You should verify critical decisions with a licensed professional.',
+        demoDataTitle: 'Simulated demo data',
+        demoDataBody: 'This analysis does NOT come from your policy. It was produced by the mock provider and every value shown is fabricated. Do not use it for any decision.',
         aiConsentTitle: 'Consent to AI analysis',
         aiConsentBody: 'To analyze your policies, the content of your documents — which may include health data — is sent to an AI provider for processing. Your consent is recorded and you can withdraw it at any time from your privacy settings.',
         aiConsentAccept: 'I consent to AI processing',
@@ -396,6 +398,18 @@ export const en: TranslationKeys = {
         lastCheck: 'Last Check',
         deductibleLabel: 'Deductible:',
         tapToUpload: 'Tap to upload policy PDF',
+        // Rejection reasons shown inline the moment a file is chosen, instead of
+        // letting the upload fail later with a generic "Upload failed".
+        uploadRejection: {
+            empty: '"{name}" is empty.',
+            too_large: '"{name}" is larger than the {limit} MB limit.',
+            illegal_filename: 'The file name "{name}" is not supported.',
+            double_extension: 'The file type of "{name}" is not supported.',
+            bad_extension: 'Only PDF, JPG, PNG or WEBP files are accepted. "{name}" is not one.',
+            mime_mismatch: '"{name}" does not appear to be what its file type claims.',
+            content_mismatch: 'The contents of "{name}" do not match its extension.',
+            infected: '"{name}" was rejected by the security scan.',
+        },
         dragDrop: 'or drag and drop your files here',
         aiExtraction: 'AI will automatically extract policy details.',
         coverageType: 'Coverage Type',

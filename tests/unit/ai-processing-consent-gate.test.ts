@@ -36,6 +36,9 @@ vi.mock('@/lib/token-tracking', () => ({
 }))
 vi.mock('@/lib/services/ai', () => ({
     getAIService: vi.fn(() => ({ isAvailable: () => false, getServiceName: () => 'mock' })),
+    // createRun records the provider that will actually serve the run rather
+    // than assuming "gemini"; the double must expose it or createRun throws.
+    getActiveAIProvider: vi.fn(() => 'gemini'),
 }))
 vi.mock('@/lib/subscription-entitlements', () => ({
     resolveUserEntitlements: vi.fn(async () => ({ tier: 'plus', limits: {} })),

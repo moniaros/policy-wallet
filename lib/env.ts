@@ -33,6 +33,13 @@ const envSchema = z.object({
     CLAUDE_MODEL_GAP_ANALYSIS: z.string().default("claude-sonnet-5"),
     CLAUDE_MODEL_CLARITY_ANALYSIS: z.string().default("claude-sonnet-5"),
     CLAUDE_MODEL_QA: z.string().default("claude-haiku-4-5"),
+    // The mock AI provider returns "Mock Insurance Co." and «Εικονική εξήγηση»
+    // for ANY document. It used to be a silent fallback whenever no provider key
+    // was set, which renders fabricated policy data in the same styling as real
+    // analysis. It is now opt-in: set AI_ALLOW_MOCK=1 (and it can never be the
+    // silent default in production — see the NODE_ENV check below).
+    AI_ALLOW_MOCK: z.string().optional(),
+    AI_SERVICE_TYPE: z.enum(["gemini", "openai", "anthropic", "mock"]).optional(),
     FF_AI_FAILOVER_OPENAI: z.string().default("false"),
     FF_AI_DEGRADED_COMPLETION: z.string().default("true"),
     FF_AI_REMEDIATION_ALERTS: z.string().default("false"),
@@ -100,6 +107,19 @@ if (parsedEnv.NODE_ENV === "production") {
     if (parsedEnv.RATELIMIT_ALLOW_LOCAL !== "1") {
         if (!parsedEnv.UPSTASH_REDIS_REST_URL) missing.push("UPSTASH_REDIS_REST_URL")
         if (!parsedEnv.UPSTASH_REDIS_REST_TOKEN) missing.push("UPSTASH_REDIS_REST_TOKEN")
+    }
+
+    // The mock AI provider fabricates policy data ("Mock Insurance Co.",
+    // «Εικονική εξήγηση») for any document and renders identically to a real
+    // analysis. Production must never reach it by accident: either a real
+    // provider key is present, or mock is explicitly and knowingly opted into.
+    const hasRealProviderKey = Boolean(
+        parsedEnv.GEMINI_API_KEY || parsedEnv.ANTHROPIC_API_KEY || parsedEnv.OPENAI_API_KEY
+    )
+    const mockExplicitlyAllowed =
+        parsedEnv.AI_ALLOW_MOCK === "1" || parsedEnv.AI_SERVICE_TYPE === "mock"
+    if (!hasRealProviderKey && !mockExplicitlyAllowed) {
+        missing.push("GEMINI_API_KEY | ANTHROPIC_API_KEY | OPENAI_API_KEY")
     }
 
     if (missing.length > 0) {

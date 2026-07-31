@@ -72,20 +72,46 @@ export class AIServiceFactory {
     }
 
     /**
+     * Whether the mock provider may be used at all.
+     *
+     * The mock returns `insurerName: "Mock Insurance Co."` and «Εικονική
+     * εξήγηση» for ANY document, styled identically to a real analysis. Reaching
+     * it by accident is the worst failure this system has — the user is shown
+     * fabricated facts about their own insurance and has no way to tell.
+     * So it requires a deliberate signal, never the absence of one.
+     */
+    static isMockAllowed(): boolean {
+        return (
+            process.env.AI_ALLOW_MOCK === '1' ||
+            process.env.AI_SERVICE_TYPE?.toLowerCase() === 'mock' ||
+            process.env.NODE_ENV === 'test'
+        )
+    }
+
+    /**
      * Determines which AI service type to use
-     * 
+     *
      * Priority:
-     * 1. Environment variable AI_SERVICE_TYPE
-     * 2. Gemini if API key is available
-     * 3. Mock as fallback
-     * 
+     * 1. Environment variable AI_SERVICE_TYPE (mock still requires opt-in)
+     * 2. The first provider whose API key is present
+     * 3. Mock — ONLY when explicitly allowed; otherwise this throws
+     *
      * @returns Service type to use
+     * @throws when no provider is configured and mock is not opted into
      */
     private static determineServiceType(): AIServiceType {
         // Check environment variable
         const envType = process.env.AI_SERVICE_TYPE?.toLowerCase()
-        if (envType === 'gemini' || envType === 'openai' || envType === 'anthropic' || envType === 'mock') {
+        if (envType === 'gemini' || envType === 'openai' || envType === 'anthropic') {
             return envType as AIServiceType
+        }
+        if (envType === 'mock') {
+            // Explicit request — honoured, but still announced so it can never
+            // be mistaken for real output in a log trail.
+            logger('warn', 'AI mock provider selected explicitly', {
+                reason: 'AI_SERVICE_TYPE=mock',
+            })
+            return 'mock'
         }
 
         // Check if Gemini is available
@@ -99,11 +125,34 @@ export class AIServiceFactory {
             return 'openai'
         }
 
-        // Fallback to mock
-        logger('warn', 'No AI service configured, using mock', {
-            reason: 'GEMINI_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY not found'
+        // No provider key. Previously this fell through to the mock silently:
+        // the app then rendered "Mock Insurance Co." with «Εικονική εξήγηση» over
+        // whatever the user had actually uploaded, with no banner anywhere.
+        if (!this.isMockAllowed()) {
+            throw new Error(
+                'No AI provider configured. Set GEMINI_API_KEY, ANTHROPIC_API_KEY or ' +
+                'OPENAI_API_KEY. To run deliberately against fabricated demo data, ' +
+                'set AI_ALLOW_MOCK=1 — never do this in production.'
+            )
+        }
+
+        logger('warn', 'No AI service configured, using mock (explicitly allowed)', {
+            reason: 'GEMINI_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY not found',
+            allowedBy: process.env.AI_ALLOW_MOCK === '1' ? 'AI_ALLOW_MOCK' : 'NODE_ENV=test',
         })
         return 'mock'
+    }
+
+    /**
+     * The service type that WOULD be used, without instantiating anything.
+     *
+     * Callers persisting a provider name (e.g. `PolicyAnalysisRun.provider`)
+     * must use this rather than assuming a default — a run row that claims
+     * "gemini" while the mock produced the data is a lie in the audit trail
+     * and defeats every downstream "is this real?" check.
+     */
+    static resolveServiceType(): AIServiceType {
+        return this.defaultServiceType ?? this.determineServiceType()
     }
 
     /**
@@ -144,4 +193,18 @@ export class AIServiceFactory {
  */
 export function getAIService(forceType?: AIServiceType): IAIService {
     return AIServiceFactory.getService(forceType)
+}
+
+/**
+ * The provider that will actually serve requests, for persistence and display.
+ *
+ * @returns the resolved provider type, or `null` when none is configured —
+ * callers recording a run should surface that rather than guessing a default.
+ */
+export function getActiveAIProvider(): AIServiceType | null {
+    try {
+        return AIServiceFactory.resolveServiceType()
+    } catch {
+        return null
+    }
 }
