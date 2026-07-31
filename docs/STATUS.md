@@ -5,6 +5,22 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-09 (μερικώς) — bilingual AI output stopped duplicating one language — 2026-07-30
+
+PR #225. 2622/2622 unit tests, 6/6 gates.
+
+Το WP περιέγραφε «πληρότητα» (πόσα `aiExplanationEl` είναι κενά). Ο έλεγχος
+βρήκε **χειρότερο από κενά**: όταν ο provider επιστρέφει σκέτο string αντί για
+`{ en, el }`, το `gap-analysis.service.ts` έγραφε **την ίδια συμβολοσειρά και
+στις δύο στήλες**. Η γραμμή φαινόταν πλήρως μεταφρασμένη σε κάθε έλεγχο
+πληρότητας, ενώ ο Έλληνας χρήστης έβλεπε αγγλικά παρουσιασμένα ως ελληνικά —
+αόρατο στα δεδομένα, ορατό μόνο στον χρήστη.
+
+Νέο `lib/services/bilingual-ai-fields.ts`: σκέτο string = απάντηση μίας
+γλώσσας, μπαίνει μόνο εκεί· η άλλη στήλη μένει null ώστε ο renderer να πέσει
+στη localized περιγραφή του gap definition αντί να ψεύδεται. **Δεν έγιναν:**
+backfill ιστορικών γραμμών + audit script — θέλουν ζωντανή ΒΔ.
+
 ## WP-19 (μερικώς) — route loading states + honest offline copy — 2026-07-30
 
 PR #225. 2615/2615 unit tests, 6/6 gates.

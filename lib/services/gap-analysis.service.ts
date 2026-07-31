@@ -7,6 +7,7 @@
  */
 
 import { BaseService } from './base.service'
+import { bilingualFields } from "./bilingual-ai-fields"
 import { AppError } from '@/lib/errors'
 import { logger } from '@/lib/logger'
 import path from 'path'
@@ -308,18 +309,19 @@ export class GapAnalysisService extends BaseService {
                                 gapDefinitionId: def.id,
                                 severity: def.defaultSeverity || 'medium',
                                 status: 'open',
-                                aiExplanation: typeof item.explanation === 'object'
-                                    ? item.explanation.en
-                                    : item.explanation || 'No explanation provided',
-                                aiExplanationEl: typeof item.explanation === 'object'
-                                    ? item.explanation.el
-                                    : item.explanation || 'Δεν δόθηκε εξήγηση',
-                                aiSuggestion: typeof item.suggestion === 'object'
-                                    ? item.suggestion.en
-                                    : item.suggestion || 'No suggestion',
-                                aiSuggestionEl: typeof item.suggestion === 'object'
-                                    ? item.suggestion.el
-                                    : item.suggestion || 'Καμία πρόταση',
+                                // A bilingual payload fills both fields. A PLAIN
+                                // STRING is a single-language answer, and we know
+                                // which language was asked for — so it goes in
+                                // that field only. Writing it to BOTH (what this
+                                // did before) stored English under
+                                // ai_explanation_el, so a Greek reader was served
+                                // English presented as Greek, while the row looked
+                                // perfectly complete to any "is it translated?"
+                                // check. Leaving the other side null lets the
+                                // renderer fall back to the gap definition's own
+                                // localized description instead of lying.
+                                ...bilingualFields('aiExplanation', item.explanation, language),
+                                ...bilingualFields('aiSuggestion', item.suggestion, language),
                                 detectedAt: new Date()
                             }
                         })
