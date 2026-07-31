@@ -94,6 +94,12 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                     >
                         AI performance →
                     </a>
+                    <Link
+                        href="/admin/gaps"
+                        className="rounded-lg border border-stone-200 dark:border-stone-700 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                    >
+                        Gap definitions →
+                    </Link>
                 </div>
             </div>
 

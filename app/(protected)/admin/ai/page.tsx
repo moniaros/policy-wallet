@@ -1,5 +1,6 @@
 export const runtime = 'nodejs'
 
+import Link from "next/link"
 import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
@@ -50,7 +51,10 @@ export default async function AiPerformancePage() {
                         Snapshot generated at {formatDateTime(s.generatedAt, 'en')} for the last {s.windowHours} hours.
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
+                    <Link href="/admin/gaps" className="px-3 py-2 rounded-md border border-stone-300 dark:border-stone-700 text-sm text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800">
+                        Gap Definitions
+                    </Link>
                     <a href="/admin/tokens" className="px-3 py-2 rounded-md border border-stone-300 dark:border-stone-700 text-sm text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800">
                         Token Analytics
                     </a>

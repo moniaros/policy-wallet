@@ -29,16 +29,11 @@ export interface QaComplianceScore {
     pass: boolean
 }
 
-/** Advice-language patterns that should never appear in an informational answer. */
-export const ADVICE_LANGUAGE: RegExp[] = [
-    /\byou should (buy|purchase|get|cancel|switch|claim|drop|add)\b/i,
-    /\bwe recommend\b/i,
-    /\bI recommend\b/i,
-    /\byou (ought|need) to (buy|cancel|claim)\b/i,
-    // Greek: "you should / I suggest you [buy|cancel|change|claim]". The `u`
-    // flag gives correct Greek case folding; the gap allows an intervening "να".
-    /(θα πρέπει να|σου προτείνω|σας προτείνω|προτείν\w* να)[^.]{0,20}(αγοράσ|αγορά|ακυρώσ|αλλάξ|κάνεις αίτηση)/iu,
-]
+// The advice-language ban is shared with the admin prompt-content policy so
+// the two can never drift: lib/services/ai/prompt-policy.ts is the single
+// source; this scorer re-exports the same array instance.
+export { ADVICE_LANGUAGE } from "@/lib/services/ai/prompt-policy"
+import { ADVICE_LANGUAGE } from "@/lib/services/ai/prompt-policy"
 
 function matches(text: string, pattern: string | RegExp): boolean {
     return typeof pattern === "string"
