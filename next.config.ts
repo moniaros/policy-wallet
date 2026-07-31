@@ -67,27 +67,24 @@ const withPWA = withPWAInit({
   },
 });
 
-let finalConfig: NextConfig = withPWA(nextConfig);
+const finalConfig: NextConfig = withPWA(nextConfig);
 
-if (process.env.SENTRY_ORG && process.env.SENTRY_PROJECT) {
-  const { withSentryConfig } = require("@sentry/nextjs");
-  finalConfig = withSentryConfig(finalConfig, {
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-    silent: !process.env.CI,
-    widenClientFileUpload: true,
-    tunnelRoute: "/monitoring",
-    hideSourceMaps: true,
-  });
-}
-
+// ONE Sentry wrap.
+//
+// There used to be two: a conditional `withSentryConfig` (only when SENTRY_ORG
+// and SENTRY_PROJECT were set) and then an unconditional one on export. The
+// second always ran, so when the env vars WERE set the config was wrapped
+// twice — two source-map upload passes per build and a nested plugin config
+// whose effective settings depended on wrap order. Org and project now come
+// from the environment, keeping the previous literals as defaults so what gets
+// uploaded is unchanged.
 export default withSentryConfig(finalConfig, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-  org: "policywallet",
+  org: process.env.SENTRY_ORG || "policywallet",
 
-  project: "policywallet",
+  project: process.env.SENTRY_PROJECT || "policywallet",
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,

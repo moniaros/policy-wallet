@@ -339,7 +339,7 @@ gates. Ένα WP ανά session κατά κανόνα· αποκλίσεις κ�
 προσκληθεί φορτίο. Το loading-feedback εδώ γιατί το WP-13 μόλις έκανε το queue
 state αξιόπιστη πηγή αλήθειας για progress UIs.*
 
-#### ☐ WP-16 — Operational readiness: Sentry, crons, DR (M) — R1, R5
+#### ◐ WP-16 — Operational readiness: Sentry, crons, DR (M) — ΜΕΡΙΚΩΣ 2026-07-30
 - **Στόχος:** σωστό monitoring config (όχι διπλό), κάθε γραμμένο job τρέχει,
   και υπάρχει γραπτή, δοκιμασμένη απάντηση στο «restore σε πότε; πόσο γρήγορα;
   πώς κάνουμε rollback;».
@@ -366,6 +366,36 @@ state αξιόπιστη πηγή αλήθειας για progress UIs.*
 - **Owner actions:** verify `POOLED_DATABASE_URL` στο prod· PITR add-on·
   λογαριασμοί log-drain/uptime· validation των AI incident secrets
   (Slack/PagerDuty — τα drills έτρεξαν με fallback τιμές).
+
+> **✅ Έγινε.**
+> - **Ένα Sentry wrap.** Υπήρχαν δύο: ένα υπό συνθήκη (μόνο με `SENTRY_ORG`/
+>   `SENTRY_PROJECT`) και ένα **χωρίς συνθήκη** στο export με hardcoded
+>   org/project. Το δεύτερο έτρεχε πάντα, άρα όταν οι μεταβλητές ΗΤΑΝ ορισμένες
+>   το config τυλιγόταν **δύο φορές** — δύο περάσματα ανεβάσματος source maps
+>   ανά build και φωλιασμένο plugin config του οποίου οι τελικές ρυθμίσεις
+>   εξαρτιόνταν από τη σειρά. Τα org/project έρχονται πλέον από env με τα ίδια
+>   literals ως defaults, ώστε να μην αλλάξει τι ανεβαίνει.
+> - **Hardcoded fallback DSN** αφαιρέθηκε από server/edge: κάθε μηχάνημα
+>   developer, preview και fork ανέφερε σιωπηλά στο **production project**,
+>   ανακατεύοντας θόρυβο στο σήμα που παρακολουθεί η εφημερία. Χωρίς DSN το SDK
+>   μένει αδρανές — σωστή συμπεριφορά για περιβάλλον χωρίς ρύθμιση.
+> - **Δύο jobs που δεν έτρεχαν ποτέ** προγραμματίστηκαν
+>   (`billing-reconciliation`, `launch-readiness-snapshot`). Σημείωση: το πρώτο
+>   θα αναφέρει ασυμφωνία μέχρι το **WP-27** (τοπικά `Invoice` rows) — αυτό
+>   είναι το ζητούμενο: ένα γνωστό κενό που αναφέρεται είναι καλύτερο από ένα
+>   job που δεν τρέχει καθόλου.
+> - **Σιωπηλό pooling fallback** έγινε θορυβώδες: production χωρίς
+>   `POOLED_DATABASE_URL` προειδοποιεί μία φορά (console + Sentry) αντί να
+>   ανακαλύπτεται όταν το φορτίο εξαντλήσει τις συνδέσεις.
+> - **`RUNBOOK_ROLLBACK_AND_DR.md`**: το repo είχε 12 incident runbooks και
+>   **κανένα** για rollback ή επαναφορά ΒΔ. Καλύπτει: Vercel promote, κανόνα
+>   **expand→contract** (50 migrations, καμία με rollback story), διαδικασία
+>   PITR με ρητά **RPO ≤5min / RTO ≤4h**, τριμηνιαίο drill — και ρητό βήμα
+>   **επαν-εφαρμογής διαγραφών GDPR** μετά από restore, το ανοιχτό εύρημα
+>   «a restore would resurrect erased PII».
+>
+> **☐ Δεν έγινε:** log-drain / uptime vendor wiring — απαιτεί λογαριασμούς και
+> credentials (owner actions §7).
 
 #### ☐ WP-27 — Billing truth tail (M) — R5, R8
 - **Στόχος:** ό,τι αφορά χρήματα να είναι ακριβές και πλήρες — «σωστά δεδομένα»

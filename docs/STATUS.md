@@ -5,6 +5,27 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-16 (μερικώς) — Sentry, crons, rollback/DR runbook — 2026-07-30
+
+PR #225. 2601/2601 unit tests, 6/6 gates.
+
+**Διπλό Sentry wrap.** Υπήρχε ένα υπό συνθήκη και ένα **χωρίς συνθήκη** στο
+export· το δεύτερο έτρεχε πάντα, άρα με ορισμένες τις μεταβλητές το config
+τυλιγόταν δύο φορές — δύο περάσματα source maps ανά build και φωλιασμένο plugin
+config. Τώρα ένα, με org/project από env. **Hardcoded fallback DSN**
+αφαιρέθηκε: κάθε dev μηχάνημα, preview και fork ανέφερε σιωπηλά στο production
+project.
+
+**Δύο jobs που δεν έτρεχαν ποτέ** μπήκαν στο `vercel.json`. Το
+`billing-reconciliation` θα αναφέρει ασυμφωνία μέχρι το WP-27 — προτιμότερο από
+job που δεν τρέχει. **Σιωπηλό pooling fallback** έγινε θορυβώδες (console +
+Sentry) αντί να ανακαλύπτεται στο πρώτο φορτίο.
+
+**`RUNBOOK_ROLLBACK_AND_DR.md`** — το repo είχε 12 incident runbooks και κανένα
+για rollback/επαναφορά. Vercel promote, κανόνας expand→contract (50 migrations,
+καμία με rollback story), PITR με ρητά RPO ≤5min / RTO ≤4h, τριμηνιαίο drill,
+και υποχρεωτικό βήμα **επαν-εφαρμογής διαγραφών GDPR** μετά από restore.
+
 ## WP-12 (μερικώς) — browser-uploaded bytes are now validated — 2026-07-30
 
 PR #225. 2601/2601 unit tests, 6/6 gates.

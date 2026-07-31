@@ -61,6 +61,14 @@
     {
       "path": "/api/v1/jobs/reap-stale-analyses",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/v1/jobs/billing-reconciliation",
+      "schedule": "30 4 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/launch-readiness-snapshot",
+      "schedule": "0 3 * * *"
     }
   ]
 }

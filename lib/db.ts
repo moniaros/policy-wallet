@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client"
+import * as Sentry from "@sentry/nextjs"
 
 // Single idiom for detecting a unique-constraint violation (P2002): accepts
 // the typed Prisma error and structurally similar ones (mocked clients in
@@ -24,6 +25,30 @@ const dbUrl =
   process.env.POOLED_DATABASE_URL ||
   process.env.DIRECT_URL ||
   process.env.DATABASE_URL
+
+// The fallback above is SILENT: a production deploy that forgets
+// POOLED_DATABASE_URL runs perfectly well on DIRECT_URL at low volume and then
+// exhausts Postgres connections under load, with nothing in the logs to say
+// which connection it chose. Make the degraded choice announce itself once, so
+// it is discovered before traffic finds it rather than during an incident.
+if (
+  process.env.NODE_ENV === "production" &&
+  !process.env.POOLED_DATABASE_URL &&
+  !globalThis.__pwPooledWarned
+) {
+  globalThis.__pwPooledWarned = true
+  console.warn(
+    "db: POOLED_DATABASE_URL is not set — running on a non-pooled connection, " +
+    "which exhausts Postgres connections at scale."
+  )
+  Sentry.captureMessage("db: POOLED_DATABASE_URL not set in production", {
+    level: "warning",
+  })
+}
+
+declare global {
+  var __pwPooledWarned: boolean | undefined
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined

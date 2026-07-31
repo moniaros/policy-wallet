@@ -3,8 +3,12 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
-    || "https://7f85e67c475b91e81dc9de9214b36cd4@o4510750648303616.ingest.de.sentry.io/4510750671634512",
+  // Environment only. A hardcoded fallback DSN meant every developer machine,
+  // preview and fork silently reported into the production project, mixing
+  // noise into the signal the on-call rotation watches. With no DSN configured
+  // the SDK simply stays inert, which is the correct behaviour for an
+  // environment nobody has set up for error reporting.
+  dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN,
 
   tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
 
