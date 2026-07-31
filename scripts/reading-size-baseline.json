@@ -1,0 +1,12 @@
+{
+  "description": "Sub-16px type still in policyholder decision surfaces. A ratchet, not a target: these numbers may only go DOWN. See tests/unit/reading-size-debt.test.ts.",
+  "surfaces": [
+    "components/wallet",
+    "components/coverage",
+    "components/dashboard",
+    "app/(protected)/wallet",
+    "app/(protected)/dashboard"
+  ],
+  "textXs": 238,
+  "textSm": 242
+}
