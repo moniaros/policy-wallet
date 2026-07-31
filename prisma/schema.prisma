@@ -1581,3 +1581,46 @@ model AiRuntimeConfigRevision {
   @@index([configId, createdAt])
   @@map("ai_runtime_config_revisions")
 }
+
+/// Admin-authored operator guidance appended to one AI operation's prompt,
+/// optionally scoped to a single line of business. lineOfBusiness uses the
+/// "__global__" sentinel instead of NULL — Postgres unique indexes treat NULLs
+/// as distinct, which would permit duplicate global rows for one operation.
+/// Guidance is ADDITIVE only: it renders under an "OPERATOR GUIDANCE" label
+/// after the canonical task rules and can never replace the compliance persona
+/// (enforced at save time by validateOperatorGuidance).
+model AiPromptOverride {
+  id             String   @id @default(cuid()) @map("override_id")
+  operation      String // extractPolicyData | analyzeGaps | analyzePolicyClarity | askQuestion | analyzeRiskProfile
+  lineOfBusiness String   @default("__global__") @map("line_of_business")
+  guidance       String   @db.Text
+  isActive       Boolean  @default(true) @map("is_active")
+  version        Int      @default(1)
+  changedBy      String?  @map("changed_by")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  revisions AiPromptOverrideRevision[]
+
+  @@unique([operation, lineOfBusiness])
+  @@index([operation, isActive])
+  @@map("ai_prompt_overrides")
+}
+
+/// Immutable audit trail per AiPromptOverride write (PlanRevision shape):
+/// full post-change snapshot + per-field {from,to} diff + who changed it.
+model AiPromptOverrideRevision {
+  id             String   @id @default(cuid()) @map("revision_id")
+  overrideId     String   @map("override_id")
+  version        Int
+  snapshot       Json
+  changes        Json
+  changedBy      String   @map("changed_by")
+  changedByEmail String   @map("changed_by_email")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  override AiPromptOverride @relation(fields: [overrideId], references: [id])
+
+  @@index([overrideId, createdAt])
+  @@map("ai_prompt_override_revisions")
+}

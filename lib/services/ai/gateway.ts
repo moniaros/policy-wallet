@@ -25,6 +25,7 @@ import { getAIService } from "./ai-service.factory"
 import { isTransientError } from "./shared-utils"
 import { recordFailure, recordSuccess, type ProviderId } from "./provider-health"
 import { getAiRuntimeOverrides } from "./runtime-config"
+import { getPromptOverrides, resolveOperatorGuidance } from "./prompt-overrides"
 import { resolveRoute, type RouteRequest, type UserTier } from "./model-router"
 import type {
     AITrackingOptions,
@@ -38,6 +39,9 @@ interface GatewayContext {
     userId?: string
     policyId?: string
     userTier?: UserTier
+    /** Policy line of business, when the caller knows it — selects a
+     *  LoB-scoped operator-guidance override over the global one. */
+    lineOfBusiness?: string
 }
 
 function logCall(operation: string, decision: { provider: string; model: string; tier: string }) {
@@ -94,6 +98,7 @@ export const aiGateway = {
     ): Promise<string> {
         // Admin runtime overrides (cached; never throws — {} = env behavior).
         const overrides = await getAiRuntimeOverrides()
+        const promptOverrides = await getPromptOverrides()
         const route = resolveRoute({ operation: "askQuestion", userTier: ctx.userTier }, overrides)
         logCall("askQuestion", route)
         const service = getAIService(route.provider)
@@ -101,6 +106,7 @@ export const aiGateway = {
             service.askQuestion(null, metadata, question, {
                 ...trackingFor(route, ctx),
                 structuredContext: ctx.structuredContext,
+                operatorGuidance: resolveOperatorGuidance(promptOverrides, "askQuestion", ctx.lineOfBusiness),
             })
         )
     },
@@ -112,6 +118,9 @@ export const aiGateway = {
         ctx: GatewayContext
     ): Promise<AIRiskProfileAnalysisResponse> {
         const overrides = await getAiRuntimeOverrides()
+        // Risk profile spans the whole portfolio — only the GLOBAL guidance row
+        // applies (no single line of business to scope to).
+        const promptOverrides = await getPromptOverrides()
         const route = resolveRoute({
             operation: "analyzeRiskProfile",
             userTier: ctx.userTier,
@@ -120,7 +129,10 @@ export const aiGateway = {
         logCall("analyzeRiskProfile", route)
         const service = getAIService(route.provider)
         return withHealthTracking(route.provider, () =>
-            service.analyzeRiskProfile(profile, existingPolicies, trackingFor(route, ctx))
+            service.analyzeRiskProfile(profile, existingPolicies, {
+                ...trackingFor(route, ctx),
+                operatorGuidance: resolveOperatorGuidance(promptOverrides, "analyzeRiskProfile"),
+            })
         )
     },
 }

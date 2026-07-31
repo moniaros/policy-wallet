@@ -5,6 +5,8 @@ import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
 import { formatDateTime } from "@/lib/i18n/format"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { OPERATION_LABELS } from "@/lib/admin/ai-prompt-update"
 import { getAiPerformance } from "../actions"
 
 // Admin-only internal tooling — English-only per the admin-page precedent.
@@ -54,6 +56,9 @@ export default async function AiPerformancePage() {
                 <div className="flex flex-wrap gap-2">
                     <Link href="/admin/ai/settings" className="px-3 py-2 rounded-md border border-stone-300 dark:border-stone-700 text-sm text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800">
                         Model Settings
+                    </Link>
+                    <Link href="/admin/ai/prompts" className="px-3 py-2 rounded-md border border-stone-300 dark:border-stone-700 text-sm text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800">
+                        Prompt Overrides
                     </Link>
                     <Link href="/admin/gaps" className="px-3 py-2 rounded-md border border-stone-300 dark:border-stone-700 text-sm text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800">
                         Gap Definitions
@@ -135,6 +140,78 @@ export default async function AiPerformancePage() {
                     </table>
                 </div>
             </section>
+
+            {/* Prompt overrides + policy-linked usage per line of business */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <section className={card}>
+                    <div className="p-4 border-b border-stone-200 dark:border-stone-700 flex items-center justify-between">
+                        <div>
+                            <h2 className="font-semibold text-stone-900 dark:text-stone-100">Prompt overrides</h2>
+                            <p className="text-xs text-stone-500 dark:text-stone-400">Admin operator guidance in effect (identity only — no prompt text)</p>
+                        </div>
+                        <Link href="/admin/ai/prompts" className="text-sm text-primary dark:text-mint hover:underline">Edit →</Link>
+                    </div>
+                    <div className="p-4 overflow-x-auto">
+                        {s.promptOverrides.length === 0 ? (
+                            <p className="text-sm text-stone-500 dark:text-stone-400">None — every prompt runs with its built-in rules only.</p>
+                        ) : (
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="text-left text-stone-500 dark:text-stone-400">
+                                        <th className="py-2 pr-4">Operation</th>
+                                        <th className="py-2 pr-4">Line of business</th>
+                                        <th className="py-2 pr-4">Version</th>
+                                        <th className="py-2 pr-4">Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {s.promptOverrides.map((o) => (
+                                        <tr key={o.operation + ":" + o.lineOfBusiness} className="border-t border-stone-100 dark:border-stone-700">
+                                            <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{OPERATION_LABELS[o.operation] ?? o.operation}</td>
+                                            <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">{o.lineOfBusiness === "__global__" ? "Global" : normalizeBranch(o.lineOfBusiness).label.en}</td>
+                                            <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">v{o.version}</td>
+                                            <td className="py-2 pr-4">{o.isActive ? "yes" : <span className="text-red-600 dark:text-red-400">no</span>}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                </section>
+
+                <section className={card}>
+                    <div className="p-4 border-b border-stone-200 dark:border-stone-700">
+                        <h2 className="font-semibold text-stone-900 dark:text-stone-100">Usage by line of business</h2>
+                        <p className="text-xs text-stone-500 dark:text-stone-400">Policy-linked usage only (rows without a policy are excluded)</p>
+                    </div>
+                    <div className="p-4 overflow-x-auto">
+                        {s.usageByLineOfBusiness.length === 0 ? (
+                            <p className="text-sm text-stone-500 dark:text-stone-400">No policy-linked AI usage in this window.</p>
+                        ) : (
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="text-left text-stone-500 dark:text-stone-400">
+                                        <th className="py-2 pr-4">Line of business</th>
+                                        <th className="py-2 pr-4">Calls</th>
+                                        <th className="py-2 pr-4">Tokens</th>
+                                        <th className="py-2 pr-4">Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {s.usageByLineOfBusiness.map((u) => (
+                                        <tr key={u.lineOfBusiness} className="border-t border-stone-100 dark:border-stone-700">
+                                            <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{normalizeBranch(u.lineOfBusiness).label.en}</td>
+                                            <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">{fmtInt(u.calls)}</td>
+                                            <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">{fmtInt(u.totalTokens)}</td>
+                                            <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">{fmtEur(u.costEur)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                </section>
+            </div>
 
             {/* Routing distribution + cost per operation */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

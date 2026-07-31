@@ -55,6 +55,27 @@ describe("interactive paths route through the gateway", () => {
     })
 })
 
+describe("operator guidance reaches every prompt site (Phase 6c)", () => {
+    it("the gateway resolves guidance for both interactive operations", () => {
+        const src = read("lib/services/ai/gateway.ts")
+        const hits = src.match(/resolveOperatorGuidance\(/g) ?? []
+        expect(hits.length).toBeGreaterThanOrEqual(2)
+    })
+    it("the orchestrator resolves guidance per step with the policy's line of business", () => {
+        const src = read("lib/services/analysis/policy-analysis-orchestrator.service.ts")
+        expect(src).toMatch(/resolveOperatorGuidance\(promptOverrides, operation, policy\.lineOfBusiness\)/)
+        const uses = src.match(/operatorGuidance: guidanceFor\(/g) ?? []
+        expect(uses.length).toBe(3) // extraction, clarity, gap detection
+    })
+    it("the quick extract route resolves GLOBAL guidance (LoB unknown pre-extraction)", () => {
+        const src = read("app/api/policies/extract/route.ts")
+        expect(src).toMatch(/resolveOperatorGuidance\(promptOverrides, "extractPolicyData"\)/)
+    })
+    it("wallet Q&A passes the policy's line of business into the gateway context", () => {
+        expect(read("app/(protected)/wallet/actions.ts")).toMatch(/lineOfBusiness: policy\.lineOfBusiness,\s*\n\s*\}\s*\n\s*\)/)
+    })
+})
+
 describe("admin runtime overrides reach every routing site (Phase 6b)", () => {
     it("the gateway loads the cached overrides", () => {
         expect(read("lib/services/ai/gateway.ts")).toMatch(/getAiRuntimeOverrides\(\)/)

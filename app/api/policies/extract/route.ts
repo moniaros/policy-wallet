@@ -84,6 +84,13 @@ export const POST = withApiGuard(
             const overrides = await getAiRuntimeOverrides()
             const extractionOverride = overrides.operations?.extractPolicyData
 
+            // Operator guidance: pre-extraction the LoB is unknown, so only the
+            // GLOBAL extractPolicyData guidance row can apply.
+            const { getPromptOverrides, resolveOperatorGuidance } =
+                await import("@/lib/services/ai/prompt-overrides")
+            const promptOverrides = await getPromptOverrides()
+            const operatorGuidance = resolveOperatorGuidance(promptOverrides, "extractPolicyData")
+
             const aiService = getAIService(extractionOverride?.provider)
             if (!aiService.isAvailable()) {
                 return NextResponse.json({ error: "AI service unavailable" }, { status: 503 })
@@ -114,7 +121,7 @@ export const POST = withApiGuard(
                     // name) must not reach the third-party AI provider.
                     fileName: sanitizeDisplayName(file.name),
                 },
-                { userId: authResult.dbUser.id, modelOverride: extractionOverride?.model },
+                { userId: authResult.dbUser.id, modelOverride: extractionOverride?.model, operatorGuidance },
             )
 
             return NextResponse.json({

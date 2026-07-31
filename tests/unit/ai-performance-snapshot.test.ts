@@ -13,10 +13,12 @@ import { join } from "node:path"
 
 // vi.mock is hoisted above const declarations, so define the spies via
 // vi.hoisted to avoid the temporal-dead-zone reference in the factory.
-const { groupBy, aggregate, findMany } = vi.hoisted(() => ({
+const { groupBy, aggregate, findMany, promptFindMany, queryRaw } = vi.hoisted(() => ({
     groupBy: vi.fn(),
     aggregate: vi.fn(),
     findMany: vi.fn(),
+    promptFindMany: vi.fn(),
+    queryRaw: vi.fn(),
 }))
 
 // The snapshot's activeConfiguration section pulls the runtime-config reader
@@ -56,6 +58,8 @@ vi.mock("@/lib/db", () => ({
         policyAnalysisStep: { groupBy, findMany },
         tokenUsage: { groupBy },
         activityLog: { groupBy },
+        aiPromptOverride: { findMany: promptFindMany },
+        $queryRaw: queryRaw,
     },
 }))
 vi.mock("@/lib/token-tracking", () => ({
@@ -110,6 +114,19 @@ function wireMocks() {
         { stepKey: "gap_detection", startedAt: new Date(0), finishedAt: new Date(3000) },
         { stepKey: "gap_detection", startedAt: new Date(0), finishedAt: new Date(9000) },
     ])
+    promptFindMany.mockResolvedValue([
+        {
+            operation: "askQuestion",
+            lineOfBusiness: "__global__",
+            version: 3,
+            isActive: true,
+            updatedAt: new Date("2026-07-30T12:00:00Z"),
+        },
+    ])
+    // Raw LoB aggregate returns bigints (COUNT/SUM in Postgres).
+    queryRaw.mockResolvedValue([
+        { lineOfBusiness: "motor", calls: BigInt(7), totalTokens: BigInt(12000), costEur: 0.6 },
+    ])
 }
 
 describe("getAiPerformanceSnapshot", () => {
@@ -153,6 +170,26 @@ describe("getAiPerformanceSnapshot", () => {
         wireMocks()
         const s = await getAiPerformanceSnapshot({})
         expect(s.trend[0]).toMatchObject({ date: "2026-07-29", tokens: 1000 })
+    })
+
+    it("lists prompt overrides (identity only) and policy-linked usage per line of business", async () => {
+        wireMocks()
+        const s = await getAiPerformanceSnapshot({})
+        expect(s.promptOverrides).toEqual([
+            {
+                operation: "askQuestion",
+                lineOfBusiness: "__global__",
+                version: 3,
+                isActive: true,
+                updatedAt: "2026-07-30T12:00:00.000Z",
+            },
+        ])
+        // The guidance TEXT must never reach the dashboard payload.
+        expect(JSON.stringify(s.promptOverrides)).not.toMatch(/guidance/i)
+        // BigInt aggregates are converted to plain numbers.
+        expect(s.usageByLineOfBusiness).toEqual([
+            { lineOfBusiness: "motor", calls: 7, totalTokens: 12000, costEur: 0.6 },
+        ])
     })
 
     it("reports the active configuration per operation (env defaults when no DB rows)", async () => {

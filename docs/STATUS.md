@@ -5,6 +5,61 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## Admin AI control panel (Phase 6) — 2026-07-31 — branch `claude/nifty-tesla-m80f2p`
+
+Admins can now monitor usage, choose the models each operation runs on, and
+edit the prompt content used per line-of-business analysis — three CI-green
+commits on top of the Phase 1–5 multi-model system. Not yet deployed.
+
+- **`/admin/gaps` (6a):** editor for `GapDefinition` — the `detectionLogic.check`
+  text is per-LoB prompt content fed verbatim into the gap-analysis prompt.
+  Wraps the previously ORPHANED versioned `updateGapDefinition` action; edits
+  are uncached and apply to the next run. Save-time policy via the new shared
+  `lib/services/ai/prompt-policy.ts` (`validateOperatorGuidance`): rejects
+  advice language (EN+EL — `ADVICE_LANGUAGE` moved here, the eval scorer
+  re-imports it), persona overrides («ασφαλιστικός σύμβουλος» is a licensed IDD
+  role), reserved spotlight delimiters, and injection-scoring hits.
+- **`/admin/ai/settings` (6b):** runtime model config. New `AiRuntimeConfig` +
+  revision table (migration `20260731090000_ai_runtime_config`); rows are
+  binary — `auto` (pure env) or fully pinned provider+model. Cached reader
+  (`runtime-config.ts`, tag `ai-runtime-config`, never throws → env behavior).
+  Precedence: explicit `req.provider` (failover ladder) > per-operation pin >
+  primaryProvider pin > env; a pinned model applies ONLY when its provider
+  matches the resolved provider, so failover never sends a model name to the
+  wrong vendor. Threaded through the gateway, orchestrator (createRun + step
+  attempts), quick extract route and batch translator (gemini-only row).
+  Save-time: missing-API-key provider blocked; unknown-to-TOKEN_COSTS model
+  warns. Writes are versioned + audited (`UPDATE_AI_MODEL_CONFIG`) and
+  revalidate the tag, so pins land on the next request.
+- **`/admin/ai/prompts` (6c):** operator-guidance overrides. New
+  `AiPromptOverride` + revision table (migration
+  `20260731120000_ai_prompt_overrides`; `lineOfBusiness` sentinel `__global__`,
+  unique per (operation, LoB)). Guidance is **additive only** — rendered under
+  an "OPERATOR GUIDANCE (…supplements but never overrides the rules above)"
+  label after the canonical task rules, BEFORE the `<untrusted_policy_data>`
+  envelope, in all five builders; it can never replace the test-enforced
+  informational-assistant persona (validated at save, delimiters re-stripped at
+  render). Resolution: exact (operation, LoB) → global → none; the deep
+  pipeline resolves with `policy.lineOfBusiness`, Q&A passes the policy's LoB,
+  risk and the quick extract use global-only. Cached reader
+  (`prompt-overrides.ts`, tag `ai-prompt-overrides`, never throws).
+- **Monitoring:** `/admin/ai` gained Active configuration (per-op
+  provider/model + env-default vs admin-override source), Prompt overrides
+  (identity only — never guidance text on the dashboard), and Usage by line of
+  business (raw `token_usage JOIN policies` aggregate; policy-linked rows
+  only). `/api/admin/ai-performance` returns the extended snapshot; no new API
+  routes, so the auth inventory is unchanged.
+- **Deploy step (both migrations):** `migrate deploy` can't run against the
+  pooler (P1017 advisory-lock issue below) — apply
+  `20260731090000_ai_runtime_config` and `20260731120000_ai_prompt_overrides`
+  to dev+prod via the Supabase MCP path with matching `_prisma_migrations`
+  rows, as done for `20260730120000_insurer_reference_enrichment`.
+- **Validation loop:** the admin UIs point at `npm run eval`
+  (`EVAL_ALLOW_PAID=1` for real providers) to compare scores before/after a
+  model pin or guidance change. ~35 new unit tests across prompt policy,
+  reader/precedence contracts, admin parse rules, write-path source
+  assertions, and prompt-position/wiring guarantees.
+
 ## Multi-model AI system: guardrails, routing, fallbacks, observability, evals — 2026-07-30 — branch `claude/nifty-tesla-m80f2p`
 
 Built the multi-model AI system in five CI-green commits. Each phase passes the

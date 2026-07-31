@@ -156,7 +156,7 @@ export class GeminiAIService implements IAIService {
 
       // Shared canonical extraction prompt (lib/services/ai/prompts.ts) —
       // the output contract is the schema block appended below.
-      const prompt = buildExtractionPrompt()
+      const prompt = buildExtractionPrompt(options?.operatorGuidance)
 
       logger('info', 'Starting Gemini extraction', {
         fileName: document.fileName,
@@ -303,7 +303,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
 
       // When structured context is available, use compact JSON instead of re-sending the PDF
       // This saves ~50-100K input tokens per call
-      const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, options?.structuredContext, hasDocument)
+      const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, options?.structuredContext, hasDocument, options?.operatorGuidance)
 
       const parts: any[] = [{ type: 'text', text: prompt }]
       if (document) {
@@ -442,7 +442,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
     const modelName = options?.modelOverride || env.GEMINI_MODEL_CLARITY_ANALYSIS
 
     // When structured context is available, use compact JSON instead of re-sending the PDF
-    const prompt = buildClarityPrompt(metadata, checklist, options?.structuredContext, !!document)
+    const prompt = buildClarityPrompt(metadata, checklist, options?.structuredContext, !!document, options?.operatorGuidance)
 
     const ClaritySchema = z.object({
       plainLanguageSummary: z.string().describe("Plain-language summary in Greek"),
@@ -583,7 +583,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
       const model = this.aiProvider((options?.modelOverride || env.GEMINI_MODEL_QA) as string)
 
       const parts: any[] = [
-        { type: 'text', text: buildQaPrompt(metadata, question, options?.structuredContext?.acordData) },
+        { type: 'text', text: buildQaPrompt(metadata, question, options?.structuredContext?.acordData, options?.operatorGuidance) },
       ]
       if (document) {
         parts.push({
@@ -679,7 +679,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
       })).describe('Positive aspects of current coverage (max 3)'),
     })
 
-    const prompt = buildRiskProfilePrompt(profile, existingPolicies)
+    const prompt = buildRiskProfilePrompt(profile, existingPolicies, options?.operatorGuidance)
 
     try {
       const result = await withTimeoutAndRetry(

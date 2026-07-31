@@ -216,6 +216,12 @@ export interface AITrackingOptions {
      *  When provided with document=null, AI services should build context from this JSON
      *  rather than requiring the raw document, saving 50-100K input tokens per call. */
     structuredContext?: AIPolicyExtractionResponse
+    /** Admin-configured operator guidance (validated at save time by
+     *  validateOperatorGuidance), rendered ADDITIVELY into the prompt under an
+     *  OPERATOR GUIDANCE label — it supplements the canonical task rules and can
+     *  never replace the compliance persona. Resolved per call from
+     *  lib/services/ai/prompt-overrides.ts (exact LoB match, then global). */
+    operatorGuidance?: string
 }
 
 // ── Risk Profile Analysis (Phase 2) ─────────────────────────────────

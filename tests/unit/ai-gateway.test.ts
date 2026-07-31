@@ -32,6 +32,11 @@ vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
 vi.mock("@/lib/services/ai/runtime-config", () => ({
     getAiRuntimeOverrides: vi.fn(async () => ({})),
 }))
+// ...and the operator-guidance map; {} = no guidance configured.
+vi.mock("@/lib/services/ai/prompt-overrides", async (importOriginal) => ({
+    ...(await importOriginal<object>()),
+    getPromptOverrides: vi.fn(async () => ({})),
+}))
 
 const askQuestion = vi.fn(async (..._args: any[]) => "answer")
 const analyzeRiskProfile = vi.fn(async (..._args: any[]) => ({ riskLevel: "low" }))

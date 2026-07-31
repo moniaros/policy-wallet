@@ -1309,6 +1309,8 @@ export async function askPolicyQuestion(policyId: string, question: string) {
                 policyId: policy.id,
                 userTier: tier,
                 structuredContext,
+                // Selects a LoB-scoped operator-guidance override when one exists.
+                lineOfBusiness: policy.lineOfBusiness,
             }
         )
 

@@ -67,6 +67,24 @@ export interface AiPerformanceSnapshot {
         model: string | null
         source: "db_override" | "env_default"
     }>
+    /** Admin operator-guidance overrides (/admin/ai/prompts) — identity + state
+     *  only, never the guidance text itself (no prompt content on dashboards). */
+    promptOverrides: Array<{
+        operation: string
+        lineOfBusiness: string
+        version: number
+        isActive: boolean
+        updatedAt: string
+    }>
+    /** Policy-linked token usage grouped by the policy's line of business.
+     *  Usage rows without a policyId (risk profile, quick extract before a
+     *  policy exists) are deliberately excluded — label it "policy-linked". */
+    usageByLineOfBusiness: Array<{
+        lineOfBusiness: string
+        calls: number
+        totalTokens: number
+        costEur: number
+    }>
 }
 
 /** actionTypes written by the Phase 1 zero-cost guardrail. */
@@ -96,6 +114,8 @@ export async function getAiPerformanceSnapshot(
         routingGroups,
         guardrailGroups,
         trend,
+        promptOverrideRows,
+        usageByLineOfBusiness,
     ] = await Promise.all([
         db.policyAnalysisRun.groupBy({
             by: ["status"],
@@ -143,6 +163,11 @@ export async function getAiPerformanceSnapshot(
             _count: { _all: true },
         }),
         getDailyUsageTrends(trendDays),
+        db.aiPromptOverride.findMany({
+            orderBy: [{ operation: "asc" }, { lineOfBusiness: "asc" }],
+            select: { operation: true, lineOfBusiness: true, version: true, isActive: true, updatedAt: true },
+        }),
+        loadUsageByLineOfBusiness(since),
     ])
 
     const byStatus: Record<string, number> = {}
@@ -224,7 +249,44 @@ export async function getAiPerformanceSnapshot(
             operations: t.operations,
         })),
         activeConfiguration: await buildActiveConfiguration(),
+        promptOverrides: promptOverrideRows.map((o) => ({
+            operation: o.operation,
+            lineOfBusiness: o.lineOfBusiness,
+            version: o.version,
+            isActive: o.isActive,
+            updatedAt: o.updatedAt instanceof Date ? o.updatedAt.toISOString() : String(o.updatedAt),
+        })),
+        usageByLineOfBusiness,
     }
+}
+
+/**
+ * Policy-linked token usage per line of business, via one raw aggregate over
+ * token_usage JOIN policies (Prisma groupBy cannot group by a relation's
+ * column). NULL policyIds drop out of the inner join by design.
+ */
+async function loadUsageByLineOfBusiness(
+    since: Date
+): Promise<AiPerformanceSnapshot["usageByLineOfBusiness"]> {
+    const rows = await db.$queryRaw<
+        Array<{ lineOfBusiness: string; calls: bigint; totalTokens: bigint; costEur: number }>
+    >`
+        SELECT p.line_of_business AS "lineOfBusiness",
+               COUNT(*)                          AS calls,
+               COALESCE(SUM(tu.total_tokens), 0) AS "totalTokens",
+               COALESCE(SUM(tu.cost_eur), 0)::float8 AS "costEur"
+        FROM token_usage tu
+        JOIN policies p ON p.policy_id = tu.policy_id
+        WHERE tu.created_at >= ${since}
+        GROUP BY p.line_of_business
+        ORDER BY SUM(tu.cost_eur) DESC
+    `
+    return rows.map((r) => ({
+        lineOfBusiness: r.lineOfBusiness,
+        calls: Number(r.calls),
+        totalTokens: Number(r.totalTokens),
+        costEur: Number(r.costEur),
+    }))
 }
 
 /**

@@ -175,7 +175,7 @@ export class AnthropicAIService implements IAIService {
                         {
                             role: "user",
                             content: [
-                                { type: "text", text: buildExtractionPrompt() },
+                                { type: "text", text: buildExtractionPrompt(options?.operatorGuidance) },
                                 {
                                     type: "file",
                                     data: document.data,
@@ -264,7 +264,7 @@ export class AnthropicAIService implements IAIService {
             acordData: AcordDataSchema.optional(),
         })
 
-        const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, options?.structuredContext, !!document)
+        const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, options?.structuredContext, !!document, options?.operatorGuidance)
 
         const parts: any[] = [{ type: "text", text: prompt }]
         if (document) {
@@ -381,7 +381,7 @@ export class AnthropicAIService implements IAIService {
             acordData: AcordDataSchema.optional(),
         })
 
-        const prompt = buildClarityPrompt(metadata, checklist, options?.structuredContext, !!document)
+        const prompt = buildClarityPrompt(metadata, checklist, options?.structuredContext, !!document, options?.operatorGuidance)
 
         const parts: any[] = [{ type: "text", text: prompt }]
         if (document) {
@@ -438,7 +438,7 @@ export class AnthropicAIService implements IAIService {
         const parts: any[] = [
             {
                 type: "text",
-                text: buildQaPrompt(metadata, question, options?.structuredContext?.acordData),
+                text: buildQaPrompt(metadata, question, options?.structuredContext?.acordData, options?.operatorGuidance),
             },
         ]
 
@@ -515,7 +515,7 @@ export class AnthropicAIService implements IAIService {
             })).describe("Positive aspects of current coverage (max 3)"),
         })
 
-        const prompt = buildRiskProfilePrompt(profile, existingPolicies)
+        const prompt = buildRiskProfilePrompt(profile, existingPolicies, options?.operatorGuidance)
 
         try {
             const result = await withTimeoutAndRetry(

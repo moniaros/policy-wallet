@@ -52,6 +52,7 @@ import {
 } from "./token-budget-estimator"
 import { getModelForStep, selectPrimaryProvider, fallbackModelFor, type AiRuntimeOverrides } from "@/lib/services/ai/model-router"
 import { getAiRuntimeOverrides } from "@/lib/services/ai/runtime-config"
+import { getPromptOverrides, resolveOperatorGuidance } from "@/lib/services/ai/prompt-overrides"
 import { detectDeterministicSavings } from "./deterministic-savings"
 import { resolveUserEntitlements, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import {
@@ -1041,6 +1042,15 @@ export class PolicyAnalysisOrchestratorService {
         }
 
         const gapDefinitions = await this.getGapDefinitionsForPolicy(policy.lineOfBusiness)
+
+        // Admin operator guidance, resolved once per attempt (cached reader,
+        // never throws). The deep pipeline knows the policy's line of business,
+        // so LoB-scoped rows beat the operation's global row.
+        const promptOverrides = await getPromptOverrides()
+        const guidanceFor = (
+            operation: "extractPolicyData" | "analyzePolicyClarity" | "analyzeGaps"
+        ) => resolveOperatorGuidance(promptOverrides, operation, policy.lineOfBusiness)
+
         const tokenBudget = estimatePolicyAnalysisTokenBudget({
             hasDocument: policy.documents.length > 0,
             gapDefinitionsCount: gapDefinitions.length,
@@ -1251,6 +1261,7 @@ export class PolicyAnalysisOrchestratorService {
                             remediationType === "provider_failover" || remediationType === "model_fallback"
                                 ? remediationType
                                 : undefined,
+                        operatorGuidance: guidanceFor("extractPolicyData"),
                     })
 
                     const checks = [
@@ -1329,6 +1340,7 @@ export class PolicyAnalysisOrchestratorService {
                                         ? remediationType
                                         : undefined,
                                 structuredContext: extractionStep.result,
+                                operatorGuidance: guidanceFor("analyzePolicyClarity"),
                             }
                         )
                         const avgScore = clarity.checklistScores.length
@@ -1468,6 +1480,7 @@ export class PolicyAnalysisOrchestratorService {
                                         ? remediationType
                                         : undefined,
                                 structuredContext: extractionStep.result,
+                                operatorGuidance: guidanceFor("analyzeGaps"),
                             }
                         )
                         const total = Math.max(gapDefinitions.length, 1)
