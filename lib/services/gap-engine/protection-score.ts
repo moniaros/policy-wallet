@@ -48,13 +48,28 @@ export const SCORE_CATEGORIES: ScoreCategory[] = [
             (p.mortgageAmount != null && Number(p.mortgageAmount) > 0) ||
             (p.hasLoans && p.loanAmount != null && Number(p.loanAmount) > 0),
     },
+    // Home and motor were ONE category ("Property & Motor", weight 20) covered
+    // by either lob. A household that owns a home and a car but insures only
+    // the car therefore scored 100% here: the score reported them protected
+    // while their house was uninsured, and the reverse hid a missing motor
+    // policy — which is also the legal minimum for driving in Greece. They are
+    // different risks, bought separately, and must be scored separately. The
+    // combined weight is unchanged at 20 so no other category shifts.
     {
         key: "property",
-        label: { en: "Property & Motor", el: "Ακίνητα & Αυτοκίνητο" },
-        weight: 20,
+        label: { en: "Home", el: "Κατοικία" },
+        weight: 10,
         essential: true,
-        coveredByLobs: ["home", "motor"],
-        appliesWhen: (p) => p.ownsHome || p.vehiclesCount > 0,
+        coveredByLobs: ["home"],
+        appliesWhen: (p) => p.ownsHome,
+    },
+    {
+        key: "motor",
+        label: { en: "Motor", el: "Αυτοκίνητο" },
+        weight: 10,
+        essential: true,
+        coveredByLobs: ["motor"],
+        appliesWhen: (p) => p.vehiclesCount > 0,
     },
     {
         key: "income",

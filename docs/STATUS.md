@@ -5,6 +5,23 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-05 (μερικώς) — the score stopped hiding an uninsured home — 2026-07-30
+
+PR #225. 2657/2657 unit tests, 6/6 gates.
+
+Το `home` και το `motor` μοιράζονταν **μία** κατηγορία score («Property &
+Motor», weight 20) που ικανοποιούνταν από **οποιοδήποτε** από τα δύο. Νοικοκυριό
+με σπίτι και αυτοκίνητο που ασφάλιζε μόνο το αυτοκίνητο έπαιρνε **100%**: το
+σκορ έλεγε ότι είναι καλυμμένο ενώ το σπίτι ήταν ανασφάλιστο. Τώρα δύο
+κατηγορίες από 10 — συνολικό βάρος αμετάβλητο, καμία άλλη κατηγορία δεν
+μετακινείται.
+
+**Τα 2649 tests πέρασαν και πριν και μετά** — καμία δοκιμή δεν κάλυπτε τη
+συμπεριφορά. 8 νέα, mutation-tested.
+
+**Δεν έγινε:** ο δομημένος χάρτης ελληνικών καλύψεων αυτοκινήτου και τα golden
+tests — απαιτούν εκτέλεση του pipeline πάνω σε πραγματικά PDF (ΒΔ + AI provider).
+
 ## WP-23 (μερικώς) — the /trust page exists — 2026-07-30
 
 PR #225. 2649/2649 unit tests, 6/6 gates, build επαληθευμένο.
