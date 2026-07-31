@@ -1558,6 +1558,7 @@ export const el = {
             noExpirationsTitle: 'Καμία λήξη τους επόμενους 6 μήνες',
             noExpirationsBody: 'Θα σας ειδοποιήσουμε εγκαίρως πριν από κάθε ανανέωση.',
             daysShort: 'ημ.',
+            moreRenewals: '{count} ακόμη ανανεώσεις',
             aiAnalysis: 'Ανάλυση AI',
             gapsNeedReview: 'Εντοπίστηκαν {count} σημεία που αξίζουν έλεγχο.',
             coverageStable: 'Η κάλυψή σας φαίνεται σταθερή σήμερα.',

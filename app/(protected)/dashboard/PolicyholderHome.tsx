@@ -12,6 +12,7 @@ import { provisionalProtectionScore } from "@/lib/services/gap-engine/protection
 import { CircleHelp, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
+import { buildRenewalTimeline } from "@/lib/wallet/renewal-timeline"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
 import { premiumExclusionNote } from "@/lib/wallet/premium-exclusion-note"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
@@ -140,13 +141,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     const insurerCount = new Set(
         activePolicies.map((policy) => policy.insurerName).filter(Boolean)
     ).size
-    const sixMonthsOut = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000)
-    const upcomingRenewals = policies
-        .map((policy) => ({ policy, endDate: resolvePolicyLifecycle(policy, now).endDate }))
-        .filter((entry): entry is { policy: typeof entry.policy; endDate: Date } =>
-            entry.endDate !== null && entry.endDate > now && entry.endDate <= sixMonthsOut
-        )
-        .sort((a, b) => a.endDate.getTime() - b.endDate.getTime())
+    // The window, the ordering and the display cap live in one tested place now
+    // — the card used to print the CAPPED length as the renewal count, so nine
+    // due renewals were reported as six.
+    const renewalTimeline = buildRenewalTimeline(
+        policies,
+        (policy) => resolvePolicyLifecycle(policy, now).endDate,
+        now
+    )
+    const upcomingRenewals = renewalTimeline.items
 
     const recentDocuments = policies
         .flatMap((policy) =>
@@ -247,7 +250,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         t.status
     )
 
-    const renewalItems = upcomingRenewals.slice(0, 6).map(({ policy, endDate }) => {
+    const renewalItems = upcomingRenewals.map(({ policy, endDate }) => {
         const branch = normalizeBranch(policy.lineOfBusiness)
         return {
             id: policy.id,
@@ -419,6 +422,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     <RenewalsTimelineCard
                         items={renewalItems}
+                        total={renewalTimeline.total}
+                        hidden={renewalTimeline.hidden}
                         hasPolicies={policies.length > 0}
                         showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
                         labels={{
@@ -430,6 +435,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             noExpirationsTitle: home.noExpirationsTitle,
                             noExpirationsBody: home.noExpirationsBody,
                             daysShort: home.daysShort,
+                            moreRenewals: home.moreRenewals,
                         }}
                     />
                 </div>

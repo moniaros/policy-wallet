@@ -1548,6 +1548,7 @@ export const en: TranslationKeys = {
             noExpirationsTitle: 'No expirations in the next 6 months',
             noExpirationsBody: 'We will alert you well before every renewal.',
             daysShort: 'd',
+            moreRenewals: '{count} more renewals',
             aiAnalysis: 'AI Analysis',
             gapsNeedReview: '{count} coverage points need review.',
             coverageStable: 'Your coverage looks stable today.',

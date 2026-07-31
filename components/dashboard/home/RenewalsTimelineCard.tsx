@@ -20,11 +20,22 @@ export interface RenewalItem {
  */
 export function RenewalsTimelineCard({
     items,
+    total,
+    hidden,
     hasPolicies,
     showUpgradeTeaser,
     labels,
 }: {
     items: RenewalItem[]
+    /**
+     * Renewals in the window, INCLUDING any beyond the display cap. The heading
+     * used to print `items.length`, so a household with nine renewals due was
+     * told it had six — a wrong count about the reader's own portfolio, not a
+     * truncated list.
+     */
+    total: number
+    /** How many the cap left out. Shown, never swallowed. */
+    hidden: number
     hasPolicies: boolean
     showUpgradeTeaser: boolean
     labels: {
@@ -36,15 +47,16 @@ export function RenewalsTimelineCard({
         noExpirationsTitle: string
         noExpirationsBody: string
         daysShort: string
+        moreRenewals: string
     }
 }) {
     return (
         <div className="pw-card pw-pad">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
-                {items.length > 0 && (
+                {total > 0 && (
                     <p className="text-micro font-semibold text-muted-foreground">
-                        {items.length} {labels.policiesSuffix}
+                        {total} {labels.policiesSuffix}
                     </p>
                 )}
             </div>
@@ -110,6 +122,20 @@ export function RenewalsTimelineCard({
                                 </Link>
                             )
                         })}
+                        {/* What the cap left out. A list that stops at six with
+                            no sign there is a seventh reads as "these are all
+                            of them" — and the ones dropped are the furthest
+                            out, which is the group a six-month view exists to
+                            surface early. */}
+                        {hidden > 0 && (
+                            <Link
+                                href="/renewals"
+                                className="flex items-center justify-center gap-1 rounded-xl border border-dashed border-black/10 p-2.5 text-xs font-semibold text-primary transition hover:bg-black/[0.03] dark:border-white/15 dark:text-mint dark:hover:bg-white/[0.03]"
+                            >
+                                {labels.moreRenewals.replace("{count}", String(hidden))}
+                                <ArrowRight className="h-3 w-3" />
+                            </Link>
+                        )}
                     </div>
                 )}
                 {/* Trigger D: smart renewal reminders teaser for free tier */}
