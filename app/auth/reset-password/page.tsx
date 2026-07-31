@@ -1,9 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import { ibmPlexSans } from "@/lib/fonts"
 import { Suspense, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { IBM_Plex_Sans } from "next/font/google"
 import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -12,11 +12,6 @@ import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, Lock, Shiel
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { resetPasswordWithToken } from "../actions"
-
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 // Lang-aware so the Zod messages the form renders (errors.*.message) are
 // localised — they were hardcoded English, so a Greek user resetting their

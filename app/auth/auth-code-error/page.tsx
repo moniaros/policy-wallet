@@ -1,15 +1,10 @@
 "use client"
 
 import Link from "next/link"
+import { ibmPlexSans } from "@/lib/fonts"
 import { AlertTriangle } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { IBM_Plex_Sans } from "next/font/google"
-
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 export default function AuthCodeErrorPage() {
     const { language } = useLanguage()

@@ -5,6 +5,27 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-17 (μερικώς) — fonts consolidated; a CI-breaking regression of mine fixed — 2026-07-30
+
+PR #225. 2632/2632 unit tests, 6/6 gates, **production build verified**.
+
+**Γραμματοσειρές.** Υπήρχαν 10 ξεχωριστές κλήσεις `next/font` (η Inter του root,
+4 διπλότυπες Inter, 4 IBM Plex Sans) και **9 από τις 10 χωρίς `display: swap`** —
+ο browser κρύβει το κείμενο μέχρι να φορτώσει, δηλαδή σε ελληνικό subset και
+αργή σύνδεση λευκή σελίδα στις πρώτες οθόνες. Τώρα ένα `lib/fonts.ts`.
+`next.config.ts`: images (AVIF/WebP + remotePatterns από env), compress,
+optimizePackageImports για framer-motion.
+
+**⚠️ Παλινδρόμηση δική μου από το WP-01.** Ο production guard του `lib/env.ts`
+απαιτούσε AI key, και το `next build` τρέχει με `NODE_ENV=production` ενώ το CI
+χτίζει **χωρίς κανένα AI key**. Θα είχε σπάσει το CI στο πρώτο commit. Ο έλεγχος
+εξαιρεί πλέον το build phase· η πραγματική εγγύηση είναι ο factory σε χρόνο
+αιτήματος. Βρέθηκε **μόνο επειδή έτρεξα το build** — lint/types/tests ήταν όλα
+πράσινα.
+
+**Διόρθωση μέτρησης:** το «unoptimized hero PNG στο LCP path» δεν υπάρχει — τα
+μεγάλα assets στο `public/` δεν αναφέρονται από πουθενά. Raw `<img>`: 11, όχι 13.
+
 ## WP-26 (μερικώς) — sold-but-unbuilt features are now declared — 2026-07-30
 
 PR #225. 2626/2626 unit tests, 6/6 gates.

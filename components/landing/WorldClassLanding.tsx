@@ -1,5 +1,5 @@
-import { Inter } from "next/font/google"
 import Link from "next/link"
+import { inter } from "@/lib/fonts"
 import { ArrowRight, Upload, Sparkles, CheckCircle } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
 import type { LandingLocale } from "@/types/landing-content"
@@ -13,8 +13,6 @@ import type { PartnerOfferView } from "@/lib/partner-offers/matching"
 import { PolicyWalletWidget } from "@/components/landing/PolicyWalletWidget"
 import { ServicesGrid } from "@/components/landing/ServicesGrid"
 import { AudienceTabs } from "@/components/landing/AudienceTabs"
-
-const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
 interface WorldClassLandingProps {
     locale: LandingLocale

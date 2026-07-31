@@ -1,11 +1,11 @@
 "use client"
 
 import Link from "next/link"
+import { inter } from "@/lib/fonts"
 import { useMemo, useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { Inter } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Mail, ShieldCheck } from "lucide-react"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
@@ -13,11 +13,6 @@ import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { resetPasswordForEmail } from "../actions"
-
-const inter = Inter({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 // Lang-aware: the Zod message the form renders (errors.email.message) was
 // hardcoded English, so a Greek user with an invalid email saw "Please provide a

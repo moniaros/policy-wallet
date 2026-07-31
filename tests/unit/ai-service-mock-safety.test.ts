@@ -9,6 +9,7 @@
  * These tests pin the selection matrix at source level: absence of config is
  * never consent, and an explicit opt-in is always required.
  */
+import { readFileSync } from "node:fs"
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
@@ -144,6 +145,24 @@ describe("AI provider selection matrix", () => {
         const { getActiveAIProvider } = await freshFactory()
 
         expect(getActiveAIProvider()).toBeNull()
+    })
+})
+
+describe("production boot guard", () => {
+    it("does not demand a runtime AI key during next build", async () => {
+        // CI builds with RATELIMIT_ALLOW_LOCAL and NO provider key — a build
+        // artifact never calls a provider, but page-data collection imports
+        // these modules with NODE_ENV=production. Requiring a key here failed
+        // every CI build; the real guarantee is the factory throwing at request
+        // time. Regression introduced and caught by running the build itself.
+        const source = readFileSync("lib/env.ts", "utf-8")
+        expect(source).toContain("phase-production-build")
+    })
+
+    it("still demands a key (or explicit mock) outside the build phase", () => {
+        const source = readFileSync("lib/env.ts", "utf-8")
+        expect(source).toContain("AI_ALLOW_MOCK")
+        expect(source).toMatch(/GEMINI_API_KEY \| ANTHROPIC_API_KEY \| OPENAI_API_KEY/)
     })
 })
 

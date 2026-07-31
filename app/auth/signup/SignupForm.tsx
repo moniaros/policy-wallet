@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useMemo, useState, Suspense } from "react"
+import { inter } from "@/lib/fonts"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Inter } from "next/font/google"
 import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -16,8 +16,6 @@ import { buildSyntheticEmailFromPhone, normalizeGreekMobile } from "@/lib/auth/p
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
-
-const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
 const signupSchema = z.object({
     mobileNumber: z.string().min(1, "mobile_required").refine((value) => Boolean(normalizeGreekMobile(value)), "mobile_invalid"),

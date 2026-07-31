@@ -414,7 +414,7 @@ state αξιόπιστη πηγή αλήθειας για progress UIs.*
 - **Owner action:** live Stripe keys στο admin (σήμερα TEST mode σε prod —
   refund/cancel/credit χτυπούν το test API).
 
-#### ☐ WP-17 — Assets & bundle performance (M) — R6
+#### ◐ WP-17 — Assets & bundle performance (M) — ΜΕΡΙΚΩΣ 2026-07-30
 - **Στόχος:** το LCP της landing να μην είναι unoptimized PNG, οι ελληνικοί
   χαρακτήρες να μην αναβοσβήνουν αόρατοι, οι βαριές βιβλιοθήκες να μην
   φορτώνουν στο first paint.
@@ -429,6 +429,39 @@ state αξιόπιστη πηγή αλήθειας για progress UIs.*
 - **Acceptance:** Lighthouse mobile στη landing ≥85 τοπικά (γίνεται CI budget
   στο WP-20)· κανένα `<img>` στο `app/` (grep test)· first-load-JS πίνακας
   πριν/μετά στο WP note, shared chunk ≤150KB gz.
+
+> **✅ Έγινε.**
+> - **Γραμματοσειρές — το πραγματικό εύρημα.** Υπήρχαν **10** ξεχωριστές
+>   κλήσεις `next/font`: η Inter του root, **4 διπλότυπες** Inter με στατικά
+>   βάρη, και **4 IBM Plex Sans** σε auth σελίδες. Κάθε κλήση είναι δικό της
+>   font loading, άρα τα διπλότυπα ξανακατέβαζαν την Inter. Χειρότερα, **9 από
+>   τις 10 δεν είχαν `display: "swap"`** — ο browser κρύβει το κείμενο μέχρι να
+>   φτάσει η γραμματοσειρά (FOIT), δηλαδή σε ελληνικό subset και σε αργή
+>   σύνδεση, **λευκή σελίδα** ακριβώς στις οθόνες που βλέπει πρώτες ένας νέος
+>   χρήστης. Τώρα ένα `lib/fonts.ts`, μία δήλωση ανά οικογένεια, swap παντού,
+>   greek subset παντού.
+> - **`next.config.ts`:** `images` (AVIF/WebP + remotePatterns από env, όπως το
+>   CSP origin), `compress: true`, `optimizePackageImports` για framer-motion
+>   (26 importers· το lucide-react είναι ήδη στο default list του Next).
+>
+> **⚠️ Παλινδρόμηση που εισήγαγα εγώ στο WP-01 και βρέθηκε εδώ.** Ο production
+> guard του `lib/env.ts` απαιτούσε AI key — και το `next build` τρέχει με
+> `NODE_ENV=production`, ενώ το **CI χτίζει χωρίς κανένα AI key** (δίνει μόνο
+> `RATELIMIT_ALLOW_LOCAL`). Θα είχε σπάσει το CI στο πρώτο commit. Ο έλεγχος
+> εξαιρεί πλέον το build phase (`NEXT_PHASE`): ένα build artifact δεν καλεί
+> ποτέ provider, και η πραγματική εγγύηση είναι ο factory που ρίχνει σε χρόνο
+> αιτήματος. **Βρέθηκε μόνο επειδή έτρεξα το build** — τα gates lint/types/
+> tests ήταν όλα πράσινα.
+>
+> **☐ Δεν έγινε:** μετανάστευση των 11 raw `<img>` σε `next/image` (είναι
+> avatars/λογότυπα και προεπισκοπήσεις εγγράφων από signed URLs με λήξη —
+> χρειάζονται προσοχή στα cache keys και οπτικό έλεγχο), dynamic imports,
+> bundle-analyzer μέτρηση.
+>
+> **Διόρθωση μέτρησης:** το «unoptimized hero PNG στο LCP path» **δεν
+> υπάρχει** — τα μεγάλα PNG/JPG στο `public/` δεν αναφέρονται από κανένα
+> component· είναι νεκρά assets στο repo, όχι πρόβλημα LCP. Και τα raw `<img>`
+> είναι **11**, όχι 13.
 
 #### ☐ WP-18 — Query scale: indexes, pagination, όρια (M) — R1, R6, R5
 - **Στόχος:** καμία σελίδα δεν διαβάζει ολόκληρο βιβλίο πελατών unbounded· τα

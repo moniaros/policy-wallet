@@ -1,13 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { inter } from "@/lib/fonts"
 import { Suspense } from "react";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin", "greek"],
-  variable: "--font-inter",
-  display: "swap",
-});
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Toaster } from "sonner";

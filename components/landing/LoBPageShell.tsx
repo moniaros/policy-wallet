@@ -1,13 +1,11 @@
 import React from "react"
+import { inter } from "@/lib/fonts"
 import Link from "next/link"
-import { Inter } from "next/font/google"
 import { ArrowRight } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { PublicHeader } from "@/components/public/PublicHeader"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { SKIP_LINK_TARGET_ID } from "@/lib/nav/public-nav"
-
-const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
 interface LoBPageShellProps {
     children: React.ReactNode

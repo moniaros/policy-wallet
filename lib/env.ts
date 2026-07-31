@@ -111,14 +111,22 @@ if (parsedEnv.NODE_ENV === "production") {
 
     // The mock AI provider fabricates policy data ("Mock Insurance Co.",
     // «Εικονική εξήγηση») for any document and renders identically to a real
-    // analysis. Production must never reach it by accident: either a real
-    // provider key is present, or mock is explicitly and knowingly opted into.
+    // analysis. A production RUNTIME must never reach it by accident: either a
+    // real provider key is present, or mock is explicitly opted into.
+    //
+    // Skipped during `next build`. A build artifact never calls a provider —
+    // page-data collection imports these modules with NODE_ENV=production, so
+    // requiring a runtime key here would fail every CI build (which sets
+    // RATELIMIT_ALLOW_LOCAL for exactly this reason and has no AI key). The
+    // real guarantee is enforced where it matters: the AI factory throws at
+    // request time rather than silently returning the mock.
+    const isBuildPhase = process.env.NEXT_PHASE === "phase-production-build"
     const hasRealProviderKey = Boolean(
         parsedEnv.GEMINI_API_KEY || parsedEnv.ANTHROPIC_API_KEY || parsedEnv.OPENAI_API_KEY
     )
     const mockExplicitlyAllowed =
         parsedEnv.AI_ALLOW_MOCK === "1" || parsedEnv.AI_SERVICE_TYPE === "mock"
-    if (!hasRealProviderKey && !mockExplicitlyAllowed) {
+    if (!isBuildPhase && !hasRealProviderKey && !mockExplicitlyAllowed) {
         missing.push("GEMINI_API_KEY | ANTHROPIC_API_KEY | OPENAI_API_KEY")
     }
 

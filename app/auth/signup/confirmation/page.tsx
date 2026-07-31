@@ -1,9 +1,9 @@
 "use client"
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
+import { inter } from "@/lib/fonts"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Inter } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowRight, CheckCircle2, CreditCard, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
@@ -16,11 +16,6 @@ import { trackLandingEvent } from "@/lib/landing/analytics"
 import { isSyntheticPhoneEmail } from "@/lib/auth/phone-auth"
 import { BillingPeriod, VALID_PLAN_IDS, ValidPlanId, publicPricingContent } from "@/lib/pricing/public-pricing-content"
 import { getSignupCheckpointState } from "./actions"
-
-const inter = Inter({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 function resolvePlanDisplayName(planId: string, language: "el" | "en"): string | null {
     for (const audience of Object.values(publicPricingContent)) {

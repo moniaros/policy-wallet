@@ -19,6 +19,30 @@ const nextConfig: NextConfig = {
     // Pin the app root to avoid workspace root inference from parent lockfiles.
     root: process.cwd(),
   },
+
+  // Serve modern formats to browsers that accept them. There was no `images`
+  // block at all, so every image was delivered exactly as uploaded — and the
+  // ones this product shows (agent photos, agency logos, document previews)
+  // come straight from user uploads at whatever size the phone produced.
+  images: {
+    formats: ["image/avif", "image/webp"],
+    // Remote images live in the Supabase storage bucket for this deployment.
+    // Derived from env for the same reason the CSP origin above is: hardcoding
+    // a project ref breaks the moment the Supabase project changes.
+    remotePatterns: supabaseOrigin
+      ? [{ protocol: "https", hostname: new URL(supabaseOrigin).hostname }]
+      : [],
+  },
+
+  // Explicit rather than implied: gzip/brotli for HTML and JSON responses.
+  compress: true,
+
+  experimental: {
+    // framer-motion is imported by 26 components; without this its whole
+    // surface ships wherever any of them is used. lucide-react (204 importers)
+    // is already in Next's default optimize list.
+    optimizePackageImports: ["framer-motion"],
+  },
   async headers() {
     return [
       {

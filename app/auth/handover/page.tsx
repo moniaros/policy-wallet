@@ -1,17 +1,12 @@
 "use client"
 
 import { useEffect, useState, Suspense } from "react"
+import { ibmPlexSans } from "@/lib/fonts"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { IBM_Plex_Sans } from "next/font/google"
 import { Loader2 } from "lucide-react"
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
-
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 function HandoverContent() {
     const searchParams = useSearchParams()

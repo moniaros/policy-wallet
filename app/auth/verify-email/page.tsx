@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, Suspense } from "react"
+import { ibmPlexSans } from "@/lib/fonts"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { verifyEmailToken } from "./actions"
@@ -8,12 +9,6 @@ import { Loader2 } from "lucide-react"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { IBM_Plex_Sans } from "next/font/google"
-
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
 
 function VerifyEmailContent() {
     const searchParams = useSearchParams()
