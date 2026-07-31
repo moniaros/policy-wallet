@@ -5,6 +5,22 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-27 (μερικώς) — subscriptions now leave an invoice behind — 2026-07-30
+
+PR #225. 2681/2681 unit tests, 6/6 gates.
+
+**Κανένας** κώδικας δεν έγραφε ποτέ γραμμή `Invoice`. Το in-app billing history
+ήταν μονίμως κενό, και ο reconciliation monitor — που μετρά ενεργές πληρωμένες
+συνδρομές χωρίς πρόσφατο τιμολόγιο — χτυπούσε σε **κάθε** συνδρομή. Monitor που
+χτυπά πάντα δεν διαβάζεται· πραγματικό περιστατικό θα ήταν αδιάκριτο.
+
+Εκκρεμότητα που δημιούργησα εγώ: το WP-16 έβαλε αυτό το job σε πρόγραμμα.
+
+Τα ποσά σπάνε σε net + ΦΠΑ με τον ίδιο helper που χρησιμοποιεί το checkout, από
+τη **μεικτή** τιμή που προσφέρθηκε. Best-effort: αποτυχία λογιστικού αρχείου δεν
+στερεί συνδρομή. **Δεν έγιναν:** C3/C7/C4 — απαιτούν φορολογική απόφαση και
+ζωντανό Stripe.
+
 ## WP-14 συμπλήρωμα — η constant-time διόρθωση δεν κάλυπτε κανένα cron — 2026-07-30
 
 PR #225. 2676/2676 unit tests, 6/6 gates.
