@@ -5,6 +5,27 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-24 (μερικώς) — το σενάριο load, με τους φύλακές του — 2026-07-31
+
+PR #225.
+
+Η εκτέλεση θέλει staging· το σενάριο όχι — και είναι το κομμάτι που καθορίζει
+αν η μέτρηση θα αξίζει κάτι. `scripts/load/authed-journey.js`, thresholds **ανά
+λειτουργία** (reads p95<500ms, enqueue p95<2s, errors<1%): ένας ενιαίος αριθμός
+θα άφηνε τις γρήγορες αναγνώσεις να κρύψουν ένα αργό enqueue.
+
+Τρία που αρνείται: **production** (γράφει — denylist + άβολο override), **AI
+spend** (`ENABLE_ANALYSIS=1` ΚΑΙ `aiProviderIsMock: true` από το `/api/health` —
+νέο boolean πεδίο, όχι το όνομα του vendor· άγνωστο = μη ασφαλές), και **να
+περάσει μετρώντας το τίποτα** (χωρίς token κάθε αίτημα κάνει 401 — ομοιόμορφα,
+γρήγορα, αόρατα σε threshold που μετράει μόνο 5xx· abort στο `setup()`, και
+έλεγχος για **200 ακριβώς**, ποτέ «κάτω από 500»).
+
+11 tests· ένα ελέγχει **κάθε διαδρομή απέναντι στο route inventory** — load test
+σε 404 αναφέρει εξαιρετικό latency και δεν σημαίνει τίποτα.
+
+**Δεν έγινε:** η εκτέλεση, Supavisor/Upstash/queue monitoring, evidence — staging.
+
 ## WP-22 (μερικώς) — η πιο μακρά αναμονή ήταν σιωπηλή — 2026-07-31
 
 PR #225.

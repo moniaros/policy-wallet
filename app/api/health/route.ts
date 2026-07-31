@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getActiveAIProvider } from '@/lib/services/ai/ai-service.factory'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,7 +26,14 @@ export async function GET() {
             timestamp: new Date().toISOString(),
             services: {
                 database: 'connected',
-                api: 'operational'
+                api: 'operational',
+                // Whether analyses on this deployment cost real money.
+                // Deliberately a boolean and not the provider's NAME: this
+                // endpoint is public, and the load scenario that reads it
+                // (scripts/load/authed-journey.js) needs to know only whether
+                // enqueueing thousands of runs would bill a real vendor.
+                // Naming the vendor would be disclosure with no added use.
+                aiProviderIsMock: getActiveAIProvider() === 'mock'
             },
             performance: {
                 responseTimeMs: responseTime

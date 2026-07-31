@@ -897,7 +897,7 @@ Phase D ώστε όλο το UX γυάλισμα να προσγειώνεται
 
 ### Phase E — Απόδειξη κλίμακας & θεμέλιο καθημερινής χρήσης
 
-#### ☐ WP-24 — Load rehearsal σε προφίλ 50–100K (M) — R1
+#### ◐ WP-24 — Load rehearsal σε προφίλ 50–100K (M) — ΜΕΡΙΚΩΣ 2026-07-31 — R1
 - **Αρχεία:** `scripts/load/` (k6 baseline υπάρχει με τεκμηριωμένα
   thresholds — επέκταση κατά το δικό του README: seeded users, Supabase
   password-grant tokens, authed διαδρομή wallet→upload→analysis-trigger με
@@ -912,6 +912,37 @@ Phase D ώστε όλο το UX γυάλισμα να προσγειώνεται
   καμία εξάντληση pool, limiter επιβάλλεται across instances (κανένα
   «degraded to in-memory» warning)· snapshot committed. Vacuity floor +
   production build (§0).
+
+> **✅ Έγινε — το σενάριο.** Η *εκτέλεση* θέλει staging· το *σενάριο* όχι, και
+> είναι το κομμάτι που καθορίζει αν η μέτρηση θα αξίζει κάτι όταν τρέξει.
+> Νέο `scripts/load/authed-journey.js`: οι τρεις αναγνώσεις πίσω από κάθε
+> session (`/api/v1/me`, λίστα wallet, protection score) + λεπτομέρεια
+> ασφαλιστηρίου και τα κενά της, με **thresholds ανά λειτουργία** (reads
+> p95<500ms, enqueue p95<2s, errors<1%) — ένας ενιαίος αριθμός θα άφηνε τις
+> γρήγορες αναγνώσεις να κρύψουν ένα αργό enqueue, που είναι ακριβώς αυτό που
+> σπάει πρώτο.
+>
+> Τρία πράγματα που το σενάριο **αρνείται**:
+> - **Να τρέξει σε production.** Γράφει, και ένα load test δεν ξεχωρίζει από
+>   επίθεση. Denylist των production hosts πίσω από επίτηδες άβολο override.
+> - **Να ξοδέψει το AI budget.** Το enqueue είναι κλειστό χωρίς
+>   `ENABLE_ANALYSIS=1`, και ακόμη και τότε ο στόχος πρέπει να αναφέρει
+>   `services.aiProviderIsMock: true` από το `/api/health` (**νέο πεδίο** —
+>   boolean, όχι το όνομα του vendor: το endpoint είναι δημόσιο και το σενάριο
+>   χρειάζεται ένα bit, όχι disclosure). Άγνωστο = μη ασφαλές.
+> - **Να περάσει μετρώντας το τίποτα.** Χωρίς αυθεντικοποιημένο χρήστη κάθε
+>   αίτημα κάνει 401: ομοιόμορφα, γρήγορα, αόρατα σε threshold που μετράει μόνο
+>   5xx. Το `setup()` κάνει abort. Οι αναγνώσεις ελέγχονται για **200 ακριβώς**,
+>   ποτέ «κάτω από 500», για τον ίδιο λόγο.
+>
+> 11 tests, εκ των οποίων ένα ελέγχει **κάθε διαδρομή του σεναρίου απέναντι στο
+> `api-route-policy-inventory.json`** — load test στραμμένο σε 404 αναφέρει
+> εξαιρετικό latency και δεν σημαίνει τίποτα. Mutations: διαδρομή που δεν
+> υπάρχει → 1 αποτυχία· αφαίρεση του zero-token abort → 1.
+>
+> **☐ Δεν έγινε:** η ίδια η εκτέλεση, η παρακολούθηση Supavisor/Upstash/βάθους
+> ουράς και το evidence στο `docs/operations/evidence/` — θέλουν staging
+> (owner action).
 
 #### ◐ WP-25 — Ενέργειες πρόληψης (M) — ΜΕΡΙΚΩΣ 2026-07-30
 - **Στόχος:** το υπάρχον catalog + cron μηχανήματα γίνονται ο καθημερινός

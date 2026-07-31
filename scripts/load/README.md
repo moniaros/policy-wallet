@@ -11,14 +11,29 @@ BASE_URL=https://<staging-url> k6 run scripts/load/public-surface.js
 
 `public-surface.js` covers the unauthenticated hot paths (landing, pricing, product, `/api/health`) plus the public rate-limited `POST /api/v1/consents`. Thresholds: **p95 < 500ms**, **error rate < 1%**. A launch spike hits these first, so they're the smoke test before opening traffic.
 
-## Extending to authenticated journeys
+## Authenticated journey — `authed-journey.js`
 
-The money path (wallet list → upload → analysis trigger → checkout) needs a real Supabase session. To load-test it:
+The 50–100K profile: the three reads behind every session (`/api/v1/me`, the wallet list, the portfolio score) plus a policy detail and its gaps, and — only on request — the analysis enqueue.
 
-1. Seed N test users in staging (`prisma/seed.ts` / `scripts/seed-agent-demo.mjs`).
-2. In a k6 `setup()`, log each in via the Supabase auth REST endpoint (`POST /auth/v1/token?grant_type=password`) and collect the access tokens.
-3. Pass `Authorization: Bearer <token>` on the protected requests.
-4. **Gate AI-triggering requests** — `runPolicyAnalysis`/`review` cost real provider tokens. Point staging at the **mock** AI provider (unset `GEMINI_API_KEY`, or set the mock flag) before load-testing analysis, or you'll burn budget and hit provider rate limits.
+```bash
+BASE_URL=https://<staging> \
+SUPABASE_URL=https://<ref>.supabase.co \
+SUPABASE_ANON_KEY=<anon> \
+LOAD_USERS='u1@example.com:pw,u2@example.com:pw' \
+k6 run scripts/load/authed-journey.js
+```
+
+Seed the users first (`prisma/seed.ts` / `scripts/seed-agent-demo.mjs`); `setup()` exchanges each pair for a Supabase access token and the VUs round-robin over them.
+
+Thresholds are **per operation**, not one global number — a fast read average would otherwise hide a slow enqueue, which is what breaks first: reads **p95 < 500ms**, analysis enqueue **p95 < 2s**, errors **< 1%**.
+
+### What it refuses to do
+
+- **Run against production.** It writes, and a load test is indistinguishable from an attack. The production hosts are denylisted behind a deliberately awkward override.
+- **Spend the AI budget.** Enqueue is off unless `ENABLE_ANALYSIS=1`, and even then the target must report `services.aiProviderIsMock: true` from `/api/health`. Unknown counts as unsafe — the point is not to find out from the invoice.
+- **Pass while measuring nothing.** If no user authenticates, every request 401s: uniform, fast, and invisible to a threshold that only counts 5xx. `setup()` aborts instead. Reads are checked for `200` exactly, never "below 500", for the same reason.
+
+`tests/unit/load-scenario-safety.test.ts` holds these properties, and checks every path the scenario requests against `scripts/api-route-policy-inventory.json` — a load test aimed at a 404 reports excellent latency and means nothing.
 
 ## Targets to validate before ramping traffic
 
