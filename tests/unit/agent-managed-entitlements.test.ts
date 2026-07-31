@@ -9,6 +9,10 @@ vi.mock('@/lib/db', () => ({
         policyAnalysisRun: { count: vi.fn() },
         monthlyTokenUsage: { findUnique: vi.fn(), upsert: vi.fn() },
         tokenBalance: { findUnique: vi.fn() },
+        // canUserUseTokens now also checks the hourly velocity ceiling, which
+        // reads the caller's own TokenUsage rows. Default to a quiet hour so
+        // these budget-branch assertions stay about the monthly budget.
+        tokenUsage: { aggregate: vi.fn(async () => ({ _sum: { totalTokens: 0 } })) },
     },
 }))
 

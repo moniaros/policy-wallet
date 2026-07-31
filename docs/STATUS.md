@@ -5,6 +5,26 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-15 — AI spend is bounded by rate, and watched — 2026-07-30
+
+PR #225. 2593/2593 unit tests, 6/6 gates. **Phase A του SCALE plan ολοκληρώθηκε
+πλην του WP-12.**
+
+Τα budgets ήταν **μόνο μηνιαία**: ένας Plus χρήστης μπορούσε να κάψει 3M tokens
+σε λεπτά, και ένα plan με `null` budget (ρυθμίσιμο από admin) δεν είχε κανένα
+ταβάνι. Τώρα ωριαίο ταβάνι = μηνιαίο/10 (δάπεδο 100K) και **απόλυτο ωριαίο 2M
+ακόμη και για unlimited** — επιβαλλόμενο και στο `reserveTokens`, το μονοπάτι
+από το οποίο περνά κάθε πραγματική δαπάνη. DB-backed κατά συνείδηση: με
+`RATELIMIT_ALLOW_LOCAL=1` και χωρίς Upstash, ένας Redis limiter εκφυλίζεται σε
+per-instance μετρητή· η μέτρηση πάνω στις `TokenUsage` γραμμές είναι
+instance-independent.
+
+Νέο `AI_SPEND_SPIKE`: κάθε προϋπάρχων κανόνας παρακολουθούσε **αποτυχίες**,
+κανένας **κόστος** — ένας βρόχος ολοκληρώνεται κανονικά και απλώς χρεώνει.
+Σύγκριση τελευταίας ώρας με τον μέσο ωριαίο 7 ημερών (>3×), δάπεδο €5, καμία
+ειδοποίηση χωρίς ιστορικό. Τρέχει μέσα από τον υπάρχοντα evaluator — κανένα νέο
+cron.
+
 ## WP-14 — rate limiting is default-deny — 2026-07-30
 
 PR #225. 2580/2580 unit tests, 6/6 gates.

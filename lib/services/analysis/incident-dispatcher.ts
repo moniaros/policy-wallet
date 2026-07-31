@@ -65,12 +65,15 @@ type AnalysisIncidentAlert = {
     windowMinutes: number
     thresholdRatio: number | null
     thresholdCount: number | null
+    /** Free-text context for alerts whose numbers are not run ratios (e.g. spend). */
+    detail?: string
 }
 
 type IncidentSeverity = "critical" | "error" | "warning" | "info"
 
 function mapIncidentSeverity(event: string): IncidentSeverity {
     if (event === "AI_ANALYSIS_FAILURE_RATE_HIGH") return "error"
+    if (event === "AI_SPEND_SPIKE") return "error"
     if (event === "AI_SCHEMA_FAILURE_SPIKE") return "error"
     if (event === "AI_FAILOVER_USAGE_HIGH") return "warning"
     if (event === "AI_TOKEN_BLOCK_SPIKE") return "warning"
@@ -105,7 +108,8 @@ function buildSlackPayload(alert: AnalysisIncidentAlert) {
                         `*${alert.event}* threshold crossed\n` +
                         `Window: ${alert.windowMinutes}m\n` +
                         `Matched: ${alert.matchedRuns}/${alert.totalRuns} (${Math.round(alert.ratio * 100)}%)\n` +
-                        `Threshold: ${thresholdText}`,
+                        `Threshold: ${thresholdText}` +
+                        (alert.detail ? `\n${alert.detail}` : ''),
                 },
             },
         ],
@@ -129,6 +133,7 @@ function buildPagerDutyPayload(alert: AnalysisIncidentAlert, routingKey: string)
                 windowMinutes: alert.windowMinutes,
                 thresholdRatio: alert.thresholdRatio,
                 thresholdCount: alert.thresholdCount,
+                detail: alert.detail ?? null,
             },
         },
     }
@@ -198,7 +203,86 @@ export async function dispatchAnalysisIncidentAlert(
     }
 }
 
+/**
+ * Alert when AI spend suddenly departs from its own normal.
+ *
+ * Every existing rule watches FAILURE ratios — nothing watched cost. A runaway
+ * loop, a pricing change, or a switch to a pricier model is not a failure: it
+ * completes successfully and simply bills more, so it could run for a full
+ * billing period unnoticed. Compares the trailing hour against the mean hour of
+ * the previous 7 days, which needs no configured budget and adapts as real
+ * traffic grows.
+ */
+const SPEND_SPIKE_MULTIPLE = 3
+/** Below this, hourly noise dominates and a multiple means nothing. */
+const SPEND_SPIKE_FLOOR_EUR = 5
+
+export async function evaluateSpendSpike(): Promise<void> {
+    const now = Date.now()
+    const cooldownKey = "AI_SPEND_SPIKE"
+    const lastAt = lastAlertAt.get(cooldownKey)
+    if (lastAt && now - lastAt < 60 * 60 * 1000) return
+
+    const hourAgo = new Date(now - 60 * 60 * 1000)
+    const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000)
+
+    const [lastHour, baseline] = await Promise.all([
+        db.tokenUsage.aggregate({
+            where: { createdAt: { gte: hourAgo } },
+            _sum: { costEur: true },
+        }),
+        db.tokenUsage.aggregate({
+            where: { createdAt: { gte: weekAgo, lt: hourAgo } },
+            _sum: { costEur: true },
+        }),
+    ])
+
+    const hourEur = Number(lastHour._sum.costEur ?? 0)
+    // 7 days minus the hour already counted above.
+    const baselineHourlyEur = Number(baseline._sum.costEur ?? 0) / (7 * 24 - 1)
+
+    if (hourEur < SPEND_SPIKE_FLOOR_EUR) return
+    // No history yet: the floor alone decides, otherwise the first busy hour of
+    // a new deployment would page on a division by ~zero.
+    if (baselineHourlyEur <= 0) return
+    const multiple = hourEur / baselineHourlyEur
+    if (multiple < SPEND_SPIKE_MULTIPLE) return
+
+    lastAlertAt.set(cooldownKey, now)
+    const alert: AnalysisIncidentAlert = {
+        event: "AI_SPEND_SPIKE",
+        ratio: multiple,
+        matchedRuns: 0,
+        totalRuns: 0,
+        windowMinutes: 60,
+        thresholdRatio: SPEND_SPIKE_MULTIPLE,
+        thresholdCount: null,
+        detail:
+            `Spend in the last hour: EUR ${hourEur.toFixed(2)} ` +
+            `vs EUR ${baselineHourlyEur.toFixed(2)}/h over the previous 7 days ` +
+            `(${multiple.toFixed(1)}x).`,
+    }
+
+    logger("error", "AI spend spike detected", {
+        incidentEvent: alert.event,
+        hourEur,
+        baselineHourlyEur,
+        multiple,
+    })
+
+    await dispatchAnalysisIncidentAlert(alert).catch((error) => {
+        logger("warn", "Failed to dispatch spend spike alert", { error })
+    })
+}
+
 export async function evaluateAnalysisIncidentThresholds(): Promise<void> {
+    // Cost is evaluated alongside the failure ratios: it shares the same
+    // cooldown map and the same single call site, so nothing else has to be
+    // scheduled for spend to be watched.
+    await evaluateSpendSpike().catch((error) => {
+        logger("warn", "Spend spike evaluation failed", { error })
+    })
+
     for (const threshold of ALERT_WINDOWS) {
         const now = Date.now()
         const cooldownKey = threshold.event

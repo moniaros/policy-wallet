@@ -255,6 +255,69 @@ export async function getTokenBalance(userId: string) {
 }
 
 /**
+ * Velocity ceiling: how many tokens one user may spend in a rolling hour.
+ *
+ * Budgets were monthly only, so nothing bounded the RATE. A Plus user could
+ * burn a 3M-token month in minutes, and an "unlimited" plan (a null budget —
+ * which admins can set from the plan editor) had no ceiling at all. Monthly
+ * caps limit the bill; they do not limit a runaway loop, a stolen session, or
+ * a script.
+ *
+ * Deliberately DB-backed rather than Redis-backed: production currently runs
+ * with RATELIMIT_ALLOW_LOCAL=1 and no Upstash, so a Redis limiter degrades to
+ * a per-instance counter and effectively disappears at scale. This counts the
+ * user's own `TokenUsage` rows, which is instance-independent by construction
+ * — the same reasoning as the MEDIC suggest backstop.
+ */
+const VELOCITY_WINDOW_MS = 60 * 60 * 1000
+
+/** Absolute hourly ceiling applied even to unlimited (null-budget) plans. */
+const UNLIMITED_HOURLY_TOKEN_CEILING = 2_000_000
+
+/**
+ * Hourly allowance for a plan: a tenth of the monthly budget, so a month
+ * cannot be consumed in under ~10 hours of sustained use, with a floor that
+ * keeps small plans usable in a single sitting.
+ */
+export function hourlyTokenCeiling(monthlyLimit: number | null): number {
+    if (monthlyLimit === null) return UNLIMITED_HOURLY_TOKEN_CEILING
+    return Math.max(Math.ceil(monthlyLimit / 10), 100_000)
+}
+
+/**
+ * Tokens this user has actually spent in the trailing hour.
+ */
+export async function tokensUsedInLastHour(userId: string): Promise<number> {
+    const since = new Date(Date.now() - VELOCITY_WINDOW_MS)
+    const aggregate = await prisma.tokenUsage.aggregate({
+        where: { userId, createdAt: { gte: since } },
+        _sum: { totalTokens: true },
+    })
+    return aggregate._sum.totalTokens ?? 0
+}
+
+/**
+ * Velocity gate. Returns null when the request may proceed, or the refusal
+ * reason. Applied on top of — never instead of — the monthly budget.
+ */
+export async function checkTokenVelocity(
+    userId: string,
+    estimatedTokens: number,
+    monthlyLimit: number | null
+): Promise<{ allowed: true } | { allowed: false; reason: string; retryAfterMs: number }> {
+    const ceiling = hourlyTokenCeiling(monthlyLimit)
+    const usedThisHour = await tokensUsedInLastHour(userId)
+
+    if (usedThisHour + estimatedTokens <= ceiling) return { allowed: true }
+
+    return {
+        allowed: false,
+        reason: 'hourly_rate_exceeded',
+        retryAfterMs: VELOCITY_WINDOW_MS,
+    }
+}
+
+/**
  * Check if user can use tokens for an operation.
  * Accounts for both recorded usage and in-flight reservations.
  */
@@ -276,6 +339,13 @@ export async function canUserUseTokens(
     })
 
     const used = usage ? Number(usage.totalTokens) + Number((usage as any).reservedTokens ?? 0) : 0
+
+    // Velocity first: a monthly budget with room left still must not be
+    // drainable in one burst, and an unlimited plan still has an hourly ceiling.
+    const velocity = await checkTokenVelocity(userId, estimatedTokens, limit)
+    if (!velocity.allowed) {
+        return { allowed: false, reason: velocity.reason }
+    }
 
     if (limit === null || used + estimatedTokens <= limit) {
         return {
@@ -325,8 +395,17 @@ export async function reserveTokens(
     const now = new Date()
     const month = new Date(now.getFullYear(), now.getMonth(), 1)
 
+    // The reservation path is the one every AI operation actually goes through,
+    // so the velocity ceiling has to be enforced HERE too — checking it only in
+    // canUserUseTokens would leave the real spend path uncapped.
+    const velocity = await checkTokenVelocity(userId, estimatedTokens, limit)
+    if (!velocity.allowed) {
+        return { allowed: false, reason: velocity.reason }
+    }
+
     if (limit === null) {
-        // Unlimited tier — ensure row exists, no check needed
+        // Unlimited MONTHLY budget — but the hourly ceiling above still applies,
+        // so "unlimited" no longer means "unbounded in a single burst".
         await prisma.monthlyTokenUsage.upsert({
             where: { userId_month: { userId, month } },
             create: {
