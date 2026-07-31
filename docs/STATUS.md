@@ -5,6 +5,23 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-20 (μερικώς) — a bundle budget now runs in CI — 2026-07-30
+
+PR #225. 2681/2681 unit tests, 6/6 gates + νέο bundle gate.
+
+Δεν υπήρχε **κανένα** size gate, και ο συνηθισμένος τρόπος δεν ήταν διαθέσιμος:
+το build τρέχει σε Turbopack, του οποίου ο πίνακας **δεν εκπέμπει «First Load
+JS»** (το επαλήθευσα τρέχοντας το build· το repo είχε καταγράψει το ίδιο
+αδιέξοδο και έναν ισχυρισμό 448 KB που δεν επαληθεύτηκε ποτέ). Το
+`check-bundle-budget.mjs` μετρά το ίδιο το artifact — gzipped client chunks.
+
+Baseline **2041 KB gz / 142 chunks**, ανοχή 10%, ρητό `--update` ώστε η αύξηση
+να εγκρίνεται σε diff. Mutation-tested και στις δύο κατευθύνσεις· απουσία
+chunks = **αποτυχία, όχι σιωπηλό skip**.
+
+**Δεν έγιναν:** Playwright smoke, axe, Lighthouse — χρειάζονται browser για να
+επαληθευτεί ότι περνούν πριν γίνουν blocking.
+
 ## WP-27 (μερικώς) — subscriptions now leave an invoice behind — 2026-07-30
 
 PR #225. 2681/2681 unit tests, 6/6 gates.

@@ -96,6 +96,12 @@ jobs:
           # A build artifact doesn't rate-limit — allow it without Upstash creds.
           RATELIMIT_ALLOW_LOCAL: '1'
 
+      # Runs on the artifact the step above just produced. Measures the gzipped
+      # client chunks directly: this build uses Turbopack, whose route table
+      # emits no "First Load JS" column, so there is no table to parse.
+      - name: Check bundle budget
+        run: npm run check:bundle
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:

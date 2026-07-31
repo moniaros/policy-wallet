@@ -19,7 +19,8 @@
     "lint:utf8": "node scripts/check-utf8.js",
     "lint:encoding": "node scripts/check-mojibake.js",
     "audit:api-auth": "node scripts/audit-api-auth.js",
-    "verify:migrations": "node scripts/verify-migration-sync.js"
+    "verify:migrations": "node scripts/verify-migration-sync.js",
+    "check:bundle": "node scripts/check-bundle-budget.mjs"
   },
   "prisma": {
     "seed": "ts-node -P prisma/tsconfig.seed.json prisma/seed.ts"
