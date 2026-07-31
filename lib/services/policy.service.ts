@@ -15,6 +15,7 @@ import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from '@/lib/email/
 import { refreshProtectionScore } from '@/lib/services/gap-engine'
 import { resolveCoverageEndDate } from '@/lib/policy-status'
 import { recordConversionEvent } from '@/lib/journey/conversion-events'
+import { enqueueAnalysisRun } from '@/lib/services/analysis/analysis-queue'
 import type { Policy, PolicyDocument } from '@prisma/client'
 import type {
     CreatePolicyInput,
@@ -416,8 +417,54 @@ export class PolicyService extends BaseService {
                 kind: "full_analysis",
                 source: "background_analysis",
             })
-            const run = await orchestrator.createAndExecuteRun(policyId, userId, language)
+            const created = await orchestrator.createRun(policyId, userId)
 
+            // Hand execution to the durable queue when one is configured.
+            //
+            // A FIRST analysis used to run inline inside after(). Server actions
+            // get no maxDuration, so they execute under the platform default
+            // (~10-15s) while a single AI call is allowed up to 180s and a run
+            // makes several — at any real volume the executor was killed
+            // mid-flight and the policy sat 'analyzing' until a reaper noticed.
+            // The three re-run paths already enqueued; only the first analysis,
+            // the one every user hits, did not. Queuing also brings it under the
+            // fleet-wide concurrency cap and QStash's retry budget.
+            //
+            // finalize: the queued consumer must run the post-analysis work
+            // below (dedup/merge, status, notifications). Re-runs enqueue
+            // WITHOUT it and keep their existing behaviour exactly.
+            if (created.status !== 'blocked') {
+                const queued = await enqueueAnalysisRun(created.id, language, { finalize: true })
+                if (queued) return
+                await orchestrator.executeRun(created.id, language)
+            }
+
+            const run = await orchestrator.getRunStatus(created.id, userId)
+
+            await this.finalizeAnalysis(run, policyId, userId, language, startTime)
+        } catch (error) {
+            await this.handleAnalysisFailure(error, policyId, userId, language)
+        }
+    }
+
+    /**
+     * Post-analysis work: interpret the finished run, deduplicate against an
+     * existing policy, flip statuses and notify.
+     *
+     * Extracted from runBackgroundAnalysis so the QStash consumer can run the
+     * identical sequence after a QUEUED execution. Without this the move to the
+     * queue would have silently dropped merge detection, the completion
+     * notification and the policy 'active' transition for every first analysis.
+     *
+     * Throws on failure — callers wrap with handleAnalysisFailure.
+     */
+    async finalizeAnalysis(
+        run: Awaited<ReturnType<import('./analysis/policy-analysis-orchestrator.service').PolicyAnalysisOrchestratorService['getRunStatus']>>,
+        policyId: string,
+        userId: string,
+        language: 'en' | 'el',
+        startTime: number = Date.now()
+    ): Promise<void> {
             if (!run) {
                 throw new Error('Analysis run did not return a result')
             }
@@ -688,43 +735,75 @@ export class PolicyService extends BaseService {
                 policyId,
                 durationMs: Date.now() - startTime
             })
-        } catch (error) {
-            logger('error', 'Background policy analysis failed', {
-                policyId,
-                userId,
-                error: error instanceof Error ? error.message : String(error)
-            })
+    }
 
-            const errorMessage = error instanceof Error ? error.message : String(error)
-            const isTimeout = errorMessage.toLowerCase().includes('timeout')
-            const isTokenLimit = /token budget check failed|monthly_limit_reached|insufficient_tokens|token_limit_blocked/i.test(errorMessage)
-            const currentPolicy = await this.db.policy.findUnique({
-                where: { id: policyId },
-                select: { acordData: true }
-            })
-
-            await this.db.policy.update({
-                where: { id: policyId },
-                data: {
-                    status: 'action_needed',
-                    acordData: {
-                        ...((currentPolicy?.acordData as any) || {}),
-                        processingError: {
-                            message: errorMessage,
-                            code: isTimeout ? 'TIMEOUT' : isTokenLimit ? 'TOKEN_LIMIT_BLOCKED' : 'ANALYSIS_FAILED',
-                            occurredAt: new Date().toISOString(),
-                            retryable: true,
-                        },
-                    },
-                }
-            })
-
-            await this.db.policyDocument.updateMany({
-                where: { policyId },
-                data: { processingStatus: 'failed' }
-            })
-            await this.notifyAnalysisFailed(userId, policyId, language)
+    /**
+     * Finalize a run that was executed by the queue consumer rather than inline.
+     * Resolves the run's own policy/user so the consumer only needs the run id.
+     */
+    async finalizeQueuedAnalysis(runId: string, language: 'en' | 'el'): Promise<void> {
+        const meta = await this.db.policyAnalysisRun.findUnique({
+            where: { id: runId },
+            select: { policyId: true, userId: true },
+        })
+        if (!meta) {
+            logger('warn', 'Cannot finalize queued analysis: run not found', { runId })
+            return
         }
+        const { PolicyAnalysisOrchestratorService } = await import('./analysis/policy-analysis-orchestrator.service')
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        const run = await orchestrator.getRunStatus(runId, meta.userId)
+        try {
+            await this.finalizeAnalysis(run, meta.policyId, meta.userId, language)
+        } catch (error) {
+            await this.handleAnalysisFailure(error, meta.policyId, meta.userId, language)
+        }
+    }
+
+    /**
+     * Shared failure path for an analysis that threw, wherever it ran.
+     */
+    private async handleAnalysisFailure(
+        error: unknown,
+        policyId: string,
+        userId: string,
+        language: 'en' | 'el'
+    ): Promise<void> {
+        logger('error', 'Background policy analysis failed', {
+            policyId,
+            userId,
+            error: error instanceof Error ? error.message : String(error)
+        })
+
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        const isTimeout = errorMessage.toLowerCase().includes('timeout')
+        const isTokenLimit = /token budget check failed|monthly_limit_reached|insufficient_tokens|token_limit_blocked/i.test(errorMessage)
+        const currentPolicy = await this.db.policy.findUnique({
+            where: { id: policyId },
+            select: { acordData: true }
+        })
+
+        await this.db.policy.update({
+            where: { id: policyId },
+            data: {
+                status: 'action_needed',
+                acordData: {
+                    ...((currentPolicy?.acordData as any) || {}),
+                    processingError: {
+                        message: errorMessage,
+                        code: isTimeout ? 'TIMEOUT' : isTokenLimit ? 'TOKEN_LIMIT_BLOCKED' : 'ANALYSIS_FAILED',
+                        occurredAt: new Date().toISOString(),
+                        retryable: true,
+                    },
+                },
+            }
+        })
+
+        await this.db.policyDocument.updateMany({
+            where: { policyId },
+            data: { processingStatus: 'failed' }
+        })
+        await this.notifyAnalysisFailed(userId, policyId, language)
     }
 
     /**

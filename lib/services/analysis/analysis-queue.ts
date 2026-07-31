@@ -24,7 +24,14 @@ function appBaseUrl(): string | null {
  */
 export async function enqueueAnalysisRun(
     runId: string,
-    language: "en" | "el"
+    language: "en" | "el",
+    /**
+     * `finalize` asks the consumer to run the post-analysis sequence
+     * (dedup/merge, status transitions, notifications) after executing. First
+     * analyses need it — that work used to happen inline in the caller. Re-runs
+     * deliberately omit it and keep their existing behaviour.
+     */
+    opts: { finalize?: boolean } = {}
 ): Promise<boolean> {
     const token = process.env.QSTASH_TOKEN
     const base = appBaseUrl()
@@ -34,7 +41,7 @@ export async function enqueueAnalysisRun(
         const client = new Client({ token })
         await client.publishJSON({
             url: `${base}/api/v1/jobs/execute-analysis`,
-            body: { runId, language },
+            body: { runId, language, finalize: opts.finalize === true },
             // Cap concurrent AI analyses across the fleet so a burst can't
             // exceed provider rate limits. Tune with AI_ANALYSIS_PARALLELISM.
             flowControl: {

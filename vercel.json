@@ -60,7 +60,7 @@
     },
     {
       "path": "/api/v1/jobs/reap-stale-analyses",
-      "schedule": "15 5 * * *"
+      "schedule": "*/15 * * * *"
     }
   ]
 }

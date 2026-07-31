@@ -130,7 +130,7 @@ gates. Ένα WP ανά session κατά κανόνα· αποκλίσεις κ�
 - **Reconciliation:** επιβεβαίωσε πρώτα αν το H2 `DROP POLICY` έχει ήδη τρέξει
   out-of-band (`docs/audits/upload-pipeline-security-2026-07.md` §5).
 
-#### ☐ WP-13 — Queue-first analysis + κανονική ανάκαμψη (M) — R1, R7, R5
+#### ☑ WP-13 — Queue-first analysis + κανονική ανάκαμψη (M) — ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-30
 - **Στόχος:** καμία πρώτη ανάλυση inline μέσα σε server-action `after()` με
   platform-default timeout· κολλημένο run ανακάμπτει ≤15 λεπτά χωρίς
   out-of-band ρύθμιση.
@@ -150,6 +150,36 @@ gates. Ένα WP ανά session κατά κανόνα· αποκλίσεις κ�
 - **Acceptance:** unit — enqueue-first ανά site· staging E2E — kill εκτελούμενο
   run → reaper το μαρκάρει failed + retry CTA ≤15 λεπτά· grep-test ότι κανένα
   production path δεν φτάνει `createAndExecuteRun` χωρίς απόπειρα enqueue.
+
+> **Τι έγινε.** Η διόρθωση μπήκε σε **ένα** σημείο αντί για πέντε: το
+> `policyService.runBackgroundAnalysis` (που εξυπηρετεί και τα 5 first-analysis
+> call sites) πλέον κάνει `createRun` → `enqueueAnalysisRun(..., { finalize: true })`
+> και επιστρέφει· inline εκτέλεση μόνο ως fallback όταν δεν υπάρχει QStash.
+>
+> **Ο κίνδυνος που έπρεπε να αποφευχθεί:** το post-analysis (dedup/merge,
+> μετάβαση σε `active`, ειδοποιήσεις ολοκλήρωσης) ζούσε **μέσα** στο
+> `runBackgroundAnalysis` μετά την inline εκτέλεση. Σκέτη μεταφορά στην ουρά θα
+> το είχε σιωπηλά ρίξει για κάθε πρώτη ανάλυση. Γι' αυτό εξήχθη σε
+> `finalizeAnalysis()` + `finalizeQueuedAnalysis(runId)` και ο consumer το
+> καλεί όταν το payload φέρει `finalize: true`. Τα 3 re-run paths στέλνουν
+> `finalize: false` και **κρατούν ακριβώς** τη σημερινή τους συμπεριφορά. Το
+> catch εξήχθη σε κοινό `handleAnalysisFailure` ώστε inline και queued μονοπάτι
+> να αποτυγχάνουν πανομοιότυπα.
+>
+> **Cron cadence:** `reap-stale-analyses` από `15 5 * * *` σε `*/15 * * * *`
+> στο `vercel.json`. Το σχόλιο «Vercel Hobby allows only DAILY crons» ήταν
+> άκυρο — το project τρέχει **11** crons, που το Hobby δεν επιτρέπει καθόλου.
+> Η out-of-band QStash schedule παραμένει ως πλεονάζον trigger.
+>
+> **Per-user concurrency — μεταφέρθηκε στο WP-15, με τεχνικό λόγο.** Το QStash
+> δέχεται **ένα** `flowControl.key` ανά μήνυμα (επαληθεύτηκε στους τύπους του
+> SDK: `FlowControl = { key } & ({ parallelism } | { rate, period })`), οπότε
+> per-user key θα ακύρωνε το fleet-wide cap. Το per-user όριο ανήκει στο
+> application layer μαζί με τα velocity caps του WP-15 (DB-backed, ανεξάρτητο
+> από τον provider, δοκιμάσιμο).
+>
+> 6 unit tests (5 νέα + 1 στο queue payload), **mutation-tested**: αφαίρεση του
+> enqueue → 3 αποτυχίες.
 
 #### ☐ WP-14 — Rate limiting: default-deny (M) — R2, R1
 - **Στόχος:** route ή mutating server action χωρίς δηλωμένη κλάση rate limit

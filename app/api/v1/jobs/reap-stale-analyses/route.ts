@@ -10,11 +10,14 @@ import { logger } from "@/lib/logger"
 // actual state transitions live in the orchestrator (reapStaleRuns) so their
 // shape can never drift from failRun's.
 //
-// Scheduling: Vercel Hobby allows only DAILY crons, so vercel.json runs this
-// once a day as the last resort. The 15-minute cadence comes from a QStash
-// schedule (create once with scripts/setup-qstash-reaper-schedule.mjs) that
-// POSTs here with the forwarded x-cron-secret header. The process-policy
-// pre-flight also reaps opportunistically on user traffic.
+// Scheduling: vercel.json now runs this every 15 minutes directly. It used to
+// be daily "because Vercel Hobby allows only daily crons", with the real
+// cadence delegated to an out-of-band QStash schedule
+// (scripts/setup-qstash-reaper-schedule.mjs) — so if that schedule was never
+// created, worst-case recovery for an orphaned run was ~24h. The project runs
+// 11 crons, which Hobby does not permit at all, so the constraint did not
+// apply. The QStash schedule remains valid as a redundant trigger, and the
+// process-policy pre-flight still reaps opportunistically on user traffic.
 
 // Lease must have been expired this long before the holder is declared dead —
 // QStash redeliveries land within minutes and may still resume the run.

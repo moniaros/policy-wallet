@@ -51,11 +51,30 @@ describe('enqueueAnalysisRun', () => {
         expect(publishJSON).toHaveBeenCalledTimes(1)
         const arg = publishJSON.mock.calls[0][0]
         expect(arg.url).toBe('https://app.example.gr/api/v1/jobs/execute-analysis')
-        expect(arg.body).toEqual({ runId: 'run-42', language: 'el' })
+        // finalize defaults to false: re-run paths must keep their existing
+        // behaviour. Only a FIRST analysis asks the consumer to finalize.
+        expect(arg.body).toEqual({ runId: 'run-42', language: 'el', finalize: false })
         expect(arg.flowControl).toEqual({ key: 'ai-analysis', parallelism: 3 })
         // Sized against the execution lease: redeliveries must outlive a dead
         // executor's ~4-min lease so the 503-on-held-lease resume path can fire.
         expect(arg.retries).toBe(5)
+    })
+
+    it('marks the job for finalization when the caller asks for it', async () => {
+        // A first analysis previously did its post-analysis work (dedup/merge,
+        // status transitions, notifications) inline in the caller. Moving it to
+        // the queue only preserves that if the flag reaches the consumer.
+        process.env.QSTASH_TOKEN = 'tok'
+        process.env.NEXTAUTH_URL = 'https://app.example.gr'
+
+        const queued = await enqueueAnalysisRun('run-77', 'en', { finalize: true })
+
+        expect(queued).toBe(true)
+        expect(publishJSON.mock.calls[0][0].body).toEqual({
+            runId: 'run-77',
+            language: 'en',
+            finalize: true,
+        })
     })
 
     it('falls back to inline (false) when the publish call throws', async () => {

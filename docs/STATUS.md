@@ -5,6 +5,29 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-13 — first analysis moved onto the durable queue — 2026-07-30
+
+PR #225. 2569/2569 unit tests, 6/6 gates.
+
+Κάθε **πρώτη** ανάλυση έτρεχε inline μέσα σε server-action `after()`. Τα server
+actions δεν παίρνουν `maxDuration`, άρα εκτελούνταν στο platform default
+(~10-15s) ενώ μία κλήση AI επιτρέπεται έως 180s και ένα run κάνει πολλές — σε
+πραγματικό φορτίο ο executor σκοτωνόταν στη μέση και το ασφαλιστήριο έμενε
+`analyzing`. Τα 3 re-run paths ήδη έμπαιναν στην ουρά· μόνο η πρώτη ανάλυση,
+αυτή που χτυπά κάθε χρήστης, όχι.
+
+Η διόρθωση μπήκε σε **ένα** σημείο (`runBackgroundAnalysis`, εξυπηρετεί και τα
+5 call sites). **Η παγίδα:** το post-analysis (dedup/merge, μετάβαση σε
+`active`, ειδοποιήσεις) ζούσε μέσα στην inline ροή — σκέτη μεταφορά στην ουρά
+θα το είχε σιωπηλά ρίξει για κάθε πρώτη ανάλυση. Εξήχθη σε `finalizeAnalysis` /
+`finalizeQueuedAnalysis` και ο consumer το καλεί με `finalize: true`· τα re-run
+paths στέλνουν `false` και κρατούν ακριβώς τη σημερινή συμπεριφορά.
+
+`reap-stale-analyses`: daily → `*/15`. Το σχόλιο «Hobby allows only daily
+crons» ήταν άκυρο (11 crons — το Hobby δεν επιτρέπει τόσα). Per-user
+concurrency μεταφέρθηκε στο WP-15: το QStash δέχεται ένα `flowControl.key` ανά
+μήνυμα, οπότε per-user key θα ακύρωνε το fleet-wide cap.
+
 ## WP-01 + WP-02 — mock-provider safety & honest upload lifecycle — 2026-07-30
 
 Branch `claude/policywallet-ethniki-0r0bai`, PR #225. 2563/2563 unit tests,
