@@ -5,6 +5,24 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-25 (μερικώς) — prevention actions, useful when nothing is wrong — 2026-07-30
+
+PR #225. 2701/2701 unit tests, 6/6 gates.
+
+Όλα τα υπόλοιπα στο προϊόν είναι **αντιδραστικά** — ανάλυση, κενά, ανανέωση.
+Τίποτα δεν δίνει λόγο να ανοίξει κανείς την εφαρμογή σε συνηθισμένη εβδομάδα,
+που είναι ακριβώς η προϋπόθεση της «καθημερινής χρήσης». Νέο
+`lib/prevention/prevention-actions.ts`: εποχικές, LOB-αντιστοιχισμένες ενέργειες.
+
+**Συνειδητή απόκλιση:** το πλάνο πρότεινε πεδίο `kind` στο partner catalog
+(migration). Το περιεχόμενο πρόληψης είναι **συντακτικό**, όχι εμπορικό — ως
+στατικό module μένει αναθεωρήσιμο σε diff και δεν χρειάζεται migration. Οι
+δεσμεύσεις τηρούνται: κανένα νέο cron, κανένας νέος cache, τίποτα δεν
+εμφανίζεται όταν τίποτα δεν ταιριάζει.
+
+**Δεν έγιναν:** κάρτα στο dashboard, προώθηση από ασφαλιστή, CTR event —
+θέλουν οπτικό έλεγχο.
+
 ## WP-06 (μερικώς) — home cover now has a real taxonomy — 2026-07-30
 
 PR #225. 2690/2690 unit tests, 6/6 gates.
