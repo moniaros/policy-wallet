@@ -17,7 +17,7 @@ const EXPIRED_HEALTH = {
     id: 'health-1',
     lineOfBusiness: 'health',
     status: 'active', // stale stored string — never recomputed
-    policyNumber: '1651622',
+    policyNumber: 'TEST-HEALTH-0001',
     insurerName: 'ΕΘΝΙΚΗ',
     endDate: new Date('2025-05-22T00:00:00Z'),
     acordData: { policy: { expirationDate: '22-05-2025' } },

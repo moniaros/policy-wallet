@@ -1,8 +1,18 @@
 /**
- * Test fixture: Εθνική Full Health policy #1651622
+ * Test fixture: an Εθνική Full Health policy.
  *
- * Derived from docs/policies/health_ethniki_1.pdf.
- * Policyholder: ΚΟΚΚΑΛΙΑ ΑΡΤΕΜΙΣ
+ * Structure derived from docs/policies/health_ethniki_1.pdf (gitignored, and
+ * deliberately so). The IDENTITY is synthetic and always must be: the source
+ * PDF is a real person's health-insurance policy, and this file is tracked —
+ * committed once, it is in every clone, every CI log and the whole history.
+ * Whoever gitignored the PDFs meant this not to be public; an earlier version
+ * of this fixture carried the real name, surname, email and policy number
+ * anyway, pinned by a test that described them as PII to preserve.
+ *
+ * What the fixture exists for is the SHAPE and the numbers — field mapping,
+ * date formats, premium arithmetic, confidence metadata. None of that needs a
+ * real identity, so none of it has one.
+ *
  * Period: 22/05/2024 – 22/05/2025
  *
  * Premium breakdown:
@@ -23,7 +33,7 @@ import type {
 export const HEALTH_ETHNIKI_1: AIPolicyExtractionResponse = {
     // Required fields
     insurerName: "Η ΕΘΝΙΚΗ",
-    policyNumber: "1651622",
+    policyNumber: "TEST-HEALTH-0001",
     lineOfBusiness: "health",
     startDate: "2024-05-22",
     endDate: "2025-05-22",
@@ -31,10 +41,10 @@ export const HEALTH_ETHNIKI_1: AIPolicyExtractionResponse = {
     coverageSummary:
         "Full Health: hospital care (€1.5M annual limit, €1,500 deductible), diagnostics at AFFIDEA–Ευρωιατρική (€2,000/yr), accident expenses (€2,000/incident), emergency medical assistance, emergency incidents (€1,000/incident, max 3/yr)",
 
-    // Customer identification
-    customerName: "ΑΡΤΕΜΙΣ",
-    customerSurname: "ΚΟΚΚΑΛΙΑ",
-    customerEmail: "artemiskohas@gmail.com",
+    // Customer identification — synthetic, see the file header.
+    customerName: "ΜΑΡΙΑ",
+    customerSurname: "ΠΑΠΑΔΟΠΟΥΛΟΥ",
+    customerEmail: "maria.papadopoulou@example.com",
 
     // Policy exclusions / special conditions
     exclusions: ["10% co-pay for US hospitalisation"],
@@ -69,7 +79,7 @@ export const HEALTH_ETHNIKI_1: AIPolicyExtractionResponse = {
  */
 export const HEALTH_ETHNIKI_1_METADATA: PolicyMetadata = {
     insurerName: "Η ΕΘΝΙΚΗ",
-    policyNumber: "1651622",
+    policyNumber: "TEST-HEALTH-0001",
     lineOfBusiness: "health",
     startDate: new Date("2024-05-22"),
     endDate: new Date("2025-05-22"),

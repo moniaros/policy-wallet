@@ -11,7 +11,7 @@ describe('resolvePolicyLifecycle', () => {
     it('reports expired from the extracted envelope even when the DB column says +1 year', () => {
         const lifecycle = resolvePolicyLifecycle({
             status: 'active',
-            policyNumber: '1651622',
+            policyNumber: 'TEST-HEALTH-0001',
             insurerName: 'ΕΘΝΙΚΗ',
             endDate: future, // placeholder column
             acordData: { policy: { expirationDate: '22-05-2025' } },

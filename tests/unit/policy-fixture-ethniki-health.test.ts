@@ -21,16 +21,16 @@ describe("HEALTH_ETHNIKI_1 fixture — AIPolicyExtractionResponse shape", () => 
     it("carries correct identification data from the PDF", () => {
         expect(HEALTH_ETHNIKI_1).toMatchObject({
             insurerName: "Η ΕΘΝΙΚΗ",
-            policyNumber: "1651622",
+            policyNumber: "TEST-HEALTH-0001",
             lineOfBusiness: "health",
         })
     })
 
-    it("carries correct policyholder PII", () => {
+    it("maps the customer identity fields", () => {
         expect(HEALTH_ETHNIKI_1).toMatchObject({
-            customerName: "ΑΡΤΕΜΙΣ",
-            customerSurname: "ΚΟΚΚΑΛΙΑ",
-            customerEmail: "artemiskohas@gmail.com",
+            customerName: "ΜΑΡΙΑ",
+            customerSurname: "ΠΑΠΑΔΟΠΟΥΛΟΥ",
+            customerEmail: "maria.papadopoulou@example.com",
         })
     })
 
