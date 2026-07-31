@@ -472,9 +472,26 @@ docs/STATUS.md, commit στο claude/policywallet-ethniki-0r0bai. Όχι PR χω
 
 ### Παγίδες περιβάλλοντος (μην ξανακαείς)
 
-- `verify:migrations` **δεν τρέχει τοπικά by construction** (direct host
-  IPv6-only, pgbouncer δεν κρατά advisory lock) — μόνο μέσω Supabase MCP
-  (βλ. STATUS 2026-07-30, διόρθωση «local pooler connectivity was dead»).
+> **⚠ Η χειρότερη παγίδα αυτής της συνεδρίας ήταν να ΜΗΝ δοκιμάσω.** Δήλωσα
+> επανειλημμένα ότι λείπουν browser και ΒΔ. **Υπήρχαν και τα δύο.** Πριν
+> γράψεις «μπλοκαρισμένο» σε οποιοδήποτε WP, τρέξε τα δύο παρακάτω· κοστίζουν
+> δύο λεπτά και ξεκλειδώνουν acceptance criteria που αλλιώς μένουν χρόνια
+> ανεπαλήθευτα.
+
+- **Υπάρχει Chromium**, στο `/opt/pw-browsers/chromium`. Απαιτεί ρητό
+  `executablePath` (η έκδοση της εικόνας προηγείται του καρφωμένου Playwright,
+  οπότε το προεπιλεγμένο μονοπάτι δείχνει σε build που δεν υπάρχει). Το
+  production build σερβίρει τις **δημόσιες** σελίδες χωρίς ΒΔ — είναι στατικές
+  — άρα το 320px sweep τρέχει: `npm run check:mobile-overflow`.
+- **Υπάρχει PostgreSQL 16** στην εικόνα· λείπει μόνο το cluster.
+  `./scripts/dev-postgres.sh start` και μετά `prisma migrate deploy` +
+  `prisma db seed`. Έτσι επαληθεύτηκαν τα WP-06 και WP-05 σε **πραγματικές
+  γραμμές**, όχι σε mocks. `initdb` δεν τρέχει ως root και ο χρήστης
+  `postgres` δεν διαβάζει κατάλογο που ανήκει στον root — γι' αυτό το PGDATA
+  είναι κάτω από το home του `postgres`.
+- `verify:migrations` **δεν τρέχει προς την πραγματική Supabase τοπικά**
+  (direct host IPv6-only, pgbouncer δεν κρατά advisory lock) — μέσω Supabase
+  MCP ή, πλέον, **προς το τοπικό cluster παραπάνω** (εκεί περνά κανονικά).
 - Playwright **μόνο port 3000**· ποτέ :5000 (AirPlay). Cookie banner: helper
   `dismissCookieBanner` από `tests/helpers/ui.ts`.
 - Tests με `mock` AI provider — ποτέ πραγματικά κλειδιά σε CI.
