@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { rateLimit } from "@/lib/rate-limit"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { requireApiUser } from "@/lib/api-auth"
 import { requireCollaborationEntitlement } from "@/lib/api-entitlements"
@@ -11,6 +12,10 @@ const createMessageSchema = z.object({
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     const authCheck = await requireApiUser()
     if ("error" in authCheck) return authCheck.error
+
+    // Creates content and fans out notifications to the other party.
+    const rl = await rateLimit(String(authCheck.auth.dbUser.id), 60, 3600000, `collab-message:${authCheck.auth.dbUser.id}`)
+    if (!rl.success) return rl.error!
     const { auth } = authCheck
     const { id } = await params
 

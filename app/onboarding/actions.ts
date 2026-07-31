@@ -1,6 +1,7 @@
 "use server"
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { rateLimit } from "@/lib/rate-limit"
 import { db } from "@/lib/db"
 import { PolicyService } from "@/lib/services/policy.service"
 import { revalidatePath } from "next/cache"
@@ -130,6 +131,13 @@ export async function completeOnboardingStep(step: number, data?: any) {
 export async function uploadOnboardingPolicy(formData: FormData) {
     const { dbUser } = await getAuthenticatedUser()
     const userId = dbUser.id
+
+    // Same exposure as wallet createPolicy: a server action starting a billable
+    // AI analysis, outside the per-IP limiter proxy.ts applies to the api path.
+    const uploadLimit = await rateLimit(userId, 20, 60 * 60 * 1000, `onboarding:upload:${userId}`)
+    if (!uploadLimit.success) {
+        return { error: "RATE_LIMITED" }
+    }
 
     const file = formData.get("file") as File
     const canAdd = await canUserAddPolicy(userId)

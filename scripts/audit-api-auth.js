@@ -165,6 +165,18 @@ function checkControlPolicy(route, policy, content, findings) {
     if (!hasRateLimit) {
       findings.push(`${prefix} missing required rate-limit control`);
     }
+  } else {
+    // Default-deny. Opting a route out of rate limiting is allowed, but it has
+    // to be a decision someone made and can be reviewed — not the silent
+    // default that left 58 of 95 routes (40 of them mutating) unthrottled,
+    // including AI-backed and billing endpoints. `required: false` therefore
+    // demands a written justification.
+    const justification = policy?.rateLimit?.justification;
+    if (typeof justification !== "string" || justification.trim().length < 15) {
+      findings.push(
+        `${prefix} rateLimit.required is false without a justification (add policy.rateLimit.justification explaining why this route needs no limit)`
+      );
+    }
   }
 
   if (policy?.validation?.required === true) {

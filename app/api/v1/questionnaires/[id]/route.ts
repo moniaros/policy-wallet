@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { rateLimit } from "@/lib/rate-limit"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { ensureOwnership } from "@/lib/security"
 import { requireApiUser } from "@/lib/api-auth"
@@ -50,6 +51,10 @@ export async function POST(
 ) {
     const authCheck = await requireApiUser()
     if ("error" in authCheck) return authCheck.error
+
+    // Persists questionnaire answers; unbounded rewrites churn the record.
+    const rl = await rateLimit(String(authCheck.auth.dbUser.id), 60, 3600000, `questionnaire-submit:${authCheck.auth.dbUser.id}`)
+    if (!rl.success) return rl.error!
     const authResult = authCheck.auth
 
     const { id } = await params

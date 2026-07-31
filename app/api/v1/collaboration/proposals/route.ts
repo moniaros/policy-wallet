@@ -28,6 +28,12 @@ export const POST = withApiGuard(
     {
         auth: { mode: "user", roles: ["agent"] },
         validation: { body: createProposalSchema },
+        // Creates content and fans out a notification to the customer.
+        rateLimit: {
+            limit: 30,
+            windowMs: 60 * 60 * 1000,
+            key: ({ auth }) => `collab-proposal:${auth?.dbUser.id || "anonymous"}`,
+        },
     },
     async ({ auth, body }) => {
         // Proposals are a Starter+ feature (proposalFlow) — sold, previously

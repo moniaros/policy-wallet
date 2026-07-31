@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { createApiError } from "@/lib/api-utils"
 import { NextResponse } from "next/server"
@@ -45,6 +46,23 @@ export async function requireApiUser(options?: { roles?: AppRole[] }): Promise<
 }
 
 /**
+ * Constant-time secret comparison.
+ *
+ * `===` on strings short-circuits at the first differing byte, so response
+ * timing leaks how much of a guessed prefix was correct — enough, over enough
+ * requests, to recover a secret byte by byte. Lengths are compared first
+ * (timingSafeEqual throws on a length mismatch) and that length leak is
+ * accepted: it reveals nothing about the secret's content.
+ */
+function secretsMatch(candidate: string | null, secret: string): boolean {
+    if (!candidate) return false
+    const a = Buffer.from(candidate)
+    const b = Buffer.from(secret)
+    if (a.length !== b.length) return false
+    return timingSafeEqual(a, b)
+}
+
+/**
  * Shared guard for cron/job routes: authorizes via CRON_SECRET (x-cron-secret
  * header or Authorization: Bearer), falling back to an admin session.
  * Returns null when authorized, or the error response to return as-is.
@@ -61,8 +79,8 @@ export async function authorizeCronRequest(req: Request): Promise<NextResponse |
     const isCronAuthorized = Boolean(
         cronSecret &&
         (
-            (headerSecret && headerSecret === cronSecret) ||
-            (bearerSecret && bearerSecret === cronSecret)
+            secretsMatch(headerSecret, cronSecret) ||
+            secretsMatch(bearerSecret, cronSecret)
         )
     )
     if (isCronAuthorized) return null

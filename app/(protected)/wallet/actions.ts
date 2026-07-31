@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
+import { rateLimit } from "@/lib/rate-limit"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -70,6 +71,17 @@ export async function createPolicy(formData: FormData) {
     // Let's rely on email for robust linking.
     const dbUser = await db.user.findUnique({ where: { email: user.email! } })
     if (!dbUser) throw new Error("User record not found")
+
+    // Server actions POST to a page route, so the global per-IP limiter that
+    // proxy.ts applies to the api path prefix never covered them: creating a
+    // policy — which starts a billable AI
+    // analysis — was completely unthrottled while the agent-side actions next
+    // door were limited. Monthly token budgets bound total spend but nothing
+    // bounded velocity, so a single session could burn a whole budget in
+    // minutes. Generous enough for a real bulk upload, tight enough to stop a
+    // loop.
+    const createLimit = await rateLimit(dbUser.id, 40, 60 * 60 * 1000, `policy:create:${dbUser.id}`)
+    if (!createLimit.success) throw new Error("RATE_LIMITED")
 
     const userId = dbUser.id
     const canAdd = await canUserAddPolicy(userId)

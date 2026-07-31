@@ -5,6 +5,33 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-14 — rate limiting is default-deny — 2026-07-30
+
+PR #225. 2580/2580 unit tests, 6/6 gates.
+
+**Η επανακαταμέτρηση διόρθωσε το εύρημα.** Το «58 routes χωρίς όριο» ερχόταν
+από το inventory· ο έλεγχος στον κώδικα έδειξε **7 routes με υπαρκτό limiter
+και stale inventory entry** (`policies/extract`, `bulk-import`, `invites`,
+`process-policy`, `tokens/purchase`, `device-token`, `analysis-runs/[runId]`)
+— πραγματικά ακάλυπτα: **51**.
+
+`audit:api-auth`: κάθε `rateLimit.required: false` απαιτεί πλέον γραπτή
+`justification`. 95/95 ταξινομημένα — 51 με όριο, 44 αιτιολογημένα (cron-gated
+jobs, QStash-signed consumer, read-only, idempotent toggles). Νέα όρια σε 9
+mutating routes (report-unlock, feedback, questionnaires, 4× collaboration).
+
+**`createPolicy` ήταν εντελώς χωρίς όριο** ενώ ξεκινά billable AI: τα server
+actions κάνουν POST σε page route, οπότε ο per-IP limiter του `proxy.ts` δεν
+τα κάλυπτε ποτέ. 40/ώρα ανά χρήστη· onboarding upload 20/ώρα. Cron secret σε
+constant time (`timingSafeEqual`), με απόρριψη αντί για throw σε ασυμφωνία
+μήκους.
+
+**Σύζευξη που φάνηκε μόνο υπό δοκιμή:** το `lib/rate-limit.ts` εισήγαγε το
+`lib/env.ts` (eager parse ΟΛΟΥ του schema στο module load) — μόλις μπήκε στα
+wallet/onboarding actions, 8 test files ζήτησαν `AUTH_SECRET`. Διαβάζει πλέον
+τις δύο προαιρετικές Upstash μεταβλητές απευθείας· ο production έλεγχος μένει
+στο `lib/env.ts`.
+
 ## WP-13 — first analysis moved onto the durable queue — 2026-07-30
 
 PR #225. 2569/2569 unit tests, 6/6 gates.

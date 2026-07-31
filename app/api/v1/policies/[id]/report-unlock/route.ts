@@ -1,4 +1,5 @@
 import { requireApiUser } from "@/lib/api-auth"
+import { rateLimit } from "@/lib/rate-limit"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { db } from "@/lib/db"
 import { stripe } from "@/lib/stripe"
@@ -17,6 +18,10 @@ import { logger } from "@/lib/logger"
 export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
     const authCheck = await requireApiUser()
     if ("error" in authCheck) return authCheck.error
+
+    // Spends entitlement credits on each call.
+    const rl = await rateLimit(String(authCheck.auth.dbUser.id), 30, 3600000, `report-unlock:${authCheck.auth.dbUser.id}`)
+    if (!rl.success) return rl.error!
     const userId = authCheck.auth.dbUser.id
 
     const { id: policyId } = await context.params

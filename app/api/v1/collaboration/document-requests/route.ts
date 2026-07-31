@@ -21,6 +21,12 @@ export const POST = withApiGuard(
     {
         auth: { mode: "user", roles: ["agent"] },
         validation: { body: createDocumentRequestSchema },
+        // Creates content and fans out a notification to the customer.
+        rateLimit: {
+            limit: 30,
+            windowMs: 60 * 60 * 1000,
+            key: ({ auth }) => `collab-doc-request:${auth?.dbUser.id || "anonymous"}`,
+        },
     },
     async ({ auth, body }) => {
         // Document requests are a Starter+ feature (documentRequestFlow).

@@ -2,15 +2,26 @@ import { NextResponse } from "next/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 import * as Sentry from "@sentry/nextjs"
-import { env } from "./env"
 
 // 1. Initialize Redis (Distributed Cache)
 let redis: Redis | null = null
 
-if (env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN) {
+// Read straight from process.env rather than importing ./env.
+//
+// Both variables are `.optional()` there, so nothing is validated away by
+// reading them directly — but importing ./env runs the FULL schema parse at
+// module load. This module is a low-level utility that guards route handlers
+// and server actions alike; forcing every one of its importers to satisfy the
+// entire environment schema is a coupling it should not impose. The production
+// requirement that these be set (unless RATELIMIT_ALLOW_LOCAL=1) still lives in
+// ./env and still runs — that module is imported throughout the app.
+const upstashUrl = process.env.UPSTASH_REDIS_REST_URL
+const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN
+
+if (upstashUrl && upstashToken) {
     redis = new Redis({
-        url: env.UPSTASH_REDIS_REST_URL,
-        token: env.UPSTASH_REDIS_REST_TOKEN,
+        url: upstashUrl,
+        token: upstashToken,
     })
 }
 

@@ -181,7 +181,7 @@ gates. Ένα WP ανά session κατά κανόνα· αποκλίσεις κ�
 > 6 unit tests (5 νέα + 1 στο queue payload), **mutation-tested**: αφαίρεση του
 > enqueue → 3 αποτυχίες.
 
-#### ☐ WP-14 — Rate limiting: default-deny (M) — R2, R1
+#### ☑ WP-14 — Rate limiting: default-deny (M) — ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-30
 - **Στόχος:** route ή mutating server action χωρίς δηλωμένη κλάση rate limit
   = κόκκινο CI, όχι σιωπηλά απεριόριστο.
 - **Αρχεία:** `scripts/audit-api-auth.js` + `api-route-policy-inventory.json`
@@ -202,6 +202,51 @@ gates. Ένα WP ανά session κατά κανόνα· αποκλίσεις κ�
 - **Reconciliation:** επανακαταμέτρηση του 37/95 (προγενέστερο των τελευταίων
   fixes)· το εύρημα B2 «ένα fixed window για όλα» εμφανίζεται ήδη διορθωμένο
   στον σημερινό κώδικα (memoized per-(limit,window)) — το audit προηγείται.
+
+> **Τι έγινε.**
+>
+> **Η επανακαταμέτρηση διόρθωσε το ίδιο το εύρημα.** Το «58 routes χωρίς όριο»
+> προερχόταν από το inventory. Ο έλεγχος στον **κώδικα** έδειξε ότι **7 routes
+> είχαν ήδη limiter** (`policies/extract`, `bulk-import`, `invites`,
+> `process-policy`, `tokens/purchase`, `device-token`, `analysis-runs/[runId]`)
+> και το inventory ήταν απλώς stale — άρα τα πραγματικά ακάλυπτα ήταν **51**.
+> Ακριβώς η κατηγορία λάθους που προειδοποιεί το UI_AUDIT §7: «a number that
+> does not move when the code moves is not measuring the code».
+>
+> **Η πύλη.** Το `audit:api-auth` απαιτεί πλέον, για κάθε
+> `rateLimit.required: false`, γραπτή `justification` (≥15 χαρακτήρες). Το
+> opt-out επιτρέπεται· η σιωπή όχι. 95/95 routes ταξινομημένα: **51 με όριο**
+> (37 + 14 που πήραν ή είχαν), **44 με αιτιολόγηση** (cron-gated jobs,
+> QStash-signed consumer, read-only, idempotent toggles).
+>
+> **Νέα πραγματικά όρια** σε 9 μη-καλυμμένα mutating routes που παράγουν
+> περιεχόμενο, ειδοποιήσεις ή δαπάνη: `report-unlock`, `feedback`,
+> `questionnaires/[id]`, και τα 4 collaboration POST (threads, messages,
+> document-requests, proposals).
+>
+> **Server actions.** Το `createPolicy` — που ξεκινά billable AI — ήταν
+> **εντελώς χωρίς όριο**, ενώ τα agent actions δίπλα του είχαν· τα server
+> actions κάνουν POST σε page route, οπότε ο per-IP limiter του `proxy.ts`
+> (μόνο στο api prefix) δεν τα κάλυπτε ποτέ. Τώρα 40/ώρα ανά χρήστη· το
+> `uploadOnboardingPolicy` 20/ώρα.
+>
+> **Cron secret σε constant time** (`crypto.timingSafeEqual`): το `===`
+> βραχυκυκλώνει στο πρώτο διαφορετικό byte, άρα ο χρόνος απόκρισης πρόδιδε
+> πόσο σωστό ήταν το prefix. Η ασυμφωνία μήκους απορρίπτεται αντί να ρίχνει
+> (το `timingSafeEqual` πετάει σε διαφορετικά μήκη — ένα probe θα γινόταν 500
+> και θα ήταν ακόμη πιο θορυβώδες oracle).
+>
+> **Παράπλευρη διόρθωση σύζευξης:** το `lib/rate-limit.ts` εισήγαγε το
+> `lib/env.ts`, που κάνει **eager parse ολόκληρου** του schema στο module load.
+> Μόλις ο limiter μπήκε στα wallet/onboarding actions, 8 test files έσπασαν
+> ζητώντας `AUTH_SECRET`. Ένα low-level utility δεν πρέπει να επιβάλλει όλο το
+> περιβάλλον στους importers του· διαβάζει πλέον απευθείας τις δύο
+> **προαιρετικές** Upstash μεταβλητές από το `process.env`. Ο production
+> έλεγχος παραμένει στο `lib/env.ts` και εξακολουθεί να τρέχει.
+>
+> 11 unit tests (5 inventory + 6 cron secret), **mutation-tested**. Το
+> inventory test ελέγχει **και τις δύο** κατευθύνσεις απόκλισης κώδικα↔δήλωσης
+> και έχει vacuity floor.
 
 #### ☐ WP-15 — Όρια ταχύτητας δαπάνης + ειδοποίηση κόστους (S) — R1, R2
 - **Στόχος:** χρήστης (ή κλεμμένο session) να μην καίει το μηνιαίο budget σε

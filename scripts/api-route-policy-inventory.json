@@ -16,7 +16,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -38,7 +39,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -79,7 +81,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -98,7 +101,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -117,7 +121,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -136,7 +141,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -155,7 +161,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -192,7 +199,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -269,7 +276,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -288,7 +296,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -307,7 +316,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -329,7 +339,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -348,7 +359,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Session teardown only; repeated calls converge on the same signed-out state and trigger no downstream work."
         },
         "validation": {
           "required": false,
@@ -462,7 +474,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -481,7 +494,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -499,7 +513,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -520,7 +534,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -539,7 +554,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -601,7 +616,7 @@
           ]
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -621,7 +636,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -639,7 +655,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -662,7 +678,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -685,7 +702,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -708,7 +726,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -730,7 +749,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -753,7 +773,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -771,7 +792,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -795,7 +816,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -833,7 +855,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -928,7 +951,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -948,7 +972,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -967,7 +992,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -985,7 +1011,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -1006,7 +1032,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -1025,7 +1052,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -1062,7 +1090,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -1140,7 +1168,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -1158,7 +1187,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -1297,7 +1326,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -1317,7 +1346,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -1336,7 +1366,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -1356,7 +1386,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -1546,7 +1577,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -1566,7 +1597,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -1585,7 +1617,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -1604,7 +1637,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -1625,7 +1658,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Idempotent per-user preference toggle with no fan-out, no spend and no external send; abuse yields no advantage beyond the caller's own row."
         },
         "validation": {
           "required": false,
@@ -1642,7 +1676,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -1679,7 +1714,7 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
+          "required": true,
           "profile": "none"
         },
         "validation": {
@@ -1703,7 +1738,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -1726,7 +1762,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -1749,7 +1786,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -1772,7 +1810,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -1795,7 +1834,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -1818,7 +1858,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,
@@ -1837,7 +1878,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Read-only endpoint returning the caller's own data; no side effects, no fan-out and no spend to bound."
         },
         "validation": {
           "required": false,
@@ -1856,7 +1898,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "optional"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": true,
@@ -1879,7 +1922,8 @@
         },
         "rateLimit": {
           "required": false,
-          "profile": "none"
+          "profile": "none",
+          "justification": "Cron-only: gated by authorizeCronRequest (shared secret / admin session) and invoked by the scheduler, not by user traffic, so a per-caller limit adds no protection."
         },
         "validation": {
           "required": false,

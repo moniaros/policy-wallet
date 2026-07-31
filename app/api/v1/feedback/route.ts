@@ -1,4 +1,5 @@
 import { requireApiUser } from "@/lib/api-auth"
+import { rateLimit } from "@/lib/rate-limit"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { db } from "@/lib/db"
 import { z } from "zod"
@@ -15,6 +16,10 @@ const FeedbackSchema = z.object({
 export async function POST(req: Request) {
     const authResult = await requireApiUser()
     if ("error" in authResult) return authResult.error
+
+    // Free-text user content — unbounded submission is an abuse and storage vector.
+    const rl = await rateLimit(String(authResult.auth.dbUser.id), 20, 3600000, `feedback:${authResult.auth.dbUser.id}`)
+    if (!rl.success) return rl.error!
     const { auth } = authResult
     const user = auth.dbUser
 
