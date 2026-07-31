@@ -9,6 +9,8 @@ import { Toaster } from "sonner";
 import NextTopLoader from 'nextjs-toploader';
 import { OfflineProvider } from "@/components/providers/OfflineProvider";
 import { MotionProvider } from "@/components/providers/MotionProvider";
+import { TextSizeProvider } from "@/contexts/TextSizeContext";
+import { textSizeBootstrapScript } from "@/lib/a11y/text-size";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { GoogleAnalyticsWebVitals } from "@/components/analytics/GoogleAnalyticsWebVitals";
 import { CookieConsentBanner } from "@/components/compliance/CookieConsentBanner";
@@ -79,6 +81,15 @@ export default function RootLayout({
             __html: `(function(){try{var p=location.pathname;if(p==="/en"||p.indexOf("/en/")===0){var e=document.documentElement;e.setAttribute("lang","en");e.setAttribute("data-locale","en-GB");e.dataset.htmlLangEnRoute="true";}}catch(e){}})();`,
           }}
         />
+        {/* Reading-size preference, applied before first paint.
+          *
+          * Same reason as the script above: a React effect would paint the page
+          * at the default size and then jump. That flash is worst for the
+          * person who set the preference, because they need the larger size to
+          * read what flashed. Generated from lib/a11y/text-size.ts so the
+          * script and the provider cannot disagree about the key or the steps.
+          */}
+        <script dangerouslySetInnerHTML={{ __html: textSizeBootstrapScript() }} />
       </head>
       <body className="antialiased min-h-screen bg-background text-foreground">
         <NextTopLoader
@@ -92,6 +103,7 @@ export default function RootLayout({
           speed={200}
         />
         <LanguageProvider>
+          <TextSizeProvider>
           <MotionProvider>
           <OfflineProvider>
             <ThemeProvider
@@ -105,6 +117,7 @@ export default function RootLayout({
             </ThemeProvider>
           </OfflineProvider>
           </MotionProvider>
+          </TextSizeProvider>
         </LanguageProvider>
         <Toaster richColors position="top-right" />
         <Suspense fallback={null}>

@@ -653,6 +653,27 @@ pre {
   }
 }
 
+/* ─── Reading-size preference — deliberately UNLAYERED ─────────────────────────
+   Set by the blocking script in app/layout.tsx before first paint, and by
+   contexts/TextSizeContext.tsx when the reader changes it in Settings.
+
+   Scaling the ROOT works because Tailwind's type scale is in `rem`: every
+   `text-sm` in the app is already a multiple of this, so all of them move
+   together and in proportion. Nothing else has to change, and nothing that
+   deliberately uses `px` (the 16px iOS floor below, the 44px targets) is
+   disturbed.
+
+   Percentages rather than pixels so a reader who has already raised their
+   browser's own default keeps that gain and this multiplies it, instead of
+   overruling them. Steps are documented in lib/a11y/text-size.ts. */
+:root[data-text-size="large"] {
+  font-size: 112.5%;
+}
+
+:root[data-text-size="larger"] {
+  font-size: 125%;
+}
+
 /* ─── Mobile control floor — deliberately UNLAYERED ────────────────────────────
    This lived in `@layer base` and the 44px min-height worked, because nothing
    else sets min-height on these elements. The 16px font-size did NOT: `text-sm`

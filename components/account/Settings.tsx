@@ -9,6 +9,7 @@ import { AlertTriangle, Bell, CheckCircle2, ChevronRight, Globe, KeyRound, Loade
 import { ProcessingHUD } from '@/components/ui/ProcessingHUD'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useTextSize } from '@/contexts/TextSizeContext'
 import { toast } from 'sonner'
 import { NOTIFICATION_PREFERENCE_GROUPS, eventTypesFor } from "@/lib/notifications/preference-registry"
 
@@ -38,6 +39,7 @@ export function Settings({
     onLogoutAllSessions
 }: SettingsProps) {
     const { t, language } = useLanguage()
+    const { textSize, setTextSize } = useTextSize()
     const [isEditingName, setIsEditingName] = useState(false)
     const [nameDraft, setNameDraft] = useState(currentUser.name || '')
 
@@ -314,6 +316,41 @@ export function Settings({
                                     >
                                         {t.settings.english}
                                     </button>
+                                </div>
+                            </div>
+
+                            {/* Reading size.
+                              * Sits beside language because it is the same kind
+                              * of choice — how this product speaks to you — and
+                              * because a policyholder who needs it will look
+                              * for it next to the other display preference,
+                              * not under a separate "accessibility" heading
+                              * they may not identify with. */}
+                            <div className="group pt-6 border-t border-black/10 dark:border-white/15">
+                                <label id="pw-text-size-label" className="text-kicker font-black text-muted-foreground uppercase tracking-[0.2em] block mb-1">{t.settings.textSize}</label>
+                                <p className="text-sm text-muted-foreground mb-4">{t.settings.textSizeHint}</p>
+                                {/* Stacked on a phone, a row from `sm` up. Three
+                                  * columns at 375px leaves ~105px a cell, and
+                                  * «Πολύ μεγάλο» does not fit in that — a
+                                  * control for people who need bigger text
+                                  * cannot ship with its own labels cramped. */}
+                                <div role="group" aria-labelledby="pw-text-size-label" className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl">
+                                    {([
+                                        { id: 'default', label: t.settings.textSizeDefault, className: 'text-sm' },
+                                        { id: 'large', label: t.settings.textSizeLarge, className: 'text-base' },
+                                        { id: 'larger', label: t.settings.textSizeLarger, className: 'text-lg' },
+                                    ] as const).map((option) => (
+                                        <button
+                                            key={option.id}
+                                            onClick={() => setTextSize(option.id)}
+                                            aria-pressed={textSize === option.id}
+                                            // Each button is set in the size it selects, so the
+                                            // choice is legible as itself rather than as a word.
+                                            className={`py-3 rounded-xl font-black tracking-tight transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${option.className} ${textSize === option.id ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md' : 'text-muted-foreground hover:text-black/70 dark:hover:text-white/80'}`}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
                         </div>
