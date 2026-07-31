@@ -396,6 +396,13 @@ async function main() {
             },
             isActive: true
         },
+        // Deterministic, not an `ai_check`. This is the single most consequential
+        // thing a Greek homeowner can be told — earthquake cover is usually an
+        // optional extension, not automatic — and as an AI check it was reported
+        // only when a completion happened to mention it. The extractor already
+        // resolves the boolean; asking the model again added variance, not
+        // information. `explicitly_false` so a policy whose property block was
+        // never extracted produces no finding instead of a confident wrong one.
         {
             slug: 'home-earthquake',
             name: 'Earthquake Coverage',
@@ -404,9 +411,16 @@ async function main() {
             lineOfBusiness: 'home',
             severity: 'critical',
             defaultSeverity: 'critical',
-            ruleId: 'ai_check',
+            ruleId: 'acord_deterministic',
             detectionLogic: {
-                check: "Does the policy explicitly cover 'Earthquake' damage?"
+                rules: [
+                    {
+                        type: 'acord_field_check',
+                        field: 'property.earthquakeCoverageIncluded',
+                        operator: 'explicitly_false'
+                    }
+                ],
+                operator: 'AND'
             },
             isActive: true
         },
@@ -479,7 +493,10 @@ async function main() {
                     {
                         type: 'acord_field_check',
                         field: 'pet.leishmaniaCovered',
-                        operator: 'is_false'
+                        // Was `is_false`, which also fires on an unextracted
+                        // field — telling the owner of a pet policy we never
+                        // parsed that leishmaniasis is uncovered.
+                        operator: 'explicitly_false'
                     }
                 ],
                 operator: 'AND'

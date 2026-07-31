@@ -73,7 +73,7 @@ export async function detectGapsForUser(userId: string): Promise<DetectedGap[]> 
 /**
  * Evaluate mature gap detection logic
  */
-function evaluateGapLogic(policy: Policy, gapDef: GapDefinition): boolean {
+export function evaluateGapLogic(policy: Policy, gapDef: GapDefinition): boolean {
     const logic = (gapDef as any).detectionLogic as any
     if (!logic) return false
 
@@ -195,12 +195,24 @@ function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
             return actual === value
         case 'not_equals':
             return actual !== value
+        // `!actual` is true for undefined and null as well as false, so these
+        // report a gap when the field was never EXTRACTED — the same mistake
+        // `missing_coverage` and `low_limit` above were both fixed for: absence
+        // of data is not evidence of absence of cover. Kept because
+        // detectionLogic is a JSON column an admin can already have written
+        // against them; prefer the explicit_ operators for anything new.
         case 'is_false':
         case 'falsy':
             return !actual
         case 'is_true':
         case 'truthy':
             return !!actual
+        // Only when the extractor actually said so. An unpopulated field yields
+        // no finding rather than a confident one.
+        case 'explicitly_false':
+            return actual === false
+        case 'explicitly_true':
+            return actual === true
         case 'missing':
             return actual === undefined || actual === null || actual === ''
         case 'less_than':
