@@ -5,6 +5,25 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## WP-26 (μερικώς) — sold-but-unbuilt features are now declared — 2026-07-30
+
+PR #225. 2626/2626 unit tests, 6/6 gates.
+
+Το audit έλεγε «`canAgentUseFeature` με **0 call sites**, ~13 πουλημένα flags
+χωρίς fence». **Και τα δύο ήταν λάθος.** Το helper έχει 5+ call sites, και η
+καταμέτρηση έψαχνε μόνο τον helper — προσμετρούσε ως ακάλυπτα το `priorityQueue`
+(ορίζει προτεραιότητα ουράς στον orchestrator) και το `pipelineAnalytics`
+(διαβάζεται από το agent dashboard). Μετρημένος αριθμός εντελώς άχτιστων:
+**5 από 17**.
+
+Νέο `lib/pricing/unbuilt-features.ts` κάνει το κενό δηλωμένο. Δεν διέγραψα
+features — build vs de-list είναι προϊοντική απόφαση. Το test ελέγχει δύο
+κατευθύνσεις και έχει ratchet στο 5.
+
+**Δεν έγιναν** (τα βαρύτερα): free-tier υπόσχεση υπενθυμίσεων, notification-bell
+dead end, invite/acceptance, **revoke UI χωρίς paywall (Art. 7(3))**,
+ειδοποιήσεις στα 5 σιωπηλά handoffs, read-access audit rows.
+
 ## WP-09 (μερικώς) — bilingual AI output stopped duplicating one language — 2026-07-30
 
 PR #225. 2622/2622 unit tests, 6/6 gates.
