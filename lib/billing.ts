@@ -512,8 +512,9 @@ export async function handleSubscriptionSuccess(
     // leave the payer with nothing. A P2002 on stripeSubscriptionId means a
     // concurrent caller (webhook vs /upgrade/success page) already granted —
     // roll back untouched and let their write stand.
+    let createdSubscriptionId: string | null = null
     try {
-        await db.$transaction([
+        const [createdSubscription] = await db.$transaction([
             db.subscription.create({
                 data: {
                     userId,
@@ -532,6 +533,7 @@ export async function handleSubscriptionSuccess(
                 })
             ),
         ])
+        createdSubscriptionId = createdSubscription?.id ?? null
     } catch (error) {
         if (isUniqueConstraintViolation(error)) {
             logger("info", "Subscription already granted by a concurrent caller, converging priors", {
@@ -548,6 +550,48 @@ export async function handleSubscriptionSuccess(
     // later call for this stripeSubscriptionId re-attempts via the
     // existing-row convergence above.
     await cancelPriorStripeSubscriptions(priors)
+
+    // Local invoice record.
+    //
+    // No code ever wrote an Invoice row. Two consequences: the in-app billing
+    // history was permanently empty, and the billing-reconciliation monitor —
+    // which counts active paid subscriptions with no recent invoice — alarmed
+    // on every single one, so a genuine billing problem would have been
+    // indistinguishable from the baseline noise.
+    //
+    // Amounts are stored VAT-INCLUSIVE-aware: the plan price is what the
+    // customer was quoted and charged (gross), split into net + VAT by the same
+    // helper the checkout uses, so a B2B agent can see the tax they paid.
+    // Best-effort: a failure here must never cost someone the entitlement they
+    // just paid for.
+    if (createdSubscriptionId) {
+        try {
+            const gross = Number(plan.price)
+            const breakdown = vatInclusiveBreakdown(gross)
+            await db.invoice.create({
+                data: {
+                    userId,
+                    subscriptionId: createdSubscriptionId,
+                    invoiceNumber: stripeSubscriptionId
+                        ? `PW-${stripeSubscriptionId}`
+                        : `PW-${createdSubscriptionId}`,
+                    amount: breakdown.net,
+                    taxAmount: breakdown.vat,
+                    totalAmount: breakdown.gross,
+                    currency: 'EUR',
+                    status: 'paid',
+                    billingDate: currentPeriodStart,
+                    paidAt: new Date(),
+                },
+            })
+        } catch (invoiceError) {
+            logger('warn', 'Invoice row could not be created for a granted subscription', {
+                userId,
+                subscriptionId: createdSubscriptionId,
+                error: invoiceError instanceof Error ? invoiceError.message : String(invoiceError),
+            })
+        }
+    }
 
     // Log Activity
     await (db.activityLog as any).create({
