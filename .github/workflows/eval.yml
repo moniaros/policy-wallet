@@ -1,0 +1,87 @@
+name: Paid AI Eval
+
+# Manual-only: dispatching this workflow IS the consent to spend provider
+# money (EVAL_ALLOW_PAID). Never wire it to push/schedule — CI's eval:ci runs
+# the free mock harness instead. The dataset is tiny (1 extraction + 2 gaps +
+# 3 QA cases), so a full run on flash-class models costs cents.
+#
+# Premium-model comparison recipe (the one place premium ≠ standard is
+# gemini extraction):
+#   run 1: defaults                       -> standard gemini-3-flash-preview
+#   run 2: extraction_model=gemini-3.5-flash -> the premium tier's model
+# Compare the [extraction] accuracy lines in the two job logs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "AI provider to evaluate"
+        type: choice
+        options: [gemini, anthropic, openai]
+        default: gemini
+      suite:
+        description: "Suite to run"
+        type: choice
+        options: [all, extraction, gaps, qa]
+        default: all
+      extraction_model:
+        description: "Override GEMINI_MODEL_EXTRACTION (e.g. gemini-3.5-flash for the premium tier). Empty = env default."
+        type: string
+        required: false
+
+jobs:
+  eval:
+    name: Eval ${{ inputs.provider }} / ${{ inputs.suite }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Preflight — provider API-key secret present
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          case "${{ inputs.provider }}" in
+            gemini)    key="$GEMINI_API_KEY";    name=GEMINI_API_KEY ;;
+            anthropic) key="$ANTHROPIC_API_KEY"; name=ANTHROPIC_API_KEY ;;
+            openai)    key="$OPENAI_API_KEY";    name=OPENAI_API_KEY ;;
+          esac
+          if [ -z "$key" ]; then
+            echo "::error::Missing repository secret $name for provider '${{ inputs.provider }}'. Add it under Settings → Secrets and variables → Actions, then re-dispatch."
+            exit 1
+          fi
+          echo "Secret $name present."
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run paid eval
+        env:
+          EVAL_ALLOW_PAID: '1'
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Placeholder app env (lib/env.ts validation) — same as CI's build step.
+          NEXT_PUBLIC_SUPABASE_URL: 'https://placeholder.supabase.co'
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'placeholder-key'
+          DATABASE_URL: 'postgresql://placeholder'
+          DIRECT_URL: 'postgresql://placeholder'
+          AUTH_SECRET: 'ci-placeholder-secret'
+          RATELIMIT_ALLOW_LOCAL: '1'
+          # Optional model override for A/B runs (empty = env default).
+          GEMINI_MODEL_EXTRACTION: ${{ inputs.extraction_model || '' }}
+        run: |
+          # An empty env var would override lib/env defaults with "" — unset it.
+          [ -z "$GEMINI_MODEL_EXTRACTION" ] && unset GEMINI_MODEL_EXTRACTION
+          echo "Provider: ${{ inputs.provider }} | Suite: ${{ inputs.suite }}"
+          echo "GEMINI_MODEL_EXTRACTION: ${GEMINI_MODEL_EXTRACTION:-<env default>}"
+          npm run eval -- --provider=${{ inputs.provider }} --suite=${{ inputs.suite }}

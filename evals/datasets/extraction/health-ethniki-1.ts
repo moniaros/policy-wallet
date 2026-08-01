@@ -14,16 +14,56 @@ export interface ExtractionEvalCase {
     expected: ExpectedExtraction
 }
 
+/**
+ * SYNTHETIC policy-schedule document, generated from the fixture's own scored
+ * fields so real-provider extraction runs measure something real (the previous
+ * placeholder was a 1x1 transparent PNG — a paid run scored extraction from a
+ * blank pixel). Plain text because Gemini accepts inline text/plain documents
+ * and hand-rolled PDFs cannot carry Greek without font embedding; the mock
+ * provider ignores document bytes either way, so eval:ci is unaffected.
+ *
+ * The policyholder identity is deliberately FAKE («ΔΕΙΓΜΑ ΣΥΝΘΕΤΙΚΟ») — the
+ * scorer never checks identity fields, and the real fixture's person must not
+ * be propagated into new artifacts.
+ */
+const SYNTHETIC_DOCUMENT_TEXT = `Η ΕΘΝΙΚΗ — ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ
+ΑΣΦΑΛΙΣΤΗΡΙΟ ΣΥΜΒΟΛΑΙΟ ΥΓΕΙΑΣ — FULL HEALTH
+(Συνθετικό δείγμα αξιολόγησης — δεν αποτελεί πραγματικό συμβόλαιο)
+
+Αριθμός Συμβολαίου: 1651622
+Λήπτης της Ασφάλισης: ΔΕΙΓΜΑ ΣΥΝΘΕΤΙΚΟ
+Κλάδος: Υγείας (health)
+
+Διάρκεια Ασφάλισης
+Έναρξη: 22/05/2024
+Λήξη: 22/05/2025
+
+Καλύψεις
+- Νοσοκομειακή περίθαλψη: ετήσιο όριο €1.500.000, απαλλαγή €1.500
+- Διαγνωστικές εξετάσεις (AFFIDEA — Ευρωιατρική): έως €2.000 ετησίως
+- Έξοδα από ατύχημα: έως €2.000 ανά περιστατικό
+- Άμεση ιατρική βοήθεια
+- Επείγοντα περιστατικά: έως €1.000 ανά περιστατικό, μέγιστο 3 ετησίως
+
+Ειδικοί Όροι
+- Συμμετοχή 10% σε νοσηλεία εντός Η.Π.Α.
+
+Ανάλυση Ασφαλίστρων
+Νοσοκομειακή περίθαλψη            €812,66
+Διαγνωστικές εξετάσεις (AFFIDEA)  €134,00
+Έξοδα ατυχήματος                   €77,00
+Άμεση βοήθεια                      €22,61
+Επείγοντα περιστατικά              €92,00
+──────────────────────────────────────────
+Ολικά Ασφάλιστρα (Πληρωτέο Ποσό) €1.138,27
+`
+
 export const EXTRACTION_HEALTH_ETHNIKI_1: ExtractionEvalCase = {
     id: "extraction/health-ethniki-1",
-    // The real PDF isn't committed; the mock provider ignores document bytes and
-    // returns deterministic fixtures. Real-provider runs should point this at a
-    // redacted sample. A 1x1 transparent PNG stands in as a valid tiny payload.
     document: {
-        data:
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-        mimeType: "image/png",
-        fileName: "health-ethniki-1.png",
+        data: Buffer.from(SYNTHETIC_DOCUMENT_TEXT, "utf8").toString("base64"),
+        mimeType: "text/plain",
+        fileName: "health-ethniki-1-synthetic.txt",
     },
     expected: {
         insurerName: HEALTH_ETHNIKI_1.insurerName,
