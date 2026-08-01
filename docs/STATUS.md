@@ -5,6 +5,36 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## Paid eval: premium extraction model — 2026-08-01 — VERDICT: don't enable
+
+Ran the deferred premium-model eval (runs #4/#5 of the new manual `eval.yml` workflow;
+`GEMINI_API_KEY` repo secret added by owner after a Google **billing dunning** denial on the
+key's GCP project was fixed — first two attempts were refused by Google before any spend).
+The premium question is exactly one comparison — the only MODEL_TIERS pair where premium ≠
+standard is gemini · extractPolicyData: `gemini-3-flash-preview` (€0.50/€3 per 1M) vs
+`gemini-3.5-flash` (€1.50/€9 per 1M, 3×).
+
+| | standard 3-flash-preview | premium 3.5-flash |
+|---|---|---|
+| extraction accuracy | 86% (6/7) | 86% (6/7 — same miss) |
+| extraction latency | **179.7s** | **9.4s** |
+| gaps / QA (constant) | 100%R·75%P / 11/11 | identical |
+
+- **Quality: identical.** Both missed only the insurer exact-match (extracted the full legal
+  name «Η ΕΘΝΙΚΗ — ΑΝΩΝΥΜΟΣ…» vs expected short «Η ΕΘΝΙΚΗ») — scorer strictness, not model
+  failure. **Enabling pro-tier premium would pay 3× for nothing measurable → not enabled;**
+  `getDefaultModelForStep` keeps tier `"free"`. The eval did exactly its job.
+- **Surprise finding, n=1:** standard flash-preview took **~180s** for one small text
+  extraction; 3.5-flash took 9.4s on identical input. If that reproduces, the real question
+  is whether the preview model is fit as the *standard* extraction model (3-min extractions
+  eat step-timeout budget). Testable without a deploy: `/admin/ai/settings` → pin
+  `extractPolicyData` → gemini/`gemini-3.5-flash`, watch cost + latency on `/admin/ai`.
+- **Eval limits, stated:** 1 synthetic text/plain extraction case (not a real PDF), one run
+  per model. To make future runs decisive: add 1–2 extraction cases incl. a redacted real
+  PDF, and accept the insurer long-form as valid in the scorer.
+- Also observed in both runs: gemini gap-analysis JSON mode emits string confidences where
+  the schema wants numbers ("using cleansed raw" warn) — pre-existing, handled, noted.
+
 ## Gap-report content gaps (Sentry POLICYWALLET-7) — 2026-08-01
 
 **Broken (user-visible), now fixed.** Three gap definitions live in the production
