@@ -34,6 +34,16 @@ signal was a Sentry warning firing since 14 Jul (68 events).
 - **Left for the owner, deliberately:** the duplicate gap *definitions* themselves are still
   active in the DB. Deactivating them changes detection behavior for real policies — an
   owner call, not a side effect of a content fix. `/admin/gaps` is where to do it.
+  Recommended first step: compare the twins' `detectionLogic` before touching anything — if
+  the logic differs they are not true duplicates, and deactivating one would silently drop a
+  real check.
+- **DEPLOYED** as release `f69f4363` (auto-deploy run #9). `POLICYWALLET-7` resolved in
+  Sentry so a recurrence arrives as a **regression** — which would mean a new unmapped slug
+  was added straight to the database. Honest caveat recorded on the issue: the fix is
+  verified *by construction* (map entries + regression tests), not by observed silence —
+  `/wallet/[id]` traffic is sparse (68 events over 18 days, once per process per slug), so a
+  quiet window proves little on its own.
+- `POLICYWALLET-G` (Upstash) also resolved, for the same tripwire reason.
 
 **Also verified this pass:** production holds **0 opportunities**, so the MEDDIC
 pipeline-memory code merged below is correct but *inert* — there is nothing to live-verify
