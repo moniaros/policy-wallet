@@ -71,9 +71,23 @@ commits on top of the Phase 1–5 multi-model system. Not yet deployed.
   through the pooler, P1017 — schema ships via the Supabase MCP path BEFORE
   merge, as recorded above); it preflights the `VERCEL_TOKEN` /
   `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` secrets and fails with a named list
-  if any is missing — **owner: verify those three secrets point at the
-  `policy-wallet` project in `moniaros-projects`**. Manual redeploys:
-  workflow_dispatch from NEW-UI only.
+  if any is missing. Manual redeploys: workflow_dispatch from NEW-UI only.
+- **DEPLOYED + auto-deploy proven end-to-end (2026-08-01):** production is
+  `NEW-UI` @ `1c8a83ac` (deployment `policy-wallet-mstfc5x2r…`, run
+  30678756560 green). Getting there surfaced two pipeline defects, both
+  fixed: (1) the three `VERCEL_*` repo secrets had never existed — the
+  cause of every historical deploy.yml failure; owner added them
+  (`VERCEL_ORG_ID = team_QzKsHlvajknceItFyQlikMk2`, project id of the
+  `policy-wallet` project, team-scoped token). (2) `amondnet/vercel-action@v25`
+  pins Vercel CLI 25.1.0 (2021), whose project-settings call no longer
+  resolves against today's API ("Could not retrieve Project Settings" even
+  with correct IDs) — replaced with a direct `npx vercel@latest deploy
+  --prod --yes` step (Vercel's documented CI pattern; same contract as the
+  old manual `vercel --prod` flow). From here on, every CI-green push to
+  NEW-UI deploys production automatically — the manual CLI step is retired.
+  Note for sandboxed sessions: policywallet.gr is not reachable through the
+  CCR egress proxy (403) — verify deploys via the workflow job log /
+  deployment URL, not by curling the apex.
 
 ## Multi-model AI system: guardrails, routing, fallbacks, observability, evals — 2026-07-30 — branch `claude/nifty-tesla-m80f2p`
 
