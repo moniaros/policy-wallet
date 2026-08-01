@@ -32,6 +32,7 @@ import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time";
 import { isAgentRole } from "@/lib/auth/require-agent";
 import { hasAnyRole } from "@/lib/api-auth";
 import { validateUploadFile, sanitizeDisplayName, REJECTION_MESSAGES } from "@/lib/security/file-upload";
+import { buildCloseFields, recordStageTransition } from "@/lib/agent/opportunity-lifecycle";
 
 const customerService = new CustomerService(db);
 
@@ -527,7 +528,9 @@ export async function updateOpportunityStatus(
     opportunityId: string,
     status: OpportunityStatus,
     notes?: string,
-    nextActionDate?: string
+    nextActionDate?: string,
+    outcome?: string,
+    outcomeNotes?: string
 ) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
@@ -536,20 +539,42 @@ export async function updateOpportunityStatus(
     // Verify ownership
     const oppAuth = await db.opportunity.findUnique({
         where: { id: opportunityId },
-        select: { relationshipId: true, relationship: { select: { agentUserId: true } } }
+        select: {
+            relationshipId: true,
+            status: true,
+            relationship: { select: { agentUserId: true } }
+        }
     })
 
     if (!oppAuth || oppAuth.relationship?.agentUserId !== authResult.dbUser.id) {
         return { error: "Opportunity not found or access denied" }
     }
 
-    await db.opportunity.update({
-        where: { id: opportunityId },
-        data: {
-            status,
-            notes,
-            nextActionAt: nextActionDate ? new Date(nextActionDate) : undefined
-        }
+    const closeFields = buildCloseFields(status, outcome, outcomeNotes)
+
+    // The status write and its history row must land together — a transition the
+    // log missed is indistinguishable from one that never happened.
+    await db.$transaction(async (tx) => {
+        await tx.opportunity.update({
+            where: { id: opportunityId },
+            data: {
+                status,
+                notes,
+                nextActionAt: nextActionDate ? new Date(nextActionDate) : undefined,
+                ...closeFields,
+            }
+        })
+
+        await recordStageTransition(tx, {
+            opportunityId,
+            fromStatus: oppAuth.status,
+            toStatus: status,
+            changedByUserId: authResult.dbUser.id,
+            outcome: closeFields.outcome,
+            // Snapshot the note as it stood at this transition; `notes` itself is
+            // a live field the next edit will overwrite.
+            note: notes ?? null,
+        })
     })
 
     if (oppAuth.relationshipId) {

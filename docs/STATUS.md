@@ -5,6 +5,36 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## MEDDIC readiness review → opportunity pipeline memory — 2026-08-01 — merged into `NEW-UI`
+
+Merged `claude/meddic-policywallet-crm-gqqcos` (2 commits, forked at `307f04f3`).
+The full review is [audits/meddic-readiness-2026-07.md](audits/meddic-readiness-2026-07.md); the
+short version is that **the finding, not the feature, was the deliverable**: MEDDIC is a poor fit
+here — no buying-committee entity exists to hang an Economic Buyer or Champion on, deals are an
+order of magnitude too small (reference deal €104.87), and commercial lines are largely a
+marketing veneer (4 of 15 B2B branches `writeEnabled`). What shipped instead is the prerequisite
+under either direction — the pipeline's missing memory:
+
+- Append-only `OpportunityStageHistory`: stage changes were destructive overwrites, so
+  `open→quoted→lost` and `open→lost` were indistinguishable and time-in-stage / funnel velocity
+  were impossible **and unbackfillable**.
+- Structured close on `Opportunity` (`outcome`/`outcomeNotes`/`outcomeAt`, the `PolicyRenewal`
+  shape) with `outcomeAt` as the immutable close date; `Proposal.declineReason/declineComment/
+  counterOfferNotes` persist a taxonomy the UI always collected and threw away.
+- Proposal acceptance closes the deal in flight instead of creating a duplicate WON row; the
+  commissions trend buckets on immutable dates, so editing a note no longer relocates revenue.
+
+**Merge notes (4 conflicts, all from the 662-commit gap since the fork):** `prisma/schema.prisma`
+and `app/(protected)/agent/actions.ts` were additive on both sides — kept both (the Phase 1 scan
+guard/metering and the lifecycle helpers coexist). `OpportunityUpdateModal`'s `onUpdate` gained
+the branch's 5th `outcome` param while keeping this line's `onMedicChange` callback. This file
+kept the NEW-UI structure rather than the branch's older `## Done (recent)` block.
+
+**Migration applied before merge** (the deploy.yml contract): `20260801120000_opportunity_lifecycle_history`
+is live on prod (`cquudefwfwrmvpftuhyl`) and dev (`lzqvtvjggylcujenlelh`) via the Supabase MCP path
+— table + 3 opportunity columns + 3 proposal columns + 3 indexes + `_prisma_migrations` rows, all
+verified. The SQL is additive and idempotent (`IF NOT EXISTS` throughout).
+
 ## Admin AI control panel (Phase 6) — 2026-07-31 — branch `claude/nifty-tesla-m80f2p`
 
 Admins can now monitor usage, choose the models each operation runs on, and

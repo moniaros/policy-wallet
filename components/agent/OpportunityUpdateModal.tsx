@@ -28,7 +28,13 @@ interface OpportunityUpdateModalProps {
         /** MEDIC qualification snapshot (read view — blueprint §F). */
         medic?: MedicData | null
     }
-    onUpdate: (opportunityId: string, status: string, notes: string, nextActionDate?: string) => Promise<void>
+    onUpdate: (
+        opportunityId: string,
+        status: string,
+        notes: string,
+        nextActionDate?: string,
+        outcome?: string
+    ) => Promise<void>
     /** Reports persisted medic changes (patch / apply-suggestions) so the list
      *  row doesn't go stale — the modal re-seeds from the row on every open. */
     onMedicChange?: (opportunityId: string, medic: MedicData, medicScore: number) => void
@@ -47,9 +53,30 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
         { value: 'on_hold', label: tt.statusOnHold, color: 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border-2 border-neutral-400' },
     ]
 
+    // Close reasons, scoped to the stage they belong to — these mirror
+    // OPPORTUNITY_WON_OUTCOMES / OPPORTUNITY_LOST_OUTCOMES in types/enums.ts, and
+    // the server drops any reason that does not match the target stage.
+    const OUTCOMES: Record<string, { value: string; label: string }[]> = {
+        won: [
+            { value: 'new_business', label: tt.outcomeWonNewBusiness },
+            { value: 'cross_sell', label: tt.outcomeWonCrossSell },
+            { value: 'renewal', label: tt.outcomeWonRenewal },
+            { value: 'proposal_accepted', label: tt.outcomeWonProposalAccepted },
+        ],
+        lost: [
+            { value: 'too_expensive', label: tt.outcomeLostTooExpensive },
+            { value: 'not_needed', label: tt.outcomeLostNotNeeded },
+            { value: 'prefer_different', label: tt.outcomeLostPreferDifferent },
+            { value: 'competitor', label: tt.outcomeLostCompetitor },
+            { value: 'unresponsive', label: tt.outcomeLostUnresponsive },
+            { value: 'other', label: tt.outcomeLostOther },
+        ],
+    }
+
     const [status, setStatus] = useState(opportunity.status)
     const [notes, setNotes] = useState(opportunity.notes || '')
     const [nextActionDate, setNextActionDate] = useState('')
+    const [outcome, setOutcome] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
     // Discovery-note capture (MEDIC note create-path) — separate from the
     // status form so a note never rides along with an accidental status change.
@@ -140,12 +167,20 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
 
     if (!isOpen) return null
 
+    const outcomeChoices = OUTCOMES[status] ?? []
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
 
         try {
-            await onUpdate(opportunity.id, status, notes, nextActionDate || undefined)
+            await onUpdate(
+                opportunity.id,
+                status,
+                notes,
+                nextActionDate || undefined,
+                outcomeChoices.length ? outcome || undefined : undefined
+            )
             onClose()
         } catch (error) {
             Sentry.captureException(error, {
@@ -359,7 +394,12 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
                                 <button
                                     key={s.value}
                                     type="button"
-                                    onClick={() => setStatus(s.value)}
+                                    onClick={() => {
+                                        setStatus(s.value)
+                                        // Reasons are stage-scoped; carrying one across
+                                        // stages would submit a reason the server drops.
+                                        setOutcome('')
+                                    }}
                                     className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${status === s.value
                                             ? s.color
                                             : 'bg-neutral-50 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400 border-2 border-transparent hover:border-neutral-300 dark:hover:border-neutral-600'
@@ -370,6 +410,29 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
                             ))}
                         </div>
                     </div>
+
+                    {/* Close reason — only meaningful once the deal is won or lost */}
+                    {outcomeChoices.length > 0 && (
+                        <div>
+                            <label htmlFor="outcome" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
+                                {tt.outcomeLabel}
+                            </label>
+                            <select
+                                id="outcome"
+                                value={outcome}
+                                onChange={(e) => setOutcome(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl border-2 border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-foreground focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
+                            >
+                                <option value="">{tt.outcomeNone}</option>
+                                {outcomeChoices.map((o) => (
+                                    <option key={o.value} value={o.value}>{o.label}</option>
+                                ))}
+                            </select>
+                            <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                                {tt.outcomeHint}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Notes */}
                     <div>

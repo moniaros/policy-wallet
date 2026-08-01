@@ -542,6 +542,16 @@ model Opportunity {
   medicScore           Int?                  @map("medic_score")
   /// Staleness/audit stamp for the qualification snapshot.
   medicUpdatedAt       DateTime?             @map("medic_updated_at")
+
+  // Structured close outcome, mirroring PolicyRenewal's proven shape. `status`
+  // alone said a deal was lost but never why, so loss reasons were unanalysable.
+  // `outcomeAt` is the IMMUTABLE close date — trend/cohort reporting must bucket
+  // on it, never on `updatedAt` (which any note edit or reassignment bumps).
+  outcome              String?               // see OPPORTUNITY_*_OUTCOMES in types/enums.ts
+  outcomeNotes         String?               @map("outcome_notes")
+  outcomeAt            DateTime?             @map("outcome_at")
+
+
   createdAt            DateTime              @default(now()) @map("created_at")
   updatedAt            DateTime              @updatedAt @map("updated_at")
   gapInstance          GapInstance?          @relation(fields: [gapInstanceId], references: [id])
@@ -549,6 +559,7 @@ model Opportunity {
   policy               Policy?               @relation(fields: [policyId], references: [id])
   relationship         CustomerRelationship  @relation(fields: [relationshipId], references: [id])
   collaborationThreads CollaborationThread[]
+  stageHistory         OpportunityStageHistory[]
 
   @@index([relationshipId])
   @@index([policyId])
@@ -559,7 +570,41 @@ model Opportunity {
   @@index([ownerAgentUserId, status])
   // Pipeline sorted MEDIC-score-descending per owner (blueprint §F /customers).
   @@index([ownerAgentUserId, medicScore])
+  // Won/lost reporting filters by owner and buckets by close date.
+  @@index([ownerAgentUserId, outcomeAt])
   @@map("opportunities")
+}
+
+/// Append-only stage-transition log.
+///
+/// `Opportunity.status` is a single mutable column, so every transition used to
+/// overwrite the previous one: `open → quoted → lost` and `open → lost` were
+/// indistinguishable afterwards, making time-in-stage, funnel velocity and
+/// forecast accuracy impossible to compute (and unbackfillable, since the data
+/// was never written). One row per transition fixes that going forward.
+///
+/// This is the first append-only table in the schema — it grows ~5-15 rows per
+/// opportunity, so it is indexed for the two reads it serves and nothing else.
+model OpportunityStageHistory {
+  id              String   @id @default(cuid()) @map("stage_history_id")
+  opportunityId   String   @map("opportunity_id")
+  /// null when the opportunity row was created (no prior stage).
+  fromStatus      String?  @map("from_status")
+  toStatus        String   @map("to_status")
+  /// null for system-driven transitions (cross-sell engine, cron).
+  changedByUserId String?  @map("changed_by_user_id")
+  /// Close reason, set only on transitions into a terminal stage.
+  outcome         String?
+  note            String?
+  changedAt       DateTime @default(now()) @map("changed_at")
+
+  opportunity Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  // Per-deal timeline reads walk one opportunity in order.
+  @@index([opportunityId, changedAt])
+  // Funnel/velocity aggregates scan transitions into a stage over a window.
+  @@index([toStatus, changedAt])
+  @@map("opportunity_stage_history")
 }
 
 model QuestionnaireTemplate {
@@ -1373,6 +1418,14 @@ model Proposal {
   status               String               @default("pending")
   clientResponseAt     DateTime?            @map("client_response_at")
   eSignatureUrl        String?              @map("e_signature_url")
+
+  // The client's decline response. The UI has always collected this taxonomy,
+  // but with no column to hold it the values were interpolated into a chat
+  // message and discarded — so "why do we lose deals?" was unanswerable.
+  declineReason        String?              @map("decline_reason") // too_expensive | not_needed | prefer_different | other
+  declineComment       String?              @map("decline_comment")
+  counterOfferNotes    String?              @map("counter_offer_notes")
+
   createdAt            DateTime             @default(now()) @map("created_at")
   updatedAt            DateTime             @updatedAt @map("updated_at")
   thread               CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)

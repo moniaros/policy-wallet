@@ -104,6 +104,52 @@ export function isOpportunityStatus(value: string): value is OpportunityStatus {
     return OPPORTUNITY_STATUSES.includes(value as OpportunityStatus)
 }
 
+// Terminal stages — a deal that reaches one of these is closed, and closing is
+// what stamps `Opportunity.outcome` / `outcomeAt`.
+export const TERMINAL_OPPORTUNITY_STATUSES = ['won', 'lost'] as const
+
+export type TerminalOpportunityStatus = typeof TERMINAL_OPPORTUNITY_STATUSES[number]
+
+export function isTerminalOpportunityStatus(value: string): value is TerminalOpportunityStatus {
+    return TERMINAL_OPPORTUNITY_STATUSES.includes(value as TerminalOpportunityStatus)
+}
+
+// Why a deal was won.
+export const OPPORTUNITY_WON_OUTCOMES = [
+    'new_business',
+    'cross_sell',
+    'renewal',
+    'proposal_accepted'
+] as const
+
+export type OpportunityWonOutcome = typeof OPPORTUNITY_WON_OUTCOMES[number]
+
+// Why a deal was lost. The first four deliberately mirror the decline taxonomy
+// the proposal-response UI already collects, so a client decline maps 1:1 onto
+// a pipeline loss reason instead of being reduced to prose.
+export const OPPORTUNITY_LOST_OUTCOMES = [
+    'too_expensive',
+    'not_needed',
+    'prefer_different',
+    'other',
+    'competitor',
+    'unresponsive'
+] as const
+
+export type OpportunityLostOutcome = typeof OPPORTUNITY_LOST_OUTCOMES[number]
+
+export type OpportunityOutcome = OpportunityWonOutcome | OpportunityLostOutcome
+
+/** Is `outcome` a valid reason for closing a deal at `status`? */
+export function isOpportunityOutcomeFor(
+    status: TerminalOpportunityStatus,
+    outcome: string
+): outcome is OpportunityOutcome {
+    return status === 'won'
+        ? OPPORTUNITY_WON_OUTCOMES.includes(outcome as OpportunityWonOutcome)
+        : OPPORTUNITY_LOST_OUTCOMES.includes(outcome as OpportunityLostOutcome)
+}
+
 // Customer Relationship Status
 export const RELATIONSHIP_STATUSES = [
     'pending_activation',
