@@ -712,6 +712,35 @@ export function resolveGapConcept(rawSlug: string): string {
     return GAP_CONTENT_MAP[slug]?.concept ?? slug
 }
 
+/**
+ * Given a slug the AI emitted, find the EXISTING gap definition it should
+ * attach to — the anti-mint half of the auto-created-definition fix. The
+ * clarity pipeline invents vocabulary variants (`no-glass-breakage` for the
+ * finding `glass_breakage` already covers), and each variant used to become a
+ * new active definition that joined every future gap-detection prompt for the
+ * line of business. Matching is by CONCEPT, not spelling, so snake/kebab and
+ * alias variants all land on the original row.
+ *
+ * Preference order on multiple concept-matches: active over inactive (an
+ * admin-deactivated duplicate must not win over the live twin), then earliest
+ * createdAt (the original row, not a later variant).
+ *
+ * Returns null for a genuinely novel concept — the caller mints a definition
+ * for it (inactive, so an admin activates it deliberately).
+ */
+export function pickCanonicalGapDefinition<
+    T extends { slug: string; isActive: boolean; createdAt: Date }
+>(emittedSlug: string, candidates: T[]): T | null {
+    const concept = resolveGapConcept(emittedSlug)
+    const matches = candidates.filter((c) => resolveGapConcept(c.slug) === concept)
+    if (matches.length === 0) return null
+    matches.sort((a, b) => {
+        if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
+        return a.createdAt.getTime() - b.createdAt.getTime()
+    })
+    return matches[0]
+}
+
 export function resolveGapContent(
     rawSlug: string,
     context: GapContentContext = {}

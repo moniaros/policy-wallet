@@ -13,6 +13,7 @@ import {
     firstSentence,
     groupGapsByCoverageArea,
     normalizeGapSlug,
+    pickCanonicalGapDefinition,
     resolveGapConcept,
     resolveGapContent,
     summarizeGaps,
@@ -159,6 +160,44 @@ describe('resolveGapContent', () => {
         // preventive-care-gap is genuinely new — it must NOT be folded into an
         // unrelated concept just to silence the warning.
         expect(resolveGapConcept('preventive-care-gap')).toBe('preventive-care')
+    })
+
+    // The anti-mint half of the auto-created-definition fix: an AI vocabulary
+    // variant must attach to the EXISTING definition for its concept instead of
+    // minting a new row that joins every future prompt for the LoB.
+    describe('pickCanonicalGapDefinition', () => {
+        const def = (slug: string, isActive = true, created = '2026-07-14') =>
+            ({ slug, isActive, createdAt: new Date(created) })
+
+        it('matches the exact slug back to itself', () => {
+            const glass = def('glass_breakage')
+            expect(pickCanonicalGapDefinition('glass_breakage', [glass, def('theft')])).toBe(glass)
+        })
+
+        it('matches a vocabulary variant across snake/kebab and aliases (the no-glass-breakage case)', () => {
+            const glass = def('glass_breakage')
+            expect(pickCanonicalGapDefinition('no-glass-breakage', [glass, def('theft')])).toBe(glass)
+            const own = def('own_vehicle_damage')
+            expect(pickCanonicalGapDefinition('own-damage-gap', [own])).toBe(own)
+        })
+
+        it('prefers the active twin over an admin-deactivated duplicate', () => {
+            const inactive = def('own_damage', false, '2026-07-14')
+            const active = def('own_vehicle_damage', true, '2026-07-20')
+            expect(pickCanonicalGapDefinition('own-damage-gap', [inactive, active])).toBe(active)
+        })
+
+        it('tie-breaks equal-activity matches on the earliest createdAt (the original row)', () => {
+            const original = def('glass_breakage', true, '2026-07-14')
+            const variant = def('windscreen', true, '2026-07-30')
+            expect(pickCanonicalGapDefinition('no-glass-breakage', [variant, original])).toBe(original)
+        })
+
+        it('returns null for a genuinely novel concept — it must NOT force-match', () => {
+            expect(
+                pickCanonicalGapDefinition('totally-new-finding-xyzzy', [def('glass_breakage'), def('theft')])
+            ).toBeNull()
+        })
     })
 
     // Acceptance test from the brief: inject a fake key → Greek fallback

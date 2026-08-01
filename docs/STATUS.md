@@ -62,13 +62,25 @@ which `GAP_RESULT_RULES` then forces the model to evaluate. Prompt bloat that on
   definition `isActive`, so existing gap cards keep rendering with the new content entries.
   Motor's deep prompt drops from 8 checks (3 redundant) to 5 distinct. Dev had none of
   these rows (they were minted by prod traffic).
-- **Broken/insecure backlog — root cause still open:** the auto-mint upsert itself. Every
-  novel slug the clarity AI emits still becomes an active definition with junk
-  checkCriteria and joins all future prompts. Candidate fixes (needs a design decision, not
-  done): create auto-minted definitions with `isActive: false` (instances still render;
-  admins activate deliberately via `/admin/gaps`), and/or canonicalize emitted slugs
-  through `resolveGapConcept` before upserting — mind the snake/kebab mismatch against
-  existing rows, a naive canonical-slug upsert would mint yet another variant.
+- **Root cause FIXED (same day):** the auto-mint feedback loop is closed with two guards in
+  the persist loop. (1) **Canonicalize before minting** — new pure
+  `pickCanonicalGapDefinition` (lib/wallet/gap-report.ts) concept-matches each emitted slug
+  against ALL of the LoB's definitions (active + inactive — filtering to active would
+  re-mint the moment an admin deactivates a duplicate), preferring active then earliest
+  `createdAt`; a vocabulary variant attaches its instance to the original row and mints
+  nothing. Slug spellings stay as they are — matching happens at concept level, so the
+  snake/kebab trap flagged earlier is sidestepped rather than migrated. (2) **Mint
+  inactive** — a genuinely novel concept still gets a definition and a rendered instance
+  (rendering ignores `isActive`), but joins prompts only when an admin activates it in
+  `/admin/gaps`, where the "no content entry" badge flags it for a content entry at the
+  same time. Plus: `gapRows` deduped by `definitionId` (no DB unique protects
+  (policyId, gapDefinitionId); gap_detection wins over clarity since it populates the map
+  first), and the dead active-minting `ensureGapDefinition` (zero callers) is deleted.
+  Pinned by `tests/unit/gap-automint.test.ts` (mutation checks: reverting to
+  `isActive: true` or filtering the lookup to active fails) + 5 helper cases in
+  `gap-report.test.ts`. 2759 unit tests + full gate + build exit 0.
+  Post-deploy watch signal: `SELECT count(*) FROM gap_definitions WHERE
+  detection_logic->>'source'='ai_clarity_pipeline' AND is_active=true` stops growing.
 
 **Also verified this pass:** production holds **0 opportunities**, so the MEDDIC
 pipeline-memory code merged below is correct but *inert* — there is nothing to live-verify

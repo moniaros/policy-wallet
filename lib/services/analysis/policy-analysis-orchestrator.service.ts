@@ -53,6 +53,10 @@ import {
 import { getModelForStep, selectPrimaryProvider, fallbackModelFor, type AiRuntimeOverrides } from "@/lib/services/ai/model-router"
 import { getAiRuntimeOverrides } from "@/lib/services/ai/runtime-config"
 import { getPromptOverrides, resolveOperatorGuidance } from "@/lib/services/ai/prompt-overrides"
+// The app's canonical gap-concept table (also used by the gap-engine
+// recommendation generator) — here it stops the clarity pipeline from minting
+// a new definition for every vocabulary variant the AI invents.
+import { pickCanonicalGapDefinition } from "@/lib/wallet/gap-report"
 import { detectDeterministicSavings } from "./deterministic-savings"
 import { resolveUserEntitlements, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import {
@@ -2617,30 +2621,62 @@ export class PolicyAnalysisOrchestratorService {
             detectedAt: Date
         }> = []
 
+        // The clarity AI emits free vocabulary, and each novel slug used to be
+        // upserted as an ACTIVE definition — which getGapDefinitionsForPolicy
+        // then fed into every future gap-detection prompt for the LoB with the
+        // junk "Auto-created…" description as its checkCriteria. Unbounded
+        // prompt bloat (motor reached 8 checks, 3 redundant). Two guards now:
+        // (1) canonicalize by CONCEPT onto an existing definition — a spelling
+        // or alias variant attaches to the original row and mints nothing;
+        // (2) a genuinely new concept mints its definition INACTIVE, so it
+        // renders on this policy but joins prompts only when an admin
+        // deliberately activates it in /admin/gaps.
+        const lobDefinitions = await db.gapDefinition.findMany({
+            where: {
+                lineOfBusiness: { equals: normalizedLob, mode: "insensitive" },
+            },
+            select: { id: true, slug: true, isActive: true, createdAt: true },
+        })
+
+        // No DB unique on (policyId, gapDefinitionId): two emitted slugs that
+        // canonicalize to one definition must not create two rows. First wins —
+        // gap_detection populates detectedGaps before clarity, so the curated
+        // result takes precedence over the free-vocabulary one.
+        const seenDefinitionIds = new Set<string>()
+
         for (const [slug, details] of detectedGaps.entries()) {
-            const source = gapDefinitions.find((item) => item.slug === slug)
-            const fallbackTitle = slug
-                .replace(/_/g, " ")
-                .replace(/\b\w/g, (char) => char.toUpperCase())
-            const definition = await db.gapDefinition.upsert({
-                where: { slug },
-                update: {},
-                create: {
-                    slug,
-                    name: source?.name || fallbackTitle,
-                    title: source?.name || fallbackTitle,
-                    description: source?.description || "Auto-created from AI clarity analysis",
-                    lineOfBusiness: normalizedLob,
-                    severity: details.severity,
-                    defaultSeverity: details.severity,
-                    ruleId: `ai_${slug}`,
-                    detectionLogic: { source: "ai_clarity_pipeline" },
-                    isActive: true,
-                },
-            })
+            const canonical = pickCanonicalGapDefinition(slug, lobDefinitions)
+            let definitionId: string
+            if (canonical) {
+                definitionId = canonical.id
+            } else {
+                const source = gapDefinitions.find((item) => item.slug === slug)
+                const fallbackTitle = slug
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, (char) => char.toUpperCase())
+                const definition = await db.gapDefinition.upsert({
+                    where: { slug },
+                    update: {},
+                    create: {
+                        slug,
+                        name: source?.name || fallbackTitle,
+                        title: source?.name || fallbackTitle,
+                        description: source?.description || "Auto-created from AI clarity analysis",
+                        lineOfBusiness: normalizedLob,
+                        severity: details.severity,
+                        defaultSeverity: details.severity,
+                        ruleId: `ai_${slug}`,
+                        detectionLogic: { source: "ai_clarity_pipeline" },
+                        isActive: false,
+                    },
+                })
+                definitionId = definition.id
+            }
+            if (seenDefinitionIds.has(definitionId)) continue
+            seenDefinitionIds.add(definitionId)
             gapRows.push({
                 policyId: policy.id,
-                gapDefinitionId: definition.id,
+                gapDefinitionId: definitionId,
                 severity: details.severity,
                 status: "open",
                 aiExplanation: details.explanationEn,
@@ -2686,38 +2722,6 @@ export class PolicyAnalysisOrchestratorService {
             if (gapRows.length > 0) {
                 await tx.gapInstance.createMany({ data: gapRows })
             }
-        })
-    }
-
-    private async ensureGapDefinition(params: {
-        slug: string
-        lineOfBusiness: string
-        severity: string
-        sourceDefinitions: GapDefinitionForAI[]
-    }) {
-        const existing = await db.gapDefinition.findUnique({
-            where: { slug: params.slug },
-        })
-        if (existing) return existing
-
-        const source = params.sourceDefinitions.find((item) => item.slug === params.slug)
-        const fallbackTitle = params.slug
-            .replace(/_/g, " ")
-            .replace(/\b\w/g, (char) => char.toUpperCase())
-
-        return db.gapDefinition.create({
-            data: {
-                slug: params.slug,
-                name: source?.name || fallbackTitle,
-                title: source?.name || fallbackTitle,
-                description: source?.description || "Auto-created from AI clarity analysis",
-                lineOfBusiness: params.lineOfBusiness,
-                severity: params.severity,
-                defaultSeverity: params.severity,
-                ruleId: `ai_${params.slug}`,
-                detectionLogic: { source: "ai_clarity_pipeline" },
-                isActive: true,
-            },
         })
     }
 
