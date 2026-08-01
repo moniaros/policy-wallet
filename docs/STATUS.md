@@ -38,6 +38,16 @@ standard is gemini · extractPolicyData: `gemini-3-flash-preview` (€0.50/€3 
   owner's call (3× extraction token cost):** `/admin/ai/settings` → pin
   `extractPolicyData` → gemini/`gemini-3.5-flash` (stable GA), watch latency + cost on
   `/admin/ai`, revert to auto if cost outweighs the tail-latency win.
+- **PIN APPLIED (owner-approved, 2026-08-01):** `extractPolicyData` → gemini/
+  `gemini-3.5-flash` is live in prod `ai_runtime_config` (v1, revision row with {from,to}
+  diff, `changed_by='ops-eval-pin-2026-08-01'` — written via Supabase MCP mirroring the
+  updateAiModelConfig write path, since the session has no admin browser login). One
+  behavioral note vs the UI path: a direct DB write cannot call `revalidateTag`, so the
+  pin lands within the cached reader's **300s TTL** per instance instead of instantly.
+  Verify on `/admin/ai`: Active configuration shows extractPolicyData as "admin override"
+  (v1); subsequent uploads meter extraction under `gemini-3.5-flash` in the routing
+  distribution. Revert = set the row back to auto in `/admin/ai/settings` (one click,
+  becomes v2 with its own revision).
 - **Eval limits, stated:** 1 synthetic text/plain extraction case (not a real PDF), one run
   per model. To make future runs decisive: add 1–2 extraction cases incl. a redacted real
   PDF, and accept the insurer long-form as valid in the scorer.
