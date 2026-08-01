@@ -30,6 +30,12 @@ guard/metering and the lifecycle helpers coexist). `OpportunityUpdateModal`'s `o
 the branch's 5th `outcome` param while keeping this line's `onMedicChange` callback. This file
 kept the NEW-UI structure rather than the branch's older `## Done (recent)` block.
 
+**DEPLOYED** 2026-08-01: merge commit `8d510bad` on `NEW-UI` → CI green → auto-deploy run #8
+(`policy-wallet-5bwpmpa4w…`), the first release to ship through the repaired pipeline without a
+manual `vercel --prod`. No new Sentry issues in the 2h after. **Not yet live-verified:** a stage
+row actually being written on a close, and the proposal accept/decline paths end to end — worth a
+manual pass on `/opportunities`, since no production traffic has exercised them yet.
+
 **Migration applied before merge** (the deploy.yml contract): `20260801120000_opportunity_lifecycle_history`
 is live on prod (`cquudefwfwrmvpftuhyl`) and dev (`lzqvtvjggylcujenlelh`) via the Supabase MCP path
 — table + 3 opportunity columns + 3 proposal columns + 3 indexes + `_prisma_migrations` rows, all
