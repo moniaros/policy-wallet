@@ -5,6 +5,40 @@
 > found, what was fixed, what still needs doing, and the five corrections where
 > my own tooling was wrong rather than the product.
 
+## Gap-report content gaps (Sentry POLICYWALLET-7) — 2026-08-01
+
+**Broken (user-visible), now fixed.** Three gap definitions live in the production
+database with no `GAP_CONTENT_MAP` entry — `no-glass-breakage` (motor), `own-damage-gap`
+(motor), `preventive-care-gap` (group_health). All three had live gap instances, so real
+customers read a **generic Greek fallback heading instead of the actual finding**; the only
+signal was a Sentry warning firing since 14 Jul (68 events).
+
+- **Not a slug-convention bug.** The prod dump looks like a snake/kebab mismatch, but
+  `normalizeGapSlug` already folds `_`→`-` and all 35 other prod slugs resolve. The three
+  are genuinely absent from the map.
+- **Why no test caught it:** they exist *only* in the database — not in `prisma/seed.ts`,
+  not anywhere in the repo. They were created straight against the DB, so no repo-level
+  assertion could have seen them.
+- **Second, quieter defect:** two of them duplicate a concept whose twin definition also
+  fires (`no-glass-breakage`≈`glass_breakage`, `own-damage-gap`≈`own_damage`/
+  `own_vehicle_damage`), so those policies rendered **two cards for one finding**. Giving the
+  new entries the existing `concept` (the `windscreen`→`glass-breakage` alias pattern) fixes
+  the heading and the duplicate in one move. `preventive-care-gap` is genuinely new content,
+  deliberately NOT folded into an unrelated concept just to silence the warning.
+- **Guard against the next one:** `/admin/gaps` now shows a "no content entry" badge per
+  definition. It uses a **pure map lookup, not `resolveGapContent`** — that function reports
+  unknown slugs to Sentry as a side effect, so an admin opening the page would otherwise
+  manufacture the very warning the badge surfaces.
+- Regression tests pin all three as `known` and pin the concept collapse. 2749 unit tests +
+  full gate + build (exit 0) green.
+- **Left for the owner, deliberately:** the duplicate gap *definitions* themselves are still
+  active in the DB. Deactivating them changes detection behavior for real policies — an
+  owner call, not a side effect of a content fix. `/admin/gaps` is where to do it.
+
+**Also verified this pass:** production holds **0 opportunities**, so the MEDDIC
+pipeline-memory code merged below is correct but *inert* — there is nothing to live-verify
+until an agent has real deals.
+
 ## MEDDIC readiness review → opportunity pipeline memory — 2026-08-01 — merged into `NEW-UI`
 
 Merged `claude/meddic-policywallet-crm-gqqcos` (2 commits, forked at `307f04f3`).

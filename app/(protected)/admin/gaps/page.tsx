@@ -5,12 +5,27 @@ import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { GAP_CONTENT_MAP, normalizeGapSlug } from "@/lib/wallet/gap-report"
 import { db } from "@/lib/db"
 
 // Admin-only internal tooling — English-only per the admin-page precedent.
 // i18n-hardcoded-ignore — admin-only internal tooling
 
 const card = "rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800"
+
+/**
+ * Does this slug have a hand-written entry in the wallet gap report's content
+ * map? Definitions created straight in the database (three of them were) have
+ * none, so the customer-facing report falls back to a generic Greek heading
+ * instead of the real finding — invisible to everyone except Sentry.
+ *
+ * Deliberately a PURE map lookup, not `resolveGapContent`: that function
+ * reports unknown slugs to Sentry as a side effect, so calling it here would
+ * make an admin opening this page manufacture the very warning it surfaces.
+ */
+function hasReportContent(slug: string): boolean {
+    return Boolean(GAP_CONTENT_MAP[normalizeGapSlug(slug)])
+}
 
 /**
  * Gap-definition editor index. The checkCriteria of each definition is per-LoB
@@ -81,6 +96,7 @@ export default async function GapDefinitionsPage() {
                                     <th className="py-2 pr-4">Severity</th>
                                     <th className="py-2 pr-4">Scope</th>
                                     <th className="py-2 pr-4">Active</th>
+                                    <th className="py-2 pr-4">Report content</th>
                                     <th className="py-2 pr-4">Version</th>
                                 </tr>
                             </thead>
@@ -96,6 +112,18 @@ export default async function GapDefinitionsPage() {
                                         <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">{def.severity}</td>
                                         <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">{def.scope}</td>
                                         <td className="py-2 pr-4">{def.isActive ? "yes" : <span className="text-red-600 dark:text-red-400">no</span>}</td>
+                                        <td className="py-2 pr-4">
+                                            {hasReportContent(def.slug) ? (
+                                                <span className="text-stone-500 dark:text-stone-400">mapped</span>
+                                            ) : (
+                                                <span
+                                                    className="px-1.5 py-0.5 rounded text-micro font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                                                    title="No entry in GAP_CONTENT_MAP — the wallet report shows a generic heading for this gap. Add one in lib/wallet/gap-report.ts."
+                                                >
+                                                    no content entry
+                                                </span>
+                                            )}
+                                        </td>
                                         <td className="py-2 pr-4 text-stone-700 dark:text-stone-300">v{def.version}</td>
                                     </tr>
                                 ))}

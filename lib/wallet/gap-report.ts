@@ -221,6 +221,17 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "exclusion",
         coverageArea: "vehicle",
     },
+    // Prod gap definition created directly in the DB (no seed, no map entry) —
+    // it was rendering the generic fallback heading AND, because it shares the
+    // concept with `glass-breakage` whose definition also fires, a second card
+    // for the same finding. The concept alias fixes both.
+    "no-glass-breakage": {
+        concept: "glass-breakage",
+        titleEl: "Πιθανή έλλειψη κάλυψης θραύσης κρυστάλλων",
+        titleEn: "Possible missing glass breakage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
     "own-damage": {
         concept: "own-damage",
         titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
@@ -229,6 +240,15 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         coverageArea: "vehicle",
     },
     "own-vehicle-damage": {
+        concept: "own-damage",
+        titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
+        titleEn: "Possible missing own-damage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    // Same story as no-glass-breakage: DB-only slug, third spelling of the
+    // own-damage finding.
+    "own-damage-gap": {
         concept: "own-damage",
         titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
         titleEn: "Possible missing own-damage coverage",
@@ -332,6 +352,16 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         titleEl: "Περιορισμένη εξωνοσοκομειακή κάλυψη",
         titleEn: "Limited outpatient coverage",
         mechanic: "limit",
+        coverageArea: "outpatient",
+    },
+    // Group-health gap definition created directly in the DB. Unlike the two
+    // motor slugs above this is a genuinely new concept, not an alias — no
+    // existing entry covers preventive/screening cover.
+    "preventive-care-gap": {
+        concept: "preventive-care",
+        titleEl: "Πιθανή έλλειψη κάλυψης προληπτικών εξετάσεων",
+        titleEn: "Possible missing preventive care coverage",
+        mechanic: "exclusion",
         coverageArea: "outpatient",
     },
     "home-earthquake": {

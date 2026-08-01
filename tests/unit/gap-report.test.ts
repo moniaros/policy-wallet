@@ -13,6 +13,7 @@ import {
     firstSentence,
     groupGapsByCoverageArea,
     normalizeGapSlug,
+    resolveGapConcept,
     resolveGapContent,
     summarizeGaps,
     type GapReportItem,
@@ -133,6 +134,31 @@ describe('resolveGapContent', () => {
         ]) {
             expect(resolveGapContent(slug).known, slug).toBe(true)
         }
+    })
+
+    // Regression: these three existed ONLY in the production database — never
+    // in the seed, never in the map — so nothing in the repo could catch them.
+    // All three had live gap instances, so real users read a generic fallback
+    // heading instead of the finding (Sentry POLICYWALLET-7, 68 events).
+    it('covers the gap definitions that exist only in the production DB', () => {
+        for (const slug of ['no-glass-breakage', 'own-damage-gap', 'preventive-care-gap']) {
+            const content = resolveGapContent(slug)
+            expect(content.known, slug).toBe(true)
+            expect(content.titleEl, slug).toMatch(GREEK_TEXT)
+        }
+        expect(captureMessage).not.toHaveBeenCalled()
+    })
+
+    // The user-visible half of that defect: each of the two motor slugs has a
+    // twin definition that ALSO fires, so without a shared concept the report
+    // renders two cards for one finding.
+    it('collapses the DB-only motor slugs onto their existing concept', () => {
+        expect(resolveGapConcept('no-glass-breakage')).toBe(resolveGapConcept('glass_breakage'))
+        expect(resolveGapConcept('own-damage-gap')).toBe(resolveGapConcept('own_damage'))
+        expect(resolveGapConcept('own-damage-gap')).toBe(resolveGapConcept('own_vehicle_damage'))
+        // preventive-care-gap is genuinely new — it must NOT be folded into an
+        // unrelated concept just to silence the warning.
+        expect(resolveGapConcept('preventive-care-gap')).toBe('preventive-care')
     })
 
     // Acceptance test from the brief: inject a fake key → Greek fallback
