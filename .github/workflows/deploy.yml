@@ -69,17 +69,29 @@ jobs:
       # docs/STATUS.md. Schema changes must land in the database first; this
       # job only ships the app.
 
+      # Current Vercel CLI, invoked directly (Vercel's documented CI pattern).
+      # amondnet/vercel-action@v25 pinned CLI 25.1.0 (2021), whose
+      # project-settings call no longer resolves against today's API — it
+      # failed with "Could not retrieve Project Settings" even with correct
+      # org/project IDs. The CLI reads VERCEL_ORG_ID / VERCEL_PROJECT_ID from
+      # the environment and links non-interactively; the build runs on
+      # Vercel's infrastructure with the project's production env vars — the
+      # same contract as a manual `vercel --prod`.
       - name: Deploy to Vercel (production)
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          working-directory: ./
+        id: vercel-deploy
+        shell: bash
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npx vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN" 2>&1 | tee deploy.log
+          url=$(grep -Eo 'https://[a-z0-9.-]+\.vercel\.app' deploy.log | tail -1)
+          echo "deployment_url=$url" >> "$GITHUB_OUTPUT"
 
       - name: Deployment summary
         if: success()
         run: |
-          echo "✅ Production deployment triggered for ${{ github.event.workflow_run.head_sha || github.sha }}"
+          echo "✅ Production deployment for ${{ github.event.workflow_run.head_sha || github.sha }}"
+          echo "Deployment: ${{ steps.vercel-deploy.outputs.deployment_url }}"
           echo "URL: https://www.policywallet.gr"
