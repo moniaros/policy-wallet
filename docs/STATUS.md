@@ -45,6 +45,31 @@ signal was a Sentry warning firing since 14 Jul (68 events).
   quiet window proves little on its own.
 - `POLICYWALLET-G` (Upstash) also resolved, for the same tripwire reason.
 
+**Follow-up (same day): the "DB-only" definitions are AI-minted — and they feed back into
+prompts.** Comparing the twins' `detectionLogic` before deactivating (the recommended first
+step) found all five rows carry `{"source":"ai_clarity_pipeline"}` and **no check logic at
+all** — nobody hand-created them. The orchestrator auto-upserts a `GapDefinition` for every
+slug the clarity pipeline emits (`policy-analysis-orchestrator.service.ts:2625`/`:2708`),
+with `description: "Auto-created from AI clarity analysis"`. The sting is the feedback loop:
+`getGapDefinitionsForPolicy` (`:2394`) feeds every active definition into the deep
+gap-detection prompt, using that junk description as the `checkCriteria` fallback — so each
+slug the AI invents becomes a **permanent extra check in every future prompt for that LoB**,
+which `GAP_RESULT_RULES` then forces the model to evaluate. Prompt bloat that only grows.
+- **Done (prod, `changed_by='ops-dedupe-2026-08-01'`, version-bumped):** deactivated
+  `no-glass-breakage`, `own-damage-gap`, and `own_damage` (keeping `own_vehicle_damage`, the
+  higher-severity twin of the same concept). Nothing real was lost — none carried logic.
+  Display-safe by construction: instance rendering filters on instance `status` only, never
+  definition `isActive`, so existing gap cards keep rendering with the new content entries.
+  Motor's deep prompt drops from 8 checks (3 redundant) to 5 distinct. Dev had none of
+  these rows (they were minted by prod traffic).
+- **Broken/insecure backlog — root cause still open:** the auto-mint upsert itself. Every
+  novel slug the clarity AI emits still becomes an active definition with junk
+  checkCriteria and joins all future prompts. Candidate fixes (needs a design decision, not
+  done): create auto-minted definitions with `isActive: false` (instances still render;
+  admins activate deliberately via `/admin/gaps`), and/or canonicalize emitted slugs
+  through `resolveGapConcept` before upserting — mind the snake/kebab mismatch against
+  existing rows, a naive canonical-slug upsert would mint yet another variant.
+
 **Also verified this pass:** production holds **0 opportunities**, so the MEDDIC
 pipeline-memory code merged below is correct but *inert* — there is nothing to live-verify
 until an agent has real deals.
