@@ -24,11 +24,20 @@ standard is gemini · extractPolicyData: `gemini-3-flash-preview` (€0.50/€3 
   name «Η ΕΘΝΙΚΗ — ΑΝΩΝΥΜΟΣ…» vs expected short «Η ΕΘΝΙΚΗ») — scorer strictness, not model
   failure. **Enabling pro-tier premium would pay 3× for nothing measurable → not enabled;**
   `getDefaultModelForStep` keeps tier `"free"`. The eval did exactly its job.
-- **Surprise finding, n=1:** standard flash-preview took **~180s** for one small text
-  extraction; 3.5-flash took 9.4s on identical input. If that reproduces, the real question
-  is whether the preview model is fit as the *standard* extraction model (3-min extractions
-  eat step-timeout budget). Testable without a deploy: `/admin/ai/settings` → pin
-  `extractPolicyData` → gemini/`gemini-3.5-flash`, watch cost + latency on `/admin/ai`.
+- **Latency finding CONFIRMED (run #6, extraction-only baseline):** the standard
+  flash-preview's problem is **tail latency, not uniform slowness**. Three attempts
+  observed: ~179.7s (run #4, just under the timeout), **180s HARD TIMEOUT** (run #6 first
+  attempt — "AI call timed out after 180000ms", killed by withTimeoutAndRetry), then the
+  run #6 retry succeeded in **~16s on the same model**. So flash-preview sometimes answers
+  in seconds and sometimes stalls past the 3-minute cap — 2 of 3 attempts hit ≥179s.
+  Premium 3.5-flash: 9.4s (n=1). Accuracy identical in all runs (86%, same scorer-strict
+  insurer miss). Production implication: every stalled extraction burns a full 180s
+  timeout + retry from the remediation budget and inflates analysis wall time. The
+  remediation ladder handled it exactly as designed (the retry salvaged the run) — but a
+  standard model that times out this often is an operational liability. **Candidate fix,
+  owner's call (3× extraction token cost):** `/admin/ai/settings` → pin
+  `extractPolicyData` → gemini/`gemini-3.5-flash` (stable GA), watch latency + cost on
+  `/admin/ai`, revert to auto if cost outweighs the tail-latency win.
 - **Eval limits, stated:** 1 synthetic text/plain extraction case (not a real PDF), one run
   per model. To make future runs decisive: add 1–2 extraction cases incl. a redacted real
   PDF, and accept the insurer long-form as valid in the scorer.
