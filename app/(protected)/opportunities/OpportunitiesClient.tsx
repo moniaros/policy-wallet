@@ -36,12 +36,19 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
     const statusLabel = (key: string) =>
         opp_t.status[key as keyof typeof opp_t.status] ?? key
 
-    const handleUpdate = async (opportunityId: string, status: string, notes: string, nextActionDate?: string) => {
+    const handleUpdate = async (
+        opportunityId: string,
+        status: string,
+        notes: string,
+        nextActionDate?: string,
+        outcome?: string
+    ) => {
         await updateOpportunityStatus(
             opportunityId,
             status as any,
             notes,
-            nextActionDate
+            nextActionDate,
+            outcome
         )
 
         // Update local state

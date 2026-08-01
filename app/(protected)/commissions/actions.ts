@@ -3,6 +3,7 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { commissionRate } from "@/lib/agent/commission"
+import { reportingCloseDate } from "@/lib/agent/opportunity-lifecycle"
 import { isAgentRole } from "@/lib/auth/require-agent"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 
@@ -50,6 +51,7 @@ export async function getCommissionDashboard(): Promise<CommissionSummary | null
             wonPremium: true,
             createdAt: true,
             updatedAt: true,
+            outcomeAt: true,
         },
     })
 
@@ -107,7 +109,14 @@ export async function getCommissionDashboard(): Promise<CommissionSummary | null
         let estimated = 0
 
         for (const opp of opportunities) {
-            const date = opp.updatedAt
+            // Bucket on IMMUTABLE dates. This used to key every bar off
+            // `updatedAt`, which any note edit or owner reassignment bumps — so
+            // editing a note on a deal won in February silently moved February's
+            // revenue into the current month and the whole trend rewrote itself.
+            // Won deals report on their close date; open deals on when they
+            // entered the pipeline. `outcomeAt` is null on rows closed before it
+            // existed, so those fall back to `updatedAt` (see reportingCloseDate).
+            const date = opp.status === "won" ? reportingCloseDate(opp) : opp.createdAt
             if (date >= d && date <= monthEnd) {
                 const lob = opp.lineOfBusiness?.toLowerCase() || "other"
                 const rate = commissionRate(rates, lob)

@@ -3,6 +3,11 @@ import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { notifyCounterparty } from "@/lib/notifications"
 import { commissionOn } from "@/lib/agent/commission"
+import {
+    buildCloseFields,
+    lostOutcomeFromDeclineReason,
+    recordStageTransition,
+} from "@/lib/agent/opportunity-lifecycle"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
 
 // GET — Get a single proposal
@@ -80,11 +85,10 @@ export const PATCH = withApiGuard(
             return NextResponse.json({ error: "Proposal is no longer pending" }, { status: 400 })
         }
 
-        // The client's decline reason / comment / counter-offer are captured in
-        // the human-readable system message below (and echoed to the agent's
-        // notification). We do NOT persist them as a structured `metadata` field —
-        // the Proposal model has no such column, so writing it threw a Prisma
-        // validation error and every decline-with-reason / counter-offer crashed.
+        // The client's decline reason / comment / counter-offer are rendered into
+        // the human-readable system message below AND persisted to the dedicated
+        // columns on Proposal, so "why do we lose deals?" is answerable from data
+        // rather than by parsing chat prose.
         let systemMessage: string
         if (body.status === "accepted") {
             systemMessage = "Proposal accepted by client"
@@ -103,11 +107,28 @@ export const PATCH = withApiGuard(
             systemMessage = "Proposal declined by client"
         }
 
-        // On accept, capture the closed sale as a WON opportunity so it flows into
-        // the agent's pipeline + commissions (previously an accepted proposal
-        // recorded nothing beyond the status flip). Commission = premium × the
-        // agent's per-line rate, mirroring cross-sell.service.ts.
+        // A proposal response CLOSES the deal the agent was already working — it
+        // does not start a new one. Creating a fresh row here (as this used to)
+        // left the original opportunity open forever, double-counting the deal in
+        // pipeline and won, and gave the new row createdAt === updatedAt so its
+        // sales-cycle length computed as zero. Find the live deal for this
+        // relationship + line and close THAT.
         const agentUserId = proposal.relationship.agentUserId
+        const isPlainDecline = body.status === "declined" && !body.counterOfferNotes
+
+        const openOpportunity =
+            body.status === "accepted" || isPlainDecline
+                ? await prisma.opportunity.findFirst({
+                      where: {
+                          relationshipId: proposal.relationshipId,
+                          lineOfBusiness: proposal.lineOfBusiness,
+                          status: { notIn: ["won", "lost"] },
+                      },
+                      orderBy: { createdAt: "desc" },
+                      select: { id: true, status: true },
+                  })
+                : null
+
         let wonOpportunityData: {
             relationshipId: string
             ownerAgentUserId: string
@@ -118,7 +139,16 @@ export const PATCH = withApiGuard(
             wonPremium: number
             currency: string
             notes: string
+            outcome: string
+            outcomeAt: Date
         } | null = null
+        let wonUpdateData: {
+            estimatedPremium: number
+            estimatedCommission: number
+            wonPremium: number
+            currency: string
+        } | null = null
+
         if (body.status === "accepted") {
             const agentProfile = await prisma.agentProfile.findUnique({
                 where: { userId: agentUserId },
@@ -126,16 +156,33 @@ export const PATCH = withApiGuard(
             })
             const rates = (agentProfile?.commissionRates as Record<string, number> | null) ?? {}
             const premium = Number(proposal.premiumAmount)
-            wonOpportunityData = {
-                relationshipId: proposal.relationshipId,
-                ownerAgentUserId: agentUserId,
-                status: "won",
-                lineOfBusiness: proposal.lineOfBusiness,
-                estimatedPremium: premium,
-                estimatedCommission: commissionOn(rates, proposal.lineOfBusiness, premium),
-                wonPremium: premium,
-                currency: proposal.premiumCurrency,
-                notes: `Won from accepted proposal — ${proposal.insurerName}`,
+            const commission = commissionOn(rates, proposal.lineOfBusiness, premium)
+
+            if (openOpportunity) {
+                // Close the deal in flight — its createdAt is preserved, so the
+                // sales cycle stays measurable.
+                wonUpdateData = {
+                    estimatedPremium: premium,
+                    estimatedCommission: commission,
+                    wonPremium: premium,
+                    currency: proposal.premiumCurrency,
+                }
+            } else {
+                // No deal was being tracked (e.g. the agent proposed straight off a
+                // conversation) — record the sale so commissions still see it.
+                wonOpportunityData = {
+                    relationshipId: proposal.relationshipId,
+                    ownerAgentUserId: agentUserId,
+                    status: "won",
+                    lineOfBusiness: proposal.lineOfBusiness,
+                    estimatedPremium: premium,
+                    estimatedCommission: commission,
+                    wonPremium: premium,
+                    currency: proposal.premiumCurrency,
+                    notes: `Won from accepted proposal — ${proposal.insurerName}`,
+                    outcome: "proposal_accepted",
+                    outcomeAt: new Date(),
+                }
             }
         }
 
@@ -145,6 +192,9 @@ export const PATCH = withApiGuard(
                 data: {
                     status: body.status,
                     clientResponseAt: new Date(),
+                    declineReason: body.declineReason ?? null,
+                    declineComment: body.declineComment ?? null,
+                    counterOfferNotes: body.counterOfferNotes ?? null,
                 },
             })
 
@@ -167,8 +217,60 @@ export const PATCH = withApiGuard(
                 },
             })
 
-            if (wonOpportunityData) {
-                await tx.opportunity.create({ data: wonOpportunityData })
+            if (wonUpdateData && openOpportunity) {
+                await tx.opportunity.update({
+                    where: { id: openOpportunity.id },
+                    data: {
+                        status: "won",
+                        ...wonUpdateData,
+                        ...buildCloseFields(
+                            "won",
+                            "proposal_accepted",
+                            `Accepted proposal — ${proposal.insurerName}`
+                        ),
+                    },
+                })
+                await recordStageTransition(tx, {
+                    opportunityId: openOpportunity.id,
+                    fromStatus: openOpportunity.status,
+                    toStatus: "won",
+                    changedByUserId: userId,
+                    outcome: "proposal_accepted",
+                    note: `Accepted proposal — ${proposal.insurerName}`,
+                })
+            } else if (wonOpportunityData) {
+                const created = await tx.opportunity.create({ data: wonOpportunityData })
+                await recordStageTransition(tx, {
+                    opportunityId: created.id,
+                    fromStatus: null,
+                    toStatus: "won",
+                    changedByUserId: userId,
+                    outcome: "proposal_accepted",
+                    note: wonOpportunityData.notes,
+                })
+            }
+
+            // A plain decline closes the deal as lost WITH the client's reason.
+            // Declines used to record nothing at all, so they were invisible to
+            // pipeline analytics while accepts inflated it. A counter-offer is a
+            // live negotiation, not a loss, so it deliberately closes nothing.
+            if (isPlainDecline && openOpportunity) {
+                const lostOutcome = lostOutcomeFromDeclineReason(body.declineReason)
+                await tx.opportunity.update({
+                    where: { id: openOpportunity.id },
+                    data: {
+                        status: "lost",
+                        ...buildCloseFields("lost", lostOutcome, body.declineComment),
+                    },
+                })
+                await recordStageTransition(tx, {
+                    opportunityId: openOpportunity.id,
+                    fromStatus: openOpportunity.status,
+                    toStatus: "lost",
+                    changedByUserId: userId,
+                    outcome: lostOutcome,
+                    note: body.declineComment ?? `Declined proposal — ${proposal.insurerName}`,
+                })
             }
 
             return result
