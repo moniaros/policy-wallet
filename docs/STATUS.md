@@ -1,5 +1,44 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-07-31 → 08-02 (AI system + admin control panel, shipped)
+
+**Current phase:** post-launch ops on the multi-model AI system. All planned work
+(Phases 1–6 + follow-ups) is deployed to production; what remains is observation.
+
+**Done this session:** Phase 6 admin AI control panel (`/admin/ai/settings`, `/admin/ai/prompts`,
+`/admin/gaps`) built, migrated (prod+dev via Supabase MCP) and DEPLOYED · auto-deploy from
+`NEW-UI` repaired and proven ×4 (secrets never existed + vercel-action's 2021 CLI dead — both
+fixed) · Upstash provisioned by owner, verified via Sentry, override removed · MEDDIC branch
+merged + deployed (migration-first) · gap-report unknown-slug defect fixed + `/admin/gaps`
+badge · **gap-definition auto-mint feedback loop closed** (canonicalize-by-concept +
+mint-inactive) · paid-eval workflow built; verdict: premium = identical accuracy at 3× cost →
+NOT enabled · flash-preview extraction tail latency confirmed (2/3 attempts ≥179s) →
+`extractPolicyData` pinned to `gemini-3.5-flash` in prod runtime config (v1, revertible in UI).
+
+**In progress:** nothing active — two watches: (1) extraction p95 + cost on `/admin/ai` under
+the pin; (2) Sentry tripwires (`POLICYWALLET-7`/`-G` resolved — recurrence = regression).
+
+**Blocked:** nothing.
+
+**Top risks (ranked):**
+1. **HIGH / correctness** — Google Cloud billing lapse recurrence: a dunning state silently
+   killed all Gemini calls once this session; no billing alert exists. Owner action.
+2. **HIGH / correctness** — eval thinness: model decisions rest on ONE synthetic text case;
+   a real redacted-PDF case is needed before the next model swap.
+3. **MED / cost** — the 3× extraction pin is live; unwatched, it's silent spend.
+4. **MED / correctness** — CRM pipeline-memory code has zero production exercise (0 deals).
+5. **MED** — gemini gap-analysis JSON emits string confidences (cleansed, pre-existing).
+
+**Non-gating (UI/UX dislike, separate backlog):** eval scorer rejects the insurer's long
+legal form (cosmetic strictness); `preview.yml` never fires (PRs target NEW-UI, it watches
+main); `/admin/ai` tables are plain but functional.
+
+**Next 3 actions:** (1) after a few days of uploads, read `/admin/ai` — if extraction p95
+dropped and cost is acceptable, keep the pin (or bake into env); else revert to auto.
+(2) Add 1–2 redacted-PDF extraction eval cases + accept the insurer long form; re-run
+`eval.yml`. (3) Set a GCP billing alert on the Gemini project (the dunning incident's
+lesson).
+
 > **Full record of the 2026-07-28/29 UI audit:**
 > [audits/UI_AUDIT_2026-07-29.md](audits/UI_AUDIT_2026-07-29.md) — what was
 > found, what was fixed, what still needs doing, and the five corrections where
