@@ -18,6 +18,8 @@
  * unlucky.
  */
 
+import { buildCoverageHaystack, haystackHasAlias } from "./coverage-matching"
+
 export type HomeCoverageKey =
     | "fire"
     | "earthquake"
@@ -118,17 +120,13 @@ const REASONS: Partial<Record<HomeCoverageKey, HomeCoverageFinding["reason"]>> =
     },
 }
 
-function normalise(text: string): string {
-    return text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
-}
-
 /** Which taxonomy entries the extracted coverage text evidences. */
 export function detectHomeCoverages(coverageTexts: string[]): Set<HomeCoverageKey> {
-    const haystack = normalise(coverageTexts.join(" | "))
+    const haystack = buildCoverageHaystack(coverageTexts)
     const found = new Set<HomeCoverageKey>()
 
     for (const coverage of HOME_COVERAGES) {
-        if (coverage.aliases.some((alias) => haystack.includes(normalise(alias)))) {
+        if (haystackHasAlias(haystack, coverage.aliases)) {
             found.add(coverage.key)
         }
     }
