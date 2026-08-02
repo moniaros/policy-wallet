@@ -42,6 +42,8 @@ import {
     isRemediationAlertingEnabled,
 } from "./remediation-policy"
 import { evaluateAnalysisIncidentThresholds } from "./incident-dispatcher"
+import { taxonomyBackstopGaps } from "./taxonomy-gap-backstop"
+import { detectGapsForPolicy } from "@/lib/gap-detection"
 import {
     INSURANCE_CLARITY_CHECKLIST,
     INSURANCE_CLARITY_CHECKLIST_TOTAL_CHECKS,
@@ -2366,15 +2368,30 @@ export class PolicyAnalysisOrchestratorService {
             },
         })
 
-        return defs.map((def) => ({
-            slug: def.slug,
-            name: def.name,
-            description: def.description,
-            checkCriteria:
-                (def.detectionLogic as any)?.check ||
-                def.description ||
-                "Check this gap against policy coverage",
-        }))
+        return (
+            defs
+                // Only definitions that are genuinely the AI's to answer: a
+                // written check prompt, or a definition the clarity pipeline
+                // itself created. Deterministic definitions (DSL `rules`,
+                // coverage_taxonomy) used to fall through to
+                // description-as-prompt here — asking the model to re-answer a
+                // question the code already answers exactly added variance and,
+                // on disagreement, let an unlucky completion overrule the
+                // deterministic result.
+                .filter((def) => {
+                    const logic = def.detectionLogic as any
+                    return Boolean(logic?.check) || logic?.source === "ai_clarity_pipeline"
+                })
+                .map((def) => ({
+                    slug: def.slug,
+                    name: def.name,
+                    description: def.description,
+                    checkCriteria:
+                        (def.detectionLogic as any)?.check ||
+                        def.description ||
+                        "Check this gap against policy coverage",
+                }))
+        )
     }
 
     private extractStoredClarity(
@@ -2528,8 +2545,10 @@ export class PolicyAnalysisOrchestratorService {
                 severity: string
                 explanationEn: string
                 explanationEl: string
-                suggestionEn: string
-                suggestionEl: string
+                suggestionEn: string | null
+                suggestionEl: string | null
+                /** Set for deterministic taxonomy entries; AI entries omit it. */
+                taxonomyName?: string
             }
         >()
 
@@ -2562,6 +2581,30 @@ export class PolicyAnalysisOrchestratorService {
         const normalizedLob = normalizeLineOfBusiness(extraction.lineOfBusiness || metadata.lineOfBusiness)
         const now = new Date()
 
+        // Deterministic taxonomy backstop. The branch taxonomies encode the
+        // findings a Greek policyholder most needs told (earthquake is not
+        // automatic, hospital-only programmes, no theft cover); without this
+        // step they were reported only when a completion happened to mention
+        // them. The AI entries win on overlap — they carry document-specific
+        // text — so this only ADDS what the model left unsaid, from the same
+        // extraction it produced.
+        for (const gap of taxonomyBackstopGaps({
+            lineOfBusiness: normalizedLob,
+            covered: clarity.coverageSnapshot?.covered ?? [],
+            notCovered: clarity.coverageSnapshot?.notCovered ?? [],
+            acordData: mergedAcord,
+            existingSlugs: [...detectedGaps.keys()],
+        })) {
+            detectedGaps.set(gap.slug, {
+                severity: gap.severity,
+                explanationEn: gap.explanationEn,
+                explanationEl: gap.explanationEl,
+                suggestionEn: null,
+                suggestionEl: null,
+                taxonomyName: gap.name,
+            })
+        }
+
         // Resolve gap definitions BEFORE the transaction. They are shared
         // reference data (unique by slug), so holding the interactive tx open
         // for a per-gap findUnique/create + gapInstance.create round-trip was
@@ -2587,19 +2630,28 @@ export class PolicyAnalysisOrchestratorService {
             const fallbackTitle = slug
                 .replace(/_/g, " ")
                 .replace(/\b\w/g, (char) => char.toUpperCase())
+            // Taxonomy entries are deterministic, and their definition rows
+            // must say so — labelling them ai_* would misreport where the
+            // finding came from.
+            const isTaxonomy = Boolean(details.taxonomyName)
             const definition = await db.gapDefinition.upsert({
                 where: { slug },
                 update: {},
                 create: {
                     slug,
-                    name: source?.name || fallbackTitle,
-                    title: source?.name || fallbackTitle,
-                    description: source?.description || "Auto-created from AI clarity analysis",
+                    name: details.taxonomyName || source?.name || fallbackTitle,
+                    title: details.taxonomyName || source?.name || fallbackTitle,
+                    description:
+                        details.taxonomyName
+                            ? details.explanationEn
+                            : source?.description || "Auto-created from AI clarity analysis",
                     lineOfBusiness: normalizedLob,
                     severity: details.severity,
                     defaultSeverity: details.severity,
-                    ruleId: `ai_${slug}`,
-                    detectionLogic: { source: "ai_clarity_pipeline" },
+                    ruleId: isTaxonomy ? "coverage_taxonomy" : `ai_${slug}`,
+                    detectionLogic: isTaxonomy
+                        ? { source: "coverage_taxonomy" }
+                        : { source: "ai_clarity_pipeline" },
                     isActive: true,
                 },
             })
@@ -2616,6 +2668,49 @@ export class PolicyAnalysisOrchestratorService {
             })
         }
 
+        const finalStartDate = parseDateMaybe(extraction.startDate, policy.startDate)
+        const finalEndDate = parseDateMaybe(extraction.endDate, policy.endDate)
+
+        // The deleteMany below swaps the FULL machine-detected gap set for this
+        // policy. The seeded deterministic rules (Green Card expiry, ENFIA
+        // components, earthquake via explicitly_false…) are evaluated by
+        // lib/gap-detection.ts, which nothing in THIS flow ran — so every
+        // completed deep analysis silently erased their instances until some
+        // out-of-band refresh recreated them. Evaluate them here, against the
+        // post-analysis shape of the policy, so the swap is a true union.
+        // Non-fatal on error: a defective rule row must not fail the analysis.
+        try {
+            const dslGaps = await detectGapsForPolicy({
+                ...policy,
+                lineOfBusiness: normalizedLob,
+                coverageSummary,
+                acordData: mergedAcord,
+                startDate: finalStartDate,
+                endDate: finalEndDate,
+            })
+            const alreadyInstanced = new Set(gapRows.map((row) => row.gapDefinitionId))
+            for (const gap of dslGaps) {
+                if (alreadyInstanced.has(gap.gapDefinitionId)) continue
+                alreadyInstanced.add(gap.gapDefinitionId)
+                gapRows.push({
+                    policyId: policy.id,
+                    gapDefinitionId: gap.gapDefinitionId,
+                    severity: gap.severity,
+                    status: "open",
+                    aiExplanation: null,
+                    aiExplanationEl: null,
+                    aiSuggestion: null,
+                    aiSuggestionEl: null,
+                    detectedAt: now,
+                })
+            }
+        } catch (err) {
+            logger("warn", "Deterministic gap evaluation failed during finalize (non-blocking)", {
+                policyId: policy.id,
+                error: err instanceof Error ? err.message : String(err),
+            })
+        }
+
         // All writes are atomic: if any step fails, no partial state is
         // persisted. Only the policy+gap swap runs inside the tx now — no
         // per-gap round-trips — so it completes well within the timeout.
@@ -2626,8 +2721,8 @@ export class PolicyAnalysisOrchestratorService {
                     insurerName: extraction.insurerName || metadata.insurerName,
                     policyNumber: extraction.policyNumber || metadata.policyNumber,
                     lineOfBusiness: normalizedLob,
-                    startDate: parseDateMaybe(extraction.startDate, policy.startDate),
-                    endDate: parseDateMaybe(extraction.endDate, policy.endDate),
+                    startDate: finalStartDate,
+                    endDate: finalEndDate,
                     premiumAmount:
                         typeof extraction.premiumAmount === "number"
                             ? extraction.premiumAmount
