@@ -1,5 +1,40 @@
 # PolicyWallet — Project Status
 
+## 🔬 Ζωντανή επαλήθευση pipeline με πραγματικό PDF — 2026-08-02
+
+PR #225. Πραγματική Postgres 16 (τοπική), πραγματικό PDF (ασφαλιστήριο αστικής
+ευθύνης «Η ΕΘΝΙΚΗ» #1400142), mock AI provider (δεν υπάρχει provider key στο
+περιβάλλον — η ποιότητα εξαγωγής πραγματικού μοντέλου ΔΕΝ επαληθεύτηκε· όλα τα
+υπόλοιπα ναι).
+
+**Επαληθεύτηκαν ζωντανά, με γραμμές στη βάση:**
+1. **Free-tier gate:** το 1ο createRun μπλόκαρε σωστά με
+   `free_tier_ai_locked`/`UPGRADE_REQUIRED` — χρειάστηκε συνδρομή Pro.
+2. **WP-01 provider honesty:** `run.provider = 'mock'` στη γραμμή του run.
+3. **Πραγματικό download path:** το PDF (312KB) κατέβηκε μέσω του fetch
+   fallback του `downloadPolicyDocument`, hash `3e21d70c…`.
+4. **WP-04 versioned cache:** `extractionCache.__extractorVersion = 1` στη
+   βάση· το run 2 έκανε cache HIT (extractedAt αμετάβλητο).
+5. **Και τα τρία σκέλη της ένωσης gaps στο ίδιο swap:** ai_check
+   (`motor-theft`), clarity (`natural_disaster_extension_missing`), DSL
+   (`green_card_expiring`, `acord_deterministic`, χωρίς AI κείμενο) — το
+   τελευταίο πυροδοτήθηκε από έγχυση `greenCardExpiryDate` στο versioned
+   cache, αποδεικνύοντας cache→enrichment→mergedAcord→DSL μέσα στο finalize.
+6. **Backstop honesty (αρνητικό, ζωντανά):** με covered 2 entries (< gate 3)
+   ΚΑΝΕΝΑ taxonomy_* δεν εφευρέθηκε. (Το θετικό σκέλος καλύπτεται από τα 10
+   unit tests του backstop — ο mock δεν παράγει σενάριο που να το δείξει live.)
+7. **WP-05 score envelope:** `protection_scores.categoryScores.__scoreModelVersion = 2`.
+8. **Idempotence:** επανάληψη του run 2 → ίδιο σύνολο 3 instances, χωρίς P2002.
+
+**Πραγματικό bug που βρέθηκε ΚΑΙ διορθώθηκε από το live run:** το post-analysis
+protection-score refresh ήταν κρεμάμενο `.then()` χωρίς await/after() — σε
+serverless το instance παγώνει με την απάντηση, άρα το refresh είτε δεν έτρεχε
+είτε σκοτωνόταν μεσο-transaction («Transaction not found», ακριβώς ό,τι
+παρήγαγε το harness). Τώρα awaited (runGapEngine = rules+DB, χωρίς κλήση
+μοντέλου — κόστος ms σε budget 300s), με το failure να παραμένει non-blocking.
+
+## WP-05/WP-06 — ζωή + σύνδεση των ταξινομιών στη ροή ανάλυσης — 2026-08-01
+
 ## WP-05/WP-06 — ζωή + σύνδεση των ταξινομιών στη ροή ανάλυσης — 2026-08-01
 
 PR #225. 27 νέα tests, 4 asserted mutations.

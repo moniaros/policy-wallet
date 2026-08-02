@@ -1797,9 +1797,16 @@ export class PolicyAnalysisOrchestratorService {
             durationMs: startedAtMs ? Math.max(0, Date.now() - startedAtMs) : undefined,
         })
 
-        // Refresh protection score after successful analysis (fire-and-forget)
+        // Refresh protection score after successful analysis. Non-blocking in
+        // OUTCOME (failure only logs) but awaited in EXECUTION: this used to be
+        // a dangling `.then()`, and a serverless runtime freezes the instance
+        // as soon as the caller responds — the refresh then either never ran or
+        // was killed mid-transaction ("Transaction not found"), which is
+        // exactly what a live pipeline run against a real database produced.
+        // runGapEngine is rules + DB only (no model call), so awaiting it costs
+        // milliseconds inside a 300s consumer budget.
         if (finalStatus === "completed" || finalStatus === "completed_with_warnings") {
-            import("@/lib/services/gap-engine")
+            await import("@/lib/services/gap-engine")
                 .then(({ refreshProtectionScore }) => refreshProtectionScore(run.userId))
                 .catch((err) =>
                     logger("warn", "Post-analysis protection score refresh failed (non-blocking)", {

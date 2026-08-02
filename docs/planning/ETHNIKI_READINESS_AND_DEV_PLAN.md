@@ -370,9 +370,20 @@ Code session να αυτοεκκινεί από αυτό το έγγραφο** �
 > 27 νέα tests (10 ζωή + 10 backstop + 7 wiring source-assertions), 4
 > mutations με asserted εφαρμογή (2/1/1/1 αποτυχίες).
 >
-> **☐ Απομένει για τον κλάδο:** golden tests σε πραγματικά PDF ανά κλάδο
-> (owner action #4, ψευδωνυμοποιημένα εξαρχής) και επαλήθευση της ροής με
-> ζωντανό pipeline run.
+> **✅ Η ζωντανή επαλήθευση έγινε (2026-08-02)** — πραγματική Postgres,
+> πραγματικό PDF (αστική ευθύνη «Η ΕΘΝΙΚΗ» #1400142) μέσω του πραγματικού
+> download path, mock provider. Αποδείχθηκαν με γραμμές στη βάση: free-tier
+> gate, provider honesty, versioned extraction cache + cache hit, και τα ΤΡΙΑ
+> σκέλη της ένωσης gaps στο ίδιο swap (ai_check + clarity + DSL
+> `green_card_expiring` από έγχυση στο cache), backstop που αρνείται να
+> εφεύρει από λίστα 2 entries, score envelope v2, idempotence. Και βρέθηκε/
+> διορθώθηκε πραγματικό bug: το post-analysis score refresh ήταν κρεμάμενο
+> `.then()` — σε serverless δεν είχε καμία εγγύηση εκτέλεσης· τώρα awaited.
+> Λεπτομέρειες στο docs/STATUS.md.
+>
+> **☐ Απομένει για τον κλάδο:** golden tests σε πραγματικά PDF ανά κλάδο με
+> ΠΡΑΓΜΑΤΙΚΟ provider key (η ποιότητα εξαγωγής πραγματικού μοντέλου δεν
+> επαληθεύεται με mock)· owner action #4, ψευδωνυμοποιημένα εξαρχής.
 
 ### Phase 3 — Ζωντανός βρόχος ασφαλιστή
 
