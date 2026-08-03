@@ -411,8 +411,9 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                     {/* Meta */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.templateName}</label>
+                            <label htmlFor="qtpl-name" className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.templateName}</label>
                             <input
+                                id="qtpl-name"
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -421,8 +422,9 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                             />
                         </div>
                         <div>
-                            <label className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.lob}</label>
+                            <label htmlFor="qtpl-lob" className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.lob}</label>
                             <select
+                                id="qtpl-lob"
                                 value={lob}
                                 onChange={(e) => setLob(e.target.value)}
                                 className="pw-input"
