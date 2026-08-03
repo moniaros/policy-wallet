@@ -1,5 +1,38 @@
 # PolicyWallet — Project Status
 
+## ✅ Live verification × 3 LOBs (motor, health-renewal, cyber) + money-scale fix — 2026-08-03
+
+PR #225. Τρία ακόμη πραγματικά PDF μέσα από το `verify-pipeline-live.ts` με
+πραγματικό Gemini. Όλα τα flow assertions πράσινα και στα τρία.
+
+| LOB | Εξαγωγή | Κρίση |
+|---|---|---|
+| motor | Η ΕΘΝΙΚΗ, #6450…, 06.10.2025→06.10.2026, 94,07 €, βασική (ΑΕ+φυσικά+δασική πυρκαγιά+ανασφάλιστο) | συνεπής· χωρίς τοπική αντι-επαλήθευση (CID fonts χωρίς ToUnicode) |
+| «life» | ταξινομήθηκε **health** — είναι η ΑΝΑΝΕΩΣΗ του γνωστού Full Health (ίδιος αριθμός με suffix -03, ίδια επέτειος 22/05, 1.567,33 €) | ισχυρά anchors: επωνυμία+αριθμός βρέθηκαν στο έγγραφο· συνεπές με το fixture του 2024 |
+| cyber | Α.Ε.Ε.Γ.Α. Η ΕΘΝΙΚΗ, ημερολογιακό 2026, 32 €, κλοπή ταυτότητας/απάτη/αγορές | συνεπής· πολλαπλά cmaps εμπόδισαν τοπικό decode |
+
+**Backstop live × 2 συμπεριφορές:** στο motor το AI ανέφερε ήδη κλοπή+νομική
+με δικά του slugs (`motor-theft-fire`, `motor-legal-protection`) → η ταξινομία
+**δεν διπλο-ανέφερε** (dedup stems σε πραγματικά slugs)· στο cyber σιωπή
+(κλάδος χωρίς ταξινομία). Νέα goldens: το ίδιο real covered list ΜΕ κενά
+existingSlugs → `taxonomy_motor_theft`+`taxonomy_motor_legal` — ο σκοπός του.
+
+**🔴 Πραγματικό bug από το live run → migration:** `Policy.premiumAmount` ήταν
+`Decimal` ΧΩΡΙΣ scale → αποθηκεύτηκε `94.069999999999990`. Νέο migration
+`20260803113530_constrain_premium_money_scale` → `DECIMAL(10,2)`· το cast
+στρογγύλεψε ζωντανά το κακό row σε 94.07. Οι υπόλοιπες 19 unconstrained
+Decimal στήλες = ίδια κλάση ελαττώματος, χωριστό sweep (καταγράφηκε).
+
+**Fixtures #5–6:** `motor-ethniki-2.ts` (η βασική χωρίς κλοπή/νομική — το
+ακριβές προφίλ των τεκμηριωμένων κενών του κλάδου) και `cyber-ethniki-1.ts`,
+με δηλωμένη προέλευση (live Gemini extraction) και συνθετικές ταυτότητες.
+
+**AI-side nit:** το clarity ανέφερε τη θραύση κρυστάλλων δύο φορές με δύο slugs
+(`motor-glass-breakage`, `no-glass-breakage`) — αβλαβές διπλό card, όχι δικό
+μας layer· σημειώνεται για το prompt.
+
+**Owner:** `npx prisma migrate deploy` στην παραγωγή για το νέο migration.
+
 ## ✅ Real-model επαλήθευση: Gemini σε πραγματικό PDF — 2026-08-03
 
 PR #225. Το τελευταίο key-gated κομμάτι του WP-06 acceptance έκλεισε.

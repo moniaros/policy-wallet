@@ -337,7 +337,13 @@ model Policy {
   // "unknown duration" (unreadable/absent expiry) — counts as coverage.
   coverageEndDate         DateTime?              @map("coverage_end_date")
   status                  String
-  premiumAmount           Decimal?               @map("premium_amount")
+  // Scale-constrained: this column is MONEY, and an unconstrained numeric
+  // stores whatever binary-float noise the JS side sends. A live pipeline run
+  // stored 94.069999999999990 for a €94.07 premium — which then renders
+  // wherever formatting forgets to round. (10,2) makes the database round at
+  // write, whoever the writer is. The other unconstrained Decimal columns are
+  // the same class of defect — swept separately, this one had the live proof.
+  premiumAmount           Decimal?               @map("premium_amount") @db.Decimal(10, 2)
   premiumCurrency         String?                @default("EUR") @map("premium_currency")
   coverageSummary         String?                @map("coverage_summary")
   createdAt               DateTime               @default(now()) @map("created_at")
