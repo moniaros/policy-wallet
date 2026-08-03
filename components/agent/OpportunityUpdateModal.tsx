@@ -149,11 +149,20 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
 
     // §F inline fields: € value-at-risk + stakeholder identification.
     const handleMedicPatch = async (patch: MedicPatch) => {
-        const res = await patchOpportunityMedic(opportunity.id, patch)
-        if (res && 'success' in res && res.success) {
-            setMedicView(res.medic as MedicData)
-            onMedicChange?.(opportunity.id, res.medic as MedicData, res.medicScore)
-        } else {
+        // A transport failure REJECTS rather than returning. MedicScorecard
+        // wraps this in try/finally with no catch, and its callers invoke it as
+        // `void submit(...)` — so the rejection escaped as an unhandled promise
+        // rejection and the advisor was told nothing: the value-at-risk or
+        // stakeholder edit simply did not save, silently.
+        try {
+            const res = await patchOpportunityMedic(opportunity.id, patch)
+            if (res && 'success' in res && res.success) {
+                setMedicView(res.medic as MedicData)
+                onMedicChange?.(opportunity.id, res.medic as MedicData, res.medicScore)
+                return
+            }
+            toast.error(tt.scPatchError)
+        } catch {
             toast.error(tt.scPatchError)
         }
     }
