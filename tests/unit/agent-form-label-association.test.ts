@@ -92,6 +92,58 @@ function bareLabels(rawSrc: string): string[] {
     return found
 }
 
+/**
+ * Round 7's guard only checked that LABELS point somewhere. It could not catch
+ * a control with no label at all — which is exactly what round 8 then found in
+ * the questionnaire builder (an unnamed type select, and an icon-only delete
+ * button announced as just "button").
+ *
+ * This checks the complementary direction for the highest-risk shapes:
+ * <select> elements and icon-only buttons must carry an accessible name.
+ */
+function unnamedControls(rawSrc: string): string[] {
+    const src = rawSrc
+        .replace(/\{\/\*[\s\S]*?\*\/\}/g, (m) => m.replace(/[^\n]/g, " "))
+        .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "))
+        .replace(/^\s*\/\/.*$/gm, (m) => " ".repeat(m.length))
+
+    const lines = src.split("\n")
+    const found: string[] = []
+    const ids = new Set(
+        [...src.matchAll(/htmlFor=["'{`]?([\w-]+)/g)].map((m) => m[1])
+    )
+
+    for (let i = 0; i < lines.length; i++) {
+        if (!/<select(\s|>)/.test(lines[i])) continue
+        // Read the opening tag, which usually spans several lines.
+        let tag = lines[i]
+        let j = i
+        while (!tag.includes(">") && j < lines.length - 1) {
+            j++
+            tag += "\n" + lines[j]
+        }
+        if (/aria-label(ledby)?=/.test(tag)) continue
+        const idMatch = tag.match(/\bid=["'{`]?([\w-]+)/)
+        if (idMatch && ids.has(idMatch[1])) continue
+        // Wrapped by a <Field>/<label> immediately above counts as named.
+        const above = lines.slice(Math.max(0, i - 3), i).join("\n")
+        if (/<Field\b|<label\b/.test(above)) continue
+        found.push(`${i + 1}: <select> with no accessible name`)
+    }
+
+    return found
+}
+
+describe("advisor selects carry an accessible name", () => {
+    it.each(FILES.map((f) => [f.replace(process.cwd() + "/", ""), f]))(
+        "%s",
+        (rel, full) => {
+            const offenders = unnamedControls(readFileSync(full, "utf8"))
+            expect(offenders, `${rel}:\n  ${offenders.join("\n  ")}`).toEqual([])
+        }
+    )
+})
+
 describe("advisor form labels are associated with their controls", () => {
     it("covers a meaningful number of files", () => {
         // Guards against the glob silently matching nothing and the suite

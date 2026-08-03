@@ -40,6 +40,8 @@ const copy = {
         questionLabel: "Question text (EN)",
         questionLabelEl: "Question text (EL)",
         questionType: "Type",
+        removeQuestion: "Remove question",
+        markRequired: "Required question",
         required: "Required",
         optional: "Optional",
         options: "Options (comma-separated)",
@@ -93,6 +95,8 @@ const copy = {
         questionLabel: "Κείμενο ερώτησης (EN)",
         questionLabelEl: "Κείμενο ερώτησης (EL)",
         questionType: "Τύπος",
+        removeQuestion: "Αφαίρεση ερώτησης",
+        markRequired: "Υποχρεωτική ερώτηση",
         required: "Υποχρεωτικό",
         optional: "Προαιρετικό",
         options: "Επιλογές (χωρισμένες με κόμμα)",
@@ -449,6 +453,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     </span>
                                     <div className="flex-1" />
                                     <select
+                                        aria-label={`${t.questionType} — Q${i + 1}`}
                                         value={q.type}
                                         onChange={(e) => updateQuestion(i, "type", e.target.value)}
                                         className="pw-input pw-input-sm"
@@ -459,6 +464,9 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                         <option value="select">{t.select}</option>
                                     </select>
                                     <button
+                                        type="button"
+                                        aria-pressed={q.required}
+                                        aria-label={`${t.markRequired} — Q${i + 1}`}
                                         onClick={() => updateQuestion(i, "required", !q.required)}
                                         className={`px-2 py-1 rounded-lg text-kicker font-black uppercase tracking-widest ${q.required
                                             ? "bg-amber-50 text-amber-700 dark:text-amber-200 dark:bg-amber-900/20"
@@ -468,10 +476,12 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                         {q.required ? t.required : t.optional}
                                     </button>
                                     <button
+                                        type="button"
+                                        aria-label={`${t.removeQuestion} — Q${i + 1}`}
                                         onClick={() => removeQuestion(i)}
                                         className="p-1 rounded-lg hover:bg-red-50 text-slate-500 dark:text-slate-400 hover:text-red-500"
                                     >
-                                        <Trash2 className="w-3.5 h-3.5" />
+                                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                                     </button>
                                 </div>
 
@@ -479,6 +489,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     <input
                                         type="text"
                                         value={q.label}
+                                        aria-label={`${t.questionLabel} — Q${i + 1}`}
                                         onChange={(e) => updateQuestion(i, "label", e.target.value)}
                                         placeholder={t.questionLabel}
                                         className="pw-input pw-input-sm"
@@ -486,6 +497,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     <input
                                         type="text"
                                         value={q.labelEl || ""}
+                                        aria-label={`${t.questionLabelEl} — Q${i + 1}`}
                                         onChange={(e) => updateQuestion(i, "labelEl", e.target.value)}
                                         placeholder={t.questionLabelEl}
                                         className="pw-input pw-input-sm"
