@@ -34,6 +34,20 @@ const cases: Array<{ file: string; expr: RegExp[] }> = [
         file: 'components/agent/QuestionnaireSender.tsx',
         expr: [/aria-pressed=\{selectedTemplate === t\.id\}/],
     },
+    // QA round 6 — the task-type selector, found by re-sweeping after round 5.
+    {
+        file: 'components/agent/CreateTaskModal.tsx',
+        expr: [/aria-pressed=\{type === t\.value\}/],
+    },
+]
+
+/**
+ * Expand/collapse controls need aria-expanded, not aria-pressed: a label that
+ * merely changes wording ("Expand"/"Collapse") never announces STATE.
+ */
+const disclosureCases: Array<{ file: string; expr: RegExp }> = [
+    { file: 'components/agent/ActionQueueCard.tsx', expr: /aria-expanded=\{showAll\}/ },
+    { file: 'components/agent/GettingStartedChecklist.tsx', expr: /aria-expanded=\{!collapsed\}/ },
 ]
 
 /**
@@ -54,6 +68,14 @@ describe('single-select choice buttons announce their selected state', () => {
             for (const re of expr) {
                 expect(re.test(src), `${file} missing ${re}`).toBe(true)
             }
+        })
+    }
+})
+
+describe('disclosure toggles announce their expanded state', () => {
+    for (const { file, expr } of disclosureCases) {
+        it(`${file}: carries aria-expanded`, () => {
+            expect(expr.test(readFileSync(file, 'utf-8')), `${file} missing ${expr}`).toBe(true)
         })
     }
 })

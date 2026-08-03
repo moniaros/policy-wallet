@@ -598,8 +598,12 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             </div>
 
                             <div>
-                                <label className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.notes}</label>
+                                {/* Was a sibling <label> with no htmlFor, so the
+                                    textarea had no accessible name — on the field
+                                    that records WHY a renewal lapsed. */}
+                                <label htmlFor="renewal-outcome-notes" className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.notes}</label>
                                 <textarea
+                                    id="renewal-outcome-notes"
                                     value={outcomeNotes}
                                     onChange={(e) => setOutcomeNotes(e.target.value)}
                                     rows={2}

@@ -101,6 +101,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                             <button
                                 key={t.value}
                                 type="button"
+                                aria-pressed={type === t.value}
                                 onClick={() => setType(t.value)}
                                 className={`text-left p-3 rounded-xl border transition-all ${type === t.value
                                         ? 'border-neutral-900 dark:border-white bg-neutral-50 dark:bg-neutral-800 ring-1 ring-neutral-900 dark:ring-white'
