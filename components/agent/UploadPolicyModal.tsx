@@ -247,6 +247,13 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     }
 
     const isCreateNew = selected === 'new'
+    // AI-consent state of whoever the policy is about to be attached to. A NEW
+    // customer is created unactivated, so attestation applies; a preset customer
+    // (per-client entry point) carries no resolution, so leave the existing
+    // behaviour rather than guess.
+    const selectedConsent: CustomerCandidate['aiConsent'] | null = isCreateNew
+        ? 'attestable'
+        : resolution?.candidates.find((c) => c.id === selected)?.aiConsent ?? null
     const canContinueResolve = selected !== '' && (
         selected !== 'new' || Boolean(customer.email.trim() && customer.name.trim())
     )
@@ -356,6 +363,20 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                                 <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium truncate">
                                                     {c.email}{c.taxIdMasked ? ` · ${up.afmLabel} ${c.taxIdMasked}` : ''} · {c.policyCount} {up.policiesLabel}
                                                 </p>
+                                                {/* Say BEFORE the upload whether an analysis can run.
+                                                    Discovering "consent required" only afterwards cost a
+                                                    scan, a slice of the token budget and ~90s, and left the
+                                                    advisor with a policy carrying no intelligence. */}
+                                                {c.aiConsent === 'blocked' && (
+                                                    <p className="mt-1 text-xs font-bold text-amber-700 dark:text-amber-400">
+                                                        {up.consentBlockedHint}
+                                                    </p>
+                                                )}
+                                                {c.aiConsent === 'attestable' && (
+                                                    <p className="mt-1 text-xs font-bold text-neutral-500 dark:text-neutral-400">
+                                                        {up.consentAttestableHint}
+                                                    </p>
+                                                )}
                                             </div>
                                         </label>
                                     ))}
@@ -416,13 +437,29 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 <Field label={ac.endDate}><input required type="date" value={policy.endDate} onChange={e => setPolicy({ ...policy, endDate: e.target.value })} className={INPUT_CLASS} /></Field>
                             </div>
 
-                            <label className="flex items-start gap-3 cursor-pointer p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-                                <input type="checkbox" checked={attestedAiConsent} onChange={e => setAttestedAiConsent(e.target.checked)} className="w-5 h-5 mt-0.5 rounded-lg border-neutral-300 text-primary focus:ring-primary/30" />
-                                <span>
-                                    <span className="block text-sm font-black text-foreground">{up.consentLabel}</span>
-                                    <span className="block text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-0.5">{up.consentDesc}</span>
-                                </span>
-                            </label>
+                            {/* Attestation only exists for accounts the customer has
+                                never activated. Offering the checkbox for a live
+                                account was a control that silently did nothing: the
+                                server refuses to attest on their behalf (correctly),
+                                so the advisor ticked it and still got no analysis.
+                                Show the real next step instead. */}
+                            {selectedConsent === 'blocked' ? (
+                                <div
+                                    role="note"
+                                    className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/40"
+                                >
+                                    <span className="block text-sm font-black text-amber-900 dark:text-amber-300">{up.consentBlockedTitle}</span>
+                                    <span className="block text-xs text-amber-800 dark:text-amber-400/90 font-medium mt-0.5">{up.consentBlockedDesc}</span>
+                                </div>
+                            ) : (
+                                <label className="flex items-start gap-3 cursor-pointer p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
+                                    <input type="checkbox" checked={attestedAiConsent} onChange={e => setAttestedAiConsent(e.target.checked)} className="w-5 h-5 mt-0.5 rounded-lg border-neutral-300 text-primary focus:ring-primary/30" />
+                                    <span>
+                                        <span className="block text-sm font-black text-foreground">{up.consentLabel}</span>
+                                        <span className="block text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-0.5">{up.consentDesc}</span>
+                                    </span>
+                                </label>
+                            )}
 
                             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
 

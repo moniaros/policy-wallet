@@ -16,6 +16,13 @@ export interface TemplateQuestion {
     labelEl?: string
     required: boolean
     options?: { label: string; labelEl?: string; value: string }[]
+    /**
+     * Risk-profile field this question writes (a `MappableProfileField`).
+     * Optional: questions carrying a canonical `risk.*` id map without it, and
+     * questions that map to nothing are simply advisor-readable notes.
+     * See lib/services/questionnaire/profile-mapping.ts.
+     */
+    profileField?: string
 }
 
 export interface TemplateData {
@@ -182,8 +189,31 @@ export async function getSentQuestionnaires(): Promise<InstanceData[]> {
         sentAt: i.sentAt.toISOString(),
         completedAt: i.completedAt?.toISOString() || null,
         responseCount: i.responses.length,
-        answers: i.responses.length > 0 ? (i.responses[0].answers as Record<string, unknown>) : null,
+        answers: i.responses.length > 0 ? normalizeStoredAnswers(i.responses[0].answers) : null,
     }))
+}
+
+/**
+ * Answers are stored as a Json OBJECT. One writer (the v1 API route) used to
+ * `JSON.stringify` them first, so those rows hold a Json *string* — and casting
+ * that to a record made the answer view iterate the string character by
+ * character. The writer is fixed; this keeps the pre-existing rows readable.
+ */
+function normalizeStoredAnswers(raw: unknown): Record<string, unknown> | null {
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+        return raw as Record<string, unknown>
+    }
+    if (typeof raw === "string") {
+        try {
+            const parsed = JSON.parse(raw)
+            return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+                ? (parsed as Record<string, unknown>)
+                : null
+        } catch {
+            return null
+        }
+    }
+    return null
 }
 
 // ── AI response analysis ──
@@ -206,7 +236,7 @@ export async function analyzeQuestionnaireResponse(instanceId: string) {
     if (instance.responses.length === 0) return { error: "No responses yet" }
 
     const questions = instance.template.questions as unknown as TemplateQuestion[]
-    const answers = instance.responses[0].answers as Record<string, string>
+    const answers = (normalizeStoredAnswers(instance.responses[0].answers) ?? {}) as Record<string, string>
     const customerName = instance.receiver.name || "Customer"
     const lob = instance.template.lineOfBusiness
 

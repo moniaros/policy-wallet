@@ -96,6 +96,50 @@ export interface ProtectionScoreResult {
     applicableCategories: string[]
 }
 
+/**
+ * A policy-level gap, reduced to the one field the score needs: which line of
+ * business it belongs to. Callers pass `policy.lineOfBusiness` when the gap sits
+ * on a policy, else the gap definition's own line.
+ */
+export interface PolicyGapRef {
+    lineOfBusiness: string | null | undefined
+}
+
+/** Points deducted per gap, and the ceiling for any single category. */
+const GAP_PENALTY_PER_GAP = 5
+const GAP_PENALTY_CAP = 20
+
+/**
+ * Count policy gaps per score category.
+ *
+ * A gap belongs to the category whose `coveredByLobs` contains the gap's line —
+ * compared at PARENT-branch level, matching how `activeLobs` are normalized, so
+ * a motorbike gap lands on Property & Motor rather than nowhere.
+ *
+ * Gaps whose line matches no category are counted in the total but deducted from
+ * nothing: with no category to attribute them to, the only alternatives are to
+ * invent one or to charge every category — and charging every category is the
+ * bug this function exists to fix.
+ */
+function countGapsByCategory(gaps: PolicyGapRef[]): Map<string, number> {
+    const counts = new Map<string, number>()
+
+    for (const gap of gaps) {
+        const raw = String(gap.lineOfBusiness || "").trim()
+        if (!raw) continue
+        const branch = normalizeBranch(raw)
+        const parent = (branch.parentId ?? branch.id).toLowerCase()
+
+        for (const cat of SCORE_CATEGORIES) {
+            if (cat.coveredByLobs.includes(parent)) {
+                counts.set(cat.key, (counts.get(cat.key) ?? 0) + 1)
+            }
+        }
+    }
+
+    return counts
+}
+
 export interface CategoryScore {
     key: string
     label: { en: string; el: string }
@@ -161,14 +205,28 @@ export function provisionalProtectionScore(
  * @param profile  User's risk profile fields
  * @param activeLobs  Lines of business the user currently has active policies for
  * @param profileGaps  Detected profile-level gaps (from profile-gap-rules.ts)
- * @param policyGapCount  Number of open policy-level gap instances (from GapInstance table)
+ * @param policyGaps  Open policy-level gap instances. Prefer `PolicyGapRef[]` so
+ *   each gap is charged to its own category. A bare `number` is still accepted
+ *   for backwards compatibility, but carries no line-of-business information, so
+ *   it can only be charged to every applicable category — which is exactly the
+ *   defect this parameter shape replaces. Pass refs from any new call site.
  */
 export function calculateProtectionScore(
     profile: ProfileFields,
     activeLobs: string[],
     profileGaps: ProfileGap[],
-    policyGapCount: number = 0
+    policyGaps: number | PolicyGapRef[] = 0
 ): ProtectionScoreResult {
+    // A single open gap on ONE policy used to deduct from EVERY applicable
+    // category: the penalty was computed from the global count and subtracted
+    // inside the per-category loop. A motor gap dragged down Health, Life and
+    // Liability, so the category breakdown — the part an advisor reads out to a
+    // client — pointed at lines that had nothing wrong with them.
+    const attributable = Array.isArray(policyGaps)
+    const policyGapCount = attributable ? policyGaps.length : policyGaps
+    const gapsByCategory = attributable
+        ? countGapsByCategory(policyGaps)
+        : null
     // Child branches count as their parent. The taxonomy models motorbike and
     // truck under motor, renters under home, personal accident under life — and
     // SCORE_CATEGORIES lists only the parents. So a correctly-insured motorbike,
@@ -223,10 +281,15 @@ export function calculateProtectionScore(
                 }
             }
 
-            // Deduct points for policy-level gaps in covered lines
+            // Deduct points for policy-level gaps in THIS category's lines.
+            // Without attribution (legacy numeric input) fall back to the global
+            // count, which is the pre-existing behaviour.
+            const categoryGapCount = gapsByCategory
+                ? gapsByCategory.get(cat.key) ?? 0
+                : policyGapCount
             const policyGapPenalty = Math.min(
-                20,
-                policyGapCount * 5
+                GAP_PENALTY_CAP,
+                categoryGapCount * GAP_PENALTY_PER_GAP
             )
             categoryScore = Math.max(0, categoryScore - policyGapPenalty)
 
