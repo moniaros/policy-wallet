@@ -11,6 +11,34 @@ export interface ResolveCustomerInput {
 
 export type CustomerMatchReason = "vat" | "email" | "phone" | "name";
 
+/**
+ * Whether an AI analysis can run for this customer if the advisor uploads now.
+ *
+ * - `granted`    — consent on file; analysis runs.
+ * - `attestable` — the account was never activated, so the advisor may attest
+ *                  on their behalf (the checkbox in UploadPolicyModal).
+ * - `blocked`    — a live account that has not consented. Only the customer can
+ *                  unblock this; the advisor can request it but not grant it.
+ *
+ * Mirrors the decision commitScannedPolicy makes AFTER the upload. Surfacing it
+ * BEFORE means the advisor no longer spends a scan, a token budget and ~90s to
+ * discover that nothing will be analysed.
+ */
+export type CandidateAiConsent = "granted" | "attestable" | "blocked";
+
+export function deriveAiConsentState(user: {
+    aiProcessingConsentVersion: string | null;
+    password: string | null;
+    emailVerified: Date | null;
+    lastActiveAt: Date | null;
+}): CandidateAiConsent {
+    if (user.aiProcessingConsentVersion) return "granted";
+    // MUST match the canonical activation check in commitScannedPolicy: a user
+    // who has EVER been active is a live account and must be asked directly.
+    const unactivated = !user.password && !user.emailVerified && !user.lastActiveAt;
+    return unactivated ? "attestable" : "blocked";
+}
+
 export interface CustomerCandidate {
     id: string;
     name: string | null;
@@ -21,6 +49,8 @@ export interface CustomerCandidate {
     status: string;
     matchReason: CustomerMatchReason;
     score: number;
+    /** Whether AI analysis will run if the advisor commits a policy now. */
+    aiConsent: CandidateAiConsent;
 }
 
 export interface CustomerResolution {
@@ -101,6 +131,12 @@ export class CustomerResolutionService extends BaseService {
                         email: true,
                         phoneNumber: true,
                         taxId: true,
+                        // Whether an AI analysis can actually run for this
+                        // customer — see deriveAiConsentState.
+                        aiProcessingConsentVersion: true,
+                        password: true,
+                        emailVerified: true,
+                        lastActiveAt: true,
                         // Only agent-visible policies, mirroring getCustomers.
                         policiesOwned: { where: visibilityWhere, select: { id: true } },
                     },
@@ -142,6 +178,7 @@ export class CustomerResolutionService extends BaseService {
                 status: rel.status,
                 matchReason,
                 score,
+                aiConsent: deriveAiConsentState(c),
             });
         }
 

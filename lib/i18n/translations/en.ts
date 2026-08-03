@@ -1772,6 +1772,12 @@ export const en: TranslationKeys = {
             confirmAccent: 'Details.',
             consentLabel: 'The customer consented to AI processing',
             consentDesc: 'I confirm the customer gave consent to analyze this policy with AI.',
+            // Shown on the customer picker and confirm step, BEFORE the upload,
+            // so the advisor knows whether an analysis can actually run.
+            consentBlockedHint: 'No AI consent — analysis will not run',
+            consentAttestableHint: 'Not activated — you can confirm consent below',
+            consentBlockedTitle: 'This customer has not consented to AI analysis',
+            consentBlockedDesc: 'Their account is active, so only they can give consent. The policy will be saved and you can request consent right after.',
             back: 'Back',
             cancel: 'Cancel',
             submitCreate: 'Create & Add',
