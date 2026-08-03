@@ -1056,6 +1056,12 @@ export const en: TranslationKeys = {
     },
 
     agentUi: {
+        // Protection-score trend card (F-08) — the client's score over time.
+        scoreTrend: {
+            title: 'Protection over time',
+            chartLabel: 'Protection score trend',
+            caption: 'Recorded each time this client’s protection score changes.',
+        },
         licensedAgent: 'Licensed Advisor',
         verified: 'Verified',
         website: 'Website',
