@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -226,6 +228,48 @@ describe("CANONICAL_RISK_QUESTIONS", () => {
         expect(fields).toContain("mortgageAmount")
         expect(fields).toContain("ownsHome")
         expect(fields).toContain("employmentStatus")
+    })
+
+    it("matches the shipped Household Risk Profile system template", () => {
+        // The template is data shipped by migration (system templates are not
+        // seeded). If its question ids or profileFields drift from the mapper,
+        // the advisor's one score-moving questionnaire silently stops mapping —
+        // exactly the failure mode F-01 exists to end.
+        const sql = readFileSync(
+            join(
+                process.cwd(),
+                "prisma/migrations/20260803120000_risk_profile_system_questionnaire/migration.sql"
+            ),
+            "utf8"
+        )
+        const payload = sql.match(/'(\[[\s\S]*?\])'::jsonb/)
+        expect(payload, "jsonb question payload not found in migration").not.toBeNull()
+
+        const questions = JSON.parse(payload![1]) as Array<
+            MappableQuestion & { type: string; label: string; labelEl: string; required: boolean }
+        >
+        expect(questions.length).toBeGreaterThanOrEqual(10)
+
+        for (const question of questions) {
+            expect(resolveProfileField(question), `${question.id} maps to nothing`).not.toBeNull()
+            // QuestionnaireForm only renders these four types.
+            expect(["text", "number", "boolean", "select"]).toContain(question.type)
+            // The UI is Greek-default; a missing labelEl renders English to a
+            // Greek advisor's client.
+            expect(question.labelEl, `${question.id} has no Greek label`).toBeTruthy()
+        }
+
+        // The four fields that decide category applicability must be collected,
+        // or the template cannot lift a score off its default.
+        const fields = questions.map((question) => resolveProfileField(question))
+        for (const required of [
+            "dependentsCount",
+            "mortgageAmount",
+            "ownsHome",
+            "employmentStatus",
+        ]) {
+            expect(fields, `template does not collect ${required}`).toContain(required)
+        }
     })
 
     it("moves a profile from all-defaults to one that activates categories", () => {
