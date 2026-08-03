@@ -235,19 +235,48 @@ export async function runCrossSellForCustomer(
 /**
  * Run cross-sell analysis for all customers of an agent.
  */
-export async function runBulkCrossSell(agentUserId: string): Promise<{
+/**
+ * Default ceiling for one bulk run. The loop is sequential and writes as it
+ * goes, so an unbounded book could hold a server action open past the platform
+ * timeout and leave a half-finished sweep behind. Callers that need the whole
+ * book should run it repeatedly — the pass is idempotent per customer.
+ */
+export const BULK_CROSS_SELL_MAX_CUSTOMERS = 250
+
+export async function runBulkCrossSell(
+    agentUserId: string,
+    opts?: {
+        maxCustomers?: number
+        /**
+         * Per-customer pass. Injectable so the sweep's bounds and
+         * failure-isolation can be tested without a database — the default is
+         * the real implementation, which callers never need to pass.
+         */
+        runForCustomer?: typeof runCrossSellForCustomer
+    }
+): Promise<{
     customersAnalyzed: number
     totalMissingLines: number
     opportunitiesCreated: number
+    /** True when the cap stopped the sweep before the end of the book. */
+    truncated: boolean
     results: CrossSellResult[]
 }> {
+    const cap = Math.max(1, opts?.maxCustomers ?? BULK_CROSS_SELL_MAX_CUSTOMERS)
+    const runForCustomer = opts?.runForCustomer ?? runCrossSellForCustomer
     const relationships = await db.customerRelationship.findMany({
         where: {
             agentUserId,
             status: { in: ["active", "pending_activation"] },
         },
         select: { policyholderUserId: true },
+        // Oldest relationships first, so repeated runs cover a book that
+        // exceeds the cap in a stable order rather than re-doing the same head.
+        orderBy: { createdAt: "asc" },
+        take: cap + 1,
     })
+    const truncated = relationships.length > cap
+    if (truncated) relationships.length = cap
 
     const results: CrossSellResult[] = []
     let totalMissing = 0
@@ -255,7 +284,7 @@ export async function runBulkCrossSell(agentUserId: string): Promise<{
 
     for (const rel of relationships) {
         try {
-            const result = await runCrossSellForCustomer(
+            const result = await runForCustomer(
                 agentUserId,
                 rel.policyholderUserId,
                 true
@@ -272,6 +301,7 @@ export async function runBulkCrossSell(agentUserId: string): Promise<{
         customersAnalyzed: results.length,
         totalMissingLines: totalMissing,
         opportunitiesCreated: totalCreated,
+        truncated,
         results,
     }
 }

@@ -1474,6 +1474,55 @@ export async function createCrossSellOpportunities(customerId: string) {
     return { success: true, opportunitiesCreated: result.opportunitiesCreated }
 }
 
+/**
+ * Run cross-sell across the WHOLE book (audit finding F-06).
+ *
+ * `runBulkCrossSell` has existed and worked for months with zero UI callers, so
+ * a top-3 advisor revenue feature shipped no value at all. Exposing it needs
+ * three things the service itself does not do: the same Pro+ fence the
+ * per-customer path uses, a per-agent rate limit (it walks every relationship
+ * and writes opportunities — cheap per row, unbounded across a book), and a
+ * cap so one click cannot sit on a connection for an entire agency's portfolio.
+ */
+export async function runBookCrossSell() {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" as const }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" as const }
+
+    const { canAgentUseFeature } = await import("@/lib/subscription-entitlements")
+    if (!(await canAgentUseFeature(authResult.dbUser.id, "crossSellIntelligence"))) {
+        return { error: "upgrade_required" as const }
+    }
+
+    // Rule-based, not billable AI — so the cap is about database work and
+    // duplicate opportunity churn, not spend. Four runs an hour is plenty:
+    // the result only changes when the book changes.
+    const { rateLimit } = await import("@/lib/rate-limit")
+    const limit = await rateLimit(
+        authResult.dbUser.id,
+        4,
+        60 * 60 * 1000,
+        `agent-bulk-crosssell:${authResult.dbUser.id}`
+    )
+    if (!limit.success) return { error: "rate_limited" as const }
+
+    const { runBulkCrossSell } = await import("@/lib/services/cross-sell.service")
+    const result = await runBulkCrossSell(authResult.dbUser.id)
+
+    revalidatePath("/opportunities")
+    revalidatePath("/customers")
+    revalidatePath("/dashboard/agent")
+
+    return {
+        success: true as const,
+        customersAnalyzed: result.customersAnalyzed,
+        totalMissingLines: result.totalMissingLines,
+        opportunitiesCreated: result.opportunitiesCreated,
+        /** The cap stopped before the end of the book — run again to continue. */
+        truncated: result.truncated,
+    }
+}
+
 
 /**
  * GDPR consent request: an agent cannot consent on the data subject's behalf,
