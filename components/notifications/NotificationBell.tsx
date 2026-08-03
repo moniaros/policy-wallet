@@ -29,7 +29,48 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
     const [isOpen, setIsOpen] = useState(false)
     const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
     const [unreadCount, setUnreadCount] = useState(initialUnreadCount)
+    const [listState, setListState] = useState<'idle' | 'loading' | 'error'>('idle')
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const hasFetchedRef = useRef(false)
+
+    /**
+     * The badge count came from the server, but the LIST only ever rendered
+     * `initialNotifications` — and the sole caller (UserMenu) passes just the
+     * count. So the bell showed "3" and the dropdown said "No notifications
+     * yet": the one place an advisor goes to find out what happened told them
+     * nothing had.
+     *
+     * Fetched on first open rather than on mount: it is a dropdown most
+     * sessions never touch, and paying for it on every page load is waste.
+     */
+    useEffect(() => {
+        if (!isOpen || hasFetchedRef.current) return
+        hasFetchedRef.current = true
+
+        let cancelled = false
+        setListState('loading')
+        fetch('/api/notifications?limit=10')
+            .then((res) => {
+                if (!res.ok) throw new Error(String(res.status))
+                return res.json()
+            })
+            .then((data) => {
+                if (cancelled) return
+                setNotifications(Array.isArray(data?.notifications) ? data.notifications : [])
+                if (typeof data?.unreadCount === 'number') setUnreadCount(data.unreadCount)
+                setListState('idle')
+            })
+            .catch(() => {
+                if (cancelled) return
+                // Allow a retry on the next open rather than caching the failure.
+                hasFetchedRef.current = false
+                setListState('error')
+            })
+
+        return () => {
+            cancelled = true
+        }
+    }, [isOpen])
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -167,11 +208,32 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                     </div>
 
                     {/* Notification List */}
-                    <div className="max-h-[400px] overflow-y-auto">
-                        {notifications.length === 0 ? (
+                    <div className="max-h-[400px] overflow-y-auto" aria-busy={listState === 'loading'}>
+                        {listState === 'loading' && notifications.length === 0 ? (
+                            // Never show "no notifications yet" while still
+                            // loading — that is a claim, and it was wrong.
+                            <div className="py-8 px-4 space-y-3" role="status" aria-live="polite">
+                                <span className="sr-only">{t.common.loading}</span>
+                                {[0, 1, 2].map((i) => (
+                                    <div key={i} className="flex items-start gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 animate-pulse shrink-0" />
+                                        <div className="flex-1 space-y-2">
+                                            <div className="h-3 w-1/2 rounded bg-stone-100 dark:bg-stone-800 animate-pulse" />
+                                            <div className="h-3 w-3/4 rounded bg-stone-100 dark:bg-stone-800 animate-pulse" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : listState === 'error' && notifications.length === 0 ? (
+                            <div className="py-12 text-center px-4" role="status">
+                                <p className="text-sm text-stone-500 dark:text-stone-400">
+                                    {t.apiErrors.generic}
+                                </p>
+                            </div>
+                        ) : notifications.length === 0 ? (
                             <div className="py-12 text-center">
                                 <div className="w-12 h-12 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <svg className="w-6 h-6 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="w-6 h-6 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
                                 </div>
