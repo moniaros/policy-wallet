@@ -7,6 +7,10 @@ import { getTranslations } from "@/lib/i18n"
 import { notifyCounterparty } from "@/lib/notifications"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import type { QuestionnaireAnswers } from "@/types/questionnaire"
+import {
+    mapAnswersToProfile,
+    type MappableQuestion,
+} from "@/lib/services/questionnaire/profile-mapping"
 
 export type ActionItem = {
     id: string
@@ -138,13 +142,24 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
         select: {
             sentToUserId: true,
             sentByUserId: true,
-            template: { select: { name: true } },
+            template: { select: { name: true, questions: true } },
         },
     })
     if (!instance) throw new Error("Questionnaire not found")
     if (instance.sentToUserId !== userId) throw new Error("Unauthorized")
 
-    // Atomically record the response and complete the instance.
+    // Map answers onto the risk profile the Protection Score is computed from.
+    // Only the recipient can reach this line, so these are the client's own
+    // declarations — the advisor asked, the client answered. Pure + validated;
+    // anything unmapped or invalid is dropped rather than guessed at.
+    const { updates: profileUpdates, applied: appliedProfileFields } = mapAnswersToProfile(
+        (instance.template.questions as unknown as MappableQuestion[]) ?? [],
+        answers
+    )
+
+    // Atomically record the response, complete the instance, and apply the
+    // profile patch — a profile written without its response would be an
+    // unattributable claim about the client.
     const { responseId } = await db.$transaction(async (tx) => {
         const response = await tx.questionnaireResponse.create({
             data: { instanceId, userId, answers },
@@ -153,6 +168,13 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
             where: { id: instanceId },
             data: { status: 'completed', completedAt: new Date() },
         })
+        if (appliedProfileFields.length > 0) {
+            await tx.policyholderProfile.upsert({
+                where: { userId },
+                create: { userId, ...profileUpdates },
+                update: profileUpdates,
+            })
+        }
         return { responseId: response.id }
     })
 
@@ -177,12 +199,10 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
         relatedObjectId: instance.sentToUserId,
     })
 
-    // Refresh the customer's protection score so /home and /coverage-insights
-    // reflect the latest picture. Questionnaire answers are free-form for the
-    // agent to read and do not map to profile fields, so the score won't move on
-    // their own — but this keeps the cached score fresh and returns it so the
-    // form can show the customer where they stand and point them to the profile
-    // wizard that *does* move it. Non-fatal: the submission already succeeded.
+    // Recompute the protection score against the profile just written. Answers
+    // that map to risk fields now MOVE this number — before F-01 they reached
+    // nothing, so an advisor could send a questionnaire, get it back, and watch
+    // the score sit exactly where it was.
     let protectionScore: number | null = null
     try {
         const refreshed = await refreshProtectionScore(userId)
@@ -191,5 +211,11 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
         // ignore — score refresh must not fail the submission
     }
 
-    return { success: true, responseId, protectionScore }
+    return {
+        success: true,
+        responseId,
+        protectionScore,
+        /** Risk-profile fields this submission updated; [] when none mapped. */
+        profileFieldsUpdated: appliedProfileFields,
+    }
 }

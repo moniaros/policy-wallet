@@ -3,10 +3,34 @@ import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { ensureOwnership } from "@/lib/security"
 import { requireApiUser } from "@/lib/api-auth"
 import { z } from "zod"
+import {
+    mapAnswersToProfile,
+    type MappableQuestion,
+} from "@/lib/services/questionnaire/profile-mapping"
+import type { QuestionnaireAnswers } from "@/types/questionnaire"
 
 const questionnaireAnswersSchema = z.object({
     answers: z.record(z.string(), z.any()),
 })
+
+/**
+ * `QuestionnaireTemplate.questions` is a Json column holding an ARRAY. This route
+ * used to `JSON.parse(... as string)` it, which throws on every normally-stored
+ * template — so the GET 500'd rather than returning questions. Tolerate both the
+ * array and a legacy stringified value.
+ */
+function parseQuestions(raw: unknown): MappableQuestion[] {
+    if (Array.isArray(raw)) return raw as MappableQuestion[]
+    if (typeof raw === "string") {
+        try {
+            const parsed = JSON.parse(raw)
+            return Array.isArray(parsed) ? (parsed as MappableQuestion[]) : []
+        } catch {
+            return []
+        }
+    }
+    return []
+}
 
 export async function GET(
     req: Request,
@@ -36,7 +60,7 @@ export async function GET(
 
         return createApiResponse({
             ...questionnaire,
-            questions: questionnaire.template.questions ? JSON.parse(questionnaire.template.questions as string) : []
+            questions: parseQuestions(questionnaire.template.questions),
         })
     } catch (error) {
         console.error(error)
@@ -60,21 +84,50 @@ export async function POST(
     try {
         const { answers } = questionnaireAnswersSchema.parse(await req.json())
 
-        const response = await db.questionnaireResponse.create({
-            data: {
-                instanceId: id,
-                userId: authResult.dbUser.id,
-                answers: JSON.stringify(answers)
-            }
+        const instance = await db.questionnaireInstance.findUnique({
+            where: { id },
+            select: { template: { select: { questions: true } } },
         })
 
-        await db.questionnaireInstance.update({
-            where: { id },
-            data: {
-                status: "completed",
-                completedAt: new Date()
+        // Map onto the risk profile the Protection Score reads. ensureOwnership
+        // above guarantees the submitter is the recipient, so these are the
+        // client's own declarations. Same contract as the server-action path.
+        const { updates: profileUpdates, applied } = mapAnswersToProfile(
+            parseQuestions(instance?.template?.questions),
+            answers as unknown as QuestionnaireAnswers
+        )
+
+        const response = await db.$transaction(async (tx) => {
+            const created = await tx.questionnaireResponse.create({
+                data: {
+                    instanceId: id,
+                    userId: authResult.dbUser.id,
+                    // Store the OBJECT, not JSON.stringify(...). The column is
+                    // Json and every reader casts it to an object; the string
+                    // form made the agent's answer view iterate characters.
+                    answers: answers as any,
+                },
+            })
+            await tx.questionnaireInstance.update({
+                where: { id },
+                data: { status: "completed", completedAt: new Date() },
+            })
+            if (applied.length > 0) {
+                await tx.policyholderProfile.upsert({
+                    where: { userId: authResult.dbUser.id },
+                    create: { userId: authResult.dbUser.id, ...profileUpdates },
+                    update: profileUpdates,
+                })
             }
+            return created
         })
+
+        if (applied.length > 0) {
+            // Non-fatal: the submission already succeeded.
+            import("@/lib/services/gap-engine")
+                .then(({ refreshProtectionScore }) => refreshProtectionScore(authResult.dbUser.id))
+                .catch(() => {})
+        }
 
         return createApiResponse(response)
     } catch (error) {

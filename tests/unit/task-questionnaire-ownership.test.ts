@@ -82,14 +82,21 @@ describe('submitQuestionnaireResponse — only the recipient may answer', () => 
         mockInstanceFind.mockResolvedValue({
             sentToUserId: 'user-1',
             sentByUserId: 'agent-9',
-            template: { name: 'Motor Review' },
+            template: { name: 'Motor Review', questions: [] },
         } as any)
         vi.mocked(db.$transaction).mockResolvedValue({ responseId: 'r-1' } as any)
         mockRefreshScore.mockResolvedValue({ protectionScore: { overallScore: 72 } } as any)
 
         const res = await submitQuestionnaireResponse('inst-1', {} as any)
 
-        expect(res).toEqual({ success: true, responseId: 'r-1', protectionScore: 72 })
+        // profileFieldsUpdated is [] here: the template asks nothing that maps
+        // to a risk-profile field, so the score is refreshed but cannot move.
+        expect(res).toEqual({
+            success: true,
+            responseId: 'r-1',
+            protectionScore: 72,
+            profileFieldsUpdated: [],
+        })
         // The agent who sent it is notified (no longer a silent handoff), deep-linked
         // to the customer via the customer's userId.
         expect(mockNotify).toHaveBeenCalledWith(
@@ -108,13 +115,79 @@ describe('submitQuestionnaireResponse — only the recipient may answer', () => 
         mockInstanceFind.mockResolvedValue({
             sentToUserId: 'user-1',
             sentByUserId: 'agent-9',
-            template: { name: 'Motor Review' },
+            template: { name: 'Motor Review', questions: [] },
         } as any)
         vi.mocked(db.$transaction).mockResolvedValue({ responseId: 'r-1' } as any)
         mockRefreshScore.mockRejectedValue(new Error('engine down'))
 
         const res = await submitQuestionnaireResponse('inst-1', {} as any)
-        expect(res).toEqual({ success: true, responseId: 'r-1', protectionScore: null })
+        expect(res).toEqual({
+            success: true,
+            responseId: 'r-1',
+            protectionScore: null,
+            profileFieldsUpdated: [],
+        })
+    })
+
+    // F-01: answers that map to risk-profile fields must reach the profile the
+    // Protection Score reads — otherwise an advisor can send a questionnaire,
+    // get it back, and watch the score sit exactly where it was.
+    it('writes mapped answers to the risk profile inside the response transaction', async () => {
+        mockAuth.mockResolvedValue({ dbUser: { id: 'user-1' } } as any)
+        mockInstanceFind.mockResolvedValue({
+            sentToUserId: 'user-1',
+            sentByUserId: 'agent-9',
+            template: {
+                name: 'Risk Profile',
+                questions: [
+                    { id: 'risk.dependentsCount' },
+                    { id: 'risk.ownsHome' },
+                    { id: 'notes' },
+                ],
+            },
+        } as any)
+
+        const tx = {
+            questionnaireResponse: { create: vi.fn().mockResolvedValue({ id: 'r-1' }) },
+            questionnaireInstance: { update: vi.fn() },
+            policyholderProfile: { upsert: vi.fn() },
+        }
+        vi.mocked(db.$transaction).mockImplementation(async (fn: any) => fn(tx))
+        mockRefreshScore.mockResolvedValue({ protectionScore: { overallScore: 61 } } as any)
+
+        const res = await submitQuestionnaireResponse('inst-1', {
+            'risk.dependentsCount': 2,
+            'risk.ownsHome': true,
+            notes: 'prefers email',
+        } as any)
+
+        expect(res.profileFieldsUpdated).toEqual(['dependentsCount', 'ownsHome'])
+        expect(tx.policyholderProfile.upsert).toHaveBeenCalledWith({
+            where: { userId: 'user-1' },
+            create: { userId: 'user-1', dependentsCount: 2, ownsHome: true },
+            update: { dependentsCount: 2, ownsHome: true },
+        })
+    })
+
+    it('does not touch the profile when no answer maps to a risk field', async () => {
+        mockAuth.mockResolvedValue({ dbUser: { id: 'user-1' } } as any)
+        mockInstanceFind.mockResolvedValue({
+            sentToUserId: 'user-1',
+            sentByUserId: 'agent-9',
+            template: { name: 'Notes', questions: [{ id: 'notes' }] },
+        } as any)
+
+        const tx = {
+            questionnaireResponse: { create: vi.fn().mockResolvedValue({ id: 'r-2' }) },
+            questionnaireInstance: { update: vi.fn() },
+            policyholderProfile: { upsert: vi.fn() },
+        }
+        vi.mocked(db.$transaction).mockImplementation(async (fn: any) => fn(tx))
+        mockRefreshScore.mockResolvedValue({ protectionScore: { overallScore: 40 } } as any)
+
+        await submitQuestionnaireResponse('inst-1', { notes: 'call me' } as any)
+
+        expect(tx.policyholderProfile.upsert).not.toHaveBeenCalled()
     })
 
     it('throws when the instance does not exist', async () => {
