@@ -31,9 +31,17 @@ export function InviteModal({
         }
         setEmailError(false)
         setSending(true)
-        await onSendInvite?.(email, scope)
-        setSending(false)
-        onClose?.()
+        try {
+            await onSendInvite?.(email, scope)
+            onClose?.()
+        } catch {
+            // Without this a transport failure skipped BOTH lines below: the
+            // modal sat on "Sending…" forever and never closed. Keep it open so
+            // the typed address is not lost, and let the caller's own toast
+            // explain the failure.
+        } finally {
+            setSending(false)
+        }
     }
 
     return (
