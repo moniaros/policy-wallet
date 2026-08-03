@@ -1443,6 +1443,66 @@ export async function updateAgentProfile(data: {
 }
 
 /**
+ * Protection-score trend for one client (audit finding F-08).
+ *
+ * Gated on the SAME rule as every other agent read of this customer: the agent
+ * must hold an active relationship AND at least one visible policy. A score
+ * trend is a statement about someone's insurance position, so a bare
+ * (unilaterally created) relationship must not reveal it.
+ */
+export async function getCustomerScoreTrend(customerId: string, limit = 12) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return null
+    if (!isAgentRole(authResult.dbUser.roles)) return null
+
+    const relationship = await db.customerRelationship.findFirst({
+        where: {
+            agentUserId: authResult.dbUser.id,
+            policyholderUserId: customerId,
+            status: { notIn: ["inactive", "terminated"] },
+        },
+        select: { id: true },
+    })
+    if (!relationship) return null
+
+    // Reuse the visibility helper rather than trusting the relationship alone.
+    const { getVisiblePolicyCountsByOwner } = await import("@/lib/agent-visibility")
+    const counts = await getVisiblePolicyCountsByOwner(authResult.dbUser.id, [customerId])
+    if ((counts.get(customerId) ?? 0) === 0) return null
+
+    const rows = await db.protectionScoreHistory.findMany({
+        where: { userId: customerId },
+        orderBy: { computedAt: "desc" },
+        take: Math.min(Math.max(1, limit), 60),
+        select: {
+            overallScore: true,
+            previousScore: true,
+            gapCount: true,
+            categoryScores: true,
+            computedAt: true,
+        },
+    })
+
+    const { summariseScoreTrend, categoryMovements } = await import(
+        "@/lib/services/gap-engine/score-trend"
+    )
+    const summary = summariseScoreTrend(rows)
+
+    return {
+        current: summary.current,
+        earliest: summary.earliest,
+        delta: summary.delta,
+        direction: summary.direction,
+        points: summary.points.map((p) => ({
+            overallScore: p.overallScore,
+            gapCount: p.gapCount,
+            computedAt: p.computedAt.toISOString(),
+        })),
+        movements: categoryMovements(rows).slice(0, 3),
+    }
+}
+
+/**
  * CROSS-SELL INTELLIGENCE
  */
 
