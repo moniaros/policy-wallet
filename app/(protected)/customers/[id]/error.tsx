@@ -2,10 +2,10 @@
 
 import { RouteError } from "@/components/ui/RouteError"
 
-// Scoped boundary for a deep advisor route. Without one, a failure here hit the
-// shared (protected) boundary, which sends the user to /home — bouncing an
-// advisor out of the client they were working on rather than letting them retry
-// in place.
+// NOT filling a missing boundary: app/(protected)/customers/error.tsx already
+// cascades to this nested segment. This one exists to make recovery CONTEXTUAL
+// — the parent sends the advisor to /dashboard/agent, which drops them out of
+// the client list they were working in; this returns them to /customers.
 export default function DeepAgentRouteError(props: {
     error: Error & { digest?: string }
     reset: () => void
