@@ -34,6 +34,7 @@ const copy = {
         deleteTemplateTitle: "Delete this template?",
         deleteTemplateBody: "The template is removed from your library. Questionnaires already sent keep their answers.",
         deleteTemplateFailed: "The template could not be deleted. Please try again.",
+        saveTemplateFailed: "The template could not be saved. Please try again.",
         templateName: "Template Name",
         lob: "Line of Business",
         addQuestion: "Add Question",
@@ -89,6 +90,7 @@ const copy = {
         deleteTemplateTitle: "Διαγραφή του προτύπου;",
         deleteTemplateBody: "Το πρότυπο αφαιρείται από τη βιβλιοθήκη σας. Τα ερωτηματολόγια που έχουν ήδη σταλεί διατηρούν τις απαντήσεις τους.",
         deleteTemplateFailed: "Το πρότυπο δεν διαγράφηκε. Δοκιμάστε ξανά.",
+        saveTemplateFailed: "Το πρότυπο δεν αποθηκεύτηκε. Δοκιμάστε ξανά.",
         templateName: "Όνομα προτύπου",
         lob: "Κλάδος ασφάλισης",
         addQuestion: "Προσθήκη ερώτησης",
@@ -244,7 +246,15 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
 
     const handleDelete = async (id: string) => {
         try {
-            await deleteTemplate(id)
+            // deleteTemplate RETURNS { error } for a refused delete (system
+            // template, or one owned by another advisor) rather than throwing.
+            // Only the throw was handled, so a refusal looked like success: the
+            // dialog closed and the template stayed in the list unexplained.
+            const result = await deleteTemplate(id)
+            if (result && "error" in result && result.error) {
+                toast.error(String(result.error))
+                return
+            }
             setPendingDeleteId(null)
         } catch {
             toast.error(t.deleteTemplateFailed)
@@ -380,15 +390,23 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
         // Normalize IDs
         const normalized = questions.map((q, i) => ({ ...q, id: `q${i + 1}` }))
 
-        const result = editingTemplate
-            ? await updateTemplate(editingTemplate.id, { name, lineOfBusiness: lob, questions: normalized })
-            : await createTemplate({ name, lineOfBusiness: lob, questions: normalized })
+        try {
+            const result = editingTemplate
+                ? await updateTemplate(editingTemplate.id, { name, lineOfBusiness: lob, questions: normalized })
+                : await createTemplate({ name, lineOfBusiness: lob, questions: normalized })
 
-        setSaving(false)
-        if (result.error) {
-            setError(result.error)
-        } else {
+            if (result.error) {
+                setError(result.error)
+                return
+            }
             onClose()
+        } catch {
+            // setSaving(false) used to sit after a bare await, so a transport
+            // failure pinned the builder on "Saving…" with the advisor's whole
+            // template still unsaved in the form.
+            setError(t.saveTemplateFailed)
+        } finally {
+            setSaving(false)
         }
     }
 
