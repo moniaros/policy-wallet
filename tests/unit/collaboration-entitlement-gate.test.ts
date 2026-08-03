@@ -6,7 +6,13 @@
  *
  * The regression that matters most here is the fix, not the hole: agents resolve
  * against *B2C* tiers, so a naive entitlement gate resolves them to `free` and
- * locks them out of their own collaboration inbox. Agent/admin must be exempt.
+ * locks them out of their own collaboration inbox.
+ *
+ * That exemption was originally blanket — agents skipped ALL fencing, so the
+ * per-tier `collaborationThreads` flag was sold and never enforced (audit F-12).
+ * Agents are now resolved against the AGENT catalogue instead: still immune to
+ * the B2C-free trap, but actually fenced. Admins stay exempt outright — they
+ * operate the product rather than buy it.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
@@ -16,8 +22,10 @@ vi.mock('@/lib/auth-helpers', () => ({
 }))
 
 const resolveUserEntitlements = vi.fn()
+const canAgentUseFeature = vi.fn()
 vi.mock('@/lib/subscription-entitlements', () => ({
     resolveUserEntitlements: (...args: any[]) => resolveUserEntitlements(...args),
+    canAgentUseFeature: (...args: any[]) => canAgentUseFeature(...args),
 }))
 
 const createThread = vi.fn(async () => ({ id: 'thr-1' }))
@@ -78,6 +86,10 @@ const writeEndpoints: Array<[string, () => Promise<Response>]> = [
 
 beforeEach(() => {
     vi.clearAllMocks()
+    // Agent catalogue default: collaborationThreads is true on every agent tier
+    // today, so the fence is inert in practice — but it now EXISTS, so an admin
+    // turning it off for a tier is actually honoured.
+    canAgentUseFeature.mockResolvedValue(true)
 })
 
 describe('collaboration write entitlement gate', () => {
@@ -107,7 +119,7 @@ describe('collaboration write entitlement gate', () => {
 
         // D3 regression guard: agents have no B2C subscription, so entitlements
         // resolve them to `free`. Role exemption must run BEFORE that lookup.
-        it('allows an agent whose B2C entitlements resolve to free', async () => {
+        it('allows an agent whose B2C entitlements resolve to free (agent catalogue decides)', async () => {
             signIn('agent,policyholder')
             withTier(false)
 
@@ -115,6 +127,19 @@ describe('collaboration write entitlement gate', () => {
 
             expect(res.status).toBe(200)
             expect(resolveUserEntitlements).not.toHaveBeenCalled()
+        })
+
+        it('rejects an agent whose AGENT catalogue withholds collaborationThreads', async () => {
+            // The fence must actually bite, or it reverts to the blanket
+            // exemption that let a sold per-tier flag go unenforced (F-12).
+            signIn('agent,policyholder')
+            withTier(false)
+            canAgentUseFeature.mockResolvedValue(false)
+
+            const res = await call()
+
+            expect(res.status).toBe(403)
+            expect(canAgentUseFeature).toHaveBeenCalledWith('user-1', 'collaborationThreads')
         })
 
         it('allows an admin whose B2C entitlements resolve to free', async () => {

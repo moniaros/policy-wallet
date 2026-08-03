@@ -268,7 +268,19 @@ export class CollaborationService {
         })
     }
 
-    async addMessage(userId: string, rolesRaw: string, threadId: string, body: string) {
+    /**
+     * @param isPrivate Agent-only internal note, hidden from the policyholder by
+     *   the `isPrivate: false` filter in getThreadDetail. Only the thread's agent
+     *   may set it — a policyholder-authored "private" note would be hidden from
+     *   the very advisor the thread exists to reach.
+     */
+    async addMessage(
+        userId: string,
+        rolesRaw: string,
+        threadId: string,
+        body: string,
+        isPrivate = false
+    ) {
         const thread = await this.assertThreadAccess(userId, rolesRaw, threadId)
         if (!thread) throw new Error("Forbidden")
 
@@ -276,30 +288,51 @@ export class CollaborationService {
         const newStatus = statusWaitingFor(senderRole === "agent" ? "policyholder" : "agent")
         const recipientId = senderRole === "agent" ? thread.relationship.policyholderUserId : thread.relationship.agentUserId
 
+        // Fail CLOSED. Storing a note the author marked private as a public
+        // message is the exact defect this parameter fixes, so a non-agent
+        // asking for privacy is refused outright rather than quietly downgraded.
+        if (isPrivate && senderRole !== "agent") throw new Error("Forbidden")
+
         const message = await db.collaborationMessage.create({
             data: {
                 threadId,
                 senderUserId: userId,
                 body,
                 messageType: "comment",
+                isPrivate,
             },
         })
 
+        // A private note is the advisor talking to themselves: it must not move
+        // the thread to "waiting for the policyholder" (that is a promise to the
+        // client that a reply is owed) — only touch activity.
         await db.collaborationThread.update({
             where: { id: threadId },
             data: {
-                status: thread.status === "resolved" || thread.status === "closed" ? thread.status : newStatus,
+                ...(isPrivate
+                    ? {}
+                    : {
+                        status:
+                            thread.status === "resolved" || thread.status === "closed"
+                                ? thread.status
+                                : newStatus,
+                    }),
                 lastActivityAt: new Date(),
             },
         })
 
-        await this.notifyCollabParticipant({
-            recipientId,
-            eventType: "collaboration_message",
-            title: { el: "Νέο μήνυμα", en: "New message" },
-            message: body.slice(0, 140),
-            relatedObjectId: thread.relationshipId,
-        })
+        // ...and must not notify them. The notification body carries the first
+        // 140 characters of the message, so sending it would have leaked the
+        // private note's own contents to the person it was hidden from.
+        if (!isPrivate) {
+            await this.notifyCollabParticipant({
+                recipientId,
+                eventType: "collaboration_message",
+                title: { el: "Νέο μήνυμα", en: "New message" },
+                message: body.slice(0, 140),
+                relatedObjectId: thread.relationshipId,
+            })
+        }
 
         return message
     }
