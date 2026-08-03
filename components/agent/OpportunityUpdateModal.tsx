@@ -386,14 +386,17 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
 
                     {/* Status */}
                     <div>
-                        <label className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
+                        {/* Group name + per-option state: this writes the pipeline
+                            status, and selection was conveyed by colour alone. */}
+                        <span id="opp-status-label" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                             {tt.statusLabel}
-                        </label>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        </span>
+                        <div role="group" aria-labelledby="opp-status-label" className="grid grid-cols-2 md:grid-cols-3 gap-2">
                             {OPPORTUNITY_STATUSES.map((s) => (
                                 <button
                                     key={s.value}
                                     type="button"
+                                    aria-pressed={status === s.value}
                                     onClick={() => {
                                         setStatus(s.value)
                                         // Reasons are stage-scoped; carrying one across

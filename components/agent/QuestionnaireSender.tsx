@@ -149,16 +149,18 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-3">
+                                    <span id="questionnaire-template-label" className="block text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-3">
                                         {t.selectTemplate}
-                                    </label>
-                                    <div className="grid grid-cols-1 gap-3">
+                                    </span>
+                                    <div role="group" aria-labelledby="questionnaire-template-label" className="grid grid-cols-1 gap-3">
                                         {templates.map(t => {
                                             const Icon = getBranchIcon(t.lineOfBusiness)
                                             const questionCount = Array.isArray(t.questions) ? t.questions.length : 0
                                             return (
                                                 <button
                                                     key={t.id}
+                                                    type="button"
+                                                    aria-pressed={selectedTemplate === t.id}
                                                     onClick={() => setSelectedTemplate(t.id)}
                                                     className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all text-left ${selectedTemplate === t.id
                                                         ? 'border-primary dark:border-mint bg-primary-tint dark:bg-primary/15'
