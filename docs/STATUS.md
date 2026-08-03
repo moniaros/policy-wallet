@@ -1,5 +1,23 @@
 # PolicyWallet — Project Status
 
+## Golden fixture αστικής ευθύνης + μόνιμο verification harness — 2026-08-03
+
+PR #225.
+
+Το πραγματικό PDF της χθεσινής επαλήθευσης αποκωδικοποιήθηκε πλήρως και έγινε
+το **τέταρτο branch fixture** (`liability-ethniki-1.ts`, ψευδωνυμοποιημένο
+εξαρχής — ο fixture-pii φύλακας το σαρώνει ήδη): πραγματικά όρια, ανάλυση
+ασφαλίστρων που αθροίζει ακριβώς στο σύνολο, dotted ημερομηνίες (golden στο
+`parseDocumentDate`), 3 πραγματικές εξαιρέσεις, σιωπή του backstop σε κλάδο
+χωρίς ταξινομία. 6 golden tests.
+
+Το harness έγινε μόνιμο: **`scripts/verify-pipeline-live.ts`** — με provider
+key στο περιβάλλον, η real-model επαλήθευση είναι πλέον **μία εντολή**. Οδηγίες
+για τα κλειδιά δόθηκαν (Vercel env vars / .env.local / CCR environment)·
+εκκρεμεί από τον ιδιοκτήτη.
+
+## 🔬 Ζωντανή επαλήθευση pipeline με πραγματικό PDF — 2026-08-02
+
 ## 🔬 Ζωντανή επαλήθευση pipeline με πραγματικό PDF — 2026-08-02
 
 PR #225. Πραγματική Postgres 16 (τοπική), πραγματικό PDF (ασφαλιστήριο αστικής
