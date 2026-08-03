@@ -697,8 +697,8 @@ function SentList({ instances, t, language }: {
                                         <p className="text-xs text-slate-500 dark:text-slate-400">{analysisData.customerName} · {analysisData.templateName}</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setAnalysisData(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                    <X className="w-5 h-5" />
+                                <button type="button" aria-label={t.cancel} onClick={() => setAnalysisData(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                    <X className="w-5 h-5" aria-hidden="true" />
                                 </button>
                             </div>
 
