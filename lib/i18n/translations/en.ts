@@ -74,6 +74,20 @@ export const en: TranslationKeys = {
         customerLimitReached: 'You have reached your plan’s customer limit ({current}/{limit}). Upgrade to add more.',
         customerHeadroomExceeded: 'This import adds {adding} customers but only {headroom} slots remain ({current}/{limit}).',
     },
+    // Reasons a file upload was rejected by the shared validation gate
+    // (lib/security/file-upload.ts). Keyed by UploadRejectionReason so any
+    // surface that receives an errorCode can localise it — the server's own
+    // REJECTION_MESSAGES strings are English-only and are the fallback.
+    uploadRejection: {
+        empty: 'That file is empty. Choose a different one.',
+        too_large: 'That file is too large. The maximum size is {maxMb} MB.',
+        illegal_filename: 'That file name is not supported. Rename the file and try again.',
+        double_extension: 'That file type is not supported.',
+        bad_extension: 'That file type is not supported. Upload a PDF or a photo of the policy.',
+        mime_mismatch: 'That file type is not supported. Upload a PDF or a photo of the policy.',
+        content_mismatch: 'The file contents do not match a supported format. It may be damaged.',
+        infected: 'That file did not pass our security screening and was not uploaded.',
+    },
     nav: {
         navigation: 'Navigation',
         home: 'Home',

@@ -842,7 +842,7 @@ export async function addPolicyForCustomer(data: {
             if (candidate instanceof File && candidate.size > 0) {
                 const docValidation = await validateUploadFile(candidate, { category: "policy", maxBytes: 10 * 1024 * 1024 })
                 if (!docValidation.ok) {
-                    return { success: false, error: REJECTION_MESSAGES[docValidation.reason] }
+                    return { success: false, error: REJECTION_MESSAGES[docValidation.reason], errorCode: docValidation.reason }
                 }
                 file = candidate
             }
@@ -1070,7 +1070,9 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     // before the file is handed to the AI — don't feed a disguised payload in.
     const scanValidation = await validateUploadFile(file, { category: "policy", maxBytes: 10 * 1024 * 1024 })
     if (!scanValidation.ok) {
-        return { error: REJECTION_MESSAGES[scanValidation.reason] }
+        // errorCode travels with the English prose so the client can localise it
+        // — REJECTION_MESSAGES is English-only and also feeds API/log surfaces.
+        return { error: REJECTION_MESSAGES[scanValidation.reason], errorCode: scanValidation.reason }
     }
 
     const apiKey = process.env.GEMINI_API_KEY
@@ -1157,7 +1159,12 @@ export async function scanPolicyForResolution(formData: FormData) {
 
     const parsed = await parsePolicyPdfWithGemini(formData)
     if (!('data' in parsed) || !parsed.data) {
-        return { success: false as const, error: ('error' in parsed && parsed.error) || "Failed to parse PDF" }
+        return {
+            success: false as const,
+            error: ('error' in parsed && parsed.error) || "Failed to parse PDF",
+            // Forward the rejection code so the modal can localise it.
+            errorCode: ('errorCode' in parsed && parsed.errorCode) || undefined,
+        }
     }
 
     const data = parsed.data

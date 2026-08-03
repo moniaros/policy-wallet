@@ -89,7 +89,7 @@ export async function uploadAgentAsset(formData: FormData) {
             category: type === 'logo' ? 'image' : 'policy',
         })
         if (!validation.ok) {
-            return { success: false, error: REJECTION_MESSAGES[validation.reason] }
+            return { success: false, error: REJECTION_MESSAGES[validation.reason], errorCode: validation.reason }
         }
 
         const publicUrl = await uploadFile(file, `agent/${dbUser.id}/${type}`)
