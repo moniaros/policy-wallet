@@ -113,7 +113,23 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
         const fd = new FormData()
         fd.append('file', file)
-        const res = await scanPolicyForResolution(fd)
+
+        // A Server Action can fail at the TRANSPORT layer — before the action
+        // body ever runs — and then it rejects instead of returning a result:
+        // an oversized body, an expired session that proxy.ts 307s to signin,
+        // or a deployment skew. Without this catch the rejection escaped to
+        // window.onunhandledrejection (Sentry POLICYWALLET-V) and, worse, the
+        // setLoading(false) below never ran, leaving the modal stuck on the
+        // 'parsing' spinner with no way out but a page reload.
+        let res: Awaited<ReturnType<typeof scanPolicyForResolution>>
+        try {
+            res = await scanPolicyForResolution(fd)
+        } catch {
+            setLoading(false)
+            setError(up.scanError)
+            setView('upload')
+            return
+        }
         setLoading(false)
 
         if (!res.success) {
@@ -160,7 +176,16 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             ? { mode: 'create_new' as const, customer: { name: customer.name, surname: customer.surname, email: customer.email, phone: customer.phone, taxId: customer.taxId } }
             : { mode: 'attach' as const, customerId: selected, taxId: customer.taxId || undefined }
 
-        const res = await commitScannedPolicy(decision, policyInput, attestedAiConsent, documentFormData, confirmDuplicate)
+        // Same transport-failure guard as handleFile — this call carries the
+        // PDF too, so it hits the same body-size ceiling.
+        let res: Awaited<ReturnType<typeof commitScannedPolicy>>
+        try {
+            res = await commitScannedPolicy(decision, policyInput, attestedAiConsent, documentFormData, confirmDuplicate)
+        } catch {
+            setLoading(false)
+            setError(up.genericError)
+            return
+        }
         setLoading(false)
 
         // Possible duplicate — let the agent keep (add anyway) or cancel.
