@@ -1,5 +1,61 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-03 (agent PDF upload was broken above 1 MB — shipped)
+
+**Current phase:** post-launch ops. One production defect found via Sentry and fixed.
+
+**Done this session:** POLICYWALLET-V (`An unexpected response was received from the
+server.`, `/customers`) root-caused and fixed — PR #229 → `3a59a08`, deployed
+(`dpl_AktqYACJdoMaFatVekdpi4AjL6Qa`, CI-green auto-deploy), issue resolved.
+
+Two defects, both real:
+1. **`next.config.ts` never set `experimental.serverActions.bodySizeLimit`**, so Next's
+   **1 MB** default applied — while the upload actions validate to 10 MB
+   (`agent/actions.ts:843,1071`) against a 15 MB `MAX_UPLOAD_SIZE_BYTES`. **Every policy PDF
+   over ~1 MB was killed by the runtime before the action ran**, so the app's own
+   size-rejection message could never fire. Real policy PDFs are routinely 1–5 MB. This hit
+   *every* Server Action upload path (agent scan/commit, wallet, onboarding); API-route
+   uploads were never subject to the cap. Now `16mb`.
+2. **All four Server Action calls on `/customers` were bare `await`s.** A transport failure
+   escaped to `window.onunhandledrejection` *and* skipped the `setLoading(false)` on the next
+   line, pinning the modal on its spinner with no recovery but a page reload. Each now
+   catches and shows an existing translated error key.
+
+**In progress:** nothing active. Watches carried forward: (1) extraction p95 + cost on
+`/admin/ai` under the 3.5-flash pin; (2) Sentry tripwires — `POLICYWALLET-7`/`-G`/`-V` all
+resolved, so recurrence = regression.
+
+**Blocked:** nothing.
+
+**Top risks (ranked):**
+1. **HIGH / correctness** — Google Cloud billing lapse recurrence; no billing alert. Owner action.
+2. **HIGH / correctness** — eval thinness: model decisions rest on ONE synthetic text case.
+3. **HIGH / tooling** — **`npm run build` cannot be run on this machine**: local node is
+   v26.3.0, `.nvmrc` pins 20.11.0, and no nvm/fnm/volta is installed. The build dies at static
+   prerender with a bogus `Cannot read properties of null (reading 'useEffect')` on randomly
+   varying pages. Verified pre-existing (base commit `a4b2ed3` fails identically while being
+   CI-green and live). **CI is currently the only working build gate, and E2E can't run either.**
+4. **MED / cost** — the 3× extraction pin is live; unwatched, it's silent spend.
+5. **MED / correctness** — CRM pipeline-memory code has zero production exercise (0 deals).
+6. **MED** — gemini gap-analysis JSON emits string confidences (cleansed, pre-existing).
+
+**Non-gating (UI/UX dislike, separate backlog):** the upload actions return
+`REJECTION_MESSAGES` (`lib/security/file-upload.ts:219`), which are **English-only** and get
+rendered straight into the Greek-default modal via `setError(res.error)` — an i18n gap, not a
+break · Sentry captures no user context on client errors (`Users Impacted: 0`), which cost us
+the ability to identify the affected agent · eval scorer rejects the insurer's long legal form
+· `preview.yml` never fires (PRs target NEW-UI, it watches main) · `/admin/ai` tables are plain.
+
+**Next 3 actions:** (1) Install Node 20.11.0 (or a version manager) so the prod build and E2E
+are runnable locally again — risk #3. (2) Add 1–2 redacted-PDF extraction eval cases; re-run
+`eval.yml`. (3) Set a GCP billing alert on the Gemini project.
+
+**Not verified:** which of three possible causes produced POLICYWALLET-V's two events is
+undeterminable — the transaction was sampled out (`client_sample_rate 0.1`, trace had 0 spans).
+The 1 MB cap was the leading candidate and is fixed; the other two (expired session 307'd to
+signin by `proxy.ts`, deployment skew) now degrade to a clean, recoverable error. The fix is
+verified by construction and by CI, **not** by an observed absence of recurrence.
+
 ## Session wrap — 2026-07-31 → 08-02 (AI system + admin control panel, shipped)
 
 **Current phase:** post-launch ops on the multi-model AI system. All planned work
