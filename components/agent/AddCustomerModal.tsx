@@ -4,7 +4,12 @@ import React, { useState, useRef } from 'react'
 import { addCustomerManually, parsePolicyPdfWithGemini } from '@/app/(protected)/agent/actions'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
-import { acceptAttribute } from "@/lib/security/file-upload"
+import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
+import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
+
+// Mirrors the maxBytes parsePolicyPdfWithGemini validates with, and stays under
+// next.config.ts's serverActions.bodySizeLimit so we own the rejection message.
+const SCAN_MAX_BYTES = 10 * 1024 * 1024
 
 interface Props {
     isOpen: boolean
@@ -84,6 +89,16 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
         const file = e.target.files?.[0]
         if (!file) return
 
+        // Size pre-flight before the upload starts — the only size check that can
+        // fire ahead of Next's Server Action body limit. See UploadPolicyModal.
+        const tooBig = preflightUploadSize(file.size, SCAN_MAX_BYTES)
+        if (tooBig) {
+            setError(uploadRejectionMessage(t, tooBig, null, SCAN_MAX_BYTES))
+            setView('choice')
+            e.target.value = ''
+            return
+        }
+
         setView('parsing')
         setLoading(true)
 
@@ -103,7 +118,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
         }
 
         if ('error' in result) {
-            setError(result.error as string)
+            setError(uploadRejectionMessage(t, (result as any).errorCode, result.error as string, SCAN_MAX_BYTES))
             setView('choice')
         } else if ('success' in result && result.data) {
             const data = result.data

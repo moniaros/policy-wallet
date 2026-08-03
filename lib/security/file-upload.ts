@@ -215,6 +215,26 @@ export interface ValidatedUpload {
     displayName: string
 }
 
+/**
+ * Cheap size-only pre-flight, safe to run in the browser before a byte is sent.
+ *
+ * The authoritative gate is still `validateUploadFile` on the server — this only
+ * spares the user a long upload that was always going to be rejected, and it is
+ * the ONLY check that can fire before Next's Server Action body limit does. A
+ * file over that limit is killed by the runtime before the action body runs, so
+ * the server's own "too_large" message can never reach the user for those.
+ *
+ * Returns the matching `UploadRejectionReason`, or null when the size is fine.
+ */
+export function preflightUploadSize(
+    size: number,
+    maxBytes: number = MAX_UPLOAD_SIZE_BYTES
+): Extract<UploadRejectionReason, "empty" | "too_large"> | null {
+    if (size <= 0) return "empty"
+    if (size > maxBytes) return "too_large"
+    return null
+}
+
 /** Human-safe, non-leaky messages. Never surface parser/internal detail. */
 export const REJECTION_MESSAGES: Record<UploadRejectionReason, string> = {
     empty: "File is empty",

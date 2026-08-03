@@ -8,7 +8,8 @@ import { scanPolicyForResolution, commitScannedPolicy, requestAiConsent } from '
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
 import type { CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
-import { acceptAttribute } from "@/lib/security/file-upload"
+import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
+import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
 
 interface Props {
     isOpen: boolean
@@ -45,6 +46,10 @@ type AnalysisState = 'started' | 'consent_required' | 'limit_reached' | 'none'
 // Derived from the server allowlist — this hand-written copy omitted HEIC, so
 // an agent could not select an iPhone photo of a client's policy.
 const ACCEPTED = acceptAttribute('policy')
+// Mirrors the maxBytes the scan/commit actions validate with (agent/actions.ts).
+// Kept below next.config.ts's serverActions.bodySizeLimit so the rejection is
+// ours (a clear, translated message) rather than the runtime's opaque failure.
+const SCAN_MAX_BYTES = 10 * 1024 * 1024
 const INPUT_CLASS = 'w-full h-12 px-5 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold'
 
 export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName }: Props) {
@@ -108,6 +113,20 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
+
+        // Size pre-flight BEFORE the upload starts. This is the only size check
+        // that can fire ahead of Next's Server Action body limit — past that the
+        // runtime kills the request before the action runs, so the server's own
+        // "too_large" message can never reach the agent. Also spares them a long
+        // upload of a file that was always going to be rejected.
+        const tooBig = preflightUploadSize(file.size, SCAN_MAX_BYTES)
+        if (tooBig) {
+            setError(uploadRejectionMessage(t, tooBig, null, SCAN_MAX_BYTES))
+            setView('upload')
+            e.target.value = ''
+            return
+        }
+
         setScannedFile(file)
         setView('parsing'); setLoading(true); setError(null)
 
@@ -133,7 +152,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setLoading(false)
 
         if (!res.success) {
-            setError(res.error || up.scanError)
+            setError(uploadRejectionMessage(t, (res as any).errorCode, res.error || up.scanError, SCAN_MAX_BYTES))
             setView('upload')
             return
         }
@@ -196,7 +215,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         }
 
         if (!res.success) {
-            setError((res as any).error || up.genericError)
+            setError(uploadRejectionMessage(t, (res as any).errorCode, (res as any).error || up.genericError, SCAN_MAX_BYTES))
             return
         }
         setResult({
