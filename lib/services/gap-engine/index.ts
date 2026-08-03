@@ -123,6 +123,9 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
                         name: true,
                         slug: true,
                         description: true,
+                        // Attributes the gap to a score category when it has no
+                        // policy of its own (profile-level gaps).
+                        lineOfBusiness: true,
                     },
                 },
                 policy: {
@@ -169,11 +172,16 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     const profileGaps = detectProfileGaps(profile, policyFields)
 
     // 4. Calculate protection score
+    // Pass the gaps themselves, not just a count, so each is charged to its own
+    // score category. The policy's line wins; profile-level gaps (no policy)
+    // fall back to the definition's.
     const protectionScore = calculateProtectionScore(
         profile,
         activeLobs,
         profileGaps,
-        liveGapInstances.length
+        liveGapInstances.map((gap) => ({
+            lineOfBusiness: gap.policy?.lineOfBusiness ?? gap.definition?.lineOfBusiness,
+        }))
     )
     const scoreTier = getScoreTier(protectionScore.overallScore)
 
@@ -321,7 +329,13 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
                 ],
                 status: { in: ["open", "detected", "acknowledged"] },
             },
-            select: { id: true, policyId: true },
+            select: {
+                id: true,
+                policyId: true,
+                // Needed to charge each gap to its own score category.
+                policy: { select: { lineOfBusiness: true } },
+                definition: { select: { lineOfBusiness: true } },
+            },
         }),
         db.customerRelationship.count({
             where: { policyholderUserId: userId, status: "active" },
@@ -342,16 +356,18 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
                 .map((p) => p.lineOfBusiness.toLowerCase())
         ),
     ]
-    const liveGapCount = openGapInstances.filter(
+    const liveGaps = openGapInstances.filter(
         (gap) => !gap.policyId || coverageActive.get(gap.policyId)
-    ).length
+    )
 
     const profileGaps = detectProfileGaps(profile, policyFields)
     const protectionScore = calculateProtectionScore(
         profile,
         activeLobs,
         profileGaps,
-        liveGapCount
+        liveGaps.map((gap) => ({
+            lineOfBusiness: gap.policy?.lineOfBusiness ?? gap.definition?.lineOfBusiness,
+        }))
     )
     const scoreTier = getScoreTier(protectionScore.overallScore)
 
