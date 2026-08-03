@@ -47,17 +47,29 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
         setLoading(true)
         setError(null)
 
-        const result = await addCustomerManually({
-            name: formData.name,
-            surname: formData.surname,
-            email: formData.email,
-            phone: formData.phone,
-            taxId: formData.taxId,
-            policy: formData.addPolicy ? {
-                ...formData.policy,
-                premiumAmount: formData.policy.premiumAmount ? parseFloat(formData.policy.premiumAmount) : undefined
-            } : undefined
-        })
+        // Transport-level Server Action failures (expired session redirected to
+        // signin by proxy.ts, deployment skew, oversized body) reject rather
+        // than returning a result. Without this the rejection escapes to
+        // window.onunhandledrejection and setLoading(false) never runs, pinning
+        // the modal on its spinner. See Sentry POLICYWALLET-V.
+        let result: Awaited<ReturnType<typeof addCustomerManually>>
+        try {
+            result = await addCustomerManually({
+                name: formData.name,
+                surname: formData.surname,
+                email: formData.email,
+                phone: formData.phone,
+                taxId: formData.taxId,
+                policy: formData.addPolicy ? {
+                    ...formData.policy,
+                    premiumAmount: formData.policy.premiumAmount ? parseFloat(formData.policy.premiumAmount) : undefined
+                } : undefined
+            })
+        } catch {
+            setError(t.agentModals.uploadPolicy.genericError)
+            setLoading(false)
+            return
+        }
 
         if ('error' in result) {
             setError(result.error as string)
@@ -78,7 +90,17 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
         const formDataObj = new FormData()
         formDataObj.append('file', file)
 
-        const result = await parsePolicyPdfWithGemini(formDataObj)
+        // Same transport-failure guard — this one carries the PDF, so it is the
+        // call that actually hit the 1 MB Server Action body cap.
+        let result: Awaited<ReturnType<typeof parsePolicyPdfWithGemini>>
+        try {
+            result = await parsePolicyPdfWithGemini(formDataObj)
+        } catch {
+            setError(t.agentModals.uploadPolicy.scanError)
+            setView('choice')
+            setLoading(false)
+            return
+        }
 
         if ('error' in result) {
             setError(result.error as string)

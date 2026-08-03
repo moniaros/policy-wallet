@@ -15,6 +15,19 @@ const supabaseCspSource = supabaseOrigin ? ` ${supabaseOrigin}` : "";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["*.picard.replit.dev", "*.replit.dev"],
+  experimental: {
+    serverActions: {
+      // Policy PDFs are uploaded through Server Actions (agent scan/commit,
+      // wallet, onboarding), NOT only through API routes. Next's default cap
+      // is 1 MB, so every file between 1 MB and the 10-15 MB that
+      // validateUploadFile allows was killed by the runtime BEFORE the action
+      // ran — the app's own size-rejection message could never fire, and the
+      // client saw an opaque "unexpected response" (Sentry POLICYWALLET-V).
+      // Sized above MAX_UPLOAD_SIZE_BYTES (15 MB) to leave room for the
+      // multipart envelope and the other form fields.
+      bodySizeLimit: "16mb",
+    },
+  },
   turbopack: {
     // Pin the app root to avoid workspace root inference from parent lockfiles.
     root: process.cwd(),
