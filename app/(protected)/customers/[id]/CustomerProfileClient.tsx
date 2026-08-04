@@ -57,7 +57,7 @@ const PROFILE_COPY = {
 
 export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore }: Props) {
     const router = useRouter()
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
     const [isRemovingCustomer, setIsRemovingCustomer] = useState(false)
     const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false)
@@ -66,13 +66,22 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
     // branded dialog, which also gives the in-flight state this never had.
     const handleRemoveCustomer = async () => {
         setIsRemovingCustomer(true)
-        const result = await terminateRelationshipAsAgent(initialCustomer.relationshipId)
-        setIsRemovingCustomer(false)
-        setRemoveConfirmOpen(false)
-        if (result.success) {
-            router.push("/customers")
-        } else {
+        try {
+            const result = await terminateRelationshipAsAgent(initialCustomer.relationshipId)
+            setRemoveConfirmOpen(false)
+            if (result.success) {
+                router.push("/customers")
+            } else {
+                toast.error(PROFILE_COPY.removeCustomerFailed[language])
+            }
+        } catch {
+            // A transport failure (expired session, deploy skew) rejects rather
+            // than returning. Without this the dialog sat on "Removing…"
+            // forever, since the reset below never ran.
+            setRemoveConfirmOpen(false)
             toast.error(PROFILE_COPY.removeCustomerFailed[language])
+        } finally {
+            setIsRemovingCustomer(false)
         }
     }
     const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
@@ -87,9 +96,19 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
     const [isLoadingProposals, setIsLoadingProposals] = useState(false)
 
     const handleUpdateStatus = async (opportunityId: string, status: OpportunityStatus, notes?: string) => {
-        const result = await updateOpportunityStatus(opportunityId, status, notes)
-        if (result.success) {
+        // A rejected update used to do nothing at all — no refresh, no message.
+        // The advisor clicked, the pipeline did not move, and nothing said why.
+        // Transport failures (expired session, deploy skew) reject rather than
+        // return, so both shapes have to be handled.
+        try {
+            const result = await updateOpportunityStatus(opportunityId, status, notes)
+            if (result && "error" in result && result.error) {
+                toast.error(String(result.error))
+                return
+            }
             router.refresh()
+        } catch {
+            toast.error(t.apiErrors.generic)
         }
     }
 

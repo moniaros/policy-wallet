@@ -1,5 +1,72 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-03 (B2B Risk Intelligence audit + Waves 1–3 shipped)
+
+**Current phase:** executing the B2B backlog in
+[audits/agent-b2b-risk-intelligence-audit-2026-08.md](audits/agent-b2b-risk-intelligence-audit-2026-08.md),
+which is the source of truth. The July production-readiness audit is stale in
+the product's favour — 10 of its findings verified closed.
+
+**Audit verdict:** the advisor product is operationally mature and strategically
+mis-aimed. It is a well-fenced insurance CRM with per-policy AI attached, not
+yet a Risk Intelligence Platform. 17 findings, four waves. Most of the required
+signal is **already extracted and unused** — a harvesting problem, not a build.
+
+**Shipped to prod this session (3 PRs, all verified live):**
+
+- **#231 Wave 1 — the score is now true and advisor-movable.**
+  - *F-04 (critical bug):* the gap penalty was computed from the GLOBAL count but
+    subtracted inside the per-category loop, so one motor gap deducted from
+    Health, Life, Income, Liability and Lifestyle too. **Every score was low by
+    up to 5×, invisibly.** Scores RISE for anyone with gaps — that is the fix.
+  - *F-01 (the headline finding):* questionnaire answers now reach
+    `PolicyholderProfile`, which the score reads and which was writable only
+    from B2C paths. Before this, a client who never self-onboarded scored
+    ~44/100 forever and **no advisor action could move it**. Ships the Household
+    Risk Profile template that asks the four fields deciding applicability.
+  - *F-11:* AI-consent state shown before the upload; the attestation checkbox
+    no longer appears where the server refuses to honour it.
+- **#233 — agent private notes were stored PUBLIC.** Started as a fencing item,
+  turned out to be a confidentiality defect: the UI posted `isPrivate`, the
+  schema stripped it, and internal commentary about a client was readable by
+  that client. Read filter was always correct; the write half never existed.
+  Also fenced `privateNotes` (a real Pro+ differentiator) and stopped agents
+  skipping all entitlement checks via a blanket role exemption.
+
+**In progress — #232 (Wave 2), BLOCKED on a prod migration:**
+F-06 exposes book-wide cross-sell (`runBulkCrossSell` existed for months with
+zero callers — a top-3 revenue feature shipping nothing); F-08 adds
+`ProtectionScoreHistory`, without which the score trend does not exist and
+"your protection improved after we added life cover" is untellable.
+
+**Blocked:** two migrations need applying to prod via the Supabase MCP path.
+Until then: `20260803120000_risk_profile_system_questionnaire` (data, already
+merged) means **F-01 is live but has no template to drive it — the fix delivers
+nothing yet**; `20260803140000_protection_score_history` (schema) gates merging
+#232. Merging it first would deploy code against a missing table.
+
+**Top risks (ranked):**
+1. **HIGH** — the two unapplied migrations above. Wave 1's headline fix is inert
+   without the first one.
+2. **HIGH / correctness** — Google Cloud billing lapse recurrence; no alert.
+3. **HIGH / correctness** — eval thinness: model decisions rest on ONE synthetic case.
+4. **MED / product** — F-03 (no bulk POLICY ingestion; `bulk-import` is contacts
+   only and the multi-PDF modal is B2C-only) and F-05 (coverage lives in
+   unqueryable `acordData` JSON, so no book-level risk question is answerable).
+   These two cap Time-to-Value and keep `/insights` a sales dashboard.
+5. **MED / cost** — the 3× extraction pin is live and unwatched.
+
+**Corrected in the audit record:** `apiAccess` is `false` on every agent tier —
+it is NOT sold. Both this audit and July's called it "sold but unbuilt".
+
+**Next 3 actions:** (1) apply both migrations, merge #232. (2) F-03 bulk policy
+ingestion — the Time-to-Value ceiling for all of B2B. (3) F-05 `PolicyCoverage`
+projection, which unlocks real risk analytics.
+
+**Sequencing rule (from the audit, still binding):** fix the arithmetic before
+scaling the volume. Importing a large book onto wrong scores makes every later
+correction read to advisors as a regression.
+
 ## Session wrap — 2026-08-03 (agent PDF upload was broken above 1 MB — shipped)
 
 **Current phase:** post-launch ops. One production defect found via Sentry and fixed.

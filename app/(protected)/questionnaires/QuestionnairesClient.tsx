@@ -34,12 +34,15 @@ const copy = {
         deleteTemplateTitle: "Delete this template?",
         deleteTemplateBody: "The template is removed from your library. Questionnaires already sent keep their answers.",
         deleteTemplateFailed: "The template could not be deleted. Please try again.",
+        saveTemplateFailed: "The template could not be saved. Please try again.",
         templateName: "Template Name",
         lob: "Line of Business",
         addQuestion: "Add Question",
         questionLabel: "Question text (EN)",
         questionLabelEl: "Question text (EL)",
         questionType: "Type",
+        removeQuestion: "Remove question",
+        markRequired: "Required question",
         required: "Required",
         optional: "Optional",
         options: "Options (comma-separated)",
@@ -87,12 +90,15 @@ const copy = {
         deleteTemplateTitle: "Διαγραφή του προτύπου;",
         deleteTemplateBody: "Το πρότυπο αφαιρείται από τη βιβλιοθήκη σας. Τα ερωτηματολόγια που έχουν ήδη σταλεί διατηρούν τις απαντήσεις τους.",
         deleteTemplateFailed: "Το πρότυπο δεν διαγράφηκε. Δοκιμάστε ξανά.",
+        saveTemplateFailed: "Το πρότυπο δεν αποθηκεύτηκε. Δοκιμάστε ξανά.",
         templateName: "Όνομα προτύπου",
         lob: "Κλάδος ασφάλισης",
         addQuestion: "Προσθήκη ερώτησης",
         questionLabel: "Κείμενο ερώτησης (EN)",
         questionLabelEl: "Κείμενο ερώτησης (EL)",
         questionType: "Τύπος",
+        removeQuestion: "Αφαίρεση ερώτησης",
+        markRequired: "Υποχρεωτική ερώτηση",
         required: "Υποχρεωτικό",
         optional: "Προαιρετικό",
         options: "Επιλογές (χωρισμένες με κόμμα)",
@@ -240,7 +246,15 @@ function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
 
     const handleDelete = async (id: string) => {
         try {
-            await deleteTemplate(id)
+            // deleteTemplate RETURNS { error } for a refused delete (system
+            // template, or one owned by another advisor) rather than throwing.
+            // Only the throw was handled, so a refusal looked like success: the
+            // dialog closed and the template stayed in the list unexplained.
+            const result = await deleteTemplate(id)
+            if (result && "error" in result && result.error) {
+                toast.error(String(result.error))
+                return
+            }
             setPendingDeleteId(null)
         } catch {
             toast.error(t.deleteTemplateFailed)
@@ -376,15 +390,23 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
         // Normalize IDs
         const normalized = questions.map((q, i) => ({ ...q, id: `q${i + 1}` }))
 
-        const result = editingTemplate
-            ? await updateTemplate(editingTemplate.id, { name, lineOfBusiness: lob, questions: normalized })
-            : await createTemplate({ name, lineOfBusiness: lob, questions: normalized })
+        try {
+            const result = editingTemplate
+                ? await updateTemplate(editingTemplate.id, { name, lineOfBusiness: lob, questions: normalized })
+                : await createTemplate({ name, lineOfBusiness: lob, questions: normalized })
 
-        setSaving(false)
-        if (result.error) {
-            setError(result.error)
-        } else {
+            if (result.error) {
+                setError(result.error)
+                return
+            }
             onClose()
+        } catch {
+            // setSaving(false) used to sit after a bare await, so a transport
+            // failure pinned the builder on "Saving…" with the advisor's whole
+            // template still unsaved in the form.
+            setError(t.saveTemplateFailed)
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -411,8 +433,9 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                     {/* Meta */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.templateName}</label>
+                            <label htmlFor="qtpl-name" className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.templateName}</label>
                             <input
+                                id="qtpl-name"
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -421,8 +444,9 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                             />
                         </div>
                         <div>
-                            <label className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.lob}</label>
+                            <label htmlFor="qtpl-lob" className="block text-kicker font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">{t.lob}</label>
                             <select
+                                id="qtpl-lob"
                                 value={lob}
                                 onChange={(e) => setLob(e.target.value)}
                                 className="pw-input"
@@ -447,6 +471,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     </span>
                                     <div className="flex-1" />
                                     <select
+                                        aria-label={`${t.questionType} — Q${i + 1}`}
                                         value={q.type}
                                         onChange={(e) => updateQuestion(i, "type", e.target.value)}
                                         className="pw-input pw-input-sm"
@@ -457,6 +482,9 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                         <option value="select">{t.select}</option>
                                     </select>
                                     <button
+                                        type="button"
+                                        aria-pressed={q.required}
+                                        aria-label={`${t.markRequired} — Q${i + 1}`}
                                         onClick={() => updateQuestion(i, "required", !q.required)}
                                         className={`px-2 py-1 rounded-lg text-kicker font-black uppercase tracking-widest ${q.required
                                             ? "bg-amber-50 text-amber-700 dark:text-amber-200 dark:bg-amber-900/20"
@@ -466,10 +494,12 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                         {q.required ? t.required : t.optional}
                                     </button>
                                     <button
+                                        type="button"
+                                        aria-label={`${t.removeQuestion} — Q${i + 1}`}
                                         onClick={() => removeQuestion(i)}
                                         className="p-1 rounded-lg hover:bg-red-50 text-slate-500 dark:text-slate-400 hover:text-red-500"
                                     >
-                                        <Trash2 className="w-3.5 h-3.5" />
+                                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                                     </button>
                                 </div>
 
@@ -477,6 +507,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     <input
                                         type="text"
                                         value={q.label}
+                                        aria-label={`${t.questionLabel} — Q${i + 1}`}
                                         onChange={(e) => updateQuestion(i, "label", e.target.value)}
                                         placeholder={t.questionLabel}
                                         className="pw-input pw-input-sm"
@@ -484,6 +515,7 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
                                     <input
                                         type="text"
                                         value={q.labelEl || ""}
+                                        aria-label={`${t.questionLabelEl} — Q${i + 1}`}
                                         onChange={(e) => updateQuestion(i, "labelEl", e.target.value)}
                                         placeholder={t.questionLabelEl}
                                         className="pw-input pw-input-sm"
@@ -683,8 +715,8 @@ function SentList({ instances, t, language }: {
                                         <p className="text-xs text-slate-500 dark:text-slate-400">{analysisData.customerName} · {analysisData.templateName}</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setAnalysisData(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                    <X className="w-5 h-5" />
+                                <button type="button" aria-label={t.cancel} onClick={() => setAnalysisData(null)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                    <X className="w-5 h-5" aria-hidden="true" />
                                 </button>
                             </div>
 

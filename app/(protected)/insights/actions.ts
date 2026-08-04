@@ -7,6 +7,10 @@ import { resolvePolicyLifecycle, calendarDaysUntil } from "@/lib/policy-status"
 import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
 import { isAgentRole } from "@/lib/auth/require-agent"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
+import {
+    conversionRate as conversionRateOf,
+    renewalRate as renewalRateOf,
+} from "@/lib/agent/pipeline-metrics"
 
 export interface InsightsData {
     portfolioHealth: {
@@ -184,7 +188,10 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const oppQuoted = countByStatus('quoted')
     const oppWon = countByStatus('won')
     const oppLost = countByStatus('lost')
-    const conversionRate = oppTotal > 0 ? Math.round((oppWon / oppTotal) * 100) : 0
+    // DECIDED denominator (won + lost) — see lib/agent/pipeline-metrics.
+    // Against the full total an advisor with 5 won, 5 lost and 40 open read
+    // 11% instead of 50%, and the rate fell every time they prospected.
+    const conversionRate = conversionRateOf(oppWon, oppLost)
 
     const totalPotentialValue = oppGroups
         .filter(g => g.status !== 'won' && g.status !== 'lost')
@@ -266,8 +273,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const premiumAtRisk = atRiskRenewals.reduce(
         (sum, r) => sum + (r.policy.premiumAmount ? Number(r.policy.premiumAmount) : 0), 0
     )
-    const totalResolved = renewedThisMonth + lapsedThisMonth
-    const renewalRate = totalResolved > 0 ? Math.round((renewedThisMonth / totalResolved) * 100) : 0
+    const renewalRate = renewalRateOf(renewedThisMonth, lapsedThisMonth)
 
     return {
         portfolioHealth: {

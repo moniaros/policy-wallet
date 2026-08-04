@@ -58,7 +58,12 @@ export interface AppShellProps {
 
 /** The two locales, as the mobile footer toggle renders them. "GR"/"EN" are
  *  locale codes shown verbatim in both languages, not translatable copy. */
-interface BottomNavItem {
+interface BottomNavItemBase {
+    /** Opens the nav drawer instead of navigating. */
+    opensDrawer?: boolean
+}
+
+interface BottomNavItem extends BottomNavItemBase {
     href: string
     icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
     label: string
@@ -94,7 +99,15 @@ const getBottomNavItems = (role: UserRole['role'], t: any): BottomNavItem[] => {
             { href: '/customers', icon: Users, label: translations.customers, id: 'customers' },
             { href: '/opportunities', icon: TrendingUp, label: translations.opportunities, id: 'opportunities' },
             { href: '/insights', icon: Lightbulb, label: translations.insights, id: 'insights' },
-            { href: '/account', icon: MoreHorizontal, label: translations.more, id: 'more', showsNotificationBadge: true }
+            // Opens the drawer rather than navigating. It carries the "more"
+            // icon and is labelled «Ενέργειες»/"Actions", but it used to go
+            // straight to /account — so the one slot that looked like it led to
+            // the rest of the product led to settings, and renewals, tasks,
+            // commissions, questionnaires, team and activity were reachable on
+            // mobile ONLY through the hamburger. Renewals and tasks are daily
+            // advisor work; they should not be two taps behind a drawer the
+            // bottom bar never points at.
+            { href: '/account', icon: MoreHorizontal, label: translations.more, id: 'more', showsNotificationBadge: true, opensDrawer: true }
         ]
     }
     return []
@@ -368,14 +381,31 @@ export function AppShell({
                         >
                             {bottomNavItems.map((item) => {
                                 const Icon = item.icon
-                                const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                                const isActive = !item.opensDrawer && (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)))
+                                // A drawer trigger is a button, not a link: it
+                                // performs no navigation, so rendering it as an
+                                // anchor would announce a destination to screen
+                                // readers that it never goes to.
+                                const Tag: any = item.opensDrawer ? 'button' : Link
+                                const tagProps = item.opensDrawer
+                                    ? {
+                                        type: 'button' as const,
+                                        onClick: () => setSidebarOpen(true),
+                                        'aria-expanded': sidebarOpen,
+                                        // The real drawer element, so the
+                                        // relationship actually resolves.
+                                        'aria-controls': 'app-sidebar',
+                                    }
+                                    : {
+                                        href: item.href,
+                                        onClick: () => handleNavigate(item.href, 'mobile_nav', item.id),
+                                    }
 
                                 return (
-                                    <Link
+                                    <Tag
                                         key={item.id}
-                                        href={item.href}
-                                        onClick={() => handleNavigate(item.href, 'mobile_nav', item.id)}
-                                        className={`min-h-[44px] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
+                                        {...tagProps}
+                                        className={`min-h-[44px] w-full rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
                                             ? 'text-primary dark:text-mint bg-primary/15 dark:bg-primary/15'
                                             : 'text-muted-foreground hover:text-black dark:hover:text-white'
                                             }`}
@@ -401,7 +431,7 @@ export function AppShell({
                                         <span className="text-kicker font-medium whitespace-nowrap">
                                             {item.label}
                                         </span>
-                                    </Link>
+                                    </Tag>
                                 )
                             })}
                         </div>

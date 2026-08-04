@@ -149,11 +149,20 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
 
     // §F inline fields: € value-at-risk + stakeholder identification.
     const handleMedicPatch = async (patch: MedicPatch) => {
-        const res = await patchOpportunityMedic(opportunity.id, patch)
-        if (res && 'success' in res && res.success) {
-            setMedicView(res.medic as MedicData)
-            onMedicChange?.(opportunity.id, res.medic as MedicData, res.medicScore)
-        } else {
+        // A transport failure REJECTS rather than returning. MedicScorecard
+        // wraps this in try/finally with no catch, and its callers invoke it as
+        // `void submit(...)` — so the rejection escaped as an unhandled promise
+        // rejection and the advisor was told nothing: the value-at-risk or
+        // stakeholder edit simply did not save, silently.
+        try {
+            const res = await patchOpportunityMedic(opportunity.id, patch)
+            if (res && 'success' in res && res.success) {
+                setMedicView(res.medic as MedicData)
+                onMedicChange?.(opportunity.id, res.medic as MedicData, res.medicScore)
+                return
+            }
+            toast.error(tt.scPatchError)
+        } catch {
             toast.error(tt.scPatchError)
         }
     }
@@ -386,14 +395,17 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate,
 
                     {/* Status */}
                     <div>
-                        <label className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
+                        {/* Group name + per-option state: this writes the pipeline
+                            status, and selection was conveyed by colour alone. */}
+                        <span id="opp-status-label" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                             {tt.statusLabel}
-                        </label>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        </span>
+                        <div role="group" aria-labelledby="opp-status-label" className="grid grid-cols-2 md:grid-cols-3 gap-2">
                             {OPPORTUNITY_STATUSES.map((s) => (
                                 <button
                                     key={s.value}
                                     type="button"
+                                    aria-pressed={status === s.value}
                                     onClick={() => {
                                         setStatus(s.value)
                                         // Reasons are stage-scoped; carrying one across
