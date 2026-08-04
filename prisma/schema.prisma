@@ -137,6 +137,7 @@ model User {
   proposalsCreated                Proposal[]
   GapInstance                     GapInstance[]
   protectionScore                 ProtectionScore?
+  protectionScoreHistory          ProtectionScoreHistory[]
   recommendations                 RecommendationInstance[]
 
   @@index([taxId])
@@ -1453,6 +1454,35 @@ model ProtectionScore {
   // The refresh cron drives off the stalest scores first.
   @@index([computedAt])
   @@map("protection_scores")
+}
+
+/// Append-only trend for the protection score.
+///
+/// `ProtectionScore` is keyed `userId @unique`, so it holds only the LATEST
+/// value — every earlier reading was overwritten and the trend was
+/// unrecoverable. That made the core advisory story untellable: "your
+/// protection improved after we added life cover" is the sentence the whole
+/// product is for, and nothing in the database could support it.
+///
+/// Written only when the score actually MOVES (the refresh cron recomputes
+/// every user daily; recording an unchanged number every day would be ~365
+/// rows per user per year of noise, and a flat line is fully implied by the
+/// gap between two entries).
+model ProtectionScoreHistory {
+  id             String   @id @default(cuid()) @map("history_id")
+  userId         String   @map("user_id")
+  overallScore   Int      @map("overall_score")
+  categoryScores Json     @map("category_scores")
+  gapCount       Int      @map("gap_count")
+  /// Score immediately before this one; null for the first ever entry.
+  previousScore  Int?     @map("previous_score")
+  computedAt     DateTime @map("computed_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Timeline reads are always "this user, newest first".
+  @@index([userId, computedAt])
+  @@map("protection_score_history")
 }
 
 model RecommendationInstance {

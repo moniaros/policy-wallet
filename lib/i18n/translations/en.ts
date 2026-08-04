@@ -1056,6 +1056,12 @@ export const en: TranslationKeys = {
     },
 
     agentUi: {
+        // Protection-score trend card (F-08) — the client's score over time.
+        scoreTrend: {
+            title: 'Protection over time',
+            chartLabel: 'Protection score trend',
+            caption: 'Recorded each time this client’s protection score changes.',
+        },
         licensedAgent: 'Licensed Advisor',
         verified: 'Verified',
         website: 'Website',
@@ -2620,6 +2626,14 @@ export const en: TranslationKeys = {
             kicker: 'PIPELINE',
             title: 'Opportunities',
             subtitle: 'Track potential sales and coverage improvements for your customers.',
+            // Book-wide cross-sell sweep (F-06).
+            scanBook: 'Scan my book',
+            scanBookRunning: 'Scanning…',
+            scanBookHint: 'Finds missing cover across every client at once.',
+            scanBookFound: 'Found {count} new opportunities across {customers} clients.',
+            scanBookNoneFound: 'Checked {customers} clients — no new gaps to act on.',
+            scanBookUpgrade: 'Book-wide scanning is available on the Pro plan and above.',
+            scanBookRateLimited: 'You have scanned recently. Try again in a little while.',
             colCustomer: 'Customer',
             sortLabel: 'Sort',
             defaultOrder: 'Default order',

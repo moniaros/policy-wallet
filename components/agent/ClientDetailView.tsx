@@ -9,6 +9,7 @@ import { ClientOverviewTab } from "./tabs/ClientOverviewTab"
 import { ClientPoliciesTab } from "./tabs/ClientPoliciesTab"
 import { ClientActivityTab } from "./tabs/ClientActivityTab"
 import { ClientFinancialsTab } from "./tabs/ClientFinancialsTab"
+import { ProtectionScoreTrendCard } from "./ProtectionScoreTrendCard"
 import type { Customer, Policy, Opportunity, Interaction } from "./types"
 import type { ViewerRole } from "@/components/collaboration/types"
 import type { AgentTier } from "@/types/subscription-entitlements"
@@ -184,13 +185,19 @@ export function ClientDetailView({
             {/* Tab Content — each pane is a labelled tabpanel bound to its tab. */}
             <div {...panelProps} className="max-w-page mx-auto px-4 py-6 sm:px-6 focus-visible:outline-none">
                 {activeTab === "overview" && (
-                    <ClientOverviewTab
-                        customer={customer}
-                        healthScore={healthScore}
-                        policies={policies}
-                        opportunities={opportunities}
-                        onCreateProposal={onCreateProposal}
-                    />
+                    <div className="space-y-5">
+                        <ClientOverviewTab
+                            customer={customer}
+                            healthScore={healthScore}
+                            policies={policies}
+                            opportunities={opportunities}
+                            onCreateProposal={onCreateProposal}
+                        />
+                        {/* Renders nothing until this client has score history —
+                            an empty chart says less than no chart. Self-fetching
+                            so a trend failure cannot take the profile down. */}
+                        <ProtectionScoreTrendCard customerId={customer.id} />
+                    </div>
                 )}
                 {activeTab === "policies" && (
                     <ClientPoliciesTab

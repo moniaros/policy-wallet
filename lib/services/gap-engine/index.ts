@@ -568,6 +568,15 @@ async function cacheProtectionScore(
         categoryScoresJson[key] = val.score
     }
 
+    const computedAt = new Date()
+
+    // Read the previous reading BEFORE overwriting it — ProtectionScore keeps
+    // only the latest value, so this is the one moment the delta is knowable.
+    const previous = await db.protectionScore.findUnique({
+        where: { userId },
+        select: { overallScore: true },
+    })
+
     await db.protectionScore.upsert({
         where: { userId },
         update: {
@@ -576,7 +585,7 @@ async function cacheProtectionScore(
             gapCount: score.gapCount,
             expectedLines: score.expectedLines,
             actualLines: score.actualLines,
-            computedAt: new Date(),
+            computedAt,
         },
         create: {
             userId,
@@ -585,9 +594,34 @@ async function cacheProtectionScore(
             gapCount: score.gapCount,
             expectedLines: score.expectedLines,
             actualLines: score.actualLines,
-            computedAt: new Date(),
+            computedAt,
         },
     })
+
+    // Append to the trend only when the number MOVED. The refresh cron
+    // recomputes every user daily, so recording an unchanged score would add
+    // ~365 rows per user per year of pure noise — and a flat stretch is fully
+    // implied by the gap between two entries.
+    if (!previous || previous.overallScore !== score.overallScore) {
+        try {
+            await db.protectionScoreHistory.create({
+                data: {
+                    userId,
+                    overallScore: score.overallScore,
+                    categoryScores: categoryScoresJson,
+                    gapCount: score.gapCount,
+                    previousScore: previous?.overallScore ?? null,
+                    computedAt,
+                },
+            })
+        } catch (err) {
+            // The trend is an advisory nicety; never fail a score refresh for it.
+            logger("warn", "Failed to append protection score history", {
+                userId,
+                error: err instanceof Error ? err.message : String(err),
+            })
+        }
+    }
 }
 
 /**

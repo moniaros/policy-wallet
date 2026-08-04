@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Target } from "lucide-react"
+import { Target, Sparkles } from "lucide-react"
 import { OpportunityUpdateModal } from "@/components/agent/OpportunityUpdateModal"
 import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyState"
-import { updateOpportunityStatus } from "../agent/actions"
+import { updateOpportunityStatus, runBookCrossSell } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { TableShell } from "@/components/ui/TableShell"
@@ -81,6 +81,42 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
         router.refresh()
     }
 
+    // F-06: book-wide cross-sell. The service existed and worked with no UI
+    // caller at all, so a top-3 advisor revenue feature shipped nothing.
+    const [isScanning, setIsScanning] = useState(false)
+    const [scanMessage, setScanMessage] = useState<string | null>(null)
+
+    const handleScanBook = async () => {
+        setIsScanning(true)
+        setScanMessage(null)
+        try {
+            const res = await runBookCrossSell()
+            if ('error' in res) {
+                setScanMessage(
+                    res.error === 'upgrade_required'
+                        ? opp_t.scanBookUpgrade
+                        : res.error === 'rate_limited'
+                            ? opp_t.scanBookRateLimited
+                            : t.apiErrors.generic
+                )
+                return
+            }
+            setScanMessage(
+                res.opportunitiesCreated > 0
+                    ? opp_t.scanBookFound
+                        .replace('{count}', String(res.opportunitiesCreated))
+                        .replace('{customers}', String(res.customersAnalyzed))
+                    : opp_t.scanBookNoneFound.replace('{customers}', String(res.customersAnalyzed))
+            )
+            router.refresh()
+        } catch {
+            // A transport failure must not leave the button stuck on "Scanning".
+            setScanMessage(t.apiErrors.generic)
+        } finally {
+            setIsScanning(false)
+        }
+    }
+
     const { sort, toggle, setSort } = useTableSort<OppSortKey>()
     const filteredOpportunities = opportunities.filter(opp => {
         if (filter === 'all') return true
@@ -106,14 +142,37 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
     return (
         <div className="pw-page-shell min-h-screen">
             <div className="max-w-page mx-auto px-4 sm:px-6 py-12 lg:py-16">
-                <header className="mb-10 text-center sm:text-left">
-                    <span className="pw-kicker inline-block mb-2">{opp_t.kicker}</span>
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
-                        {opp_t.title}
-                    </h1>
-                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
-                        {opp_t.subtitle}
-                    </p>
+                {/* min-w-0 lets the title column shrink so the action keeps its
+                    full size; the button is full-width and centred on mobile and
+                    right-aligned from sm, matching /customers. */}
+                <header className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div className="min-w-0">
+                        <span className="pw-kicker inline-block mb-2">{opp_t.kicker}</span>
+                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
+                            {opp_t.title}
+                        </h1>
+                        <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
+                            {opp_t.subtitle}
+                        </p>
+                    </div>
+                    <div className="flex flex-col items-center sm:items-end gap-2 shrink-0">
+                        <button
+                            onClick={handleScanBook}
+                            disabled={isScanning}
+                            aria-busy={isScanning}
+                            className="pw-primary-button justify-center w-full sm:w-auto"
+                        >
+                            <Sparkles className={`w-4 h-4 shrink-0 ${isScanning ? 'animate-pulse' : ''}`} />
+                            <span>{isScanning ? opp_t.scanBookRunning : opp_t.scanBook}</span>
+                        </button>
+                        <p
+                            role="status"
+                            aria-live="polite"
+                            className="text-xs font-medium text-neutral-500 dark:text-neutral-400 max-w-xs text-center sm:text-right"
+                        >
+                            {scanMessage || opp_t.scanBookHint}
+                        </p>
+                    </div>
                 </header>
 
                 {/* Filters */}
