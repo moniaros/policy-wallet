@@ -7,6 +7,7 @@ import * as Sentry from '@sentry/nextjs'
 import { db as prisma } from '@/lib/db'
 import { getUserSubscription } from '@/lib/subscription-limits'
 import { Decimal } from '@prisma/client/runtime/library'
+import type { Prisma } from '@prisma/client'
 import {
     TOKEN_COSTS,
     resolveTokenCosts,
@@ -110,27 +111,48 @@ export async function trackTokenUsage(params: {
         const now = new Date()
         const month = new Date(now.getFullYear(), now.getMonth(), 1)
 
-        await prisma.$transaction(async (tx) => {
-            const existingMonthly = await tx.monthlyTokenUsage.findUnique({
-                where: {
-                    userId_month: {
-                        userId: params.userId,
-                        month,
-                    },
+        // The split read runs OUTSIDE the transaction, and the writes go as a
+        // BATCH rather than an interactive transaction (POLICYWALLET-W).
+        //
+        // Metering is called around the response — the failing event returned
+        // HTTP 200 while this threw — so on Vercel the instance can be frozen
+        // between two awaits inside an interactive transaction and resumed much
+        // later. Prisma's timer keeps running: the reported failure was 52,779ms
+        // against a 15,000ms limit. That limit had ALREADY been raised from
+        // Prisma's 5,000ms default for this same P2028 error (lib/db.ts:43), and
+        // it still overshot by 3.5x, so raising it again treats the symptom. A
+        // batched $transaction([...]) is one round trip with no client-side
+        // timer spanning a JS await, which is the thing that gets frozen.
+        //
+        // Moving the read out does NOT change correctness: Postgres runs at READ
+        // COMMITTED, so this findUnique never locked the row. Two concurrent
+        // calls could always read the same "before" value. Totals stay exact
+        // because the upserts use atomic `increment`; only the
+        // subscription-vs-purchased SPLIT can skew under concurrency, and that
+        // was equally true before. Fixing that properly needs SELECT ... FOR
+        // UPDATE and is out of scope here.
+        const existingMonthly = await prisma.monthlyTokenUsage.findUnique({
+            where: {
+                userId_month: {
+                    userId: params.userId,
+                    month,
                 },
-            })
+            },
+            select: { totalTokens: true },
+        })
 
-            const monthlyUsedBefore = existingMonthly ? Number(existingMonthly.totalTokens) : 0
-            const subscriptionLimit = budgetLimit
-            const subscriptionRemaining = subscriptionLimit === null
-                ? totalTokens
-                : Math.max(subscriptionLimit - monthlyUsedBefore, 0)
-            const subscriptionConsumed = subscriptionLimit === null
-                ? totalTokens
-                : Math.min(subscriptionRemaining, totalTokens)
-            const purchasedConsumed = Math.max(totalTokens - subscriptionConsumed, 0)
+        const monthlyUsedBefore = existingMonthly ? Number(existingMonthly.totalTokens) : 0
+        const subscriptionLimit = budgetLimit
+        const subscriptionRemaining = subscriptionLimit === null
+            ? totalTokens
+            : Math.max(subscriptionLimit - monthlyUsedBefore, 0)
+        const subscriptionConsumed = subscriptionLimit === null
+            ? totalTokens
+            : Math.min(subscriptionRemaining, totalTokens)
+        const purchasedConsumed = Math.max(totalTokens - subscriptionConsumed, 0)
 
-            await tx.tokenUsage.create({
+        const operations: Prisma.PrismaPromise<unknown>[] = [
+            prisma.tokenUsage.create({
                 data: {
                     userId: params.userId,
                     operationType: params.operationType,
@@ -141,9 +163,9 @@ export async function trackTokenUsage(params: {
                     costEur: new Decimal(totalCost),
                     model: params.model,
                 },
-            })
+            }),
 
-            await tx.monthlyTokenUsage.upsert({
+            prisma.monthlyTokenUsage.upsert({
                 where: {
                     userId_month: {
                         userId: params.userId,
@@ -174,10 +196,12 @@ export async function trackTokenUsage(params: {
                     },
                     tier,
                 },
-            })
+            }),
+        ]
 
-            if (purchasedConsumed > 0) {
-                await tx.tokenBalance.upsert({
+        if (purchasedConsumed > 0) {
+            operations.push(
+                prisma.tokenBalance.upsert({
                     where: { userId: params.userId },
                     create: {
                         userId: params.userId,
@@ -190,8 +214,13 @@ export async function trackTokenUsage(params: {
                         },
                     },
                 })
-            }
-        })
+            )
+        }
+
+        // Array form: still one database transaction (all-or-nothing), but sent
+        // as a single batch, so there is no open session waiting on the JS event
+        // loop between statements.
+        await prisma.$transaction(operations)
     } catch (error) {
         // Provider-billed spend that goes unrecorded must at least alert ops.
         console.error('[token-tracking] trackTokenUsage failed (usage not recorded)', {
