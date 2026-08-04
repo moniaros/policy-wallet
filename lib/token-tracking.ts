@@ -85,6 +85,31 @@ async function resolveTokenBudget(
 }
 
 /**
+ * The subscription/purchased split, as a pure function.
+ *
+ * This is the REFERENCE DEFINITION. It is not called by `recordUsageAtomically`
+ * — the split has to be computed inside the SQL statement or it races (see
+ * below) — so this exists to make the rule executable and testable on its own,
+ * and to give the SQL something precise to mirror.
+ *
+ * That mirroring is a convention, not a guarantee: nothing forces the two to
+ * agree at runtime. The SQL is the code that actually runs.
+ *
+ *   null budget -> everything counts against the subscription (unlimited)
+ *   otherwise   -> subscription takes what headroom is left, purchased the rest
+ */
+export function splitTokens(
+    amount: number,
+    budgetLimit: number | null,
+    usedBefore: number
+): { subscription: number; purchased: number } {
+    if (budgetLimit === null) return { subscription: amount, purchased: 0 }
+    const headroom = Math.max(budgetLimit - usedBefore, 0)
+    const subscription = Math.min(amount, headroom)
+    return { subscription, purchased: amount - subscription }
+}
+
+/**
  * Apply one usage record, its monthly rollup and any purchased-balance draw as
  * a SINGLE statement, so the subscription/purchased split cannot race.
  *
@@ -101,6 +126,10 @@ async function resolveTokenBudget(
  * Data-modifying CTEs are executed exactly once each regardless of whether the
  * outer query reads them, so the rollup still applies when the balance draw is
  * filtered out by `purchased_delta > 0`.
+ *
+ * The arithmetic below mirrors `splitTokens` above. Keep them in step: that
+ * function is what the tests exercise, and this statement is what production
+ * runs. Nothing enforces the correspondence at runtime.
  *
  * Exported for testing: the SQL is the whole point of this function, and a
  * silent revert to JS-side arithmetic would reintroduce the race invisibly.
