@@ -3,11 +3,11 @@
  * Tracks AI token usage, costs, and manages token balances
  */
 
+import { randomUUID } from 'node:crypto'
 import * as Sentry from '@sentry/nextjs'
 import { db as prisma } from '@/lib/db'
 import { getUserSubscription } from '@/lib/subscription-limits'
 import { Decimal } from '@prisma/client/runtime/library'
-import type { Prisma } from '@prisma/client'
 import {
     TOKEN_COSTS,
     resolveTokenCosts,
@@ -85,6 +85,114 @@ async function resolveTokenBudget(
 }
 
 /**
+ * Apply one usage record, its monthly rollup and any purchased-balance draw as
+ * a SINGLE statement, so the subscription/purchased split cannot race.
+ *
+ * The subscription delta is the same expression in all four places it appears:
+ *
+ *   NULL budget            -> the whole amount is subscription (unlimited)
+ *   otherwise              -> LEAST(amount, GREATEST(budget - used_before, 0))
+ *
+ * `used_before` is 0 on the insert path and `monthly_token_usage.total_tokens`
+ * on the conflict path (pre-update, per Postgres ON CONFLICT semantics). In the
+ * RETURNING clause the row is already updated, so `used_before` is recovered as
+ * `total_tokens - amount`.
+ *
+ * Data-modifying CTEs are executed exactly once each regardless of whether the
+ * outer query reads them, so the rollup still applies when the balance draw is
+ * filtered out by `purchased_delta > 0`.
+ *
+ * Exported for testing: the SQL is the whole point of this function, and a
+ * silent revert to JS-side arithmetic would reintroduce the race invisibly.
+ */
+export async function recordUsageAtomically(input: {
+    userId: string
+    operationType: OperationType
+    policyId: string | null
+    inputTokens: number
+    outputTokens: number
+    totalTokens: number
+    totalCost: number
+    model: AIModel
+    tier: string
+    budgetLimit: number | null
+    month: Date
+}): Promise<void> {
+    const amount = BigInt(input.totalTokens)
+    const budget = input.budgetLimit === null ? null : BigInt(input.budgetLimit)
+    // Prisma generates these with cuid(); raw inserts must supply their own.
+    // Format is not constrained anywhere — only uniqueness matters.
+    const usageId = randomUUID()
+    const summaryId = randomUUID()
+    const balanceId = randomUUID()
+    // token_usage.cost_eur is Decimal(10,6) but monthly_token_usage.total_cost_eur
+    // is Decimal(10,2). Send full precision to both and let each column round,
+    // which is exactly what Prisma did before — rounding to 2 here first would
+    // silently flatten every per-call cost to cents.
+    const cost = new Decimal(input.totalCost).toFixed(6)
+    // Sent as a plain YYYY-MM-DD string rather than a Date. `month` is built as
+    // LOCAL midnight of the 1st; handing Postgres a timestamptz and casting to
+    // ::date would resolve it in the server's timezone and could land on the
+    // previous month for any zone ahead of UTC.
+    const monthKey = `${input.month.getFullYear()}-${String(input.month.getMonth() + 1).padStart(2, '0')}-01`
+
+    await prisma.$executeRaw`
+        WITH usage AS (
+            INSERT INTO "token_usage"
+                ("usage_id", "user_id", "operation_type", "policy_id",
+                 "input_tokens", "output_tokens", "total_tokens", "cost_eur",
+                 "model", "created_at")
+            VALUES
+                (${usageId}, ${input.userId}, ${input.operationType}, ${input.policyId},
+                 ${input.inputTokens}, ${input.outputTokens}, ${input.totalTokens}, ${cost}::numeric,
+                 ${input.model}, now())
+        ),
+        rollup AS (
+            INSERT INTO "monthly_token_usage"
+                ("summary_id", "user_id", "month", "tier", "total_tokens",
+                 "total_cost_eur", "subscription_tokens", "purchased_tokens_used", "created_at")
+            VALUES (
+                ${summaryId}, ${input.userId}, ${monthKey}::date, ${input.tier}, ${amount},
+                ${cost}::numeric,
+                CASE WHEN ${budget}::bigint IS NULL THEN ${amount}::bigint
+                     ELSE LEAST(${amount}::bigint, GREATEST(${budget}::bigint, 0)) END,
+                ${amount}::bigint - CASE WHEN ${budget}::bigint IS NULL THEN ${amount}::bigint
+                     ELSE LEAST(${amount}::bigint, GREATEST(${budget}::bigint, 0)) END,
+                now()
+            )
+            ON CONFLICT ("user_id", "month") DO UPDATE SET
+                "total_tokens" = "monthly_token_usage"."total_tokens" + ${amount}::bigint,
+                "total_cost_eur" = "monthly_token_usage"."total_cost_eur" + ${cost}::numeric,
+                "subscription_tokens" = "monthly_token_usage"."subscription_tokens"
+                    + CASE WHEN ${budget}::bigint IS NULL THEN ${amount}::bigint
+                           ELSE LEAST(${amount}::bigint,
+                                      GREATEST(${budget}::bigint - "monthly_token_usage"."total_tokens", 0)) END,
+                "purchased_tokens_used" = "monthly_token_usage"."purchased_tokens_used"
+                    + (${amount}::bigint
+                       - CASE WHEN ${budget}::bigint IS NULL THEN ${amount}::bigint
+                              ELSE LEAST(${amount}::bigint,
+                                         GREATEST(${budget}::bigint - "monthly_token_usage"."total_tokens", 0)) END),
+                "tier" = ${input.tier}
+            RETURNING (
+                ${amount}::bigint
+                - CASE WHEN ${budget}::bigint IS NULL THEN ${amount}::bigint
+                       ELSE LEAST(${amount}::bigint,
+                                  GREATEST(${budget}::bigint
+                                           - ("monthly_token_usage"."total_tokens" - ${amount}::bigint), 0)) END
+            ) AS purchased_delta
+        )
+        INSERT INTO "token_balances"
+            ("balance_id", "user_id", "purchased_tokens", "used_tokens", "created_at", "updated_at")
+        SELECT ${balanceId}, ${input.userId}, 0, rollup.purchased_delta, now(), now()
+        FROM rollup
+        WHERE rollup.purchased_delta > 0
+        ON CONFLICT ("user_id") DO UPDATE SET
+            "used_tokens" = "token_balances"."used_tokens" + EXCLUDED."used_tokens",
+            "updated_at" = now()
+    `
+}
+
+/**
  * Track token usage for an AI operation
  */
 export async function trackTokenUsage(params: {
@@ -111,116 +219,42 @@ export async function trackTokenUsage(params: {
         const now = new Date()
         const month = new Date(now.getFullYear(), now.getMonth(), 1)
 
-        // The split read runs OUTSIDE the transaction, and the writes go as a
-        // BATCH rather than an interactive transaction (POLICYWALLET-W).
+        // The subscription-vs-purchased split is computed IN THE DATABASE, in
+        // the same statement that applies it (POLICYWALLET-W follow-up).
         //
-        // Metering is called around the response — the failing event returned
-        // HTTP 200 while this threw — so on Vercel the instance can be frozen
-        // between two awaits inside an interactive transaction and resumed much
-        // later. Prisma's timer keeps running: the reported failure was 52,779ms
-        // against a 15,000ms limit. That limit had ALREADY been raised from
-        // Prisma's 5,000ms default for this same P2028 error (lib/db.ts:43), and
-        // it still overshot by 3.5x, so raising it again treats the symptom. A
-        // batched $transaction([...]) is one round trip with no client-side
-        // timer spanning a JS await, which is the thing that gets frozen.
+        // It used to be computed in JS from a separate read. That read never
+        // locked anything — Postgres runs at READ COMMITTED — so two concurrent
+        // calls for the same user both saw the same "tokens used before" and
+        // both awarded themselves the same remaining subscription headroom.
+        // With a 1,000,000 budget at 999,500 used, two concurrent 1,500-token
+        // calls each charged 500 to the subscription and 1,000 to purchased:
+        // 1,000 subscription tokens granted beyond the budget, and 500
+        // purchased tokens never billed. It skews toward UNDER-charging, and
+        // every AI call is a concurrent write candidate.
         //
-        // Moving the read out does NOT change correctness: Postgres runs at READ
-        // COMMITTED, so this findUnique never locked the row. Two concurrent
-        // calls could always read the same "before" value. Totals stay exact
-        // because the upserts use atomic `increment`; only the
-        // subscription-vs-purchased SPLIT can skew under concurrency, and that
-        // was equally true before. Fixing that properly needs SELECT ... FOR
-        // UPDATE and is out of scope here.
-        const existingMonthly = await prisma.monthlyTokenUsage.findUnique({
-            where: {
-                userId_month: {
-                    userId: params.userId,
-                    month,
-                },
-            },
-            select: { totalTokens: true },
+        // ON CONFLICT DO UPDATE takes a row lock, so folding the read into the
+        // write serialises concurrent callers on (user_id, month). Inside
+        // DO UPDATE, an unqualified `monthly_token_usage.x` is the PRE-update
+        // value — that is what makes the split exact.
+        //
+        // Semantics are unchanged: still incremental (each call consumes what
+        // headroom remains at the moment it lands), not recomputed from the
+        // running total. Recomputing would be simpler but would retroactively
+        // re-classify earlier usage when a plan changes mid-month, which would
+        // have to un-bill purchased tokens already charged.
+        await recordUsageAtomically({
+            userId: params.userId,
+            operationType: params.operationType,
+            policyId: params.policyId ?? null,
+            inputTokens: params.inputTokens,
+            outputTokens: params.outputTokens,
+            totalTokens,
+            totalCost,
+            model: params.model,
+            tier,
+            budgetLimit,
+            month,
         })
-
-        const monthlyUsedBefore = existingMonthly ? Number(existingMonthly.totalTokens) : 0
-        const subscriptionLimit = budgetLimit
-        const subscriptionRemaining = subscriptionLimit === null
-            ? totalTokens
-            : Math.max(subscriptionLimit - monthlyUsedBefore, 0)
-        const subscriptionConsumed = subscriptionLimit === null
-            ? totalTokens
-            : Math.min(subscriptionRemaining, totalTokens)
-        const purchasedConsumed = Math.max(totalTokens - subscriptionConsumed, 0)
-
-        const operations: Prisma.PrismaPromise<unknown>[] = [
-            prisma.tokenUsage.create({
-                data: {
-                    userId: params.userId,
-                    operationType: params.operationType,
-                    policyId: params.policyId,
-                    inputTokens: params.inputTokens,
-                    outputTokens: params.outputTokens,
-                    totalTokens,
-                    costEur: new Decimal(totalCost),
-                    model: params.model,
-                },
-            }),
-
-            prisma.monthlyTokenUsage.upsert({
-                where: {
-                    userId_month: {
-                        userId: params.userId,
-                        month,
-                    },
-                },
-                create: {
-                    userId: params.userId,
-                    month,
-                    tier,
-                    totalTokens: BigInt(totalTokens),
-                    totalCostEur: new Decimal(totalCost),
-                    subscriptionTokens: BigInt(subscriptionConsumed),
-                    purchasedTokensUsed: BigInt(purchasedConsumed),
-                },
-                update: {
-                    totalTokens: {
-                        increment: BigInt(totalTokens),
-                    },
-                    totalCostEur: {
-                        increment: new Decimal(totalCost),
-                    },
-                    subscriptionTokens: {
-                        increment: BigInt(subscriptionConsumed),
-                    },
-                    purchasedTokensUsed: {
-                        increment: BigInt(purchasedConsumed),
-                    },
-                    tier,
-                },
-            }),
-        ]
-
-        if (purchasedConsumed > 0) {
-            operations.push(
-                prisma.tokenBalance.upsert({
-                    where: { userId: params.userId },
-                    create: {
-                        userId: params.userId,
-                        purchasedTokens: BigInt(0),
-                        usedTokens: BigInt(purchasedConsumed),
-                    },
-                    update: {
-                        usedTokens: {
-                            increment: BigInt(purchasedConsumed),
-                        },
-                    },
-                })
-            )
-        }
-
-        // Array form: still one database transaction (all-or-nothing), but sent
-        // as a single batch, so there is no open session waiting on the JS event
-        // loop between statements.
-        await prisma.$transaction(operations)
     } catch (error) {
         // Provider-billed spend that goes unrecorded must at least alert ops.
         console.error('[token-tracking] trackTokenUsage failed (usage not recorded)', {
