@@ -535,11 +535,35 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     )
 }
 
+/**
+ * Labelled form field.
+ *
+ * The label used to be a SIBLING of the control with no htmlFor, so it was
+ * decorative: clicking it did nothing, and a screen reader announced every
+ * field on the confirm step as "edit text, blank" — Insurer, Policy Number,
+ * Premium and both dates, on the advisor's main data-entry surface.
+ *
+ * The id is generated and pushed onto the child so callers keep passing a plain
+ * <input>. A child that already carries an id keeps it, so an explicit one
+ * always wins.
+ */
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
+    const generatedId = React.useId()
+    const child = React.isValidElement(children) ? children : null
+    const childId = (child?.props as { id?: string } | undefined)?.id
+    const fieldId = childId ?? generatedId
+
     return (
         <div className="space-y-1.5">
-            <label className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 ml-1">{label}</label>
-            {children}
+            <label
+                htmlFor={child ? fieldId : undefined}
+                className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 ml-1"
+            >
+                {label}
+            </label>
+            {child && !childId
+                ? React.cloneElement(child as React.ReactElement<{ id?: string }>, { id: fieldId })
+                : children}
         </div>
     )
 }

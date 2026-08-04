@@ -31,9 +31,17 @@ export function InviteModal({
         }
         setEmailError(false)
         setSending(true)
-        await onSendInvite?.(email, scope)
-        setSending(false)
-        onClose?.()
+        try {
+            await onSendInvite?.(email, scope)
+            onClose?.()
+        } catch {
+            // Without this a transport failure skipped BOTH lines below: the
+            // modal sat on "Sending…" forever and never closed. Keep it open so
+            // the typed address is not lost, and let the caller's own toast
+            // explain the failure.
+        } finally {
+            setSending(false)
+        }
     }
 
     return (
@@ -73,9 +81,15 @@ export function InviteModal({
                         </div>
 
                         <div>
-                            <label className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3 block pl-2">{t.invite.contextLabel}</label>
-                            <div className="grid grid-cols-2 gap-4">
+                            {/* A <label> with no control labels nothing. This is a
+                                single-select group, so it needs a real group name and
+                                per-option state — selection was conveyed by border
+                                colour alone (WCAG 1.4.1). */}
+                            <span id="invite-scope-label" className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3 block pl-2">{t.invite.contextLabel}</span>
+                            <div role="group" aria-labelledby="invite-scope-label" className="grid grid-cols-2 gap-4">
                                 <button
+                                    type="button"
+                                    aria-pressed={scope === 'upload_only'}
                                     onClick={() => setScope('upload_only')}
                                     className={`p-6 rounded-[28px] border text-left transition-all ${scope === 'upload_only' ? 'bg-white dark:bg-neutral-900 border-primary dark:border-mint shadow-xl shadow-primary/5' : 'bg-neutral-50/50 dark:bg-neutral-800 border-transparent hover:bg-neutral-100'}`}
                                 >
@@ -87,6 +101,8 @@ export function InviteModal({
                                 </button>
 
                                 <button
+                                    type="button"
+                                    aria-pressed={scope === 'portfolio'}
                                     onClick={() => setScope('portfolio')}
                                     className={`p-6 rounded-[28px] border text-left transition-all ${scope === 'portfolio' ? 'bg-white dark:bg-neutral-900 border-amber-500 shadow-xl shadow-amber-500/5' : 'bg-neutral-50/50 dark:bg-neutral-800 border-transparent hover:bg-neutral-100'}`}
                                 >

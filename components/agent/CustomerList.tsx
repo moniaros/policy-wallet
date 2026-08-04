@@ -193,11 +193,11 @@ export function CustomerList({
                         </span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <button onClick={() => onBulkAction?.("email", Array.from(selectedIds))} className="p-2 text-primary dark:text-mint hover:bg-primary/10 dark:hover:bg-primary/25 rounded-xl transition-colors cursor-pointer" title={roleCopy.customerList.sendEmail}>
-                            <Mail className="w-4 h-4" />
+                        <button onClick={() => onBulkAction?.("email", Array.from(selectedIds))} className="p-2 text-primary dark:text-mint hover:bg-primary/10 dark:hover:bg-primary/25 rounded-xl transition-colors cursor-pointer" aria-label={roleCopy.customerList.sendEmail} title={roleCopy.customerList.sendEmail}>
+                            <Mail className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button onClick={() => onBulkAction?.("export", Array.from(selectedIds))} className="p-2 text-primary dark:text-mint hover:bg-primary/10 dark:hover:bg-primary/25 rounded-xl transition-colors cursor-pointer" title={roleCopy.customerList.export}>
-                            <Download className="w-4 h-4" />
+                        <button onClick={() => onBulkAction?.("export", Array.from(selectedIds))} className="p-2 text-primary dark:text-mint hover:bg-primary/10 dark:hover:bg-primary/25 rounded-xl transition-colors cursor-pointer" aria-label={roleCopy.customerList.export} title={roleCopy.customerList.export}>
+                            <Download className="w-4 h-4" aria-hidden="true" />
                         </button>
                     </div>
                 </div>

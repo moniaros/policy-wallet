@@ -231,40 +231,66 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
     const handleOutcomeSave = async () => {
         if (!outcomeModal) return
         setIsSaving(true)
-        const result = await updateRenewalOutcome(outcomeModal.renewalId, {
-            outcome: outcomeChoice,
-            notes: outcomeNotes || undefined,
-        })
-        setIsSaving(false)
+        try {
+            const result = await updateRenewalOutcome(outcomeModal.renewalId, {
+                outcome: outcomeChoice,
+                notes: outcomeNotes || undefined,
+            })
 
-        if (result.success) {
+            if (!result.success) {
+                toast.error(result.error || t.actionFailed)
+                return
+            }
+
             toast.success(t.outcomeRecorded)
             setOutcomeModal(null)
             setOutcomeNotes("")
             router.refresh()
-            // Refresh list
-            const updated = await getAgentRenewals({ status: statusFilter === "all" ? undefined : statusFilter, timeframe })
-            setRenewals(updated)
-        } else {
-            toast.error(result.error || t.actionFailed)
+
+            // Best-effort list refresh: the outcome is already saved, so a
+            // failure here must not report the save itself as failed.
+            try {
+                const updated = await getAgentRenewals({
+                    status: statusFilter === "all" ? undefined : statusFilter,
+                    timeframe,
+                })
+                setRenewals(updated)
+            } catch {
+                // router.refresh() above will reconcile the list.
+            }
+        } catch {
+            // A transport failure used to skip setIsSaving(false) entirely,
+            // pinning the modal on "Saving…" with the outcome unrecorded.
+            toast.error(t.actionFailed)
+        } finally {
+            setIsSaving(false)
         }
     }
 
     const handleBatchReminder = async () => {
         if (selectedIds.size === 0) return
         setIsSending(true)
-        const result = await sendBatchRenewalReminder(Array.from(selectedIds))
-        setIsSending(false)
+        try {
+            const result = await sendBatchRenewalReminder(Array.from(selectedIds))
 
-        if (result.success) {
+            if (!result.success) {
+                toast.error(result.error || t.actionFailed)
+                return
+            }
+
             toast.success(
                 language === "el"
                     ? `${result.sent} υπενθυμίσεις στάλθηκαν`
                     : `${result.sent} reminders sent`
             )
+            // Only clear the selection once the send is confirmed — clearing it
+            // on a failure would leave the advisor unable to retry without
+            // re-selecting every renewal.
             setSelectedIds(new Set())
-        } else {
-            toast.error(result.error || t.actionFailed)
+        } catch {
+            toast.error(t.actionFailed)
+        } finally {
+            setIsSending(false)
         }
     }
 
@@ -572,8 +598,12 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             </div>
 
                             <div>
-                                <label className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.notes}</label>
+                                {/* Was a sibling <label> with no htmlFor, so the
+                                    textarea had no accessible name — on the field
+                                    that records WHY a renewal lapsed. */}
+                                <label htmlFor="renewal-outcome-notes" className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">{t.notes}</label>
                                 <textarea
+                                    id="renewal-outcome-notes"
                                     value={outcomeNotes}
                                     onChange={(e) => setOutcomeNotes(e.target.value)}
                                     rows={2}

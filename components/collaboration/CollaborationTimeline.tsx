@@ -106,6 +106,13 @@ export function CollaborationTimeline({
         setBusy(true)
         try {
             await fn()
+        } catch {
+            // The mutations below check res.ok and toast their own HTTP errors,
+            // but a REJECTING fetch — offline, DNS, a dropped connection — was
+            // caught by nobody: this wrapper had only a finally, and every call
+            // site is an onClick that discards the promise. The advisor's
+            // message or status change vanished with no error at all.
+            toast.error(t.apiErrors.generic)
         } finally {
             setBusy(false)
         }

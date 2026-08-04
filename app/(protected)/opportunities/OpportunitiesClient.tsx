@@ -51,7 +51,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
         nextActionDate?: string,
         outcome?: string
     ) => {
-        await updateOpportunityStatus(
+        const res = await updateOpportunityStatus(
             opportunityId,
             status as any,
             notes,
@@ -59,7 +59,18 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
             outcome
         )
 
-        // Update local state
+        // updateOpportunityStatus RETURNS { error } on unauthorized / not-found
+        // rather than throwing. Ignoring that return meant the local state was
+        // updated and the modal closed on a rejected write, so an advisor saw
+        // an opportunity move to Quoted or Won when the server had refused —
+        // and opportunity status feeds the pipeline, conversion rate and the
+        // revenue figures on /insights. Throw so the caller's existing
+        // error handling (toast + Sentry) actually fires.
+        if (res && "error" in res && res.error) {
+            throw new Error(String(res.error))
+        }
+
+        // Only reflect the change locally once the server has accepted it.
         setOpportunities(opps =>
             opps.map(o => o.id === opportunityId
                 ? { ...o, status, notes, nextActionAt: nextActionDate ? new Date(nextActionDate) : null }
