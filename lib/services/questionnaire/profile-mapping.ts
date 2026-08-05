@@ -44,6 +44,17 @@ export type MappableProfileField =
     | "loanAmount"
     | "travelsFrequently"
     | "drivingRecord"
+    // ── Life Context factors ──────────────────────────────────────────────
+    | "childrenCount"
+    | "residenceType"
+    | "propertiesOwned"
+    | "rentsOutProperty"
+    | "ownsBoat"
+    | "ownsBusiness"
+    | "businessEmployees"
+    | "savingsAmount"
+    | "valuablesValue"
+    | "retirementPlanning"
 
 type FieldSpec =
     | { kind: "int"; min: number; max: number }
@@ -85,6 +96,19 @@ export const PROFILE_FIELD_SPECS: Record<MappableProfileField, FieldSpec> = {
         kind: "enum",
         values: ["clean", "minor_violations", "major_violations", "accidents"],
     },
+    childrenCount: { kind: "int", min: 0, max: 20 },
+    residenceType: {
+        kind: "enum",
+        values: ["owned", "rented", "family", "company"],
+    },
+    propertiesOwned: { kind: "int", min: 0, max: 100 },
+    rentsOutProperty: { kind: "bool" },
+    ownsBoat: { kind: "bool" },
+    ownsBusiness: { kind: "bool" },
+    businessEmployees: { kind: "int", min: 0, max: 10_000 },
+    savingsAmount: { kind: "decimal", min: 0, max: 100_000_000 },
+    valuablesValue: { kind: "decimal", min: 0, max: 100_000_000 },
+    retirementPlanning: { kind: "bool" },
 }
 
 /**
@@ -110,6 +134,16 @@ export const CANONICAL_QUESTION_IDS: Record<string, MappableProfileField> = {
     "risk.loanAmount": "loanAmount",
     "risk.travelsFrequently": "travelsFrequently",
     "risk.drivingRecord": "drivingRecord",
+    "risk.childrenCount": "childrenCount",
+    "risk.residenceType": "residenceType",
+    "risk.propertiesOwned": "propertiesOwned",
+    "risk.rentsOutProperty": "rentsOutProperty",
+    "risk.ownsBoat": "ownsBoat",
+    "risk.ownsBusiness": "ownsBusiness",
+    "risk.businessEmployees": "businessEmployees",
+    "risk.savingsAmount": "savingsAmount",
+    "risk.valuablesValue": "valuablesValue",
+    "risk.retirementPlanning": "retirementPlanning",
 }
 
 /** Minimal shape this module needs from a template question. */
@@ -139,6 +173,16 @@ export interface ProfileUpdatePatch {
     loanAmount?: number
     travelsFrequently?: boolean
     drivingRecord?: string
+    childrenCount?: number
+    residenceType?: string
+    propertiesOwned?: number
+    rentsOutProperty?: boolean
+    ownsBoat?: boolean
+    ownsBusiness?: boolean
+    businessEmployees?: number
+    savingsAmount?: number
+    valuablesValue?: number
+    retirementPlanning?: boolean
 }
 
 export interface ProfileMappingResult {
@@ -331,6 +375,28 @@ export function mapAnswersToProfile(
 }
 
 /**
+ * Union the fields this submission answered into what was already on record.
+ *
+ * Answering "no, I have no pets" writes `hasPets: false` — the same value the
+ * column defaults to. Without a record of the question having been ASKED, the
+ * risk engine cannot tell that declaration from silence and leaves the pet risk
+ * in `needs_review` no matter how carefully the client filled the form in. This
+ * is what makes a completed questionnaire actually move the assessment.
+ *
+ * Pure so both write paths (the API route and the server action) share one
+ * definition instead of each growing their own merge.
+ */
+export function mergeAnsweredFields(
+    existing: unknown,
+    applied: MappableProfileField[]
+): string[] {
+    const previous = Array.isArray(existing)
+        ? existing.filter((f): f is string => typeof f === "string")
+        : []
+    return [...new Set([...previous, ...applied])]
+}
+
+/**
  * The canonical risk questions, ready to seed as a system template.
  *
  * Exported so the advisor-facing "Risk Profile" template is defined once and
@@ -407,5 +473,96 @@ export const CANONICAL_RISK_QUESTIONS = [
         labelEl: "Έχετε κατοικίδια;",
         required: false,
         profileField: "hasPets",
+    },
+    // ── Life Context factors ────────────────────────────────────────────────
+    // `residenceType` supersedes the bare `ownsHome` boolean above: "not an
+    // owner" and "a tenant" are different risks, and the boolean could only ever
+    // express the first. Both are asked so an advisor working from an older
+    // template still populates something usable.
+    {
+        id: "risk.residenceType",
+        type: "select" as const,
+        label: "Your home is…",
+        labelEl: "Η κατοικία σας είναι…",
+        required: false,
+        profileField: "residenceType",
+        options: [
+            { value: "owned", label: "Owned by you", labelEl: "Ιδιόκτητη" },
+            { value: "rented", label: "Rented", labelEl: "Ενοικιαζόμενη" },
+            { value: "family", label: "Family-owned", labelEl: "Οικογενειακή" },
+            { value: "company", label: "Provided by employer", labelEl: "Παρέχεται από εργοδότη" },
+        ],
+    },
+    {
+        id: "risk.childrenCount",
+        type: "number" as const,
+        label: "How many children do you have?",
+        labelEl: "Πόσα παιδιά έχετε;",
+        required: false,
+        profileField: "childrenCount",
+    },
+    {
+        id: "risk.propertiesOwned",
+        type: "number" as const,
+        label: "How many properties do you own?",
+        labelEl: "Πόσα ακίνητα σας ανήκουν;",
+        required: false,
+        profileField: "propertiesOwned",
+    },
+    {
+        id: "risk.rentsOutProperty",
+        type: "boolean" as const,
+        label: "Do you let out any property to tenants?",
+        labelEl: "Εκμισθώνετε κάποιο ακίνητο σε ενοικιαστές;",
+        required: false,
+        profileField: "rentsOutProperty",
+    },
+    {
+        id: "risk.ownsBoat",
+        type: "boolean" as const,
+        label: "Do you own a boat?",
+        labelEl: "Έχετε σκάφος;",
+        required: false,
+        profileField: "ownsBoat",
+    },
+    {
+        id: "risk.ownsBusiness",
+        type: "boolean" as const,
+        label: "Do you own a business?",
+        labelEl: "Έχετε δική σας επιχείρηση;",
+        required: false,
+        profileField: "ownsBusiness",
+    },
+    {
+        id: "risk.businessEmployees",
+        type: "number" as const,
+        label: "How many people do you employ?",
+        labelEl: "Πόσα άτομα απασχολείτε;",
+        required: false,
+        profileField: "businessEmployees",
+    },
+    {
+        id: "risk.savingsAmount",
+        type: "number" as const,
+        label: "Roughly how much do you have in savings (€)?",
+        labelEl: "Περίπου πόσα έχετε σε αποταμιεύσεις (€);",
+        required: false,
+        profileField: "savingsAmount",
+    },
+    {
+        id: "risk.valuablesValue",
+        type: "number" as const,
+        label: "Total value of jewellery, art, instruments or similar (€)",
+        labelEl: "Συνολική αξία κοσμημάτων, έργων τέχνης, οργάνων ή παρόμοιων (€)",
+        required: false,
+        profileField: "valuablesValue",
+    },
+    {
+        id: "risk.retirementPlanning",
+        type: "boolean" as const,
+        label: "Do you have a private pension or retirement savings plan?",
+        labelEl: "Έχετε ιδιωτικό συνταξιοδοτικό ή πρόγραμμα αποταμίευσης;",
+        required: false,
+        profileField: "retirementPlanning",
     },
 ]

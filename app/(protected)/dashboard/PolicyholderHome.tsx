@@ -28,6 +28,7 @@ import { RenewalsTimelineCard } from "@/components/dashboard/home/RenewalsTimeli
 import { QuickActionsRow } from "@/components/dashboard/home/QuickActionsRow"
 import { StatusRow } from "@/components/dashboard/home/StatusRow"
 import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidget"
+import { RecentChangesWidget } from "@/components/dashboard/home/RecentChangesWidget"
 import { RecommendedActionsWidget } from "@/components/dashboard/home/RecommendedActionsWidget"
 
 function daysUntil(date: Date) {
@@ -218,8 +219,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
      */
     const hasPolicies = policies.length > 0
     const isProvisionalScore = hasPolicies && !cachedScore
+    // A cached score computed from a life we know almost nothing about is a
+    // verdict on our own ignorance, not on their cover. StatTiles already knows
+    // how to render an unavailable score — give it null rather than a number.
     const healthScore: number | null = cachedScore
-        ? cachedScore.overallScore
+        ? cachedScore.indeterminate
+            ? null
+            : cachedScore.overallScore
         : provisionalProtectionScore(policies.length, openGaps.map(g => g.severity))
 
     // Precomputed view models — components stay presentational
@@ -314,6 +320,24 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         }))
     } catch (error) {
         console.error("Failed to load home recommendations:", error)
+    }
+
+    // The last few things that changed, and whether we recorded why. The
+    // dashboard could show a score and a list of recommendations with no
+    // account of how either got there; this is the way in to that account.
+    let recentChanges: Array<{ id: string; title: string; at: string; delta?: number | null; explained: boolean }> = []
+    try {
+        const { getTimeline } = await import("@/lib/services/timeline/service")
+        const entries = await getTimeline(dbUser.id, { limit: 3 })
+        recentChanges = entries.map((entry) => ({
+            id: entry.id,
+            title: entry.title[lang] || entry.title.en,
+            at: entry.at.toISOString(),
+            delta: entry.delta ?? null,
+            explained: entry.cause !== null,
+        }))
+    } catch (error) {
+        console.error("Failed to load recent changes:", error)
     }
 
     return (
@@ -473,6 +497,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 low: home.severityLow,
                             },
                             note: home.severityNote,
+                        }}
+                    />
+                    <RecentChangesWidget
+                        changes={recentChanges}
+                        labels={{
+                            kicker: home.recentChangesKicker,
+                            empty: home.recentChangesEmpty,
+                            viewAll: home.recentChangesViewAll,
+                            explained: home.recentChangesExplained,
                         }}
                     />
                 </div>

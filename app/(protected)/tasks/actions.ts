@@ -9,6 +9,7 @@ import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import type { QuestionnaireAnswers } from "@/types/questionnaire"
 import {
     mapAnswersToProfile,
+    mergeAnsweredFields,
     type MappableQuestion,
 } from "@/lib/services/questionnaire/profile-mapping"
 
@@ -157,6 +158,20 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
         answers
     )
 
+    // See mergeAnsweredFields: a declared "no" and an untouched default are the
+    // same stored value, so the question having been ASKED must be recorded or a
+    // completed questionnaire cannot move the assessment. Read outside the
+    // transaction — the union is monotonic, so the worst a lost race can do is
+    // omit a field until the next submission, and the transaction stays at its
+    // three writes.
+    const existingProfile = appliedProfileFields.length > 0
+        ? await db.policyholderProfile.findUnique({
+            where: { userId },
+            select: { answeredFields: true },
+        })
+        : null
+    const answeredFields = mergeAnsweredFields(existingProfile?.answeredFields, appliedProfileFields)
+
     // Atomically record the response, complete the instance, and apply the
     // profile patch — a profile written without its response would be an
     // unattributable claim about the client.
@@ -171,8 +186,8 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
         if (appliedProfileFields.length > 0) {
             await tx.policyholderProfile.upsert({
                 where: { userId },
-                create: { userId, ...profileUpdates },
-                update: profileUpdates,
+                create: { userId, ...profileUpdates, answeredFields },
+                update: { ...profileUpdates, answeredFields },
             })
         }
         return { responseId: response.id }

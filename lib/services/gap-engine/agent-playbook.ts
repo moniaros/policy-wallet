@@ -9,6 +9,7 @@
  */
 
 import { db } from "@/lib/db"
+import { toLifeContext, totalDependents } from "./life-context"
 import type { ConversionLikelihood } from "./opportunity-scoring"
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility"
 import { isConsentedRelationship, isPhantomCustomer } from "@/lib/agent-consent"
@@ -350,11 +351,16 @@ export async function generatePlaybook(
         }
     })
 
-    const profile = clientProfile as any
+    // Read through the same resolution the customer-facing engine uses.
+    // Reading `profile.ownsHome` directly meant a client who declared "owned"
+    // via `residenceType` — the field the wizard and questionnaire now write —
+    // still looked like a non-owner to their advisor, so the playbook and the
+    // client's own dashboard described different people.
+    const ctx = toLifeContext(clientProfile ?? null)
     const keyInsight = generateKeyInsight(lineOfBusiness, severity, {
-        dependentsCount: profile?.dependentsCount ?? 0,
-        ownsHome: profile?.ownsHome ?? false,
-        hasLoans: profile?.hasLoans ?? false,
+        dependentsCount: totalDependents(ctx),
+        ownsHome: ctx.residenceType === "owned" || ctx.propertiesOwned > 0,
+        hasLoans: (ctx.loanAmount ?? 0) > 0 || (ctx.mortgageAmount ?? 0) > 0,
     })
 
     return {

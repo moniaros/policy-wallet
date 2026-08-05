@@ -311,28 +311,48 @@ export function buildRiskProfilePrompt(
         ? Math.floor((Date.now() - new Date(profile.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
         : null
 
+    // "Not answered" and "answered no" are different facts and must not render
+    // identically. These helpers exist because the previous version wrote
+    // `profile.ownsHome ? "Yes" : "No"` — an untouched profile therefore told the
+    // model the person owned no home, had no vehicles and no pets, none of which
+    // anyone had asked.
+    const yesNo = (v: boolean | null | undefined) =>
+        v === null || v === undefined ? "Unknown (not asked)" : v ? "Yes" : "No"
+    const count = (v: number | null | undefined) =>
+        v === null || v === undefined ? "Unknown (not asked)" : String(v)
+    // `null` means never asked; `[]` means asked and the answer was none. They
+    // are not the same statement, and "None reported" for a null told the model
+    // the person had declared themselves free of chronic conditions when nobody
+    // had raised the subject.
+    const list = <T,>(v: T[] | null | undefined, render: (items: T[]) => string) =>
+        v === null || v === undefined
+            ? "Unknown (not asked)"
+            : v.length === 0
+              ? "None reported"
+              : render(v)
+
     return `You are an informational insurance-analysis assistant for the Greek market. Analyze this person's risk profile and current insurance portfolio for educational purposes.${formatOperatorGuidance(operatorGuidance)}
 
 ## Risk Profile
 - Age: ${age ?? "Unknown"}
 - Marital status: ${profile.maritalStatus || "Unknown"}
-- Dependents: ${profile.dependentsCount}
+- Dependents: ${count(profile.dependentsCount)}
 - Employment: ${profile.employmentStatus || "Unknown"}
 - Occupation: ${profile.occupation || "Unknown"}
 - Annual income: ${profile.annualIncome ? `€${profile.annualIncome}` : "Unknown"}
-- Owns home: ${profile.ownsHome ? "Yes" : "No"}
-- Mortgage: ${profile.mortgageAmount ? `€${profile.mortgageAmount}` : "None"}
-- Vehicles: ${profile.vehiclesCount}
-- Has pets: ${profile.hasPets ? "Yes" : "No"}
-- Travels frequently: ${profile.travelsFrequently ? "Yes" : "No"}
-- Has loans: ${profile.hasLoans ? "Yes" : "No"}${profile.loanAmount ? ` (€${profile.loanAmount})` : ""}
+- Owns home: ${yesNo(profile.ownsHome)}
+- Mortgage: ${profile.mortgageAmount ? `€${profile.mortgageAmount}` : "Unknown or none"}
+- Vehicles: ${count(profile.vehiclesCount)}
+- Has pets: ${yesNo(profile.hasPets)}
+- Travels frequently: ${yesNo(profile.travelsFrequently)}
+- Has loans: ${yesNo(profile.hasLoans)}${profile.loanAmount ? ` (€${profile.loanAmount})` : ""}
 - Smoking status: ${profile.smokingStatus || "Unknown"}
-- Life events: ${profile.lifeEvents?.length ? profile.lifeEvents.map(e => `${e.type} (${e.date})`).join(", ") : "None reported"}
+- Life events: ${list(profile.lifeEvents, (e) => e.map((x) => `${x.type} (${x.date})`).join(", "))}
 - Gender: ${profile.gender || "Unknown"}
 - BMI: ${profile.heightCm && profile.weightKg ? (profile.weightKg / ((profile.heightCm / 100) ** 2)).toFixed(1) : "Unknown"}
 - Activity level: ${profile.activityLevel || "Unknown"}
-- Chronic conditions: ${profile.chronicConditions?.length ? profile.chronicConditions.join(", ") : "None reported"}
-- Family medical history: ${profile.familyMedicalHistory?.length ? profile.familyMedicalHistory.join(", ") : "None reported"}
+- Chronic conditions: ${list(profile.chronicConditions, (c) => c.join(", "))}
+- Family medical history: ${list(profile.familyMedicalHistory, (c) => c.join(", "))}
 - Driving record: ${profile.drivingRecord || "Unknown"}
 
 ## Current Insurance Portfolio
@@ -344,5 +364,18 @@ ${policySummary}
 3. Provide factual, informational observations about coverage gaps and overlaps; do not give personalized financial or insurance advice or tell the user what they "should" buy. Phrase findings as observations (e.g. "this profile appears to lack ...", "this policy may not cover ...").
 4. Be bilingual: provide both English and Greek for all text fields
 5. Consider life stage, income level, and family situation when assessing urgency
-6. Limit insights to max 5, prioritized gaps to max 5, strengths to max 3`
+6. Limit insights to max 5, prioritized gaps to max 5, strengths to max 3
+
+## Applicability — the rule that outranks the rest
+A risk belongs in your answer only if this person's stated situation creates it.
+Never raise a cover for an asset, responsibility or exposure they have not
+declared: no declared pet is not a pet-insurance gap, no declared vehicle is not
+a motor gap, no declared business is not a commercial gap. The absence of a
+policy is not, on its own, evidence of anything.
+
+Treat the three cases as distinct and never blur them:
+- The profile SAYS the exposure exists → you may assess it.
+- The profile SAYS it does not exist → it is not a gap; do not mention it.
+- The field reads "Unknown (not asked)" → you do not know. Say what would need
+  to be asked. Do not assume the answer is "no", and do not assume it is "yes".`
 }

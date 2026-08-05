@@ -1,5 +1,774 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-05 (Playwright — the claims, measured)
+
+**The gap flagged every round, closed.** Every responsive and accessibility
+claim about the new surfaces was a *source-level* guard — a regex over the JSX
+checking `min-h-11` appears. That catches a class being deleted. It cannot catch
+a row that overflows because Greek runs ~30% longer than English, or a tap target
+that computes to 38px because a parent constrained it, or a heading order that
+only exists once components compose.
+
+`tests/e2e/risk-intelligence.spec.ts` measures the rendered page: horizontal
+overflow at **320px and 1280px**, computed tap-target heights, heading-level
+ordering, and accessible names — across the risk profile, the timeline and the
+cover page.
+
+**What the measurement confirmed, and what it caught.** The overflow and
+tap-target checks passed first time, on every surface at both widths — the
+source-level discipline held up when actually measured. The heading test did not:
+
+> **`UpgradeTriggerCard` rendered an `<h3>` directly under the page `<h1>`.**
+
+A screen-reader user navigating by heading jumps h1 → h3 and cannot tell what was
+skipped. It is a pre-existing defect in a shared monetization component used in
+six places, invisible to source inspection because an `<h3>` in isolation is a
+perfectly ordinary tag — the defect only exists in composition. The level is now
+a prop defaulting to 2 (page level), with 3 passed where the card genuinely nests
+under another heading.
+
+**An unplanned confirmation.** The dev server logged Prisma failing on
+`recommendation_instances.risk_id` — a column behind one of the two unapplied
+migrations — and every page still rendered and passed. The fail-soft paths
+written across this session work against a real database that is genuinely
+missing those columns, which is the exact condition production is in today.
+
+**Full regression: 84 passed, 1 flaky, 0 failed** (chromium, 40 min). The flaky
+one — `money-path` locked-PDF-preview — waits 20s for an uploaded document
+fixture and selects by button name; it touches no heading role, so the
+`UpgradeTriggerCard` change is not implicated. Pre-existing timing flake.
+
+**Playwright is no longer an outstanding gap — and neither are the migrations.**
+
+**Both migrations are applied, to both projects** (2026-08-05, via Supabase MCP,
+owner-authorised). Production `PolicyWallet-Prod` verified: 15/15 profile
+columns, 7/7 recommendation columns, 1/1 score column, 2/2 tables, 5/5 indexes,
+**2/2 foreign keys confirmed `ON DELETE CASCADE`** (`pg_constraint.confdeltype`,
+checked explicitly because the GDPR erasure path relies on the cascade rather
+than on a delete step someone has to remember). Row counts identical before and
+after — 13 users, 8 profiles, 43 recommendations. Nothing altered, dropped or
+backfilled. Both recorded in `_prisma_migrations` with the real SHA-256 of each
+migration file, so Prisma sees them as applied rather than drifted. Dev
+`PolicyWallet` migrated identically.
+
+**Root cause of a recurring dead end, now understood.** `prisma migrate deploy`
+and `verify:migrations` can *never* work in this repo: `DIRECT_URL` points at the
+**transaction pooler (6543)**, and Prisma migrations need a session connection.
+The `Environment variable not found: DIRECT_URL` error is a red herring — Prisma
+loads `.env`, not `.env.local`, so fixing that only reveals the real failure, and
+`verify:migrations` hangs rather than reporting. This is why the documented path
+is MCP `apply_migration` plus a manual ledger row. Making the CLI work would
+require the **session** pooler (5432) in `DIRECT_URL`.
+
+**What this unlocks.** Life events, risk-profile versions, trends, timeline
+causality and score history were all reading empty by design. They now have
+tables behind them — so the causal chain the timeline draws, the trend arrows on
+Risk DNA, and the score history all begin accumulating from the next engine run.
+Nothing backfills: the history starts now, which is correct, since a fabricated
+past would be the one thing this product must not do.
+
+## Session wrap — 2026-08-05 (Time-to-Value — three questions, one true thing)
+
+**The gap the CPO review named, closed.** A product whose thesis is *"we
+understand your life, not your policies"* asked for a policy PDF or a
+twenty-two-field wizard before it would say anything at all. Three questions now
+sit in front of both: **where you live, do you have children who depend on you,
+do you drive** — how an advisor actually opens a conversation, and answerable
+without looking anything up.
+
+The payoff is produced by the **real engine over the real catalog**, not a lookup
+table of nice-sounding lines. A renter with children is told their household
+would have to cover living costs from savings alone; an owner without children is
+told what rebuilding after an earthquake costs. Every answer changes the outcome.
+
+**7 issues found and fixed** across seven rounds. Three are worth naming, because
+each was only visible by running the thing rather than reading it:
+
+- **It accused drivers of having no compulsory cover.** At that moment the wallet
+  is empty because *we have not looked yet*, not because they are uninsured —
+  the engine cannot tell those apart. Motor TPL is compulsory and enforced in
+  Greece, so the opening line was both very likely false and the fastest possible
+  way to lose someone. Compulsory lines are now excluded from the first insight,
+  and the screen says plainly that we have not seen their policies.
+- **The middle question did nothing.** "Does anyone depend on your income" left
+  the risk that needs it unreachable, because that risk requires *children* to be
+  known too — so a customer with three children saw the identical finding to one
+  with none, and two of their three answers appeared inert. Asking the narrower
+  question answers both facts honestly.
+- **The opener never disappeared.** Gated on the health index, which refuses to
+  report below a third of the picture — three answers out of twenty-four factors
+  is about a fifth. The customer answered, the page reloaded, and asked the same
+  three questions again. It now has its own completion condition, which is a
+  different question from "do we know enough to score this person".
+
+Also: it returned a finding from zero answers (some risks apply to everyone in
+Greece regardless of profile — true, but not what "from what you told us"
+promises), and the write could overwrite a completed wizard with three coarse
+answers, so it now never overwrites a fact already given properly.
+
+**Validation:** 19 opener assertions · 3,392 unit tests, **zero regressions** ·
+full guardrail gate · production build exit 0 · three consecutive clean rounds ·
+the full reachable answer space swept exhaustively rather than sampled.
+
+**Still outstanding, unchanged:** the two migrations remain unapplied, and
+Playwright has not been run this session — all responsive and accessibility work
+is guarded at source level, not measured in a browser.
+
+## Session wrap — 2026-08-05 (CPO review — information architecture rebuilt)
+
+**The finding was not a bug. It was a product failure.**
+
+A policyholder had **ten navigation items, four of which answered "what are my
+risks?"**. `/coverage-insights` stacked nine panels containing **four different
+renderings of one assessment** — recommendations, the risk graph, a flat list of
+all 21 risks, and a six-category score — and `/insights/risk-profile` added a
+fifth in the nine dimensions. No customer can hold five models of their own risk
+in their head, and reconciling them is our job, not theirs. A CEO would see it in
+thirty seconds.
+
+**What changed**
+
+- **The dimension is now the drill-down.** Each of the nine carries its own risks
+  in full — name, what the loss is, why it applies to *this* customer, and the
+  mitigation ladder. The flat 21-risk panel is **deleted**, not hidden.
+- **Two pages, two questions.** `/insights/risk-profile` → *Your risks* (the life),
+  `/coverage-insights` → *Your cover* (what the documents say). Each links to the
+  other instead of half-answering both. Nav labels say which is which, and risks
+  now come before cover — the life before the paperwork.
+- **The evidence view was preserved, not lost.** Removing the risk graph's old
+  home would have deleted the only surface showing *why* we believe something,
+  which is the product's whole claim to trust. It moved to the risks page, where
+  it answers a genuinely different question from the dimensions: those are areas
+  of life, this is the specific property, car or dependant.
+
+**7 issues found and fixed** across seven assessment rounds:
+
+five renderings of one assessment · the risk graph orphaned by the consolidation
+(evidence view lost) · a health-index call to action that told a new customer to
+answer questions and gave them **nowhere to go** — now a control · the household
+panel rendering "People 1, Dependants 0, Assets 0, Obligations 0" at someone who
+had told us nothing, when every other panel self-hides · `RiskAssessmentPanel`
+left as dead code *with a test still guarding it*, which implies it is live ·
+a dead local left behind on the cover page.
+
+**Validation:** 3,373 unit tests, **zero regressions** · full guardrail gate ·
+production build exit 0 · three consecutive clean rounds · ~31,000 fuzz cases
+across two dozen seeds, asserting the nested risks stay consistent with their
+dimension's counts and that no risk appears in two dimensions.
+
+**What I did NOT do, and would do next.** The deepest weakness is still
+**Time-to-Value**: nothing works until a customer uploads a PDF or completes a
+22-field wizard, and the first thing a product built on "we understand your life,
+not your policies" asks for is a policy. The strongest next move is a three-
+question opener that produces one true, specific statement about their life
+before any document exists — the engine already handles partial answers
+correctly, so this is a UI flow, not an engine change. That is a bigger piece of
+work than a review round should smuggle in, and it is the single highest-value
+item on the backlog.
+
+## Session wrap — 2026-08-05 (Risk Intelligence Platform — 3 clean assessments, 6 issues fixed)
+
+**Current phase:** implemented, not deployed. No schema change, no new API route.
+Spec: [architecture/risk-dna.md](architecture/risk-dna.md).
+
+### Implemented
+
+**Risk DNA** is the keystone — nine dimensions, and **Protection Score 2.0**,
+**Risk Categories**, **Risk Trends** and the **Customer Health Index** are all
+readings of the same single dimension pass, so they cannot disagree with each
+other on screen.
+
+- **The founding constraint holds: there is no second composite.** The nine
+  dimensions do not roll into a "DNA score". The protection score remains the
+  only composite, and a second one would immediately contradict it in front of
+  the customer. Generous secondary membership is safe *because* primary
+  membership is unique — asserted by a test over the whole catalog.
+- **Financial Resilience** is the one dimension that is capacity, not cover: the
+  denominator, with nothing to buy and no gap to close. It is the first thing a
+  commercially-minded revision would drop, so a test pins that it never sells.
+- **A dimension that does not apply scores `null`, never 0.** A childless renter
+  has no Family exposure, and scoring that zero reports the safest position as
+  the worst.
+- **Customer Health Index** measures the *relationship*, not the cover — how much
+  of a life we have established, how current it is, how much we could decide. It
+  explicitly does not count policies, because the customer a traditional CRM
+  ranks highest is the one with broad cover it cannot read.
+- **Household Risk Overview**, **Continuous Risk Monitoring** (a standing watch
+  that reports `clear` as a result, because a watch that only appears when
+  something is wrong cannot be told from a broken one), and **Prediction Engine
+  hooks** — a typed seam plus observations, with **no forecasts and no invented
+  probabilities**. A predictor trained on a history this product has not
+  accumulated is a random number with a confidence score attached.
+
+**Advisor Opportunity Engine + Executive Dashboard — the CRM removal.** The
+existing scorer ranked by `ConversionLikelihood`: gap severity because "critical
+gaps convert better", engagement because "active users convert better". That is a
+sales-lead queue with an insurance vocabulary, and it sinks the household that
+never logs in and needs help most. The replacement ranks by **advisory impact** —
+protection recoverable, exposure standing open, how many people a gap reaches,
+and how much only a human can settle. Conversion is not a factor; a test forbids
+the vocabulary in the model. The executive view counts households, people covered
+and protection recoverable — never premium, commission or conversion.
+
+**Every feature answers the five questions**, with `null` as a legitimate answer:
+what changed (trend, absent without history rather than faked), why it matters
+(the actual open risk's impact), what next (from the mitigation ladder, so it can
+be "keep a fund instead"), confidence (with the reason it is limited), and how it
+improves protection — **computed by re-running the real scorer**, never estimated,
+and suppressed entirely when the movement is zero or negative.
+
+### Architecture changes
+
+Everything is derived on read; **no new tables, no migration**. `lib/services/
+risk-dna/` — `dimensions` (data), `compute` (the five answers), `health-index`
+(index, household, trends), `monitoring` (watch + prediction seam),
+`advisory-impact` (advisor + executive), `book`, `service` (one read, one pass).
+Two customer surfaces (`/insights/risk-profile`) and one advisor surface
+(`/insights/book`), both in the primary nav.
+
+### 6 issues found and fixed
+
+A `protectionScore: null` field that could never be anything else · a dead
+re-export promising an executive dashboard that did not exist yet · two features
+built and unwired · the surfaces missing from navigation · and — the fourth
+recurrence this session — **`typeof x === "number"` used as a finite check, which
+`NaN` passes**, reaching the customer as "Property fell by NaN". `Number.isFinite`
+is the guard that matters.
+
+### Remaining technical debt
+
+- **Two migrations remain unapplied** (`20260804120000`, `20260804140000`). Until
+  they are, trend and history read empty everywhere and the risk-profile version
+  table returns nothing — every consumer fails soft, by design.
+- **Playwright has not been run this session.** All responsive and a11y work is
+  guarded at source level, not measured in a browser.
+- `opportunity-scoring.ts` still exists for the surfaces that speak it. Nothing in
+  the new layer reads it; it should be retired once those surfaces move.
+- `getAdvisorBook` computes full intelligence per household and is capped at 60,
+  reported rather than silently truncated. Fine for tens, wrong for thousands.
+- The `urgency`/`priority` alias on recommendations is still pending a rename.
+
+### Future enhancement opportunities
+
+- Feed the labelled outcome history the prediction seam needs, then fill it.
+- Per-object intake (which property, which vehicle) — the ceiling on the risk
+  graph's precision and on the limit dimension.
+- Territorial and sum-insured extraction, which would let three protection
+  dimensions resolve instead of reading `unknown`.
+- A household view that models *members* rather than a dependant count.
+
+**Validation:** 46 risk-DNA assertions · 3,373 unit tests, **zero regressions** ·
+full guardrail gate · production build exit 0 · three consecutive clean
+assessments · ~20,000 fuzz cases across two dozen seeds.
+
+## Session wrap — 2026-08-05 (Life Timeline BUILT — 3 clean audits, 13 issues fixed)
+
+**Current phase:** implemented, not deployed. No schema change, no new API route.
+Spec: [architecture/personal-life-timeline.md](architecture/personal-life-timeline.md).
+
+**What it answers.** Two questions the product could previously only answer with
+"the engine decided": *why is this recommendation on my screen*, and *why did my
+score move*. Both are recovered from data that already existed —
+`RiskProfileVersion` stores a per-risk snapshot alongside the trigger that
+produced it, so consecutive versions can be **diffed**. The score did not "go
+down": three specific risks opened, and one opened because the customer declared
+a mortgage on the 14th.
+
+**The causal chain is real, not inferred:**
+
+    recommendation → the version where its risk opened → the event that
+    triggered that version
+
+Three sources of truth, tried in order of how much each actually knows —
+`version_event` (recorded fact), `version_trigger` (a recalculation, but nothing
+the customer declared caused it), `exposing_event` (no history reaches back, but
+a declared event this risk structurally depends on predates the finding).
+**Returning nothing is the fourth answer and a legitimate one.** A wrong cause is
+worse than no cause: it teaches the customer the explanations are decorative.
+
+**Where it appears.** A `/timeline` page in the primary nav; a *What changed
+lately* widget on the dashboard; and — the mission's core requirement — a **"Why
+you are seeing this"** block on the recommendation card itself, on all three
+surfaces that render one, linking back to where the cause sits in context.
+
+**Claims are absent, deliberately.** The mission lists them; this product has no
+claims model — no table, no thread category, nothing. An entry kind nothing can
+produce is an unreachable state, not a placeholder, so the kind is simply not
+there. Adding it later is one entry in the source registry. The other **eight
+sources are all live**.
+
+**13 issues found and fixed**, counter reset at each. The one worth naming first:
+**risk rows crowded out everything else.** Twelve recalculations flipping eight
+risks each filled the entire window — the timeline built to explain
+recommendations showed **zero recommendations, zero life events, zero policies**.
+Capped at three rows per version, ranked by consequence; nothing is lost, because
+the score entry above states the full counts.
+
+Others: a hidden `Date.now()` · the version history re-walked once per
+recommendation · `/timeline` missing from the nav · **the repo's own expiry guard
+caught me comparing milliseconds for a calendar question — the third time** · a
+`react-hooks` lint error · duplicate entry ids from a repeated risk in a Json
+snapshot (duplicate React keys, and "2 risks opened" for one risk) · an
+unreadable date throwing through the page · **causes left dangling by the
+unplaceable-entry filter**, so "Why this?" scrolled nowhere · a dead `variant`
+prop nothing passed · non-finite scores printing "Protection score: NaN" · a
+delta badge surviving as "+NaN" beside a sentence saying we knew too little to
+say — now one predicate governs the title, the explanation and the badge.
+
+**Validation:** 45 timeline assertions · 3,323 unit tests, **zero regressions**
+(the same 4 pre-existing jsdom/env failures throughout) · full guardrail gate ·
+production build exit 0 · three consecutive clean audits. Ad-hoc runs covered
+**~50,000 fuzz cases** across two dozen seeds, asserting on every one that no
+entry points at something absent, that nothing prints an unreadable value, and
+that the ordering is deterministic.
+
+## Session wrap — 2026-08-04 (Context-aware recommendations — 3 clean audits, 9 issues fixed)
+
+**Current phase:** implemented, not deployed. No schema change, no new API route.
+
+**What the audit found.** The rule "never recommend insurance because a policy is
+missing" already held — applicability is decided before cover is consulted, the two
+service-absence rules (`no_agent_connected`, `unclear_exclusions`) are deliberately not
+pushed, and the score already gates on `scorableRisks`. All of it pinned by tests. The
+real gaps were elsewhere.
+
+**Four of the nine required fields did not exist**, and one of the five that did was a
+lie:
+
+- **Urgency was an alias for priority** — literally `urgency: a.priority`. Two names,
+  one number, and neither told the customer what to do first. They are now separate
+  axes. Priority asks how much the loss would hurt; **urgency asks whether there is a
+  deadline**, and derives one only where a deadline really exists: cover that is
+  compulsory and absent, cover that has expired, an exposure opened by a life event in
+  the last 90 days, or a narrowing underwriting window. Everything else is
+  `no_deadline` — the common case, and no badge. *A list where everything is urgent has
+  no urgency in it.*
+- **Evidence** now comes from the risk graph — the things in their life that produce the
+  risk, and the cover that does or does not answer it.
+- **Advisor opportunity** is derived from what we could NOT settle (market eligibility,
+  unreadable cover, several objects to map, unanswered factors) and returns **null when
+  nothing is unresolved** rather than manufacturing a reason to involve someone. Framed
+  as the advisor's work, not a pitch — under IDD / Law 4583/2018 the regulated act is
+  the advice, not our analysis. A test bans sales vocabulary.
+- **Customer benefit** follows the mitigation ladder, so a risk whose best answer is
+  "keep a fund instead" says that. A benefit field that always described a purchase
+  would quietly turn the ladder back into a catalogue.
+
+All four are **derived from the live assessment, never read off the persisted row** — so
+they are correct the instant a profile changes, even before the row is rewritten.
+
+**Which risks a life event opened is derived, not authored.** `ContextDelta.factor` and
+`RiskDefinition.requires` already share a vocabulary, so an event exposes a risk when it
+moved a factor that risk depends on. `birth → life_dependents`, `mortgage → life_debt`,
+`pet_adoption → pet_costs`, with no second table to maintain.
+
+**9 issues found and fixed**, counter reset at each. Besides the four missing fields:
+
+- **Profile saves raced the page.** Both write paths fired the engine unawaited while
+  the wizard called `router.refresh()`, so the customer answered "I have two children",
+  watched the page reload, and saw the same recommendations — the one moment the product
+  most needs to show that answering changes the advice. Both now await, still non-fatal.
+- **Two pages read the raw rows.** The wallet policy page and the branch page called
+  `getActiveRecommendations` directly and rendered cards missing four of the nine fields.
+  A field set that depends on which function you happened to call is how surfaces drift;
+  there is now one complete read, and a test that no page bypasses it.
+- **Copy defects (2).** The English fabricated "your late 50s" for a 52-year-old (the
+  decade was computed from the band's start), and the Greek used the closing age for
+  both clauses so it read "harden as you approach 65 and stop around 65".
+- **An unreadable event date threw** straight through the engine snapshot, with no
+  per-row catch — one bad row would have taken the recommendations *and* the score off
+  the page. Same class as the risk-graph date defect; now guarded.
+
+**`urgency` is kept as a deprecated alias** for the fifteen surfaces that speak it
+(agent dashboards, action queue, weekly digest, the persisted column). Both names are
+assigned from one expression at one site and a test pins them equal, so they cannot
+drift while the rename waits.
+
+**Validation:** 36 recommendation-context assertions (including a 2,000-case seeded fuzz
+over partially-answered profiles) · 3,278 unit tests, **zero regressions** · full
+guardrail gate · production build exit 0 · three consecutive clean audits. Ad-hoc runs
+during validation covered **~65,000 fuzz cases** across two dozen seeds, asserting on
+every one that nothing reaches a recommendation without an exposure, that the score
+contains only applicable risks, and that no card is missing a field.
+
+## Session wrap — 2026-08-04 (Personal Risk Graph BUILT — 3 clean rounds, 22 issues fixed)
+
+**Current phase:** implemented, not deployed. Spec + delta:
+[architecture/personal-risk-graph.md](architecture/personal-risk-graph.md) §15.
+
+**The idea, in one line:** *the app now models the customer's LIFE, and policies are
+protections attached to it.* Rows are things — a property, a car, a dependant — not
+products. `Policy`, `Cover` and `Claim` are **absent from the node vocabulary**, pinned
+by a test, because one insurance node type is all it takes for a life model to slide
+back into a product model.
+
+**Derived, not stored — no third migration.** The graph is projected from the profile
+and the wallet on every read. Nothing to backfill, nothing to keep in sync, every
+existing surface still reads `LifeContext` untouched.
+
+**What it can say that the flat model could not:**
+- **Which one.** `propertiesOwned: 2` becomes two independently-coverable nodes, so one
+  policy across two houses is `partially_protected` **with evidence saying why** —
+  replacing the `minPolicies` count comparison.
+- **How well.** Cover is judged per dimension (peril / limit / territory / period), so
+  a home policy naming only fire stops reading as "covered".
+- **On what basis.** Every risk carries structured evidence naming the node and the
+  policy behind the verdict.
+
+**One verdict per risk, everywhere.** `already_covered` is downgraded to `needs_review`
+wherever the graph finds cover partial or unreadable — on **both** engine paths, so the
+score, the risk list and the graph panel cannot disagree. One-way by construction: the
+graph may lower a coverage claim, never invent one. **Scores will move**: a wallet whose
+contents we cannot read now scores lower, because the old number counted an unread PDF
+as protection.
+
+**22 issues found and fixed**, counter reset at each. The dominant class, found six
+times: **a node's existence condition drawn tighter than the applicability condition of
+the risk anchored to it** — so a risk applied to a real person and pointed at nothing in
+their life. `professional_liability` wanted a job title the risk never required ·
+`landlord_letting` reserved property 1 as "the home" for people who rent, and needed a
+property node at all for someone who only answered the letting question ·
+`employer_liability` demanded `ownsBusiness` from someone who had declared five
+employees · `income_interruption` demanded a salary figure from someone who had only
+said they were employed · `life_debt` anchored to mortgages only, missing car loans ·
+`pet_costs` produced no pet for "yes, I have pets" with a zero count.
+
+Others worth naming: **two of the four states were unreachable** when first built
+(territory was permanently unevaluable, and `period` being always-evaluable made
+`unknown` impossible) · territory then still docked **every** insured motorist for
+extraction we do not do · `limit` reported satisfied merely because a number was
+readable, so €10k of cover on a €180k mortgage rolled up to `protected` · the
+count-shortfall downgrade showed an amber badge beside three green dimensions and
+**nothing explaining it** · the repo's own guard caught me hand-rolling expiry maths
+instead of using the one Athens-calendar clock · an unparseable `endDate` threw
+straight through the graph · evidence conjugated a label into a sentence ("You is
+recorded in your profile", and Greek adjective agreement no template can do) · raw
+extraction tokens ("home", "earthquake") sat inside Greek copy · condition and activity
+ids rendered untranslated while both label maps already existed · the panel printed
+every failed dimension twice.
+
+**Search, not inspection.** Three independent strategies, all now permanent tests: 19
+personas, a **~315-case axis sweep**, and a **3,000-case seeded fuzz over
+partially-answered profiles** — the last found what the first two structurally could
+not, because both always answered everything. Ad-hoc runs during validation covered
+**1,137 pairwise combinations and ~70,000 fuzz cases** across a dozen seeds.
+
+**Validation:** 74 risk-graph assertions · 3,242 unit tests, **zero regressions** (the
+same 4 pre-existing jsdom/env failures throughout) · full guardrail gate · production
+build exit 0 · three consecutive clean rounds.
+
+**No schema change, no new API route, no new personal-data store** — so no migration
+and no DSR wiring. The two migrations from earlier today still **must be applied before
+merge**.
+
+## Session wrap — 2026-08-04 (Life Event Engine BUILT — 3 clean rounds, 12 issues fixed)
+
+**Current phase:** implemented, not deployed. Spec:
+[architecture/life-event-model.md](architecture/life-event-model.md).
+
+**The architecture, in one line:** *life events write to CONTEXT; the risk catalog
+decides, unchanged.* An event's only channel is a `ContextDelta`. There is **no field
+on a definition in which a product, premium or severity could be written**, so the
+product-trigger pattern ("you got married → buy life insurance") is unrepresentable
+rather than merely discouraged — asserted by a test.
+
+**Extensible by construction.** `applyLifeEvent` is generic over `ContextDelta[]`;
+there is no branch on an event id anywhere. **Adding an event is a registry row, never
+a code change** — including the API schema, which validates against the registry.
+
+**22 events** covering all 19 the brief required, plus the disposals that make risk
+*reduction* expressible at all (`property_sale`, `vehicle_disposal`,
+`mortgage_cleared`, `child_leaves_home`). A model with only acquisitions is a ratchet.
+
+**Versioned risk profiles, recalculated automatically.** New `RiskProfileVersion` is
+fingerprinted on status/priority/coverage — an unchanged assessment writes **no row**,
+so the history records *changes* rather than cron ticks, and rewording a risk
+explanation cannot manufacture a version.
+
+**12 issues found and fixed**, counter reset at each:
+- **DSR (3)** — `LifeEventInstance` and `RiskProfileVersion` absent from the Art. 15
+  export; and because erasure is *anonymize-in-place* (the User row survives),
+  `ON DELETE CASCADE` never fires — **life events would have outlived an erasure
+  request**. `petsCount` was also missing from the export. Third occurrence of this
+  defect class; now guarded.
+- **A bug I introduced (1)** — the erasure summary reads results **positionally** out
+  of a `Promise.all`; inserting two deletes shifted every count after them.
+- **Engine semantics (4)** — `child_leaves_home` could *never* retire the life risk
+  (`totalDependents` took `max(dependents, children)`, so the one event meant to reduce
+  cover was inert) · `property_sale` left `residenceType: "owned"` so the buildings
+  risk survived the sale · a letting flag with no property behind it kept the landlord
+  risk open · `renting` wrongly claimed to retire the buildings risk.
+- **Robustness (1)** — `set` wrote `NaN`/`Infinity` straight into the profile;
+  `z.number()` accepts `Infinity` without `.finite()`.
+- **Provenance (1)** — every automatic version was stamped `policy_change`, so a
+  questionnaire submission and a nightly cron both appeared as policy changes. The one
+  column that explains a score movement was saying the wrong thing.
+- **UI (2)** — a hand-rolled primary button (design-system guardrail caught it) · a
+  ~2,500px picker at 320px; descriptions moved into the expanded state → **1,583px**.
+
+**Validation:** 405 risk-engine assertions · 3,213 unit tests, **zero regressions** ·
+full guardrail gate · production build exit 0 · 320–1280 measured in Chrome (zero
+overflow, zero sub-24px targets) · 31 controls accessibility-audited clean · event
+semantics, adversarial and the 24-scenario risk suite all re-run against final code.
+
+**Migration `20260804140000_life_event_engine`** — two additive tables, generated from
+`prisma migrate diff` and verified column-for-column against Prisma's own DDL. Nothing
+existing is altered, so every current surface keeps working. **Must be applied before
+merge**, along with `20260804120000_life_context_risk_assessment`.
+
+## Session wrap — 2026-08-04 (Recommendations are now risk-first, not product-first)
+
+**Current phase:** delivered, not deployed. Backlog agreed before coding:
+[audits/risk-centric-recommendations-backlog.md](audits/risk-centric-recommendations-backlog.md).
+
+**The audit found the risk catalog already risk-centric — and three things that were not.**
+
+1. **Insurance was the only mitigation the model could express.** All 21
+   `suggestedSolution` entries named an insurance product, not because that was the
+   judgement but because there was no field an author could write anything else in.
+   Now every risk carries a **`Mitigation[]` ladder — avoid / reduce / retain /
+   transfer** — and `suggestedSolution` is *derived* from the transfer entries so the
+   two cannot drift. Three risks now lead with **retain**: for a healthy young pet,
+   "keep a vet fund instead" is the honest advice, and a product that cannot say so
+   is not advising.
+2. **Two recommendations described no risk at all.** `no_agent_connected` ("you have
+   no advisor") and `unclear_exclusions` ("we could not read your exclusions" — a
+   statement about *our* extraction). Both occupied recommendation slots, counted in
+   `gapCount` and dragged the score. Both removed; `noAgentRule` retained for
+   whatever UI wants an advisor prompt, which is not a protection finding.
+3. **Five real risks were titled from the policy's point of view.** "Motor policy
+   appears to lack roadside assistance" → **"A breakdown would be towed at your own
+   cost."** The reason strings were already risk-shaped; only the headline was
+   inverted, and the headline is what the customer reads.
+
+**Also:** **Current protection** is now stated on every card ("Καμία / None") rather
+than left to be inferred from a status chip · exposure is quantified where we have
+the number — «Έχετε 2 κατοικίδια», degrading to the boolean rather than inventing one
+(new `petsCount`).
+
+**Validation:** 361 risk-engine assertions · 3,167 unit tests, **zero regressions** ·
+full guardrail gate · production build exit 0 · **320–1280 re-measured in Chrome with
+the ladder expanded, in Greek: zero overflow, zero sub-24px targets.**
+
+**Migration note:** the same unapplied migration now also adds `mitigations`,
+`pets_count` and `assessment_coverage`. Still additive and idempotent; still must be
+applied before merge.
+
+**Left alone deliberately:** AI-detected policy gaps (`policy_gap:*`) describe a
+specific document's contents, so the subject genuinely *is* the policy — rewriting
+them risk-first would be miscategorisation.
+
+## Session wrap — 2026-08-04 (Risk engine VALIDATED — 3 clean rounds, 17 issues fixed)
+
+**Current phase:** the Life Context Risk Assessment Engine built earlier this
+session has been validated end to end. Full report:
+[audits/risk-engine-validation-2026-08-04.md](audits/risk-engine-validation-2026-08-04.md).
+Still **not deployed**; the migration must be applied before merge.
+
+**Result: three consecutive complete assessment rounds, zero issues** — after 17
+found and fixed, with the counter reset at each discovery.
+
+**A round** = 355 risk-engine assertions (24 scenarios × 11 invariant classes +
+catalog integrity + a 3,072-combination reachability sweep + mobile + cross-surface
++ intake boundary) · full unit suite diffed against a pre-change baseline (3,163
+passing, **0 regressions**) · the whole CI guardrail gate · production build exit 0.
+Each round was preceded by *new* inspection — re-running the same assertions is not
+an assessment.
+
+**The 17, grouped by what they broke:**
+- **Applicability (4)** — boat ownership was invisible (a *compulsory* liability in
+  Greece); a skipped select became a declaration, dismissing both property risks;
+  "never asked about your health" read as "no chronic condition"; "not an owner" was
+  read as "tenant".
+- **Actuarial (5)** — score compression (every uncovered profile in 19–46; a single
+  renter 35 vs a landlord with two uninsured properties 25 — now 75 vs 47); fixed
+  category weights ignoring actual exposure; a **confident 90 "Excellent" for someone
+  we had never asked a question**; a convenience product (private treatment *speed*)
+  outranking an uninsured business; a holiday home falsely reported as covered by one
+  policy for two houses.
+- **Cross-surface (4)** — three different definitions of "profile completeness"; the
+  advisor playbook reading a legacy boolean; the **dashboard** still rendering a raw
+  score; upgrading would have resurrected every dismissed card.
+- **AI (1)** — `null` and `[]` rendered identically, telling the model someone had
+  declared themselves free of chronic conditions when nobody had asked.
+- **Copy/UX (3)** — the «Ζωή» tile showing a gap on 17 of 24 scenarios; Greek copy
+  reading the customer's answer back in English; `"2 month(s)"`.
+
+**Two candidates were chased down and found NOT to be defects** — the disclosure
+chevron (Tailwind 4 sets `rotate`, not `transform`, and I was reading mid-transition)
+and 40 apparent false positives (my harness compared branch *families*, so a
+legitimate `renters` suggestion counted as a `home` one). Fixing either would have
+been the error.
+
+**Verification beyond the automated gate:** every one of the 21 recommendations read
+end to end in both languages · **real browser layout measurement** — panel
+server-rendered with production CSS, all cards expanded, in Greek, measured in Chrome
+at 320/360/390/414/768/1024/1280: **zero overflow, zero sub-24px tap targets** · 14
+adversarial input classes (null, NaN, Infinity, MAX_SAFE_INTEGER, markup injection,
+500-policy portfolio) — no crash, no broken copy, no out-of-range score · a
+three-questions pass over all 21 risks · two independently-written harnesses agreeing.
+
+**Remaining risks (none a defect in what was built):**
+1. **Migration must be applied before merge** (`20260804120000_life_context_risk_assessment`,
+   additive + idempotent). `verify:migrations` cannot run on this network by
+   construction; verified instead against `prisma migrate diff --from-empty` —
+   **every column type, default and index matches Prisma's own DDL exactly.**
+2. **Playwright E2E not run** (environmental). The component was measured in a real
+   browser; the assembled pages were not.
+3. **Adequacy still unmeasured** — a €10k life policy against €300k of debt still
+   reads as covered. Disclosed in `scoreMethodologyLimits`; waits on F-05.
+4. **The AI risk analysis still has no caller** and cannot see the new factors.
+5. Score bands are calibrated judgement; `critical_illness` still absent from the
+   taxonomy; no admin surface for the catalog (deliberate).
+
+**Next 3 actions:** (1) apply the migration via Supabase MCP, then merge. (2) Run the
+Playwright responsive sweep over `/coverage-insights` and `/branches`. (3) Decide
+whether to wire the AI risk analysis — and if so, extend `RiskProfileInput` first.
+
+## Session wrap — 2026-08-04 (Life Context Risk Assessment Engine — BUILT, not deployed)
+
+**Current phase:** the audit below was executed. The recommendation engine is now a
+**Life Context Risk Assessment Engine**. Not deployed; **one migration must be applied
+before merge** (the deploy.yml contract).
+
+**The architectural change, in one line:** cover is consulted **last**.
+`assessRisks` asks, in order — are the deciding facts known → does the exposure exist →
+is it already covered → can insurance answer it → essential or discretionary. A risk that
+does not apply is never examined for cover, so it *cannot* become a recommendation. "Never
+recommend for an exposure that does not exist" is now a property of the control flow, not
+a rule each author has to remember.
+
+**New modules** (`lib/services/gap-engine/`): `life-context.ts` (21 contextual factors,
+each carrying a `known` flag), `risk-types.ts` (the six-status vocabulary),
+`risk-catalog.ts` (20 risks, each a LOSS conditioned on life, never a product),
+`risk-assessment.ts` (the classifier + selectors).
+
+**Every recommendation now carries** risk explanation · why it applies · expected impact ·
+priority · suggested solution · confidence — bilingual, from the catalog, persisted on
+`RecommendationInstance`. Six statuses: applicable / not applicable / already covered /
+needs review / protection gap / opportunity.
+
+**Audit P0s, all closed:**
+1. **R-01** `expectedLines` is now `relevantLines(assessments)` — only lines applicable
+   risks call for. The dead, disagreeing duplicate `getExpectedLines` is deleted.
+2. **R-02** the diabetic no longer gets a *critical* push for cover that excludes their
+   condition — reframed onto hospital cash, with the pre-existing exclusion on the card.
+3. **R-03** family history is now a priority *escalator*, never a life risk of its own.
+4. **R-04** `no_health` is gone; `health_access_delay` is honest (waiting time, not absence
+   of cover) and discretionary.
+5. **R-05** income protection is unshadowable — a 3,072-combination sweep asserts **every**
+   catalog risk can reach a user.
+6. **R-06** `answeredFields` makes "we never asked" distinct from "no". Unknown →
+   `needs_review`, never a gap. Backwards compatible; no backfill.
+
+**Also:** the AI prompt no longer asserts defaults as facts (`Unknown (not asked)`) and
+carries an Applicability section that outranks the rest · renters, business owners,
+landlords, employers, valuables, cyber, activities and retirement are all reachable risks
+now · occupation drives professional-liability priority · debt size drives life priority
+(€900 ≠ €300,000) · `coverHeldElsewhere` stops us flagging a gap against the cover a Greek
+lender already required.
+
+**Same personas, before → after:** renter with a car had phantom **home/life** gap tiles →
+now `motor` covered and home/pet/cyber/travel explicitly *not applicable* · 28-year-old
+with a dog had **5** gap tiles, 4 wrong → now pet only · retired 72-year-old had a
+**critical** life gap → life not applicable, score 25 → 78 · brand-new user scored **0
+"Critical"** → 18 risks `needs_review`, **zero** gaps asserted, score 60 flagged
+provisional.
+
+**Validation:** 46 new unit tests (incl. the reachability sweep) · **zero regressions**
+against a pre-change baseline (2851 passing; the 224 failures are a pre-existing local
+jsdom breakage — `html-encoding-sniffer` requires an ESM module — identical before and
+after) · full guardrail gate green (audit:api-auth, lint, i18n, utf8, encoding,
+type-check) · **production build exit 0**.
+
+**Found and fixed en route (the repo's own guards caught it):** the new personal-data
+columns were absent from the **GDPR Art. 15 export** — `subject-access-completeness`
+failed and now passes. Also: two of my label styles were below the WCAG AA contrast floor,
+and my first cut read `answeredFields` *inside* the response transaction rather than
+before it.
+
+**Blocked / owner action:**
+1. **Migration `20260804120000_life_context_risk_assessment` must be applied to prod and
+   dev via the Supabase MCP path BEFORE merge.** Additive and idempotent throughout.
+   `verify:migrations` could NOT be run — it hangs by construction on this network (the
+   migrate engine takes a session-level advisory lock transaction-mode pgbouncer cannot
+   hold). Verified instead by diffing against `prisma migrate diff --from-empty
+   --to-schema-datamodel`: **every column type, default and index matches Prisma's own
+   DDL exactly.**
+2. **E2E not run** — the local jsdom/vitest breakage above is environmental; Playwright
+   was not exercised. Worth a pass on `/coverage-insights` and `/branches` before merge.
+
+**Deliberately not done:** `critical_illness` is still absent from the taxonomy (adding a
+branch changes the policy Zod enum and the extraction prompt enum — wider blast radius
+than R-03's fix needed) · true sum-assured **adequacy** still waits on F-05's
+`PolicyCoverage` projection, since building it on `acordData` JSON would be the wrong
+foundation · no DB-backed admin surface for the risk catalog (that is how the gap
+definitions grew an auto-mint feedback loop) · wizard is still one form, not steps.
+
+**Next 3 actions:** (1) apply the migration via Supabase MCP, then merge. (2) Run the
+Playwright responsive sweep over `/coverage-insights` at 320–1920. (3) Decide R-07 — the
+AI risk analysis is now safe to enable (R-08 landed) but still has no caller.
+
+## Session wrap — 2026-08-04 (Risk-engine context-awareness audit — REPORT ONLY, no code changed)
+
+**Current phase:** audit delivered, backlog not yet started. Full report:
+[audits/risk-engine-context-awareness-2026-08.md](audits/risk-engine-context-awareness-2026-08.md).
+
+**Question asked:** does a recommendation appear because the customer carries the risk, or
+because a policy is absent from the wallet? **Verdict: context-aware in architecture, not
+yet in content.** Findings were produced by *executing* the engine (esbuild-bundled, no DB)
+over 8 personas and an exhaustive 18,432-combination enumeration — not by reading it.
+
+**Broken (gates launch) — 6 items, P0:**
+1. **`expectedLines` turns a category verdict into per-line verdicts**
+   (`protection-score.ts:319`), so branch tiles show "gap" for lines the score itself rules
+   inapplicable. Observed: a renter with a car is shown a **home** gap; a single 28-year-old
+   with a dog is shown **home, life, travel, pet and cyber** gaps. The correct function,
+   `getExpectedLines`, already exists in `profile-gap-rules.ts:427` **with zero callers**.
+2. **`chronic_condition_no_health`** promises, at *critical*, private health cover for the
+   declared condition — which Greek underwriting excludes as pre-existing. Only finding with
+   direct customer harm.
+3. **`family_history_no_life`** spends a morbidity signal on a mortality product; fires for
+   people with no dependents and no debt, i.e. nobody to suffer the loss.
+4. **`no_health`** discards its profile argument entirely — recommends from product absence,
+   and is why an empty profile scores 0/100 "Critical".
+5. **`income_no_protection` can never surface** (proven over all 18,432 combinations) — it is
+   always shadowed by `dependents_no_life` on the same line. So «Προστασία Εισοδήματος», a
+   weighted, labelled score category, has **no reachable rule**.
+6. **DB defaults are indistinguishable from declarations** (`ownsHome:false` etc.), and the
+   wizard's `useState` defaults write "single"/"employed" as facts if untouched.
+
+**Also broken, not customer-visible:** the **AI risk analysis has zero callers** —
+`ai_insights=true` appears only in the route that defines it, so `analyzeRiskProfile` is
+fully built (3 providers, gateway, model pinning, prompt overrides, eval scorer) and never
+runs. It is the only consumer of **11 of 23 profile fields**, including Art. 9 health data.
+
+**Product (does NOT gate):** no needs analysis anywhere — a €300k mortgage with 3 dependents
+scores **89/100 "Excellent"** because the score measures product ownership, not adequacy.
+**This is honestly disclosed** in `scoreMethodologyLimits`, so it is a capability gap, not a
+deception. Also: renters, business ownership (asked in onboarding, then discarded),
+cover-held-elsewhere (banks mandate the very cover we flag as missing).
+
+**UI/UX (separate backlog):** Greek category labels truncate to indistinguishable stubs in
+the 320px `grid-cols-2` score grid; the "wizard" is one 23-field form with no steps and is
+the engine's *only* B2C intake; free-tier users see a critical verdict with the evidence
+paywalled. Responsive foundation itself is solid — nothing regressed.
+
+**What's already right (don't "fix" it):** `pets_no_pet` is correctly gated on `hasPets`;
+portfolio rules fire only against policies actually held; coverage liveness is derived;
+prioritization ranks by protection weight not premium; `syncRecommendations` retires stale
+rules; IDD framing holds throughout.
+
+**Next 3 actions:** (1) R-01 — swap the `expectedLines` loop for the existing
+`getExpectedLines`; smallest change, largest false-positive reduction. (2) R-02/R-03 —
+re-severity and reframe the two clinically wrong rules. (3) R-07 — decide whether the AI
+risk analysis gets wired or deleted; `/admin/ai` currently offers knobs for an operation
+that cannot run.
+
+**Correction to the 2026-08-03 entry below:** top risk #3 claims "no nvm/fnm/volta is
+installed" and local node is v26.3.0. nvm 0.40.6 **is** installed and `node -v` reports
+**20.11.0**, matching `.nvmrc`. That risk reads stale (the build itself was not re-run).
+
 ## Session wrap — 2026-08-03 (B2B Risk Intelligence audit + Waves 1–3 shipped)
 
 **Current phase:** executing the B2B backlog in

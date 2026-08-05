@@ -12,6 +12,7 @@
  */
 
 import { db } from "@/lib/db"
+import { contextCompleteness, toLifeContext } from "./life-context"
 import { calculateEngagementScoresBatch } from "../engagement-scoring"
 
 export type ConversionLikelihood = "high" | "medium" | "low"
@@ -187,22 +188,19 @@ export async function getOpportunitySummary(agentUserId: string): Promise<{
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
+/**
+ * How much of the client's life we know — the SAME measure the customer sees.
+ *
+ * This carried its own six-field definition, which was a third independent
+ * answer to one question (the customer-facing score had two of its own). It also
+ * predated `answeredFields`, so a client who had carefully answered "no" to
+ * every boolean read as 0% complete to their advisor while reading ~100% to
+ * themselves. Two surfaces describing the same person differently is how an
+ * advisor loses trust in the number.
+ *
+ * `contextCompleteness` counts answered CONTEXT FACTORS, which is what the
+ * phrase means on both sides.
+ */
 function computeProfileCompleteness(profile: any): number {
-    const fields = [
-        profile.maritalStatus != null,
-        profile.employmentStatus != null,
-        profile.dateOfBirth != null,
-        profile.annualIncome != null,
-        profile.occupation != null,
-        profile.smokingStatus != null,
-    ]
-
-    // Only the nullable fields are counted. The boolean/count fields
-    // (ownsHome, hasPets, vehiclesCount, travelsFrequently, hasLoans) all
-    // default to false/0, so they can't tell "answered no" from "never
-    // answered" — counting them as always-present gave an empty profile a
-    // fabricated ~45% floor. Completeness now reflects real answers only:
-    // empty profile → 0%, fully filled → 100%.
-    const filled = fields.filter(Boolean).length
-    return Math.round((filled / fields.length) * 100)
+    return contextCompleteness(toLifeContext(profile ?? null))
 }

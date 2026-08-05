@@ -10,6 +10,12 @@ import { db } from "@/lib/db"
 import { resolveGapConcept, resolveGapContent } from "@/lib/wallet/gap-report"
 import type { ProfileGap, GapSeverity } from "./profile-gap-rules"
 import { lobProtectionWeight } from "./protection-score"
+import type { Mitigation, RiskAssessment, RiskConfidence, RiskStatus } from "./risk-types"
+import type {
+    RecommendationEvidence,
+    UrgencyVerdict,
+} from "./recommendation-context"
+import { openFindings } from "./risk-assessment"
 
 // ── Rule identity ────────────────────────────────────────────────────
 
@@ -72,7 +78,34 @@ function readableTitleKey(title: unknown): string {
 
 // ── Types ────────────────────────────────────────────────────────────
 
-export interface RecommendationInput {
+/**
+ * The assessment payload every recommendation carries.
+ *
+ * A recommendation has to be able to answer, on the card, why this risk exists
+ * for this person and what it would cost them. Splitting it out keeps the shape
+ * identical between the input written to the DB and the output read back.
+ */
+export interface RecommendationAssessment {
+    /** Catalog risk id, when the recommendation came from the risk engine. */
+    riskId: string | null
+    /** One of the six RiskStatus values; null on rows written by the old engine. */
+    riskStatus: RiskStatus | null
+    confidence: RiskConfidence | null
+    expectedImpact: { en: string; el: string } | null
+    /** Avoid / reduce / retain / transfer. Insurance is one entry, not the frame. */
+    mitigations: Mitigation[] | null
+    suggestedSolution: { en: string; el: string } | null
+    eligibilityNote: { en: string; el: string } | null
+    /** Lines already answering this risk — renders as "Current protection". */
+    coveredBy: string[] | null
+}
+
+/**
+ * Optional on the way IN, always present on the way OUT. A caller producing a
+ * portfolio or policy-gap recommendation has no assessment to report and should
+ * not have to spell out six nulls to say so; the persistence layer normalises.
+ */
+export interface RecommendationInput extends Partial<RecommendationAssessment> {
     userId: string
     lineOfBusiness: string
     ruleId: string | null
@@ -85,6 +118,18 @@ export interface RecommendationInput {
     matchedProductId?: string | null
 }
 
+/** Rows produced outside the risk catalog (policy + portfolio gaps) carry no assessment. */
+const NO_ASSESSMENT: RecommendationAssessment = {
+    riskId: null,
+    riskStatus: null,
+    confidence: null,
+    expectedImpact: null,
+    mitigations: null,
+    suggestedSolution: null,
+    eligibilityNote: null,
+    coveredBy: null,
+}
+
 export interface MatchedProduct {
     id: string
     name: { en: string; el: string }
@@ -94,13 +139,51 @@ export interface MatchedProduct {
     greekMarketPopularity: number
 }
 
-export interface RecommendationOutput {
+export interface RecommendationOutput extends RecommendationAssessment {
     id: string
     lineOfBusiness: string
     ruleId: string | null
     title: { en: string; el: string }
     description: { en: string; el: string }
+    /**
+     * @deprecated Misnamed: this is the SEVERITY axis — how much the loss would
+     * hurt — not how soon it needs attention. Read `priority` in new code. The
+     * name is kept because fifteen surfaces (agent dashboards, the action queue,
+     * the weekly digest email) and the persisted column both speak it; both
+     * fields are assigned from one expression at one site, and a test pins them
+     * equal so they cannot drift while the rename waits.
+     */
     urgency: GapSeverity
+    /** How much this matters. Same value as `urgency`, correctly named. */
+    priority: GapSeverity
+    /**
+     * How SOON — the axis `urgency` never carried. Null on rows with no
+     * assessment behind them (policy and portfolio findings).
+     */
+    timing: UrgencyVerdict | null
+    /**
+     * What this rests on: the things in their life that produce the risk, and
+     * the policies that do or do not answer it. From the risk graph.
+     */
+    evidence: RecommendationEvidence[] | null
+    /** What a licensed advisor adds here. Null when nothing is unresolved. */
+    advisorOpportunity: { en: string; el: string } | null
+    /** What changes for the customer if they act. */
+    customerBenefit: { en: string; el: string } | null
+    /**
+     * The change that put this on the screen.
+     *
+     * Recovered from the risk-profile version in which this risk opened, which
+     * records the trigger and any declared life event behind it. Null is a real
+     * answer — a finding read out of a policy document was not caused by
+     * anything in the customer's life, and no version history reaches back
+     * before versioning existed. Attaching the nearest-looking event instead
+     * would teach the reader that the explanations are decorative.
+     */
+    cause: {
+        source: "version_event" | "version_trigger" | "exposing_event"
+        explanation: { en: string; el: string }
+    } | null
     estimatedCostEur: number | null
     personalReason: { en: string; el: string }
     status: string
@@ -142,6 +225,14 @@ const ESTIMATED_ANNUAL_PREMIUMS: Record<string, number> = {
     income_protection: 500,
     disability: 400,
     cyber: 100,
+    // Lines the life-context catalog can now reach. Without an entry the card
+    // silently shows no indicative cost at all, which reads as "we don't know
+    // what this is" rather than "we didn't estimate".
+    renters: 90,
+    gadget: 120,
+    personal_accident: 150,
+    pension: 600,
+    business: 700,
 }
 
 export function getEstimatedPremium(lob: string): number | null {
@@ -152,12 +243,18 @@ export function getEstimatedPremium(lob: string): number | null {
 
 /**
  * Convert profile gaps into recommendation inputs.
+ *
+ * @deprecated Superseded by `assessmentsToRecommendations`. Kept because the
+ * legacy `ProfileGap` shape is still what `buildProfileGapEvidence` and several
+ * tests speak; it carries no assessment payload, so cards built from it render
+ * without a status chip rather than with a guessed one.
  */
 export function profileGapsToRecommendations(
     userId: string,
     gaps: ProfileGap[]
 ): RecommendationInput[] {
     return gaps.map((gap) => ({
+        ...NO_ASSESSMENT,
         userId,
         lineOfBusiness: gap.lineOfBusiness,
         ruleId: gap.ruleId,
@@ -167,6 +264,47 @@ export function profileGapsToRecommendations(
         urgency: gap.severity,
         estimatedCostEur: getEstimatedPremium(gap.lineOfBusiness),
         personalReason: gap.reason,
+    }))
+}
+
+/**
+ * Convert assessed risks into recommendation inputs.
+ *
+ * **Only open findings become recommendations.** `not_applicable`,
+ * `needs_review` and `already_covered` are deliberately not persisted: a
+ * recommendation is something we are asking the customer to consider, and none
+ * of those three is. They are still returned by the engine for the dashboard,
+ * which needs to be able to say "we checked this and it is not your risk" —
+ * that is a statement about coverage of the assessment, not a suggestion.
+ *
+ * The mapping onto existing columns is deliberate rather than a parallel set:
+ *   title           ← the risk's name
+ *   description     ← what can go wrong (riskExplanation)
+ *   personalReason  ← why it applies to THIS customer
+ * with impact, solution, confidence and status in the new columns.
+ */
+export function assessmentsToRecommendations(
+    userId: string,
+    assessments: RiskAssessment[]
+): RecommendationInput[] {
+    return openFindings(assessments).map((a) => ({
+        userId,
+        lineOfBusiness: a.lineOfBusiness,
+        ruleId: `risk:${a.riskId}`,
+        gapInstanceId: null,
+        title: a.name,
+        description: a.riskExplanation,
+        urgency: a.priority,
+        estimatedCostEur: getEstimatedPremium(a.lineOfBusiness),
+        personalReason: a.whyItApplies,
+        riskId: a.riskId,
+        riskStatus: a.status,
+        confidence: a.confidence,
+        expectedImpact: a.expectedImpact,
+        mitigations: a.mitigations,
+        suggestedSolution: a.suggestedSolution,
+        eligibilityNote: a.eligibilityNote,
+        coveredBy: a.coveredBy,
     }))
 }
 
@@ -205,6 +343,7 @@ export function policyGapsToRecommendations(
         })
 
         return {
+            ...NO_ASSESSMENT,
             userId,
             lineOfBusiness: lob,
             ruleId: policyGapRuleId(lob, gi.definition.slug),
@@ -402,6 +541,35 @@ function isUserDismissal(dismissReason: string | null): boolean {
 }
 
 /**
+ * Legacy profile-rule ids and the catalog risk that replaced each one.
+ *
+ * A dismissal is the clearest signal a customer ever gives us: "I have
+ * considered this and it is not for me." When the profile rules became catalog
+ * risks every rule id changed, so on the first run after the switch every
+ * dismissed card would have come back under a new id — the product forgetting,
+ * on upgrade, the one thing the user took the trouble to tell it.
+ *
+ * Mapped only where the new risk is the SAME finding better expressed. The
+ * deliberate omissions are `no_health` and `family_history_no_life`: those were
+ * withdrawn as wrong, not renamed, and `health_access_delay` /
+ * `chronic_condition_costs` ask a different question. Someone who dismissed a
+ * claim we no longer make has not dismissed the one we now make.
+ */
+const LEGACY_RULE_REPLACEMENTS: Record<string, string> = {
+    mortgage_no_life: "risk:life_debt",
+    loans_no_life: "risk:life_debt",
+    dependents_no_life: "risk:life_dependents",
+    income_no_protection: "risk:income_interruption",
+    vehicles_no_motor: "risk:motor_liability",
+    homeowner_no_home: "risk:home_building_damage",
+    pets_no_pet: "risk:pet_costs",
+    travels_no_travel: "risk:travel_abroad",
+    self_employed_no_liability: "risk:professional_liability",
+    poor_driving_record_needs_legal: "risk:motor_legal_disputes",
+    no_legal_expenses: "risk:home_legal_disputes",
+}
+
+/**
  * Sync recommendations to the database — exactly ONE row per (user, rule).
  *
  * The old read-then-write ("SELECT active → loop INSERT") had no transaction
@@ -449,6 +617,17 @@ export async function syncRecommendations(
         const existingByRuleId = new Map(
             existing.filter((row) => row.ruleId).map((row) => [row.ruleId as string, row])
         )
+        // Rule ids the customer dismissed under the old engine, translated to the
+        // risk that replaced them, so an upgrade does not resurrect a card they
+        // already told us to put away.
+        const dismissedByReplacement = new Map<string, (typeof existing)[number]>()
+        for (const row of existing) {
+            const replacement = row.ruleId ? LEGACY_RULE_REPLACEMENTS[row.ruleId] : undefined
+            if (!replacement) continue
+            if (row.status === "dismissed" && isUserDismissal(row.dismissReason)) {
+                dismissedByReplacement.set(replacement, row)
+            }
+        }
 
         for (const [ruleId, rec] of byRuleId) {
             const data = {
@@ -460,10 +639,31 @@ export async function syncRecommendations(
                 estimatedCostEur: rec.estimatedCostEur,
                 personalReason: rec.personalReason as any,
                 productId: rec.matchedProductId ?? null,
+                riskId: rec.riskId ?? null,
+                riskStatus: rec.riskStatus ?? null,
+                confidence: rec.confidence ?? null,
+                expectedImpact: (rec.expectedImpact ?? undefined) as any,
+                mitigations: (rec.mitigations ?? undefined) as any,
+                suggestedSolution: (rec.suggestedSolution ?? undefined) as any,
+                eligibilityNote: (rec.eligibilityNote ?? undefined) as any,
             }
 
             const current = existingByRuleId.get(ruleId)
             if (!current) {
+                // Carry a dismissal across the rename rather than re-asking.
+                const dismissedPredecessor = dismissedByReplacement.get(ruleId)
+                if (dismissedPredecessor) {
+                    await tx.recommendationInstance.create({
+                        data: {
+                            userId,
+                            ruleId,
+                            status: "dismissed",
+                            dismissReason: dismissedPredecessor.dismissReason,
+                            ...data,
+                        },
+                    })
+                    continue
+                }
                 await tx.recommendationInstance.create({
                     data: { userId, ruleId, status: "active", ...data },
                 })
@@ -502,6 +702,13 @@ export async function syncRecommendations(
                     personalReason: rec.personalReason as any,
                     status: "active",
                     productId: rec.matchedProductId ?? null,
+                    riskId: rec.riskId ?? null,
+                    riskStatus: rec.riskStatus ?? null,
+                    confidence: rec.confidence ?? null,
+                    expectedImpact: (rec.expectedImpact ?? undefined) as any,
+                    mitigations: (rec.mitigations ?? undefined) as any,
+                    suggestedSolution: (rec.suggestedSolution ?? undefined) as any,
+                    eligibilityNote: (rec.eligibilityNote ?? undefined) as any,
                 },
             })
             created++
@@ -647,11 +854,31 @@ export async function getActiveRecommendations(
         title: r.title as { en: string; el: string },
         description: r.description as { en: string; el: string },
         urgency: r.urgency as GapSeverity,
+        // One expression, both names — see the deprecation note on `urgency`.
+        priority: r.urgency as GapSeverity,
+        // Filled by `withRecommendationContext` from the LIVE assessment, not
+        // from this row: the four context fields must reflect the profile as it
+        // is now, even when the persisted row was written before the last change.
+        timing: null,
+        evidence: null,
+        advisorOpportunity: null,
+        customerBenefit: null,
+        cause: null,
         estimatedCostEur: r.estimatedCostEur ? Number(r.estimatedCostEur) : null,
         personalReason: r.personalReason as { en: string; el: string },
         status: r.status,
         createdAt: r.createdAt,
         gapValidationState: r.gapInstance?.validationState ?? null,
+        // Null on rows written by the pre-assessment engine; the card renders
+        // without a status chip rather than inventing one.
+        riskId: r.riskId ?? null,
+        riskStatus: (r.riskStatus as RiskStatus | null) ?? null,
+        confidence: (r.confidence as RiskConfidence | null) ?? null,
+        expectedImpact: (r.expectedImpact as { en: string; el: string } | null) ?? null,
+        mitigations: (r.mitigations as Mitigation[] | null) ?? null,
+        coveredBy: null,
+        suggestedSolution: (r.suggestedSolution as { en: string; el: string } | null) ?? null,
+        eligibilityNote: (r.eligibilityNote as { en: string; el: string } | null) ?? null,
         matchedProduct: r.product
             ? {
                   id: r.product.id,

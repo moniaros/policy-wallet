@@ -17,6 +17,8 @@ export async function buildUserDataExportPayload(userId: string) {
         detectedGaps,
         protectionScore,
         recommendations,
+        lifeEventInstances,
+        riskProfileVersions,
         advisorRelationships,
         accessGrants,
         analysisRuns,
@@ -56,6 +58,7 @@ export async function buildUserDataExportPayload(userId: string) {
                         ownsHome: true,
                         mortgageAmount: true,
                         hasPets: true,
+                        petsCount: true,
                         vehiclesCount: true,
                         dateOfBirth: true,
                         annualIncome: true,
@@ -73,6 +76,27 @@ export async function buildUserDataExportPayload(userId: string) {
                         familyMedicalHistory: true,
                         drivingRecord: true,
                         activityLevel: true,
+                        // Life Context Risk Assessment factors. Same Art. 15
+                        // reasoning as the fields above: these are things the
+                        // person told us about their household, property,
+                        // business and finances, so they are exactly what a
+                        // subject access request is for. `answeredFields` is
+                        // included deliberately — it records what we asked, which
+                        // is itself personal data about the exchange.
+                        childrenCount: true,
+                        residenceType: true,
+                        propertiesOwned: true,
+                        rentsOutProperty: true,
+                        ownsBoat: true,
+                        ownsBusiness: true,
+                        businessEmployees: true,
+                        savingsAmount: true,
+                        valuablesValue: true,
+                        activities: true,
+                        cyberExposure: true,
+                        retirementPlanning: true,
+                        coverHeldElsewhere: true,
+                        answeredFields: true,
                         createdAt: true,
                         updatedAt: true,
                     },
@@ -229,6 +253,42 @@ export async function buildUserDataExportPayload(userId: string) {
             orderBy: { createdAt: "desc" },
             take: 200,
         }),
+        // Life events are among the most personal data the product holds —
+        // marriage, divorce, a birth, a change in health. Art. 15(1) is a copy
+        // of the personal data undergoing processing, and these are exactly what
+        // someone exercises that right over.
+        db.lifeEventInstance.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                definitionId: true,
+                occurredAt: true,
+                discoveredAt: true,
+                source: true,
+                confidence: true,
+                magnitude: true,
+                status: true,
+                appliedPatch: true,
+            },
+            orderBy: { occurredAt: "desc" },
+            take: 500,
+        }),
+        // The assessment history. Derived rather than declared, but it is a
+        // record OF this person and disclosable on the same basis.
+        db.riskProfileVersion.findMany({
+            where: { userId },
+            select: {
+                version: true,
+                computedAt: true,
+                trigger: true,
+                overallScore: true,
+                indeterminate: true,
+                openFindingCount: true,
+                categoryScores: true,
+            },
+            orderBy: { version: "desc" },
+            take: 200,
+        }),
         // Who can see this person's policies, and which advisor is linked to
         // them — relationships are personal data about the subject too.
         db.customerRelationship.findMany({
@@ -334,6 +394,16 @@ export async function buildUserDataExportPayload(userId: string) {
         protectionScore: protectionScore
             ? { ...protectionScore, computedAt: toIso(protectionScore.computedAt) }
             : null,
+        lifeEvents: lifeEventInstances.map((event) => ({
+            ...event,
+            occurredAt: toIso(event.occurredAt),
+            discoveredAt: toIso(event.discoveredAt),
+            magnitude: event.magnitude ? Number(event.magnitude) : null,
+        })),
+        riskProfileVersions: riskProfileVersions.map((v) => ({
+            ...v,
+            computedAt: toIso(v.computedAt),
+        })),
         recommendations: recommendations.map((rec) => ({
             ...rec,
             createdAt: toIso(rec.createdAt),

@@ -11,6 +11,7 @@ import {
     Car,
     ChevronDown,
     ChevronUp,
+    Clock,
     FileSearch,
     Heart,
     Home,
@@ -45,6 +46,31 @@ interface Recommendation {
     /** Evidence ladder of the linked gap — confirmed/validated adds visible
      *  advisor weight; probable/null stays a hedged suggestion (no chip). */
     gapValidationState?: "probable" | "confirmed" | "validated" | null
+    /** Life Context Risk Assessment payload. Null on rows written by the
+     *  pre-assessment engine — the card then renders without these blocks
+     *  rather than inventing them. */
+    riskStatus?: "not_applicable" | "needs_review" | "already_covered" | "protection_gap" | "opportunity" | "applicable" | null
+    confidence?: "high" | "medium" | "low" | null
+    expectedImpact?: { en: string; el: string } | null
+    suggestedSolution?: { en: string; el: string } | null
+    eligibilityNote?: { en: string; el: string } | null
+    /**
+     * How SOON, as opposed to how much — `urgency` above is the severity axis
+     * despite its name. `no_deadline` carries no reason and renders no badge,
+     * which is the point: a list where everything is urgent has no urgency in it.
+     */
+    timing?: { level: "now" | "weeks" | "months" | "no_deadline"; reason: { en: string; el: string } | null } | null
+    /** What the finding rests on — things in their life, and cover held or not. */
+    evidence?: Array<{ kind: string; statement: { en: string; el: string } }> | null
+    /** What a licensed advisor adds. Null when nothing is unresolved. */
+    advisorOpportunity?: { en: string; el: string } | null
+    /** What changes for them if they act. */
+    customerBenefit?: { en: string; el: string } | null
+    /** The change that put this on the screen. Null when we cannot say. */
+    cause?: {
+        source: "version_event" | "version_trigger" | "exposing_event"
+        explanation: { en: string; el: string }
+    } | null
     matchedProduct?: {
         id: string
         name: { en: string; el: string }
@@ -293,9 +319,54 @@ export function RecommendationCards({
                                             )}
                                             {urgLabel}
                                         </span>
+                                        {/* The DEADLINE, which the badge above never carried
+                                            despite its name. Rendered only when one exists —
+                                            `no_deadline` is the common case, and a list where
+                                            everything is urgent has no urgency in it. The clock
+                                            icon and the outline keep it readable as a different
+                                            question from the severity chip beside it. */}
+                                        {rec.timing && rec.timing.level !== "no_deadline" && (
+                                            <span
+                                                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-kicker font-semibold uppercase tracking-wider ${
+                                                    rec.timing.level === "now"
+                                                        ? "border-red-300 text-red-700 dark:border-red-800 dark:text-red-300"
+                                                        : "border-black/20 text-black/70 dark:border-white/25 dark:text-white/70"
+                                                }`}
+                                            >
+                                                <Clock className="h-2.5 w-2.5" aria-hidden="true" />
+                                                {rec.timing.level === "now"
+                                                    ? t("Άμεσα", "Act now")
+                                                    : rec.timing.level === "weeks"
+                                                      ? t("Εντός εβδομάδων", "Within weeks")
+                                                      : t("Εντός μηνών", "Within months")}
+                                            </span>
+                                        )}
                                         {/* Advisor weight from the evidence ladder — shown only
                                             once a human stands behind the finding; a probable
                                             (AI-only) finding earns no extra authority chip. */}
+                                        {/* What the assessment concluded, and how
+                                            much of it rests on answered facts. An
+                                            urgency badge alone says how loud, not
+                                            how sure. */}
+                                        {rec.riskStatus === "opportunity" && (
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider border border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
+                                                {t("Ευκαιρία", "Opportunity")}
+                                            </span>
+                                        )}
+                                        {rec.riskStatus === "protection_gap" && (
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider border border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
+                                                {t("Κενό προστασίας", "Protection gap")}
+                                            </span>
+                                        )}
+                                        {rec.confidence && (
+                                            <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-kicker text-muted-foreground">
+                                                {rec.confidence === "high"
+                                                    ? t("Υψηλή βεβαιότητα", "High confidence")
+                                                    : rec.confidence === "medium"
+                                                      ? t("Μεσαία βεβαιότητα", "Medium confidence")
+                                                      : t("Χαμηλή βεβαιότητα", "Low confidence")}
+                                            </span>
+                                        )}
                                         {(rec.gapValidationState === "confirmed" || rec.gapValidationState === "validated") && (
                                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-kicker font-semibold uppercase tracking-wider border border-primary/25 bg-primary/5 text-primary/90 dark:border-primary/30 dark:bg-primary/10 dark:text-mint/90">
                                                 {rec.gapValidationState === "validated" ? home.recAdvisorValidated : home.recAdvisorConfirmed}
@@ -356,9 +427,129 @@ export function RecommendationCards({
                                     {/* Expanded details */}
                                     {isExpanded && (
                                         <div className="mt-3 pt-3 border-t border-black/8 dark:border-white/10 space-y-2">
+                                            {/* Why this is on your screen at all — first, because
+                                                it is the question a reader has before any of the
+                                                detail below can matter. Links to the timeline,
+                                                where the causing change sits in context. */}
+                                            {rec.cause && (
+                                                <div className="rounded-lg border border-primary/20 bg-primary/5 p-2.5 dark:border-primary/25 dark:bg-primary/10">
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-primary/90 dark:text-mint/90">
+                                                        {t("Γιατί το βλέπετε", "Why you are seeing this")}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/75 dark:text-white/75">
+                                                        {rec.cause.explanation[lang] || rec.cause.explanation.en}
+                                                    </p>
+                                                    <Link
+                                                        href="/timeline"
+                                                        className="mt-1 inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
+                                                    >
+                                                        {t("Δείτε το στο χρονολόγιο", "See it on your timeline")}
+                                                        <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                                                    </Link>
+                                                </div>
+                                            )}
+
                                             <p className="text-xs text-black/60 dark:text-white/60 leading-relaxed">
                                                 {rec.description[lang] || rec.description.en}
                                             </p>
+
+                                            {/* The badge says there is a deadline; this says what
+                                                it is. A deadline asserted without a reason is
+                                                just pressure. */}
+                                            {rec.timing?.reason && (
+                                                <div>
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                        {t("Γιατί τώρα", "Why now")}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                        {rec.timing.reason[lang] || rec.timing.reason.en}
+                                                    </p>
+                                                </div>
+                                            )}
+                                            {rec.expectedImpact && (
+                                                <div>
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                        {t("Πιθανή επίπτωση", "Expected impact")}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                        {rec.expectedImpact[lang] || rec.expectedImpact.en}
+                                                    </p>
+                                                </div>
+                                            )}
+                                            {rec.suggestedSolution && (
+                                                <div>
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                        {t("Τι το καλύπτει", "What covers it")}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                        {rec.suggestedSolution[lang] || rec.suggestedSolution.en}
+                                                    </p>
+                                                </div>
+                                            )}
+                                            {/* What this rests on. Structured evidence from the
+                                                risk graph — the things in their life that produce
+                                                the risk, and the cover that does or does not
+                                                answer it. A claim the reader can check. */}
+                                            {rec.evidence && rec.evidence.length > 0 && (
+                                                <div>
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                        {t("Σε τι βασιζόμαστε", "What this rests on")}
+                                                    </p>
+                                                    <ul className="mt-1 space-y-1">
+                                                        {rec.evidence.map((item, i) => (
+                                                            <li
+                                                                key={`${item.kind}-${i}`}
+                                                                className="flex items-start gap-2 text-xs leading-relaxed text-black/70 dark:text-white/70"
+                                                            >
+                                                                <span
+                                                                    className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-black/30 dark:bg-white/30"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="min-w-0 [overflow-wrap:anywhere]">
+                                                                    {item.statement[lang] || item.statement.en}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+
+                                            {rec.customerBenefit && (
+                                                <div>
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                        {t("Τι κερδίζετε", "What you get")}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                        {rec.customerBenefit[lang] || rec.customerBenefit.en}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {/* What an advisor adds — stated as their work, not
+                                                as a pitch, and only where something is genuinely
+                                                unresolved. Under IDD / Law 4583/2018 the
+                                                regulated act is the advice, not this analysis. */}
+                                            {rec.advisorOpportunity && (
+                                                <div className="rounded-lg border border-black/10 bg-black/[0.02] p-2.5 dark:border-white/12 dark:bg-white/[0.03]">
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">
+                                                        {t("Πού βοηθά ένας σύμβουλος", "Where an advisor helps")}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                                                        {rec.advisorOpportunity[lang] || rec.advisorOpportunity.en}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {rec.eligibilityNote && (
+                                                <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-2.5 dark:border-amber-900/40 dark:bg-amber-900/15">
+                                                    <p className="text-kicker font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                                                        {t("Προσοχή στην αγορά", "Market reality")}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs leading-relaxed text-amber-900 dark:text-amber-200/90">
+                                                        {rec.eligibilityNote[lang] || rec.eligibilityNote.en}
+                                                    </p>
+                                                </div>
+                                            )}
                                             {rec.matchedProduct && (
                                                 <div className="rounded-lg bg-black/[0.03] dark:bg-white/[0.04] p-2.5 space-y-1.5">
                                                     <p className="text-kicker font-bold uppercase tracking-wider text-muted-foreground">

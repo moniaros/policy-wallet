@@ -64,7 +64,7 @@ export async function POST(req: Request) {
             }
             const chunk = stale.slice(i, i + CONCURRENCY)
             const results = await Promise.allSettled(
-                chunk.map((s) => runGapEngine(s.userId))
+                chunk.map((s) => runGapEngine(s.userId, { trigger: "cron" }))
             )
             for (let j = 0; j < results.length; j++) {
                 const r = results[j]

@@ -87,11 +87,21 @@ describe('branch page data — buildBranchOverview', () => {
         expect(motor.state).toBe('covered')
     })
 
-    it('marks expected-but-missing lines as gaps', () => {
+    it('marks expected-but-missing TOP-LEVEL lines as gaps', () => {
         const overview = buildBranchOverview([], ['health', 'income_protection'])
         expect(overview.find((entry) => entry.branch.id === 'health')!.state).toBe('gap')
-        // income_protection rolls up to life
-        expect(overview.find((entry) => entry.branch.id === 'life')!.state).toBe('gap')
+
+        // A child-branch EXPECTATION deliberately does NOT roll up, even though a
+        // child-branch POLICY does (see the test above). The asymmetry is the
+        // point: holding a motorbike policy really does mean you are insured in
+        // the motor family, but needing income protection does not mean you need
+        // life insurance. Tiles carry the parent's label, so rolling the
+        // expectation up put a tile reading «Ζωή» (Life) in front of every
+        // employed person with thin savings — including those with no dependants
+        // and no debt, who have no life-insurance need at all. It fired on 17 of
+        // 24 validation scenarios. The recommendation card still names the right
+        // product; silence beats a mislabelled verdict.
+        expect(overview.find((entry) => entry.branch.id === 'life')!.state).toBe('neutral')
     })
 
     it('attention wins over covered', () => {

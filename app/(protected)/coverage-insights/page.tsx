@@ -1,11 +1,15 @@
 export const runtime = 'nodejs'
 
+import Link from "next/link"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { CoverageInsightsClient } from "@/components/coverage/CoverageInsightsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { ProtectionScoreCard } from "@/components/coverage/ProtectionScoreCard"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
+import { LifeEventsPanel } from "@/components/coverage/LifeEventsPanel"
+import { declarableLifeEvents, getLifeEvent, magnitudePrompt } from "@/lib/services/life-events/registry"
+import { getLifeEventHistory } from "@/lib/services/life-events/service"
 import { RiskProfileWizard } from "@/components/coverage/RiskProfileWizard"
 import { RefreshAnalysisButton } from "@/components/coverage/RefreshAnalysisButton"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
@@ -33,6 +37,28 @@ export default async function CoverageInsightsPage() {
     const profileRecord = await db.policyholderProfile.findUnique({
         where: { userId: dbUser.id },
     })
+
+    // 2c. Life events — the declared history, and which one-time events are spent.
+    const declaredEvents = await getLifeEventHistory(dbUser.id).catch(() => [])
+    const recordedIds = new Set(declaredEvents.map((e) => e.definitionId))
+    const lifeEventOptions = declarableLifeEvents().map((definition) => ({
+        id: definition.id,
+        domain: definition.domain,
+        label: definition.label,
+        description: definition.description,
+        needsMagnitude: magnitudePrompt(definition.id) !== null,
+        magnitudeLabel: magnitudePrompt(definition.id),
+        alreadyRecorded: !definition.repeatable && recordedIds.has(definition.id),
+    }))
+    const recentLifeEvents = declaredEvents.slice(0, 5).map((event) => ({
+        id: event.id,
+        definitionId: event.definitionId,
+        label: getLifeEvent(event.definitionId)?.label ?? {
+            en: event.definitionId,
+            el: event.definitionId,
+        },
+        occurredAt: event.occurredAt.toISOString(),
+    }))
 
     // 3. Fetch all current gap instances for this user's policies
     const allGapInstances = await db.gapInstance.findMany({
@@ -93,6 +119,7 @@ export default async function CoverageInsightsPage() {
         && effectivePolicyStatus(policy) === 'expired')
     const livePolicyIds = new Set(policies.map((policy) => policy.id))
     const gapInstances = allGapInstances.filter((gap) => !gap.policyId || livePolicyIds.has(gap.policyId))
+
 
     // 5. Calculate statistics
     const criticalGaps = gapInstances.filter(g => g.severity === 'critical').length
@@ -216,6 +243,18 @@ export default async function CoverageInsightsPage() {
                                         loanAmount: profileRecord.loanAmount ? Number(profileRecord.loanAmount) : null,
                                         smokingStatus: profileRecord.smokingStatus,
                                         lifeEvents: Array.isArray(profileRecord.lifeEvents) ? profileRecord.lifeEvents as Array<{ type: string; date: string }> : undefined,
+                                        childrenCount: profileRecord.childrenCount,
+                                        residenceType: profileRecord.residenceType,
+                                        propertiesOwned: profileRecord.propertiesOwned,
+                                        rentsOutProperty: profileRecord.rentsOutProperty,
+                                        ownsBoat: profileRecord.ownsBoat,
+                                        ownsBusiness: profileRecord.ownsBusiness,
+                                        businessEmployees: profileRecord.businessEmployees,
+                                        savingsAmount: profileRecord.savingsAmount ? Number(profileRecord.savingsAmount) : null,
+                                        valuablesValue: profileRecord.valuablesValue ? Number(profileRecord.valuablesValue) : null,
+                                        activities: Array.isArray(profileRecord.activities) ? profileRecord.activities as string[] : null,
+                                        cyberExposure: profileRecord.cyberExposure,
+                                        retirementPlanning: profileRecord.retirementPlanning,
                                     } : undefined}
                                     language={userLanguage}
                                 />
@@ -234,6 +273,34 @@ export default async function CoverageInsightsPage() {
                             />
                         )}
 
+                        {/* Declaring a change is the cheapest way to improve the
+                            assessment, so it sits above the assessment itself. */}
+                        <LifeEventsPanel
+                            options={lifeEventOptions}
+                            recent={recentLifeEvents}
+                            language={userLanguage}
+                        />
+
+                        {/* The risk list and the risk graph used to sit here.
+                            Both are now nested inside the nine dimensions on
+                            /insights/risk-profile: three renderings of one
+                            assessment on one page asked the customer to
+                            reconcile them, which is our job, not theirs. This
+                            page answers a different question — what your
+                            POLICIES say — and links across for the other. */}
+                        <div className="pw-card pw-pad">
+                            <p className="pw-kicker">{t.insights.riskProfileKicker}</p>
+                            <p className="mt-1 text-caption text-muted-foreground">
+                                {t.insights.riskProfileBlurb}
+                            </p>
+                            <Link
+                                href="/insights/risk-profile"
+                                className="mt-2 inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
+                            >
+                                {t.insights.riskProfileCta}
+                            </Link>
+                        </div>
+
                         {/* The protection score only makes sense once there is a
                             policy to score — with none it read "0 / Critical",
                             which is noise, not a verdict. */}
@@ -246,6 +313,7 @@ export default async function CoverageInsightsPage() {
                                 expectedLines={engineResult.protectionScore.expectedLines}
                                 actualLines={engineResult.protectionScore.actualLines}
                                 profileCompleteness={engineResult.profileCompleteness}
+                                indeterminate={engineResult.protectionScore.indeterminate ?? false}
                                 language={userLanguage}
                                 analyzedAt={latestAnalyzedAt}
                             />

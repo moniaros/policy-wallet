@@ -73,6 +73,8 @@ export type ErasureSummary = {
     deletedGapInstances: number
     deletedProtectionScores: number
     deletedRecommendations: number
+    deletedLifeEvents: number
+    deletedRiskProfileVersions: number
     deletedFormSubmissions: number
     scrubbedCollaborationMessages: number
     scrubbedReferrals: number
@@ -207,6 +209,8 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedUserTasks,
                 deletedProtectionScores,
                 deletedRecommendations,
+                deletedLifeEvents,
+                deletedRiskProfileVersions,
                 deletedFormSubmissions,
                 cancelledSubscriptions,
                 sanitizedPolicyholderProfiles,
@@ -239,6 +243,12 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 tx.userTask.deleteMany({ where: { userId } }),
                 tx.protectionScore.deleteMany({ where: { userId } }),
                 tx.recommendationInstance.deleteMany({ where: { userId } }),
+                // The model here is anonymize-in-place: the User row survives, so
+                // ON DELETE CASCADE never fires and these would otherwise outlive
+                // the erasure request holding a record of the person's marriage,
+                // divorce, children and health changes.
+                tx.lifeEventInstance.deleteMany({ where: { userId } }),
+                tx.riskProfileVersion.deleteMany({ where: { userId } }),
                 // Contact/newsletter submissions have no userId — match by email.
                 tx.formSubmission.deleteMany({
                     where: { email: { equals: originalEmail, mode: "insensitive" } },
@@ -375,6 +385,8 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedGapInstances: deletedGapInstances.count,
                 deletedProtectionScores: deletedProtectionScores.count,
                 deletedRecommendations: deletedRecommendations.count,
+                deletedLifeEvents: deletedLifeEvents.count,
+                deletedRiskProfileVersions: deletedRiskProfileVersions.count,
                 deletedFormSubmissions: deletedFormSubmissions.count,
                 scrubbedCollaborationMessages: scrubbedCollaborationMessages.count,
                 scrubbedReferrals: scrubbedReferrals.count,

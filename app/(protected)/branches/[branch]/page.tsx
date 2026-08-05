@@ -101,8 +101,9 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
     // is never re-run from a page render (coverage-insights lesson).
     let recommendations: any[] = []
     try {
-        const { getActiveRecommendations } = await import("@/lib/services/gap-engine")
-        const all = await getActiveRecommendations(dbUser.id)
+        // Enriched, not raw — see the note in the wallet policy page.
+        const { getEnrichedRecommendations } = await import("@/lib/services/gap-engine")
+        const all = await getEnrichedRecommendations(dbUser.id)
         const family = new Set(getBranchFamily(branch.id))
         recommendations = all
             .filter((rec) => family.has(normalizeBranch(rec.lineOfBusiness).id))

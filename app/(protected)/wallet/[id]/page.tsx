@@ -194,8 +194,11 @@ export default async function PolicyDetailPage({
     let relatedRecommendations: Array<Record<string, unknown>> = []
     if (isOwner) {
         try {
-            const { getActiveRecommendations, policyGapConcept } = await import("@/lib/services/gap-engine")
-            const recommendations = (await getActiveRecommendations(dbUser.id)).filter((r) => {
+            // Enriched, not raw: the card renders evidence, urgency, the
+            // advisor angle and the customer benefit, and the raw row read
+            // leaves all four null.
+            const { getEnrichedRecommendations, policyGapConcept } = await import("@/lib/services/gap-engine")
+            const recommendations = (await getEnrichedRecommendations(dbUser.id)).filter((r) => {
                 const concept = policyGapConcept(r.ruleId)
                 if (concept === null) return true // profile/portfolio rule — always shown
                 return !reportConcepts.has(concept)
