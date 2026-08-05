@@ -137,8 +137,9 @@ model User {
   proposalsCreated                Proposal[]
   GapInstance                     GapInstance[]
   protectionScore                 ProtectionScore?
-  protectionScoreHistory          ProtectionScoreHistory[]
   recommendations                 RecommendationInstance[]
+  lifeEventInstances              LifeEventInstance[]
+  riskProfileVersions             RiskProfileVersion[]
 
   @@index([taxId])
   @@map("users")
@@ -220,6 +221,9 @@ model PolicyholderProfile {
   ownsHome         Boolean  @default(false) @map("owns_home")
   mortgageAmount   Decimal? @map("mortgage_amount")
   hasPets          Boolean  @default(false) @map("has_pets")
+  /// How many, so the exposure can be stated in the customer's own numbers
+  /// ("two dogs") rather than as a boolean ("you have pets").
+  petsCount        Int?     @map("pets_count")
   vehiclesCount    Int      @default(0) @map("vehicles_count")
 
   // Enhanced Risk Fields (Gap Detection Engine)
@@ -232,6 +236,31 @@ model PolicyholderProfile {
   travelsFrequently Boolean   @default(false) @map("travels_frequently")
   smokingStatus     String?   @map("smoking_status") // 'non_smoker', 'smoker', 'former_smoker'
   lifeEvents        Json?     @map("life_events") // [{type: 'new_baby', date: '2026-03'}]
+
+  // ── Life Context Risk Assessment fields ───────────────────────────────────
+  // Contextual factors the risk catalog conditions on. A risk whose deciding
+  // factors are unknown is reported as `needs_review`, never as a gap — see
+  // lib/services/gap-engine/life-context.ts.
+  childrenCount      Int      @default(0) @map("children_count")
+  residenceType      String?  @map("residence_type") // 'owned' | 'rented' | 'family' | 'company'
+  propertiesOwned    Int?     @map("properties_owned")
+  rentsOutProperty   Boolean  @default(false) @map("rents_out_property")
+  ownsBoat           Boolean  @default(false) @map("owns_boat")
+  ownsBusiness       Boolean  @default(false) @map("owns_business")
+  businessEmployees  Int      @default(0) @map("business_employees")
+  savingsAmount      Decimal? @map("savings_amount")
+  valuablesValue     Decimal? @map("valuables_value")
+  activities         Json?    @map("activities") // string[] — HIGH_RISK_ACTIVITIES ids
+  cyberExposure      String?  @map("cyber_exposure") // 'low' | 'moderate' | 'high'
+  retirementPlanning Boolean  @default(false) @map("retirement_planning")
+  /// Lines the customer holds OUTSIDE PolicyWallet (bank-assigned borrower
+  /// cover, employer group scheme). Without this the engine reads "not in the
+  /// wallet" as "does not exist" and manufactures a gap against a real policy.
+  coverHeldElsewhere Json?    @map("cover_held_elsewhere") // string[] of branch ids
+  /// Columns the customer has actually been asked and answered. The risk
+  /// columns are NOT NULL with defaults, so without this record an untouched
+  /// profile is byte-identical to one whose owner answered "no" to everything.
+  answeredFields     Json?    @map("answered_fields") // string[] of column names
 
   // Health & Lifestyle Risk Fields
   gender               String? @map("gender") // 'male', 'female', 'prefer_not_to_say'
@@ -1440,6 +1469,66 @@ model Proposal {
 
 // ── Gap Detection & Recommendation Engine ────────────────────────────
 
+/// One declared life event. Append-only: a correction is a new row that
+/// supersedes the old one, because a record that rewrites itself is not a record.
+model LifeEventInstance {
+  id           String   @id @default(cuid()) @map("life_event_id")
+  userId       String   @map("user_id")
+  /// `LIFE_EVENT_REGISTRY[].id`. Not an enum — the registry is data, and a DB
+  /// enum would make adding an event a migration.
+  definitionId String   @map("definition_id")
+  occurredAt   DateTime @map("occurred_at")
+  /// When WE learned it. Windows run from here, not from occurrence — a customer
+  /// telling us in November about a March event has their attention on it now.
+  discoveredAt DateTime @default(now()) @map("discovered_at")
+  source       String
+  confidence   String
+  /// Amount for events that carry one (mortgage balance, headcount, valuables).
+  magnitude    Decimal?
+  status       String   @default("applied") // applied | superseded | retracted
+  /// Exactly what was written, so a retraction can reverse cleanly rather than
+  /// guess at the prior state.
+  appliedPatch Json?    @map("applied_patch")
+  supersedesId String?  @map("supersedes_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, occurredAt])
+  @@index([userId, definitionId])
+  @@map("life_event_instances")
+}
+
+/// A versioned snapshot of the risk assessment.
+///
+/// The current `ProtectionScore` is a single upserted row, so the product cannot
+/// answer "what changed and why". This is the history: one row per materially
+/// different assessment, stamped with what triggered the recalculation.
+model RiskProfileVersion {
+  id                 String   @id @default(cuid()) @map("risk_profile_version_id")
+  userId             String   @map("user_id")
+  version            Int
+  computedAt         DateTime @default(now()) @map("computed_at")
+  /// life_event | policy_change | profile_update | cron | manual
+  trigger            String
+  /// The event that caused it, when there was one.
+  lifeEventId        String?  @map("life_event_id")
+  overallScore       Int      @map("overall_score")
+  assessmentCoverage Int?     @map("assessment_coverage")
+  indeterminate      Boolean  @default(false)
+  /// Per-risk status snapshot — what applied, what was covered, what was open.
+  risks              Json
+  categoryScores     Json     @map("category_scores")
+  openFindingCount   Int      @map("open_finding_count")
+  /// Fingerprint of the assessment. A recalculation that produces an identical
+  /// hash writes no row, so the history records CHANGES rather than cron ticks.
+  contextHash        String   @map("context_hash")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, version])
+  @@index([userId, computedAt])
+  @@map("risk_profile_versions")
+}
+
 model ProtectionScore {
   id             String   @id @default(cuid()) @map("protection_score_id")
   userId         String   @unique @map("user_id")
@@ -1447,6 +1536,10 @@ model ProtectionScore {
   categoryScores Json     @map("category_scores") // { life: 80, health: 100, property: 0, income: 40, liability: 60, other: 0 }
   gapCount       Int      @map("gap_count")
   expectedLines  Json     @map("expected_lines") // ["motor","health","home","life"]
+  /// Share of the risk catalog that could be decided, 0-100. Below 50 the score
+  /// is not a measure of this person's cover but of what we happened to be able
+  /// to answer, and every surface must show "not enough information" instead.
+  assessmentCoverage Int?  @map("assessment_coverage")
   actualLines    Json     @map("actual_lines") // ["motor","health"]
   computedAt     DateTime @map("computed_at")
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1468,22 +1561,6 @@ model ProtectionScore {
 /// every user daily; recording an unchanged number every day would be ~365
 /// rows per user per year of noise, and a flat line is fully implied by the
 /// gap between two entries).
-model ProtectionScoreHistory {
-  id             String   @id @default(cuid()) @map("history_id")
-  userId         String   @map("user_id")
-  overallScore   Int      @map("overall_score")
-  categoryScores Json     @map("category_scores")
-  gapCount       Int      @map("gap_count")
-  /// Score immediately before this one; null for the first ever entry.
-  previousScore  Int?     @map("previous_score")
-  computedAt     DateTime @map("computed_at")
-  createdAt      DateTime @default(now()) @map("created_at")
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Timeline reads are always "this user, newest first".
-  @@index([userId, computedAt])
-  @@map("protection_score_history")
-}
 
 model RecommendationInstance {
   id               String       @id @default(cuid()) @map("recommendation_id")
@@ -1497,6 +1574,27 @@ model RecommendationInstance {
   estimatedCostEur Decimal?     @map("estimated_cost_eur") @db.Decimal(10, 2)
   personalReason   Json         @map("personal_reason") // { en: "You have a mortgage...", el: "..." }
   status           String       @default("active") // 'active', 'dismissed', 'actioned'
+
+  // ── Life Context Risk Assessment payload ────────────────────────────────
+  // Every recommendation must be able to answer: does this risk exist, could
+  // they suffer it, and is insurance the right answer. These carry that answer
+  // to the UI instead of it being re-derived per surface.
+  /// RiskStatus: not_applicable | needs_review | already_covered |
+  /// protection_gap | opportunity | applicable
+  riskStatus        String? @map("risk_status")
+  /// RiskConfidence: high | medium | low — how much rests on answered facts.
+  confidence        String? @map("confidence")
+  /// The catalog risk this came from (`RISK_CATALOG[].id`), when applicable.
+  riskId            String? @map("risk_id")
+  expectedImpact    Json?   @map("expected_impact") // { en, el }
+  /// Everything that can be done about the risk — avoid / reduce / retain /
+  /// transfer. Insurance appears here as ONE option among others; the card is
+  /// built from this, not from suggestedSolution.
+  mitigations       Json?   @map("mitigations") // Mitigation[]
+  suggestedSolution Json?   @map("suggested_solution") // { en, el } — the transfer option, derived
+  /// Market reality that qualifies the suggestion (e.g. pre-existing-condition
+  /// exclusions, life underwriting age ceilings). Shown verbatim on the card.
+  eligibilityNote   Json?   @map("eligibility_note") // { en, el } | null
   dismissReason    String?      @map("dismiss_reason")
   actionedAt       DateTime?    @map("actioned_at")
   createdAt        DateTime     @default(now()) @map("created_at")
@@ -1513,6 +1611,8 @@ model RecommendationInstance {
   @@unique([userId, ruleId])
   @@index([userId, status])
   @@index([urgency])
+  // The recommendations list groups by assessment status.
+  @@index([userId, riskStatus])
   @@map("recommendation_instances")
 }
 

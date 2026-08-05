@@ -36,7 +36,12 @@ export const GET = withApiGuard(
                 expectedLines: result.protectionScore.expectedLines,
                 actualLines: result.protectionScore.actualLines,
                 profileCompleteness: result.profileCompleteness,
-                profileGaps: result.profileGaps.length,
+                // Open findings from the life-context assessment. This read
+                // `result.profileGaps.length` — the LEGACY rule set, which no
+                // longer drives the score or the recommendations, so the number
+                // described an engine the rest of the response is not about.
+                profileGaps: result.riskSummary.protection_gap + result.riskSummary.opportunity,
+                riskSummary: result.riskSummary,
                 recommendations: result.recommendations.length,
                 computedAt: new Date().toISOString(),
             })

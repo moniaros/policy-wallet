@@ -14,6 +14,8 @@
 import type { ProfileFields, ProfileGap } from "./profile-gap-rules"
 import type { GapSeverity } from "./profile-gap-rules"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import type { RiskAssessment, RiskKind, RiskPriority } from "./risk-types"
+import { relevantLines, scorableRisks } from "./risk-assessment"
 
 // ── Category definitions ─────────────────────────────────────────────
 
@@ -53,15 +55,20 @@ export const SCORE_CATEGORIES: ScoreCategory[] = [
         label: { en: "Property & Motor", el: "Ακίνητα & Αυτοκίνητο" },
         weight: 20,
         essential: true,
-        coveredByLobs: ["home", "motor"],
+        // `boat` sits here rather than in Lifestyle: it is a titled asset with
+        // a compulsory third-party liability, not a hobby line.
+        coveredByLobs: ["home", "motor", "boat"],
         appliesWhen: (p) => p.ownsHome || p.vehiclesCount > 0,
     },
     {
         key: "income",
+        // `pension` added so the retirement risk has a category to score in;
+        // it is top-level in the taxonomy and previously matched none, which
+        // meant a whole risk could be assessed and then silently ignored.
         label: { en: "Income Protection", el: "Προστασία Εισοδήματος" },
         weight: 15,
         essential: false,
-        coveredByLobs: ["life", "income_protection", "disability"],
+        coveredByLobs: ["life", "income_protection", "disability", "pension"],
         appliesWhen: (p) =>
             p.employmentStatus === "employed" ||
             p.employmentStatus === "self_employed",
@@ -71,7 +78,9 @@ export const SCORE_CATEGORIES: ScoreCategory[] = [
         label: { en: "Liability & Legal", el: "Ευθύνη & Νομική" },
         weight: 10,
         essential: false,
-        coveredByLobs: ["liability", "legal_expenses"],
+        // `business` carries professional/employer liability and commercial
+        // property for the self-employed and small-business risks.
+        coveredByLobs: ["liability", "legal_expenses", "business"],
         appliesWhen: (p) =>
             p.employmentStatus === "self_employed" || p.ownsHome,
     },
@@ -80,7 +89,7 @@ export const SCORE_CATEGORIES: ScoreCategory[] = [
         label: { en: "Lifestyle", el: "Τρόπος Ζωής" },
         weight: 5,
         essential: false,
-        coveredByLobs: ["travel", "pet", "cyber"],
+        coveredByLobs: ["travel", "pet", "cyber", "gadget"],
         appliesWhen: (p) => p.travelsFrequently || p.hasPets,
     },
 ]
@@ -94,6 +103,17 @@ export interface ProtectionScoreResult {
     expectedLines: string[]
     actualLines: string[]
     applicableCategories: string[]
+    /** Share of the risk catalog we were able to decide, 0-100. */
+    assessmentCoverage?: number
+    /**
+     * True when too little of the catalog could be decided for the number to
+     * mean anything. A profile we have never asked a question resolves almost
+     * every risk to `needs_review`, leaving only the handful that apply to
+     * everyone — and those scored 90 "Excellent", which is a confident verdict
+     * on a stranger. Renderers must show "not enough information" instead of the
+     * number when this is set.
+     */
+    indeterminate?: boolean
 }
 
 /**
@@ -215,8 +235,16 @@ export function calculateProtectionScore(
     profile: ProfileFields,
     activeLobs: string[],
     profileGaps: ProfileGap[],
-    policyGaps: number | PolicyGapRef[] = 0
+    policyGaps: number | PolicyGapRef[] = 0,
+    assessments?: RiskAssessment[]
 ): ProtectionScoreResult {
+    // When the life-context assessment is available it decides applicability,
+    // and it is strictly better evidence than `appliesWhen`: it already
+    // separated "this risk is not yours" from "we never asked", and it did so
+    // per RISK rather than per category. See calculateScoreFromAssessments.
+    if (assessments) {
+        return calculateScoreFromAssessments(assessments, activeLobs, policyGaps)
+    }
     // A single open gap on ONE policy used to deduct from EVERY applicable
     // category: the penalty was computed from the global count and subtracted
     // inside the per-category loop. A motor gap dragged down Health, Life and
@@ -332,6 +360,191 @@ export function calculateProtectionScore(
         gapCount: profileGaps.length + policyGapCount,
         expectedLines,
         actualLines,
+        applicableCategories,
+    }
+}
+
+// ── Risk-driven scoring ──────────────────────────────────────────────
+
+/** How much an uncovered risk of each priority drags its category. */
+const PRIORITY_WEIGHT: Record<RiskPriority, number> = {
+    critical: 4,
+    high: 3,
+    medium: 2,
+    low: 1,
+}
+
+/**
+ * How much of its weight an uncovered risk actually deducts.
+ *
+ * An `essential` loss is one the household cannot absorb, so leaving it
+ * uncovered costs the category its full weight. A `discretionary` one is real
+ * but survivable, and must not be able to zero a category on its own — the
+ * Health category contains exactly one discretionary risk (private treatment
+ * speed), and at full weight a customer with public cover and no private policy
+ * scored 0/100 "Critical" for having ΕΟΠΥΥ like everyone else.
+ */
+const KIND_PENALTY: Record<RiskKind, number> = {
+    essential: 1,
+    discretionary: 0.4,
+}
+
+/** Top-level branch id for a line, so children score under their parent. */
+function parentLine(lob: string): string {
+    const branch = normalizeBranch(String(lob || ""))
+    return (branch.parentId ?? branch.id).toLowerCase()
+}
+
+/**
+ * Protection score computed from assessed risks.
+ *
+ * Two things change versus the profile-driven path, and both come straight from
+ * the audit:
+ *
+ * **Only relevant risks count.** A category is applicable when a risk that
+ * genuinely applies to this customer lands in it — not when a coarse profile
+ * predicate fires. `not_applicable` and `needs_review` risks are excluded from
+ * the denominator entirely, so the score can no longer be dragged down by cover
+ * the customer has no reason to hold, nor by questions we never asked.
+ *
+ * **Uncovered risks are weighted by priority.** A missing compulsory motor cover
+ * and a missing pet policy used to move a category identically, because scoring
+ * counted LINES held rather than RISKS answered. Weighting by the assessed
+ * priority makes the number respond to how much is actually at stake.
+ *
+ * `expectedLines` is the list of lines the applicable risks call for — nothing
+ * else. This is the fix for the audit's largest finding: the old inline loop
+ * expanded an applicable CATEGORY into every line it contained, so owning a car
+ * made `home` "expected" and owning a pet made `cyber` "expected", and the
+ * branch tiles rendered both as gaps.
+ */
+export function calculateScoreFromAssessments(
+    assessments: RiskAssessment[],
+    activeLobs: string[],
+    policyGaps: number | PolicyGapRef[] = 0
+): ProtectionScoreResult {
+    const attributable = Array.isArray(policyGaps)
+    const policyGapCount = attributable ? policyGaps.length : policyGaps
+    const gapsByCategory = attributable ? countGapsByCategory(policyGaps) : null
+
+    const normalizedLobs = new Set(activeLobs.map(parentLine))
+    const inScope = scorableRisks(assessments)
+
+    const categoryResults: Record<string, CategoryScore> = {}
+    const applicableCategories: string[] = []
+    let weightedSum = 0
+    let totalWeight = 0
+
+    for (const cat of SCORE_CATEGORIES) {
+        const catRisks = inScope.filter((a) =>
+            cat.coveredByLobs.includes(parentLine(a.lineOfBusiness))
+        )
+        const coveredLobs = cat.coveredByLobs.filter((lob) => normalizedLobs.has(lob))
+
+        // Applicable when a real risk lands here, or when the customer already
+        // holds cover in the category — never ignore cover someone actually has.
+        const applicable = catRisks.length > 0 || coveredLobs.length > 0
+
+        // Lines this category still needs: from unanswered risks only.
+        const missingLobs = [
+            ...new Set(
+                catRisks
+                    .filter((a) => a.status === "protection_gap" || a.status === "opportunity")
+                    .map((a) => a.lineOfBusiness.toLowerCase())
+            ),
+        ]
+
+        let categoryScore = 100
+
+        if (applicable) {
+            applicableCategories.push(cat.key)
+
+            if (catRisks.length > 0) {
+                // Normalise against an ABSOLUTE severity ceiling — what this
+                // category COULD have cost if every risk in it were critical and
+                // essential — not against the category's own contents.
+                //
+                // Dividing by its own contents made every category behave the
+                // same regardless of what was in it: one uncovered medium risk
+                // scored 0, exactly like three uncovered critical ones. The
+                // effect on the whole score was severe compression. A single
+                // renter whose only gap was income protection scored 35 "Needs
+                // Attention", while a landlord with two entirely uninsured
+                // properties scored 25 — a 10-point gap between materially
+                // different situations. Measured against a fixed ceiling those
+                // separate to 75 and 30, which is what the number is for.
+                const ceiling = catRisks.length * PRIORITY_WEIGHT.critical
+                const penalty = catRisks
+                    .filter((a) => a.status !== "already_covered")
+                    .reduce(
+                        (sum, a) => sum + PRIORITY_WEIGHT[a.priority] * KIND_PENALTY[a.kind],
+                        0
+                    )
+                categoryScore = Math.max(0, Math.round(100 - (penalty / ceiling) * 100))
+            } else {
+                // No assessed risk, but cover is held — nothing to fault.
+                categoryScore = 100
+            }
+
+            const categoryGapCount = gapsByCategory
+                ? gapsByCategory.get(cat.key) ?? 0
+                : policyGapCount
+            const policyGapPenalty = Math.min(
+                GAP_PENALTY_CAP,
+                categoryGapCount * GAP_PENALTY_PER_GAP
+            )
+            categoryScore = Math.max(0, categoryScore - policyGapPenalty)
+
+            // Weight by the product's stated importance AND by how much exposure
+            // this person actually carries in the category.
+            //
+            // With fixed weights alone, a landlord whose two properties were
+            // both uninsured scored 63 "Fair": Property is weighted 20 while
+            // Health is 25, so their largest uncovered asset class counted for
+            // less than a low-severity private-treatment preference. Multiplying
+            // by the category's exposure mass makes the score respond to what is
+            // actually at stake for this customer rather than to an average one.
+            const exposureMass = catRisks.reduce(
+                (sum, a) => sum + PRIORITY_WEIGHT[a.priority],
+                0
+            )
+            const effectiveWeight = cat.weight * Math.max(exposureMass, 1)
+
+            weightedSum += categoryScore * effectiveWeight
+            totalWeight += effectiveWeight
+        }
+
+        categoryResults[cat.key] = {
+            key: cat.key,
+            label: cat.label,
+            score: applicable ? categoryScore : -1,
+            weight: cat.weight,
+            applicable,
+            essential: cat.essential,
+            coveredLobs,
+            missingLobs,
+        }
+    }
+
+    const openCount = assessments.filter(
+        (a) => a.status === "protection_gap" || a.status === "opportunity"
+    ).length
+
+    const decided = assessments.filter((a) => a.applicability !== "needs_review").length
+    const assessmentCoverage =
+        assessments.length > 0 ? Math.round((decided / assessments.length) * 100) : 0
+
+    return {
+        overallScore: totalWeight > 0 ? Math.round(weightedSum / totalWeight) : 0,
+        assessmentCoverage,
+        // Below half the catalog decided, the number is an artefact of what we
+        // happened to be able to answer, not a measure of this person's cover.
+        indeterminate: assessmentCoverage < 50,
+        categoryScores: categoryResults,
+        gapCount: openCount + policyGapCount,
+        // ONLY lines the applicable risks call for (audit R-01).
+        expectedLines: relevantLines(assessments),
+        actualLines: [...normalizedLobs],
         applicableCategories,
     }
 }

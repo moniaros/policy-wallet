@@ -121,8 +121,8 @@ function expiringMotorRule(
         lineOfBusiness: expiring.lineOfBusiness,
         severity: daysLeft <= 7 ? "critical" : "high",
         name: {
-            en: "Motor policy expiring soon",
-            el: "Το ασφαλιστήριο αυτοκινήτου λήγει σύντομα",
+            en: "Your vehicle is about to be uninsured",
+            el: "Το όχημά σας πρόκειται να μείνει ανασφάλιστο",
         },
         reason: {
             en: "Driving without active cover is illegal in Greece and even one day's lapse leaves you personally liable for any accident.",
@@ -174,8 +174,8 @@ function lowHealthCoverageRule(
         lineOfBusiness: "health",
         severity: limit < LOW_HEALTH_LIMIT_HIGH ? "high" : "medium",
         name: {
-            en: "Health coverage limit looks low",
-            el: "Το όριο κάλυψης υγείας φαίνεται χαμηλό",
+            en: "One hospitalisation could exceed what your cover pays",
+            el: "Μία νοσηλεία μπορεί να ξεπεράσει όσα καλύπτει το ασφαλιστήριό σας",
         },
         reason: {
             en: "A single serious hospitalisation in a private Greek hospital can exceed a low annual limit, leaving the rest out of pocket.",
@@ -268,8 +268,8 @@ function duplicateCoverageRules(
             lineOfBusiness: lob,
             severity: "medium",
             name: {
-                en: `Possible duplicate ${label.en} coverage`,
-                el: `Πιθανή διπλή κάλυψη ${label.el}`,
+                en: `You may be paying twice for the same ${label.en} protection`,
+                el: `Ίσως πληρώνετε δύο φορές για την ίδια προστασία ${label.el}`,
             },
             reason: {
                 en: "Two policies on the same insured item over the same period usually means paying twice — insurers rarely pay out twice for the same loss.",
@@ -385,8 +385,8 @@ function homeNoEarthquakeRule(policies: PortfolioPolicyFacts[]): PortfolioGap | 
         lineOfBusiness: candidate.lineOfBusiness,
         severity: "medium",
         name: {
-            en: "Home policy appears to lack earthquake cover",
-            el: "Η κατοικία φαίνεται χωρίς κάλυψη σεισμού",
+            en: "Earthquake damage to your home would not be paid",
+            el: "Ζημιά από σεισμό στην κατοικία σας δεν θα αποζημιωνόταν",
         },
         reason: {
             en: "Earthquake cover is usually an optional add-on in Greek home policies — many basic packages leave it out.",
@@ -453,8 +453,8 @@ function homeUnderinsuredRule(policies: PortfolioPolicyFacts[]): PortfolioGap | 
         lineOfBusiness: candidate.lineOfBusiness,
         severity: "high",
         name: {
-            en: "Sum insured is below the rebuild cost stated in the policy",
-            el: "Το ασφαλισμένο κεφάλαιο είναι κάτω από το κόστος ανακατασκευής που αναφέρει το ασφαλιστήριο",
+            en: "A total loss would not rebuild your home",
+            el: "Μια ολική ζημιά δεν θα ξανάχτιζε την κατοικία σας",
         },
         reason: {
             en: "Greek home policies apply an average clause: if the sum insured is below the rebuild cost, EVERY claim — not only a total loss — is reduced by the same proportion.",
@@ -492,8 +492,8 @@ function motorNoRoadsideRule(policies: PortfolioPolicyFacts[]): PortfolioGap | n
         lineOfBusiness: candidate.lineOfBusiness,
         severity: "medium",
         name: {
-            en: "Motor policy appears to lack roadside assistance",
-            el: "Το αυτοκίνητο φαίνεται χωρίς οδική βοήθεια",
+            en: "A breakdown would be towed at your own cost",
+            el: "Μια βλάβη θα ρυμουλκούνταν με δικά σας έξοδα",
         },
         reason: {
             en: "A breakdown without roadside assistance means paying for towing out of pocket — often more than the cover itself costs.",
@@ -535,11 +535,24 @@ export function evaluatePortfolioRules(
 
     gaps.push(...duplicateCoverageRules(policies))
 
-    const unclear = unclearExclusionsRule(policies)
-    if (unclear) gaps.push(unclear)
+    // `unclear_exclusions` is deliberately NOT pushed either. It says something
+    // about the quality of OUR extraction, not about the customer's exposure —
+    // "we could not read your exclusions" is a data-quality note, and belongs in
+    // the needs-review channel the engine already has rather than in the list of
+    // things the customer is asked to act on.
 
-    const noAgent = noAgentRule(policies, context.hasAgent)
-    if (noAgent) gaps.push(noAgent)
+    // `no_agent_connected` is deliberately NOT pushed.
+    //
+    // It recommended connecting an advisor. There is no loss described, because
+    // there is no risk — it is a service-absence recommendation, structurally the
+    // same defect as the `no_health` rule the July audit removed, surviving in a
+    // file the risk rebuild did not touch. It occupied a slot in the
+    // recommendation list, counted toward gapCount and dragged the protection
+    // score, all on the strength of the customer not having bought something.
+    //
+    // The advisor prompt is a worthwhile product affordance; where it belongs is
+    // a UI decision, not a protection finding. `noAgentRule` is retained and
+    // exported for that surface to use.
 
     return gaps
 }

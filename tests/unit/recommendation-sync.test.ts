@@ -115,3 +115,48 @@ describe('syncRecommendations — one row per (user, rule)', () => {
         expect(result.dismissed).toBe(1)
     })
 })
+
+
+describe('upgrading the engine does not resurrect dismissed cards', () => {
+    it('carries a user dismissal across the legacy rule rename', async () => {
+        // Every profile-rule id changed when the rules became catalog risks. A
+        // customer who had dismissed `mortgage_no_life` would otherwise meet the
+        // same finding again the next morning as `risk:life_debt` — the product
+        // forgetting, on upgrade, the one thing they took the trouble to say.
+        findMany.mockResolvedValue([
+            { id: 'old-1', ruleId: 'mortgage_no_life', status: 'dismissed', dismissReason: 'not_relevant' },
+        ])
+
+        await syncRecommendations('u1', [rec('risk:life_debt', { lineOfBusiness: 'life' })])
+
+        const written = create.mock.calls.map((c: any) => c[0].data)
+        const lifeDebt = written.find((d: any) => d.ruleId === 'risk:life_debt')
+        expect(lifeDebt, 'the replacement row was not written').toBeTruthy()
+        expect(lifeDebt.status).toBe('dismissed')
+        expect(lifeDebt.dismissReason).toBe('not_relevant')
+    })
+
+    it('still surfaces a replacement whose predecessor was active', async () => {
+        findMany.mockResolvedValue([
+            { id: 'old-2', ruleId: 'vehicles_no_motor', status: 'active', dismissReason: null },
+        ])
+
+        await syncRecommendations('u1', [rec('risk:motor_liability', { lineOfBusiness: 'motor' })])
+
+        const written = create.mock.calls.map((c: any) => c[0].data)
+        expect(written.find((d: any) => d.ruleId === 'risk:motor_liability')?.status).toBe('active')
+    })
+
+    it('does not carry a dismissal onto a finding we now make differently', async () => {
+        // `no_health` was withdrawn as wrong, not renamed. Someone who dismissed
+        // a claim we no longer make has not dismissed the one we now make.
+        findMany.mockResolvedValue([
+            { id: 'old-3', ruleId: 'no_health', status: 'dismissed', dismissReason: 'not_relevant' },
+        ])
+
+        await syncRecommendations('u1', [rec('risk:health_access_delay', { lineOfBusiness: 'health' })])
+
+        const written = create.mock.calls.map((c: any) => c[0].data)
+        expect(written.find((d: any) => d.ruleId === 'risk:health_access_delay')?.status).toBe('active')
+    })
+})

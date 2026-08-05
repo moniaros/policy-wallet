@@ -5,6 +5,7 @@ import { requireApiUser } from "@/lib/api-auth"
 import { z } from "zod"
 import {
     mapAnswersToProfile,
+    mergeAnsweredFields,
     type MappableQuestion,
 } from "@/lib/services/questionnaire/profile-mapping"
 import type { QuestionnaireAnswers } from "@/types/questionnaire"
@@ -113,20 +114,33 @@ export async function POST(
                 data: { status: "completed", completedAt: new Date() },
             })
             if (applied.length > 0) {
+                // Record that these questions were ASKED, not just what they
+                // answered — a "no" is indistinguishable from a default value.
+                const existing = await tx.policyholderProfile.findUnique({
+                    where: { userId: authResult.dbUser.id },
+                    select: { answeredFields: true },
+                })
+                const answeredFields = mergeAnsweredFields(existing?.answeredFields, applied)
                 await tx.policyholderProfile.upsert({
                     where: { userId: authResult.dbUser.id },
-                    create: { userId: authResult.dbUser.id, ...profileUpdates },
-                    update: profileUpdates,
+                    create: { userId: authResult.dbUser.id, ...profileUpdates, answeredFields },
+                    update: { ...profileUpdates, answeredFields },
                 })
             }
             return created
         })
 
         if (applied.length > 0) {
-            // Non-fatal: the submission already succeeded.
-            import("@/lib/services/gap-engine")
+            // Awaited, for the same reason as the risk-profile route: the client
+            // reloads on success and reads the persisted recommendations, so a
+            // background re-run races it and the answers appear to have changed
+            // nothing. Still non-fatal — the submission has already succeeded and
+            // must not be reported as failed because the re-run did.
+            await import("@/lib/services/gap-engine")
                 .then(({ refreshProtectionScore }) => refreshProtectionScore(authResult.dbUser.id))
-                .catch(() => {})
+                .catch((err) => {
+                    console.error("Post-questionnaire engine run failed:", err)
+                })
         }
 
         return createApiResponse(response)

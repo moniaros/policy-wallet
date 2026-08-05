@@ -19,7 +19,6 @@ import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import {
     detectProfileGaps,
-    getExpectedLines,
     toProfileFields,
     type ProfileGap,
     type ProfileFields,
@@ -31,7 +30,7 @@ import {
     type ProtectionScoreResult,
 } from "./protection-score"
 import {
-    profileGapsToRecommendations,
+    assessmentsToRecommendations,
     policyGapsToRecommendations,
     prioritizeRecommendations,
     syncRecommendations,
@@ -42,13 +41,28 @@ import {
     type RecommendationOutput,
 } from "./recommendation-generator"
 import {
+    toLifeContext,
+    contextCompleteness,
+    type LifeContext,
+    type ContextFactorKey,
+} from "./life-context"
+import { assessRisks, factorsToResolve, statusCounts } from "./risk-assessment"
+import { withRecommendationContext, risksExposedBy } from "./recommendation-context"
+import { attributeRecommendationCause } from "@/lib/services/timeline/build"
+import { parseRisks } from "@/lib/services/timeline/diff"
+import type { RiskAssessment } from "./risk-types"
+import {
     evaluatePortfolioRules,
-    buildProfileGapEvidence,
     type PortfolioGap,
     type SmartCardContent,
 } from "./portfolio-rules"
 import type { AIRiskProfileAnalysisResponse } from "@/lib/services/ai/ai-service.interface"
 import { coverageEngineStatus, isPolicyCoverageActive } from "@/lib/policy-status"
+import {
+    assembleRiskGraph,
+    type RiskGraphPolicyInput,
+    type RiskGraphResult,
+} from "@/lib/services/risk-graph/service"
 
 // ── Public types ─────────────────────────────────────────────────────
 
@@ -56,6 +70,27 @@ export interface GapEngineResult {
     protectionScore: ProtectionScoreResult
     scoreTier: ReturnType<typeof getScoreTier>
     profileGaps: ProfileGap[]
+    /**
+     * Every risk in the catalog, assessed against this customer's life —
+     * including the ones that do NOT apply. The dashboard needs to be able to
+     * say "we checked this and it is not your risk", which is a different and
+     * more trustworthy statement than saying nothing at all.
+     */
+    riskAssessments: RiskAssessment[]
+    /**
+     * The risk graph the assessments were reconciled against.
+     *
+     * Returned rather than left for the caller to rebuild: the page renders the
+     * graph beside the risk list, and computing it twice from two independent
+     * reads means a policy added between them would leave the two panels
+     * describing different wallets. Null only if the projection failed, in which
+     * case `riskAssessments` is the bare assessment.
+     */
+    riskGraph: RiskGraphResult | null
+    /** Counts per RiskStatus — the assessment summary band. */
+    riskSummary: ReturnType<typeof statusCounts>
+    /** Factors that, if answered, would resolve at least one `needs_review`. */
+    unansweredFactors: ReturnType<typeof factorsToResolve>
     recommendations: RecommendationOutput[]
     profileCompleteness: number // 0-100
     syncStats: { created: number; dismissed: number }
@@ -71,6 +106,15 @@ export interface GapEngineResult {
 export interface RunGapEngineOptions {
     /** Run AI risk profile analysis (slower, costs tokens). Default: false */
     includeAiInsights?: boolean
+    /**
+     * What caused this run, stamped on the risk-profile version.
+     *
+     * Defaults to `policy_change` because the upload pipeline is the busiest
+     * caller — but a questionnaire submission and a nightly cron are not policy
+     * changes, and recording them as such makes the one column that explains a
+     * score movement say the wrong thing.
+     */
+    trigger?: "life_event" | "policy_change" | "profile_update" | "cron" | "manual"
 }
 
 export interface CachedProtectionScore {
@@ -80,6 +124,168 @@ export interface CachedProtectionScore {
     expectedLines: string[]
     actualLines: string[]
     computedAt: Date
+    /** Share of the risk catalog decided, 0-100. Null on rows cached before this existed. */
+    assessmentCoverage: number | null
+    /** True when too little was decided for `overallScore` to mean anything. */
+    indeterminate: boolean
+}
+
+/**
+ * Assess this customer's risks, then reconcile the result against the risk graph.
+ *
+ * The graph answers the half of the question the assessment cannot: not "does a
+ * policy on this line exist" but "does the cover that exists actually answer the
+ * risk". It may only ever downgrade `already_covered` to `needs_review`, never
+ * invent coverage (§lib/services/risk-graph/reconcile).
+ *
+ * **Falls back to the bare assessment if the projection throws.** Both engine
+ * entry points feed the whole coverage page — score, recommendations, risk list —
+ * and before the graph existed this path could not fail. A defect in a derived,
+ * additive layer must degrade the answer, not blank the page.
+ */
+function reconciledAssessments(
+    profileRecord: unknown,
+    policies: RiskGraphPolicyInput[],
+    lifeContext: LifeContext,
+    policyFields: PolicyFields[]
+): { assessments: RiskAssessment[]; riskGraph: RiskGraphResult | null } {
+    try {
+        const riskGraph = assembleRiskGraph(profileRecord, policies)
+        return { assessments: riskGraph.assessments, riskGraph }
+    } catch (err) {
+        logger("error", "Risk graph reconciliation failed; scoring the bare assessment", {
+            error: err instanceof Error ? err.message : String(err),
+        })
+        return { assessments: assessRisks(lifeContext, policyFields), riskGraph: null }
+    }
+}
+
+
+/**
+ * Attach urgency, evidence, advisor opportunity and customer benefit.
+ *
+ * Derived from the live assessment and graph rather than from the persisted row,
+ * so these four are correct the instant a profile changes even if the row behind
+ * them has not been rewritten yet.
+ *
+ * The life-event read is what separates urgency from priority: a gap opened by a
+ * mortgage taken last month is a different proposition from the same gap carried
+ * for a decade, and nothing else in the engine knows the difference. Failing soft
+ * — an unreadable event history costs the recency signal, not the recommendation.
+ */
+async function enrichRecommendations(
+    userId: string,
+    recommendations: RecommendationOutput[],
+    assessments: RiskAssessment[],
+    lifeContext: LifeContext,
+    riskGraph: RiskGraphResult | null
+): Promise<RecommendationOutput[]> {
+    // Both reads fail soft: the two tables involved sit behind migrations that
+    // are not applied yet, and a recommendation without its provenance is worth
+    // more than no recommendation.
+    const [events, versionRows] = await Promise.all([
+        db.lifeEventInstance
+            .findMany({
+                where: { userId },
+                select: { id: true, definitionId: true, occurredAt: true },
+                orderBy: { occurredAt: "desc" },
+                take: 20,
+            })
+            .catch(() => [] as Array<{ id: string; definitionId: string; occurredAt: Date }>),
+        db.riskProfileVersion
+            .findMany({
+                where: { userId },
+                select: {
+                    version: true,
+                    computedAt: true,
+                    trigger: true,
+                    lifeEventId: true,
+                    overallScore: true,
+                    indeterminate: true,
+                    openFindingCount: true,
+                    risks: true,
+                },
+                orderBy: { version: "asc" },
+                take: 200,
+            })
+            .catch(() => [] as any[]),
+    ])
+
+    const versions = versionRows.map((v: any) => ({
+        version: v.version,
+        computedAt: v.computedAt,
+        trigger: v.trigger,
+        lifeEventId: v.lifeEventId,
+        overallScore: v.overallScore,
+        indeterminate: v.indeterminate,
+        openFindingCount: v.openFindingCount,
+        risks: parseRisks(v.risks),
+    }))
+
+    const withContext = withRecommendationContext(recommendations, assessments, {
+        age: lifeContext.age,
+        recentEvents: events,
+        eventExposes: risksExposedBy,
+        graphRisks: riskGraph?.risks ?? [],
+    })
+
+    // Provenance: the change that put each recommendation on the screen.
+    return withContext.map((rec) => {
+        const cause = attributeRecommendationCause(rec.riskId, rec.createdAt, versions, events)
+        return {
+            ...rec,
+            cause: cause ? { source: cause.source, explanation: cause.explanation } : null,
+        }
+    })
+}
+
+/**
+ * The recommendation list for a user, complete.
+ *
+ * `getActiveRecommendations` is the raw row read; it returns the persisted
+ * columns and leaves urgency, evidence, advisor opportunity and customer benefit
+ * null because those are derived from the live assessment. Two pages called it
+ * directly and rendered cards missing four of the nine things a recommendation
+ * is supposed to say — a field set that depends on which function you happened
+ * to call is exactly how surfaces drift apart.
+ *
+ * Every reader outside the engine should call this. The engine itself keeps
+ * using the in-memory path, because it already holds the assessment and graph
+ * and has no reason to load them twice.
+ */
+export async function getEnrichedRecommendations(userId: string): Promise<RecommendationOutput[]> {
+    const [profileRecord, policies] = await Promise.all([
+        db.policyholderProfile.findUnique({ where: { userId } }),
+        db.policy.findMany({
+            where: { ownerUserId: userId },
+            select: {
+                id: true,
+                lineOfBusiness: true,
+                status: true,
+                insurerName: true,
+                endDate: true,
+                acordData: true,
+            },
+        }),
+    ])
+    const lifeContext = toLifeContext(profileRecord)
+    const policyFields: PolicyFields[] = policies.map((p) => ({
+        lineOfBusiness: p.lineOfBusiness,
+        status: coverageEngineStatus(p as any),
+    }))
+    const { assessments, riskGraph } = reconciledAssessments(
+        profileRecord,
+        policies,
+        lifeContext,
+        policyFields
+    )
+    return enrichRecommendations(
+        userId,
+        await getActiveRecommendations(userId),
+        assessments,
+        lifeContext,
+        riskGraph
+    )
 }
 
 // ── Main orchestrator ────────────────────────────────────────────────
@@ -168,20 +374,39 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
         (gap) => !gap.policyId || coverageActive.get(gap.policyId)
     )
 
-    // 3. Detect profile-level gaps
+    // 3. Assess the catalog against this customer's life, then reconcile that
+    // against the risk graph.
+    //
+    // The ordering inside assessRisks is the whole point: a risk that does not
+    // apply is never examined for cover, so it can never become a
+    // recommendation. The graph adds the second half of the question — whether
+    // the cover that exists actually answers the risk — and can only ever
+    // downgrade `already_covered` to `needs_review`, never invent coverage
+    // (§lib/services/risk-graph/reconcile). Without it the score credited a
+    // fire-only home policy as full home protection.
+    const lifeContext = toLifeContext(profileRecord)
+    const { assessments: riskAssessments, riskGraph } = reconciledAssessments(
+        profileRecord,
+        policies,
+        lifeContext,
+        policyFields
+    )
+
+    // Legacy profile gaps are still computed — the agent playbook speaks that
+    // shape — but they no longer drive the score or the recommendation list.
     const profileGaps = detectProfileGaps(profile, policyFields)
 
-    // 4. Calculate protection score
-    // Pass the gaps themselves, not just a count, so each is charged to its own
-    // score category. The policy's line wins; profile-level gaps (no policy)
-    // fall back to the definition's.
+    // 4. Calculate protection score from the ASSESSMENT, so only risks that
+    // genuinely apply reach the denominator. Policy gaps are still passed as
+    // refs so each is charged to its own category rather than to all of them.
     const protectionScore = calculateProtectionScore(
         profile,
         activeLobs,
         profileGaps,
         liveGapInstances.map((gap) => ({
             lineOfBusiness: gap.policy?.lineOfBusiness ?? gap.definition?.lineOfBusiness,
-        }))
+        })),
+        riskAssessments
     )
     const scoreTier = getScoreTier(protectionScore.overallScore)
 
@@ -201,8 +426,11 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
         { hasAgent }
     )
 
-    // 5. Generate recommendations from both profile gaps and policy gaps
-    const profileRecs = profileGapsToRecommendations(userId, profileGaps)
+    // 5. Generate recommendations. Only OPEN findings become recommendations:
+    // `not_applicable`, `needs_review` and `already_covered` are returned to the
+    // dashboard but never persisted as suggestions, because none of the three is
+    // something we are asking the customer to consider.
+    const riskRecs = assessmentsToRecommendations(userId, riskAssessments)
     const policyRecs = policyGapsToRecommendations(userId, liveGapInstances)
 
     // 5b. Match recommendations to insurance products from catalog.
@@ -210,7 +438,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     // "duplicate coverage" or "expiring policy" card would read as a pitch.
     const profileTags = deriveProfileTags(profile)
     const matchedRecs = await matchProductsToRecommendations(
-        prioritizeRecommendations([...profileRecs, ...policyRecs]),
+        prioritizeRecommendations([...riskRecs, ...policyRecs]),
         profileTags
     )
     const portfolioRecs: RecommendationInput[] = portfolioGaps.map((gap) => ({
@@ -223,6 +451,14 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
         urgency: gap.severity,
         estimatedCostEur: null,
         personalReason: gap.reason,
+        // Portfolio findings are about a policy the customer already holds, not
+        // about a life risk, so they carry no catalog assessment.
+        riskId: null,
+        riskStatus: null,
+        confidence: null,
+        expectedImpact: null,
+        suggestedSolution: null,
+        eligibilityNote: null,
     }))
 
     // 6. Sync recommendations to DB
@@ -230,8 +466,6 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
 
     // 6b. Smart-card content (evidence / next action / review target),
     // recomputed from live data every run so it never goes stale.
-    // "We checked your N active policies" must not count expired ones.
-    const activePolicyCount = policies.filter((p) => isPolicyCoverageActive(p)).length
     const smartContent: Record<string, SmartCardContent> = {}
     for (const gap of portfolioGaps) {
         smartContent[gap.ruleId] = {
@@ -240,32 +474,58 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
             reviewHref: gap.reviewHref,
         }
     }
-    for (const gap of profileGaps) {
-        smartContent[gap.ruleId] = buildProfileGapEvidence(
-            gap.ruleId,
-            gap.lineOfBusiness,
-            activePolicyCount
-        )
-    }
+    // Profile-gap evidence is deliberately NOT populated any more. Its keys are
+    // legacy rule ids that no recommendation carries since risk findings became
+    // the source, so every entry was dead — and its fallback line ("we checked
+    // your N policies, none covers X") is the product-absence framing the audit
+    // objected to. Risk cards carry their own risk / why / impact / solution,
+    // which is what that block was standing in for.
 
-    // 7. Cache protection score
+    // 7. Cache protection score, and version it.
+    //
+    // Versioning is fire-and-forget and fingerprinted: an unchanged assessment
+    // writes no row, so a nightly cron over a stable book costs nothing and the
+    // history records CHANGES rather than ticks. It must never block or fail an
+    // upload — the score is the product of this function; the history is
+    // observability about it.
     await cacheProtectionScore(userId, protectionScore)
+    void import("@/lib/services/life-events/risk-profile-version")
+        .then(({ recordRiskProfileVersion }) =>
+            recordRiskProfileVersion({
+                userId,
+                assessments: riskAssessments,
+                score: protectionScore,
+                trigger: opts?.trigger ?? "policy_change",
+            })
+        )
+        .catch(() => {})
 
-    // 8. Fetch final recommendation list (includes existing + newly created)
-    const recommendations = await getActiveRecommendations(userId)
+    // 8. Fetch final recommendation list (includes existing + newly created),
+    // then attach the four context fields from the LIVE assessment.
+    const recommendations = await enrichRecommendations(
+        userId,
+        await getActiveRecommendations(userId),
+        riskAssessments,
+        lifeContext,
+        riskGraph
+    )
 
-    // 9. Calculate profile completeness
-    const profileCompleteness = calculateProfileCompleteness(profile)
+    // 9. How much of the customer's life we actually know. Measured over
+    // ANSWERED context factors, not over non-null columns — the old measure
+    // counted a defaulted `false` as filled in.
+    const profileCompleteness = contextCompleteness(lifeContext)
 
     // 10. AI risk insights (optional, non-blocking)
     let aiInsights: AIRiskProfileAnalysisResponse | null = null
     if (opts?.includeAiInsights) {
-        aiInsights = await runAiRiskAnalysis(profile, policies, userId)
+        aiInsights = await runAiRiskAnalysis(profile, policies, userId, lifeContext)
     }
+
+    const riskSummary = statusCounts(riskAssessments)
 
     logger("info", `Gap engine completed for user ${userId}`, {
         score: protectionScore.overallScore,
-        profileGaps: profileGaps.length,
+        risks: riskSummary,
         policyGaps: openGapInstances.length,
         recommendations: recommendations.length,
         syncStats,
@@ -276,6 +536,10 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
         protectionScore,
         scoreTier,
         profileGaps,
+        riskAssessments,
+        riskGraph,
+        riskSummary,
+        unansweredFactors: factorsToResolve(riskAssessments),
         recommendations,
         profileCompleteness,
         syncStats,
@@ -360,6 +624,15 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
         (gap) => !gap.policyId || coverageActive.get(gap.policyId)
     )
 
+    // Same reconciliation as the write path, so the score the page renders and
+    // the score the engine persists cannot disagree.
+    const lifeContext = toLifeContext(profileRecord)
+    const { assessments: riskAssessments, riskGraph } = reconciledAssessments(
+        profileRecord,
+        policies,
+        lifeContext,
+        policyFields
+    )
     const profileGaps = detectProfileGaps(profile, policyFields)
     const protectionScore = calculateProtectionScore(
         profile,
@@ -367,7 +640,8 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
         profileGaps,
         liveGaps.map((gap) => ({
             lineOfBusiness: gap.policy?.lineOfBusiness ?? gap.definition?.lineOfBusiness,
-        }))
+        })),
+        riskAssessments
     )
     const scoreTier = getScoreTier(protectionScore.overallScore)
 
@@ -385,8 +659,6 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
         { hasAgent }
     )
 
-    // "We checked your N active policies" must not count expired ones.
-    const activePolicyCount = policies.filter((p) => isPolicyCoverageActive(p)).length
     const smartContent: Record<string, SmartCardContent> = {}
     for (const gap of portfolioGaps) {
         smartContent[gap.ruleId] = {
@@ -395,21 +667,30 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
             reviewHref: gap.reviewHref,
         }
     }
-    for (const gap of profileGaps) {
-        smartContent[gap.ruleId] = buildProfileGapEvidence(
-            gap.ruleId,
-            gap.lineOfBusiness,
-            activePolicyCount
-        )
-    }
+    // Profile-gap evidence is deliberately NOT populated any more. Its keys are
+    // legacy rule ids that no recommendation carries since risk findings became
+    // the source, so every entry was dead — and its fallback line ("we checked
+    // your N policies, none covers X") is the product-absence framing the audit
+    // objected to. Risk cards carry their own risk / why / impact / solution,
+    // which is what that block was standing in for.
 
-    const recommendations = await getActiveRecommendations(userId)
-    const profileCompleteness = calculateProfileCompleteness(profile)
+    const recommendations = await enrichRecommendations(
+        userId,
+        await getActiveRecommendations(userId),
+        riskAssessments,
+        lifeContext,
+        riskGraph
+    )
+    const profileCompleteness = contextCompleteness(lifeContext)
 
     return {
         protectionScore,
         scoreTier,
         profileGaps,
+        riskAssessments,
+        riskGraph,
+        riskSummary: statusCounts(riskAssessments),
+        unansweredFactors: factorsToResolve(riskAssessments),
         recommendations,
         profileCompleteness,
         smartContent,
@@ -434,6 +715,26 @@ export async function getCachedProtectionScore(
 ): Promise<CachedProtectionScore | null> {
     const cached = await db.protectionScore.findUnique({ where: { userId } })
     if (!cached) return null
+    return toCachedScore(cached)
+}
+
+/**
+ * Shape a persisted row for readers.
+ *
+ * `assessmentCoverage` is null on rows written before it existed. Those are
+ * treated as determinate: they were computed by an engine that answered every
+ * risk it knew about, and retro-labelling them "not enough information" would
+ * blank a score the customer has already seen.
+ */
+function toCachedScore(cached: {
+    overallScore: number
+    categoryScores: unknown
+    gapCount: number
+    expectedLines: unknown
+    actualLines: unknown
+    computedAt: Date
+    assessmentCoverage: number | null
+}): CachedProtectionScore {
     return {
         overallScore: cached.overallScore,
         categoryScores: cached.categoryScores as Record<string, any>,
@@ -441,6 +742,8 @@ export async function getCachedProtectionScore(
         expectedLines: cached.expectedLines as string[],
         actualLines: cached.actualLines as string[],
         computedAt: cached.computedAt,
+        assessmentCoverage: cached.assessmentCoverage,
+        indeterminate: cached.assessmentCoverage != null && cached.assessmentCoverage < 50,
     }
 }
 
@@ -459,14 +762,7 @@ export async function getProtectionScore(
     if (cached) {
         const age = Date.now() - cached.computedAt.getTime()
         if (age < maxAgeMs) {
-            return {
-                overallScore: cached.overallScore,
-                categoryScores: cached.categoryScores as Record<string, any>,
-                gapCount: cached.gapCount,
-                expectedLines: cached.expectedLines as string[],
-                actualLines: cached.actualLines as string[],
-                computedAt: cached.computedAt,
-            }
+            return toCachedScore(cached)
         }
     }
 
@@ -479,6 +775,8 @@ export async function getProtectionScore(
         expectedLines: result.protectionScore.expectedLines,
         actualLines: result.protectionScore.actualLines,
         computedAt: new Date(),
+        assessmentCoverage: result.protectionScore.assessmentCoverage ?? null,
+        indeterminate: result.protectionScore.indeterminate ?? false,
     }
 }
 
@@ -486,9 +784,10 @@ export async function getProtectionScore(
  * Force refresh the protection score (e.g., after profile update or policy change).
  */
 export async function refreshProtectionScore(
-    userId: string
+    userId: string,
+    trigger: RunGapEngineOptions["trigger"] = "profile_update"
 ): Promise<GapEngineResult> {
-    return runGapEngine(userId)
+    return runGapEngine(userId, { trigger })
 }
 
 // ── AI risk analysis ─────────────────────────────────────────────────
@@ -500,7 +799,8 @@ async function runAiRiskAnalysis(
         premiumAmount: any; policyNumber: string; startDate: Date; endDate: Date;
         coverageSummary: string | null;
     }>,
-    userId: string
+    userId: string,
+    ctx: LifeContext
 ): Promise<AIRiskProfileAnalysisResponse | null> {
     try {
         const { getAIService } = await import("@/lib/services/ai/ai-service.factory")
@@ -520,19 +820,25 @@ async function runAiRiskAnalysis(
         // Route through the AI gateway so the model + output cap come from the
         // per-call route decision (portfolio size escalates the tier).
         const { aiGateway } = await import("@/lib/services/ai/gateway")
+        // Unknown must reach the model as unknown. Every defaulted column is sent
+        // as null unless the customer actually answered it, so the prompt renders
+        // "Unknown (not asked)" instead of asserting a fact nobody stated.
+        const ifKnown = <T,>(factor: Parameters<typeof ctxKnown>[1], value: T): T | null =>
+            ctxKnown(ctx, factor) ? value : null
+
         return await aiGateway.analyzeRiskProfile(
             {
                 maritalStatus: profile.maritalStatus,
-                dependentsCount: profile.dependentsCount,
+                dependentsCount: ifKnown("dependents", profile.dependentsCount),
                 employmentStatus: profile.employmentStatus,
-                ownsHome: profile.ownsHome,
+                ownsHome: ifKnown("residence", profile.ownsHome),
                 mortgageAmount: profile.mortgageAmount ? Number(profile.mortgageAmount) : null,
-                hasPets: profile.hasPets,
-                vehiclesCount: profile.vehiclesCount,
+                hasPets: ifKnown("pets", profile.hasPets),
+                vehiclesCount: ifKnown("vehicles", profile.vehiclesCount),
                 annualIncome: profile.annualIncome ? Number(profile.annualIncome) : null,
                 occupation: profile.occupation,
-                travelsFrequently: profile.travelsFrequently,
-                hasLoans: profile.hasLoans,
+                travelsFrequently: ifKnown("travelFrequency", profile.travelsFrequently),
+                hasLoans: ifKnown("loans", profile.hasLoans),
                 loanAmount: profile.loanAmount ? Number(profile.loanAmount) : null,
                 smokingStatus: profile.smokingStatus,
                 dateOfBirth: profile.dateOfBirth?.toISOString().split("T")[0] ?? null,
@@ -558,6 +864,11 @@ async function runAiRiskAnalysis(
 }
 
 // ── Internal helpers ─────────────────────────────────────────────────
+
+/** Narrow read of the knownness map, so the AI mapping stays declarative. */
+function ctxKnown(ctx: LifeContext, factor: ContextFactorKey): boolean {
+    return ctx.known[factor]
+}
 
 async function cacheProtectionScore(
     userId: string,
@@ -585,6 +896,8 @@ async function cacheProtectionScore(
             gapCount: score.gapCount,
             expectedLines: score.expectedLines,
             actualLines: score.actualLines,
+            assessmentCoverage: score.assessmentCoverage ?? null,
+            // Hoisted above so create and update stamp the SAME instant.
             computedAt,
         },
         create: {
@@ -594,34 +907,17 @@ async function cacheProtectionScore(
             gapCount: score.gapCount,
             expectedLines: score.expectedLines,
             actualLines: score.actualLines,
+            assessmentCoverage: score.assessmentCoverage ?? null,
+            // Hoisted above so create and update stamp the SAME instant.
             computedAt,
         },
     })
 
-    // Append to the trend only when the number MOVED. The refresh cron
-    // recomputes every user daily, so recording an unchanged score would add
-    // ~365 rows per user per year of pure noise — and a flat stretch is fully
-    // implied by the gap between two entries.
-    if (!previous || previous.overallScore !== score.overallScore) {
-        try {
-            await db.protectionScoreHistory.create({
-                data: {
-                    userId,
-                    overallScore: score.overallScore,
-                    categoryScores: categoryScoresJson,
-                    gapCount: score.gapCount,
-                    previousScore: previous?.overallScore ?? null,
-                    computedAt,
-                },
-            })
-        } catch (err) {
-            // The trend is an advisory nicety; never fail a score refresh for it.
-            logger("warn", "Failed to append protection score history", {
-                userId,
-                error: err instanceof Error ? err.message : String(err),
-            })
-        }
-    }
+    // The score trend is recorded by RiskProfileVersion, which fingerprints the
+    // whole assessment rather than just the number — so it captures a change of
+    // WHICH risks are open even when the total happens to land the same, and
+    // writes nothing when genuinely nothing moved. A second parallel history
+    // here would be a second answer to one question.
 }
 
 /**
@@ -692,7 +988,7 @@ function calculateProfileCompleteness(profile: ProfileFields): number {
 
 // ── Re-exports ───────────────────────────────────────────────────────
 
-export { detectProfileGaps, getExpectedLines, toProfileFields } from "./profile-gap-rules"
+export { detectProfileGaps, toProfileFields } from "./profile-gap-rules"
 export { calculateProtectionScore, getScoreTier, SCORE_CATEGORIES } from "./protection-score"
 export {
     getActiveRecommendations,

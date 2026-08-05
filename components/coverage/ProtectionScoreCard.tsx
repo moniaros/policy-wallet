@@ -38,6 +38,13 @@ interface ProtectionScoreCardProps {
      * the score is then profile/extraction-based and no date is claimed.
      */
     analyzedAt?: string | null
+    /**
+     * Set when too little of the risk catalog could be decided for the number to
+     * mean anything. The card then shows what it actually knows — "not enough
+     * information yet" — instead of a confident 90/100 "Excellent" derived from
+     * the two or three risks that apply to everybody.
+     */
+    indeterminate?: boolean
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -57,6 +64,7 @@ export function ProtectionScoreCard({
     profileCompleteness,
     language,
     analyzedAt,
+    indeterminate = false,
 }: ProtectionScoreCardProps) {
     const router = useRouter()
     const lang = language
@@ -138,7 +146,7 @@ export function ProtectionScoreCard({
                             stroke="currentColor"
                             strokeWidth="10"
                             strokeDasharray={circumference}
-                            strokeDashoffset={strokeDashoffset}
+                            strokeDashoffset={indeterminate ? circumference : strokeDashoffset}
                             strokeLinecap="round"
                             transform="rotate(-90 70 70)"
                             className={scoreColor}
@@ -146,11 +154,11 @@ export function ProtectionScoreCard({
                         />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className={`text-3xl font-bold ${scoreColor}`}>
-                            {overallScore}
+                        <span className={`text-3xl font-bold ${indeterminate ? "text-black/35 dark:text-white/35" : scoreColor}`}>
+                            {indeterminate ? "—" : overallScore}
                         </span>
                         <span className="text-xs text-black/60 dark:text-white/50">
-                            /100
+                            {indeterminate ? (lang === "el" ? "από 100" : "of 100") : "/100"}
                         </span>
                     </div>
                 </div>
@@ -160,15 +168,32 @@ export function ProtectionScoreCard({
                     <h2 className="text-lg font-semibold text-black dark:text-white mb-1">
                         {copy.title}
                     </h2>
-                    <p className={`text-sm font-medium ${scoreColor} mb-1`}>
-                        {tier.label[lang]}
-                        {profileCompleteness < 80 && (
-                            <span className="ml-1.5 text-xs font-normal text-muted-foreground">· {copy.provisional}</span>
-                        )}
-                    </p>
-                    <p className="text-sm text-black/60 dark:text-white/60 mb-2">
-                        {copy.subtitle}
-                    </p>
+                    {indeterminate ? (
+                        <>
+                            <p className="mb-1 text-sm font-medium text-black/70 dark:text-white/70">
+                                {lang === "el"
+                                    ? "Δεν έχουμε αρκετά στοιχεία ακόμη"
+                                    : "Not enough information yet"}
+                            </p>
+                            <p className="mb-2 text-sm text-black/60 dark:text-white/60">
+                                {lang === "el"
+                                    ? "Θα σας δώσουμε βαθμολογία μόλις μάθουμε αρκετά για την κατάστασή σας. Μέχρι τότε δεν βγάζουμε συμπέρασμα."
+                                    : "We will give you a score once we know enough about your situation. Until then we are not drawing a conclusion."}
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <p className={`text-sm font-medium ${scoreColor} mb-1`}>
+                                {tier.label[lang]}
+                                {profileCompleteness < 80 && (
+                                    <span className="ml-1.5 text-xs font-normal text-muted-foreground">· {copy.provisional}</span>
+                                )}
+                            </p>
+                            <p className="text-sm text-black/60 dark:text-white/60 mb-2">
+                                {copy.subtitle}
+                            </p>
+                        </>
+                    )}
                     {analyzedAt && (
                         <p className="text-xs text-muted-foreground mb-2">
                             {copy.analyzedOn} {formatDate(analyzedAt, lang)}
@@ -198,7 +223,14 @@ export function ProtectionScoreCard({
                     <h3 className="text-xs font-semibold text-black/60 dark:text-white/50 uppercase tracking-widest mb-3">
                         {copy.categories}
                     </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {/* One column below 400px, two from there, three from `sm`.
+                        At 320px a two-column grid leaves ~86px of text per cell
+                        after padding and the icon, and `truncate` reduced
+                        «Προστασία Εισοδήματος» and «Ζωή & Εισόδημα» — the two
+                        longest Greek labels, in the default language — to
+                        near-identical stubs. Two of six categories were
+                        indistinguishable on a phone. */}
+                    <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-3">
                         {applicableCategories.map((cat) => {
                             const barColor =
                                 cat.score >= 70
@@ -214,7 +246,10 @@ export function ProtectionScoreCard({
                                 >
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="text-base">{icon}</span>
-                                        <span className="text-xs font-semibold text-black dark:text-white truncate">
+                                        {/* Wrap rather than truncate: a clipped
+                                            category name is not a shorter label,
+                                            it is a different one. */}
+                                        <span className="min-w-0 text-xs font-semibold leading-tight text-black dark:text-white">
                                             {cat.label[lang]}
                                         </span>
                                         {cat.essential && (

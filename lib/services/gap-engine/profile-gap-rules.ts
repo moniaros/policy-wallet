@@ -422,34 +422,18 @@ export function detectProfileGaps(
 }
 
 /**
- * Determine which lines of business the user should have, based on their profile.
+ * REMOVED: `getExpectedLines(profile)`.
+ *
+ * It had zero callers and disagreed with the implementation that actually ran.
+ * The live one was an inline loop in `calculateProtectionScore` that expanded an
+ * applicable CATEGORY into every line inside it — so owning a car made `home`
+ * expected and owning a pet made `cyber` expected, and `buildBranchOverview`
+ * rendered both as amber "gap" tiles. Two definitions of the same thing, one
+ * dead and one wrong.
+ *
+ * Expected lines now come from `relevantLines(assessments)`: the lines that
+ * risks which genuinely apply to this customer call for, and nothing else.
  */
-export function getExpectedLines(profile: ProfileFields): string[] {
-    const expected: string[] = []
-
-    // Everyone should have health
-    expected.push("health")
-
-    if (profile.vehiclesCount > 0) expected.push("motor")
-    if (profile.ownsHome) expected.push("home")
-
-    if (
-        profile.dependentsCount > 0 ||
-        (profile.mortgageAmount != null && Number(profile.mortgageAmount) > 0) ||
-        (profile.hasLoans && profile.loanAmount != null && Number(profile.loanAmount) > 0)
-    ) {
-        expected.push("life")
-    }
-
-    if (profile.travelsFrequently) expected.push("travel")
-    if (profile.hasPets) expected.push("pet")
-    if (profile.employmentStatus === "self_employed") expected.push("liability")
-    if (profile.ownsHome || profile.employmentStatus === "self_employed") {
-        expected.push("legal_expenses")
-    }
-
-    return [...new Set(expected)]
-}
 
 /**
  * Convert a PolicyholderProfile DB record to the ProfileFields interface.

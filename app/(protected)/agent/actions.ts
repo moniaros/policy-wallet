@@ -1470,18 +1470,38 @@ export async function getCustomerScoreTrend(customerId: string, limit = 12) {
     const counts = await getVisiblePolicyCountsByOwner(authResult.dbUser.id, [customerId])
     if ((counts.get(customerId) ?? 0) === 0) return null
 
-    const rows = await db.protectionScoreHistory.findMany({
+    // Sourced from RiskProfileVersion, which is now the single score history.
+    // `ProtectionScoreHistory` recorded the same thing in parallel, and two
+    // histories of one number are two answers waiting to disagree in front of an
+    // advisor. The versions table is the better source: it only writes when the
+    // assessment MATERIALLY changed, so a flat stretch is implied by the gap
+    // between points rather than by 365 identical rows.
+    const versions = await db.riskProfileVersion.findMany({
         where: { userId: customerId },
         orderBy: { computedAt: "desc" },
         take: Math.min(Math.max(1, limit), 60),
         select: {
             overallScore: true,
-            previousScore: true,
-            gapCount: true,
             categoryScores: true,
             computedAt: true,
+            openFindingCount: true,
+            indeterminate: true,
         },
     })
+
+    // An indeterminate score was never shown to anyone as a number, so plotting
+    // it would draw a movement that never happened.
+    const scored = versions.filter((v) => !v.indeterminate)
+
+    // `previousScore` is not stored — it IS the next row's score, since these
+    // come back newest-first.
+    const rows = scored.map((v, i) => ({
+        overallScore: v.overallScore,
+        previousScore: scored[i + 1]?.overallScore ?? null,
+        gapCount: v.openFindingCount,
+        categoryScores: v.categoryScores,
+        computedAt: v.computedAt,
+    }))
 
     const { summariseScoreTrend, categoryMovements } = await import(
         "@/lib/services/gap-engine/score-trend"

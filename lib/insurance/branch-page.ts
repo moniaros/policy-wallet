@@ -84,8 +84,24 @@ export function buildBranchOverview(
     policies: BranchPolicyFacts[],
     expectedLines: string[]
 ): BranchOverviewEntry[] {
+    // Only expectations that ARE a top-level branch paint a tile.
+    //
+    // Tiles are top-level and carry the parent's label, so folding a child up
+    // into its parent mislabels the need: `income_protection` became a tile
+    // reading «Ζωή» (Life) — shown to every employed person with thin savings,
+    // including those with no dependants and no debt and therefore no life
+    // insurance need at all. It fired on 17 of 24 validation scenarios. Same for
+    // `renters` → «Κατοικία» (Home), which tells a tenant they need buildings
+    // cover on a building they do not own.
+    //
+    // The recommendation card names the right product either way, so suppressing
+    // the tile loses a coarse signal and removes a wrong one. Silence beats a
+    // mislabelled verdict on the most-scanned surface in the product.
     const expectedTopLevel = new Set(
-        expectedLines.map((line) => toTopLevelBranch(normalizeBranch(line)).id)
+        expectedLines
+            .map((line) => normalizeBranch(line))
+            .filter((branch) => !branch.parentId)
+            .map((branch) => branch.id)
     )
 
     const byTopLevel = new Map<string, BranchPolicyFacts[]>()

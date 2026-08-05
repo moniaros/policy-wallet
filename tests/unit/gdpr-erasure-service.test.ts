@@ -37,6 +37,8 @@ const tx = {
     dataExportRequest: { updateMany: vi.fn(async (_a?: any) => count(1)) },
     customerRelationship: { updateMany: vi.fn(async (_a?: any) => count(1)) },
     gapInstance: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
+    lifeEventInstance: { deleteMany: vi.fn(async (_a?: any) => count(2)) },
+    riskProfileVersion: { deleteMany: vi.fn(async (_a?: any) => count(3)) },
     user: { update: vi.fn(async (_a?: any) => ({})) },
 }
 
@@ -308,5 +310,26 @@ describe('eraseUserData — external systems, ordered for retry safety', () => {
         expect(mockStripeCancel).not.toHaveBeenCalled()
         expect(mockListUsers).not.toHaveBeenCalled()
         expect(mockTransaction).not.toHaveBeenCalled()
+    })
+})
+
+describe('eraseUserData — the life-event stores', () => {
+    it('deletes life events and risk profile versions', async () => {
+        // The erasure model is anonymize-in-place: the User row SURVIVES, so
+        // `ON DELETE CASCADE` never fires. A store left off the transaction
+        // outlives the request that asked for it to go — and life events are
+        // marriage, divorce, births and health changes.
+        mockUserFind.mockResolvedValue({ id: 'u1', email: 'a@b.gr', roles: 'policyholder' } as any)
+        const summary = await eraseUserData('u1')
+
+        expect(tx.lifeEventInstance.deleteMany).toHaveBeenCalledWith({ where: { userId: 'u1' } })
+        expect(tx.riskProfileVersion.deleteMany).toHaveBeenCalledWith({ where: { userId: 'u1' } })
+
+        // The counts must reach the summary, because the DSR decision log is
+        // what evidences the erasure. They are read POSITIONALLY out of a
+        // Promise.all, so an insertion without a matching name silently shifts
+        // every count after it — which is exactly what this catches.
+        expect(summary.deletedLifeEvents).toBe(2)
+        expect(summary.deletedRiskProfileVersions).toBe(3)
     })
 })

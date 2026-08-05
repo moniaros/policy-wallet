@@ -618,6 +618,7 @@ export function AnalysisCard({
             {tier === "free" && trialAnalysisAvailable === false && !analysisInProgress && (
                 <div className="px-6 pt-5">
                     <UpgradeTriggerCard
+                        headingLevel={3}
                         featureKey="full_ai_policy_analysis"
                         triggerSource="post_trial_analysis"
                         variant="inline"

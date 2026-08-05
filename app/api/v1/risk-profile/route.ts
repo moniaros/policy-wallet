@@ -1,42 +1,9 @@
 import { createApiResponse, createApiError } from '@/lib/api-utils'
 import { withApiGuard } from '@/lib/api-guard'
 import { db } from '@/lib/db'
-import { z } from 'zod'
 import { refreshProtectionScore } from '@/lib/services/gap-engine'
+import { RiskProfileSchema } from '@/lib/validations/risk-profile'
 
-const RiskProfileSchema = z.object({
-  // Original fields
-  maritalStatus: z.enum(['single', 'married', 'divorced', 'widowed']).optional(),
-  dependentsCount: z.number().min(0).optional(),
-  employmentStatus: z.enum(['employed', 'self_employed', 'retired', 'unemployed']).optional(),
-  ownsHome: z.boolean().optional(),
-  mortgageAmount: z.number().min(0).optional(),
-  hasPets: z.boolean().optional(),
-  vehiclesCount: z.number().min(0).optional(),
-
-  // Enhanced risk fields (Gap Detection Engine)
-  dateOfBirth: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
-  annualIncome: z.number().min(0).optional(),
-  occupation: z.string().max(100).optional(),
-  riskTolerance: z.enum(['conservative', 'moderate', 'aggressive']).optional(),
-  hasLoans: z.boolean().optional(),
-  loanAmount: z.number().min(0).optional(),
-  travelsFrequently: z.boolean().optional(),
-  smokingStatus: z.enum(['non_smoker', 'smoker', 'former_smoker']).optional(),
-  lifeEvents: z.array(z.object({
-    type: z.string(),
-    date: z.string(),
-  })).optional(),
-
-  // Health & Lifestyle risk fields
-  gender: z.enum(['male', 'female', 'prefer_not_to_say']).optional(),
-  heightCm: z.number().int().min(50).max(250).optional(),
-  weightKg: z.number().int().min(20).max(500).optional(),
-  chronicConditions: z.array(z.string().max(50)).optional(),
-  familyMedicalHistory: z.array(z.string().max(50)).optional(),
-  drivingRecord: z.enum(['clean', 'minor_violations', 'major_violations', 'accidents']).optional(),
-  activityLevel: z.enum(['sedentary', 'moderate', 'active', 'very_active']).optional(),
-})
 
 export const PATCH = withApiGuard(
   {
@@ -57,74 +24,59 @@ export const PATCH = withApiGuard(
       return createApiError('VALIDATION_ERROR', 'Invalid data', 400, parsed.error.issues)
     }
 
-    const {
-      maritalStatus,
-      dependentsCount,
-      employmentStatus,
-      ownsHome,
-      mortgageAmount,
-      hasPets,
-      vehiclesCount,
-      dateOfBirth,
-      annualIncome,
-      occupation,
-      riskTolerance,
-      hasLoans,
-      loanAmount,
-      travelsFrequently,
-      smokingStatus,
-      lifeEvents,
-      gender,
-      heightCm,
-      weightKg,
-      chronicConditions,
-      familyMedicalHistory,
-      drivingRecord,
-      activityLevel,
-    } = parsed.data
-
-    const profileData = {
-      maritalStatus,
-      dependentsCount,
-      employmentStatus,
-      ownsHome,
-      mortgageAmount,
-      hasPets,
-      vehiclesCount,
-      dateOfBirth,
-      annualIncome,
-      occupation,
-      riskTolerance,
-      hasLoans,
-      loanAmount,
-      travelsFrequently,
-      smokingStatus,
-      lifeEvents: lifeEvents ?? undefined,
-      gender,
-      heightCm,
-      weightKg,
-      chronicConditions: chronicConditions ?? undefined,
-      familyMedicalHistory: familyMedicalHistory ?? undefined,
-      drivingRecord,
-      activityLevel,
-    }
+    // Every writable column, in one list. The old code destructured 22 names and
+    // re-listed all 22 into an object literal — adding a field meant editing
+    // three places and the compiler could not tell you if you missed one.
+    const { answeredFields: declaredAnswered, ...submitted } = parsed.data
 
     // Remove undefined fields so we don't overwrite existing values
     const cleanData = Object.fromEntries(
-      Object.entries(profileData).filter(([, v]) => v !== undefined)
+      Object.entries(submitted).filter(([, v]) => v !== undefined)
     )
+
+    // Record what the customer has now answered. A submitted field is answered
+    // by definition; `answeredFields` additionally covers the ones they were
+    // shown and deliberately left at the default, which a value alone cannot
+    // express (see the schema note above).
+    const existing = await db.policyholderProfile.findUnique({
+      where: { userId },
+      select: { answeredFields: true },
+    })
+    const previouslyAnswered = Array.isArray(existing?.answeredFields)
+      ? (existing.answeredFields as unknown[]).filter((f): f is string => typeof f === 'string')
+      : []
+    const answered = [
+      ...new Set([
+        ...previouslyAnswered,
+        ...Object.keys(cleanData),
+        ...(declaredAnswered ?? []),
+      ]),
+    ]
 
     const updatedProfile = await db.policyholderProfile.upsert({
       where: { userId },
-      update: cleanData,
+      update: { ...cleanData, answeredFields: answered },
       create: {
         userId,
         ...cleanData,
+        answeredFields: answered,
       },
     })
 
-    // Refresh protection score after profile update (fire-and-forget)
-    refreshProtectionScore(userId).catch(() => {})
+    // Re-run the engine BEFORE responding, and await it.
+    //
+    // It used to be fire-and-forget, which raced the client: the wizard calls
+    // `router.refresh()` the moment this resolves, and the page re-reads the
+    // PERSISTED recommendation rows. The engine had not finished rewriting them,
+    // so the customer answered "I have two children", watched the page reload,
+    // and saw the same recommendations as before — the one moment the product
+    // most needs to demonstrate that answering questions changes the advice.
+    //
+    // Still non-fatal: the profile is saved either way, and a failed re-run must
+    // not turn a successful save into an error the customer has to retry.
+    await refreshProtectionScore(userId).catch((err) => {
+        console.error("Post-profile-update engine run failed:", err)
+    })
 
     return createApiResponse({ success: true, profile: updatedProfile })
   }

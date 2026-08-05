@@ -59,10 +59,30 @@ beforeEach(() => {
         { threadId: 't3', userId: 'C1' },
     ])
     proposalFindMany.mockResolvedValue([{ relationshipId: 'r1', relationship: { policyholderUserId: 'C1' } }])
+    // A genuinely complete profile. It used to list six nullable fields, which
+    // was "100%" under the opportunity engine's own long-gone definition of
+    // completeness; that number now comes from `contextCompleteness`, which
+    // counts answered CONTEXT FACTORS — the same measure the client sees on their
+    // own dashboard. `answeredFields` is what makes a declared "no" count as an
+    // answer, so a maxed customer has to carry it.
     profileFindMany.mockResolvedValue([
         {
             userId: 'C1', maritalStatus: 'single', employmentStatus: 'employed',
             dateOfBirth: daysAgo(10000), annualIncome: 30000, occupation: 'x', smokingStatus: 'non_smoker',
+            childrenCount: 0, dependentsCount: 0, hasPets: false, vehiclesCount: 0,
+            residenceType: 'rented', propertiesOwned: 0, rentsOutProperty: false, ownsBoat: false,
+            ownsBusiness: false, businessEmployees: 0, savingsAmount: 5000,
+            mortgageAmount: null, hasLoans: false, loanAmount: null, travelsFrequently: false,
+            activities: [], valuablesValue: 0, cyberExposure: 'low', retirementPlanning: false,
+            chronicConditions: [],
+            answeredFields: [
+                'maritalStatus', 'employmentStatus', 'dateOfBirth', 'annualIncome',
+                'childrenCount', 'dependentsCount', 'hasPets', 'vehiclesCount',
+                'residenceType', 'propertiesOwned', 'rentsOutProperty', 'ownsBoat',
+                'ownsBusiness', 'businessEmployees', 'savingsAmount', 'mortgageAmount',
+                'hasLoans', 'loanAmount', 'travelsFrequently', 'activities',
+                'valuablesValue', 'cyberExposure', 'retirementPlanning', 'chronicConditions',
+            ],
         },
     ])
 })

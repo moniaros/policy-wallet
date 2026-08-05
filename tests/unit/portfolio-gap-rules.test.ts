@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
 import {
     evaluatePortfolioRules,
     buildProfileGapEvidence,
@@ -218,41 +219,54 @@ describe('duplicate_coverage', () => {
     })
 })
 
-describe('unclear_exclusions', () => {
-    it('fires for analyzed policies with no extracted exclusions and links to the policy page', () => {
+describe('findings that describe no risk are not recommendations', () => {
+    // Both of these once produced recommendation cards. Neither described a loss
+    // the customer could suffer, and no rewording could have saved either.
+
+    it('never surfaces unclear_exclusions — that is a statement about OUR extraction', () => {
+        // "We could not read your exclusions" says something about the quality of
+        // our own analysis, not about the customer's exposure. It belongs in the
+        // needs-review channel, not in the list of things to act on.
         const gaps = evaluatePortfolioRules(
             [policy({ acordData: { extraction: { source: 'gemini' }, exclusions: [] } })],
             ctx()
         )
-        const gap = gaps.find((g) => g.ruleId === 'unclear_exclusions')
-        expect(gap).toBeDefined()
-        expect(gap!.severity).toBe('low')
-        expect(gap!.reviewHref).toBe('/wallet/pol-1')
+        expect(ruleIds(gaps)).not.toContain('unclear_exclusions')
     })
 
-    it('does not fire for unanalyzed policies or ones with exclusions', () => {
-        const unanalyzed = evaluatePortfolioRules([policy({ acordData: null })], ctx())
-        const withExclusions = evaluatePortfolioRules(
-            [policy({ acordData: { extraction: {}, exclusions: ['Racing'] } })],
-            ctx()
-        )
-        expect(ruleIds(unanalyzed)).not.toContain('unclear_exclusions')
-        expect(ruleIds(withExclusions)).not.toContain('unclear_exclusions')
+    it('never surfaces no_agent_connected — there is no risk in not having an advisor', () => {
+        // Structurally the same defect as the `no_health` rule the July audit
+        // removed: a recommendation justified purely by the absence of something
+        // the customer had not acquired. It occupied a slot in the list, counted
+        // toward gapCount and dragged the protection score.
+        for (const hasAgent of [true, false]) {
+            const gaps = evaluatePortfolioRules([policy()], ctx(hasAgent))
+            expect(ruleIds(gaps)).not.toContain('no_agent_connected')
+        }
+        expect(ruleIds(evaluatePortfolioRules([], ctx(false)))).not.toContain('no_agent_connected')
     })
 })
 
-describe('no_agent_connected', () => {
-    it('fires when there is no agent and at least one active policy', () => {
-        const gaps = evaluatePortfolioRules([policy()], ctx(false))
-        const gap = gaps.find((g) => g.ruleId === 'no_agent_connected')
-        expect(gap).toBeDefined()
-        expect(gap!.evidence.en).toContain('1 active policy')
-        expect(gap!.reviewHref).toBe('/agent')
-    })
+describe('portfolio findings lead with the customer\'s exposure', () => {
+    it('no title is written from the policy\'s point of view', () => {
+        // These read "Motor policy appears to lack roadside assistance" and
+        // "Home policy appears to lack earthquake cover" — accurate, and the
+        // wrong way round. The customer reads the title.
+        //
+        // Asserted over the source rather than over triggered fixtures so it
+        // covers every title in the file, including ones no fixture here happens
+        // to fire.
+        const source = readFileSync('lib/services/gap-engine/portfolio-rules.ts', 'utf-8')
+        const titles: string[] = []
+        for (const match of source.matchAll(/name: \{\s*\n\s*en: ([`"])((?:[^`"\\]|\\.)*)\1/g)) {
+            titles.push(match[2])
+        }
+        expect(titles.length).toBeGreaterThanOrEqual(5)
 
-    it('does not fire with an agent or with an empty wallet', () => {
-        expect(ruleIds(evaluatePortfolioRules([policy()], ctx(true)))).not.toContain('no_agent_connected')
-        expect(ruleIds(evaluatePortfolioRules([], ctx(false)))).not.toContain('no_agent_connected')
+        const policyShaped = /\b(policy|ασφαλιστήριο)\b[^.]{0,30}\b(lacks?|appears to lack|without|χωρίς)/i
+        for (const title of titles) {
+            expect(title, `"${title}" is titled from the policy's point of view`).not.toMatch(policyShaped)
+        }
     })
 })
 

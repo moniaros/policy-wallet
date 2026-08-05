@@ -17,6 +17,8 @@ import { UpgradeModal } from "./UpgradeModal"
 import { UsageMeter } from "./UsageMeter"
 
 interface UpgradeTriggerCardProps {
+    /** 2 at page level, 3 when nested inside a card that has its own heading. */
+    headingLevel?: 2 | 3
     featureKey: FeatureKey
     triggerSource: string
     returnTo?: string
@@ -37,6 +39,7 @@ export function UpgradeTriggerCard({
     meter,
     dismissible = false,
     className = "",
+    headingLevel = 2,
 }: UpgradeTriggerCardProps) {
     const { language } = useLanguage()
     const pathname = usePathname()
@@ -44,6 +47,7 @@ export function UpgradeTriggerCard({
     const [dismissed, setDismissed] = useState(false)
     const viewedRef = useRef(false)
 
+    const Heading = headingLevel === 3 ? "h3" : "h2"
     const copy = getUpgradeCopy(featureKey, language)
 
     useEffect(() => {
@@ -122,7 +126,14 @@ export function UpgradeTriggerCard({
                         <Crown className="h-4 w-4 text-primary dark:text-mint" />
                     </span>
                     <div className="min-w-0 flex-1">
-                        <h3 className="text-sm font-bold text-foreground">{copy.headline}</h3>
+                        {/* Level is a prop because this card appears both at page
+                            level and nested inside another card. Fixed at h3 it
+                            rendered directly under the page h1 with no h2 between,
+                            which makes the page unnavigable by heading — a screen
+                            reader user jumps h1 → h3 and cannot tell what was
+                            skipped. Only a rendered measurement catches this; a
+                            source guard sees a perfectly ordinary heading tag. */}
+                        <Heading className="text-sm font-bold text-foreground">{copy.headline}</Heading>
                         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                             {copy.body}
                         </p>

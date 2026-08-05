@@ -226,18 +226,29 @@ export interface AITrackingOptions {
 
 // ── Risk Profile Analysis (Phase 2) ─────────────────────────────────
 
+/**
+ * The profile as the model is allowed to see it.
+ *
+ * The booleans and counts are nullable ON PURPOSE. They used to be plain
+ * `boolean` / `number`, so an untouched profile — whose columns default to
+ * `false` and `0` — rendered into the prompt as the assertions "Owns home: No",
+ * "Vehicles: 0", "Has pets: No". The model was being told, as fact, things
+ * nobody had ever asked. `null` now means "not answered" and the prompt renders
+ * it as Unknown, which is the difference between a model reasoning about a
+ * person and a model reasoning about a set of defaults.
+ */
 export interface RiskProfileInput {
     maritalStatus: string | null
-    dependentsCount: number
+    dependentsCount: number | null
     employmentStatus: string | null
-    ownsHome: boolean
+    ownsHome: boolean | null
     mortgageAmount: number | null
-    hasPets: boolean
-    vehiclesCount: number
+    hasPets: boolean | null
+    vehiclesCount: number | null
     annualIncome: number | null
     occupation: string | null
-    travelsFrequently: boolean
-    hasLoans: boolean
+    travelsFrequently: boolean | null
+    hasLoans: boolean | null
     loanAmount: number | null
     smokingStatus: string | null
     dateOfBirth: string | null

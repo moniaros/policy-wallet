@@ -18,7 +18,7 @@ import { signOut } from "@/app/auth/actions"
 import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, Gift, FileText, Inbox, Coins } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, Gift, FileText, Inbox, Coins, History } from 'lucide-react'
 
 export default async function ProtectedLayout({
     children,
@@ -75,6 +75,7 @@ export default async function ProtectedLayout({
                 { label: t.nav.home, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 { label: t.nav.branches, href: "/branches", icon: <LayoutGrid className="w-5 h-5" /> },
+                { label: t.nav.riskProfile, href: "/insights/risk-profile", icon: <Activity className="w-5 h-5" /> },
                 {
                     label: t.nav.coverageInsights,
                     href: "/coverage-insights",
@@ -82,6 +83,7 @@ export default async function ProtectedLayout({
                     isLocked: false,
                     icon: <Shield className="w-5 h-5" />
                 },
+                { label: t.nav.timeline, href: "/timeline", icon: <History className="w-5 h-5" /> },
                 ...(hasLiveOffers
                     ? [{ label: t.nav.benefits, href: "/benefits", icon: <Gift className="w-5 h-5" /> }]
                     : []),
@@ -95,6 +97,7 @@ export default async function ProtectedLayout({
             title: roleCopy.shell.agentSection,
             items: [
                 { label: t.nav.dashboard, href: "/dashboard/agent", icon: <LayoutDashboard className="w-5 h-5" /> },
+                { label: t.nav.advisorBook, href: "/insights/book", icon: <Activity className="w-5 h-5" /> },
                 { label: t.nav.customers, href: "/customers", icon: <Users className="w-5 h-5" /> },
                 { label: t.nav.opportunities, href: "/opportunities", icon: <Lightbulb className="w-5 h-5" /> },
                 { label: t.nav.renewals, href: "/renewals", icon: <RefreshCw className="w-5 h-5" /> },

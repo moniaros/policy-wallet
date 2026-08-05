@@ -7,6 +7,8 @@ vi.mock('@/lib/db', () => ({
         customerRelationship: { findFirst: vi.fn() },
         questionnaireInstance: { findUnique: vi.fn(), update: vi.fn() },
         questionnaireResponse: { create: vi.fn() },
+        // Read outside the transaction so the tx stays at its three writes.
+        policyholderProfile: { findUnique: vi.fn() },
         $transaction: vi.fn(),
     },
 }))
@@ -162,10 +164,23 @@ describe('submitQuestionnaireResponse — only the recipient may answer', () => 
         } as any)
 
         expect(res.profileFieldsUpdated).toEqual(['dependentsCount', 'ownsHome'])
+        // `answeredFields` rides along deliberately: a client answering "no, I
+        // don't own a home" writes `ownsHome: false`, which is the column
+        // default — so without a record of the question having been ASKED, a
+        // completed questionnaire could not move the risk assessment at all.
         expect(tx.policyholderProfile.upsert).toHaveBeenCalledWith({
             where: { userId: 'user-1' },
-            create: { userId: 'user-1', dependentsCount: 2, ownsHome: true },
-            update: { dependentsCount: 2, ownsHome: true },
+            create: {
+                userId: 'user-1',
+                dependentsCount: 2,
+                ownsHome: true,
+                answeredFields: ['dependentsCount', 'ownsHome'],
+            },
+            update: {
+                dependentsCount: 2,
+                ownsHome: true,
+                answeredFields: ['dependentsCount', 'ownsHome'],
+            },
         })
     })
 

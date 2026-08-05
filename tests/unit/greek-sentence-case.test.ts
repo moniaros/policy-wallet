@@ -68,13 +68,22 @@ describe('Greek UI labels use sentence case', () => {
         // A capital is correct at the start and after any of these — '·' and '|'
         // join separate labels into one string; '&' starts a new noun phrase.
         const restarts = ['.', '!', '?', ':', '·', '|', '—', '–', '&']
-        const proper = new Set(['Ελλάδα', 'Ελλάδας', 'PolicyWallet', 'Tokens', 'Token', 'AI', 'PDF', 'Stripe', 'Google'])
+        // Place names are proper nouns in Greek and stay capitalised mid-sentence:
+        // "σε διακομιστές μέσα στην Ευρώπη" is correct, not Title Case.
+        const proper = new Set([
+            'Ελλάδα', 'Ελλάδας', 'Ευρώπη', 'Ευρώπης', 'Ευρωπαϊκή', 'Ευρωπαϊκής',
+            'Ένωση', 'Ένωσης', 'Αθήνα', 'Αθήνας',
+            'PolicyWallet', 'Tokens', 'Token', 'AI', 'PDF', 'Stripe', 'Google',
+        ])
         const offenders: string[] = []
         for (const file of files) {
             for (const m of readFileSync(file, 'utf-8').matchAll(/el:\s*['"]([^'"]{4,})['"]/g)) {
                 let atStart = true
                 for (const tok of m[1].split(/\s+/)) {
-                    const core = tok.replace(/^[«"'(]+|[»"')]+$/g, '')
+                    // Trailing punctuation has to come off too, or an
+                    // allow-listed proper noun stops matching the moment a
+                    // comma follows it ("στην Ευρώπη," vs "στην Ευρώπη").
+                    const core = tok.replace(/^[«"'(]+|[»"'),.;:!?·—–]+$/g, '')
                     if (!atStart && core.length > 2 && GU.includes(core[0]) && !proper.has(core) && core !== core.toUpperCase()) {
                         offenders.push(`${file}: ${m[1]}`)
                     }
