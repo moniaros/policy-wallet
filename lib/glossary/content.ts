@@ -1095,6 +1095,83 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         dateModified: "2026-07-26",
     },
+    {
+        // The category's named instrument. Weights and limits below are the
+        // shipped ones (lib/services/gap-engine/protection-score.ts and the
+        // in-app methodology copy) — this page is the public, citable
+        // definition so the score is not a number without a source.
+        slug: "skor-prostasias",
+        term: { el: "Σκορ Προστασίας", en: "Protection Score" },
+        aliases: [{ el: "Βαθμολογία προστασίας", en: "Coverage score" }],
+        metaTitle: {
+            el: "Τι είναι το Σκορ Προστασίας;",
+            en: "What is the Protection Score?",
+        },
+        metaDescription: {
+            el: "Το Σκορ Προστασίας είναι μια βαθμολογία 0–100 που δείχνει πόσο πλήρης είναι η ασφαλιστική σας εικόνα. Δείτε πώς υπολογίζεται και τι δεν σημαίνει.",
+            en: "The Protection Score is a 0-100 rating showing how complete your insurance picture is. See exactly how it is calculated and what it does not mean.",
+        },
+        shortDefinition: {
+            el: "Το Σκορ Προστασίας είναι μια βαθμολογία από 0 έως 100 που δείχνει πόσο πλήρης είναι η ασφαλιστική σας εικόνα. Συγκρίνει τους κλάδους που θα ήταν αναμενόμενοι για το προφίλ σας με αυτούς που πράγματι έχετε, και αφαιρεί μονάδες για κενά μέσα στα ασφαλιστήρια που κατέχετε.",
+            en: "The Protection Score is a rating from 0 to 100 showing how complete your insurance picture is. It compares the branches that would be expected for your profile against the ones you actually hold, and deducts points for gaps found inside the policies you already own.",
+        },
+        body: [
+            {
+                el: "Κάθε κατηγορία σταθμίζεται ανάλογα με τη σημασία της: Υγεία 25 μονάδες, Ζωή και εισόδημα 25, Ακίνητα και αυτοκίνητο 20, Προστασία εισοδήματος 15, Αστική ευθύνη 10 και λοιπές καλύψεις 5. Οι τρεις πρώτες θεωρούνται βασικές: αν λείπουν εντελώς, το σκορ πέφτει πολύ περισσότερο απ' ό,τι αν λείπει μια προαιρετική κάλυψη.",
+                en: "Each category is weighted by how much it matters: Health 25 points, Life and income 25, Property and motor 20, Income protection 15, Liability 10, and other cover 5. The first three count as essential: if they are missing entirely, the score falls much further than it would for an optional cover.",
+            },
+            {
+                el: "Το σκορ υπολογίζεται από τα δικά σας έγγραφα — όχι από ερωτηματολόγιο. Ο εντοπισμός κενών μέσα στα ασφαλιστήρια, που τροφοδοτεί τις αφαιρέσεις, γίνεται στο πλάνο PolicyWallet Plus.",
+                en: "The score is computed from your own documents, not from a questionnaire. The detection of gaps inside your policies, which drives the deductions, runs on the PolicyWallet Plus plan.",
+            },
+            {
+                el: "Τι δεν σημαίνει: το σκορ δείχνει το εύρος των καλύψεων που έχετε — όχι αν τα όριά τους επαρκούν για τις ανάγκες σας. Υψηλή βαθμολογία δεν σημαίνει επαρκή ασφάλιση ούτε ότι μια ζημιά θα αποζημιωθεί· χαμηλή βαθμολογία δεν σημαίνει ότι μια απαίτηση θα απορριφθεί. Δεν αξιολογεί ασφάλιστρα, ασφαλιστικές εταιρείες ή την ποιότητα των όρων.",
+                en: "What it does not mean: the score shows the breadth of the cover you hold, not whether its limits are enough for your needs. A high score does not mean you are adequately insured, nor that a claim will be paid; a low score does not mean a claim will be refused. It does not rate premiums, insurers, or the quality of your terms.",
+            },
+        ],
+        howToCheck: {
+            el: "Στο PolicyWallet, το Σκορ Προστασίας εμφανίζεται στην αρχική σας οθόνη μαζί με την ανάλυση ανά κατηγορία και τη μεθοδολογία του. Είναι ενημερωτική ένδειξη με βάση τα έγγραφα που έχετε ανεβάσει — δεν αποτελεί εξατομικευμένη ασφαλιστική συμβουλή. Για σύσταση προσαρμοσμένη στις ανάγκες σας απευθυνθείτε σε αδειοδοτημένο ασφαλιστικό διαμεσολαβητή.",
+            en: "In PolicyWallet the Protection Score appears on your home screen together with the per-category breakdown and its methodology. It is an informational indicator based on the documents you upload — not personalised insurance advice. For a recommendation tailored to your needs, speak to a licensed insurance intermediary.",
+        },
+        faq: [
+            {
+                question: {
+                    el: "Πώς υπολογίζεται το Σκορ Προστασίας;",
+                    en: "How is the Protection Score calculated?",
+                },
+                answer: {
+                    el: "Συγκρίνει τους κλάδους που θα ήταν αναμενόμενοι για το προφίλ σας με αυτούς που έχετε, με σταθμίσεις: Υγεία 25, Ζωή και εισόδημα 25, Ακίνητα και αυτοκίνητο 20, Προστασία εισοδήματος 15, Αστική ευθύνη 10, λοιπά 5. Από το σύνολο αφαιρούνται μονάδες για κενά που εντοπίζονται μέσα στα ασφαλιστήριά σας.",
+                    en: "It compares the branches expected for your profile against the ones you hold, weighted: Health 25, Life and income 25, Property and motor 20, Income protection 15, Liability 10, other 5. Points are then deducted for gaps found inside your own policies.",
+                },
+            },
+            {
+                question: {
+                    el: "Σημαίνει το υψηλό σκορ ότι είμαι επαρκώς ασφαλισμένος;",
+                    en: "Does a high score mean I am adequately insured?",
+                },
+                answer: {
+                    el: "Όχι. Το σκορ δείχνει πόσο πλήρης είναι η εικόνα των καλύψεών σας, όχι αν τα ποσά και τα όρια επαρκούν για τη δική σας περίπτωση. Δύο άνθρωποι με το ίδιο σκορ μπορεί να έχουν πολύ διαφορετική πραγματική προστασία.",
+                    en: "No. The score shows how complete your coverage picture is, not whether the sums and limits are enough for your situation. Two people with the same score can have very different real protection.",
+                },
+            },
+            {
+                question: {
+                    el: "Είναι το Σκορ Προστασίας ασφαλιστική συμβουλή;",
+                    en: "Is the Protection Score insurance advice?",
+                },
+                answer: {
+                    el: "Όχι. Είναι ενημερωτική ένδειξη που προκύπτει από τα έγγραφα που ανεβάζετε. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθεια. Για εξατομικευμένη σύσταση απευθυνθείτε σε αδειοδοτημένο ασφαλιστικό διαμεσολαβητή.",
+                    en: "No. It is an informational indicator derived from the documents you upload. PolicyWallet sells no insurance and takes no commission. For a personalised recommendation, speak to a licensed insurance intermediary.",
+                },
+            },
+        ],
+        related: [
+            { label: { el: "Κενό κάλυψης", en: "Coverage gap" }, href: "/guides/kena-kalypsis-ti-einai-pos-ta-vriskete" },
+            { label: { el: "Υπασφάλιση", en: "Underinsurance (ypasfalisi)" }, href: "/lexiko/ypasfalisi" },
+            { label: { el: "Τι δεν είναι το PolicyWallet", en: "What PolicyWallet is not" }, href: "/compare" },
+        ],
+        dateModified: "2026-08-06",
+    },
 ]
 
 /** One glossary term by slug, or undefined when the slug is unknown. */
