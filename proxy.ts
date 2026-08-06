@@ -142,6 +142,11 @@ export async function proxy(request: NextRequest) {
         "/robots.txt",
         "/sitemap.xml",
         "/opengraph-image",
+        // The English link-preview card. A separate stable route because Next
+        // hashes NESTED metadata routes per build, so /en/opengraph-image
+        // could never be referenced from metadata. Without this entry the
+        // proxy fails closed and every English share loses its preview.
+        "/opengraph-image-en",
         "/twitter-image",
         // PWA service worker + Sentry browser tunnel for anonymous visitors
         "/sw.js",

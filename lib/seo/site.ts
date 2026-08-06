@@ -108,7 +108,7 @@ export const siteConfig = {
 export function ogImagesFor(locale: "el" | "en") {
     return [
         {
-            url: locale === "en" ? "/en/opengraph-image" : "/opengraph-image",
+            url: locale === "en" ? "/opengraph-image-en" : "/opengraph-image",
             width: 1200,
             height: 630,
             alt:
@@ -120,7 +120,7 @@ export function ogImagesFor(locale: "el" | "en") {
 }
 
 export function twitterImagesFor(locale: "el" | "en") {
-    return [locale === "en" ? "/en/twitter-image" : "/twitter-image"]
+    return [locale === "en" ? "/opengraph-image-en" : "/twitter-image"]
 }
 
 /** Greek defaults for the shared shell (root layout) and locale-less callers. */
