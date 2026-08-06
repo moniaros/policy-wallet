@@ -4,7 +4,7 @@ import GlossaryTermClient from "../../../lexiko/[term]/GlossaryTermClient"
 import { getGlossaryTerm, glossaryTerms } from "@/lib/glossary/content"
 import { marketingPages } from "@/lib/seo/marketing-pages"
 import { StaticLanguageProvider } from "@/contexts/LanguageContext"
-import { OG_IMAGES, TWITTER_IMAGES } from "@/lib/seo/site"
+import { ogImagesFor, twitterImagesFor } from "@/lib/seo/site"
 import {
     JsonLd,
     breadcrumbTrailJsonLd,
@@ -41,13 +41,13 @@ export async function generateMetadata({ params }: GlossaryTermPageProps): Promi
             siteName: "PolicyWallet",
             title: entry.metaTitle.en,
             description: entry.metaDescription.en,
-            images: OG_IMAGES,
+            images: ogImagesFor("en"),
         },
         twitter: {
             card: "summary_large_image",
             title: entry.metaTitle.en,
             description: entry.metaDescription.en,
-            images: TWITTER_IMAGES,
+            images: twitterImagesFor("en"),
         },
     }
 }

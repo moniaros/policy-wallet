@@ -4,7 +4,7 @@ import GuideArticleClient from "../../../guides/[slug]/GuideArticleClient"
 import { getGuide, guides } from "@/lib/guides/content"
 import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import { marketingPages, enPathFor } from "@/lib/seo/marketing-pages"
-import { OG_IMAGES, TWITTER_IMAGES } from "@/lib/seo/site"
+import { ogImagesFor, twitterImagesFor } from "@/lib/seo/site"
 import {
     JsonLd,
     articleJsonLd,
@@ -45,13 +45,13 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
             description: guide.metaDescription.en,
             publishedTime: guide.datePublished,
             modifiedTime: guide.dateModified,
-            images: OG_IMAGES,
+            images: ogImagesFor("en"),
         },
         twitter: {
             card: "summary_large_image",
             title: guide.metaTitle.en,
             description: guide.metaDescription.en,
-            images: TWITTER_IMAGES,
+            images: twitterImagesFor("en"),
         },
     }
 }

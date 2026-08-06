@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { OG_IMAGES, siteConfig, TWITTER_IMAGES } from "@/lib/seo/site"
+import { ogImagesFor, siteConfig, twitterImagesFor } from "@/lib/seo/site"
 
 /**
  * Registry of unique metadata for every public marketing page.
@@ -507,13 +507,13 @@ export function buildMarketingMetadata(
             siteName: "PolicyWallet",
             title: copy.title,
             description: copy.description,
-            images: OG_IMAGES,
+            images: ogImagesFor(locale),
         },
         twitter: {
             card: "summary_large_image",
             title: copy.title,
             description: copy.description,
-            images: TWITTER_IMAGES,
+            images: twitterImagesFor(locale),
         },
     }
 }

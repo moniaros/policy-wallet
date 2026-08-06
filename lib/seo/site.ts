@@ -99,18 +99,34 @@ export const siteConfig = {
  * shallow-replace the parent's, so relying on inheritance or file-convention
  * auto-injection silently drops og:image on pages that set their own OG data.
  */
-export const OG_IMAGES = [
-    {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        // English as the shared-scraper fallback; the OG image itself is
-        // bilingual-neutral branding. Mirrors CATEGORY in positioning.ts.
-        alt: "PolicyWallet — We tell you if you are covered.",
-    },
-]
+/**
+ * Link-preview cards are per-locale: the Greek tree gets the Greek card (its
+ * category name previously never appeared in any share preview) and /en gets
+ * the English one. Alt mirrors the decode sentence so it cannot contradict
+ * the image — see lib/seo/og-card.tsx.
+ */
+export function ogImagesFor(locale: "el" | "en") {
+    return [
+        {
+            url: locale === "en" ? "/en/opengraph-image" : "/opengraph-image",
+            width: 1200,
+            height: 630,
+            alt:
+                locale === "en"
+                    ? "PolicyWallet — We do not sell insurance. We tell you if you are covered."
+                    : "PolicyWallet — Δεν πουλάμε ασφάλειες. Σας λέμε αν είστε καλυμμένοι.",
+        },
+    ]
+}
 
-export const TWITTER_IMAGES = ["/twitter-image"]
+export function twitterImagesFor(locale: "el" | "en") {
+    return [locale === "en" ? "/en/twitter-image" : "/twitter-image"]
+}
+
+/** Greek defaults for the shared shell (root layout) and locale-less callers. */
+export const OG_IMAGES = ogImagesFor("el")
+
+export const TWITTER_IMAGES = twitterImagesFor("el")
 
 /** Social profile URLs that are actually configured (for footer + sameAs). */
 export function getSocialProfiles(): { label: string; url: string }[] {
