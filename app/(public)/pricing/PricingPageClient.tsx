@@ -54,9 +54,12 @@ export default function PricingPage({
             el: "Διαλέξτε το πλάνο που σας ταιριάζει",
             en: "Pick the plan that fits you",
         },
+        // Leads with the decode: a price-shopper should read WHAT they are
+        // buying before HOW the meter works, otherwise the page reads as a
+        // storage quota ladder rather than the category.
         subtitle: {
-            el: "Ξεκινάτε δωρεάν. Αλλάζετε ή σταματάτε όποτε θέλετε. Καμία κρυφή χρέωση.",
-            en: "Start free. Change or stop whenever you want. No hidden charges.",
+            el: "Δεν πουλάμε ασφάλειες — σας λέμε αν είστε καλυμμένοι. Ξεκινάτε δωρεάν, αλλάζετε ή σταματάτε όποτε θέλετε.",
+            en: "We do not sell insurance — we tell you if you are covered. Start free, change or stop whenever you want.",
         },
         audiencePolicyholder: {
             el: "Ιδιώτες",
