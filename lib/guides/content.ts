@@ -318,8 +318,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των συμβολαίων και η AI διαβάζει καλύψεις και εξαιρέσεις — και, στο πλάνο PolicyWallet Plus, τα διασταυρώνει μεταξύ τους, βαθμολογεί το επίπεδο προστασίας σας και επισημαίνει κενά και επικαλύψεις σε απλά ελληνικά.",
-                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions — and, on the PolicyWallet Plus plan, cross-checks them, scores your protection level, and flags gaps and overlaps in plain language.",
+                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των συμβολαίων και η AI διαβάζει καλύψεις και εξαιρέσεις — και, στο πλάνο PolicyWallet Plus, τα διασταυρώνει μεταξύ τους, υπολογίζει το Σκορ Προστασίας σας και επισημαίνει κενά και επικαλύψεις σε απλά ελληνικά.",
+                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions — and, on the PolicyWallet Plus plan, cross-checks them, calculates your Protection Score, and flags gaps and overlaps in plain language.",
                     },
                 ],
             },
@@ -373,6 +373,10 @@ export const guides: Guide[] = [
             },
         ],
         related: [
+            {
+                label: { el: "Σκορ Προστασίας", en: "Protection Score" },
+                href: "/lexiko/skor-prostasias",
+            },
             {
                 label: {
                     el: "Πού διαχειρίζεστε όλα τα ασφαλιστήριά σας online",
