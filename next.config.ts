@@ -39,7 +39,12 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.stripe.com https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://storage.googleapis.com https://www.googletagmanager.com${supabaseCspSource}; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://checkout.stripe.com; connect-src 'self' https://api.stripe.com https://api.brevo.com https://static.cloudflareinsights.com https://*.policywallet.gr${supabaseCspSource} https://*.sentry.io https://*.google-analytics.com https://www.googletagmanager.com;`,
+            // `worker-src` must be explicit: without it browsers fall back to
+            // `script-src`, which has no `blob:`, so Sentry Session Replay's
+            // blob-URL compression worker was refused on EVERY page — a console
+            // error for every visitor and a degraded replay feed. Scoped to
+            // same-origin and same-origin blobs; `script-src` is NOT loosened.
+            value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.stripe.com https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://www.googletagmanager.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://storage.googleapis.com https://www.googletagmanager.com${supabaseCspSource}; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://checkout.stripe.com; connect-src 'self' https://api.stripe.com https://api.brevo.com https://static.cloudflareinsights.com https://*.policywallet.gr${supabaseCspSource} https://*.sentry.io https://*.google-analytics.com https://www.googletagmanager.com;`,
           },
           {
             key: "X-Frame-Options",
