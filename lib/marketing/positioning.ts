@@ -121,8 +121,8 @@ export const PROMISE: { lead: Bilingual; accent: Bilingual } = {
  * sentence shares its span with the free-CTA reassurance line.
  */
 export const WHAT_WE_DO: Bilingual = {
-    el: "Παιδί, νέο σπίτι, νέα δουλειά. Κάθε αλλαγή αλλάζει και τα ρίσκα σας. Σας λέμε αν είστε ακόμη καλυμμένοι.",
-    en: "A child, a new home, a new job. Every change changes your risks. We tell you whether you are still covered.",
+    el: "Παιδί, νέο σπίτι, νέα δουλειά. Κάθε αλλαγή αλλάζει και τα ρίσκα σας. Δεν πουλάμε ασφάλειες — σας λέμε αν είστε ακόμη καλυμμένοι.",
+    en: "A child, a new home, a new job. Every change changes your risks. We do not sell insurance — we tell you whether you are still covered.",
 }
 
 /**

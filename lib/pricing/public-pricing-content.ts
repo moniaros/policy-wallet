@@ -445,6 +445,19 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
         },
         faqItems: [
             {
+                // The CRM denial, verbatim from app/(public)/solutions/agents/faqs.ts:
+                // this tab lists client counts and bulk import beside plan prices,
+                // which is exactly the broker-CRM read the site denies elsewhere.
+                question: {
+                    el: "Είναι το PolicyWallet CRM για ασφαλιστικά γραφεία;",
+                    en: "Is PolicyWallet a CRM for insurance agencies?",
+                },
+                answer: {
+                    el: "Όχι. Είναι πλατφόρμα προσωπικής ανάλυσης ρίσκου: το πορτοφόλι ανήκει στον ασφαλισμένο και εσείς το βλέπετε μόνο αν εκείνος επιλέξει να το μοιραστεί. Δεν διαχειριζόμαστε το πελατολόγιό σας — διαβάζουμε τα ασφαλιστήρια των πελατών σας και σας δείχνουμε τι λέει το καθένα.",
+                    en: "No. It is a personal risk intelligence platform: the wallet belongs to the policyholder, and you see it only if they choose to share it. We do not manage your book — we read your clients' policies and show you what each one says.",
+                },
+            },
+            {
                 question: {
                     el: "Μπορώ να διαχειρίζομαι πολλούς πελάτες;",
                     en: "Can I manage multiple clients?",
