@@ -316,9 +316,18 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                         ))}
                     </div>
 
-                    <p className="mt-10 text-lead font-semibold leading-relaxed text-[#0F172A] dark:text-white">
-                        {CATEGORY_ANSWER.a(locale)}
-                    </p>
+                    {/* The turn from five denials to one assertion. The heading
+                        is rendered, not just emitted: this pair is the sixth
+                        FAQPage entry, and structured data may never carry a
+                        question the reader cannot see on the page. */}
+                    <div className="mt-10 rounded-2xl border border-[#A7F3D0] bg-[#ECFDF5] p-7 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                        <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
+                            {pick(CATEGORY_ANSWER.q, locale)}
+                        </h3>
+                        <p className="text-lead font-semibold leading-relaxed text-[#0F172A] dark:text-white">
+                            {CATEGORY_ANSWER.a(locale)}
+                        </p>
+                    </div>
                 </div>
             </section>
 

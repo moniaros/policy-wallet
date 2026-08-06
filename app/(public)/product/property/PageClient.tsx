@@ -22,7 +22,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                         {t("Το σπίτι σας, ασφαλισμένο στη σωστή αξία.", "Your home, insured at the right value.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Ελέγξτε αν το ποσό ασφάλισης φτάνει για να ξαναχτιστεί το σπίτι σας, τι καλύπτεται σε σεισμό ή πλημμύρα, και αν δικαιούστε έκπτωση ΕΝΦΙΑ.", "Check whether the sum insured is enough to rebuild your home, what is covered in an earthquake or a flood, and whether you qualify for the ENFIA discount.")}
+                        {t("Δείτε τι κεφάλαιο δηλώνει το συμβόλαιό σας, τι καλύπτεται σε σεισμό ή πλημμύρα, και αν έχετε την τριάδα για την έκπτωση ΕΝΦΙΑ.", "See what sum insured your policy states, what is covered in an earthquake or a flood, and whether you hold the trio for the ENFIA discount.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
@@ -78,7 +78,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Έλεγχος κόστους ανακατασκευής", "Rebuild cost check")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Δείτε αν το ποσό ασφάλισης φτάνει ακόμη για να ξαναχτιστεί το σπίτι σας — πριν πληρώσει λιγότερα η ασφαλιστική.", "See whether the sum insured is still enough to rebuild your home — before the insurer pays out less.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Με το PolicyWallet Plus, δείτε αν το ποσό ασφάλισης φτάνει ακόμη για να ξαναχτιστεί το σπίτι σας — πριν πληρώσει λιγότερα η ασφαλιστική.", "With PolicyWallet Plus, see whether the sum insured is still enough to rebuild your home — before the insurer pays out less.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
