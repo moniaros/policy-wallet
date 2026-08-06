@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
-import { CompareSections } from "../../compare/CompareSections"
+import { CompareSections, CATEGORY_ANSWER, NOT_CONFUSABLES } from "../../compare/CompareSections"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
-import { JsonLd, breadcrumbEnJsonLd } from "@/lib/seo/jsonld"
+import { JsonLd, breadcrumbEnJsonLd, faqPageJsonLd } from "@/lib/seo/jsonld"
+import { pick } from "@/lib/marketing/positioning"
 
 export const metadata: Metadata = buildMarketingMetadata("compare", "en")
 
@@ -11,7 +12,22 @@ export default function ComparePageEnglish() {
     return (
         <>
             <CompareSections locale="en" />
-            <JsonLd data={[breadcrumbEnJsonLd(["compare"])]} />
+            <JsonLd
+                data={[
+                    breadcrumbEnJsonLd(["compare"]),
+                    // See the Greek route: same constants, same verbatim rule.
+                    faqPageJsonLd([
+                        ...NOT_CONFUSABLES.map((item) => ({
+                            question: pick(item.q, "en"),
+                            answer: pick(item.a, "en"),
+                        })),
+                        {
+                            question: pick(CATEGORY_ANSWER.q, "en"),
+                            answer: CATEGORY_ANSWER.a("en"),
+                        },
+                    ]),
+                ]}
+            />
         </>
     )
 }

@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref } from "@/lib/seo/locale-links"
+import { AGENT_FAQS } from "./faqs"
 import { productCategories } from "@/lib/product/catalog"
 import { DEFAULT_PLAN_FACTS } from "@/lib/pricing/plan-defaults"
 import { formatEur } from "@/lib/pricing/pricing-view-model"
@@ -19,6 +20,7 @@ import {
     RenewalReminderWidget,
     BrandedReportWidget,
 } from "@/components/landing/AgentWidgets"
+
 
 export default function AgentSolutionsPage() {
     const { language } = useLanguage()
@@ -243,6 +245,31 @@ export default function AgentSolutionsPage() {
                         {t("Ανοίξτε δωρεάν λογαριασμό", "Open a free account")}
                         <ArrowRight aria-hidden className="h-4 w-4" />
                     </Link>
+                </div>
+            </section>
+
+            {/* Answers to the questions an agent (and an answer engine) actually
+                asks — including the CRM negative this page most needs. */}
+            <section aria-labelledby="agents-faq-heading" className="px-6 pb-24 lg:px-12">
+                <div className="mx-auto max-w-[820px]">
+                    <h2
+                        id="agents-faq-heading"
+                        className="mb-8 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white"
+                    >
+                        {t("Συχνές ερωτήσεις ασφαλιστών", "Common questions from agents")}
+                    </h2>
+                    <div className="space-y-8">
+                        {AGENT_FAQS.map((item) => (
+                            <div key={item.q.en}>
+                                <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
+                                    {t(item.q.el, item.q.en)}
+                                </h3>
+                                <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                                    {t(item.a.el, item.a.en)}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
         </LoBPageShell>

@@ -8,6 +8,7 @@ import {
     COMPARISON_ROWS,
     PRIMARY_ACTION,
     pick,
+    type Bilingual,
     type ComparisonVerdict,
     type MarketingLocale,
 } from "@/lib/marketing/positioning"
@@ -59,6 +60,59 @@ function Verdict({ value, locale }: { value: ComparisonVerdict; locale: Marketin
             {label}
         </span>
     )
+}
+
+/**
+ * The category defined by its EDGES: the five things PolicyWallet gets
+ * mistaken for, each excluded with a reason. Single-sourced because the
+ * rendered section AND the FAQPage JSON-LD on /compare both read this array —
+ * structured data can never claim a question the page does not visibly answer.
+ */
+export const NOT_CONFUSABLES: readonly { q: Bilingual; a: Bilingual }[] = [
+    {
+        q: { el: "Portal ασφαλιστικής εταιρείας;", en: "An insurer's portal?" },
+        a: {
+            el: "Όχι. Ένα portal σάς δείχνει μόνο τα συμβόλαια μίας εταιρείας. Εμείς διαβάζουμε όλα σας τα ασφαλιστήρια, από όποια εταιρεία κι αν είναι — και δεν μας πληρώνει καμία.",
+            en: "No. An insurer's portal shows you one company's policies only. We read all your policies, from any company — and no company pays us.",
+        },
+    },
+    {
+        q: { el: "Ιστότοπος σύγκρισης τιμών;", en: "A price-comparison site?" },
+        a: {
+            el: "Όχι. Τα site συγκρίσεων πουλάνε νέα συμβόλαια με προμήθεια. Εμείς δεν πουλάμε κανένα συμβόλαιο — αναλύουμε αυτά που ήδη έχετε.",
+            en: "No. Comparison sites sell new policies on commission. We sell no policies — we analyze the ones you already own.",
+        },
+    },
+    {
+        q: { el: "Εφαρμογή αποθήκευσης εγγράφων;", en: "A document-storage app?" },
+        a: {
+            el: "Όχι. Η αποθήκευση είναι το πρώτο λεπτό, όχι το προϊόν. Το προϊόν είναι η απάντηση: πού είστε καλυμμένοι και πού όχι.",
+            en: "No. Storage is the first minute, not the product. The product is the answer: where you are covered and where you are not.",
+        },
+    },
+    {
+        q: { el: "Ψηφιακό πορτοφόλι;", en: "A digital wallet?" },
+        a: {
+            el: "Όχι — παρά το όνομά μας. Δεν κρατάμε κάρτες, χρήματα ή πληρωμές. Κρατάμε τη συνολική εικόνα του ρίσκου σας, διαβασμένη από τα ίδια σας τα ασφαλιστήρια.",
+            en: "No — despite our name. We hold no cards, money, or payments. We hold the full picture of your risk, read from your own policies.",
+        },
+    },
+    {
+        q: { el: "CRM για ασφαλιστικά γραφεία;", en: "A CRM for insurance agencies?" },
+        a: {
+            el: "Όχι. Είμαστε το εργαλείο του ασφαλισμένου. Οι ασφαλιστές που δουλεύουν μαζί μας βλέπουν το πορτοφόλι ενός πελάτη μόνο αν εκείνος επιλέξει να το μοιραστεί.",
+            en: "No. We are the policyholder's tool. Agents who work with us see a client's own wallet only if the client chooses to share it.",
+        },
+    },
+]
+
+/** The affirmative that closes the section — also the sixth FAQ entry. */
+export const CATEGORY_ANSWER: { q: Bilingual; a: (locale: MarketingLocale) => string } = {
+    q: { el: "Τι είναι τότε το PolicyWallet;", en: "What is PolicyWallet then?" },
+    a: (locale) =>
+        locale === "el"
+            ? `Είμαστε κάτι που δεν υπήρχε: η ${CATEGORY_NAME.el}. Διαβάζουμε τις ασφάλειές σας και σας λέμε αν είστε καλυμμένοι.`
+            : `We are something that did not exist: the ${CATEGORY_NAME.en}. We read your insurance and tell you if you are covered.`,
 }
 
 export function CompareSections({ locale }: { locale: MarketingLocale }) {
@@ -250,70 +304,20 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                     </p>
 
                     <div className="space-y-8">
-                        <div>
-                            <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
-                                {t("Portal ασφαλιστικής εταιρείας;", "An insurer's portal?")}
-                            </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t(
-                                    "Όχι. Ένα portal σάς δείχνει μόνο τα συμβόλαια μίας εταιρείας. Εμείς διαβάζουμε όλα σας τα ασφαλιστήρια, από όποια εταιρεία κι αν είναι — και δεν μας πληρώνει καμία.",
-                                    "No. An insurer's portal shows you one company's policies only. We read all your policies, from any company — and no company pays us.",
-                                )}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
-                                {t("Ιστότοπος σύγκρισης τιμών;", "A price-comparison site?")}
-                            </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t(
-                                    "Όχι. Τα site συγκρίσεων πουλάνε νέα συμβόλαια με προμήθεια. Εμείς δεν πουλάμε κανένα συμβόλαιο — αναλύουμε αυτά που ήδη έχετε.",
-                                    "No. Comparison sites sell new policies on commission. We sell no policies — we analyze the ones you already own.",
-                                )}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
-                                {t("Εφαρμογή αποθήκευσης εγγράφων;", "A document-storage app?")}
-                            </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t(
-                                    "Όχι. Η αποθήκευση είναι το πρώτο λεπτό, όχι το προϊόν. Το προϊόν είναι η απάντηση: πού είστε καλυμμένοι και πού όχι.",
-                                    "No. Storage is the first minute, not the product. The product is the answer: where you are covered and where you are not.",
-                                )}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
-                                {t("Ψηφιακό πορτοφόλι;", "A digital wallet?")}
-                            </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t(
-                                    "Όχι — παρά το όνομά μας. Δεν κρατάμε κάρτες, χρήματα ή πληρωμές. Κρατάμε τη συνολική εικόνα του ρίσκου σας, διαβασμένη από τα ίδια σας τα ασφαλιστήρια.",
-                                    "No — despite our name. We hold no cards, money, or payments. We hold the full picture of your risk, read from your own policies.",
-                                )}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
-                                {t("CRM για ασφαλιστικά γραφεία;", "A CRM for insurance agencies?")}
-                            </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t(
-                                    "Όχι. Είμαστε το εργαλείο του ασφαλισμένου. Οι ασφαλιστές που δουλεύουν μαζί μας βλέπουν το πορτοφόλι ενός πελάτη μόνο αν εκείνος επιλέξει να το μοιραστεί.",
-                                    "No. We are the policyholder's tool. Agents who work with us see a client's own wallet only if the client chooses to share it.",
-                                )}
-                            </p>
-                        </div>
+                        {NOT_CONFUSABLES.map((item) => (
+                            <div key={item.q.en}>
+                                <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
+                                    {pick(item.q, locale)}
+                                </h3>
+                                <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                                    {pick(item.a, locale)}
+                                </p>
+                            </div>
+                        ))}
                     </div>
 
                     <p className="mt-10 text-lead font-semibold leading-relaxed text-[#0F172A] dark:text-white">
-                        {t("Είμαστε κάτι που δεν υπήρχε: η", "We are something that did not exist: the")}{" "}
-                        {pick(CATEGORY_NAME, locale)}.{" "}
-                        {t(
-                            "Διαβάζουμε τις ασφάλειές σας και σας λέμε αν είστε καλυμμένοι.",
-                            "We read your insurance and tell you if you are covered.",
-                        )}
+                        {CATEGORY_ANSWER.a(locale)}
                     </p>
                 </div>
             </section>

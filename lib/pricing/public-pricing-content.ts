@@ -389,6 +389,18 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
+                // The metered core of the agent product: an agent paying for a
+                // plan has to be able to see how many policies it will read.
+                // Figures are DEFAULT_ENTITLEMENT_LIMITS (plan-defaults.ts).
+                name: { el: "Αναλύσεις AI ανά μήνα", en: "AI analyses per month" },
+                values: {
+                    "agent-free": "5",
+                    "agent-starter": "50",
+                    "agent-pro": "200",
+                    "agent-agency": { el: "Απεριόριστες", en: "Unlimited" },
+                },
+            },
+            {
                 category: { el: "Καθημερινή δουλειά", en: "Day-to-day work" },
                 name: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" },
                 values: {

@@ -64,8 +64,10 @@ export const productCategories = [
         tagEn: "Real estate",
         headlineEl: "Κόστος ανακατασκευής και έκπτωση ΕΝΦΙΑ, με μια ματιά.",
         headlineEn: "Rebuild cost and the ENFIA tax discount, at a glance.",
-        descEl: "Δείτε αν το σπίτι σας είναι ασφαλισμένο για λιγότερα απ' όσο κοστίζει να ξαναχτιστεί.",
-        descEn: "See whether your home is insured for less than it would cost to rebuild.",
+        // Underinsurance detection is a Plus output — the glossary hooks for
+        // «υπασφάλιση» and «ασφαλισμένο κεφάλαιο» name the plan, so this does too.
+        descEl: "Με το PolicyWallet Plus, δείτε αν το σπίτι σας είναι ασφαλισμένο για λιγότερα απ' όσο κοστίζει να ξαναχτιστεί.",
+        descEn: "With PolicyWallet Plus, see whether your home is insured for less than it would cost to rebuild.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
