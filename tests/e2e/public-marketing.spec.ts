@@ -171,3 +171,50 @@ test("every same-origin link on every public page resolves", async ({ request })
 
     expect(broken, `Broken links:\n${broken.join("\n")}`).toEqual([])
 })
+
+/**
+ * The closed mobile menu must never paint.
+ *
+ * It shipped hidden by `-translate-y-full` alone, which shifts it up by the
+ * height of its own `inset-0` box — but its content is taller than that box
+ * and was not clipped, so the overflow hung below the box and the upward
+ * shift dragged it back on screen: a stray full-width «Δείτε πού είστε»
+ * pill under the header, painting over the nav at z-[100].
+ *
+ * The bug is HEIGHT-driven (it appears once the viewport is shorter than the
+ * drawer's ~875px of content), which is why the 320/1280 sweep above never
+ * caught it. These viewports are deliberately short.
+ */
+const SHORT_VIEWPORTS = [
+    { name: "desktop, short", width: 1440, height: 700 },
+    { name: "wide, short", width: 2000, height: 700 },
+    { name: "tablet, short", width: 900, height: 660 },
+    { name: "mobile, short", width: 390, height: 640 },
+]
+
+for (const viewport of SHORT_VIEWPORTS) {
+    test(`closed mobile menu stays off screen (${viewport.name})`, async ({ page }) => {
+        await page.setViewportSize({ width: viewport.width, height: viewport.height })
+        await page.goto("/", { waitUntil: "domcontentloaded" })
+
+        const offScreen = await page.evaluate((viewportHeight) => {
+            const drawer = document.querySelector('[role="dialog"][aria-modal="true"]')
+            if (!drawer) return { ok: true, reason: "no drawer in DOM" }
+            const style = getComputedStyle(drawer)
+            if (style.display === "none" || style.visibility === "hidden") {
+                return { ok: true, reason: `hidden via ${style.display}/${style.visibility}` }
+            }
+            // Its own box must sit fully outside the viewport, AND it must clip
+            // its overflow — otherwise taller content paints back inside.
+            const rect = drawer.getBoundingClientRect()
+            const intersects = rect.bottom > 0 && rect.top < viewportHeight
+            const clips = style.overflowY !== "visible"
+            return {
+                ok: !intersects && clips,
+                reason: `top=${Math.round(rect.top)} bottom=${Math.round(rect.bottom)} overflowY=${style.overflowY}`,
+            }
+        }, viewport.height)
+
+        expect(offScreen.ok, `closed drawer is reachable on screen — ${offScreen.reason}`).toBe(true)
+    })
+}
