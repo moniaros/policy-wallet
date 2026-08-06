@@ -139,7 +139,14 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                                 {section.link ? (
                                     <p>
                                         <Link
-                                            href={`${section.link.href}?lang=${language}`}
+                                            // Same locale rule as the nav strip: English readers
+                                            // get the real /en document, not the Greek route's
+                                            // ?lang=en variant.
+                                            href={
+                                                language === "en"
+                                                    ? `/en${section.link.href}`
+                                                    : `${section.link.href}?lang=el`
+                                            }
                                             className="font-semibold text-primary hover:text-primary-hover"
                                         >
                                             {section.link.label}
