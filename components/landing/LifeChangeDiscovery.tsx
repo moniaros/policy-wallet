@@ -47,7 +47,7 @@ export function LifeChangeDiscovery({ locale }: { locale: MarketingLocale }) {
         <section
             id="life-changes"
             aria-labelledby="life-changes-heading"
-            className="border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-12 lg:px-12 lg:py-16 dark:border-slate-800 dark:bg-slate-900"
+            className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-12 lg:scroll-mt-36 lg:px-12 lg:py-16 dark:border-slate-800 dark:bg-slate-900"
         >
             <div className="mx-auto max-w-page space-y-6 text-center">
                 <h2
@@ -73,7 +73,7 @@ export function LifeChangeDiscovery({ locale }: { locale: MarketingLocale }) {
                                     aria-pressed={active}
                                     className={`flex min-h-11 items-center gap-2 rounded-full border px-4 text-body-sm font-semibold transition-colors ${
                                         active
-                                            ? "border-[#29685B] bg-[#29685B] text-white dark:border-[#A7F3D0] dark:bg-[#29685B]"
+                                            ? "border-[#29685B] bg-[#29685B] text-white forced-colors:border-[3px] forced-colors:border-double dark:border-[#A7F3D0] dark:bg-[#29685B]"
                                             : "border-[#E2E8F0] bg-white text-[#334155] hover:border-[#29685B]/40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                     }`}
                                 >
@@ -102,7 +102,7 @@ export function LifeChangeDiscovery({ locale }: { locale: MarketingLocale }) {
                             <li
                                 key={key}
                                 hidden={!active}
-                                className="flex items-center justify-between gap-4 rounded-2xl border border-[#DCEBDA] bg-white px-4 py-3 dark:border-[#29685B]/40 dark:bg-slate-800"
+                                className="flex flex-col items-start gap-2 rounded-2xl border border-[#DCEBDA] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 dark:border-[#29685B]/40 dark:bg-slate-800"
                             >
                                 <span className="text-body text-[#0F172A] dark:text-white">
                                     {pick(entry.effect, locale)}
@@ -112,6 +112,9 @@ export function LifeChangeDiscovery({ locale }: { locale: MarketingLocale }) {
                                     className="inline-flex min-h-11 flex-shrink-0 items-center gap-1 text-body-sm font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
                                 >
                                     {t("Δείτε τι μετράει", "See what matters")}
+                                    {/* Six links otherwise share one accessible
+                                        name; the change makes each unique. */}
+                                    <span className="sr-only"> — {pick(entry.change, locale)}</span>
                                     <ArrowRight aria-hidden className="h-3.5 w-3.5" />
                                 </Link>
                             </li>

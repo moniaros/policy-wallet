@@ -65,7 +65,10 @@ export function PricingPreview({
                                         : "border-[#E2E8F0] dark:border-slate-800"
                                 }`}
                             >
-                                <div className="mb-4 flex items-center gap-2">
+                                {/* Wraps: at 768 the English "RECOMMENDED" badge
+                                    sat beside a long plan name and pushed the
+                                    document 2px wider than the viewport. */}
+                                <div className="mb-4 flex flex-wrap items-center gap-2">
                                     <h3 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
                                         {pick(plan.name)}
                                     </h3>
