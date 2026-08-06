@@ -22,7 +22,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Οι εξαιρέσεις του κατοικιδίου σας, στο φως.", "Your pet policy's exclusions, out in the open.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε ποιες παθήσεις εξαιρούνται, συγκρίνετε τα ετήσια όρια και ελέγξτε αν καλύπτεται η λεϊσμανίαση — πριν το χρειαστείτε.", "See which conditions are excluded, compare the yearly limits, and check whether leishmaniasis is covered — before you need it.")}
+                        {t("Δείτε ποιες παθήσεις εξαιρεί το συμβόλαιό σας, ποια είναι τα ετήσια όριά του και αν καλύπτεται η λεϊσμανίαση — πριν το χρειαστείτε.", "See which conditions your policy excludes, what its yearly limits are, and whether leishmaniasis is covered — before you need it.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
