@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { Suspense } from "react"
 import { WorldClassLanding } from "@/components/landing/WorldClassLanding"
 import { buildLandingJsonLd, buildLandingMetadata } from "@/lib/landing/seo"
 import { JsonLd } from "@/lib/seo/jsonld"
@@ -23,9 +22,9 @@ export default async function LandingPageEnglish() {
 
     return (
         <>
-            <Suspense fallback={null}>
-                <WorldClassLanding locale="en" partnerOffers={partnerOffers} pricingPlans={pricingPlans} />
-            </Suspense>
+            {/* NOT wrapped in Suspense — see the Greek homepage for why: the
+                boundary hid the entire page from JS-less crawlers. */}
+            <WorldClassLanding locale="en" partnerOffers={partnerOffers} pricingPlans={pricingPlans} />
             {/* Server-rendered so crawlers without JS see the structured data. */}
             <JsonLd data={jsonLd} />
         </>

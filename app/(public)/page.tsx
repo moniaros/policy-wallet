@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { Suspense } from "react"
 import { WorldClassLanding } from "@/components/landing/WorldClassLanding"
 import { buildLandingJsonLd, buildLandingMetadata } from "@/lib/landing/seo"
 import { JsonLd } from "@/lib/seo/jsonld"
@@ -23,9 +22,12 @@ export default async function LandingPage() {
 
     return (
         <>
-            <Suspense fallback={null}>
-                <WorldClassLanding locale="el" partnerOffers={partnerOffers} pricingPlans={pricingPlans} />
-            </Suspense>
+            {/* NOT wrapped in Suspense: a boundary here streamed the whole page
+                into a JS-revealed `<div hidden>`, so crawlers that do not run
+                JS (several AI crawlers) saw an empty homepage. Both data reads
+                above are already awaited, so there is nothing left to suspend
+                on — the markup renders straight into the server HTML. */}
+            <WorldClassLanding locale="el" partnerOffers={partnerOffers} pricingPlans={pricingPlans} />
             {/* Server-rendered so crawlers without JS see the structured data. */}
             <JsonLd data={jsonLd} />
         </>

@@ -7,7 +7,7 @@ import { ImageResponse } from "next/og"
  * ImageResponse font has no Greek glyphs.
  */
 
-export const alt = "PolicyWallet — Your insurance, understood."
+export const alt = "PolicyWallet — We tell you if you are covered."
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -68,7 +68,7 @@ export default function OpenGraphImage() {
                             maxWidth: "980px",
                         }}
                     >
-                        Your insurance, understood.
+                        We tell you if you are covered.
                     </div>
                     <div
                         style={{
@@ -78,13 +78,16 @@ export default function OpenGraphImage() {
                             maxWidth: "900px",
                         }}
                     >
-                        AI policy analysis, coverage-gap detection, and renewal
-                        reminders — in one neutral wallet.
+                        The Personal Risk Intelligence Platform. We read the
+                        insurance you already own — we do not sell it.
                     </div>
                 </div>
 
                 <div style={{ display: "flex", gap: "14px" }}>
-                    {["AI analysis in <30s", "Gap detection", "EL / EN"].map((chip) => (
+                    {/* Baseline, always-true claims only: no speed promise (the
+                        canon allows "in minutes" alone) and no tier-gated
+                        capability, since a social card carries no plan context. */}
+                    {["Independent", "No commission", "EL / EN"].map((chip) => (
                         <div
                             key={chip}
                             style={{
