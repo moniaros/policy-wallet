@@ -207,7 +207,20 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                 aria-modal="true"
                 aria-label={t("Μενού", "Menu")}
                 onKeyDown={onDialogKeyDown}
-                className={`fixed inset-0 z-[100] flex flex-col bg-[#29685B] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                // `aria-hidden`/`inert` while closed: `pointer-events-none`
+                // stops the mouse but leaves every link focusable and readable
+                // by assistive tech.
+                aria-hidden={!open}
+                inert={!open}
+                // `lg:hidden` — the trigger below is lg:hidden, so the drawer
+                // must be too; it has no way to open on desktop.
+                // `overflow-y-auto` — the content is centre-justified and
+                // taller than this viewport-height box, so it used to spill out
+                // BOTH ends. Closing only translates the box by its own height,
+                // which dragged the spill-over (the full-width CTA) back into
+                // view under the header. Containing the overflow is what makes
+                // the closed state genuinely hidden.
+                className={`fixed inset-0 z-[100] flex flex-col overflow-y-auto bg-[#29685B] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:hidden ${
                     open ? "translate-y-0" : "pointer-events-none -translate-y-full"
                 }`}
             >
