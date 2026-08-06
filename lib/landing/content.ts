@@ -95,8 +95,8 @@ export const landingContent: LandingContentModel = {
                 id: "faq-data-security",
                 question: { el: "Είναι ασφαλή τα δεδομένα μου;", en: "Is my data safe?" },
                 answer: {
-                    el: "Ναι. Τα αρχεία σας αποθηκεύονται κρυπτογραφημένα σε διακομιστές μέσα στην Ευρωπαϊκή Ένωση. Μπορείτε να ζητήσετε αντίγραφο ή πλήρη διαγραφή όποτε θέλετε.",
-                    en: "Yes. Your files are stored encrypted on servers inside the European Union. You can ask for a copy or a full deletion whenever you want.",
+                    el: "Ναι. Τα αρχεία σας αποθηκεύονται κρυπτογραφημένα σε διακομιστές μέσα στην Ευρωπαϊκή Ένωση, και τα έγγραφά σας δεν χρησιμοποιούνται για την εκπαίδευση μοντέλων AI. Μπορείτε να ζητήσετε αντίγραφο ή πλήρη διαγραφή όποτε θέλετε.",
+                    en: "Yes. Your files are stored encrypted on servers inside the European Union, and your documents are not used to train AI models. You can ask for a copy or a full deletion whenever you want.",
                 },
             },
             {
@@ -160,7 +160,7 @@ export const landingContent: LandingContentModel = {
             ],
             ogTitle: "PolicyWallet | Δείτε τι δεν καλύπτει η ασφάλειά σας",
             ogDescription:
-                "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι, πού όχι και τι να διορθώσετε πρώτα.",
+                "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι, πού όχι και — με το PolicyWallet Plus — τι να διορθώσετε πρώτα.",
             twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",
             twitterDescription: "Δεν πουλάμε ασφάλειες. Σας λέμε τι δεν καλύπτεστε.",
         },
@@ -179,7 +179,7 @@ export const landingContent: LandingContentModel = {
             ],
             ogTitle: "PolicyWallet | See what your insurance does not cover",
             ogDescription:
-                "We read your insurance and tell you where you are covered, where you are not, and what to fix first.",
+                "We read your insurance and tell you where you are covered, where you are not, and — with PolicyWallet Plus — what to fix first.",
             twitterTitle: "PolicyWallet | An independent risk check",
             twitterDescription: "We do not sell insurance. We tell you what you are not covered for.",
         },

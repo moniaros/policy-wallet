@@ -31,8 +31,8 @@ export const PRODUCT_STEPS = [
         icon: Bell,
         titleEl: "Σας κρατάμε ενήμερους",
         titleEn: "We keep you in the loop",
-        descEl: "Σας ειδοποιούμε πριν λήξει κάτι και όταν βρούμε κάτι νέο στα έγγραφά σας — από το πλάνο Starter.",
-        descEn: "We warn you before something runs out, and when we find something new in your documents — from the Starter plan.",
+        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Starter — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το PolicyWallet Plus.",
+        descEn: "We warn you before something runs out — from the Starter plan — and when we find something new in your documents, with PolicyWallet Plus.",
     },
 ] as const
 
@@ -67,8 +67,8 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Πού φυλάσσονται τα έγγραφά μου;",
         qEn: "Where are my documents kept?",
-        aEl: "Σε κρυπτογραφημένους διακομιστές μέσα στην Ευρωπαϊκή Ένωση. Δεν τα δείχνουμε ποτέ σε κανέναν χωρίς τη ρητή σας άδεια, και τα διαγράφετε όποτε θέλετε.",
-        aEn: "On encrypted servers inside the European Union. We never show them to anyone without your explicit permission, and you can delete them whenever you want.",
+        aEl: "Σε κρυπτογραφημένους διακομιστές μέσα στην Ευρωπαϊκή Ένωση. Δεν τα δείχνουμε ποτέ σε κανέναν χωρίς τη ρητή σας άδεια, δεν χρησιμοποιούνται για την εκπαίδευση μοντέλων AI, και τα διαγράφετε όποτε θέλετε.",
+        aEn: "On encrypted servers inside the European Union. We never show them to anyone without your explicit permission, they are not used to train AI models, and you can delete them whenever you want.",
     },
     {
         qEl: "Δουλεύει με όλες τις ασφαλιστικές εταιρείες;",
