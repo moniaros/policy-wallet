@@ -73,8 +73,8 @@ export function ProductSections({ language }: { language: Language }) {
 
                     <p className="mx-auto mb-10 max-w-[640px] text-lead leading-[1.55] text-[#475569] dark:text-slate-300 md:text-title">
                         {t(
-                            "Δείτε τι καλύπτει κάθε συμβόλαιο — και τι δεν καλύπτει.",
-                            "See what every policy covers — and what it does not."
+                            "Δεν πουλάμε ασφάλειες — σας λέμε αν είστε καλυμμένοι. Δείτε τι καλύπτει κάθε συμβόλαιο και τι δεν καλύπτει.",
+                            "We do not sell insurance — we tell you if you are covered. See what every policy covers and what it does not."
                         )}
                     </p>
 
