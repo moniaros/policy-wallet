@@ -37,7 +37,14 @@ export interface PublicPricingPlan {
 export interface PublicPricingComparisonRow {
     category?: LocalizedText
     name: LocalizedText
-    values: Record<string, boolean | string>
+    /**
+     * `true`/`false` render as an included/excluded mark; a string renders as
+     * given; a LocalizedText renders in the reader's language. The last form
+     * exists because these cells used to be language-blind strings, so a Greek
+     * visitor read "Unlimited", "No" and "100 rows" in an otherwise Greek
+     * table — and one cell displayed "Απεριόριστα / Unlimited" at once.
+     */
+    values: Record<string, boolean | string | LocalizedText>
 }
 
 export interface PublicPricingFaqItem {
@@ -82,14 +89,14 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
         },
         subtitle: {
             el: "Από απλή οργάνωση ασφαλιστηρίων μέχρι πλήρη ανάλυση κάλυψης: κενά, λήξεις, απαντήσεις.",
-            en: "From simple policy organization to full coverage analysis: gaps, renewals, answers.",
+            en: "From simple policy organization to full coverage analysis: gaps, expiry dates, answers.",
         },
         plans: [
             {
                 key: "free",
                 checkoutPlanId: null,
                 name: { el: "Δωρεάν", en: "Free" },
-                description: { el: "Για προσωπική έναρξη", en: "For personal getting started" },
+                description: { el: "Για να ξεκινήσετε", en: "To get you started" },
                 pricing: {
                     monthly: {
                         amount: "€0",
@@ -108,7 +115,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 key: "plus",
                 checkoutPlanId: "ph-plus",
                 name: { el: "Starter", en: "Starter" },
-                description: { el: "Για βασική οργάνωση", en: "For basic organization" },
+                description: { el: "Για να μη σας ξεφύγει καμία λήξη", en: "So no expiry slips past you" },
                 pricing: {
                     monthly: {
                         amount: "€2.99",
@@ -132,7 +139,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 key: "pro",
                 checkoutPlanId: "ph-pro",
                 name: { el: "PolicyWallet Plus", en: "PolicyWallet Plus" },
-                description: { el: "Πλήρης εμπειρία AI", en: "The full AI experience" },
+                description: { el: "Όλες οι απαντήσεις, για όλα σας τα ασφαλιστήρια", en: "Every answer, for all your policies" },
                 badge: { el: "Προτείνεται", en: "Recommended" },
                 isHighlighted: true,
                 pricing: {
@@ -157,13 +164,13 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
         ],
         comparisonTitle: {
             el: "Σύγκριση δυνατοτήτων ιδιωτών",
-            en: "Individual feature comparison",
+            en: "Feature comparison for individuals",
         },
         comparisonRows: [
             {
                 category: { el: "Όρια χρήσης", en: "Usage limits" },
                 name: { el: "Αριθμός ασφαλιστηρίων", en: "Number of policies" },
-                values: { free: "1", plus: "5", pro: "Απεριόριστα / Unlimited" },
+                values: { free: "1", plus: "5", pro: { el: "Απεριόριστα", en: "Unlimited" } },
             },
             {
                 name: { el: "Βασική σύνοψη ασφαλιστηρίου", en: "Basic policy summary" },
@@ -198,7 +205,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
         ],
         faqTitle: {
             el: "Συχνές ερωτήσεις ιδιωτών",
-            en: "Individual FAQs",
+            en: "FAQs for individuals",
         },
         faqItems: [
             // Direct-answer item: answer engines lift this verbatim for "how much
@@ -210,8 +217,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "How much does PolicyWallet cost?",
                 },
                 answer: {
-                    el: "Το δωρεάν πακέτο καλύπτει ένα ασφαλιστήριο και δεν ζητά κάρτα. Το Starter κοστίζει 2,99 € τον μήνα ή 29 € τον χρόνο, και το PolicyWallet Plus 7,99 € τον μήνα ή 79 € τον χρόνο. Όλες οι τιμές περιλαμβάνουν ΦΠΑ.",
-                    en: "The free plan covers one policy and asks for no card. Starter is €2.99 a month or €29 a year, and PolicyWallet Plus is €7.99 a month or €79 a year. All prices include VAT.",
+                    el: "Το δωρεάν πλάνο καλύπτει ένα ασφαλιστήριο και δεν ζητά κάρτα. Το Starter κοστίζει €2.99 τον μήνα ή €29 τον χρόνο, και το PolicyWallet Plus €7.99 τον μήνα ή €79 τον χρόνο. Όλες οι τιμές περιλαμβάνουν ΦΠΑ.",
+                    en: "The free plan covers one policy and needs no card. Starter is €2.99 a month or €29 a year, and PolicyWallet Plus is €7.99 a month or €79 a year. All prices include VAT.",
                 },
             },
             {
@@ -230,8 +237,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "Is there a yearly discount?",
                 },
                 answer: {
-                    el: "Ναι, τα ετήσια πλάνα κοστίζουν λιγότερο από 12 μηνιαίες χρεώσεις και εμφανίζουν τη συνολική εξοικονόμηση.",
-                    en: "Yes, yearly plans cost less than 12 monthly payments and display total savings.",
+                    el: "Ναι. Με την ετήσια χρέωση πληρώνετε περίπου 10 μήνες αντί για 12.",
+                    en: "Yes. On yearly billing you pay for roughly 10 months instead of 12.",
                 },
             },
             {
@@ -241,26 +248,26 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
                 answer: {
                     el: "Διατηρείτε πρόσβαση μέχρι το τέλος της ήδη πληρωμένης περιόδου χρέωσης.",
-                    en: "You keep access until the end of your already paid billing period.",
+                    en: "You keep access until the end of the billing period you have already paid for.",
                 },
             },
         ],
     },
     agent: {
         heading: {
-            el: "Πλάνα για πράκτορες & πρακτορεία",
+            el: "Πλάνα για ασφαλιστές & γραφεία",
             en: "Plans for agents & agencies",
         },
         subtitle: {
-            el: "Σχεδιασμένα για multi-client χαρτοφυλάκιο, ανανεώσεις και συνεργασία ομάδας.",
-            en: "Built for multi-client portfolio management, renewals, and team collaboration.",
+            el: "Σχεδιασμένα για χαρτοφυλάκιο πολλών πελατών, ανανεώσεις και συνεργασία ομάδας — με την ίδια ανεξάρτητη ανάλυση ρίσκου ανά πελάτη. Ο πελάτης ελέγχει τι μοιράζεται.",
+            en: "Built for a many-client portfolio, renewals, and team collaboration — with the same independent risk analysis for every client. The client controls what is shared.",
         },
         plans: [
             {
                 key: "agent-free",
                 checkoutPlanId: null,
                 name: { el: "Agent Free", en: "Agent Free" },
-                description: { el: "Για πιλοτική χρήση", en: "For pilot usage" },
+                description: { el: "Για να το δοκιμάσετε", en: "To try it out" },
                 pricing: {
                     monthly: {
                         amount: "€0",
@@ -268,10 +275,10 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     },
                 },
                 features: [
-                    { label: { el: "10 πελάτες", en: "10 customers" }, included: true },
+                    { label: { el: "10 πελάτες", en: "10 clients" }, included: true },
                     { label: { el: "5 AI αναλύσεις / μήνα", en: "5 AI analyses / month" }, included: true },
-                    { label: { el: "Βασικό client dashboard", en: "Basic client dashboard" }, included: true },
-                    { label: { el: "Bulk import", en: "Bulk import" }, included: false },
+                    { label: { el: "Βασική εικόνα πελατών", en: "Basic client view" }, included: true },
+                    { label: { el: "Μαζική εισαγωγή", en: "Bulk import" }, included: false },
                     { label: { el: "Αυτοματισμοί ανανέωσης", en: "Renewal automation" }, included: false },
                 ],
             },
@@ -294,10 +301,13 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     },
                 },
                 features: [
-                    { label: { el: "100 πελάτες", en: "100 customers" }, included: true, highlight: true },
-                    { label: { el: "Portfolio dashboard", en: "Portfolio dashboard" }, included: true, highlight: true },
-                    { label: { el: "Renewal pipeline", en: "Renewal pipeline" }, included: true },
-                    { label: { el: "Bulk import έως 100 γραμμές", en: "Bulk import up to 100 rows" }, included: true },
+                    { label: { el: "100 πελάτες", en: "100 clients" }, included: true, highlight: true },
+                    // Same plain register as the comparison rows below — the
+                    // cards used to say "Portfolio dashboard" / "Renewal
+                    // pipeline" in English inside the Greek column.
+                    { label: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" }, included: true, highlight: true },
+                    { label: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" }, included: true },
+                    { label: { el: "Μαζική εισαγωγή έως 100 γραμμές", en: "Bulk import up to 100 rows" }, included: true },
                     { label: { el: "Ερωτηματολόγια πελατών (5 πρότυπα)", en: "Client questionnaires (5 templates)" }, included: true },
                 ],
             },
@@ -305,7 +315,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 key: "agent-pro",
                 checkoutPlanId: "agent-pro",
                 name: { el: "Agent Pro", en: "Agent Pro" },
-                description: { el: "Για ομάδες παραγωγής", en: "For production teams" },
+                description: { el: "Για ομάδες παραγωγής", en: "For sales teams" },
                 pricing: {
                     monthly: {
                         amount: "€49.99",
@@ -318,10 +328,10 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     },
                 },
                 features: [
-                    { label: { el: "500 πελάτες", en: "500 customers" }, included: true, highlight: true },
-                    { label: { el: "Team έως 3 πράκτορες", en: "Team up to 3 agents" }, included: true },
-                    { label: { el: "Cross-sell intelligence", en: "Cross-sell intelligence" }, included: true },
-                    { label: { el: "Priority queue", en: "Priority queue" }, included: true },
+                    { label: { el: "500 πελάτες", en: "500 clients" }, included: true, highlight: true },
+                    { label: { el: "Ομάδα έως 3 ασφαλιστές", en: "A team of up to 3 agents" }, included: true },
+                    { label: { el: "Προτάσεις επιπλέον κάλυψης ανά πελάτη", en: "Extra-cover suggestions per client" }, included: true },
+                    { label: { el: "Οι αναλύσεις σας τρέχουν πρώτες", en: "Your analyses run first" }, included: true },
                     { label: { el: "Παρακολούθηση προμηθειών", en: "Commission tracking" }, included: true },
                 ],
             },
@@ -329,7 +339,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 key: "agent-agency",
                 checkoutPlanId: "agent-agency",
                 name: { el: "Agency", en: "Agency" },
-                description: { el: "Για πρακτορεία με ανάπτυξη", en: "For growing brokerages" },
+                description: { el: "Για γραφεία σε ανάπτυξη", en: "For growing brokerages" },
                 isContactPlan: true,
                 pricing: {
                     monthly: {
@@ -343,31 +353,34 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     },
                 },
                 features: [
-                    { label: { el: "Απεριόριστοι πελάτες", en: "Unlimited customers" }, included: true, highlight: true },
+                    { label: { el: "Απεριόριστοι πελάτες", en: "Unlimited clients" }, included: true, highlight: true },
                     { label: { el: "Απεριόριστη ομάδα", en: "Unlimited team members" }, included: true },
                     { label: { el: "Απεριόριστη μαζική εισαγωγή", en: "Unlimited bulk import" }, included: true },
-                    { label: { el: "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)", en: "Largest AI budget (25M tokens/month)" }, included: true },
-                    { label: { el: "Dedicated support", en: "Dedicated support" }, included: true },
+                    // "25M tokens" is a billing internal — meaningless to a
+                    // brokerage owner. The card states the promise; the exact
+                    // allowance lives in the entitlement config.
+                    { label: { el: "Το μεγαλύτερο όριο χρήσης AI", en: "The largest AI allowance" }, included: true },
+                    { label: { el: "Αποκλειστική υποστήριξη", en: "Dedicated support" }, included: true },
                 ],
             },
         ],
         comparisonTitle: {
-            el: "Σύγκριση δυνατοτήτων πρακτόρων",
+            el: "Σύγκριση δυνατοτήτων ασφαλιστών",
             en: "Agent feature comparison",
         },
         comparisonRows: [
             {
                 category: { el: "Χαρτοφυλάκιο πελατών", en: "Client portfolio" },
-                name: { el: "Πελάτες", en: "Customers" },
+                name: { el: "Πελάτες", en: "Clients" },
                 values: {
                     "agent-free": "10",
                     "agent-starter": "100",
                     "agent-pro": "500",
-                    "agent-agency": "Unlimited",
+                    "agent-agency": { el: "Απεριόριστοι", en: "Unlimited" },
                 },
             },
             {
-                name: { el: "Client portfolio dashboard", en: "Client portfolio dashboard" },
+                name: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" },
                 values: {
                     "agent-free": true,
                     "agent-starter": true,
@@ -376,8 +389,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
-                category: { el: "Λειτουργίες ροής εργασιών", en: "Workflow features" },
-                name: { el: "Renewal pipeline", en: "Renewal pipeline" },
+                category: { el: "Καθημερινή δουλειά", en: "Day-to-day work" },
+                name: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" },
                 values: {
                     "agent-free": false,
                     "agent-starter": true,
@@ -386,12 +399,12 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
-                name: { el: "Bulk policy import", en: "Bulk policy import" },
+                name: { el: "Μαζική αποστολή ασφαλιστηρίων", en: "Send many policies at once" },
                 values: {
-                    "agent-free": "No",
-                    "agent-starter": "100 rows",
-                    "agent-pro": "500 rows",
-                    "agent-agency": "Unlimited",
+                    "agent-free": false,
+                    "agent-starter": { el: "100 γραμμές", en: "100 rows" },
+                    "agent-pro": { el: "500 γραμμές", en: "500 rows" },
+                    "agent-agency": { el: "Απεριόριστες", en: "Unlimited" },
                 },
             },
             {
@@ -404,18 +417,18 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
-                category: { el: "Ομάδα & επεκτασιμότητα", en: "Team & scale" },
+                category: { el: "Η ομάδα σας", en: "Your team" },
                 name: { el: "Μέλη ομάδας", en: "Team members" },
                 values: {
                     "agent-free": "1",
                     "agent-starter": "1",
                     "agent-pro": "3",
-                    "agent-agency": "Unlimited",
+                    "agent-agency": { el: "Απεριόριστα", en: "Unlimited" },
                 },
             },
         ],
         faqTitle: {
-            el: "Συχνές ερωτήσεις πρακτόρων",
+            el: "Συχνές ερωτήσεις ασφαλιστών",
             en: "Agent FAQs",
         },
         faqItems: [
@@ -425,8 +438,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "Can I manage multiple clients?",
                 },
                 answer: {
-                    el: "Ναι. Τα agent πλάνα προσφέρουν πολυ-πελατειακό χαρτοφυλάκιο με διαφορετικά όρια ανά πλάνο.",
-                    en: "Yes. Agent plans include multi-client portfolio management with tier-based limits.",
+                    el: "Ναι. Τα πλάνα για ασφαλιστές σας δίνουν όλους τους πελάτες σας σε ένα σημείο. Κάθε πλάνο έχει το δικό του όριο πελατών.",
+                    en: "Yes. The agent plans put all your clients in one place. Each plan has its own client limit.",
                 },
             },
             {
@@ -435,18 +448,18 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "Can I invite clients to view their policies?",
                 },
                 answer: {
-                    el: "Ναι, μπορείτε να μοιράζεστε policy views και αναφορές με πελάτες μέσα από το dashboard.",
-                    en: "Yes, you can share policy views and reports with clients directly from the dashboard.",
+                    el: "Ναι. Μοιράζεστε ασφαλιστήρια και αναφορές με τον πελάτη μέσα από την ίδια οθόνη.",
+                    en: "Yes. You share policies and reports with your client from the same screen.",
                 },
             },
             {
                 question: {
-                    el: "Υποστηρίζεται ομαδική συνεργασία στο πρακτορείο;",
+                    el: "Υποστηρίζεται ομαδική συνεργασία στο γραφείο;",
                     en: "Do you support agency team collaboration?",
                 },
                 answer: {
-                    el: "Στα ανώτερα πλάνα υποστηρίζεται role-based πρόσβαση και συνεργασία πολλών πρακτόρων.",
-                    en: "Higher tiers support role-based access and collaboration across multiple agents.",
+                    el: "Ναι, στα μεγαλύτερα πλάνα. Κάθε μέλος της ομάδας βλέπει μόνο ό,τι του αναλογεί.",
+                    en: "Yes, on the larger plans. Each team member sees only what is theirs.",
                 },
             },
         ],

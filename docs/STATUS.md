@@ -1,5 +1,94 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-06 (Marketing site: launch-readiness loop closed — GO)
+
+**Current phase:** marketing website **launch-ready**, uncommitted on NEW-UI
+(parallel session shares the tree — stage selectively, never `git add -A`).
+
+**Done.** The production-launch brief ran the audit loop to completion: six
+findings waves (tier-honesty canon completed sitewide — «Ναι, με το Plus»
+compare cells, Plus/Starter attributions on home, /product, motor, liability,
+group-health, /solutions/agents and six glossary hooks; metas de-fused to
+«Δωρεάν βασική σύνοψη»; legal `?lang=` metadata language-matched; HowTo
+structured data made verbatim-visible; glossary title budget now
+test-enforced), then **three consecutive zero-issue rounds** across five
+components each (mechanical gate — 3,764 tests + 59/59 sweep — SEO+AEO, GEO,
+consumer-persona and product-tree lenses), with explicit launch signoffs from
+all four lenses. Executive Launch Report: `docs/audits/
+marketing-launch-report-2026-08.md` §8; full round record in
+`marketing-website-audit-2026-08.md` §"Launch-readiness loop".
+
+**In progress:** nothing open on the marketing surfaces.
+
+**Blocked:** legal-entity details (ΓΕΜΗ/ΑΦΜ, registered office) still
+"coming soon" on /company + /privacy — owner input.
+
+**Top risks:** 1) legal-entity placeholders at launch; 2) deploy-time env
+verifications not yet run (NEXT_PUBLIC_SITE_URL origins, CWV on prod build,
+preview noindex); 3) huge uncommitted working set shared with a parallel
+session (selective staging required).
+
+**Next 3 actions:** 1) owner supplies legal-entity details; 2) stage + commit
+the marketing set selectively, run CI guardrails (`audit:api-auth`, `lint`,
+`type-check`, `verify:migrations`, i18n/UTF-8); 3) after deploy, verify
+origins/OG/sitemap on policywallet.gr and measure CWV.
+
+## Session wrap — 2026-08-05 (Marketing site: 36 truth/positioning fixes + executive audit)
+
+**Current phase:** marketing-website hardening, uncommitted on NEW-UI (a
+parallel session shares the tree — stage selectively, never `git add -A`).
+
+**Done.** Completed the risk-intelligence repositioning a prior session
+started, then fixed **36 gate-level defects** found by rendered-page audits in
+both languages: a FALSE "20 branches" claim shipping in FAQPage JSON-LD (now
+derived from the catalog), a contradicting dead hero (~70 % of
+`lib/landing/content.ts` deleted), document-manager SEO metas, four
+contradictory speed claims (one canon: «σε λίγα λεπτά», codified as
+`SPEED_CLAIM`), invented EN features and live-tracking implications, "fully
+GDPR compliant" self-verdicts (×4, demoted to auditable behaviours), tier
+overpromises (advisor sharing, reminders, guide CTAs promising free AI gap
+detection Free doesn't ship), the agents page closing on B2C prices (price
+band is now audience-aware and derives names/prices from `plan-defaults`), and
+an EL/EN meaning-parity sweep of all 15 product pages. New permanent harness:
+`tests/e2e/public-marketing.spec.ts` under a **`public-anon`** Playwright
+project — ~70 routes × both locales × 320/1280 px: overflow, one-h1, heading
+skips, `<html lang>`, console, global link integrity. **Final state measured
+green:** 59/59 sweep, 3,724 unit tests, tsc/lint/i18n/utf8. Docs:
+`docs/audits/marketing-website-audit-2026-08.md` (the deliverable — full
+UX/SEO/AEO/GEO audit, scorecard, open-findings register) and
+`marketing-launch-report-2026-08.md` (fix ledger + drift-prevention map).
+
+**Loop completed (later the same session).** Two further briefs (content
+rewrite; redesign pass) re-opened implementation: **all §11b items applied**,
+plus 35 more findings across six audit-fix rounds — including a real
+**`<html lang>` hydration race on /en/\*** (the global LanguageProvider could
+stamp the Greek default over English pages after chunked hydration; fixed
+with an ownership guard, caught and confirmed by the sweep) and a
+group-pension meta promising "projections" the product doesn't have. The
+validation loop then closed with **three consecutive zero-finding rounds
+(7–9)**: each = full gate + 59/59 anonymous sweep + two independent
+full-rubric auditors over every page pair, both languages. Round log in
+`marketing-website-audit-2026-08.md` §"Validation loop — final record".
+
+**Blocked:** nothing.
+
+**Top risks (ranked):**
+1. **Legal-entity vacuum** — /company and /privacy have no ΓΕΜΗ/ΑΦΜ/company
+   name ("coming soon"): GDPR Art. 13 completeness + the biggest GEO
+   groundability gap. Owner action, not code.
+2. **CWV never measured on production** — architecture predicts green (RSC,
+   zero raster images, few islands); predicts ≠ measured.
+3. **LoBPageShell price band** reads `DEFAULT_PLAN_FACTS`, not the live
+   catalog — an /admin/plans price edit updates /pricing but not the band
+   (documented at source).
+4. Vitest/tsc need Node **20.20.2** (`require(esm)`); the pinned 20.11.0 dies
+   with ERR_REQUIRE_ESM — worth bumping `.nvmrc`.
+
+**Next 3 actions:** (1) apply the §11b polish register (P1 grammar/claim items
+first). (2) Add per-branch FAQ blocks to the 15 LoB pages (highest-leverage
+AEO increment) + an axe pass in the public-anon sweep. (3) Fill in the legal
+entity and verify `sameAs`/`NEXT_PUBLIC_SITE_URL` on the production deploy.
+
 ## Session wrap — 2026-08-05 (Playwright — the claims, measured)
 
 **The gap flagged every round, closed.** Every responsive and accessibility

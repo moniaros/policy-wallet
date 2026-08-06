@@ -247,14 +247,17 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                 <aside className="rounded-2xl bg-[#1A2420] p-8 text-white md:p-10">
                     <h2 className="mb-3 text-h3 font-semibold tracking-tight">
                         {t(
-                            "Ελέγξτε τα δικά σας συμβόλαια σε 2 λεπτά",
-                            "Check your own policies in 2 minutes"
+                            "Ελέγξτε τα δικά σας συμβόλαια σε λίγα λεπτά",
+                            "Check your own policies in minutes"
                         )}
                     </h2>
+                    {/* The free tier ships a basic summary for one policy; gap
+                        detection is a paid feature — the CTA says so instead
+                        of promising free AI gap analysis. */}
                     <p className="mb-6 text-body leading-relaxed text-white/70">
                         {t(
-                            "Ανεβάστε τα ασφαλιστήριά σας και η AI του PolicyWallet εντοπίζει κενά, επικαλύψεις και ευκαιρίες — δωρεάν, χωρίς πιστωτική κάρτα.",
-                            "Upload your policies and PolicyWallet's AI detects gaps, overlaps, and opportunities — free, no credit card required."
+                            "Ξεκινήστε δωρεάν με ένα συμβόλαιο, χωρίς κάρτα — το διαβάζουμε και σας δείχνουμε τι καλύπτει. Στο πλάνο PolicyWallet Plus, η AI εντοπίζει κενά και επικαλύψεις.",
+                            "Start free with one policy, no card — we read it and show you what it covers. On the PolicyWallet Plus plan, the AI finds gaps and overlaps."
                         )}
                     </p>
                     <Link

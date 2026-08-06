@@ -23,13 +23,23 @@ export const PUBLIC_NAV_ITEMS: readonly PublicNavItem[] = [
     { key: "solutions", kind: "dropdown", label: { el: "Λύσεις", en: "Solutions" } },
     { key: "guides", kind: "link", href: "/guides", label: { el: "Οδηγοί", en: "Guides" } },
     { key: "company", kind: "link", href: "/company", label: { el: "Εταιρεία", en: "Company" } },
-    { key: "pricing", kind: "link", href: "/pricing", label: { el: "Τιμολόγηση", en: "Pricing" } },
+    // "Τιμολόγηση" is the accountant's word for it. "Τιμές" is the word a
+    // person uses when they want to know what something costs.
+    { key: "pricing", kind: "link", href: "/pricing", label: { el: "Τιμές", en: "Pricing" } },
 ]
 
-/** The one primary CTA used across every public page. */
+/**
+ * The one primary CTA used across every public page.
+ *
+ * Deliberately SHORTER than the in-page CTA (PRIMARY_ACTION in
+ * lib/marketing/positioning.ts). The header is a fixed-width flex row: with
+ * the full "Δείτε αν είστε καλυμμένοι" in it, at 1024px the logo overlapped
+ * the first nav item and the button wrapped out of the bar. Same promise,
+ * fewer words, because this one has to fit next to five nav links.
+ */
 export const PRIMARY_CTA = {
     href: "/auth/signup?role=policyholder",
-    label: { el: "Ξεκινήστε", en: "Get started" } satisfies NavLabel,
+    label: { el: "Δείτε πού είστε", en: "See where you stand" } satisfies NavLabel,
 }
 
 /** The one secondary CTA (log in) used across every public page. */

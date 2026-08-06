@@ -39,7 +39,7 @@ export const LEGAL_ENTITY: Record<"el" | "en", LegalEntity> = {
     },
     en: {
         detailsComingSoon:
-            "Full company details (legal name, GEMI number, VAT and registered seat) will be available soon.",
+            "Full company details (legal name, GEMI number, VAT number and registered office) will be available soon.",
         dpoEmail: "dpo@policywallet.gr",
         venue: "Greece",
         liabilityCap:

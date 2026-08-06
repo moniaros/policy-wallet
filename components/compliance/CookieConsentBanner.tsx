@@ -100,10 +100,10 @@ export function CookieConsentBanner() {
                         >
                             {expanded ? copy.hidePreferences : copy.managePreferences}
                         </button>
-                        <a href={`/privacy?lang=${language}`} className="font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
+                        <a href={`/privacy?lang=${language}`} className="inline-flex min-h-11 items-center font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
                             {copy.privacyLink}
                         </a>
-                        <a href={`/terms?lang=${language}`} className="font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
+                        <a href={`/terms?lang=${language}`} className="inline-flex min-h-11 items-center font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
                             {copy.termsLink}
                         </a>
                     </div>

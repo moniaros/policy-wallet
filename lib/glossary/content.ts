@@ -111,29 +111,29 @@ export const glossaryTerms: GlossaryTerm[] = [
         aliases: [{ el: "Ίδια κράτηση", en: "Excess" }],
         metaTitle: {
             el: "Τι σημαίνει απαλλαγή στην ασφάλεια;",
-            en: "What does deductible (apallagi) mean in insurance?",
+            en: "What is a deductible (apallagi)?",
         },
         metaDescription: {
             el: "Απαλλαγή είναι το ποσό που πληρώνετε εσείς σε κάθε ζημιά πριν αρχίσει να καταβάλλει η ασφαλιστική. Δείτε πώς επηρεάζει το ασφάλιστρο και την αποζημίωσή σας.",
             en: "A deductible is the amount you pay on each claim before the insurer starts paying. See how it affects your premium and your payout.",
         },
         shortDefinition: {
-            el: "Απαλλαγή (ή ίδια κράτηση) είναι το ποσό που επιβαρύνεστε εσείς σε κάθε ζημιά, πριν αρχίσει να πληρώνει η ασφαλιστική εταιρεία. Αν η απαλλαγή είναι 300€ και η ζημιά 1.000€, λαμβάνετε 700€. Όσο μεγαλύτερη η απαλλαγή, τόσο χαμηλότερο συνήθως το ασφάλιστρο — και το αντίστροφο.",
+            el: "Απαλλαγή (ή ίδια κράτηση) είναι το ποσό που επιβαρύνεστε εσείς σε κάθε ζημιά, πριν αρχίσει να πληρώνει η ασφαλιστική εταιρεία. Αν η απαλλαγή είναι 300 € και η ζημιά 1.000 €, λαμβάνετε 700 €. Όσο μεγαλύτερη η απαλλαγή, τόσο χαμηλότερο συνήθως το ασφάλιστρο — και το αντίστροφο.",
             en: "A deductible (apallagi) is the amount you bear on each claim before the insurer starts paying. If the deductible is €300 and the loss is €1,000, you receive €700. The higher the deductible, the lower the premium usually is — and vice versa.",
         },
         body: [
             {
                 el: "Η απαλλαγή είναι ο πιο συνηθισμένος λόγος που δύο συμβόλαια με «ίδια κάλυψη» κοστίζουν διαφορετικά. Μεταφέρει μέρος του μικρού ρίσκου σε εσάς, ώστε η ασφαλιστική να χρεώνει χαμηλότερο ασφάλιστρο. Είναι λογική επιλογή αν μπορείτε να απορροφήσετε μια μικρή ζημιά μόνοι σας.",
-                en: "The deductible is the most common reason two policies with the 'same cover' cost differently. It shifts part of the small risk onto you, so the insurer charges a lower premium. It is a sensible choice if you can absorb a small loss yourself.",
+                en: "The deductible is the most common reason two policies with the “same cover” cost differently. It shifts part of the small risk onto you, so the insurer charges a lower premium. It is a sensible choice if you can absorb a small loss yourself.",
             },
             {
                 el: "Πολλά συμβόλαια έχουν διαφορετική απαλλαγή ανά κάλυψη — άλλη για θραύση κρυστάλλων, άλλη για φυσικά φαινόμενα. Το «έχω μικτή» δεν σας λέει πόσα θα πληρώσετε· η απαλλαγή σας το λέει.",
-                en: "Many policies have a different deductible per cover — one for glass breakage, another for weather events. 'I have comprehensive' does not tell you how much you will pay; the deductible does.",
+                en: "Many policies have a different deductible per cover — one for glass breakage, another for natural events. “I have comprehensive” does not tell you how much you will pay; the deductible does.",
             },
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο, η απαλλαγή αναγράφεται συνήθως δίπλα σε κάθε κάλυψη στον πίνακα, όχι σε ένα ενιαίο σημείο. Αναζητήστε τις λέξεις «απαλλαγή» ή «ίδια κράτηση». Το PolicyWallet εντοπίζει τις απαλλαγές ανά κάλυψη και σας δείχνει πού διαφέρουν.",
-            en: "In your own policy the deductible usually appears next to each cover in the schedule, not in one single place. Look for the words «απαλλαγή» or «ίδια κράτηση». PolicyWallet surfaces the deductibles per cover and shows you where they differ.",
+            en: "In your own policy the deductible usually appears next to each cover in the schedule, not in one single place. Look for the words “απαλλαγή” or “ίδια κράτηση”. PolicyWallet surfaces the deductibles per cover and shows you where they differ.",
         },
         faq: [
             {
@@ -185,7 +185,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         body: [
             {
                 el: "Οι περισσότερες διαφωνίες σε αποζημιώσεις ξεκινούν από μια εξαίρεση που κανείς δεν είχε διαβάσει. Τυπικά παραδείγματα: ζημιές από πρόθεση ή βαριά αμέλεια, φθορά λόγω παλαιότητας, μη δηλωμένη χρήση, πόλεμος ή πανδημία. Δεν είναι «ψιλά γράμματα για να σας παγιδεύσουν»· είναι ο τρόπος που ορίζεται η τιμή του κινδύνου.",
-                en: "Most claim disputes start from an exclusion nobody had read. Typical examples: intentional or grossly negligent damage, wear and tear, undeclared use, war or pandemic. They are not 'fine print to trap you'; they are how the price of the risk is defined.",
+                en: "Most claim disputes start from an exclusion nobody had read. Typical examples: intentional or grossly negligent damage, wear and tear, undeclared use, war or pandemic. They are not “fine print to trap you”; they are how the price of the risk is defined.",
             },
             {
                 el: "Υπάρχουν γενικές εξαιρέσεις (ισχύουν σε όλο το συμβόλαιο) και ειδικές εξαιρέσεις (ανά κάλυψη). Το να ξέρετε τις εξαιρέσεις σας από πριν σημαίνει ότι κάνετε τις σωστές ερωτήσεις στον ασφαλιστή σας πριν συμβεί κάτι, όχι μετά.",
@@ -194,13 +194,13 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο, ψάξτε τις ενότητες «Εξαιρέσεις» στους γενικούς και στους ειδικούς όρους — είναι δύο διαφορετικά σημεία. Το PolicyWallet συγκεντρώνει τις εξαιρέσεις του εγγράφου σας σε μία λίστα, ώστε να μη χρειάζεται να τις κυνηγήσετε σελίδα-σελίδα.",
-            en: "In your own policy, look for the «Exclusions» sections in both the general and the special terms — they are two different places. PolicyWallet gathers your document's exclusions into one list, so you do not have to chase them page by page.",
+            en: "In your own policy, look for the “Exclusions” sections in both the general and the special terms — they are two different places. PolicyWallet gathers your document's exclusions into one list, so you do not have to chase them page by page.",
         },
         faq: [
             {
                 question: {
                     el: "Μπορεί να απορριφθεί ζημιά ακόμη κι αν «είμαι ασφαλισμένος»;",
-                    en: "Can a claim be denied even if I am 'insured'?",
+                    en: "Can a claim be denied even if I am “insured”?",
                 },
                 answer: {
                     el: "Ναι, αν η αιτία της ζημιάς εμπίπτει σε εξαίρεση. Γι' αυτό οι εξαιρέσεις μετράνε όσο και οι καλύψεις.",
@@ -226,7 +226,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     },
     {
         slug: "asfalismeno-kefalaio",
-        term: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured" },
+        term: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured (asfalismeno kefalaio)" },
         aliases: [{ el: "Ασφαλιζόμενο ποσό", en: "Insured amount" }],
         metaTitle: {
             el: "Τι είναι το ασφαλισμένο κεφάλαιο;",
@@ -251,8 +251,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, το ασφαλισμένο κεφάλαιο είναι το κύριο ποσό δίπλα σε κάθε κάλυψη. Συγκρίνετέ το με μια ρεαλιστική εκτίμηση: για την κατοικία, το κόστος ανακατασκευής ανά τετραγωνικό. Το PolicyWallet εντοπίζει το ασφαλισμένο κεφάλαιο και, αν το ασφαλιστήριο αναφέρει και κόστος ανακατασκευής, σας ειδοποιεί όταν το κεφάλαιο υπολείπεται.",
-            en: "In your own policy, the sum insured is the main amount next to each cover. Compare it to a realistic estimate: for a home, the rebuild cost per square metre. PolicyWallet surfaces the sum insured and, if the policy also states a rebuild cost, tells you when the sum falls short.",
+            el: "Στο δικό σας ασφαλιστήριο, το ασφαλισμένο κεφάλαιο είναι το κύριο ποσό δίπλα σε κάθε κάλυψη. Συγκρίνετέ το με μια ρεαλιστική εκτίμηση: για την κατοικία, το κόστος ανακατασκευής ανά τετραγωνικό. Το PolicyWallet εντοπίζει το ασφαλισμένο κεφάλαιο και, αν το ασφαλιστήριο αναφέρει και κόστος ανακατασκευής, σας δείχνει αν το κεφάλαιο υπολείπεται — στο πλάνο Plus.",
+            en: "In your own policy, the sum insured is the main amount next to each cover. Compare it to a realistic estimate: for a home, the rebuild cost per square meter. PolicyWallet surfaces the sum insured and, if the policy also states a rebuild cost, shows you when the sum falls short — on the Plus plan.",
         },
         faq: [
             {
@@ -277,14 +277,14 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         related: [
-            { label: { el: "Υπασφάλιση", en: "Underinsurance" }, href: "/lexiko/ypasfalisi" },
+            { label: { el: "Υπασφάλιση", en: "Underinsurance (ypasfalisi)" }, href: "/lexiko/ypasfalisi" },
             { label: { el: "Ασφάλεια κατοικίας", en: "Home insurance" }, href: "/product/property" },
         ],
         dateModified: "2026-07-21",
     },
     {
         slug: "asfalistro",
-        term: { el: "Ασφάλιστρο", en: "Premium" },
+        term: { el: "Ασφάλιστρο", en: "Premium (asfalistro)" },
         metaTitle: {
             el: "Τι είναι το ασφάλιστρο;",
             en: "What is an insurance premium?",
@@ -295,7 +295,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         shortDefinition: {
             el: "Ασφάλιστρο είναι το ποσό που καταβάλλετε στην ασφαλιστική εταιρεία για να ισχύει η κάλυψη, ετησίως ή σε δόσεις. Διαμορφώνεται από τον ασφαλιζόμενο κίνδυνο, το ασφαλισμένο κεφάλαιο, τις απαλλαγές και τις καλύψεις που επιλέγετε. Δύο ασφάλιστρα με μεγάλη διαφορά συχνά κρύβουν διαφορετικές καλύψεις ή απαλλαγές.",
-            en: "A premium is the amount you pay the insurer to keep cover in force, annually or in instalments. It is shaped by the insured risk, the sum insured, the deductibles and the covers you choose. Two very different premiums often hide different covers or deductibles.",
+            en: "A premium is the amount you pay the insurer to keep cover in force, annually or in installments. It is shaped by the insured risk, the sum insured, the deductibles and the covers you choose. Two very different premiums often hide different covers or deductibles.",
         },
         body: [
             {
@@ -331,7 +331,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     },
     {
         slug: "ypasfalisi",
-        term: { el: "Υπασφάλιση", en: "Underinsurance" },
+        term: { el: "Υπασφάλιση", en: "Underinsurance (ypasfalisi)" },
         metaTitle: {
             el: "Τι είναι η υπασφάλιση;",
             en: "What is underinsurance?",
@@ -342,7 +342,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         shortDefinition: {
             el: "Υπασφάλιση συμβαίνει όταν το ασφαλισμένο κεφάλαιο είναι χαμηλότερο από την πραγματική αξία του ασφαλισμένου αντικειμένου. Σε περίπτωση ζημιάς, εφαρμόζεται ο «αναλογικός κανόνας»: αν το κεφάλαιο καλύπτει το 70% της αξίας, λαμβάνετε το 70% κάθε ζημιάς — ακόμη και για μια μικρή, μερική ζημιά.",
-            en: "Underinsurance occurs when the sum insured is lower than the real value of the insured item. In a claim, the 'average rule' applies: if the sum insured covers 70% of the value, you receive 70% of every loss — even a small, partial one.",
+            en: "Underinsurance occurs when the sum insured is lower than the real value of the insured item. In a claim, the “average rule” applies: if the sum insured covers 70% of the value, you receive 70% of every loss — even a small, partial one.",
         },
         body: [
             {
@@ -351,8 +351,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, συγκρίνετε το ασφαλισμένο κεφάλαιο με μια σημερινή εκτίμηση αξίας. Για την κατοικία, χρησιμοποιήστε κόστος ανακατασκευής ανά τετραγωνικό, όχι την τιμή αγοράς. Αν το ασφαλιστήριο αναφέρει κόστος ανακατασκευής, το PolicyWallet συγκρίνει τα δύο ποσά και επισημαίνει την υπασφάλιση.",
-            en: "In your own policy, compare the sum insured to a current value estimate. For a home, use rebuild cost per square metre, not the purchase price. If the policy states a rebuild cost, PolicyWallet compares the two figures and flags the shortfall.",
+            el: "Στο δικό σας ασφαλιστήριο, συγκρίνετε το ασφαλισμένο κεφάλαιο με μια σημερινή εκτίμηση αξίας. Για την κατοικία, χρησιμοποιήστε κόστος ανακατασκευής ανά τετραγωνικό, όχι την τιμή αγοράς. Αν το ασφαλιστήριο αναφέρει κόστος ανακατασκευής, το PolicyWallet συγκρίνει τα δύο ποσά και επισημαίνει την υπασφάλιση — στο πλάνο Plus.",
+            en: "In your own policy, compare the sum insured to a current value estimate — Greek policies state it as «ασφαλιζόμενο κεφάλαιο», and the proportional cut appears as «αναλογικός κανόνας». For a home, use rebuild cost per square meter, not the purchase price. If the policy states a rebuild cost, PolicyWallet compares the two figures and flags the shortfall — on the Plus plan.",
         },
         faq: [
             {
@@ -367,14 +367,14 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         related: [
-            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured" }, href: "/lexiko/asfalismeno-kefalaio" },
+            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured (asfalismeno kefalaio)" }, href: "/lexiko/asfalismeno-kefalaio" },
             { label: { el: "Ασφάλεια κατοικίας", en: "Home insurance" }, href: "/product/property" },
         ],
         dateModified: "2026-07-21",
     },
     {
         slug: "chronos-anamonis",
-        term: { el: "Χρόνος αναμονής", en: "Waiting period" },
+        term: { el: "Χρόνος αναμονής", en: "Waiting period (chronos anamonis)" },
         aliases: [{ el: "Περίοδος αναμονής", en: "Qualifying period" }],
         metaTitle: {
             el: "Τι είναι ο χρόνος αναμονής στην ασφάλιση;",
@@ -391,12 +391,12 @@ export const glossaryTerms: GlossaryTerm[] = [
         body: [
             {
                 el: "Ο χρόνος αναμονής υπάρχει για να αποτρέψει το να ασφαλίζεται κανείς μόνο όταν ξέρει ήδη ότι θα χρειαστεί την κάλυψη. Είναι λογικός, αλλά σας αφορά άμεσα: αν αλλάξατε πρόσφατα ασφαλιστική, μια πάθηση ή διαφορά που «γεννήθηκε» μέσα στους πρώτους μήνες μπορεί να μείνει εκτός, ακόμη κι αν την πληροφορηθήκατε αργότερα.",
-                en: "A waiting period exists to prevent someone from insuring only when they already know they will need the cover. It is reasonable, but it affects you directly: if you recently switched insurer, a condition or dispute that 'arose' in the first months may fall outside, even if you learned of it later.",
+                en: "A waiting period exists to prevent someone from insuring only when they already know they will need the cover. It is reasonable, but it affects you directly: if you recently switched insurer, a condition or dispute that “arose” in the first months may fall outside, even if you learned of it later.",
             },
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο, αναζητήστε «χρόνο αναμονής» ή «περίοδο αναμονής» στους όρους της κάθε κάλυψης — διαφέρει ανά παροχή. Το PolicyWallet εντοπίζει αναφορές σε χρόνους αναμονής στο έγγραφό σας, ώστε να ξέρετε από πότε ισχύει πραγματικά η κάθε κάλυψη.",
-            en: "In your own policy, look for «χρόνο αναμονής» or «περίοδο αναμονής» in the terms of each cover — it varies per benefit. PolicyWallet surfaces references to waiting periods in your document, so you know from when each cover actually applies.",
+            en: "In your own policy, look for “χρόνο αναμονής” or “περίοδο αναμονής” in the terms of each cover — it varies per benefit. PolicyWallet surfaces references to waiting periods in your document, so you know from when each cover actually applies.",
         },
         faq: [
             {
@@ -418,7 +418,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     },
     {
         slug: "dikaiouchos",
-        term: { el: "Δικαιούχος", en: "Beneficiary" },
+        term: { el: "Δικαιούχος", en: "Beneficiary (dikaiouchos)" },
         metaTitle: {
             el: "Τι είναι ο δικαιούχος σε ασφάλεια ζωής;",
             en: "What is a beneficiary in life insurance?",
@@ -438,8 +438,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο ζωής, βρείτε την ενότητα «δικαιούχοι» και επιβεβαιώστε ότι αντικατοπτρίζει τη σημερινή σας πρόθεση. Μετά από κάθε μεγάλη αλλαγή ζωής, ενημερώστε τη δήλωση εγγράφως. Το PolicyWallet εντοπίζει τους αναγραφόμενους δικαιούχους και σας υπενθυμίζει να τους επανελέγξετε.",
-            en: "In your own life policy, find the «beneficiaries» section and confirm it reflects your current intent. After every major life change, update the designation in writing. PolicyWallet surfaces the named beneficiaries and reminds you to re-check them.",
+            el: "Στο δικό σας ασφαλιστήριο ζωής, βρείτε την ενότητα «δικαιούχοι» και επιβεβαιώστε ότι αντικατοπτρίζει τη σημερινή σας πρόθεση. Μετά από κάθε μεγάλη αλλαγή ζωής, ενημερώστε τη δήλωση εγγράφως. Το PolicyWallet εντοπίζει τους αναγραφόμενους δικαιούχους και σας υπενθυμίζει να τους επανελέγξετε — από το πλάνο Starter.",
+            en: "In your own life policy, find the “beneficiaries” section and confirm it reflects your current intent. After every major life change, update the designation in writing. PolicyWallet surfaces the named beneficiaries and reminds you to re-check them — from the Starter plan.",
         },
         faq: [
             {
@@ -454,14 +454,14 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         related: [
-            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured" }, href: "/lexiko/asfalismeno-kefalaio" },
+            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured (asfalismeno kefalaio)" }, href: "/lexiko/asfalismeno-kefalaio" },
             { label: { el: "Ασφάλεια ζωής", en: "Life insurance" }, href: "/product/life" },
         ],
         dateModified: "2026-07-21",
     },
     {
         slug: "odiki-voitheia",
-        term: { el: "Οδική βοήθεια", en: "Roadside assistance" },
+        term: { el: "Οδική βοήθεια", en: "Roadside assistance (odiki voitheia)" },
         aliases: [{ el: "Φροντίδα ατυχήματος", en: "Accident care" }],
         metaTitle: {
             el: "Οδική βοήθεια ή φροντίδα ατυχήματος;",
@@ -473,7 +473,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         shortDefinition: {
             el: "Οδική βοήθεια είναι η κάλυψη που μεταφέρει ή επισκευάζει επί τόπου το όχημά σας σε βλάβη ή ακινητοποίηση, οπουδήποτε. Διαφέρει από τη «φροντίδα ατυχήματος», που ενεργοποιείται μόνο μετά από τροχαίο για να καταγράψει τη ζημιά. Πολλά συμβόλαια αναγράφουν τηλέφωνο φροντίδας ατυχήματος χωρίς να περιλαμβάνουν οδική βοήθεια.",
-            en: "Roadside assistance is the cover that tows or repairs your vehicle on the spot in a breakdown or immobilisation, anywhere. It differs from 'accident care', which is triggered only after a collision to record the damage. Many policies print an accident-care phone line without including roadside assistance.",
+            en: "Roadside assistance is the cover that tows or repairs your vehicle on the spot in a breakdown or immobilization, anywhere. It differs from “accident care”, which is triggered only after a collision to record the damage. Many policies print an accident-care phone line without including roadside assistance.",
         },
         body: [
             {
@@ -483,7 +483,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο, μην κρίνετε από το αν υπάρχει τηλέφωνο· ψάξτε ρητά την κάλυψη «οδική βοήθεια» στον πίνακα καλύψεων. Αν αναγράφεται μόνο «φροντίδα ατυχήματος», η οδική βοήθεια πιθανόν να μην περιλαμβάνεται. Το PolicyWallet ξεχωρίζει τις δύο και σας δείχνει ποια πραγματικά έχετε.",
-            en: "In your own policy, do not judge by whether a phone number exists; look explicitly for the «roadside assistance» cover in the schedule. If only «accident care» appears, roadside assistance may not be included. PolicyWallet separates the two and shows which you actually hold.",
+            en: "In your own policy, do not judge by whether a phone number exists; look explicitly for the “roadside assistance” cover in the schedule. If only “accident care” appears, roadside assistance may not be included. PolicyWallet separates the two and shows which you actually hold.",
         },
         faq: [
             {
@@ -493,7 +493,7 @@ export const glossaryTerms: GlossaryTerm[] = [
                 },
                 answer: {
                     el: "Όχι απαραίτητα. Μπορεί να είναι η γραμμή φροντίδας ατυχήματος. Επιβεβαιώστε την κάλυψη «οδική βοήθεια» στον πίνακα καλύψεων.",
-                    en: "Not necessarily. It may be the accident-care line. Confirm the «roadside assistance» cover in the schedule.",
+                    en: "Not necessarily. It may be the accident-care line. Confirm the “roadside assistance” cover in the schedule.",
                 },
             },
         ],
@@ -505,7 +505,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     },
     {
         slug: "mikti-asfaleia",
-        term: { el: "Μικτή ασφάλεια", en: "Comprehensive car insurance" },
+        term: { el: "Μικτή ασφάλεια", en: "Comprehensive car insurance (mikti)" },
         metaTitle: {
             el: "Τι καλύπτει η μικτή ασφάλεια αυτοκινήτου;",
             en: "What does comprehensive car insurance cover?",
@@ -516,17 +516,17 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         shortDefinition: {
             el: "Μικτή ασφάλεια είναι το πακέτο που καλύπτει ζημιές στο δικό σας όχημα — όχι μόνο σε τρίτους — πέρα από την υποχρεωτική αστική ευθύνη. Τυπικά περιλαμβάνει ίδιες ζημιές, κλοπή, πυρκαγιά, φυσικά φαινόμενα και θραύση κρυστάλλων, το καθένα με δικά του όρια και απαλλαγές. Το «έχω μικτή» δεν λέει από μόνο του τι πληρώνετε σε ζημιά.",
-            en: "Comprehensive (mikti) is the package that covers damage to your own vehicle — not only to third parties — beyond mandatory liability. It typically includes own damage, theft, fire, natural events and glass breakage, each with its own limits and deductibles. 'I have comprehensive' alone does not tell you what you pay in a claim.",
+            en: "Comprehensive (mikti) is the package that covers damage to your own vehicle — not only to third parties — beyond mandatory liability. It typically includes own damage, theft, fire, natural events and glass breakage, each with its own limits and deductibles. “I have comprehensive” alone does not tell you what you pay in a claim.",
         },
         body: [
             {
                 el: "Η «μικτή» δεν είναι ένα ενιαίο πράγμα· είναι ένα καλάθι επιμέρους καλύψεων που διαφέρει ανά εταιρεία και ανά πακέτο. Δύο συμβόλαια που λέγονται και τα δύο «μικτή» μπορεί να έχουν τελείως διαφορετικές απαλλαγές, όρια και εξαιρέσεις. Η αξία της κρίνεται στις λεπτομέρειες, όχι στον τίτλο.",
-                en: "'Comprehensive' is not a single thing; it is a basket of component covers that varies by insurer and package. Two policies both called 'comprehensive' can have completely different deductibles, limits and exclusions. Its value is judged in the details, not the label.",
+                en: "“Comprehensive” is not a single thing; it is a basket of component covers that varies by insurer and package. Two policies both called “comprehensive” can have completely different deductibles, limits and exclusions. Its value is judged in the details, not the label.",
             },
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο, διαβάστε ποιες επιμέρους καλύψεις περιλαμβάνει η μικτή σας και με ποια απαλλαγή η καθεμία. Ελέγξτε ιδιαίτερα κλοπή, φυσικά φαινόμενα και θραύση κρυστάλλων. Το PolicyWallet αναλύει το πακέτο σας κάλυψη-κάλυψη αντί για μια ετικέτα «μικτή».",
-            en: "In your own policy, read which component covers your comprehensive includes and with what deductible each carries. Check theft, natural events and glass breakage in particular. PolicyWallet breaks your package down cover by cover instead of a single 'comprehensive' label.",
+            en: "In your own policy, read which component covers your comprehensive includes and with what deductible each carries. Check theft, natural events and glass breakage in particular. PolicyWallet breaks your package down cover by cover instead of a single “comprehensive” label.",
         },
         faq: [
             {
@@ -542,14 +542,14 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         related: [
             { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
-            { label: { el: "Οδική βοήθεια", en: "Roadside assistance" }, href: "/lexiko/odiki-voitheia" },
+            { label: { el: "Οδική βοήθεια", en: "Roadside assistance (odiki voitheia)" }, href: "/lexiko/odiki-voitheia" },
             { label: { el: "Τι καλύπτει η ασφάλεια αυτοκινήτου", en: "What car insurance covers" }, href: "/guides/ti-kalyptei-i-asfaleia-aytokinitou" },
         ],
         dateModified: "2026-07-21",
     },
     {
         slug: "prasini-karta",
-        term: { el: "Πράσινη κάρτα", en: "Green Card" },
+        term: { el: "Πράσινη κάρτα", en: "Green Card (prasini karta)" },
         aliases: [{ el: "Διεθνές πιστοποιητικό ασφάλισης", en: "International insurance certificate" }],
         metaTitle: {
             el: "Τι είναι η πράσινη κάρτα ασφάλισης;",
@@ -570,8 +570,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, δείτε τη γεωγραφική ισχύ και ζητήστε πράσινη κάρτα από την εταιρεία σας πριν από ταξίδι στο εξωτερικό. Επιβεβαιώστε ότι οι χώρες προορισμού αναγράφονται ως έγκυρες. Το PolicyWallet εντοπίζει ημερομηνίες λήξης και σας υπενθυμίζει πριν ταξιδέψετε.",
-            en: "In your own policy, check the territorial scope and request a Green Card from your insurer before travelling abroad. Confirm your destination countries are listed as valid. PolicyWallet surfaces expiry dates and reminds you before you travel.",
+            el: "Στο δικό σας ασφαλιστήριο, δείτε τη γεωγραφική ισχύ και ζητήστε πράσινη κάρτα από την εταιρεία σας πριν από ταξίδι στο εξωτερικό. Επιβεβαιώστε ότι οι χώρες προορισμού αναγράφονται ως έγκυρες. Το PolicyWallet εντοπίζει ημερομηνίες λήξης και σας υπενθυμίζει πριν ταξιδέψετε — από το πλάνο Starter.",
+            en: "In your own policy, check the territorial scope and request a Green Card from your insurer before travelling abroad. Confirm your destination countries are listed as valid. PolicyWallet surfaces expiry dates and reminds you before you travel — from the Starter plan.",
         },
         faq: [
             {
@@ -593,7 +593,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     },
     {
         slug: "exagora",
-        term: { el: "Εξαγορά", en: "Surrender (of a policy)" },
+        term: { el: "Εξαγορά", en: "Policy surrender (exagora)" },
         aliases: [{ el: "Αξία εξαγοράς", en: "Surrender value" }],
         metaTitle: {
             el: "Τι είναι η εξαγορά ασφαλιστηρίου;",
@@ -637,7 +637,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     },
     {
         slug: "ypoorio",
-        term: { el: "Υποόριο", en: "Sublimit" },
+        term: { el: "Υποόριο", en: "Sublimit (ypoorio)" },
         aliases: [{ el: "Επιμέρους όριο", en: "Inner limit" }],
         metaTitle: {
             el: "Τι είναι το υποόριο σε ασφαλιστήριο;",
@@ -648,18 +648,18 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "A sublimit is a lower ceiling on a specific cover, inside the overall sum insured. See why you may be paid less than the headline limit suggests.",
         },
         shortDefinition: {
-            el: "Υποόριο είναι ένα χαμηλότερο ανώτατο όριο που ισχύει για μια συγκεκριμένη κάλυψη ή κατηγορία ζημιάς, μέσα στο συνολικό ασφαλισμένο κεφάλαιο. Παράδειγμα: σε ασφάλιση κατοικίας 200.000€ μπορεί να υπάρχει υποόριο 3.000€ για κοσμήματα. Ακόμη κι αν το συνολικό όριο είναι υψηλό, η συγκεκριμένη αποζημίωση περιορίζεται στο υποόριο.",
-            en: "A sublimit is a lower ceiling that applies to a specific cover or type of loss, within the overall sum insured. Example: a €200,000 home policy may carry a €3,000 sublimit for jewellery. Even when the overall limit is high, that particular claim is capped at the sublimit.",
+            el: "Υποόριο είναι ένα χαμηλότερο ανώτατο όριο που ισχύει για μια συγκεκριμένη κάλυψη ή κατηγορία ζημιάς, μέσα στο συνολικό ασφαλισμένο κεφάλαιο. Παράδειγμα: σε ασφάλιση κατοικίας 200.000 € μπορεί να υπάρχει υποόριο 3.000 € για κοσμήματα. Ακόμη κι αν το συνολικό όριο είναι υψηλό, η συγκεκριμένη αποζημίωση περιορίζεται στο υποόριο.",
+            en: "A sublimit is a lower ceiling that applies to a specific cover or type of loss, within the overall sum insured. Example: a €200,000 home policy may carry a €3,000 sublimit for jewelry. Even when the overall limit is high, that particular claim is capped at the sublimit.",
         },
         body: [
             {
                 el: "Το υποόριο είναι από τους πιο συχνούς λόγους που μια αποζημίωση βγαίνει μικρότερη από το αναμενόμενο. Δύο συμβόλαια με το ίδιο «ασφαλισμένο κεφάλαιο» μπορεί να πληρώνουν πολύ διαφορετικά, αν το ένα έχει αυστηρά υποόρια ανά κατηγορία — π.χ. για κλοπή, για μετρητά, για ένα μεμονωμένο αντικείμενο ή, στην υγεία, ανά ημέρα νοσηλείας ή ανά πράξη. Το υποόριο δεν είναι εξαίρεση: η ζημιά καλύπτεται, αλλά μέχρι ένα χαμηλότερο ποσό.",
-                en: "A sublimit is one of the most common reasons a payout comes out smaller than expected. Two policies with the same 'sum insured' can pay very differently if one carries strict sublimits per category — for theft, for cash, for a single item, or, in health, per day of hospitalisation or per procedure. A sublimit is not an exclusion: the loss is covered, but only up to a lower amount.",
+                en: "A sublimit is one of the most common reasons a payout comes out smaller than expected. Two policies with the same “sum insured” can pay very differently if one carries strict sublimits per category — for theft, for cash, for a single item, or, in health, per day of hospitalisation or per procedure. A sublimit is not an exclusion: the loss is covered, but only up to a lower amount.",
             },
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο, τα υποόρια αναγράφονται συνήθως στον πίνακα καλύψεων δίπλα σε κάθε κάλυψη — αναζητήστε φράσεις όπως «έως», «μέχρι», «ανώτατο όριο ανά…» ή «υποόριο». Το PolicyWallet εντοπίζει τα υποόρια ανά κάλυψη στο έγγραφό σας, ώστε να δείτε πού η πραγματική σας προστασία είναι χαμηλότερη από το συνολικό όριο.",
-            en: "In your own policy, sublimits usually appear in the schedule of cover next to each cover — look for phrases like «έως», «μέχρι», «ανώτατο όριο ανά…» or «υποόριο». PolicyWallet surfaces the sublimits per cover in your document, so you can see where your real protection is lower than the overall limit.",
+            en: "In your own policy, sublimits usually appear in the schedule of cover next to each cover — look for phrases like “έως”, “μέχρι”, “ανώτατο όριο ανά…” or “υποόριο”. PolicyWallet surfaces the sublimits per cover in your document, so you can see where your real protection is lower than the overall limit.",
         },
         faq: [
             {
@@ -679,12 +679,12 @@ export const glossaryTerms: GlossaryTerm[] = [
                 },
                 answer: {
                     el: "Στην υγεία (π.χ. δωμάτιο & τροφή ανά ημέρα, συγκεκριμένες πράξεις) και στην κατοικία (κοσμήματα, μετρητά, μεμονωμένο αντικείμενο).",
-                    en: "In health (e.g. room & board per day, specific procedures) and home (jewellery, cash, a single item).",
+                    en: "In health (e.g. room & board per day, specific procedures) and home (jewelry, cash, a single item).",
                 },
             },
         ],
         related: [
-            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured" }, href: "/lexiko/asfalismeno-kefalaio" },
+            { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Sum insured (asfalismeno kefalaio)" }, href: "/lexiko/asfalismeno-kefalaio" },
             { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
             { label: { el: "Εξαίρεση", en: "Exclusion" }, href: "/lexiko/exairesi" },
         ],
@@ -692,11 +692,11 @@ export const glossaryTerms: GlossaryTerm[] = [
     },
     {
         slug: "symmetochi",
-        term: { el: "Συμμετοχή", en: "Co-payment" },
+        term: { el: "Συμμετοχή", en: "Co-payment (symmetochi)" },
         aliases: [{ el: "Συνασφάλιση", en: "Co-insurance" }],
         metaTitle: {
-            el: "Τι είναι η συμμετοχή στο κόστος στην ασφάλιση;",
-            en: "What is a co-payment (cost sharing) in insurance?",
+            el: "Τι είναι η συμμετοχή στην ασφάλιση;",
+            en: "What is a co-payment in insurance?",
         },
         metaDescription: {
             el: "Συμμετοχή είναι το μέρος κάθε καλυπτόμενης δαπάνης που πληρώνετε εσείς, συνήθως ως ποσοστό. Δείτε πώς διαφέρει από την απαλλαγή και πόσο επηρεάζει την αποζημίωση.",
@@ -709,12 +709,12 @@ export const glossaryTerms: GlossaryTerm[] = [
         body: [
             {
                 el: "Η συμμετοχή μπερδεύεται συχνά με την απαλλαγή, αλλά είναι διαφορετική: η απαλλαγή είναι ένα σταθερό ποσό που πληρώνετε πρώτοι σε κάθε ζημιά, ενώ η συμμετοχή είναι ένα ποσοστό της δαπάνης που μοιράζεστε με τον ασφαλιστή. Δύο συμβόλαια που «καλύπτουν νοσηλεία» μπορεί να σας κοστίσουν πολύ διαφορετικά αν το ένα έχει συμμετοχή 10% και το άλλο 30%. Ορισμένα προγράμματα έχουν και ανώτατο όριο ετήσιας συμμετοχής, πάνω από το οποίο ο ασφαλιστής καλύπτει το 100%.",
-                en: "Co-payment is often confused with a deductible, but it is different: a deductible is a fixed amount you pay first on each claim, while a co-payment is a percentage of the cost you share with the insurer. Two policies that both 'cover hospitalisation' can cost you very differently if one has a 10% co-payment and the other 30%. Some plans also cap your annual co-payment, above which the insurer covers 100%.",
+                en: "Co-payment is often confused with a deductible, but it is different: a deductible is a fixed amount you pay first on each claim, while a co-payment is a percentage of the cost you share with the insurer. Two policies that both “cover hospitalisation” can cost you very differently if one has a 10% co-payment and the other 30%. Some plans also cap your annual co-payment, above which the insurer covers 100%.",
             },
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο υγείας, αναζητήστε «συμμετοχή», «ποσοστό συμμετοχής» ή «συνασφάλιση» στους όρους κάθε παροχής — διαφέρει ανά κάλυψη και ανά τρόπο νοσηλείας (π.χ. με ή χωρίς παραπεμπτικό). Το PolicyWallet εντοπίζει τις συμμετοχές στο έγγραφό σας, ώστε να ξέρετε τι θα πληρώσετε ακόμη και όταν η παροχή καλύπτεται.",
-            en: "In your own health policy, look for «συμμετοχή», «ποσοστό συμμετοχής» or «συνασφάλιση» in the terms of each benefit — it varies per cover and per pathway (e.g. with or without a referral). PolicyWallet surfaces the co-payments in your document, so you know what you will pay even when a benefit is covered.",
+            en: "In your own health policy, look for “συμμετοχή”, “ποσοστό συμμετοχής” or “συνασφάλιση” in the terms of each benefit — it varies per cover and per pathway (e.g. with or without a referral). PolicyWallet surfaces the co-payments in your document, so you know what you will pay even when a benefit is covered.",
         },
         faq: [
             {
@@ -740,7 +740,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         related: [
             { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
-            { label: { el: "Υποόριο", en: "Sublimit" }, href: "/lexiko/ypoorio" },
+            { label: { el: "Υποόριο", en: "Sublimit (ypoorio)" }, href: "/lexiko/ypoorio" },
             { label: { el: "Ασφάλεια υγείας", en: "Health insurance" }, href: "/product/health" },
         ],
         dateModified: "2026-07-25",
@@ -772,8 +772,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και δείτε αν αναφέρεται «αυτόματη ανανέωση» και με ποια προθεσμία προειδοποίησης. Αν δεν είστε βέβαιοι, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας πριν τη λήξη — όχι μετά. Το PolicyWallet σας θυμίζει τις επερχόμενες λήξεις ώστε να έχετε χρόνο να αποφασίσετε.",
-            en: "In your own policy, find the expiry date and check whether it mentions «automatic renewal» and with what notice period. If you are unsure, ask your insurer or advisor before the expiry date — not after. PolicyWallet reminds you of upcoming expiries so you have time to decide.",
+            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και δείτε αν αναφέρεται «αυτόματη ανανέωση» και με ποια προθεσμία προειδοποίησης. Αν δεν είστε βέβαιοι, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας πριν τη λήξη — όχι μετά. Το PolicyWallet σας θυμίζει τις επερχόμενες λήξεις ώστε να έχετε χρόνο να αποφασίσετε — από το πλάνο Starter.",
+            en: "In your own policy, find the expiry date and check whether it mentions “automatic renewal” and with what notice period. If you are unsure, ask your insurer or advisor before the expiry date — not after. PolicyWallet reminds you of upcoming expiries so you have time to decide — from the Starter plan.",
         },
         faq: [
             {
@@ -831,8 +831,8 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
         ],
         howToCheck: {
-            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και βεβαιωθείτε ότι το ασφάλιστρο έχει πληρωθεί και είναι ενήμερο. Αν πλησιάζει η λήξη ή έχετε αμφιβολία, επικοινωνήστε με την ασφαλιστική ή τον σύμβουλό σας πριν την ημερομηνία λήξης. Το PolicyWallet σας ειδοποιεί για τις επερχόμενες λήξεις ώστε να προλάβετε.",
-            en: "In your own policy, find the expiry date and make sure the premium is paid and up to date. If the expiry is near or you are in any doubt, contact your insurer or advisor before the expiry date. PolicyWallet alerts you to upcoming expiries so you can act in time.",
+            el: "Στο δικό σας ασφαλιστήριο, βρείτε την ημερομηνία λήξης και βεβαιωθείτε ότι το ασφάλιστρο έχει πληρωθεί και είναι ενήμερο. Αν πλησιάζει η λήξη ή έχετε αμφιβολία, επικοινωνήστε με την ασφαλιστική ή τον σύμβουλό σας πριν την ημερομηνία λήξης. Το PolicyWallet σας ειδοποιεί για τις επερχόμενες λήξεις ώστε να προλάβετε — από το πλάνο Starter.",
+            en: "In your own policy, find the expiry date and make sure the premium is paid and up to date. If the expiry is near or you are in any doubt, contact your insurer or advisor before the expiry date. PolicyWallet alerts you to upcoming expiries so you can act in time — from the Starter plan.",
         },
         faq: [
             {
@@ -858,7 +858,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         related: [
             { label: { el: "Ανανέωση", en: "Renewal" }, href: "/lexiko/ananeosi" },
-            { label: { el: "Χρόνος αναμονής", en: "Waiting period" }, href: "/lexiko/chronos-anamonis" },
+            { label: { el: "Χρόνος αναμονής", en: "Waiting period (chronos anamonis)" }, href: "/lexiko/chronos-anamonis" },
             { label: { el: "Ασφαλιστήριο", en: "Insurance policy" }, href: "/lexiko/asfalistirio" },
         ],
         dateModified: "2026-07-26",
@@ -886,12 +886,12 @@ export const glossaryTerms: GlossaryTerm[] = [
             },
             {
                 el: "Εξαιρέσεις υπάρχουν: ορισμένες ασφαλίσεις ζωής και προσωπικών ατυχημάτων πληρώνουν ένα προσυμφωνημένο ποσό ανεξάρτητα από την «πραγματική ζημιά», γιατί η ζωή ή η αρτιμέλεια δεν αποτιμώνται σαν περιουσιακό στοιχείο. Στις ασφαλίσεις περιουσίας και ευθύνης, όμως, η αρχή της αποζημίωσης είναι ο κανόνας.",
-                en: "There are exceptions: some life and personal-accident policies pay a pre-agreed sum regardless of the 'actual loss', because a life or a limb is not valued like an asset. In property and liability insurance, though, indemnity is the rule.",
+                en: "There are exceptions: some life and personal-accident policies pay a pre-agreed sum regardless of the “actual loss”, because a life or a limb is not valued like an asset. In property and liability insurance, though, indemnity is the rule.",
             },
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο, δείτε πώς ορίζεται η βάση αποζημίωσης ανά κάλυψη — «σε αξία καινούριου», «σε τρέχουσα αξία», με απαλλαγή ή συμμετοχή. Αυτά καθορίζουν πόσα θα λάβετε στην πράξη. Αν κάτι δεν είναι σαφές πριν από μια ζημιά, ρωτήστε την ασφαλιστική ή τον σύμβουλό σας.",
-            en: "In your own policy, look at how the basis of settlement is defined per cover — «replacement value», «current value», with a deductible or co-payment. These decide how much you receive in practice. If anything is unclear before a loss, ask your insurer or advisor.",
+            en: "In your own policy, look at how the basis of settlement is defined per cover — “replacement value”, “current value”, with a deductible or co-payment. These decide how much you receive in practice. If anything is unclear before a loss, ask your insurer or advisor.",
         },
         faq: [
             {
@@ -918,7 +918,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         related: [
             { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Insured amount" }, href: "/lexiko/asfalismeno-kefalaio" },
             { label: { el: "Απαλλαγή", en: "Deductible" }, href: "/lexiko/apallagi" },
-            { label: { el: "Υπασφάλιση", en: "Underinsurance" }, href: "/lexiko/ypasfalisi" },
+            { label: { el: "Υπασφάλιση", en: "Underinsurance (ypasfalisi)" }, href: "/lexiko/ypasfalisi" },
             {
                 label: { el: "Εφαρμογές για ασφαλιστήρια και ζημιές", en: "Apps for policies and claims" },
                 href: "/guides/efarmoges-asfalistirion-apozimioseis",
@@ -932,7 +932,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         aliases: [{ el: "Αξία καινούριου", en: "New-for-old value" }],
         metaTitle: {
             el: "Τι είναι η αξία αντικατάστασης;",
-            en: "What is replacement value (axia antikatastasis)?",
+            en: "What is replacement value (new-for-old)?",
         },
         metaDescription: {
             el: "Αξία αντικατάστασης είναι το κόστος να αντικαταστήσετε ένα αντικείμενο με καινούριο ισοδύναμο, χωρίς αφαίρεση για παλαιότητα. Δείτε πώς διαφέρει από την τρέχουσα αξία.",
@@ -940,17 +940,17 @@ export const glossaryTerms: GlossaryTerm[] = [
         },
         shortDefinition: {
             el: "Αξία αντικατάστασης (ή αξία καινούριου) είναι το κόστος να αντικαταστήσετε ένα κατεστραμμένο ή χαμένο αντικείμενο με καινούριο ισοδύναμο, χωρίς αφαίρεση για παλαιότητα ή φθορά. Διαφέρει από την «τρέχουσα αξία», που αφαιρεί την απόσβεση και πληρώνει λιγότερα. Το ποια βάση χρησιμοποιεί το συμβόλαιό σας καθορίζει πόσα θα λάβετε.",
-            en: "Replacement value (new-for-old) is the cost to replace a damaged or lost item with a new equivalent, without deducting for age or wear. It differs from «current value», which subtracts depreciation and pays less. Which basis your policy uses decides how much you receive.",
+            en: "Replacement value (new-for-old) is the cost to replace a damaged or lost item with a new equivalent, without deducting for age or wear. It differs from “current value”, which subtracts depreciation and pays less. Which basis your policy uses decides how much you receive.",
         },
         body: [
             {
                 el: "Δύο συμβόλαια που «καλύπτουν» την ίδια συσκευή μπορεί να πληρώσουν πολύ διαφορετικά: το ένα σε αξία καινούριου (αγοράζετε καινούρια), το άλλο σε τρέχουσα αξία (λαμβάνετε την παλιά, μειωμένη τιμή). Στην ασφάλιση κατοικίας και περιεχομένου, αυτή η διαφορά είναι από τις πιο σημαντικές και συχνά περνά απαρατήρητη μέχρι τη ζημιά.",
-                en: "Two policies that both 'cover' the same appliance can pay very differently: one at new-for-old (you buy new), the other at current value (you get the old, reduced price). In home and contents insurance this difference is one of the most important, and it often goes unnoticed until a loss.",
+                en: "Two policies that both “cover” the same appliance can pay very differently: one at new-for-old (you buy new), the other at current value (you get the old, reduced price). In home and contents insurance this difference is one of the most important, and it often goes unnoticed until a loss.",
             },
         ],
         howToCheck: {
             el: "Στο δικό σας ασφαλιστήριο κατοικίας, αναζητήστε αν η αποζημίωση δίνεται «σε αξία αντικατάστασης / καινούριου» ή «σε τρέχουσα / πραγματική αξία», ανά κάλυψη. Ελέγξτε επίσης αν υπάρχει όριο ηλικίας αντικειμένων. Το PolicyWallet εντοπίζει τη βάση αποτίμησης στο έγγραφό σας.",
-            en: "In your own home policy, look for whether settlement is «on a replacement / new-for-old basis» or «on a current / actual value basis», per cover. Check too for any age limit on items. PolicyWallet surfaces the valuation basis in your document.",
+            en: "In your own home policy, look for whether settlement is “on a replacement / new-for-old basis” or “on a current / actual value basis”, per cover. Check too for any age limit on items. PolicyWallet surfaces the valuation basis in your document.",
         },
         faq: [
             {
@@ -976,7 +976,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         ],
         related: [
             { label: { el: "Ασφαλισμένο κεφάλαιο", en: "Insured amount" }, href: "/lexiko/asfalismeno-kefalaio" },
-            { label: { el: "Υπασφάλιση", en: "Underinsurance" }, href: "/lexiko/ypasfalisi" },
+            { label: { el: "Υπασφάλιση", en: "Underinsurance (ypasfalisi)" }, href: "/lexiko/ypasfalisi" },
             { label: { el: "Ασφάλεια κατοικίας", en: "Home insurance" }, href: "/product/property" },
         ],
         dateModified: "2026-07-26",
@@ -1055,7 +1055,7 @@ export const glossaryTerms: GlossaryTerm[] = [
         body: [
             {
                 el: "Η ακύρωση δεν είναι πάντα «δωρεάν»: κάποια συμβόλαια προβλέπουν ποινή ή κρατούν ένα ελάχιστο ασφάλιστρο, ενώ άλλα επιστρέφουν αναλογικά το ποσό που δεν χρησιμοποιήσατε. Σε ορισμένες περιπτώσεις ο νόμος δίνει δικαίωμα εναντίωσης ή υπαναχώρησης μέσα σε συγκεκριμένη προθεσμία μετά τη σύναψη — χωρίς επιβάρυνση.",
-                en: "Cancellation is not always 'free': some policies apply a penalty or keep a minimum premium, while others refund the unused amount pro-rata. In certain cases the law grants a right of objection or withdrawal within a set period after signing — at no cost.",
+                en: "Cancellation is not always “free”: some policies apply a penalty or keep a minimum premium, while others refund the unused amount pro-rata. In certain cases the law grants a right of objection or withdrawal within a set period after signing — at no cost.",
             },
             {
                 el: "Πριν ακυρώσετε, αξίζει να ελέγξετε δύο πράγματα: τι θα κοστίσει η ακύρωση και πότε ακριβώς σταματά η κάλυψη. Το κενό μεταξύ της ακύρωσης ενός συμβολαίου και της έναρξης ενός νέου είναι διάστημα χωρίς προστασία.",

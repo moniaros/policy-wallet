@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { marketingPages } from '@/lib/seo/marketing-pages'
 import { guides } from '@/lib/guides/content'
+import { glossaryTerms } from '@/lib/glossary/content'
 
 /**
  * SEO guardrails: rendered <title> (page title + " | PolicyWallet" template)
@@ -32,6 +33,22 @@ describe('marketing page metadata', () => {
                 expect(page.en!.title.length + TEMPLATE_SUFFIX.length).toBeLessThanOrEqual(MAX_TITLE)
                 expect(page.en!.description.length).toBeGreaterThanOrEqual(DESCRIPTION_RANGE[0])
                 expect(page.en!.description.length).toBeLessThanOrEqual(DESCRIPTION_RANGE[1])
+            })
+        }
+    }
+})
+
+describe('glossary term metadata', () => {
+    // Titles share the sitewide 60-char rendered budget. Descriptions are NOT
+    // held to the 140–160 registry range: glossary entries lead with the
+    // definition itself and some run 131–168 by design.
+    for (const term of glossaryTerms) {
+        for (const lang of ['el', 'en'] as const) {
+            it(`${term.slug}: ${lang} metaTitle fits the 60-char rendered budget`, () => {
+                expect(
+                    term.metaTitle[lang].length + TEMPLATE_SUFFIX.length,
+                    `"${term.metaTitle[lang]}" renders at ${term.metaTitle[lang].length + TEMPLATE_SUFFIX.length} chars`
+                ).toBeLessThanOrEqual(MAX_TITLE)
             })
         }
     }

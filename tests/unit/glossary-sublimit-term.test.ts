@@ -16,7 +16,9 @@ describe('sublimit (Υποόριο) is defined in the dictionary and explained i
         const term = getGlossaryTerm('ypoorio')
         expect(term).toBeTruthy()
         expect(term!.term.el).toBe('Υποόριο')
-        expect(term!.term.en).toBe('Sublimit')
+        // EN dictionary names carry the transliterated Greek in parentheses so
+        // English speakers can match the word they see on their Greek policy.
+        expect(term!.term.en).toBe('Sublimit (ypoorio)')
         // A real definition in both locales, not a stub.
         expect(term!.shortDefinition.el.length).toBeGreaterThan(60)
         expect(term!.shortDefinition.en.length).toBeGreaterThan(60)
@@ -35,7 +37,7 @@ describe('sublimit (Υποόριο) is defined in the dictionary and explained i
         const term = getGlossaryTerm('symmetochi')
         expect(term).toBeTruthy()
         expect(term!.term.el).toBe('Συμμετοχή')
-        expect(term!.term.en).toBe('Co-payment')
+        expect(term!.term.en).toBe('Co-payment (symmetochi)')
         expect(term!.shortDefinition.el.length).toBeGreaterThan(60)
         const hints = resolvePolicyGlossaryHints('el', { copayment: 'Συμμετοχή στο κόστος' })
         expect(hints.copayment).toBeTruthy()

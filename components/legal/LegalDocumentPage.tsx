@@ -10,6 +10,7 @@ import {
 import { PublicHeader } from "@/components/public/PublicHeader"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { SKIP_LINK_TARGET_ID } from "@/lib/nav/public-nav"
+import { JsonLd, breadcrumbEnJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld"
 
 type LegalDocumentPageProps = {
     language: LegalLanguage
@@ -55,13 +56,24 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
         <div className="min-h-screen bg-stone-50 dark:bg-slate-950">
             <PublicHeader locale={language} />
 
+            {/* The legal set was the only public surface without a
+                BreadcrumbList — emitted here so all four documents (and both
+                languages) get it from one place. */}
+            <JsonLd
+                data={
+                    language === "en"
+                        ? breadcrumbEnJsonLd([documentKind])
+                        : breadcrumbJsonLd([documentKind])
+                }
+            />
+
             <main id={SKIP_LINK_TARGET_ID} tabIndex={-1} className="px-4 pb-12 pt-28 sm:px-6 lg:px-8 lg:pt-32">
                 {/* The card had NO dark variants while its muted line did (dark:text-stone-400),
                     so the background stayed white and the text lightened onto it — 2.59:1. */}
                 <div className="mx-auto max-w-3xl rounded-2xl border border-stone-100 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-8 border-b border-stone-100 pb-4 dark:border-slate-800">
-                        <h1 className="text-3xl font-bold text-stone-900 dark:text-white">{document.title}</h1>
-                        <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-stone-500 dark:text-stone-400">
+                        <h1 className="text-h2 font-bold text-stone-900 dark:text-white">{document.title}</h1>
+                        <div className="mt-2 flex flex-wrap items-center gap-3 text-body-sm text-stone-500 dark:text-stone-400">
                             <span>{content.ui.lastUpdatedLabel}: {lastUpdatedDisplay}</span>
                             <span>{content.ui.versionLabel}: {versionDisplay}</span>
                         </div>
@@ -72,15 +84,29 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                             <p key={`intro-${index}`}>{paragraph}</p>
                         ))}
 
+                        {/* h2, not h3: these sections sit directly under the
+                            document h1, so an h3 made every legal page jump
+                            h1 -> h3 in the outline. */}
                         {document.sections.map((section) => (
                             <section key={section.id}>
-                                <h3>{section.title}</h3>
+                                <h2 className="text-h3 font-semibold">{section.title}</h2>
                                 {section.paragraphs.map((paragraph, index) => (
                                     <p key={`${section.id}-${index}`}>{paragraph}</p>
                                 ))}
                                 {section.table ? (
-                                    <div className="overflow-x-auto">
-                                        <table className="min-w-full text-sm">
+                                    /* Focusable + labelled: a plain
+                                       overflow-x-auto scroller cannot be
+                                       reached with a keyboard, so the columns
+                                       past the fold were unreachable without a
+                                       mouse. `relative` keeps the wide table
+                                       from scrolling the whole document. */
+                                    <div
+                                        role="region"
+                                        aria-label={section.title}
+                                        tabIndex={0}
+                                        className="relative overflow-x-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                                    >
+                                        <table className="min-w-full text-body-sm">
                                             <thead>
                                                 <tr>
                                                     {section.table.headers.map((header) => (
@@ -126,13 +152,13 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                             <Link
                                 key={link.kind}
                                 href={link.href}
-                                className="inline-flex min-h-[24px] items-center text-sm font-semibold text-primary hover:text-primary-hover"
+                                className="inline-flex min-h-11 items-center text-body font-semibold text-primary hover:text-primary-hover"
                             >
                                 {link.label}
                             </Link>
                         ))}
                         <span className="text-stone-300 dark:text-slate-600">|</span>
-                        <Link href="/" className="inline-flex min-h-[24px] items-center text-sm font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white">
+                        <Link href={language === "en" ? "/en" : "/"} className="inline-flex min-h-11 items-center text-body font-medium text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white">
                             {content.ui.backToHome}
                         </Link>
                     </div>

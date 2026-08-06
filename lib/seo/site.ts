@@ -52,14 +52,22 @@ function envOrUndefined(value: string | undefined): string | undefined {
 
 export const siteConfig = {
     name: "PolicyWallet",
-    /** One-line definition used for snippets and AI extraction (AEO). */
+    /**
+     * One-line definition used for snippets and AI extraction (AEO). This is
+     * the ONE place the category label lives — visitor-facing copy renders
+     * the plain-language CATEGORY sentence from lib/marketing/positioning.ts
+     * instead. EL is authoritative; EN must carry the identical meaning
+     * («προσωπική ανάλυση ρίσκου» ↔ "personal risk intelligence").
+     */
     definition: {
-        el: "Το PolicyWallet είναι το ουδέτερο ψηφιακό ασφαλιστικό πορτοφόλι για την ελληνική αγορά: οργανώνει όλα τα ασφαλιστήριά σας σε ένα μέρος, τα αναλύει με AI και εντοπίζει κενά κάλυψης πριν σας κοστίσουν.",
-        en: "PolicyWallet is the neutral digital insurance wallet for the Greek market: it organizes all your policies in one place, analyzes them with AI, and detects coverage gaps before they cost you.",
+        el: "Το PolicyWallet είναι η ανεξάρτητη πλατφόρμα προσωπικής ανάλυσης ρίσκου για την ελληνική αγορά. Διαβάζει τις ασφάλειές σας και δείχνει πού είστε καλυμμένοι, πού όχι, και τι να διορθώσετε πρώτα. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
+        en: "PolicyWallet is the independent personal risk intelligence platform for the Greek market. It reads your insurance and shows where you are covered, where you are not, and what to fix first. We do not sell insurance and we take no commission.",
     },
+    // App-wide fallback meta (root layout). Kept in step with the home meta:
+    // no "fix first" (a Plus output) and no free-fusion.
     description: {
-        el: "Ψηφιακό ασφαλιστικό πορτοφόλι με ανάλυση AI: οργάνωση συμβολαίων, εντοπισμός κενών κάλυψης και υπενθυμίσεις ανανέωσης, στα ελληνικά και στα αγγλικά.",
-        en: "Digital insurance wallet with AI analysis: policy organization, coverage-gap detection, and renewal reminders, in Greek and English.",
+        el: "Ανεξάρτητος έλεγχος ρίσκου με AI: δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλειες. Στα ελληνικά και στα αγγλικά.",
+        en: "Independent risk check powered by AI: see where you are covered and where the gaps are. We do not sell insurance. Greek and English.",
     },
     // The product domain is policywallet.gr — a .com address here is rendered
     // publicly on /contact and in JSON-LD, and is not a mailbox we control.
@@ -92,7 +100,9 @@ export const OG_IMAGES = [
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "PolicyWallet — Your insurance, understood.",
+        // English as the shared-scraper fallback; the OG image itself is
+        // bilingual-neutral branding. Mirrors CATEGORY in positioning.ts.
+        alt: "PolicyWallet — We tell you if you are covered.",
     },
 ]
 

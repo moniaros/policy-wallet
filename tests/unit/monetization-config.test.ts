@@ -159,10 +159,17 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
     // analysis" while the enforced free entitlement was 1 policy / 0 analyses.
     // Pin the landing copy to the catalog truth so the false claim can't return.
     it('landing free-tier copy matches the enforced free entitlement', () => {
-        const source = readFileSync(
-            join(process.cwd(), 'components/landing/WorldClassLanding.tsx'),
-            'utf8'
-        )
+        // The free-tier promise now lives in lib/marketing/positioning.ts (one
+        // string reused by the hero, the final CTA, /product and /compare)
+        // rather than inline in the landing component. Scanning only the
+        // component would have left this guard passing over a file that no
+        // longer contains the claim it is guarding, so both are read.
+        const source = [
+            'components/landing/WorldClassLanding.tsx',
+            'lib/marketing/positioning.ts',
+        ]
+            .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
+            .join('\n')
 
         // The retired false claims, in either language and either word order.
         const falseClaims = [

@@ -9,6 +9,7 @@ import type {
 } from "@/lib/pricing/public-pricing-content"
 
 const WAIT_LABEL: LocalizedText = { el: "Παρακαλώ περιμένετε...", en: "Please wait..." }
+const NOT_INCLUDED_LABEL: LocalizedText = { el: "Δεν περιλαμβάνεται: ", en: "Not included: " }
 
 export interface PricingCardProps {
     plan: PublicPricingPlan
@@ -84,9 +85,17 @@ export function PricingCard({
                                 }`}
                             />
                         ) : (
-                            <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-slate-500 dark:text-slate-400" />
+                            <X aria-hidden className="mt-0.5 h-5 w-5 flex-shrink-0 text-slate-500 dark:text-slate-400" />
                         )}
-                        <span className="text-sm leading-tight">{feature.label[language]}</span>
+                        <span className="text-sm leading-tight">
+                            {/* The X icon alone is invisible to screen readers
+                                and text extractors — without this prefix the
+                                Free card READS as including full AI analysis. */}
+                            {!feature.included && (
+                                <span className="sr-only">{NOT_INCLUDED_LABEL[language]}</span>
+                            )}
+                            {feature.label[language]}
+                        </span>
                     </li>
                 ))}
             </ul>

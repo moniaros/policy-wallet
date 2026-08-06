@@ -5,55 +5,72 @@ interface ServicesGridProps {
     isGreek: boolean
 }
 
+/**
+ * Each card answers a question a real person asks out loud, in the words they
+ * would use. Titles are the question, not the feature name: "Digital Portfolio"
+ * and "Policy AI Q&A" told the visitor what we built; these tell them what they
+ * find out.
+ *
+ * Nothing here leads with the machinery. The reader is told the outcome first
+ * and, at most, how it happens second — never "our AI engine extracts…" before
+ * "you find out what you are missing".
+ */
 const services = [
     {
-        Icon: FolderOpen,
-        titleEl: "Ψηφιακό Χαρτοφυλάκιο",
-        titleEn: "Digital Portfolio",
-        descEl: "Ανεβάστε PDF ή φωτογραφία. Η AI εξάγει αυτόματα τα δεδομένα σε δευτερόλεπτα — από οποιαδήποτε εταιρεία.",
-        descEn: "Upload a PDF or photo. AI automatically extracts the data in seconds — from any insurer.",
-        benefitEl: "Τέλος στους φακέλους",
-        benefitEn: "No more paper folders",
+        Icon: ScanSearch,
+        titleEl: "Τι δεν καλύπτεστε;",
+        titleEn: "What are you not covered for?",
+        // Gap detection is Plus-only — the tier is named, same rule as the
+        // advisor-sharing card below.
+        descEl: "Βρίσκουμε τι λείπει από την κάλυψή σας πριν το χρειαστείτε — με το πλάνο PolicyWallet Plus. Διαβάζουμε κάθε σελίδα για εσάς.",
+        descEn: "We find what your cover is missing before you need it — on the PolicyWallet Plus plan. We read every page for you.",
+        benefitEl: "Το μαθαίνετε σήμερα, όχι μετά",
+        benefitEn: "You find out today, not later",
         wide: true,
     },
     {
-        Icon: ScanSearch,
-        titleEl: "Ανάλυση Κενών AI",
-        titleEn: "AI Gap Analysis",
-        descEl: "Σύγκριση καλύψεων βάσει του προφίλ σας. Εντοπίζει τι λείπει πριν το χρειαστείτε.",
-        descEn: "Coverage comparison based on your profile. Finds what is missing before you need it.",
-        benefitEl: "Μαθαίνετε τι δεν καλύπτεστε",
-        benefitEn: "Know your blind spots early",
+        Icon: FolderOpen,
+        titleEl: "Τι ακριβώς έχετε;",
+        titleEn: "What exactly do you have?",
+        descEl: "Όλες οι ασφάλειές σας μαζεύονται σε ένα μέρος. Αρκεί να στείλετε ένα αρχείο ή μια φωτογραφία.",
+        descEn: "All your insurance ends up in one place. Just send a file or a photo.",
+        benefitEl: "Τέλος τα χαρτιά στο συρτάρι",
+        benefitEn: "No more papers in a drawer",
         wide: true,
     },
     {
         Icon: Bell,
-        titleEl: "Έξυπνες Ειδοποιήσεις",
-        titleEn: "Smart Alerts",
-        descEl: "Αυτόματες υπενθυμίσεις για λήξεις, αλλαγές τιμών και νέες παροχές.",
-        descEn: "Automatic reminders for renewals, price changes and new benefits.",
-        benefitEl: "Δεν χάνετε ποτέ ανανέωση",
-        benefitEn: "Never miss a renewal",
+        titleEl: "Πότε λήγει;",
+        titleEn: "When does it run out?",
+        // Only promises what the product can do from documents: expiry
+        // reminders and re-analysis findings — not price-change feeds.
+        descEl: "Σας ειδοποιούμε πριν λήξει κάτι και όταν βρούμε κάτι νέο στα έγγραφά σας — από το πλάνο Starter.",
+        descEn: "We warn you before something runs out, and when we find something new in your documents — from the Starter plan.",
+        benefitEl: "Δεν σας πιάνει ποτέ απροετοίμαστους",
+        benefitEn: "It never catches you out",
         wide: false,
     },
     {
         Icon: MessageCircle,
-        titleEl: "AI Q&A Συμβολαίου",
-        titleEn: "Policy AI Q&A",
-        descEl: "Ρωτήστε με απλά λόγια. Η AI απαντά άμεσα από το ίδιο το κείμενο του συμβολαίου σας.",
-        descEn: "Ask in plain language. AI answers instantly from your actual policy text.",
+        titleEl: "Τι σημαίνει αυτό;",
+        titleEn: "What does this mean?",
+        // Policy Q&A is Plus-only — same naming rule.
+        descEl: "Ρωτήστε με απλά λόγια. Απαντάμε από το ίδιο σας το συμβόλαιο, όχι από γενικές πληροφορίες — με το πλάνο PolicyWallet Plus.",
+        descEn: "Ask in plain words. We answer from your own policy, not from general information — on the PolicyWallet Plus plan.",
         benefitEl: "Καταλαβαίνετε τι υπογράψατε",
-        benefitEn: "Understand what you signed",
+        benefitEn: "You understand what you signed",
         wide: false,
     },
     {
         Icon: Users,
-        titleEl: "Σύνδεση Πράκτορα",
-        titleEn: "Agent Connect",
-        descEl: "Κοινοποίηση συμβολαίων, μηνύματα και προτάσεις με τον σύμβουλό σας — στο ίδιο μέρος.",
-        descEn: "Share policies, messages, and proposals with your advisor — all in one place.",
-        benefitEl: "Λιγότερα τηλέφωνα",
-        benefitEn: "Less back-and-forth",
+        titleEl: "Ποιος μπορεί να βοηθήσει;",
+        titleEn: "Who can help you?",
+        // Advisor sharing is a paid feature — the tier is named so the card
+        // never promises on Free what only PolicyWallet Plus delivers.
+        descEl: "Δείξτε ό,τι θέλετε στον ασφαλιστή σας, με ένα κλικ — διαθέσιμο με το πλάνο PolicyWallet Plus.",
+        descEn: "Show your agent whatever you choose, with one click — available on the PolicyWallet Plus plan.",
+        benefitEl: "Εσείς αποφασίζετε τι βλέπει",
+        benefitEn: "You decide what they see",
         wide: false,
     },
 ]
@@ -67,9 +84,9 @@ function ServiceCard({
 }) {
     const t = (el: string, en: string) => (isGreek ? el : en)
     return (
-        <div className="group flex flex-col rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#A7F3D0] hover:shadow-[0_8px_24px_rgba(41,104,91,0.08)]">
+        <div className="group flex flex-col rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#A7F3D0] hover:shadow-[0_8px_24px_rgba(41,104,91,0.08)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#ECFDF5] dark:bg-[#29685B]/15">
-                <s.Icon className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                <s.Icon aria-hidden className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
             </div>
             <h3 className="mb-2 text-body-lg font-semibold tracking-tight text-[#0F172A] dark:text-white">
                 {t(s.titleEl, s.titleEn)}
@@ -78,7 +95,7 @@ function ServiceCard({
                 {t(s.descEl, s.descEn)}
             </p>
             <div className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#F0FDF4] dark:bg-[#29685B]/15 px-3 py-1 text-caption font-semibold text-[#29685B] dark:text-[#A7F3D0]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#29685B]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
                 {t(s.benefitEl, s.benefitEn)}
             </div>
         </div>

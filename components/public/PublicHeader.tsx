@@ -103,7 +103,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
             {/* Skip link — first focusable element on every public page. */}
             <a
                 href={`#${SKIP_LINK_TARGET_ID}`}
-                className="sr-only rounded-lg bg-[#29685B] px-4 py-2 text-sm font-semibold text-white focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200]"
+                className="sr-only rounded-lg bg-[#29685B] px-4 text-body font-semibold text-white focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:inline-flex focus:min-h-11 focus:items-center"
             >
                 {t("Μετάβαση στο περιεχόμενο", "Skip to content")}
             </a>
@@ -117,7 +117,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             : "border-gray-200/50 bg-white/80 shadow-sm dark:border-slate-800/50 dark:bg-slate-900/80"
                     }`}
                 >
-                    <Link href={l("/")} className="inline-flex items-center text-title font-bold tracking-tight">
+                    <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight">
                         <span className="text-[#0F172A] dark:text-white">Policy</span>
                         <span className="text-[#5B6A7A] dark:text-slate-400">Wallet</span>
                     </Link>
@@ -131,7 +131,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                                     key={item.key}
                                     href={l(item.href)}
                                     aria-current={isActive(item.href) ? "page" : undefined}
-                                    className={`transition-colors duration-150 hover:text-[#0F172A] dark:hover:text-white ${
+                                    className={`inline-flex min-h-11 items-center transition-colors duration-150 hover:text-[#0F172A] dark:hover:text-white ${
                                         isActive(item.href) ? "text-[#0F172A] dark:text-white" : ""
                                     }`}
                                 >
@@ -146,7 +146,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             <Link
                                 href={elPath}
                                 aria-current={isGreek ? "true" : undefined}
-                                className={`text-xs font-semibold transition-colors ${elActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"}`}
+                                className={`inline-flex min-h-11 items-center px-1 text-body-sm font-semibold transition-colors ${elActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"}`}
                             >
                                 ΕΛ
                             </Link>
@@ -154,15 +154,22 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             <Link
                                 href={enPath}
                                 aria-current={!isGreek ? "true" : undefined}
-                                className={`text-xs font-semibold transition-colors ${enActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"}`}
+                                className={`inline-flex min-h-11 items-center px-1 text-body-sm font-semibold transition-colors ${enActive ? "text-[#0F172A] dark:text-white" : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"}`}
                             >
                                 EN
                             </Link>
                         </div>
-                        <ThemeToggle />
+                        {/* The toggle itself renders a 36px control; the
+                            wrapper alone does not resize the control, so the
+                            size is applied to the child button from here:
+                            presentation only, and the shared component (used by
+                            the authenticated app too) is left alone. */}
+                        <span className="inline-flex items-center [&>button]:inline-flex [&>button]:min-h-11 [&>button]:min-w-11 [&>button]:items-center [&>button]:justify-center">
+                            <ThemeToggle />
+                        </span>
                         <Link
                             href={secondaryHref}
-                            className="text-body font-medium text-[#0F172A] transition-colors hover:text-[#29685B] dark:text-white"
+                            className="inline-flex min-h-11 items-center text-body font-medium text-[#0F172A] transition-colors hover:text-[#29685B] dark:text-white"
                         >
                             {SECONDARY_CTA.label[locale]}
                         </Link>
@@ -198,7 +205,7 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                 }`}
             >
                 <div className="mx-auto flex h-16 w-full max-w-page-wide items-center justify-between px-6 pt-4">
-                    <Link href={l("/")} className="inline-flex items-center text-title font-bold tracking-tight" onClick={closeMenu}>
+                    <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight" onClick={closeMenu}>
                         <span className="text-white">Policy</span>
                         <span className="text-white/80">Wallet</span>
                     </Link>
@@ -231,6 +238,37 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             )
                         )}
                     </nav>
+
+                    {/* The language switcher lived only in the desktop bar, so
+                        on a phone — the viewport most people arrive on — an
+                        English speaker landing on the Greek site had no way to
+                        reach the English tree at all. */}
+                    <div
+                        role="group"
+                        aria-label={t("Γλώσσα", "Language")}
+                        className="mb-8 flex items-center gap-2 border-t border-white/20 pt-6"
+                    >
+                        <Link
+                            href={elPath}
+                            aria-current={isGreek ? "true" : undefined}
+                            onClick={closeMenu}
+                            className={`inline-flex min-h-11 items-center rounded-full px-4 text-body font-semibold transition-colors ${
+                                elActive ? "bg-white text-[#29685B]" : "text-white/80 hover:text-white"
+                            }`}
+                        >
+                            Ελληνικά
+                        </Link>
+                        <Link
+                            href={enPath}
+                            aria-current={!isGreek ? "true" : undefined}
+                            onClick={closeMenu}
+                            className={`inline-flex min-h-11 items-center rounded-full px-4 text-body font-semibold transition-colors ${
+                                enActive ? "bg-white text-[#29685B]" : "text-white/80 hover:text-white"
+                            }`}
+                        >
+                            English
+                        </Link>
+                    </div>
 
                     <div className="mt-auto flex flex-col gap-4">
                         <Link href={secondaryHref} className="pw-secondary-button-inverse pw-btn-lg w-full" onClick={closeMenu}>

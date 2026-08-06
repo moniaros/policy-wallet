@@ -79,6 +79,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     useEffect(() => {
+        // The /en/* routes own their lang attribute (StaticLanguageProvider +
+        // HtmlLang stamp "en"). This provider's default is "el", and under
+        // chunked hydration its effect can land AFTER theirs — which stamped
+        // the Greek default onto English pages (WCAG 3.1.1). Never fight them.
+        const path = window.location.pathname
+        if (path === '/en' || path.startsWith('/en/')) return
+
         const html = document.documentElement
         const locale = language === 'el' ? 'el' : 'en'
         const localeTag = language === 'el' ? 'el-GR' : 'en-US'

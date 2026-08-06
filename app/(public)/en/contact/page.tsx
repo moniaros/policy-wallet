@@ -10,7 +10,7 @@ export default function ContactPageEnglish() {
     return (
         <StaticLanguageProvider language="en" counterpartPath="/contact">
             <ContactPageClient locale="en" />
-            <JsonLd data={[breadcrumbEnJsonLd(["contact"]), organizationJsonLd()]} />
+            <JsonLd data={[breadcrumbEnJsonLd(["contact"]), organizationJsonLd("en")]} />
         </StaticLanguageProvider>
     )
 }

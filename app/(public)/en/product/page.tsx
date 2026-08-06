@@ -27,8 +27,10 @@ export default function ProductPageEnglish() {
                     ),
                     howToJsonLd({
                         name: "Three steps to full control of your insurance",
+                        // Neutral flow summary — tier-gated outputs (reminders,
+                        // recommendations) are attributed inside the steps.
                         description:
-                            "How PolicyWallet works: you upload your policies, AI analyzes them, and you receive reminders and recommendations.",
+                            "How PolicyWallet works: you send us your policies, we read them for you, and we keep you in the loop.",
                         steps: PRODUCT_STEPS.map((step) => ({
                             name: step.titleEn,
                             text: step.descEn,

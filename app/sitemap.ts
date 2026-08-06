@@ -6,8 +6,11 @@ import { glossaryTerms } from "@/lib/glossary/content"
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const origin = getSiteOrigin()
-    const lastModified = new Date()
 
+    // Static marketing pages carry NO lastModified: stamping them with the
+    // request time claimed every page changed at crawl moment, which teaches
+    // crawlers to distrust the field. Guides and glossary entries keep their
+    // real dateModified below.
     const homeLanguages = {
         el: origin,
         en: `${origin}/en`,
@@ -16,14 +19,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const entries: MetadataRoute.Sitemap = [
         {
             url: origin,
-            lastModified,
             changeFrequency: "weekly",
             priority: 1,
             alternates: { languages: homeLanguages },
         },
         {
             url: `${origin}/en`,
-            lastModified,
             changeFrequency: "weekly",
             priority: 0.9,
             alternates: { languages: homeLanguages },
@@ -33,6 +34,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const priorityByKey: Partial<Record<keyof typeof marketingPages, number>> = {
         product: 0.9,
         pricing: 0.9,
+        // Linked from the homepage and the footer — a first-class landing page.
+        compare: 0.8,
         "solutions-agents": 0.8,
         guides: 0.7,
         lexiko: 0.7,
@@ -60,7 +63,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
         entries.push({
             url: `${origin}${page.path}`,
-            lastModified,
             changeFrequency: key === "guides" ? "weekly" : "monthly",
             priority,
             ...(languages ? { alternates: { languages } } : {}),
@@ -68,9 +70,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
         if (page.en) {
             entries.push({
                 url: `${origin}${enPathFor(page.path)}`,
-                lastModified,
                 changeFrequency: "monthly",
-                priority: Math.max(priority - 0.1, 0.1),
+                // Rounded: raw float math emitted "0.7000000000000001".
+                priority: Math.round(Math.max(priority - 0.1, 0.1) * 10) / 10,
                 alternates: { languages: languages! },
             })
         }

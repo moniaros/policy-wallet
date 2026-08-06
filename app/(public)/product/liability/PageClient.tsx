@@ -2,6 +2,7 @@ import React from "react"
 import Link from "next/link"
 import { Copy, Dog, Droplets, Bike, ShieldCheck } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
+import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
 export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }) {
@@ -14,19 +15,19 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             titleEl: "Η μπανιέρα πλημμύρισε τον κάτω όροφο",
             titleEn: "The bathtub flooded the flat below",
             descEl: "Ως ένοικος ή ιδιοκτήτης, η ζημιά στο διαμέρισμα του γείτονα είναι δική σας υποχρέωση. Η οικογενειακή αστική ευθύνη την αναλαμβάνει.",
-            descEn: "As a tenant or owner, the damage to your neighbour's flat is your obligation. Family liability cover takes it on.",
+            descEn: "As a tenant or owner, the damage to your neighbor's flat is your obligation. Family liability cover takes it on.",
         },
         {
             icon: Dog,
             titleEl: "Ο σκύλος σας δάγκωσε περαστικό",
-            titleEn: "Your dog bit a passer-by",
+            titleEn: "Your dog bit a passerby",
             descEl: "Ιατρικά έξοδα και αξίωση αποζημίωσης βαραίνουν τον ιδιοκτήτη του ζώου. Ελέγξτε αν το συμβόλαιό σας καλύπτει κατοικίδια — δεν το κάνουν όλα.",
             descEn: "Medical costs and a compensation claim land on the animal's owner. Check whether your policy covers pets — not all of them do.",
         },
         {
             icon: Bike,
             titleEl: "Το παιδί έσπασε τζαμαρία με το ποδήλατο",
-            titleEn: "Your child broke a shop window cycling",
+            titleEn: "Your child broke a glass pane with their bike",
             descEl: "Για πράξεις ανήλικων παιδιών ευθύνονται οι γονείς. Η κάλυψη αστικής ευθύνης οικογένειας απαντά σε αυτές ακριβώς τις στιγμές.",
             descEn: "Parents are liable for their minor children's actions. Family liability cover exists for exactly these moments.",
         },
@@ -39,9 +40,9 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
                     <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Αστική Ευθύνη", "Personal Liability")}
+                        {t("Αστική ευθύνη", "Personal liability")}
                     </span>
-                    <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8">
+                    <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
                         {t("Όταν η ζημιά είναι σε ξένη περιουσία, ποιος πληρώνει;", "When the damage is to someone else's property, who pays?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
@@ -49,9 +50,12 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε δωρεάν", "Get Started Free")}
+                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
+                    <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                        {t("Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.", "Free for 1 policy. No card.")}
+                    </p>
                 </div>
             </section>
 
@@ -59,7 +63,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
                             {t("Τρεις καθημερινές στιγμές που γίνονται λογαριασμός.", "Three everyday moments that turn into a bill.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
@@ -88,11 +92,11 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             <section className="px-6 lg:px-12 py-24">
                 <div className="mx-auto max-w-page grid md:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
                             {t("Πριν την αγοράσετε, δείτε αν την έχετε ήδη.", "Before you buy it, see if you already own it.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-6">
-                            {t("Πολλά συμβόλαια κατοικίας περιλαμβάνουν αστική ευθύνη ως ενσωματωμένη κάλυψη — αγορασμένη μαζί με την πυρκαγιά και ξεχασμένη από την πρώτη μέρα. Όταν ανεβάζετε τα συμβόλαιά σας, η ανάλυση διαβάζει κάθε κάλυψη ξεχωριστά και δείχνει πού η ίδια προστασία εμφανίζεται δύο φορές.", "Many home policies include liability as a bundled cover — bought together with the fire section and forgotten since day one. When you upload your policies, the analysis reads every cover separately and shows where the same protection appears twice.")}
+                            {t("Πολλά συμβόλαια κατοικίας περιλαμβάνουν αστική ευθύνη ως ενσωματωμένη κάλυψη — αγορασμένη μαζί με την πυρκαγιά και ξεχασμένη από την πρώτη μέρα. Όταν ανεβάζετε τα συμβόλαιά σας, η ανάλυση διαβάζει κάθε κάλυψη ξεχωριστά και, στο πλάνο PolicyWallet Plus, δείχνει πού η ίδια προστασία εμφανίζεται δύο φορές.", "Many home policies include liability as a bundled cover — bought together with the fire section and forgotten since day one. When you upload your policies, the analysis reads every cover separately and, on the PolicyWallet Plus plan, shows where the same protection appears twice.")}
                         </p>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Αν λείπει, το βλέπετε κι αυτό: το κενό εμφανίζεται δίπλα στα υπόλοιπα, με τα όρια που ισχύουν σήμερα.", "And if it's missing, you see that too: the gap appears next to everything else, with the limits that apply today.")}
@@ -103,30 +107,30 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-xl border border-[#E2E8F0] dark:border-slate-800 shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
-                                <h3 className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">Liability Check</h3>
-                                <p className="text-body-sm text-gray-500 dark:text-gray-400">2 policies scanned</p>
+                                <p className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">{t("Έλεγχος αστικής ευθύνης", "Liability check")}</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Ελέγχθηκαν 2 ασφαλιστήρια", "2 policies checked")}</p>
                             </div>
                         </div>
                         <div className="space-y-5">
                             <div className="p-4 bg-[#F0FDF4] dark:bg-[#29685B]/15 rounded-lg flex justify-between items-center border border-[#29685B]/20">
                                 <div>
-                                    <p className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">Home Policy · Section D</p>
-                                    <p className="text-xs text-[#166534] dark:text-[#A7F3D0] mt-1">Family liability included</p>
+                                    <p className="font-medium text-[#166534] dark:text-[#A7F3D0] text-sm">{t("Ασφάλεια κατοικίας · Ενότητα Δ", "Home policy · Section D")}</p>
+                                    <p className="text-xs text-[#166534] dark:text-[#A7F3D0] mt-1">{t("Περιλαμβάνεται ευθύνη οικογένειας", "Family liability included")}</p>
                                 </div>
                                 <ShieldCheck className="w-5 h-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             </div>
                             <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex justify-between border border-amber-100 dark:border-amber-800/40">
                                 <div>
                                     <p className="font-medium text-amber-900 dark:text-amber-200 text-sm flex items-center gap-2">
-                                        <Copy className="w-4 h-4" /> Possible duplicate
+                                        <Copy className="w-4 h-4" /> {t("Πιθανή διπλή κάλυψη", "Possible duplicate cover")}
                                     </p>
-                                    <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">Standalone liability policy overlaps Section D</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-200 mt-1">{t("Το ξεχωριστό συμβόλαιο ευθύνης επικαλύπτει την Ενότητα Δ", "A separate liability policy overlaps Section D")}</p>
                                 </div>
                             </div>
                             <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-lg text-sm border border-slate-200 dark:border-white/10">
                                 <div className="flex justify-between mb-2">
-                                    <span className="text-[#475569] dark:text-slate-300">Pet incidents</span>
-                                    <span className="font-medium text-slate-700 dark:text-slate-200">Not covered</span>
+                                    <span className="text-[#475569] dark:text-slate-300">{t("Ζημιές από κατοικίδιο", "Damage caused by a pet")}</span>
+                                    <span className="font-medium text-slate-700 dark:text-slate-200">{t("Δεν καλύπτεται", "Not covered")}</span>
                                 </div>
                                 <div className="w-full bg-gray-100 dark:bg-white/10 h-2 rounded-full">
                                     <div className="bg-slate-400 w-[0%] h-2 rounded-full" />
@@ -137,15 +141,17 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                 </div>
             </section>
 
+            <LobFaq categoryId="liability" locale={locale} />
+
             <ProductCategoryExplorer currentCategoryId="liability" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">
-                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μία κάλυψη αρκεί. Δύο είναι σπατάλη.", "One cover is enough. Two is a waste.")}
                 </h2>
                 <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
-                    {t("Ελέγξτε τι έχετε ήδη", "Check what you already hold")}
+                    {t("Ελέγξτε τι έχετε ήδη", "Check what you already have")}
                 </Link>
             </section>
 

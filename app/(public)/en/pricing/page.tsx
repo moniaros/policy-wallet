@@ -41,7 +41,8 @@ export default async function PricingPageEnglish() {
                                 name: plan.name.en,
                                 price: plan.pricing.monthly.amount.replace(/[^0-9.]/g, ""),
                                 description: plan.description.en,
-                            }))
+                            })),
+                        "en"
                     ),
                 ]}
             />
