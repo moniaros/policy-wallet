@@ -568,7 +568,10 @@ describe("catalog integrity", () => {
         }
     })
 
-    it("no risk is permanently shadowed — every one can reach a user", () => {
+    // Exhaustive 18,432-combination sweep: ~1s locally but repeatedly over
+    // the 5s default on CI's shared runners, where it blocked a production
+    // deploy. The assertion is unchanged — only the budget is realistic.
+    it("no risk is permanently shadowed — every one can reach a user", { timeout: 30_000 }, () => {
         // `income_no_protection` fired internally and was masked by a life rule
         // on the same line across all 18,432 profile combinations. A scored,
         // labelled category had no reachable rule and nobody noticed. This sweeps
