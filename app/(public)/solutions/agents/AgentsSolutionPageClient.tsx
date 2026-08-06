@@ -33,7 +33,13 @@ export default function AgentSolutionsPage() {
                 <div className="mx-auto max-w-page">
                     <div className="mb-14 text-center">
                         <p className="mb-3 text-caption font-semibold uppercase tracking-[0.18em] text-[#29685B] dark:text-[#A7F3D0]">
-                            {t("Για ασφαλιστές", "For insurance agents")}
+                            {/* The category name precedes the audience signal:
+                                the H1 below is verbatim the broker-CRM promise,
+                                so the kicker must say what this actually is. */}
+                            {t(
+                                "Πλατφόρμα προσωπικής ανάλυσης ρίσκου — για ασφαλιστές",
+                                "Personal Risk Intelligence Platform — for insurance agents"
+                            )}
                         </p>
                         <h1 className="mx-auto mb-6 max-w-[920px] text-h1 font-semibold leading-[1.05] tracking-[-0.035em] text-[#0F172A] dark:text-white lg:text-display text-balance">
                             {t("Όλοι οι πελάτες σας σε μία οθόνη.", "All your clients on one screen.")}

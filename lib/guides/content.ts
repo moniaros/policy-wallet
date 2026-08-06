@@ -1955,6 +1955,10 @@ export const guides: Guide[] = [
         ],
         related: [
             {
+                label: { el: "Σκορ Προστασίας", en: "Protection Score" },
+                href: "/lexiko/skor-prostasias",
+            },
+            {
                 label: {
                     el: "Τι δεν είναι το PolicyWallet — η σύγκριση",
                     en: "What PolicyWallet is not — the comparison",

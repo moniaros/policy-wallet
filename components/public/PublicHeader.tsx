@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
 import { localizeHref } from "@/lib/seo/locale-links"
+import { normalizeHeaderPath } from "@/lib/nav/header-path"
 import {
     PRIMARY_CTA,
     PUBLIC_NAV_ITEMS,
@@ -29,6 +30,7 @@ interface PublicHeaderProps {
  * to the current page's counterpart route (computed from the pathname), so it
  * works on the homepage (no LanguageContext) and inside the app shell alike.
  */
+
 export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHeaderProps) {
     const isGreek = locale === "el"
     const elActive = isGreek
@@ -36,7 +38,12 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
     const t = (el: string, en: string) => (isGreek ? el : en)
     const l = (href: string) => localizeHref(href, locale)
 
-    const pathname = usePathname() || "/"
+    // During static prerender of the ROOT route, usePathname() reports the
+    // emitted filename rather than the URL, so the language toggle derived
+    // dead index-suffixed hrefs (a sign-in redirect, and a 404).
+    // Only surfaced once the homepage stopped rendering inside a Suspense
+    // boundary, which moved this header into the server prerender.
+    const pathname = normalizeHeaderPath(usePathname())
     // Normalise to the Greek path so active-state + the language toggle work
     // regardless of the locale tree we are currently in.
     const elPath = pathname === "/en" ? "/" : pathname.startsWith("/en/") ? pathname.slice(3) : pathname
