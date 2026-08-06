@@ -105,6 +105,69 @@ export const LIFE_CHANGES: readonly Bilingual[] = [
 ]
 
 /**
+ * What each change does to your risk — the payload of the hero's discovery
+ * step. Every line states a FACT about the reader's new situation, never a
+ * capability of ours, so nothing here needs a plan attribution. `href` points
+ * at the branch page that already explains the cover in depth.
+ *
+ * Keyed by the English label so the copy above stays the single source.
+ */
+export const LIFE_CHANGE_EFFECTS: readonly {
+    change: Bilingual
+    effect: Bilingual
+    href: string
+}[] = [
+    {
+        change: { el: "Κάνατε παιδί", en: "You had a child" },
+        effect: {
+            el: "Τώρα κάποιος εξαρτάται από το εισόδημά σας.",
+            en: "Someone now depends on your income.",
+        },
+        href: "/product/life",
+    },
+    {
+        change: { el: "Αλλάξατε σπίτι", en: "You moved house" },
+        effect: {
+            el: "Το νέο σπίτι θέλει τη δική του κάλυψη.",
+            en: "The new home needs cover of its own.",
+        },
+        href: "/product/property",
+    },
+    {
+        change: { el: "Πήρατε δάνειο", en: "You took out a loan" },
+        effect: {
+            el: "Το δάνειο μένει, ακόμη κι αν εσείς λείψετε.",
+            en: "The loan stays, even if you are gone.",
+        },
+        href: "/product/life",
+    },
+    {
+        change: { el: "Αλλάξατε δουλειά", en: "You changed jobs" },
+        effect: {
+            el: "Μαζί με τη δουλειά άλλαξαν και οι παροχές σας.",
+            en: "Your benefits changed with the job.",
+        },
+        href: "/product/group-health",
+    },
+    {
+        change: { el: "Αγοράσατε αυτοκίνητο", en: "You bought a car" },
+        effect: {
+            el: "Νέο αυτοκίνητο σημαίνει νέα αξία να καλυφθεί.",
+            en: "A new car means a new value to cover.",
+        },
+        href: "/product/motor",
+    },
+    {
+        change: { el: "Πήρατε σκύλο", en: "You got a dog" },
+        effect: {
+            el: "Τα έξοδα του κτηνιάτρου τα πληρώνετε εσείς.",
+            en: "The vet bills are yours to pay.",
+        },
+        href: "/product/pet",
+    },
+]
+
+/**
  * The headline promise. Says the outcome, and why it is urgent, in one line.
  * Split in two so the hero can colour the question without re-typing the copy.
  */
