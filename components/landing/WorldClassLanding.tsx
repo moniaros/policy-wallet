@@ -8,6 +8,7 @@ import { LandingCtaLink } from "@/components/landing/LandingCtaLink"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { TrustBadges } from "@/components/landing/TrustBadges"
 import { TrustRow } from "@/components/landing/TrustRow"
+import { LifeChangeDiscovery } from "@/components/landing/LifeChangeDiscovery"
 import { WhyDifferent } from "@/components/landing/WhyDifferent"
 import { WhyNow } from "@/components/landing/WhyNow"
 import { PricingPreview } from "@/components/landing/PricingPreview"
@@ -133,36 +134,11 @@ export function WorldClassLanding({
                 </section>
 
                 {/* ── 2. WHAT CHANGED ──────────────────────────────── */}
-                <section
-                    id="life-changes"
-                    aria-labelledby="life-changes-heading"
-                    className="border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-12 lg:px-12 dark:border-slate-800 dark:bg-slate-900"
-                >
-                    <div className="mx-auto max-w-page space-y-6 text-center">
-                        <h2
-                            id="life-changes-heading"
-                            className="text-lead font-semibold text-balance text-[#0F172A] sm:text-title dark:text-white"
-                        >
-                            {t(
-                                "Κάτι άλλαξε στη ζωή σας φέτος;",
-                                "Did something change in your life this year?",
-                            )}
-                        </h2>
-                        <ul className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-                            {LIFE_CHANGES.map((change) => (
-                                <li
-                                    key={change.en}
-                                    className="flex h-10 items-center rounded-full border border-[#E2E8F0] bg-white px-4 text-body-sm font-semibold text-[#334155] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                                >
-                                    {pick(change, locale)}
-                                </li>
-                            ))}
-                        </ul>
-                        <p className="mx-auto max-w-[560px] text-body-lg text-[#475569] dark:text-slate-300">
-                            {pick(STORY.matters, locale)}
-                        </p>
-                    </div>
-                </section>
+                {/* Interactive: the visitor picks their own changes and reads
+                    what each one does to their cover. Every line is in the
+                    server HTML, so this section still argues its case with
+                    JavaScript off. */}
+                <LifeChangeDiscovery locale={locale} />
 
                 {/* ── 3. WHY WE ARE DIFFERENT ──────────────────────── */}
                 <WhyDifferent locale={locale} />
