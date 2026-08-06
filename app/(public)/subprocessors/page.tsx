@@ -2,9 +2,16 @@ import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { LegalDocumentPage } from "@/components/legal/LegalDocumentPage"
 import { resolveLegalLanguage } from "@/lib/legal/legal-content"
-import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
+import { buildLegalPageMetadata } from "@/lib/seo/marketing-pages"
 
-export const metadata: Metadata = buildMarketingMetadata("subprocessors")
+// Copy follows the served language (?lang= / Accept-Language) so the tab
+// title matches the content; see buildLegalPageMetadata for the mechanics.
+export async function generateMetadata({ searchParams }: SubprocessorsPageProps): Promise<Metadata> {
+    const params = await resolveSearchParams(searchParams)
+    const requestHeaders = await headers()
+    const language = resolveLegalLanguage(params.lang, requestHeaders.get("accept-language"))
+    return buildLegalPageMetadata("subprocessors", language)
+}
 
 type SubprocessorsPageProps = {
     searchParams?: Promise<{ lang?: string }> | { lang?: string }

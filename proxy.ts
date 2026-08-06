@@ -114,6 +114,10 @@ export async function proxy(request: NextRequest) {
         "/cookies",
         "/subprocessors",
         "/pricing",
+        // Honest comparison against the alternatives a Greek household
+        // actually has. Linked from the homepage and the footer, so it must be
+        // reachable anonymously or every visitor hits a login wall.
+        "/compare",
         "/company",
         "/contact",
         "/for-agents",

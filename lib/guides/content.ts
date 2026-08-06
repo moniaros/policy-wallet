@@ -153,7 +153,7 @@ export const guides: Guide[] = [
                     },
                     {
                         el: "Το ασφαλιζόμενο κεφάλαιο πρέπει να καλύπτει την αξία ανακατασκευής του κτίσματος. Η ΑΑΔΕ ορίζει ελάχιστη αξία ανά τετραγωνικό μέτρο — επιβεβαιώστε το ισχύον όριο στο aade.gr.",
-                        en: "The insured sum must cover the building's reconstruction value. AADE sets a minimum value per square metre — confirm the current threshold at aade.gr.",
+                        en: "The insured sum must cover the building's reconstruction value. AADE sets a minimum value per square meter — confirm the current threshold at aade.gr.",
                     },
                 ],
             },
@@ -165,7 +165,7 @@ export const guides: Guide[] = [
                 paragraphs: [
                     {
                         el: "Για τον ΕΝΦΙΑ του 2022 και του 2023 η έκπτωση ήταν 10% για πλήρες έτος ασφάλισης. Από τον ΕΝΦΙΑ του 2024 η έκπτωση διπλασιάστηκε σε 20% για κατοικίες με φορολογητέα αξία έως 500.000 ευρώ που είναι ασφαλισμένες για ολόκληρο το έτος· για μεγαλύτερες αξίες παραμένει το 10%. Επειδή οι λεπτομέρειες ενδέχεται να αλλάζουν με νέες αποφάσεις, ελέγχετε πάντα την τρέχουσα ανακοίνωση της ΑΑΔΕ πριν από την εκκαθάριση.",
-                        en: "For the 2022 and 2023 ENFIA the discount was 10% for a full year of coverage. From the 2024 ENFIA the discount was doubled to 20% for homes with a taxable value up to €500,000 insured for the full year; above that, 10% still applies. Because the details can change with new ministerial decisions, always check the current AADE announcement before assessment time.",
+                        en: "For the 2022 and 2023 ENFIA the discount was 10% for a full year of coverage. From the 2024 ENFIA the discount was doubled to 20% for homes with a taxable value up to €500,000 insured for the full year; above that, 10% still applies. Because the details can change with new decisions, always check the current AADE announcement before assessment time.",
                     },
                 ],
             },
@@ -188,8 +188,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ανοίξτε τον πίνακα καλύψεων του ασφαλιστηρίου και αναζητήστε ρητά τις λέξεις «σεισμός», «πυρκαγιά» και «πλημμύρα» στις καλυπτόμενες ζημιές — όχι στις προαιρετικές ή στις εξαιρέσεις. Ελέγξτε επίσης το ασφαλιζόμενο κεφάλαιο κτίσματος σε σχέση με τα τετραγωνικά μέτρα. Εναλλακτικά, ανεβάστε το PDF του συμβολαίου στο PolicyWallet: η ανάλυση AI επισημαίνει αν λείπει κάποιος από τους τρεις κινδύνους της έκπτωσης ΕΝΦΙΑ, και — εφόσον το έγγραφο αναφέρει και τα δύο ποσά — αν το ασφαλισμένο κεφάλαιο υπολείπεται του κόστους ανακατασκευής.",
-                        en: "Open your policy's coverage table and look for earthquake, fire, and flood explicitly listed among the covered perils — not in the optional add-ons or the exclusions. Also check the insured building sum against your square metres. Alternatively, upload the policy PDF to PolicyWallet: the AI analysis automatically flags a missing ENFIA-discount peril and an insufficient reconstruction sum.",
+                        el: "Ανοίξτε τον πίνακα καλύψεων του ασφαλιστηρίου και αναζητήστε ρητά τις λέξεις «σεισμός», «πυρκαγιά» και «πλημμύρα» στις καλυπτόμενες ζημιές — όχι στις προαιρετικές ή στις εξαιρέσεις. Ελέγξτε επίσης το ασφαλιζόμενο κεφάλαιο κτίσματος σε σχέση με τα τετραγωνικά μέτρα. Εναλλακτικά, ανεβάστε το PDF του συμβολαίου στο PolicyWallet: η ανάλυση AI σας δείχνει ποιες καλύψεις αναφέρει το συμβόλαιο, ώστε να δείτε αν λείπει κάποιος από τους τρεις κινδύνους της έκπτωσης ΕΝΦΙΑ — και, εφόσον το έγγραφο αναφέρει και τα δύο ποσά, αν το ασφαλισμένο κεφάλαιο υπολείπεται του κόστους ανακατασκευής.",
+                        en: "Open your policy's coverage table and look for earthquake, fire, and flood explicitly listed among the covered perils — not in the optional add-ons or the exclusions. Also check the insured building sum against your square meters. Alternatively, upload the policy PDF to PolicyWallet: the AI analysis shows you which perils the policy names, so you can see whether one of the three ENFIA-discount perils is missing — and, provided the document states both amounts, whether the insured sum falls below the reconstruction cost.",
                     },
                 ],
             },
@@ -254,12 +254,12 @@ export const guides: Guide[] = [
             en: "Insurance coverage gaps: how to find them",
         },
         metaDescription: {
-            el: "Κενό κάλυψης είναι ο κίνδυνος που νομίζετε ότι καλύπτεται αλλά δεν καλύπτεται. Τα συχνότερα κενά στην Ελλάδα, ο αναλογικός όρος και πώς τα εντοπίζετε σε λεπτά.",
-            en: "A coverage gap is the risk you think is insured but is not. The most common gaps in Greece, the pro-rata average clause and how to find yours in minutes.",
+            el: "Κενό κάλυψης είναι ο κίνδυνος που νομίζετε ότι καλύπτεται αλλά δεν καλύπτεται. Τα συχνότερα κενά στην Ελλάδα, ο αναλογικός κανόνας και πώς τα εντοπίζετε.",
+            en: "A coverage gap is the risk you think is insured but is not. The most common gaps in Greece, the average rule (pro-rata) and how to find yours in minutes.",
         },
         summary: {
-            el: "Κενό κάλυψης είναι η διαφορά ανάμεσα σε αυτό που νομίζετε ότι καλύπτει το ασφαλιστήριό σας και σε αυτό που πραγματικά καλύπτει. Εμφανίζεται σε εξαιρέσεις, σε ανεπαρκή κεφάλαια και σε κινδύνους που δεν προστέθηκαν ποτέ. Εντοπίζεται με προσεκτική ανάγνωση των όρων ή αυτόματα, ανεβάζοντας το συμβόλαιο σε ένα εργαλείο ανάλυσης όπως το PolicyWallet.",
-            en: "A coverage gap is the difference between what you think your policy covers and what it actually covers. It hides in exclusions, insufficient insured sums, and risks that were never added. You find it by carefully reading the terms — or automatically, by uploading the policy to an analysis tool like PolicyWallet.",
+            el: "Κενό κάλυψης είναι η διαφορά ανάμεσα σε αυτό που νομίζετε ότι καλύπτει το ασφαλιστήριό σας και σε αυτό που πραγματικά καλύπτει. Εμφανίζεται σε εξαιρέσεις, σε ανεπαρκή κεφάλαια και σε κινδύνους που δεν προστέθηκαν ποτέ. Εντοπίζεται με προσεκτική ανάγνωση των όρων ή αυτόματα, με ένα εργαλείο ανάλυσης όπως το PolicyWallet — στο πλάνο Plus.",
+            en: "A coverage gap is the difference between what you think your policy covers and what it actually covers. It hides in exclusions, insufficient insured sums, and risks that were never added. You find it by carefully reading the terms — or automatically, with an analysis tool like PolicyWallet, on the Plus plan.",
         },
         datePublished: "2026-07-07",
         dateModified: "2026-07-07",
@@ -273,7 +273,7 @@ export const guides: Guide[] = [
                 paragraphs: [
                     {
                         el: "Η ελληνική αγορά έχει από τα χαμηλότερα ποσοστά ασφάλισης στην Ευρωπαϊκή Ένωση — σύμφωνα με τα δημοσιευμένα στοιχεία της ΕΑΕΕ, μόνο μία μικρή μειοψηφία κατοικιών διαθέτει ασφάλιση. Ακόμα όμως και όσοι έχουν συμβόλαια συναντούν επαναλαμβανόμενα κενά:",
-                        en: "The Greek market has one of the lowest insurance penetration rates in the European Union — according to published EAEE data, only a small minority of homes carry insurance. But even policyholders run into recurring gaps:",
+                        en: "The Greek market has one of the lowest insurance penetration rates in the European Union — according to data published by the Hellenic Association of Insurance Companies (HAIC), only a small minority of homes carry insurance. But even policyholders run into recurring gaps:",
                     },
                 ],
                 bullets: [
@@ -286,7 +286,7 @@ export const guides: Guide[] = [
                         en: "Building underinsurance: reconstruction costs rose with inflation, but the insured sum stayed where it was set years ago.",
                     },
                     {
-                        el: "Υψηλή απαλλαγή υγείας: μια απαλλαγή 1.500€ σημαίνει ότι τα περισσότερα περιστατικά πληρώνονται εξ ολοκλήρου από εσάς.",
+                        el: "Υψηλή απαλλαγή υγείας: μια απαλλαγή 1.500 € σημαίνει ότι τα περισσότερα περιστατικά πληρώνονται εξ ολοκλήρου από εσάς.",
                         en: "High health deductible: a €1,500 deductible means most incidents are paid entirely out of pocket.",
                     },
                     {
@@ -301,13 +301,13 @@ export const guides: Guide[] = [
             },
             {
                 heading: {
-                    el: "Τι είναι ο αναλογικός όρος και γιατί σας αφορά;",
-                    en: "What is the average clause and why does it matter?",
+                    el: "Τι είναι ο αναλογικός κανόνας και γιατί σας αφορά;",
+                    en: "What is the average rule and why does it matter?",
                 },
                 paragraphs: [
                     {
-                        el: "Αν το σπίτι σας κοστίζει 200.000€ να ξαναχτιστεί αλλά το έχετε ασφαλίσει για 100.000€, δεν θα πάρετε 100.000€ σε ολική ζημιά — ο «αναλογικός όρος» (pro-rata) σημαίνει ότι κάθε αποζημίωση, ακόμη και μερική, μειώνεται στο ποσοστό της υπασφάλισης. Ζημιά 20.000€ αποζημιώνεται με 10.000€. Γι' αυτό ο έλεγχος του κεφαλαίου ανακατασκευής είναι το πιο σημαντικό, και πιο παραμελημένο, σημείο κάθε ανανέωσης.",
-                        en: "If your home costs €200,000 to rebuild but you insured it for €100,000, you will not receive €100,000 on a total loss — the average clause (pro-rata rule) means every claim, even a partial one, is reduced by the underinsurance ratio. A €20,000 loss pays out €10,000. That is why checking the reconstruction sum is the most important — and most neglected — step of every renewal.",
+                        el: "Αν το σπίτι σας κοστίζει 200.000 € να ξαναχτιστεί αλλά το έχετε ασφαλίσει για 100.000 €, δεν θα πάρετε 100.000 € σε ολική ζημιά — ο «αναλογικός κανόνας» (pro-rata) σημαίνει ότι κάθε αποζημίωση, ακόμη και μερική, μειώνεται στο ποσοστό της υπασφάλισης. Ζημιά 20.000 € αποζημιώνεται με 10.000 €. Γι' αυτό ο έλεγχος του κεφαλαίου ανακατασκευής είναι το πιο σημαντικό, και πιο παραμελημένο, σημείο κάθε ανανέωσης.",
+                        en: "If your home costs €200,000 to rebuild but you insured it for €100,000, you will not receive €100,000 on a total loss — the average rule (pro-rata) means every claim, even a partial one, is reduced by the underinsurance ratio. A €20,000 loss pays out €10,000. That is why checking the reconstruction sum is the most important — and most neglected — step of every renewal.",
                     },
                 ],
             },
@@ -318,8 +318,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των συμβολαίων και η AI εξάγει καλύψεις και εξαιρέσεις, τα διασταυρώνει μεταξύ τους και βαθμολογεί το επίπεδο προστασίας σας, επισημαίνοντας κενά και επικαλύψεις σε απλά ελληνικά.",
-                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI extracts coverages and exclusions, cross-checks them, and scores your protection level, flagging gaps and overlaps in plain language.",
+                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των συμβολαίων και η AI διαβάζει καλύψεις και εξαιρέσεις — και, στο πλάνο PolicyWallet Plus, τα διασταυρώνει μεταξύ τους, βαθμολογεί το επίπεδο προστασίας σας και επισημαίνει κενά και επικαλύψεις σε απλά ελληνικά.",
+                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions — and, on the PolicyWallet Plus plan, cross-checks them, scores your protection level, and flags gaps and overlaps in plain language.",
                     },
                 ],
             },
@@ -411,7 +411,10 @@ export const guides: Guide[] = [
         dateModified: "2026-07-07",
         readingMinutes: 5,
         // HowTo structured data for the 7-step checklist (rendered by the
-        // guide route when howToSteps is present).
+        // guide route when howToSteps is present). Every name and text is a
+        // VERBATIM substring of the visible checklist bullets below (minus the
+        // "N. " ordinal) — structured data must never say what the page
+        // doesn't. Edit the bullets and these together.
         howToSteps: [
             {
                 name: {
@@ -419,18 +422,18 @@ export const guides: Guide[] = [
                     en: "Note what changed",
                 },
                 text: {
-                    el: "Μετακόμιση, ανακαίνιση, νέο όχημα, οικογενειακές αλλαγές, νέος εξοπλισμός — κάθε αλλαγή επηρεάζει την κάλυψη που χρειάζεστε.",
-                    en: "Moving, renovation, a new vehicle, family changes, new equipment — every change affects the coverage you need.",
+                    el: "Καταγράψτε τι άλλαξε: μετακόμιση, ανακαίνιση, νέο όχημα, οικογενειακές αλλαγές, νέος εξοπλισμός.",
+                    en: "Note what changed: moving, renovation, new vehicle, family changes, new equipment.",
                 },
             },
             {
                 name: {
                     el: "Επικαιροποιήστε τα κεφάλαια",
-                    en: "Update the insured sums",
+                    en: "Update insured sums",
                 },
                 text: {
-                    el: "Κόστος ανακατασκευής κατοικίας, εμπορική αξία οχήματος, αξία περιεχομένου — τα κεφάλαια πρέπει να αντιστοιχούν στις σημερινές αξίες.",
-                    en: "Home reconstruction cost, vehicle market value, contents value — insured sums must match today's values.",
+                    el: "Επικαιροποιήστε τα κεφάλαια: κόστος ανακατασκευής κατοικίας, εμπορική αξία οχήματος, αξία περιεχομένου.",
+                    en: "Update insured sums: home reconstruction cost, vehicle market value, contents value.",
                 },
             },
             {
@@ -439,8 +442,8 @@ export const guides: Guide[] = [
                     en: "Review the deductible",
                 },
                 text: {
-                    el: "Μεγαλύτερη απαλλαγή σημαίνει μικρότερο ασφάλιστρο — και αντίστροφα. Βεβαιωθείτε ότι ταιριάζει ακόμη στα οικονομικά σας.",
-                    en: "A higher deductible means a lower premium — and vice versa. Make sure it still fits your finances.",
+                    el: "Ελέγξτε την απαλλαγή: ταιριάζει ακόμη στα οικονομικά σας; Μεγαλύτερη απαλλαγή σημαίνει μικρότερο ασφάλιστρο — και αντίστροφα.",
+                    en: "Review the deductible: does it still fit your finances? A higher deductible means a lower premium — and vice versa.",
                 },
             },
             {
@@ -449,8 +452,8 @@ export const guides: Guide[] = [
                     en: "Re-read the exclusions",
                 },
                 text: {
-                    el: "Οι όροι αλλάζουν στις ανανεώσεις, συχνά χωρίς να το προσέξετε.",
-                    en: "Terms change at renewal, often without you noticing.",
+                    el: "Ξαναδιαβάστε τις εξαιρέσεις: οι όροι αλλάζουν στις ανανεώσεις, συχνά χωρίς να το προσέξετε.",
+                    en: "Re-read the exclusions: terms change at renewal, often without you noticing.",
                 },
             },
             {
@@ -459,18 +462,18 @@ export const guides: Guide[] = [
                     en: "Question the increase",
                 },
                 text: {
-                    el: "Αν το ασφάλιστρο ανέβηκε, ζητήστε αιτιολόγηση και ελέγξτε τι δίνει η αγορά.",
-                    en: "If the premium went up, ask why and check what the market offers.",
+                    el: "Συγκρίνετε την αύξηση: αν το ασφάλιστρο ανέβηκε, ζητήστε αιτιολόγηση και ελέγξτε τι δίνει η αγορά.",
+                    en: "Question the increase: if the premium went up, ask why and check what the market offers.",
                 },
             },
             {
                 name: {
-                    el: "Πάρτε εναλλακτική προσφορά",
-                    en: "Get an alternative quote",
+                    el: "Πάρτε τουλάχιστον μία εναλλακτική προσφορά",
+                    en: "Get at least one alternative quote",
                 },
                 text: {
-                    el: "Τουλάχιστον μία προσφορά με ίδιες καλύψεις — αλλιώς η σύγκριση τιμής είναι παραπλανητική.",
-                    en: "At least one quote with identical coverages — otherwise the price comparison is misleading.",
+                    el: "Πάρτε τουλάχιστον μία εναλλακτική προσφορά με ίδιες καλύψεις — αλλιώς η σύγκριση τιμής είναι παραπλανητική.",
+                    en: "Get at least one alternative quote with identical coverages — otherwise the price comparison is misleading.",
                 },
             },
             {
@@ -479,8 +482,8 @@ export const guides: Guide[] = [
                     en: "Ensure continuity",
                 },
                 text: {
-                    el: "Η νέα κάλυψη πρέπει να ξεκινά την ημέρα που λήγει η παλιά. Ένα κενό ημερών μπορεί να κοστίσει και την έκπτωση ΕΝΦΙΑ.",
-                    en: "The new coverage must start the day the old one ends. A gap of days can even cost you the ENFIA discount.",
+                    el: "Εξασφαλίστε συνέχεια: η νέα κάλυψη πρέπει να ξεκινά την ημέρα που λήγει η παλιά. Ένα κενό ημερών μπορεί να κοστίσει και την έκπτωση ΕΝΦΙΑ.",
+                    en: "Ensure continuity: the new coverage must start the day the old one ends. A gap of days can even cost you the ENFIA discount.",
                 },
             },
         ],
@@ -628,7 +631,7 @@ export const guides: Guide[] = [
         },
         summary: {
             el: "Η υποχρεωτική ασφάλεια αυτοκινήτου καλύπτει μόνο τις ζημιές που προκαλείτε σε τρίτους — όχι το δικό σας όχημα. Η βασική προσθέτει συνήθως θραύση κρυστάλλων και οδική βοήθεια, ενώ η μικτή καλύπτει και τις ίδιες ζημιές με απαλλαγή. Κρίσιμες εξαιρέσεις: οδήγηση υπό μέθη, χωρίς δίπλωμα ή από μη δηλωμένο οδηγό.",
-            en: "Mandatory car insurance covers only the damage you cause to others — not your own vehicle. Basic packages typically add glass breakage and roadside assistance, while comprehensive (mikti) also covers own damage subject to a deductible. Critical exclusions: driving under the influence, without a licence, or by an undeclared driver.",
+            en: "Mandatory car insurance covers only the damage you cause to others — not your own vehicle. Basic packages typically add glass breakage and roadside assistance, while comprehensive (mikti) also covers own damage subject to a deductible. Critical exclusions: driving under the influence, without a license, or by an undeclared driver.",
         },
         datePublished: "2026-07-13",
         dateModified: "2026-07-13",
@@ -681,7 +684,7 @@ export const guides: Guide[] = [
                 paragraphs: [
                     {
                         el: "Τα περισσότερα «βασικά» πακέτα της αγοράς συνδυάζουν την αστική ευθύνη με καλύψεις όπως θραύση κρυστάλλων, οδική βοήθεια ή φροντίδα ατυχήματος και νομική προστασία. Ενδιάμεσα πακέτα προσθέτουν πυρκαγιά, ολική κλοπή και φυσικά φαινόμενα.",
-                        en: "Most \"basic\" packages on the market combine liability with covers such as glass breakage, roadside assistance or accident care, and legal protection. Mid-tier packages add fire, total theft, and natural phenomena.",
+                        en: "Most “basic” packages on the market combine liability with covers such as glass breakage, roadside assistance or accident care, and legal protection. Mid-tier packages add fire, total theft, and natural phenomena.",
                     },
                     {
                         el: "Η μικτή (πλήρης) ασφάλεια καλύπτει επιπλέον τις ίδιες ζημιές: επισκευή του δικού σας οχήματος ακόμη και αν ευθύνεστε εσείς. Σχεδόν πάντα προβλέπει απαλλαγή — ένα ποσό, συνήθως από 300 έως 1.000 ευρώ ανά ζημιά, που επιβαρύνει εσάς πριν πληρώσει η εταιρεία.",
@@ -715,7 +718,7 @@ export const guides: Guide[] = [
                 paragraphs: [
                     {
                         el: "Οι εξαιρέσεις είναι το σημείο όπου οι περισσότεροι οδηγοί εκπλήσσονται τη στιγμή της ζημιάς. Οι πιο συνηθισμένες: οδήγηση υπό την επήρεια αλκοόλ ή ουσιών, οδηγός χωρίς ισχύουσα άδεια ή εκτός των δηλωμένων οδηγών, συμμετοχή σε αγώνες, χρήση του οχήματος για σκοπό διαφορετικό από τον δηλωμένο (π.χ. επαγγελματική διανομή με συμβόλαιο ιδιωτικής χρήσης) και φυσιολογική φθορά ή μηχανικές βλάβες.",
-                        en: "Exclusions are where most drivers get surprised at claim time. The most common: driving under the influence of alcohol or drugs, a driver without a valid licence or outside the declared drivers, participation in racing, using the vehicle for a purpose other than declared (e.g. commercial delivery on a private-use policy), and normal wear or mechanical failure.",
+                        en: "Exclusions are where most drivers get surprised at claim time. The most common: driving under the influence of alcohol or drugs, a driver without a valid license or outside the declared drivers, participation in racing, using the vehicle for a purpose other than declared (e.g. commercial delivery on a private-use policy), and normal wear or mechanical failure.",
                     },
                     {
                         el: "Στην αστική ευθύνη, η εταιρεία μπορεί να αποζημιώσει τον τρίτο και στη συνέχεια να στραφεί αναγωγικά εναντίον σας αν συνέτρεχε λόγος εξαίρεσης — π.χ. μέθη. Διαβάστε τους γενικούς και ειδικούς όρους: εκεί ορίζεται τι ακριβώς εξαιρείται στο δικό σας συμβόλαιο.",
@@ -777,7 +780,7 @@ export const guides: Guide[] = [
                     en: "Does my insurance apply abroad?",
                 },
                 answer: {
-                    el: "Η αστική ευθύνη ισχύει σε όλο τον Ενιαίο Οικονομικό Χώρο. Για χώρες εκτός συστήματος χρειάζεστε Πράσινη Κάρτα από την εταιρεία σας — συνήθως εκδίδεται δωρεάν ή με μικρό κόστος.",
+                    el: "Η αστική ευθύνη ισχύει σε όλο τον Ευρωπαϊκό Οικονομικό Χώρο (ΕΟΧ). Για χώρες εκτός συστήματος χρειάζεστε Πράσινη Κάρτα από την εταιρεία σας — συνήθως εκδίδεται δωρεάν ή με μικρό κόστος.",
                     en: "Liability cover applies across the European Economic Area. For countries outside the system you need a Green Card from your insurer — usually issued free or at small cost.",
                 },
             },
@@ -821,7 +824,7 @@ export const guides: Guide[] = [
             en: "How health insurance deductibles work: annual or per incident, how they combine with EOPYY and employer group policies, and how much they cut premiums.",
         },
         summary: {
-            el: "Η απαλλαγή είναι το ποσό των εξόδων νοσηλείας που πληρώνετε εσείς πριν ενεργοποιηθεί το συμβόλαιο υγείας. Ορίζεται ετησίως ή ανά περιστατικό — συνήθως από 300 έως 5.000 ευρώ — και όσο υψηλότερη είναι, τόσο χαμηλότερο το ασφάλιστρο. Συχνά μπορεί να καλυφθεί από τον ΕΟΠΥΥ ή από ομαδικό συμβόλαιο εργασίας, ώστε να μην πληρώσετε τίποτα.",
+            el: "Η απαλλαγή είναι το ποσό των εξόδων νοσηλείας που πληρώνετε εσείς πριν ενεργοποιηθεί το συμβόλαιο υγείας. Ορίζεται ετησίως ή ανά περιστατικό — συνήθως από 300 έως 5.000 ευρώ — και όσο υψηλότερη είναι, τόσο χαμηλότερο το ασφάλιστρο. Συχνά μπορεί να καλυφθεί από τον ΕΟΠΥΥ ή από ομαδικό συμβόλαιο εργασίας, ώστε ίσως να μην πληρώσετε τίποτα.",
             en: "A deductible is the portion of hospital costs you pay before your health policy kicks in. It is defined annually or per incident — typically €300 to €5,000 — and the higher it is, the lower your premium. It can often be absorbed by the public fund (EOPYY) or an employer group policy, so you may end up paying nothing.",
         },
         datePublished: "2026-07-13",
@@ -856,7 +859,7 @@ export const guides: Guide[] = [
                     },
                     {
                         el: "Η απαλλαγή δεν είναι «κρυφή χρέωση» — είναι εργαλείο τιμολόγησης. Προγράμματα με μηδενική απαλλαγή υπάρχουν, αλλά κοστίζουν αισθητά περισσότερο, ιδίως μετά τα 40-45 έτη.",
-                        en: "A deductible is not a \"hidden fee\" — it is a pricing tool. Zero-deductible plans exist, but cost noticeably more, especially past age 40-45.",
+                        en: "A deductible is not a “hidden fee” — it is a pricing tool. Zero-deductible plans exist, but cost noticeably more, especially past age 40-45.",
                     },
                 ],
             },
@@ -933,7 +936,7 @@ export const guides: Guide[] = [
             {
                 question: {
                     el: "Τι σημαίνει «κάλυψη απαλλαγής» από ομαδικό;",
-                    en: "What does \"deductible coverage\" via a group policy mean?",
+                    en: "What does “deductible coverage” via a group policy mean?",
                 },
                 answer: {
                     el: "Ότι το ποσό που πλήρωσε το ομαδικό σας συμβόλαιο συνυπολογίζεται στην απαλλαγή του ατομικού. Ελέγξτε ότι το ατομικό σας το προβλέπει ρητά στους όρους — δεν το κάνουν όλα τα προγράμματα.",
@@ -1107,8 +1110,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Αν δηλώσετε κεφάλαιο χαμηλότερο από το πραγματικό κόστος ανακατασκευής για να μειώσετε το ασφάλιστρο, σε ζημιά θα αποζημιωθείτε αναλογικά (όρος «pro-rata»): κατοικία που κοστίζει 200.000 να ξαναχτιστεί, ασφαλισμένη για 100.000, εισπράττει το 50% κάθε ζημιάς — και μετά την απαλλαγή. Ενημερώνετε το κεφάλαιο σε κάθε ανανέωση, ειδικά όταν το κατασκευαστικό κόστος αυξάνεται.",
-                        en: "If you declare a sum lower than the true reconstruction cost to cut the premium, claims are paid proportionally (the pro-rata rule): a home costing €200,000 to rebuild but insured for €100,000 collects 50% of any damage — after the deductible. Update the sum at every renewal, especially when construction costs rise.",
+                        el: "Αν δηλώσετε κεφάλαιο χαμηλότερο από το πραγματικό κόστος ανακατασκευής για να μειώσετε το ασφάλιστρο, σε ζημιά θα αποζημιωθείτε με τον «αναλογικό κανόνα» (pro-rata): κατοικία που κοστίζει 200.000 € να ξαναχτιστεί, ασφαλισμένη για 100.000 €, εισπράττει το 50% κάθε ζημιάς — και μετά την απαλλαγή. Ενημερώνετε το κεφάλαιο σε κάθε ανανέωση, ειδικά όταν το κατασκευαστικό κόστος αυξάνεται.",
+                        en: "If you declare a sum lower than the true reconstruction cost to cut the premium, claims are paid proportionally (the average rule, pro-rata): a home costing €200,000 to rebuild but insured for €100,000 collects 50% of any damage — after the deductible. Update the sum at every renewal, especially when construction costs rise.",
                     },
                 ],
             },
@@ -1121,7 +1124,7 @@ export const guides: Guide[] = [
                 },
                 answer: {
                     el: "Τα σύγχρονα κτίρια αντέχουν καλύτερα, αλλά «αντισεισμικό» δεν σημαίνει άτρωτο — σημαίνει σχεδιασμένο να μην καταρρεύσει. Ζημιές επισκευάσιμες αλλά δαπανηρές παραμένουν πιθανές, και το ασφάλιστρο για νέα κτίρια είναι αντίστοιχα χαμηλότερο.",
-                    en: "Modern buildings fare better, but \"seismic-code\" does not mean invulnerable — it means designed not to collapse. Repairable yet costly damage remains possible, and premiums for new buildings are correspondingly lower.",
+                    en: "Modern buildings fare better, but “seismic-code” does not mean invulnerable — it means designed not to collapse. Repairable yet costly damage remains possible, and premiums for new buildings are correspondingly lower.",
                 },
             },
             {
@@ -1239,7 +1242,7 @@ export const guides: Guide[] = [
                     },
                     {
                         el: "Ορισμένα προγράμματα διαχωρίζουν τις «ιάσιμες» προϋπάρχουσες (π.χ. μια ωτίτιδα που θεραπεύτηκε πλήρως) από τις χρόνιες· οι πρώτες μπορεί να επανακαλυφθούν μετά από διάστημα χωρίς συμπτώματα. Ρωτήστε ρητά — η διαφορά είναι σημαντική.",
-                        en: "Some plans distinguish \"curable\" pre-existing conditions (e.g. a fully healed ear infection) from chronic ones; the former may become coverable again after a symptom-free interval. Ask explicitly — the difference matters.",
+                        en: "Some plans distinguish “curable” pre-existing conditions (e.g. a fully healed ear infection) from chronic ones; the former may become coverable again after a symptom-free interval. Ask explicitly — the difference matters.",
                     },
                 ],
             },
@@ -1528,7 +1531,7 @@ export const guides: Guide[] = [
         },
         summary: {
             el: "Τα ανασφάλιστα οχήματα εντοπίζονται με ηλεκτρονικές διασταυρώσεις της ΑΑΔΕ και ελέγχους της Τροχαίας. Η διασταύρωση επιφέρει διοικητικό παράβολο κλιμακούμενο ανά κατηγορία οχήματος — ενδεικτικά από 100 έως 250 ευρώ — ενώ ο έλεγχος στον δρόμο προσθέτει πρόστιμο και αφαίρεση στοιχείων κυκλοφορίας. Σε ατύχημα, το Επικουρικό Κεφάλαιο αποζημιώνει τον τρίτο και αναζητά το σύνολο από τον ιδιοκτήτη.",
-            en: "Uninsured vehicles are detected through AADE electronic cross-checks and traffic police stops. A cross-check triggers an administrative fee scaled by vehicle category — indicatively €100 to €250 — while a roadside stop adds a fine and confiscation of plates. In an accident, the Auxiliary Fund compensates the third party and then recovers the full amount from the owner.",
+            en: "Uninsured vehicles are detected through AADE electronic cross-checks and traffic police stops. A cross-check triggers an administrative fee scaled by vehicle category — indicatively €100 to €250 — while a roadside stop adds a fine and confiscation of the plates and registration. In an accident, the Auxiliary Fund compensates the third party and then recovers the full amount from the owner.",
         },
         datePublished: "2026-07-13",
         dateModified: "2026-07-13",
@@ -1578,7 +1581,7 @@ export const guides: Guide[] = [
                     },
                     {
                         el: "Σε έλεγχο της Τροχαίας, οι κυρώσεις είναι βαρύτερες και άμεσες: χρηματικό πρόστιμο, αφαίρεση πινακίδων, άδειας κυκλοφορίας και διπλώματος, ενώ η οδήγηση ανασφάλιστου οχήματος συνιστά και ποινικό αδίκημα.",
-                        en: "At a police stop, penalties are heavier and immediate: a monetary fine, confiscation of plates, registration, and licence — and driving uninsured is also a criminal offence.",
+                        en: "At a police stop, penalties are heavier and immediate: a monetary fine, confiscation of plates, registration, and license — and driving uninsured is also a criminal offense.",
                     },
                 ],
             },
@@ -1679,7 +1682,7 @@ export const guides: Guide[] = [
         },
         summary: {
             el: "Τα εργαλεία που υπόσχονται «όλα τα ασφαλιστήρια σε ένα σημείο» χωρίζονται σε πέντε κατηγορίες: portal ασφαλιστικής εταιρείας, εφαρμογή πράκτορα, συγκριτική πλατφόρμα, γενική αποθήκευση αρχείων και ψηφιακό πορτοφόλι ασφαλίσεων. Μόνο η τελευταία δέχεται συμβόλαια από όλες τις εταιρείες μαζί και διαβάζει το περιεχόμενό τους. Καμία τους όμως δεν εισπράττει ασφάλιστρα και δεν δίνει επίσημη κατάσταση αποζημίωσης.",
-            en: "Tools that promise «all your policies in one place» fall into five categories: an insurer's own portal, an agent's app, a comparison site, generic file storage, and an insurance policy wallet. Only the last accepts policies from every insurer at once and actually reads what they say. None of them, however, collects premiums or returns official claim status.",
+            en: "Tools that promise “all your policies in one place” fall into five categories: an insurer's own portal, an agent's app, a comparison site, generic file storage, and an insurance policy wallet. Only the last accepts policies from every insurer at once and actually reads what they say. None of them, however, collects premiums or returns official claim status.",
         },
         datePublished: "2026-07-27",
         dateModified: "2026-07-27",
@@ -1693,7 +1696,7 @@ export const guides: Guide[] = [
                 paragraphs: [
                     {
                         el: "Το ερώτημα «πού τα βάζω όλα μαζί» έχει πέντε πιθανές απαντήσεις στην ελληνική αγορά, και καμία τους δεν κάνει ακριβώς το ίδιο πράγμα. Η ουσιαστική διαφορά δεν είναι η εμφάνιση αλλά το εύρος: άλλα εργαλεία βλέπουν μόνο τα συμβόλαια μιας εταιρείας, άλλα μόνο όσα πέρασαν από έναν διαμεσολαβητή, και άλλα ό,τι ανεβάσετε εσείς.",
-                        en: "The question «where do I keep everything together» has five possible answers in the Greek market, and no two of them do quite the same job. The real difference is not the interface but the scope: some tools see only one insurer's policies, some only what was written through one intermediary, and some whatever you upload yourself.",
+                        en: "The question “where do I keep everything together” has five possible answers in the Greek market, and no two of them do quite the same job. The real difference is not the interface but the scope: some tools see only one insurer's policies, some only what was written through one intermediary, and some whatever you upload yourself.",
                     },
                 ],
                 bullets: [
@@ -1727,7 +1730,7 @@ export const guides: Guide[] = [
                 paragraphs: [
                     {
                         el: "Ο πίνακας συγκρίνει τις πέντε κατηγορίες σε έξι πράγματα που ζητούν συνήθως όσοι θέλουν «όλα σε ένα σημείο». Οι δύο τελευταίες στήλες είναι αυτές που εκπλήσσουν τους περισσότερους.",
-                        en: "The table compares the five categories across the six things people usually mean by «all in one place». The last two columns are the ones that surprise most readers.",
+                        en: "The table compares the five categories across the six things people usually mean by “all in one place”. The last two columns are the ones that surprise most readers.",
                     },
                 ],
                 table: {
@@ -1834,15 +1837,15 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Το PolicyWallet ανήκει στην τελευταία κατηγορία και είναι φτιαγμένο για την ελληνική αγορά. Ανεβάζετε το PDF ή μια φωτογραφία κάθε ασφαλιστηρίου — αυτοκίνητο, κατοικία, υγεία, ομαδικό, ταξίδι, κατοικίδιο — και η AI το διαβάζει και βγάζει σε απλά ελληνικά τι καλύπτεται, τι εξαιρείται, ποια είναι τα όρια, οι απαλλαγές και οι κρίσιμες ημερομηνίες.",
-                        en: "PolicyWallet sits in that last category and is built for the Greek market. You upload the PDF or a photo of each policy — motor, home, health, group, travel, pet — and the AI reads it and sets out in plain language what is covered, what is excluded, and what the limits, deductibles and key dates are.",
+                        el: "Το PolicyWallet ανήκει στην τελευταία κατηγορία — και την πηγαίνει ένα βήμα πιο πέρα: είναι πλατφόρμα προσωπικής ανάλυσης ρίσκου, που δεν αποθηκεύει απλώς τα συμβόλαια αλλά σας λέει αν είστε καλυμμένοι. Ανεβάζετε το PDF ή μια φωτογραφία κάθε ασφαλιστηρίου — αυτοκίνητο, κατοικία, υγεία, ομαδικό, ταξίδι, κατοικίδιο — και η AI το διαβάζει και βγάζει σε απλά ελληνικά τι καλύπτεται, τι εξαιρείται, ποια είναι τα όρια, οι απαλλαγές και οι κρίσιμες ημερομηνίες.",
+                        en: "PolicyWallet sits in that last category — and takes it one step further: it is a personal risk intelligence platform, which does not just store your policies but tells you whether you are covered. You upload the PDF or a photo of each policy — motor, home, health, group, travel, pet — and the AI reads it and sets out in plain language what is covered, what is excluded, and what the limits, deductibles and key dates are.",
                     },
                     {
-                        el: "Επειδή τα βλέπει όλα μαζί, κάνει και κάτι που κανένα portal μεμονωμένης εταιρείας δεν μπορεί: τα διασταυρώνει μεταξύ τους. Εντοπίζει κενά — για παράδειγμα κατοικία χωρίς κάλυψη σεισμού — υπασφάλιση σε σχέση με το κόστος ανακατασκευής, και επικαλύψεις όπου πληρώνετε δύο φορές για τον ίδιο κίνδυνο. Από αυτά προκύπτει μια βαθμολογία προστασίας 0–100 με δημοσιευμένη μεθοδολογία.",
-                        en: "Because it sees them together, it does something no single insurer's portal can: it cross-checks them against each other. It flags gaps — a home with no earthquake cover, for instance — underinsurance against rebuild cost, and overlaps where you pay twice for the same risk. Out of that comes a 0–100 protection score with a published methodology.",
+                        el: "Επειδή τα βλέπει όλα μαζί, κάνει και κάτι που κανένα portal μεμονωμένης εταιρείας δεν μπορεί: τα διασταυρώνει μεταξύ τους. Εντοπίζει κενά — για παράδειγμα κατοικία χωρίς κάλυψη σεισμού — υπασφάλιση σε σχέση με το κόστος ανακατασκευής, και επικαλύψεις όπου πληρώνετε δύο φορές για τον ίδιο κίνδυνο. Από αυτά προκύπτει το Σκορ Προστασίας 0–100, με τη μεθοδολογία του γραμμένη μέσα στην εφαρμογή — μαζί με το τι δεν σημαίνει.",
+                        en: "Because it sees them together, it does something no single insurer's portal can: it cross-checks them against each other. It flags gaps — a home with no earthquake cover, for instance — underinsurance against rebuild cost, and overlaps where you pay twice for the same risk. Out of that comes the 0–100 Protection Score, with its methodology written out inside the app — along with what it does not mean.",
                     },
                     {
-                        el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα συνδρομητικά πακέτα, ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",
+                        el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",
                         en: "Beyond that: renewal reminders from 90 days before expiry on paid plans, AI questions about a specific policy, secure sharing with an advisor that you can revoke at any time, and report export. PolicyWallet does not sell insurance and takes no commission: it is neither an insurance undertaking nor an intermediary.",
                     },
                 ],
@@ -1919,7 +1922,7 @@ export const guides: Guide[] = [
                     en: "How much does a policy-management platform cost?",
                 },
                 answer: {
-                    el: "Από μηδέν έως λίγα ευρώ τον μήνα. Τα portal των εταιρειών και οι εφαρμογές πρακτορείων είναι δωρεάν για τους πελάτες τους. Το PolicyWallet έχει δωρεάν πακέτο για ένα συμβόλαιο και συνδρομές που ξεκινούν από 2,99 € τον μήνα.",
+                    el: "Από μηδέν έως λίγα ευρώ τον μήνα. Τα portal των εταιρειών και οι εφαρμογές πρακτορείων είναι δωρεάν για τους πελάτες τους. Το PolicyWallet έχει δωρεάν πακέτο για ένα συμβόλαιο και συνδρομές που ξεκινούν από €2.99 τον μήνα.",
                     en: "From nothing to a few euros a month. Insurer portals and agency apps are free to their own customers. PolicyWallet has a free plan for one policy and subscriptions starting at €2.99 a month.",
                 },
             },
@@ -1930,7 +1933,7 @@ export const guides: Guide[] = [
                 },
                 answer: {
                     el: "Ένα εργαλείο που δέχεται συμβόλαια από οποιαδήποτε εταιρεία και τα διαβάζει, όχι απλώς τα αποθηκεύει. Με τρία ή περισσότερα συμβόλαια η αξία δεν είναι στο να τα βρίσκετε, αλλά στο να βλέπετε τι λείπει και τι πληρώνετε δύο φορές.",
-                    en: "A tool that accepts policies from any insurer and reads them, rather than merely storing them. Past three policies the value is not in finding them, but in seeing what is missing and what you are paying for twice.",
+                    en: "A tool that accepts policies from any insurer and reads them, rather than merely storing them. With three or more policies the value is not in finding them, but in seeing what is missing and what you are paying for twice.",
                 },
             },
         ],
@@ -1951,6 +1954,13 @@ export const guides: Guide[] = [
             },
         ],
         related: [
+            {
+                label: {
+                    el: "Τι δεν είναι το PolicyWallet — η σύγκριση",
+                    en: "What PolicyWallet is not — the comparison",
+                },
+                href: "/compare",
+            },
             {
                 label: {
                     el: "Πληρωμή ασφαλίστρων ψηφιακά",
@@ -1990,7 +2000,7 @@ export const guides: Guide[] = [
         },
         summary: {
             el: "Στην ασφάλιση ο όρος «ψηφιακό πορτοφόλι» σημαίνει δύο εντελώς διαφορετικά πράγματα. Το πορτοφόλι πληρωμών κρατά κάρτες και μεταφέρει χρήματα, οπότε μπορεί να εξοφλήσει ένα ασφάλιστρο όπου η εταιρεία δέχεται τη μέθοδο. Το πορτοφόλι ασφαλίσεων κρατά τα συμβόλαια και τις καλύψεις σας: σας δείχνει πόσο πληρώνετε και πότε λήγει η κάλυψη, χωρίς να κινεί χρήματα.",
-            en: "In insurance, «digital wallet» means two entirely different things. A payment wallet holds cards and moves money, so it can settle a premium wherever the insurer accepts that method. A policy wallet holds your contracts and your cover: it shows you what you pay and when cover ends, without moving any money at all.",
+            en: "In insurance, “digital wallet” means two entirely different things. A payment wallet holds cards and moves money, so it can settle a premium wherever the insurer accepts that method. A policy wallet holds your contracts and your cover: it shows you what you pay and when cover ends, without moving any money at all.",
         },
         datePublished: "2026-07-27",
         dateModified: "2026-07-27",
@@ -1999,7 +2009,7 @@ export const guides: Guide[] = [
             {
                 heading: {
                     el: "Τι εννοούμε «ψηφιακό πορτοφόλι» στην ασφάλιση;",
-                    en: "What does «digital wallet» mean in insurance?",
+                    en: "What does “digital wallet” mean in insurance?",
                 },
                 paragraphs: [
                     {
@@ -2074,7 +2084,7 @@ export const guides: Guide[] = [
                     },
                     {
                         el: "Πάγια εντολή χρέωσης τραπεζικού λογαριασμού, ώστε η δόση να φεύγει αυτόματα στην ημερομηνία της.",
-                        en: "A standing order on your bank account, so each instalment leaves automatically on its due date.",
+                        en: "A standing order on your bank account, so each installment leaves automatically on its due date.",
                     },
                     {
                         el: "Επαναλαμβανόμενη χρέωση κάρτας που δηλώνετε μία φορά στην ασφαλιστική εταιρεία.",
@@ -2117,8 +2127,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Σχεδόν όλα όσα εννοεί κανείς όταν λέει «θέλω να παρακολουθώ τα ασφάλιστρά μου». Όταν ανεβάσετε ένα ασφαλιστήριο στο PolicyWallet, η AI διαβάζει και το οικονομικό μέρος του εγγράφου, όχι μόνο τις καλύψεις.",
-                        en: "Almost everything people mean when they say «I want to keep track of my premiums». When you upload a policy to PolicyWallet, the AI reads the financial side of the document too, not just the cover.",
+                        el: "Σχεδόν όλα όσα εννοεί κανείς όταν λέει «θέλω να παρακολουθώ τα ασφάλιστρά μου». Όταν ανεβάσετε ένα ασφαλιστήριο στο PolicyWallet, η AI διαβάζει και το οικονομικό μέρος του εγγράφου, όχι μόνο τις καλύψεις. Γι' αυτό το PolicyWallet δεν είναι απλώς πορτοφόλι ασφαλίσεων αλλά πλατφόρμα προσωπικής ανάλυσης ρίσκου: δεν σας δείχνει μόνο τι πληρώνετε — σας λέει αν είστε καλυμμένοι.",
+                        en: "Almost everything people mean when they say “I want to keep track of my premiums”. When you upload a policy to PolicyWallet, the AI reads the financial side of the document too, not just the cover. That is why PolicyWallet is not just a policy wallet but a personal risk intelligence platform: it does not only show you what you pay — it tells you whether you are covered.",
                     },
                 ],
                 bullets: [
@@ -2131,7 +2141,7 @@ export const guides: Guide[] = [
                         en: "The combined annual cost of every policy together — usually the first surprise.",
                     },
                     {
-                        el: "Τις ημερομηνίες λήξης και ανανέωσης, με υπενθυμίσεις από τις 90 ημέρες πριν στα συνδρομητικά πακέτα.",
+                        el: "Τις ημερομηνίες λήξης και ανανέωσης, με υπενθυμίσεις από τις 90 ημέρες πριν στα πληρωμένα πλάνα.",
                         en: "Expiry and renewal dates, with reminders from 90 days out on paid plans.",
                     },
                     {
@@ -2179,7 +2189,7 @@ export const guides: Guide[] = [
                 },
                 answer: {
                     el: "Ούτε το ένα ούτε το άλλο. Δεν εκδίδει, δεν πουλά και δεν διαχειρίζεται ασφαλιστικές συμβάσεις, και δεν λαμβάνει προμήθειες. Είναι εργαλείο κατανόησης και οργάνωσης των συμβολαίων που ήδη έχετε.",
-                    en: "Neither. It does not issue, sell or administer insurance contracts, and it receives no commission. It is a tool for understanding and organising the policies you already hold.",
+                    en: "Neither. It does not issue, sell or administer insurance contracts, and it receives no commission. It is a tool for understanding and organizing the policies you already hold.",
                 },
             },
         ],
@@ -2207,6 +2217,13 @@ export const guides: Guide[] = [
             },
         ],
         related: [
+            {
+                label: {
+                    el: "Τι δεν είναι το PolicyWallet — η σύγκριση",
+                    en: "What PolicyWallet is not — the comparison",
+                },
+                href: "/compare",
+            },
             {
                 label: {
                     el: "Πού διαχειρίζεστε όλα τα ασφαλιστήριά σας online",
@@ -2242,11 +2259,11 @@ export const guides: Guide[] = [
         },
         metaDescription: {
             el: "Ποιες εφαρμογές οργανώνουν ασφαλιστήρια, καλύψεις και πληροφορίες ζημιάς — και ποιος πραγματικά σας δίνει την πορεία μιας αποζημίωσης στην Ελλάδα.",
-            en: "Which apps organise policies, coverage and claim information — and who actually gives you the status of a claim in Greece. An honest breakdown.",
+            en: "Which apps organize policies, coverage and claim information — and who actually gives you the status of a claim in Greece. An honest breakdown.",
         },
         summary: {
             el: "Η φράση «όλα σε ένα σημείο» κρύβει τρεις διαφορετικές δουλειές: οργάνωση εγγράφων, κατανόηση καλύψεων και ενημέρωση για αποζημιώσεις. Καμία εφαρμογή δεν τις κάνει και τις τρεις. Την πορεία μιας αποζημίωσης τη δίνει μόνο η ασφαλιστική εταιρεία ή ο διαμεσολαβητής σας. Ένα πορτοφόλι ασφαλίσεων καλύπτει τις δύο πρώτες και, όταν συμβεί ζημιά, σας δίνει προθεσμίες, υποχρεώσεις και το σωστό τηλέφωνο.",
-            en: "The phrase «all in one place» hides three different jobs: organising documents, understanding cover, and getting claim updates. No single app does all three. Only your insurer or your intermediary can tell you where a claim stands. A policy wallet covers the first two and, when a loss happens, hands you the deadlines, the obligations and the right phone number.",
+            en: "The phrase “all in one place” hides three different jobs: organizing documents, understanding cover, and getting claim updates. No single app does all three. Only your insurer or your intermediary can tell you where a claim stands. A policy wallet covers the first two and, when a loss happens, hands you the deadlines, the obligations and the right phone number.",
         },
         datePublished: "2026-07-27",
         dateModified: "2026-07-27",
@@ -2255,7 +2272,7 @@ export const guides: Guide[] = [
             {
                 heading: {
                     el: "«Όλα σε ένα σημείο»: τρεις διαφορετικές δουλειές",
-                    en: "«All in one place»: three different jobs",
+                    en: "“All in one place”: three different jobs",
                 },
                 paragraphs: [
                     {
@@ -2290,7 +2307,7 @@ export const guides: Guide[] = [
                     },
                     {
                         el: "Πρακτικά αυτό σημαίνει ότι η εφαρμογή ή το portal της εταιρείας σας παραμένει το σημείο αναφοράς για την πορεία μιας ζημιάς, και ο πράκτοράς σας ο συντομότερος δρόμος όταν κάτι κολλήσει. Αν μια εφαρμογή τρίτου υπόσχεται «claim updates», αξίζει να δείτε αν εννοεί πραγματική κατάσταση φακέλου ή απλώς υπενθυμίσεις και οδηγίες.",
-                        en: "In practice that means your insurer's app or portal stays the reference point for how a claim is progressing, and your agent is the fastest route when something stalls. If a third-party app promises «claim updates», it is worth checking whether it means real file status or simply reminders and guidance.",
+                        en: "In practice that means your insurer's app or portal stays the reference point for how a claim is progressing, and your agent is the fastest route when something stalls. If a third-party app promises “claim updates”, it is worth checking whether it means real file status or simply reminders and guidance.",
                     },
                 ],
             },
@@ -2305,8 +2322,8 @@ export const guides: Guide[] = [
                         en: "Not file status, but something that in practice goes missing far more often: your own data, at the moment you need it. In the first hours after an incident the question is not how the claim is progressing — it is what you must do right now so you do not forfeit your right to be paid.",
                     },
                     {
-                        el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας συμβόλαιο: η προθεσμία δήλωσης και οι υποχρεώσεις ειδοποίησης όπως τις αναφέρει το έγγραφό σας, ο αριθμός ασφαλιστηρίου, και το τηλέφωνο του σωστού κλάδου — γραμμή δήλωσης ατυχήματος για το αυτοκίνητο, τεχνική βοήθεια για την κατοικία, κέντρο συντονισμού για την υγεία. Όταν το τηλέφωνο δεν υπάρχει στο έγγραφο, το λέει ευθέως αντί να επινοήσει έναν αριθμό.",
-                        en: "In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadline and reporting obligations exactly as your document states them, your policy number, and the right claims line — the accident-declaration line for motor, technical assistance for home, the coordination centre for health. Where the number is not in the document, it says so plainly rather than inventing one.",
+                        el: "Στο PolicyWallet αυτό εμφανίζεται ως οδηγία ανά κλάδο, δεμένη με το δικό σας συμβόλαιο: η προθεσμία δήλωσης και οι υποχρεώσεις ειδοποίησης όπως τις αναφέρει το έγγραφό σας, ο αριθμός ασφαλιστηρίου, και το τηλέφωνο του σωστού κλάδου — γραμμή δήλωσης ατυχήματος για το αυτοκίνητο, τεχνική βοήθεια για την κατοικία, κέντρο συντονισμού για την υγεία. Όταν το τηλέφωνο δεν υπάρχει στο έγγραφο, το λέει ευθέως αντί να επινοήσει έναν αριθμό. Αυτή είναι η διαφορά μιας πλατφόρμας προσωπικής ανάλυσης ρίσκου από μια απλή αποθήκη εγγράφων: δεν σας δίνει απλώς το αρχείο — σας δίνει το τι σημαίνει.",
+                        en: "In PolicyWallet that appears as branch-specific guidance tied to your own policy: the notification deadline and reporting obligations exactly as your document states them, your policy number, and the right claims line — the accident-declaration line for motor, technical assistance for home, the coordination centre for health. Where the number is not in the document, it says so plainly rather than inventing one. That is the difference between a personal risk intelligence platform and a plain document store: it does not just hand you the file — it hands you what the file means.",
                     },
                     {
                         el: "Η προθεσμία δήλωσης είναι το σημείο όπου χάνονται αποζημιώσεις που θα πληρώνονταν κανονικά. Είναι γραμμένη στους όρους, συνήθως σε ημέρες από τη στιγμή που λάβατε γνώση του συμβάντος, και σχεδόν ποτέ δεν τη θυμάται κανείς την ώρα που τη χρειάζεται.",
@@ -2317,7 +2334,7 @@ export const guides: Guide[] = [
             {
                 heading: {
                     el: "Πώς οργανώνετε καλύψεις και έγγραφα σε ένα σημείο;",
-                    en: "How do you organise cover and documents in one place?",
+                    en: "How do you organize cover and documents in one place?",
                 },
                 paragraphs: [
                     {
@@ -2334,7 +2351,7 @@ export const guides: Guide[] = [
         faq: [
             {
                 question: {
-                    el: "Ποιες εφαρμογές οργανώνουν ασφαλιστήρια, ενημερώσεις ζημιών και πληροφορίες κάλυψης σε ένα σημείο;",
+                    el: "Ποιες είναι οι δημοφιλείς εφαρμογές για ασφαλιστήρια, ενημερώσεις ζημιών και πληροφορίες κάλυψης σε ένα σημείο;",
                     en: "What are popular apps for organizing policies, claim updates, and coverage information in one place?",
                 },
                 answer: {
@@ -2400,6 +2417,13 @@ export const guides: Guide[] = [
             },
         ],
         related: [
+            {
+                label: {
+                    el: "Τι δεν είναι το PolicyWallet — η σύγκριση",
+                    en: "What PolicyWallet is not — the comparison",
+                },
+                href: "/compare",
+            },
             {
                 label: {
                     el: "Πού διαχειρίζεστε όλα τα ασφαλιστήριά σας online",

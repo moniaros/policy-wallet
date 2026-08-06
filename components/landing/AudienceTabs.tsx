@@ -49,10 +49,10 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         tabIndex={activeTab === "policyholders" ? 0 : -1}
                         onClick={() => setActiveTab("policyholders")}
                         onKeyDown={(e) => handleKeyDown(e, "policyholders")}
-                        className={`rounded-full px-6 py-2 text-body font-semibold transition-all duration-200 ${
+                        className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
                             activeTab === "policyholders"
                                 ? "bg-[#29685B] text-white shadow-sm"
-                                : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A]"
+                                : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-slate-400 dark:hover:text-white"
                         }`}
                     >
                         {t("Ιδιώτες", "Individuals")}
@@ -66,10 +66,10 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         tabIndex={activeTab === "agents" ? 0 : -1}
                         onClick={() => setActiveTab("agents")}
                         onKeyDown={(e) => handleKeyDown(e, "agents")}
-                        className={`rounded-full px-6 py-2 text-body font-semibold transition-all duration-200 ${
+                        className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
                             activeTab === "agents"
                                 ? "bg-[#29685B] text-white shadow-sm"
-                                : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A]"
+                                : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-slate-400 dark:hover:text-white"
                         }`}
                     >
                         {t("Ασφαλιστές", "Agents")}
@@ -105,22 +105,28 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
 
     const benefits = [
         {
-            el: "Όλα τα συμβόλαια — αυτοκίνητο, σπίτι, υγεία — σε μία οθόνη",
-            en: "All your policies — auto, home, health — on one screen",
+            el: "Όλες οι ασφάλειές σας — αυτοκίνητο, σπίτι, υγεία — σε μία οθόνη",
+            en: "All your insurance — car, home, health — on one screen",
         },
         {
-            el: "Ειδοποίηση 30 μέρες πριν τη λήξη, ώστε να μην μείνετε χωρίς κάλυψη",
-            en: "Alert 30 days before expiry so you are never left unprotected",
+            // Reminders start on the Starter plan (Free shows only the date),
+            // so the benefit names the plan instead of promising it to everyone.
+            el: "Υπενθύμιση πριν λήξει κάτι, για να μη μείνετε ακάλυπτοι — από το πλάνο Starter",
+            en: "A reminder before something runs out, so you are never left uncovered — from the Starter plan",
         },
         {
-            el: "Εντοπισμός κενών προστασίας που ίσως δεν εντόπισε ούτε ο σύμβουλός σας",
-            en: "Gap detection your advisor may have missed",
+            // Gap detection is a PolicyWallet Plus feature — the benefit names
+            // the plan, same honesty rule as the Starter bullet above.
+            el: "Βρίσκουμε κενά που ίσως δεν είδε ούτε ο σύμβουλός σας — με το PolicyWallet Plus",
+            en: "We find gaps even your own advisor may have missed — with PolicyWallet Plus",
         },
     ]
 
     const miniPolicies = [
-        { Icon: Car, name: t("Αυτοκίνητο", "Motor"), score: 92, type: "ok" as const },
-        { Icon: Home, name: t("Κατοικία", "Home"), score: 71, type: "warn" as const },
+        // Mock app UI speaks consumer words ("Car"); the product taxonomy
+        // (catalog, footer) keeps the branch name "Motor".
+        { Icon: Car, name: t("Αυτοκίνητο", "Car"), score: 92, type: "ok" as const },
+        { Icon: Home, name: t("Σπίτι", "Home"), score: 71, type: "warn" as const },
         { Icon: Heart, name: t("Υγεία", "Health"), score: 98, type: "ok" as const },
     ]
 
@@ -129,7 +135,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
             {/* Copy */}
             <div>
                 <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                    {t("Για Ιδιώτες", "For Individuals")}
+                    {t("Για ιδιώτες", "For individuals")}
                 </p>
                 <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h2">
                     {t(
@@ -139,8 +145,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                 </h3>
                 <p className="mb-7 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                     {t(
-                        "Δεν χρειάζεται πλέον να ψάχνετε σε συρτάρια. Όλα σε ένα μέρος, πάντα ενημερωμένα.",
-                        "No more searching through drawers. Everything in one place, always up to date."
+                        "Τέλος το ψάξιμο στα συρτάρια. Όλα σε ένα μέρος, πάντα ενημερωμένα.",
+                        "No more digging through drawers. Everything in one place, always up to date."
                     )}
                 </p>
                 <ul className="mb-8 space-y-3.5">
@@ -155,13 +161,22 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     href="/auth/signup?role=policyholder&source=landing_audience"
                     className="pw-primary-button"
                 >
-                    {t("Δείτε το χαρτοφυλάκιό σας", "See your portfolio")}
-                    <ArrowRight className="h-4 w-4" />
+                    {t("Δείτε αν είστε καλυμμένοι", "See if you are covered")}
+                    <ArrowRight aria-hidden className="h-4 w-4" />
                 </Link>
             </div>
 
-            {/* Mini widget */}
-            <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-5">
+            {/* Illustration. One role="img" with a plain-language alternative,
+                so assistive tech hears a description instead of reading the
+                example data as if it were the visitor's own policies. */}
+            <div
+                role="img"
+                aria-label={t(
+                    "Παράδειγμα: τρεις ασφάλειες σε μία οθόνη — αυτοκίνητο και υγεία εντάξει, στην κατοικία λείπει η κάλυψη πλημμύρας.",
+                    "Example: three policies on one screen — car and health are fine, the home is missing flood cover."
+                )}
+                className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-5"
+            >
                 <div className="mb-4 flex items-center justify-between">
                     <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">
                         {t("Τα συμβόλαιά μου", "My Policies")}
@@ -209,8 +224,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-200" />
                     <p className="text-caption font-medium text-[#92400E] dark:text-amber-200">
                         {t(
-                            "Κατοικία: λείπει κάλυψη πλημμύρας",
-                            "Home: missing flood coverage"
+                            "Σπίτι: λείπει κάλυψη πλημμύρας",
+                            "Home: missing flood cover"
                         )}
                     </p>
                 </div>
@@ -226,24 +241,24 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
 
     const benefits = [
         {
-            el: "Χαρτοφυλάκιο όλων των πελατών σε ένα dashboard — ανανεώσεις, κενά, ευκαιρίες",
-            en: "All client portfolios in one dashboard — renewals, gaps, opportunities",
+            el: "Όλοι οι πελάτες σας σε μία οθόνη — ποιος λήγει, ποιος έχει κενό",
+            en: "All your clients on one screen — who is running out, who has a gap",
         },
         {
-            el: "AI cross-sell προτάσεις βασισμένες στο προφίλ κάλυψης κάθε πελάτη",
-            en: "AI cross-sell suggestions based on each client's actual coverage profile",
+            el: "Προτάσεις για το τι λείπει σε κάθε πελάτη, βγαλμένες από τα ίδια του τα συμβόλαια",
+            en: "Suggestions for what each client is missing, taken from their own policies",
         },
         {
-            el: "Μαζική ανάλυση συμβολαίων — 50 αρχεία σε λίγα λεπτά",
-            en: "Bulk policy analysis — 50 files in minutes",
+            el: "Στέλνετε 50 αρχεία μαζί και τα διαβάζουμε όλα σε λίγα λεπτά",
+            en: "Send 50 files at once and we read every one of them in minutes",
         },
     ]
 
     const clients = [
-        { initials: "ΓΚ", name: t("Γ. Κυριακόπουλος", "G. Kyriakopoulos"), renewal: 7, score: 68, alert: true },
-        { initials: "ΜΠ", name: t("Μ. Παπαδοπούλου", "M. Papadopoulou"), renewal: 23, score: 91, alert: false },
-        { initials: "ΑΔ", name: t("Α. Δημητρίου", "A. Dimitriou"), renewal: 45, score: 84, alert: false },
-        { initials: "ΝΣ", name: t("Ν. Σταυρόπουλος", "N. Stavropoulos"), renewal: 62, score: 55, alert: true },
+        { initials: t("ΓΚ", "GK"), name: t("Γ. Κυριακόπουλος", "G. Kyriakopoulos"), renewal: 7, score: 68, alert: true },
+        { initials: t("ΜΠ", "MP"), name: t("Μ. Παπαδοπούλου", "M. Papadopoulou"), renewal: 23, score: 91, alert: false },
+        { initials: t("ΑΔ", "AD"), name: t("Α. Δημητρίου", "A. Dimitriou"), renewal: 45, score: 84, alert: false },
+        { initials: t("ΝΣ", "NS"), name: t("Ν. Σταυρόπουλος", "N. Stavropoulos"), renewal: 62, score: 55, alert: true },
     ]
 
     return (
@@ -251,15 +266,15 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
             {/* Copy */}
             <div>
                 <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                    {t("Για Ασφαλιστές", "For Insurance Agents")}
+                    {t("Για ασφαλιστές", "For insurance agents")}
                 </p>
                 <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h2">
-                    {t("Λιγότερο χάος. Περισσότερες πωλήσεις.", "Less chaos. More sales.")}
+                    {t("Λιγότερο τρέξιμο. Περισσότεροι πελάτες.", "Less running around. More clients.")}
                 </h3>
                 <p className="mb-7 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                     {t(
-                        "Αναπτύξτε το χαρτοφυλάκιό σας χωρίς να μεγαλώσετε την ομάδα: κάθε συμβόλαιο αναλύεται αυτόματα μόλις ανέβει.",
-                        "Grow your book without growing your team: every policy is analyzed automatically the moment it's uploaded."
+                        "Πάρτε περισσότερους πελάτες χωρίς να πάρετε περισσότερο κόσμο. Κάθε συμβόλαιο διαβάζεται μόνο του μόλις το στείλετε.",
+                        "Take on more clients without taking on more staff. Every policy is read on its own the moment you send it."
                     )}
                 </p>
                 <ul className="mb-8 space-y-3.5">
@@ -274,19 +289,27 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     href={localizeHref("/solutions/agents", isGreek ? "el" : "en")}
                     className="pw-primary-button"
                 >
-                    {t("Δείτε το agent dashboard", "See agent dashboard")}
-                    <ArrowRight className="h-4 w-4" />
+                    {t("Δείτε τι παίρνετε", "See what you get")}
+                    <ArrowRight aria-hidden className="h-4 w-4" />
                 </Link>
             </div>
 
-            {/* Mini agent widget */}
-            <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-5">
+            {/* Illustration — described once for assistive tech, so the example
+                client names are never read out as real people. */}
+            <div
+                role="img"
+                aria-label={t(
+                    "Παράδειγμα: μία οθόνη με 47 πελάτες, 8 ασφάλειες που λήγουν σύντομα και 12 ευκαιρίες, με προτάσεις για το τι λείπει σε κάθε πελάτη.",
+                    "Example: one screen showing 47 clients, 8 policies running out soon and 12 opportunities, with suggestions for what each client is missing."
+                )}
+                className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-5"
+            >
                 {/* Stats row */}
                 <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {[
                         { value: "47", label: t("Πελάτες", "Clients"), color: "text-[#0F172A] dark:text-white" },
                         { value: "8", label: t("Ανανεώσεις", "Renewals"), color: "text-[#92400E] dark:text-amber-200" },
-                        { value: "12", label: t("Ευκαιρίες", "Opps"), color: "text-[#29685B] dark:text-[#A7F3D0]" },
+                        { value: "12", label: t("Ευκαιρίες", "Opportunities"), color: "text-[#29685B] dark:text-[#A7F3D0]" },
                     ].map((stat) => (
                         <div
                             key={stat.label}
@@ -314,7 +337,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                             {c.alert ? (
                                 <span className="flex items-center gap-1 rounded-full bg-[#FEF3C7] dark:bg-amber-500/15 px-2 py-0.5 text-kicker font-semibold text-[#92400E] dark:text-amber-200">
                                     <AlertTriangle className="h-2.5 w-2.5" />
-                                    {c.renewal}d
+                                    {t(`${c.renewal} ημ.`, `${c.renewal}d`)}
                                 </span>
                             ) : (
                                 <span
@@ -330,12 +353,15 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 </div>
 
                 {/* AI suggestion */}
-                <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-[#C7D2FE] bg-[#EEF2FF] dark:bg-indigo-500/15 p-3">
-                    <TrendingUp className="h-4 w-4 flex-shrink-0 text-[#4F46E5] dark:text-indigo-300" />
-                    <p className="text-caption font-medium text-[#312E81] dark:text-indigo-200">
+                {/* Was indigo (#EEF2FF / #4F46E5) — a colour that appears
+                    nowhere else on the public site, whose light border had no
+                    dark-mode pair. Brand green, both themes. */}
+                <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] p-3 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                    <TrendingUp className="h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
+                    <p className="text-caption font-medium text-[#166534] dark:text-[#A7F3D0]">
                         {t(
-                            "AI: Γ. Κυριακόπουλος — προτείνεται κάλυψη ζωής",
-                            "AI: G. Kyriakopoulos — life cover recommended"
+                            "Γ. Κυριακόπουλος — του λείπει ασφάλεια ζωής",
+                            "G. Kyriakopoulos — has no life cover"
                         )}
                     </p>
                 </div>

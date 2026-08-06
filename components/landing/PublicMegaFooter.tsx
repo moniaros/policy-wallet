@@ -4,6 +4,7 @@ import Link from "next/link"
 import { FormEvent, useMemo, useState } from "react"
 import { ArrowRight, Facebook, Instagram, Linkedin, Mail, ShieldCheck, Twitter, type LucideIcon } from "lucide-react"
 import { LEGAL_ENTITY } from "@/lib/legal/entity-placeholders"
+import { CATEGORY, CATEGORY_NAME } from "@/lib/marketing/positioning"
 import { productCategories } from "@/lib/product/catalog"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { getSocialProfiles, siteConfig } from "@/lib/seo/site"
@@ -44,22 +45,22 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     )
 
     const solutionLinks = [
-        { href: l("/product"), label: t("Για Ιδιώτες", "For Individuals") },
-        { href: l("/solutions/agents"), label: t("Για Ασφαλιστές", "For Insurance Agents") },
-        { href: l("/pricing?audience=agent"), label: t("Πλάνα Ασφαλιστών", "Agent Plans") },
-        { href: l("/pricing#pricing-faq"), label: t("FAQ Τιμολόγησης", "Pricing FAQ") },
-        { href: l("/product#product-faq"), label: t("FAQ Προϊόντος", "Product FAQ") },
+        { href: l("/product"), label: t("Για ιδιώτες", "For individuals") },
+        { href: l("/solutions/agents"), label: t("Για ασφαλιστές", "For insurance agents") },
+        { href: l("/compare"), label: t("Σύγκριση με τις άλλες επιλογές", "How we compare") },
+        { href: l("/pricing?audience=agent"), label: t("Πλάνα ασφαλιστών", "Agent plans") },
+        { href: l("/pricing#pricing-faq"), label: t("Ερωτήσεις για τις τιμές", "Questions about pricing") },
     ]
 
     const companyLinks = [
         { href: l("/company"), label: t("Εταιρεία", "Company") },
-        { href: l("/guides"), label: t("Οδηγοί Ασφάλισης", "Insurance Guides") },
-        { href: l("/lexiko"), label: t("Ασφαλιστικό Λεξικό", "Insurance Glossary") },
+        { href: l("/guides"), label: t("Οδηγοί ασφάλισης", "Insurance guides") },
+        { href: l("/lexiko"), label: t("Ασφαλιστικό λεξικό", "Insurance glossary") },
         { href: l("/contact"), label: t("Επικοινωνία", "Contact") },
-        { href: l("/privacy"), label: t("Πολιτική Απορρήτου", "Privacy Policy") },
-        { href: l("/terms"), label: t("Όροι Χρήσης", "Terms of Service") },
-        { href: l("/cookies"), label: t("Πολιτική Cookies", "Cookie Policy") },
-        { href: l("/subprocessors"), label: t("Υπο-εκτελούντες Επεξεργασίας", "Subprocessors") },
+        { href: l("/privacy"), label: t("Πολιτική απορρήτου", "Privacy policy") },
+        { href: l("/terms"), label: t("Όροι χρήσης", "Terms of service") },
+        { href: l("/cookies"), label: t("Πολιτική cookies", "Cookie policy") },
+        { href: l("/subprocessors"), label: t("Υπο-εκτελούντες επεξεργασίας", "Subprocessors") },
     ]
 
     // Legal-identity block (Greek corporate sites must display ΓΕΜΗ — ν. 3419/2005).
@@ -79,7 +80,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
         if (!isValidEmail(normalizedEmail)) {
             setStatus("error")
             setStatusMessage(
-                t("Παρακαλώ δώστε έγκυρο email.", "Please enter a valid email address.")
+                t("Αυτό το email δεν φαίνεται σωστό. Ελέγξτε το.", "That email does not look right. Have another look.")
             )
             return
         }
@@ -113,8 +114,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             setStatus("success")
             setStatusMessage(
                 t(
-                    "Εγγραφήκατε επιτυχώς. Θα λάβετε νέα και πρακτικά tips.",
-                    "You are subscribed. You will receive updates and practical tips."
+                    "Έγινε. Θα σας στέλνουμε πρακτικές συμβουλές, όχι διαφημίσεις.",
+                    "Done. We will send you practical advice, not adverts."
                 )
             )
             setEmail("")
@@ -122,8 +123,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             setStatus("error")
             setStatusMessage(
                 t(
-                    `Η εγγραφή δεν ολοκληρώθηκε. Δοκιμάστε ξανά ή επικοινωνήστε στο ${siteConfig.contactEmail}.`,
-                    `Subscription failed. Try again or contact ${siteConfig.contactEmail}.`
+                    `Δεν καταφέραμε να σας γράψουμε στη λίστα. Δοκιμάστε ξανά ή γράψτε μας στο ${siteConfig.contactEmail}.`,
+                    `We could not add you to the list. Try again, or write to us at ${siteConfig.contactEmail}.`
                 )
             )
         }
@@ -136,22 +137,22 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                         <div>
                             <p className="mb-1 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                                {t("Επιλέξτε λύση", "Choose your path")}
+                                {t("Ξεκινήστε", "Get started")}
                             </p>
                             <h3 className="text-h3 font-medium leading-tight tracking-tight text-[#0F172A] dark:text-white">
                                 {t(
-                                    "Ξεκινήστε από τη λύση που ταιριάζει στο προφίλ σας.",
-                                    "Start with the solution that fits your profile."
+                                    "Ασφαλίζεστε ή ασφαλίζετε άλλους;",
+                                    "Are you insured, or do you insure others?"
                                 )}
                             </h3>
                         </div>
                         <div className="flex flex-col gap-3 sm:flex-row">
                             <Link href={l("/product")} className="pw-secondary-button pw-btn-sm">
-                                {t("Για Ιδιώτες", "For Individuals")}
+                                {t("Είμαι ασφαλισμένος", "I am insured")}
                             </Link>
                             <Link href={l("/solutions/agents")} className="pw-primary-button pw-btn-sm">
-                                {t("Για Ασφαλιστές", "For Insurance Agents")}
-                                <ArrowRight className="h-4 w-4" />
+                                {t("Είμαι ασφαλιστής", "I am an insurance agent")}
+                                <ArrowRight aria-hidden className="h-4 w-4" />
                             </Link>
                         </div>
                     </div>
@@ -161,14 +162,14 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             <div className="px-6 pb-12 lg:px-12">
                 <div className="mx-auto grid max-w-page-wide gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1.25fr]">
                     <div>
-                        <Link href={l("/")} className="inline-flex items-center text-title font-bold tracking-tight">
+                        <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight">
                             <span className="text-[#0F172A] dark:text-white">Policy</span>
                             <span className="text-[#5B6A7A] dark:text-slate-400">Wallet</span>
                         </Link>
                         <p className="mt-4 max-w-[320px] text-body leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Οργανώστε όλα τα ασφαλιστήριά σας, δείτε τι καλύπτει το καθένα, εντοπίστε κενά και προλάβετε τις λήξεις.",
-                                "Organize all your policies, see what each one covers, spot the gaps, and act before renewals."
+                                "Η ζωή σας αλλάζει και τα ρίσκα σας μαζί της. Σας λέμε αν η ασφάλειά σας κράτησε τον ρυθμό. Δεν πουλάμε ασφάλειες.",
+                                "Your life changes and your risks change with it. We tell you whether your insurance kept up. We do not sell insurance."
                             )}
                         </p>
                     </div>
@@ -182,7 +183,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="inline-flex min-h-[24px] items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-11 items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>
@@ -193,14 +194,14 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
 
                     <div>
                         <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-[#0F172A] dark:text-white">
-                            {t("Λύσεις & Πλοήγηση", "Solutions & Browse")}
+                            {t("Λύσεις", "Solutions")}
                         </p>
                         <ul className="space-y-2.5">
                             {solutionLinks.map((link) => (
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="inline-flex min-h-[24px] items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-11 items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>
@@ -209,8 +210,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         </ul>
                         <p className="mt-4 text-caption leading-relaxed text-[#5B6A7A] dark:text-slate-400">
                             {t(
-                                "Συντομεύσεις για γρήγορη πρόσβαση σε FAQ και κρίσιμες σελίδες αξιολόγησης.",
-                                "Shortcuts for quick access to FAQs and key decision pages."
+                                "Οι σελίδες που βοηθούν να αποφασίσετε.",
+                                "The pages that help you decide."
                             )}
                         </p>
                     </div>
@@ -224,7 +225,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="inline-flex min-h-[24px] items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-11 items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>
@@ -235,17 +236,17 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
 
                     <div>
                         <p className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-[#0F172A] dark:text-white">
-                            {t("Newsletter", "Newsletter")}
+                            {t("Ενημερώσεις", "Newsletter")}
                         </p>
                         <p className="mb-4 text-body leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Λάβετε tips για renewals, συγκρίσεις καλύψεων και πρακτικούς οδηγούς.",
-                                "Get renewal tips, coverage comparisons, and practical insurance guides."
+                                "Τι αλλάζει στην ασφάλιση και τι σημαίνει για εσάς. Λίγα email, χωρίς πωλήσεις.",
+                                "What changes in insurance, and what it means for you. Few emails, no selling."
                             )}
                         </p>
                         <form onSubmit={handleSubmit} className="space-y-3">
                             <label htmlFor="footer-newsletter-email" className="sr-only">
-                                {t("Email για newsletter", "Newsletter email")}
+                                {t("Email για ενημερώσεις", "Newsletter email")}
                             </label>
                             <input
                                 type="text"
@@ -257,7 +258,9 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 aria-hidden="true"
                                 className="absolute left-[-9999px] h-0 w-0 opacity-0"
                             />
-                            <div className="flex flex-col gap-2 sm:flex-row">
+                            {/* Stacked until xl: in the five-column footer the side-by-side
+                                    layout clipped the placeholder to "Το email σα". */}
+                            <div className="flex flex-col gap-2 sm:flex-row lg:flex-col xl:flex-row">
                                 <input
                                     id="footer-newsletter-email"
                                     type="email"
@@ -273,7 +276,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                     className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#29685B] px-4 py-2.5 text-body font-semibold text-white transition-colors hover:bg-[#1C4E44] disabled:cursor-not-allowed disabled:opacity-70"
                                 >
                                     <Mail className="h-4 w-4" />
-                                    {status === "loading" ? t("Αποστολή...", "Submitting...") : t("Εγγραφή", "Subscribe")}
+                                    {status === "loading" ? t("Το στέλνουμε…", "Sending it…") : t("Εγγραφή", "Subscribe")}
                                 </button>
                             </div>
                             {statusMessage ? (
@@ -293,6 +296,14 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
 
             <div className="border-t border-[#E2E8F0] dark:border-slate-800 px-6 py-5 lg:px-12">
                 <div className="mx-auto max-w-page-wide pb-4 text-body-sm leading-relaxed text-[#5B6A7A] dark:text-slate-400">
+                    {/* Category identity line — the one place EVERY page names
+                        the category and decodes it in the same breath. */}
+                    <p className="mb-2 font-semibold text-[#0F172A] dark:text-white">
+                        PolicyWallet — {t("η", "the")} {t(CATEGORY_NAME.el, CATEGORY_NAME.en)}.{" "}
+                        <span className="font-normal text-[#5B6A7A] dark:text-slate-400">
+                            {t(CATEGORY.el, CATEGORY.en)}
+                        </span>
+                    </p>
                     <p>
                         {t(
                             "Η πλατφόρμα PolicyWallet λειτουργεί από ελληνική εταιρεία.",
@@ -303,7 +314,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                 </div>
                 <div className="mx-auto flex max-w-page-wide flex-col gap-3 text-body-sm text-[#5B6A7A] dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
                     <p>
-                        (c) {new Date().getFullYear()} PolicyWallet.{" "}
+                        © {new Date().getFullYear()} PolicyWallet.{" "}
                         {t("Με επιφύλαξη παντός δικαιώματος.", "All rights reserved.")}
                     </p>
                     <div className="flex flex-wrap items-center gap-4">
@@ -323,13 +334,13 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 </a>
                             )
                         })}
-                        <Link href={l("/privacy")} className="inline-flex min-h-[24px] items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
-                            {t("Privacy", "Privacy")}
+                        <Link href={l("/privacy")} className="inline-flex min-h-11 items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                            {t("Απόρρητο", "Privacy")}
                         </Link>
-                        <Link href={l("/terms")} className="inline-flex min-h-[24px] items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
-                            {t("Terms", "Terms")}
+                        <Link href={l("/terms")} className="inline-flex min-h-11 items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                            {t("Όροι", "Terms")}
                         </Link>
-                        <Link href={l("/contact")} className="inline-flex min-h-[24px] items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/contact")} className="inline-flex min-h-11 items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
                             {t("Επικοινωνία", "Contact")}
                         </Link>
                         <span className="inline-flex items-center gap-1.5 text-[#29685B] dark:text-[#A7F3D0]">

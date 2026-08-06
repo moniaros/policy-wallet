@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { landingContent } from "@/lib/landing/content"
 import type { LandingLocale } from "@/types/landing-content"
-import { getSiteOrigin, getSiteUrl, OG_IMAGES, TWITTER_IMAGES } from "@/lib/seo/site"
+import { getSiteOrigin, getSiteUrl, OG_IMAGES, siteConfig, TWITTER_IMAGES } from "@/lib/seo/site"
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/jsonld"
 
 export function buildLandingMetadata(locale: LandingLocale): Metadata {
@@ -48,6 +48,9 @@ export function buildLandingJsonLd(locale: LandingLocale) {
     const softwareApplication = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
+        // Same @id as the pricing page's node so validators read ONE app
+        // entity across the site, not two competing ones.
+        "@id": `${baseUrl}/#app`,
         name: "PolicyWallet",
         applicationCategory: "FinanceApplication",
         operatingSystem: "Web",
@@ -58,7 +61,10 @@ export function buildLandingJsonLd(locale: LandingLocale) {
             priceCurrency: "EUR",
         },
         url: pageUrl,
-        description: meta.description,
+        // The app entity describes itself with the category definition (same
+        // string as the pricing page's node — one identity, not two), not the
+        // page's meta snippet.
+        description: siteConfig.definition[locale],
         publisher: { "@id": `${baseUrl}/#organization` },
     }
 
@@ -88,5 +94,5 @@ export function buildLandingJsonLd(locale: LandingLocale) {
         })),
     }
 
-    return [softwareApplication, organizationJsonLd(), webSiteJsonLd(), faqPage, howTo]
+    return [softwareApplication, organizationJsonLd(locale), webSiteJsonLd(), faqPage, howTo]
 }

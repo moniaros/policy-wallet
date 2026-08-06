@@ -116,7 +116,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "subscriptions",
                     title: "4. Συνδρομές, χρεώσεις, ανανέωση και ακύρωση",
                     paragraphs: [
-                        "Η βασική χρήση είναι δωρεάν για ένα συμβόλαιο. Τα επί πληρωμή πλάνα για ιδιώτες και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται στη σελίδα τιμολόγησης και επιβεβαιώνεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
+                        "Η βασική χρήση είναι δωρεάν για ένα συμβόλαιο. Τα πληρωμένα πλάνα για ιδιώτες και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται στη σελίδα τιμολόγησης και επιβεβαιώνεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
                         "Οι συνδρομές ανανεώνονται αυτόματα στο τέλος κάθε περιόδου χρέωσης (μηνιαίας ή ετήσιας) μέχρι να τις ακυρώσετε.",
                         "Μπορείτε να ακυρώσετε οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας. Η ακύρωση ισχύει από το τέλος της τρέχουσας περιόδου χρέωσης — μέχρι τότε διατηρείτε πλήρη πρόσβαση στο πλάνο σας. Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.",
                         "Αν αλλάξουν οι τιμές των πλάνων, θα ενημερωθείτε εκ των προτέρων και η νέα τιμή θα ισχύσει από την επόμενη περίοδο χρέωσης.",
@@ -375,7 +375,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "what_are_cookies",
                     title: "1. Τι είναι τα cookies",
                     paragraphs: [
-                        "Τα cookies είναι μικρά αρχεία που αποθηκεύονται στη συσκευή σας όταν επισκέπτεστε έναν ιστότοπο, ώστε να «θυμάται» πληροφορίες όπως τη σύνδεσή σας ή τις προτιμήσεις σας. Παρόμοιο ρόλο παίζει και η τοπική αποθήκευση του φυλλομετρητή (localStorage).",
+                        "Τα cookies είναι μικρά αρχεία που αποθηκεύονται στη συσκευή σας όταν επισκέπτεστε έναν ιστότοπο, ώστε να «θυμάται» πληροφορίες όπως τη σύνδεσή σας ή τις προτιμήσεις σας. Παρόμοιο ρόλο παίζει και η τοπική αποθήκευση του προγράμματος περιήγησης (localStorage).",
                     ],
                 },
                 {
@@ -406,7 +406,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "Λειτουργικό",
                             ],
                             [
-                                "_ga, _ga_<αναγνωριστικό ιδιότητας> (Google Analytics)",
+                                "_ga, _ga_<αναγνωριστικό container> (Google Analytics)",
                                 "Διακρίνει επισκέπτες και συνεδρίες για συγκεντρωτικά στατιστικά χρήσης — τοποθετούνται μόνο εφόσον αποδεχθείτε την κατηγορία «Ανάλυση»",
                                 "Έως 2 έτη (προεπιλογή Google Analytics 4)",
                                 "Ανάλυση — με τη συγκατάθεσή σας",
@@ -418,11 +418,11 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "analytics_marketing",
                     title: "3. Cookies ανάλυσης και marketing",
                     paragraphs: [
-                        "Για συγκεντρωτικά στατιστικά χρήσης χρησιμοποιούμε το Google Analytics 4, ώστε να κατανοούμε ποιες σελίδες αξιοποιούνται και πού δυσκολεύονται οι χρήστες. Το Google Analytics τοποθετεί τα cookies _ga και _ga_<αναγνωριστικό ιδιότητας>, με τυπική διάρκεια έως 2 έτη σύμφωνα με τις προεπιλογές του Google Analytics 4.",
+                        "Για συγκεντρωτικά στατιστικά χρήσης χρησιμοποιούμε το Google Analytics 4, ώστε να κατανοούμε ποιες σελίδες αξιοποιούνται και πού δυσκολεύονται οι χρήστες. Το Google Analytics τοποθετεί τα cookies _ga και _ga_<αναγνωριστικό container>, με τυπική διάρκεια έως 2 έτη σύμφωνα με τις προεπιλογές του Google Analytics 4.",
                         "Τα cookies αυτά τοποθετούνται αποκλειστικά αφού αποδεχθείτε την κατηγορία «Ανάλυση» στο banner συγκατάθεσης. Πριν από τη συγκατάθεσή σας δεν φορτώνεται καθόλου ο κώδικας του Google Analytics και δεν αποστέλλεται κανένα δεδομένο στη Google.",
                         "Η υπηρεσία είναι ρυθμισμένη με ανωνυμοποίηση διεύθυνσης IP (anonymize_ip) και με απενεργοποιημένα τα Google Signals (allow_google_signals: false), ώστε να μην πραγματοποιείται διαφημιστική στόχευση ή δημιουργία προφίλ μεταξύ συσκευών.",
                         "Δεν χρησιμοποιούμε cookies marketing ή διαφημιστικής στόχευσης τρίτων. Η κατηγορία «Marketing» παραμένει στο banner ώστε, αν προστεθούν στο μέλλον, να ενεργοποιηθούν μόνο με τη δική σας συγκατάθεση και αφού πρώτα ενημερωθεί η παρούσα σελίδα.",
-                        "Μπορείτε να ανακαλέσετε τη συγκατάθεσή σας οποιαδήποτε στιγμή, διαγράφοντας το cookie pw_cookie_consent από τον φυλλομετρητή σας ώστε να επανεμφανιστεί το banner και να επιλέξετε εκ νέου. Με την ανάκληση σταματά η αποστολή δεδομένων στο Google Analytics και τα cookies _ga διαγράφονται.",
+                        "Μπορείτε να ανακαλέσετε τη συγκατάθεσή σας οποιαδήποτε στιγμή, διαγράφοντας το cookie pw_cookie_consent από το πρόγραμμα περιήγησής σας ώστε να επανεμφανιστεί το banner και να επιλέξετε εκ νέου. Με την ανάκληση σταματά η αποστολή δεδομένων στο Google Analytics και τα cookies _ga διαγράφονται.",
                         "Η Google ενεργεί ως εκτελούσα την επεξεργασία για λογαριασμό μας· οι τυχόν διαβιβάσεις εκτός ΕΟΧ καλύπτονται από τις εγγυήσεις που περιγράφονται στη σελίδα Υπο-εκτελούντων Επεξεργασίας.",
                     ],
                     link: { href: "/subprocessors", label: "Δείτε τον κατάλογο υπο-εκτελούντων" },
@@ -432,7 +432,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "4. Πώς διαχειρίζεστε τα cookies",
                     paragraphs: [
                         "Κατά την πρώτη επίσκεψη επιλέγετε από το banner αν αποδέχεστε όλα τα cookies, μόνο τα απαραίτητα, ή προσαρμοσμένες προτιμήσεις ανά κατηγορία. Η επιλογή σας καταγράφεται με την έκδοση της πολιτικής που ίσχυε τη στιγμή της συγκατάθεσης.",
-                        "Για να αλλάξετε γνώμη, διαγράψτε το cookie pw_cookie_consent από τις ρυθμίσεις του φυλλομετρητή σας — το banner θα εμφανιστεί ξανά στην επόμενη επίσκεψη. Μπορείτε επίσης να αποκλείσετε cookies συνολικά από τον φυλλομετρητή· σημειώστε ότι χωρίς τα απολύτως απαραίτητα cookies η σύνδεση στην πλατφόρμα δεν λειτουργεί.",
+                        "Για να αλλάξετε γνώμη, διαγράψτε το cookie pw_cookie_consent από τις ρυθμίσεις του προγράμματος περιήγησής σας — το banner θα εμφανιστεί ξανά στην επόμενη επίσκεψη. Μπορείτε επίσης να αποκλείσετε cookies συνολικά από το πρόγραμμα περιήγησης· σημειώστε ότι χωρίς τα απολύτως απαραίτητα cookies η σύνδεση στην πλατφόρμα δεν λειτουργεί.",
                     ],
                     link: { href: "/privacy", label: "Δείτε και την Πολιτική Απορρήτου" },
                 },
@@ -630,7 +630,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "liability",
                     title: "10. Limitation of liability",
                     paragraphs: [
-                        "The service is provided \"as is\" and \"as available\", to the maximum extent permitted by applicable law.",
+                        "The service is provided “as is” and “as available”, to the maximum extent permitted by applicable law.",
                         "We are not liable for decisions you make based on the platform's informational outputs (see section 7), nor for indirect or consequential damages arising from its use, to the extent such limitation is permitted by law.",
                         `The provider's total liability arising out of or in connection with these terms is limited to ${EN.liabilityCap}.`,
                         "Nothing in these terms excludes or limits our liability for fraud, wilful misconduct, gross negligence, death or personal injury, or any liability or consumer right that cannot be excluded or limited by contract under Greek or EU law.",
@@ -837,7 +837,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "what_are_cookies",
                     title: "1. What cookies are",
                     paragraphs: [
-                        "Cookies are small files stored on your device when you visit a website, so that it can \"remember\" information such as your sign-in or your preferences. Browser local storage (localStorage) plays a similar role.",
+                        "Cookies are small files stored on your device when you visit a website, so that it can “remember” information such as your sign-in or your preferences. Browser local storage (localStorage) plays a similar role.",
                     ],
                 },
                 {
@@ -869,7 +869,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                             ],
                             [
                                 "_ga, _ga_<container-id> (Google Analytics)",
-                                "Distinguishes visitors and sessions for aggregate usage statistics — set only if you accept the \"Analytics\" category",
+                                "Distinguishes visitors and sessions for aggregate usage statistics — set only if you accept the “Analytics” category",
                                 "Up to 2 years (Google Analytics 4 default)",
                                 "Analytics — with your consent",
                             ],
@@ -881,9 +881,9 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "3. Analytics and marketing cookies",
                     paragraphs: [
                         "We use Google Analytics 4 to produce aggregate usage statistics, so that we can understand which pages are used and where users run into difficulty. Google Analytics sets the _ga and _ga_<container-id> cookies, with a typical lifetime of up to 2 years under the Google Analytics 4 defaults.",
-                        "These cookies are set only after you accept the \"Analytics\" category in the consent banner. Before you consent, the Google Analytics code is not loaded at all and no data is sent to Google.",
+                        "These cookies are set only after you accept the “Analytics” category in the consent banner. Before you consent, the Google Analytics code is not loaded at all and no data is sent to Google.",
                         "The service is configured with IP anonymisation (anonymize_ip) and with Google Signals disabled (allow_google_signals: false), so no advertising targeting or cross-device profiling takes place.",
-                        "We do not use third-party marketing or advertising-targeting cookies. The \"Marketing\" category remains in the banner so that, if such cookies are added in the future, they are activated only with your consent and after this page is updated first.",
+                        "We do not use third-party marketing or advertising-targeting cookies. The “Marketing” category remains in the banner so that, if such cookies are added in the future, they are activated only with your consent and after this page is updated first.",
                         "You can withdraw your consent at any time by deleting the pw_cookie_consent cookie in your browser, which brings the banner back so you can choose again. On withdrawal we stop sending data to Google Analytics and the _ga cookies are deleted.",
                         "Google acts as a processor on our behalf; any transfers outside the EEA are covered by the safeguards described on our Subprocessors page.",
                     ],
@@ -954,7 +954,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                             [
                                 "Google (Google Analytics)",
                                 "Usage analytics",
-                                "Aggregate usage events with IP anonymisation — only if you accept the \"Analytics\" category",
+                                "Aggregate usage events with IP anonymisation — only if you accept the “Analytics” category",
                                 "EU/US",
                             ],
                             [

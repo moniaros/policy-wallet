@@ -24,8 +24,8 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
 
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const label = t("Λύσεις", "Solutions")
-    const individualsLabel = t("Για Ιδιώτες", "For Individuals")
-    const agentsLabel = t("Για Ασφαλιστές", "For Insurance Agents")
+    const individualsLabel = t("Για ιδιώτες", "For individuals")
+    const agentsLabel = t("Για ασφαλιστές", "For insurance agents")
 
     useEffect(() => {
         const onPointerDown = (event: MouseEvent) => {
@@ -61,7 +61,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         setIsOpen(false)
                     }
                 }}
-                className="inline-flex items-center gap-1 transition-colors hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:hover:text-white"
+                className="inline-flex min-h-11 items-center gap-1 transition-colors hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:hover:text-white"
             >
                 <span>{label}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -84,7 +84,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         role="menuitem"
                         href={localizeHref("/product", language)}
                         onClick={() => setIsOpen(false)}
-                        className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
+                        className="flex min-h-11 items-center rounded-lg px-3 text-body font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         {individualsLabel}
                     </Link>
@@ -92,7 +92,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         role="menuitem"
                         href={localizeHref("/solutions/agents", language)}
                         onClick={() => setIsOpen(false)}
-                        className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
+                        className="flex min-h-11 items-center rounded-lg px-3 text-body font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         {agentsLabel}
                     </Link>
@@ -105,16 +105,16 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
 export function SolutionsMobileGroup({ language, onNavigate, className = "" }: SolutionsMobileGroupProps) {
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const label = t("Λύσεις", "Solutions")
-    const individualsLabel = t("Για Ιδιώτες", "For Individuals")
-    const agentsLabel = t("Για Ασφαλιστές", "For Insurance Agents")
+    const individualsLabel = t("Για ιδιώτες", "For individuals")
+    const agentsLabel = t("Για ασφαλιστές", "For insurance agents")
 
     return (
         <div className={`space-y-3 ${className}`}>
-            <p className="text-sm font-semibold uppercase tracking-widest text-white/60">{label}</p>
-            <Link href={localizeHref("/product", language)} className="block text-white hover:text-white/80 transition-colors" onClick={onNavigate}>
+            <p className="text-body-sm font-semibold uppercase tracking-widest text-white/75">{label}</p>
+            <Link href={localizeHref("/product", language)} className="flex min-h-11 items-center text-white transition-colors hover:text-white/80" onClick={onNavigate}>
                 {individualsLabel}
             </Link>
-            <Link href={localizeHref("/solutions/agents", language)} className="block text-white hover:text-white/80 transition-colors" onClick={onNavigate}>
+            <Link href={localizeHref("/solutions/agents", language)} className="flex min-h-11 items-center text-white transition-colors hover:text-white/80" onClick={onNavigate}>
                 {agentsLabel}
             </Link>
         </div>

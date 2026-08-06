@@ -18,6 +18,7 @@ import {
     PRODUCT_STATS as STATS,
     PRODUCT_STEPS as STEPS,
 } from "./marketing-content"
+import { CATEGORY_NAME } from "@/lib/marketing/positioning"
 import { ProductFaqList } from "./ProductFaqList"
 import { ProductPageView } from "./ProductPageView"
 import { ProductScrollButton } from "./ProductScrollButton"
@@ -56,29 +57,31 @@ export function ProductSections({ language }: { language: Language }) {
 
             <section className="px-6 text-center md:px-12">
                 <div className="mx-auto max-w-[860px]">
+                    {/* The category claim, in the same slot the homepage uses —
+                        the platform's own page names the platform's category. */}
                     <div className="mb-8 inline-flex select-none items-center gap-2 rounded-full bg-[#DCEBDA] dark:bg-[#29685B]/30 px-3 py-1.5 text-caption font-semibold uppercase tracking-wide text-[#166534] dark:text-[#A7F3D0]">
                         <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
-                        {t("Διαθέσιμο τώρα", "Available now")}
+                        {t(CATEGORY_NAME.el, CATEGORY_NAME.en)}
                     </div>
 
-                    <h1 className="inline-flex min-h-[24px] items-center mb-6 text-h1 font-semibold leading-[1.02] tracking-[-0.045em] text-[#0F172A] dark:text-white md:text-display">
+                    <h1 className="mb-6 inline-flex min-h-[24px] items-center text-h1 font-semibold leading-[1.02] tracking-[-0.045em] text-[#0F172A] dark:text-white md:text-display text-balance">
                         {t(
-                            "Όλες οι ασφαλίσεις σας. Ένα έξυπνο πορτοφόλι.",
-                            "All your insurance. One intelligent wallet."
+                            "Κάθε ασφάλειά σας, διαβασμένη για εσάς.",
+                            "Every policy you own, read for you."
                         )}
                     </h1>
 
                     <p className="mx-auto mb-10 max-w-[640px] text-lead leading-[1.55] text-[#475569] dark:text-slate-300 md:text-title">
                         {t(
-                            "Δείτε τι καλύπτει κάθε συμβόλαιο, τι δεν καλύπτει — και τι να κάνετε γι' αυτό.",
-                            "See what every policy covers, what it doesn't, and what to do about it."
+                            "Δείτε τι καλύπτει κάθε συμβόλαιο — και τι δεν καλύπτει.",
+                            "See what every policy covers — and what it does not."
                         )}
                     </p>
 
                     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                         <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε δωρεάν", "Get started free")}
-                            <ArrowRight className="h-4 w-4" />
+                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
+                            <ArrowRight aria-hidden className="h-4 w-4" />
                         </Link>
                         <ProductScrollButton
                             targetId="how-it-works"
@@ -86,15 +89,17 @@ export function ProductSections({ language }: { language: Language }) {
                             className="pw-secondary-button pw-btn-lg w-full cursor-pointer sm:w-auto"
                         >
                             <ChevronDown className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
-                            {t("Πώς λειτουργεί", "See how it works")}
+                            {t("Πώς λειτουργεί", "How it works")}
                         </ProductScrollButton>
                     </div>
 
-                    <p className="mt-4 flex items-center justify-center gap-2 text-body text-[#5B6A7A] dark:text-slate-400">
-                        <ChevronDown className="h-4 w-4 text-[#29685B] dark:text-[#A7F3D0]" />
+                    {/* The line that used to sit here repeated the button
+                        beside it ("See how it works" / "Scroll to the 3 steps").
+                        The reassurance the visitor actually needs is the price. */}
+                    <p className="mt-4 text-body-sm text-[#5B6A7A] dark:text-slate-400">
                         {t(
-                            "Κύλιση στην ίδια σελίδα για τα 3 βήματα.",
-                            "Scroll on this page to the 3-step walkthrough."
+                            "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.",
+                            "Free for 1 policy. No card."
                         )}
                     </p>
                 </div>
@@ -104,26 +109,26 @@ export function ProductSections({ language }: { language: Language }) {
                 <div className="grid items-center gap-16 md:grid-cols-2 lg:gap-24">
                     <div>
                         <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                            {t("Το Πορτοφόλι σας", "Your wallet")}
+                            {t("Τι σας δίνει", "What it gives you")}
                         </p>
-                        <h2 className="mb-6 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
+                        <h2 className="mb-6 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1 text-balance">
                             {t(
-                                "Τα απαραίτητα για να διαχειρίζεστε τις ασφαλίσεις σας αβίαστα.",
-                                "The essentials to manage your insurance effortlessly."
+                                "Καθαρές απαντήσεις, χωρίς να διαβάσετε ούτε μία σελίδα.",
+                                "Clear answers, without reading a single page."
                             )}
                         </h2>
                         <p className="mb-8 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Αποκτήστε εξατομικευμένες συστάσεις για να βελτιστοποιήσετε τις καλύψεις σας, να κλείσετε κενά και να εξοικονομήσετε χρήματα.",
-                                "Get personalized recommendations to optimize your coverage, close dangerous gaps, and save money on premiums."
+                                "Με το PolicyWallet Plus, σας λέμε τι λείπει από την κάλυψή σας, τι πληρώνετε δύο φορές και τι αξίζει να διορθώσετε πρώτα.",
+                                "With PolicyWallet Plus, we tell you what your cover is missing, what you are paying for twice, and what is worth fixing first."
                             )}
                         </p>
                         <ul className="space-y-3">
                             {[
-                                t("Ανάλυση εγγράφων σε λίγα λεπτά", "Document analysis in minutes"),
-                                t("Εντοπισμός κενών και επικαλύψεων", "Gap and overlap detection"),
-                                t("Υπενθυμίσεις ανανέωσης και ειδοποιήσεις", "Renewal reminders and alerts"),
-                                t("Κοινοποίηση με ασφαλιστές και μεσίτες", "Sharing with insurers and brokers"),
+                                t("Διαβάζουμε κάθε συμβόλαιο σε λίγα λεπτά", "We read every policy in minutes"),
+                                t("Βρίσκουμε κενά και διπλές καλύψεις — με το Plus", "We find gaps and doubled-up cover — with Plus"),
+                                t("Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Starter", "We warn you before something runs out — from the Starter plan"),
+                                t("Δείχνετε στον ασφαλιστή σας ό,τι θέλετε", "You show your agent whatever you choose"),
                             ].map((item) => (
                                 <li key={item} className="flex items-start gap-3 text-body-lg text-[#0F172A] dark:text-white">
                                     <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
@@ -133,15 +138,25 @@ export function ProductSections({ language }: { language: Language }) {
                         </ul>
                     </div>
 
-                    <div className="relative">
+                    {/* Illustration — described once, so assistive tech is not
+                        read a list of example policies as though they were the
+                        visitor's own. */}
+                    <div
+                        role="img"
+                        aria-label={t(
+                            "Παράδειγμα: τρεις ασφάλειες με τις ημερομηνίες λήξης τους, και μια επισήμανση ότι το σπίτι είναι ασφαλισμένο για λιγότερα από όσα κοστίζει να ξαναχτιστεί.",
+                            "Example: three policies with their end dates, and a note that the home is insured for less than it would cost to rebuild."
+                        )}
+                        className="relative"
+                    >
                         <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
                             <div className="mb-6 flex items-center justify-between border-b border-[#E2E8F0] dark:border-slate-800 pb-4">
                                 <div>
                                     <p className="mb-1 text-micro font-semibold uppercase tracking-wider text-[#5B6A7A] dark:text-slate-400">
-                                        {t("Πύλη Ασφάλισης", "Insurance Hub")}
+                                        {t("Οι ασφάλειές σας", "Your policies")}
                                     </p>
                                     <p className="text-lead font-semibold text-[#0F172A] dark:text-white">
-                                        {t("Γεια σου, Νίκο", "Welcome back, Nick")}
+                                        {t("Γεια σου, Νίκο", "Hi, Nick")}
                                     </p>
                                 </div>
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#29685B] text-body font-bold text-white">
@@ -170,7 +185,7 @@ export function ProductSections({ language }: { language: Language }) {
                                     {
                                         icon: Heart,
                                         nameEl: "Ατομική Υγεία",
-                                        nameEn: "Health Plan",
+                                        nameEn: "Individual Health",
                                         status: "ok",
                                         expEl: "Λήγει 1 Ιαν",
                                         expEn: "Expires Jan 1",
@@ -204,13 +219,13 @@ export function ProductSections({ language }: { language: Language }) {
 
                             <div className="rounded-xl bg-[#29685B] px-4 py-3.5 text-body-sm leading-snug text-white">
                                 <p className="mb-0.5 flex items-center gap-2 font-bold">
-                                    <Sparkles className="h-3.5 w-3.5" />
-                                    {t("AI Σύσταση", "AI Recommendation")}
+                                    <Sparkles aria-hidden className="h-3.5 w-3.5" />
+                                    {t("Τι βρήκαμε", "What we found")}
                                 </p>
                                 <p className="text-white/80">
                                     {t(
-                                        "Η κατοικία σας υπο-ασφαλίζεται κατά 12%. Ανεβάστε τιμή rebuild cost.",
-                                        "Your home is under-insured by 12%. Update your rebuild cost coverage."
+                                        "Το σπίτι σας είναι ασφαλισμένο για λιγότερα από όσα κοστίζει να ξαναχτιστεί.",
+                                        "Your home is insured for less than it would cost to rebuild it."
                                     )}
                                 </p>
                             </div>
@@ -232,6 +247,14 @@ export function ProductSections({ language }: { language: Language }) {
                 </div>
             </section>
 
+            {/* NOTE ON COLOUR: `category.surface` is a FIXED light tint
+                (bg-[#DCEBDA] and friends) declared in lib/product/catalog.tsx,
+                which the authenticated app shares — it has no dark-mode
+                variant. The cards below used to carry `dark:text-white` and
+                `dark:text-slate-300`, which in dark mode painted white text
+                onto a pale green card: a serious contrast failure axe flagged
+                on every one of the 15 product pages. The surface is light in
+                BOTH themes, so the text on it stays dark in both themes. */}
             <section id="product-categories" className="scroll-mt-32 bg-[#F8FAFC] dark:bg-slate-900 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mx-auto max-w-page">
                     <div className="mb-14">
@@ -245,16 +268,16 @@ export function ProductSections({ language }: { language: Language }) {
                                 className="max-w-[500px] text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white focus:outline-none lg:text-h1"
                             >
                                 {t(
-                                    "Κάθε ασφάλεια που χρειάζεστε, αναλυμένη για εσάς.",
-                                    "Every policy you need, analyzed for you."
+                                    `${productCategories.length} είδη συμβολαίων. Μία ανάλυση.`,
+                                    `${productCategories.length} kinds of policies. One analysis.`
                                 )}
                             </h2>
                             <ProductScrollButton
                                 targetId="product-categories"
                                 headingId="product-categories-heading"
-                                className="min-h-[24px] inline-flex flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-body font-semibold text-[#29685B] dark:text-[#A7F3D0] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
+                                className="inline-flex min-h-11 flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-body font-semibold text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto dark:text-[#A7F3D0]"
                             >
-                                {t("Δείτε όλα", "Explore all")}
+                                {t("Δείτε όλα", "See all")}
                                 <ChevronDown className="h-4 w-4" />
                             </ProductScrollButton>
                         </div>
@@ -272,24 +295,24 @@ export function ProductSections({ language }: { language: Language }) {
                                 >
                                     <div className="mb-6 flex items-start justify-between">
                                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 shadow-sm backdrop-blur-sm">
-                                            <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
+                                            <Icon className="h-5 w-5 text-[#0F172A]" />
                                         </div>
                                         <span className={`rounded-full px-2.5 py-1 text-micro font-semibold uppercase tracking-wide ${category.tagBg}`}>
                                             {t(category.tagEl, category.tagEn)}
                                         </span>
                                     </div>
 
-                                    <h3 className="mb-3 text-title font-semibold leading-[1.2] tracking-tight text-[#0F172A] dark:text-white">
+                                    <h3 className="mb-3 text-title font-semibold leading-[1.2] tracking-tight text-[#0F172A]">
                                         {t(category.labelEl, category.labelEn)}
                                     </h3>
-                                    <p className="mb-3 text-body font-semibold leading-snug text-[#0F172A] dark:text-white">
+                                    <p className="mb-3 text-body font-semibold leading-snug text-[#0F172A]">
                                         {t(category.headlineEl, category.headlineEn)}
                                     </p>
-                                    <p className="mb-6 flex-1 text-body leading-relaxed text-[#475569] dark:text-slate-300">
+                                    <p className="mb-6 flex-1 text-body leading-relaxed text-[#475569]">
                                         {t(category.descEl, category.descEn)}
                                     </p>
 
-                                    <div className="flex items-center gap-1.5 text-body font-semibold text-[#0F172A] dark:text-white transition-all duration-150 group-hover:gap-2.5">
+                                    <div className="flex items-center gap-1.5 text-body font-semibold text-[#0F172A] transition-all duration-150 group-hover:gap-2.5">
                                         {t("Δείτε τι αναλύουμε", "See what we analyze")}
                                         <ArrowRight className="h-4 w-4" />
                                     </div>
@@ -303,7 +326,7 @@ export function ProductSections({ language }: { language: Language }) {
             <section id="how-it-works" className="mx-auto max-w-page scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-16 text-center">
                     <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                        {t("Η Διαδικασία", "The process")}
+                        {t("Η διαδικασία", "The process")}
                     </p>
                     <h2
                         id="how-it-works-heading"
@@ -350,9 +373,9 @@ export function ProductSections({ language }: { language: Language }) {
             <section id="product-faq" className="mx-auto max-w-[860px] scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-12 text-center">
                     <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                        {t("Ερωτήσεις", "FAQs")}
+                        {t("Ερωτήσεις", "Questions")}
                     </p>
-                    <h2 className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
+                    <h2 className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1 text-balance">
                         {t("Συχνές ερωτήσεις", "Frequently asked questions")}
                     </h2>
                 </div>
@@ -364,22 +387,22 @@ export function ProductSections({ language }: { language: Language }) {
 
             <section className="bg-[#1A2420] px-6 py-20 text-white md:px-12 lg:py-28">
                 <div className="mx-auto max-w-[860px] text-center">
-                    <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white md:text-h1 lg:text-display [overflow-wrap:anywhere]">
+                    <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white [overflow-wrap:anywhere] md:text-h1 lg:text-display">
                         {t(
-                            "Αποκτήστε πρόσβαση στο PolicyWallet για ιδιώτες, ομάδες και επαγγελματίες.",
-                            "Get access to the PolicyWallet platform for individuals, teams, and professionals."
+                            "Στείλτε ένα συμβόλαιο και δείτε τι βρίσκουμε.",
+                            "Send us one policy and see what we find."
                         )}
                     </h2>
-                    <p className="mx-auto mb-10 max-w-[540px] text-lead leading-relaxed text-white/60">
+                    <p className="mx-auto mb-10 max-w-[540px] text-lead leading-relaxed text-white/75">
                         {t(
-                            "Ξεκινήστε δωρεάν. Χωρίς πιστωτική κάρτα.",
-                            "Start for free. No credit card required."
+                            "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
+                            "Free for 1 policy. No card. Delete everything whenever you want."
                         )}
                     </p>
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                         <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε δωρεάν", "Get started free")}
-                            <ArrowRight className="h-4 w-4" />
+                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
+                            <ArrowRight aria-hidden className="h-4 w-4" />
                         </Link>
                         <Link
                             href={localizeHref("/pricing", language)}

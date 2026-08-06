@@ -26,7 +26,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
   title: {
-    default: "PolicyWallet — Το ψηφιακό ασφαλιστικό σας πορτοφόλι",
+    // The fallback a page inherits when it sets no title of its own — it must
+    // carry the CURRENT positioning, not the retired "digital wallet" frame.
+    default: "PolicyWallet — Δείτε αν είστε καλυμμένοι",
     template: "%s | PolicyWallet",
   },
   description: siteConfig.description.el,

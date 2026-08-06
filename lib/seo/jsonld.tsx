@@ -5,6 +5,7 @@ import {
     hasCompleteAddress,
     siteConfig,
 } from "@/lib/seo/site"
+import { CATEGORY } from "@/lib/marketing/positioning"
 import { enPathFor, marketingPages, type MarketingPageKey } from "@/lib/seo/marketing-pages"
 import { getFounders, teamMembers, type TeamMember } from "@/lib/seo/team"
 
@@ -35,7 +36,7 @@ export function JsonLd({ data }: { data: object | object[] }) {
     )
 }
 
-export function organizationJsonLd() {
+export function organizationJsonLd(locale: "el" | "en" = "el") {
     const origin = getSiteOrigin()
     const sameAs = getSocialProfiles().map((profile) => profile.url)
 
@@ -56,7 +57,12 @@ export function organizationJsonLd() {
         name: siteConfig.name,
         url: origin,
         logo: `${origin}/icons/icon-512x512.png`,
-        description: siteConfig.definition.el,
+        // EN pages carried the Greek definition — describe the entity in the
+        // page's own language.
+        description: siteConfig.definition[locale],
+        // The brand motto — the category decode, rendered verbatim in the
+        // sitewide footer identity line.
+        slogan: CATEGORY[locale],
         email: siteConfig.contactEmail,
         contactPoint,
         areaServed: "GR",
@@ -73,7 +79,9 @@ export function organizationJsonLd() {
     const founders = getFounders()
     if (founders.length > 0) {
         organization.founder = founders.map((member) => ({
+            "@type": "Person",
             "@id": personId(member),
+            name: member.name,
         }))
     }
     return organization
@@ -81,6 +89,24 @@ export function organizationJsonLd() {
 
 function personId(member: TeamMember): string {
     return `${getSiteOrigin()}/company#${member.slug}`
+}
+
+/**
+ * Minimal NAMED reference to the Organization node. Rich-results validators
+ * evaluate each page's graph independently, so a bare `{"@id": …}` on a page
+ * that does not define the node renders as an unnamed publisher/author. The
+ * stub carries the name so every page's graph is self-contained; the full
+ * node (contact point, founders, address) still lives on the pages that
+ * render organizationJsonLd().
+ */
+function organizationRef() {
+    const origin = getSiteOrigin()
+    return {
+        "@type": "Organization",
+        "@id": `${origin}/#organization`,
+        name: siteConfig.name,
+        url: origin,
+    }
 }
 
 /** Person entity for a published team member (E-E-A-T). */
@@ -92,7 +118,7 @@ export function personJsonLd(member: TeamMember) {
         name: member.name,
         jobTitle: member.role.el,
         description: member.bio.el,
-        worksFor: { "@id": `${getSiteOrigin()}/#organization` },
+        worksFor: organizationRef(),
     }
     if (member.profileUrl) {
         person.sameAs = [member.profileUrl]
@@ -114,7 +140,7 @@ export function webSiteJsonLd() {
         name: siteConfig.name,
         url: origin,
         inLanguage: ["el", "en"],
-        publisher: { "@id": `${origin}/#organization` },
+        publisher: organizationRef(),
     }
 }
 
@@ -183,17 +209,19 @@ export type PricingOfferInput = {
     description?: string
 }
 
-export function softwareApplicationJsonLd(offers: PricingOfferInput[]) {
+export function softwareApplicationJsonLd(offers: PricingOfferInput[], locale: "el" | "en" = "el") {
     const origin = getSiteOrigin()
     return {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
+        // Shared @id with the homepage node — one app entity sitewide.
+        "@id": `${origin}/#app`,
         name: siteConfig.name,
         applicationCategory: "FinanceApplication",
         operatingSystem: "Web",
         url: origin,
-        description: siteConfig.definition.el,
-        publisher: { "@id": `${origin}/#organization` },
+        description: siteConfig.definition[locale],
+        publisher: organizationRef(),
         offers: offers.map((offer) => ({
             "@type": "Offer",
             name: offer.name,
@@ -292,9 +320,9 @@ export function articleJsonLd(input: {
               name: input.author.name,
               ...(input.author.jobTitle ? { jobTitle: input.author.jobTitle } : {}),
               ...(input.author.profileUrl ? { sameAs: [input.author.profileUrl] } : {}),
-              worksFor: { "@id": `${origin}/#organization` },
+              worksFor: organizationRef(),
           }
-        : { "@id": `${origin}/#organization` }
+        : organizationRef()
     return {
         "@context": "https://schema.org",
         "@type": "Article",
@@ -305,7 +333,7 @@ export function articleJsonLd(input: {
         dateModified: input.dateModified ?? input.datePublished,
         inLanguage: input.inLanguage ?? "el",
         author,
-        publisher: { "@id": `${origin}/#organization` },
+        publisher: organizationRef(),
         mainEntityOfPage: `${origin}${input.path}`,
     }
 }

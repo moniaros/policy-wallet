@@ -1,13 +1,11 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref } from "@/lib/seo/locale-links"
-import { ThemeToggle } from "@/components/ThemeToggle"
-import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { PublicHeader } from "@/components/public/PublicHeader"
 import { PricingCard } from "@/components/pricing/PricingCard"
@@ -20,7 +18,7 @@ import {
     PublicPricingPlan,
     publicPricingContent,
 } from "@/lib/pricing/public-pricing-content"
-import { CreditCard, Lock, Menu, Shield, X } from "lucide-react"
+import { CreditCard, Lock, Shield } from "lucide-react"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
 import type { PartnerOfferView } from "@/lib/partner-offers/matching"
@@ -37,12 +35,13 @@ export default function PricingPage({
     const router = useRouter()
     const [session, setSession] = useState<any>(null)
     const { language, setLanguage } = useLanguage()
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [audience, setAudience] = useState<PricingAudience>("policyholder")
     const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly")
     const [loadingPlanKey, setLoadingPlanKey] = useState<string | null>(null)
 
-    const content = useMemo(() => pricingContent[audience], [pricingContent, audience])
+    // Both audiences render server-side (inactive panels carry `hidden`), so
+    // the per-audience content is read inline where each panel renders.
+    const AUDIENCES: readonly PricingAudience[] = ["policyholder", "agent"]
     // EN context navigates within the /en tree (unmirrored targets stay Greek).
     const l = (href: string) => localizeHref(href, language)
 
@@ -52,20 +51,20 @@ export default function PricingPage({
             en: "We couldn't start the checkout. Please try again.",
         },
         heading: {
-            el: "Επιλέξτε το πλάνο που ταιριάζει σε εσάς",
-            en: "Choose the plan that fits your needs",
+            el: "Διαλέξτε το πλάνο που σας ταιριάζει",
+            en: "Pick the plan that fits you",
         },
         subtitle: {
-            el: "Αλλάξτε πλάνο οποιαδήποτε στιγμή. Χωρίς κρυφές χρεώσεις.",
-            en: "Switch plans anytime. No hidden fees.",
+            el: "Ξεκινάτε δωρεάν. Αλλάζετε ή σταματάτε όποτε θέλετε. Καμία κρυφή χρέωση.",
+            en: "Start free. Change or stop whenever you want. No hidden charges.",
         },
         audiencePolicyholder: {
             el: "Ιδιώτες",
             en: "Individuals",
         },
         audienceAgent: {
-            el: "Πράκτορες & Πρακτορεία",
-            en: "Agents & Agencies",
+            el: "Ασφαλιστές & γραφεία",
+            en: "Agents & agencies",
         },
         monthly: {
             el: "Μηνιαία χρέωση",
@@ -80,37 +79,23 @@ export default function PricingPage({
             en: "Save",
         },
         cancelAnytime: {
-            el: "Ακύρωση ανά πάσα στιγμή",
-            en: "Cancel anytime",
+            el: "Σταματάτε όποτε θέλετε",
+            en: "Stop whenever you want",
         },
         noHiddenFees: {
-            el: "Χωρίς κρυφές χρεώσεις",
-            en: "No hidden fees",
+            el: "Καμία κρυφή χρέωση",
+            en: "No hidden charges",
         },
         secure: {
-            el: "Ασφαλής πληρωμή με Stripe",
-            en: "Secure payment with Stripe",
+            el: "Ασφαλής πληρωμή μέσω Stripe",
+            en: "Secure payment through Stripe",
         },
         signin: { el: "Σύνδεση", en: "Log in" },
         getStarted: { el: "Ξεκινήστε", en: "Get started" },
         viewAccount: { el: "Διαχείριση λογαριασμού", en: "Manage account" },
         choosePlan: { el: "Επιλογή πλάνου", en: "Choose plan" },
         contactSales: { el: "Επικοινωνία πωλήσεων", en: "Contact sales" },
-        dashboard: { el: "Πίνακας ελέγχου", en: "Dashboard" },
-        pricing: { el: "Τιμολόγηση", en: "Pricing" },
-        products: { el: "Προϊόντα", en: "Products" },
-        company: { el: "Εταιρεία", en: "Company" },
-        openMenu: { el: "Άνοιγμα μενού", en: "Open menu" },
-        closeMenu: { el: "Κλείσιμο μενού", en: "Close menu" },
     } as const
-
-    // Prevent scrolling when mobile menu is open
-    useEffect(() => {
-        document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset"
-        return () => {
-            document.body.style.overflow = "unset"
-        }
-    }, [isMobileMenuOpen])
 
     // supabase-js is ~47 KB gzip and is only needed to resolve the session-aware
     // CTA *after* mount — the server already renders the anonymous CTA, since
@@ -211,16 +196,16 @@ export default function PricingPage({
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#F0FDF4] via-white to-[#ECFDF5] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:from-slate-950 dark:via-slate-900 dark:to-[#0B1F1A]">
+        <div className="min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:bg-slate-950 dark:text-white">
             <PublicHeader locale={language} ctaSource="public_pricing_nav" />
 
             <main id="main-content" tabIndex={-1}>
             <section className="px-4 pb-12 pt-28 sm:px-6 lg:px-8 lg:pt-36">
                 <div className="mx-auto max-w-7xl text-center">
-                    <h1 className="mb-4 text-4xl font-bold leading-tight text-slate-900 dark:text-white md:text-5xl">
+                    <h1 className="mb-4 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] lg:text-display dark:text-white">
                         {labels.heading[language]}
                     </h1>
-                    <p className="mx-auto mb-12 max-w-3xl text-xl text-slate-600 dark:text-slate-300">
+                    <p className="mx-auto mb-12 max-w-3xl text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                         {labels.subtitle[language]}
                     </p>
 
@@ -228,7 +213,7 @@ export default function PricingPage({
                         <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
                             <button
                                 onClick={() => setAudience("policyholder")}
-                                className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+                                className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors ${
                                     audience === "policyholder"
                                         ? "bg-[#29685B] text-white"
                                         : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
@@ -238,7 +223,7 @@ export default function PricingPage({
                             </button>
                             <button
                                 onClick={() => setAudience("agent")}
-                                className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+                                className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors ${
                                     audience === "agent"
                                         ? "bg-[#29685B] text-white"
                                         : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
@@ -249,16 +234,24 @@ export default function PricingPage({
                         </div>
                     </div>
 
-                    <h2 className="mb-3 text-2xl font-bold text-slate-900 dark:text-white">{content.heading[language]}</h2>
-                    <p className="mx-auto mb-12 max-w-3xl text-base text-slate-600 dark:text-slate-300">
-                        {content.subtitle[language]}
-                    </p>
+                    {/* BOTH audiences render server-side (inactive one hidden)
+                        so agent plans, comparison and FAQs are visible to
+                        crawlers and non-JS extractors — previously the agent
+                        tier existed only after client-side interaction. */}
+                    {AUDIENCES.map((aud) => (
+                        <div key={aud} hidden={audience !== aud}>
+                            <h2 className="mb-3 text-h3 font-semibold tracking-tight text-[#0F172A] dark:text-white">{pricingContent[aud].heading[language]}</h2>
+                            <p className="mx-auto mb-12 max-w-3xl text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                                {pricingContent[aud].subtitle[language]}
+                            </p>
+                        </div>
+                    ))}
 
                     <div className="mb-12 flex justify-center">
                         <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
                             <button
                                 onClick={() => setBillingPeriod("monthly")}
-                                className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-colors ${
+                                className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors ${
                                     billingPeriod === "monthly"
                                         ? "bg-[#29685B] text-white"
                                         : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
@@ -268,7 +261,7 @@ export default function PricingPage({
                             </button>
                             <button
                                 onClick={() => setBillingPeriod("annual")}
-                                className={`relative rounded-full px-6 py-2.5 text-sm font-semibold transition-colors ${
+                                className={`relative inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors ${
                                     billingPeriod === "annual"
                                         ? "bg-[#29685B] text-white"
                                         : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
@@ -285,7 +278,7 @@ export default function PricingPage({
                         </div>
                     </div>
 
-                    <div className="mb-12 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 dark:text-slate-400">
+                    <div className="mb-12 flex flex-wrap items-center justify-center gap-6 text-body text-[#475569] dark:text-slate-400">
                         <div className="flex items-center gap-2">
                             <Shield className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             <span>{labels.secure[language]}</span>
@@ -302,44 +295,55 @@ export default function PricingPage({
                 </div>
             </section>
 
-            <section className="px-4 pb-20 sm:px-6 lg:px-8">
-                <div className="mx-auto max-w-7xl">
-                    <div className={`grid grid-cols-1 gap-8 ${content.plans.length === 4 ? "lg:grid-cols-2 2xl:grid-cols-4" : "md:grid-cols-3"}`}>
-                        {content.plans.map((plan) => (
-                            <PricingCard
-                                key={plan.key}
-                                plan={plan}
-                                language={language}
-                                billingPeriod={billingPeriod}
-                                actionLabel={getPlanActionLabel(plan)}
-                                isLoading={loadingPlanKey === plan.key}
-                                onSelectPlan={handleSelectPlan}
-                            />
-                        ))}
+            {AUDIENCES.map((aud) => (
+                <section key={aud} hidden={audience !== aud} className="px-4 pb-20 sm:px-6 lg:px-8">
+                    <div className="mx-auto max-w-7xl">
+                        <div className={`grid grid-cols-1 gap-8 ${pricingContent[aud].plans.length === 4 ? "lg:grid-cols-2 2xl:grid-cols-4" : "md:grid-cols-3"}`}>
+                            {pricingContent[aud].plans.map((plan) => (
+                                <PricingCard
+                                    key={plan.key}
+                                    plan={plan}
+                                    language={language}
+                                    billingPeriod={billingPeriod}
+                                    actionLabel={getPlanActionLabel(plan)}
+                                    isLoading={loadingPlanKey === plan.key}
+                                    onSelectPlan={handleSelectPlan}
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            ))}
 
             {/* Partner benefits — renders only with live partners (honesty rule). */}
             <PartnerPerksSection offers={partnerOffers} isGreek={language === "el"} id="partner-perks" />
 
-            <section className="bg-white px-4 py-20 dark:bg-slate-900/50 sm:px-6 lg:px-8">
-                <div className="mx-auto max-w-6xl">
-                    <h2 className="mb-12 text-center text-3xl font-bold text-slate-900 dark:text-white md:text-4xl">
-                        {content.comparisonTitle[language]}
-                    </h2>
-                    <FeatureComparison language={language} plans={content.plans} rows={content.comparisonRows} />
-                </div>
-            </section>
+            {AUDIENCES.map((aud) => (
+                <section key={aud} hidden={audience !== aud} className="bg-white px-4 py-20 dark:bg-slate-900/50 sm:px-6 lg:px-8">
+                    <div className="mx-auto max-w-6xl">
+                        <h2 className="mb-12 text-center text-h2 font-semibold tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white">
+                            {pricingContent[aud].comparisonTitle[language]}
+                        </h2>
+                        <FeatureComparison language={language} plans={pricingContent[aud].plans} rows={pricingContent[aud].comparisonRows} />
+                    </div>
+                </section>
+            ))}
 
-            <section id="pricing-faq" className="scroll-mt-32 px-4 py-20 sm:px-6 lg:scroll-mt-40 lg:px-8">
-                <div className="mx-auto max-w-6xl">
-                    <h2 className="mb-12 text-center text-3xl font-bold text-slate-900 dark:text-white md:text-4xl">
-                        {content.faqTitle[language]}
-                    </h2>
-                    <PricingFAQ language={language} items={content.faqItems} />
-                </div>
-            </section>
+            {AUDIENCES.map((aud) => (
+                <section
+                    key={aud}
+                    hidden={audience !== aud}
+                    id={aud === "policyholder" ? "pricing-faq" : "pricing-faq-agent"}
+                    className="scroll-mt-32 px-4 py-20 sm:px-6 lg:scroll-mt-40 lg:px-8"
+                >
+                    <div className="mx-auto max-w-6xl">
+                        <h2 className="mb-12 text-center text-h2 font-semibold tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white">
+                            {pricingContent[aud].faqTitle[language]}
+                        </h2>
+                        <PricingFAQ language={language} items={pricingContent[aud].faqItems} />
+                    </div>
+                </section>
+            ))}
             </main>
 
             <PublicMegaFooter locale={language} />

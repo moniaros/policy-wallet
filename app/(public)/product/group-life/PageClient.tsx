@@ -2,7 +2,9 @@ import React from "react"
 import Link from "next/link"
 import { Umbrella, Users, TrendingUp, ArrowRight } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
+import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
+import { localizeHref } from "@/lib/seo/locale-links"
 
 export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }) {
     const isGreek = locale === "el"
@@ -32,8 +34,8 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             href: "/product/group-pension",
             titleEl: "Ομαδική Σύνταξη",
             titleEn: "Group Pension",
-            descEl: "Συνταξιοδοτική αποταμίευση με εισφορές εργοδότη ανά εργαζόμενο — η παροχή που χτίζει το μέλλον της ομάδας.",
-            descEn: "Pension savings with employer contributions per employee — the benefit that builds your team's future.",
+            descEl: "Συνταξιοδοτική αποταμίευση με εισφορές εργοδότη ανά εργαζόμενο — δείτε τι έχει χτιστεί για κάθε μέλος της ομάδας.",
+            descEn: "Pension savings with employer contributions per employee — see what has been built for each member of the team.",
         },
     ]
 
@@ -44,22 +46,25 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
                     <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ομαδική Ζωή", "Group Life Insurance")}
+                        {t("Ομαδική ζωή", "Group life")}
                     </span>
-                    <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8">
-                        {t("Η παροχή που λέει «σε καλύπτουμε» στην πράξη.", "The benefit that says “we've got you” — and means it.")}
+                    <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
+                        {t("Η παροχή που κανείς δεν διαβάζει. Εμείς τη διαβάζουμε.", "The benefit nobody reads. We read it.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
                         {t("Η ομαδική ασφάλιση ζωής δίνει σε κάθε εργαζόμενο κεφάλαιο ζωής και ανικανότητας με έξοδα εργοδότη. Οργανώστε το συμβόλαιο, δείτε ποιος καλύπτεται και με πόσα — χωρίς να ψάχνετε πίνακες σε PDF.", "Group life insurance gives every employee life and disability capital at the employer's expense. Organize the policy and see who is covered and for how much — without digging through PDF tables.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε δωρεάν", "Get Started Free")}
+                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
-                        <Link href="/solutions/agents" className="pw-secondary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Είστε πράκτορας ομαδικών;", "Do you broker group plans?")}
+                        <Link href={localizeHref("/solutions/agents", locale)} className="pw-secondary-button pw-btn-lg w-full sm:w-auto">
+                            {t("Είστε ασφαλιστής ομαδικών;", "Do you broker group plans?")}
                         </Link>
                     </div>
+                    <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                        {t("Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.", "Free for 1 policy. No card.")}
+                    </p>
                 </div>
             </section>
 
@@ -67,7 +72,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
                             {t("Το ένα τρίτο του πακέτου παροχών που ξεχνιέται.", "The forgotten third of the benefits package.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
@@ -97,7 +102,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                                 </div>
                             )
                             return pillar.href ? (
-                                <Link key={pillar.titleEn} href={pillar.href} className="block h-full">
+                                <Link key={pillar.titleEn} href={localizeHref(pillar.href, locale)} className="block h-full">
                                     {card}
                                 </Link>
                             ) : (
@@ -124,25 +129,27 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                             {t("Για εργαζομένους", "For employees")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Το ομαδικό κεφάλαιο ζωής μετράει στον οικογενειακό σας σχεδιασμό: αν το ατομικό σας συμβόλαιο το αγνοεί, ίσως πληρώνετε για κάλυψη που ήδη έχετε — ή στηρίζεστε σε κεφάλαιο μικρότερο απ' όσο νομίζετε.", "Your group life capital counts in your family planning: if your personal policy ignores it, you may be paying for cover you already have — or relying on a smaller sum than you think.")}
+                            {t("Η ομαδική ασφάλεια ζωής της δουλειάς σας μετράει. Αν το ατομικό σας συμβόλαιο την αγνοεί, ίσως πληρώνετε δύο φορές για το ίδιο. Ή ίσως στηρίζεστε σε λιγότερα χρήματα απ' όσα νομίζετε.", "The group life cover from your job counts. If your personal policy ignores it, you may be paying twice for the same thing. Or leaning on less money than you think.")}
                         </p>
                     </div>
                 </div>
             </section>
 
+            <LobFaq categoryId="group-life" locale={locale} />
+
             <ProductCategoryExplorer currentCategoryId="group-life" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">
-                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μια παροχή που κανείς δεν διαβάζει αξίζει να τη βλέπουν όλοι.", "A benefit nobody reads deserves to be seen by everyone.")}
                 </h2>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
                         {t("Ανεβάστε το ομαδικό σας", "Upload your group policy")}
                     </Link>
-                    <Link href="/solutions/agents" className="pw-secondary-button-inverse pw-btn-lg">
-                        {t("Λύσεις για πράκτορες", "Solutions for agents")}
+                    <Link href={localizeHref("/solutions/agents", locale)} className="pw-secondary-button-inverse pw-btn-lg">
+                        {t("Λύσεις για ασφαλιστές", "Solutions for agents")}
                     </Link>
                 </div>
             </section>

@@ -13,6 +13,7 @@ import { OG_IMAGES, siteConfig, TWITTER_IMAGES } from "@/lib/seo/site"
 export type MarketingPageKey =
     | "product"
     | "pricing"
+    | "compare"
     | "company"
     | "contact"
     | "solutions-agents"
@@ -61,47 +62,69 @@ export function enPathFor(path: string): string {
 export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     product: {
         path: "/product",
-        title: "Ψηφιακό πορτοφόλι ασφαλίσεων με ανάλυση AI",
+        // Leads with the answer the visitor gets, not with storage — "wallet"
+        // and "upload PDFs" framing sold the filing cabinet, not the check.
+        title: "Έλεγχος ασφάλισης με AI: καλύψεις και κενά",
+        // "Free basic summary" — the meta must not fuse Plus-only outputs
+        // (gaps, fix-first) with the free offer in one extractable span.
         description:
-            "Ανεβάστε τα ασφαλιστήριά σας σε PDF και η AI τα αναλύει σε λίγα λεπτά: καλύψεις, κενά, υπενθυμίσεις ανανέωσης. Δωρεάν για 1 ασφαλιστήριο, χωρίς κάρτα.",
+            "Στείλτε το ασφαλιστήριό σας και δείτε σε λίγα λεπτά τι καλύπτει και τι όχι, σε απλά ελληνικά. Δωρεάν βασική σύνοψη για 1 συμβόλαιο, χωρίς κάρτα.",
         keywords: [
-            "διαχείριση ασφαλιστηρίων",
+            "έλεγχος ασφάλισης",
             "ανάλυση ασφαλιστηρίου AI",
             "κενά κάλυψης",
-            "ψηφιακό ασφαλιστικό πορτοφόλι",
+            "έλεγχος καλύψεων",
         ],
         breadcrumb: "Προϊόν",
         en: {
-            title: "Digital insurance wallet with AI analysis",
+            title: "AI insurance check: coverages and gaps",
             description:
-                "Upload your insurance policies as PDFs and AI analyzes them in minutes: coverages, gaps and renewal reminders. Free for 1 policy, no card needed.",
+                "Send us your insurance policy and see in minutes what it covers and what it does not, in plain words. Free basic summary for 1 policy, no card needed.",
             breadcrumb: "Product",
         },
     },
     pricing: {
         path: "/pricing",
-        title: "Τιμές: Δωρεάν, Starter 2,99€, Plus 7,99€/μήνα",
+        title: "Τιμές: Δωρεάν, Starter €2.99, Plus €7.99/μήνα",
         description:
-            "Διαφανής τιμολόγηση PolicyWallet: δωρεάν για 1 συμβόλαιο, Starter 2,99€/μήνα για οργάνωση, Plus 7,99€/μήνα με πλήρη AI ανάλυση. Ακύρωση όποτε θέλετε.",
-        keywords: ["τιμές PolicyWallet", "συνδρομή διαχείρισης ασφαλιστηρίων"],
-        breadcrumb: "Τιμολόγηση",
+            "Καθαρές τιμές PolicyWallet: δωρεάν για 1 συμβόλαιο, Starter €2.99/μήνα, PolicyWallet Plus €7.99/μήνα με πλήρη ανάλυση AI. Ακύρωση όποτε θέλετε.",
+        keywords: ["τιμές PolicyWallet", "συνδρομή PolicyWallet"],
+        breadcrumb: "Τιμές",
         en: {
             title: "Pricing: Free, Starter €2.99, Plus €7.99/mo",
             description:
-                "Transparent PolicyWallet pricing: a free plan for 1 policy, Starter at €2.99/month for basic organization, and Plus at €7.99/month. Cancel anytime.",
+                "Clear PolicyWallet pricing: a free plan for 1 policy, Starter at €2.99/month and PolicyWallet Plus at €7.99/month with full AI analysis. Cancel anytime.",
             breadcrumb: "Pricing",
+        },
+    },
+    compare: {
+        path: "/compare",
+        title: "Σύγκριση με τις άλλες επιλογές",
+        description:
+            "Ο φάκελος στο συρτάρι, η ασφαλιστική σας, ο ασφαλιστής σας ή το PolicyWallet; Δείτε σε έναν καθαρό πίνακα τι κάνει το καθένα και τι δεν κάνει για εσάς.",
+        keywords: [
+            "σύγκριση ασφαλιστικών εργαλείων",
+            "ανεξάρτητος έλεγχος ασφάλισης",
+            "PolicyWallet σύγκριση",
+        ],
+        breadcrumb: "Σύγκριση",
+        en: {
+            title: "How PolicyWallet compares",
+            description:
+                "The folder in the drawer, your insurance company, your agent, or PolicyWallet? See in one clear table what each of them does, and what each one does not.",
+            breadcrumb: "Compare",
         },
     },
     company: {
         path: "/company",
-        title: "Η αποστολή μας: διαφάνεια στην ασφάλιση",
+        title: "Η αποστολή μας: καθαρές απαντήσεις",
         description:
-            "Το PolicyWallet είναι το ουδέτερο ψηφιακό πορτοφόλι ασφαλίσεων: οργανώνει τα συμβόλαιά σας και εντοπίζει κενά κάλυψης με AI. Δείτε τις αξίες μας.",
+            "Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια. Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι και πού όχι. Δείτε γιατί το φτιάξαμε.",
         breadcrumb: "Εταιρεία",
         en: {
-            title: "Our mission: transparency in insurance",
+            title: "Our mission: clear answers",
             description:
-                "PolicyWallet is the neutral digital insurance wallet: it organizes your policies and detects coverage gaps with AI. Meet the values and team behind it.",
+                "We do not sell insurance and we take no commission. We read your insurance and tell you where you are covered and where you are not. See why we built it.",
             breadcrumb: "Company",
         },
     },
@@ -123,33 +146,35 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/solutions/agents",
         title: "Λογισμικό με AI για ασφαλιστικούς πράκτορες",
         description:
-            "Χαρτοφυλάκιο πελατών, ανάλυση κενών με AI, υπενθυμίσεις ανανεώσεων και branded αναφορές για πράκτορες και πρακτορεία. Δείτε πώς λειτουργεί το PolicyWallet.",
+            "Όλοι οι πελάτες σας σε μία οθόνη: ανάλυση κενών με AI, υπενθυμίσεις λήξεων και αναφορές με το δικό σας όνομα, για ασφαλιστές και ασφαλιστικά γραφεία.",
         keywords: ["λογισμικό ασφαλιστικού πράκτορα", "CRM ασφαλιστών"],
-        breadcrumb: "Για Πράκτορες",
+        breadcrumb: "Για ασφαλιστές",
         en: {
             title: "AI software for insurance agents",
             description:
-                "Client portfolio oversight, AI coverage-gap analysis, renewal reminders and branded reports for insurance agents and agencies. See how PolicyWallet works.",
+                "All your clients on one screen: AI coverage-gap analysis, renewal reminders and reports with your own name — for insurance agents and agencies.",
             breadcrumb: "For Agents",
         },
     },
     "product-motor": {
         path: "/product/motor",
         title: "Ασφάλεια αυτοκινήτου: ανάλυση καλύψεων με AI",
+        // No "market value tracking": the product has no price feed (see the
+        // catalog comment) — the meta promises exactly what the page delivers.
         description:
-            "Παρακολουθήστε την εμπορική αξία του οχήματος, συγκρίνετε καλύψεις και εντοπίστε κενά όπως η οδική βοήθεια. Η AI διαβάζει το ασφαλιστήριό σας σε λίγα λεπτά.",
+            "Δείτε τι θα πλήρωνε το συμβόλαιο του αυτοκινήτου σας σε ολική ζημιά, τι περιλαμβάνει η οδική βοήθεια και πού υπάρχουν κενά. Η AI το διαβάζει σε λίγα λεπτά.",
         keywords: ["ασφάλεια αυτοκινήτου", "καλύψεις ασφάλειας αυτοκινήτου"],
         breadcrumb: "Αυτοκίνητο",
         en: {
             title: "Car insurance in Greece: AI coverage analysis",
             description:
-                "Track your vehicle's market value, compare coverages and spot gaps like missing roadside assistance. AI reads your motor policy for you in minutes.",
+                "See what your car policy would pay on a total loss, what your roadside assistance includes, and where the gaps are. AI reads your policy in minutes.",
             breadcrumb: "Motor",
         },
     },
     "product-property": {
         path: "/product/property",
-        title: "Ασφάλεια κατοικίας: κενά, ΕΝΦΙΑ, rebuild cost",
+        title: "Ασφάλεια κατοικίας: κενά, ΕΝΦΙΑ, ανακατασκευή",
         description:
             "Ελέγξτε αν το σπίτι σας είναι υπασφαλισμένο, αν δικαιούστε έκπτωση ΕΝΦΙΑ (σεισμός–φωτιά–πλημμύρα) και αν το κόστος ανακατασκευής είναι ενημερωμένο.",
         keywords: ["ασφάλεια κατοικίας", "έκπτωση ΕΝΦΙΑ ασφάλιση", "υπασφάλιση"],
@@ -205,15 +230,17 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     },
     "product-group-pension": {
         path: "/product/group-pension",
-        title: "Ομαδική σύνταξη: φοροαπαλλαγές και προβολές",
+        // "Projections" was removed from the page (no projection capability
+        // exists) — the meta must promise only what the page keeps.
+        title: "Ομαδική σύνταξη: εισφορές και φοροαπαλλαγές",
         description:
-            "Παρακολουθήστε το ομαδικό συνταξιοδοτικό σας πρόγραμμα: εισφορές, φορολογικά οφέλη και προβολή σύνταξης. Όλα σε ένα ασφαλές ψηφιακό πορτοφόλι.",
+            "Παρακολουθήστε το ομαδικό συνταξιοδοτικό σας πρόγραμμα: εισφορές, εργοδοτική συμμετοχή και φορολογικά οφέλη, όλα σε μία καθαρή εικόνα με απλά λόγια.",
         keywords: ["ομαδικό συνταξιοδοτικό πρόγραμμα", "φοροαπαλλαγή σύνταξης"],
         breadcrumb: "Ομαδική Σύνταξη",
         en: {
-            title: "Group pension: tax benefits and projections",
+            title: "Group pension: contributions and tax benefits",
             description:
-                "Track your employer pension plan: contributions, tax advantages and retirement projections. Everything organized in one secure digital insurance wallet.",
+                "Track your employer pension plan: contributions, employer match and tax advantages, all of it in one clear picture written in plain language.",
             breadcrumb: "Group Pension",
         },
     },
@@ -241,7 +268,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         en: {
             title: "Life insurance: family & mortgage protection",
             description:
-                "Death benefit, permanent disability, critical illness and mortgage protection. AI reads your life policy and shows what is missing for your family.",
+                "Death benefit, permanent disability, serious illness and mortgage protection. The AI reads your life policy and shows what is missing for your family.",
             breadcrumb: "Life",
         },
     },
@@ -379,13 +406,15 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     privacy: {
         path: "/privacy",
         title: "Πολιτική Απορρήτου",
+        // States the rights you can exercise, not a self-graded compliance
+        // verdict — same rule as TRUST_FACTS in lib/marketing/positioning.ts.
         description:
-            "Πώς το PolicyWallet συλλέγει, αποθηκεύει και προστατεύει τα δεδομένα σας: κρυπτογράφηση, ευρωπαϊκοί servers και πλήρης συμμόρφωση με τον GDPR.",
+            "Πώς συλλέγουμε, αποθηκεύουμε και προστατεύουμε τα δεδομένα σας: κρυπτογράφηση, διακομιστές στην Ευρώπη και δικαιώματα GDPR — αντίγραφο ή διαγραφή όποτε θέλετε.",
         breadcrumb: "Πολιτική Απορρήτου",
         en: {
             title: "Privacy Policy",
             description:
-                "How PolicyWallet collects, stores and protects your data: encryption, European servers, full GDPR compliance and how to exercise your rights.",
+                "How PolicyWallet collects, stores and protects your data: encryption, European servers and your GDPR rights — ask for a copy or a deletion at any time.",
             breadcrumb: "Privacy Policy",
         },
     },
@@ -428,6 +457,22 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             breadcrumb: "Subprocessors",
         },
     },
+}
+
+// For pages that localize via ?lang= (or Accept-Language) on the Greek route —
+// the legal set. The copy must follow the served language so the browser-tab
+// title matches what the reader sees, but URL identity (canonical + hreflang)
+// stays the Greek route's: the ?lang= variant is a parameterized duplicate of
+// this URL, not a separate document (the real English document lives at /en/*).
+export function buildLegalPageMetadata(
+    key: MarketingPageKey,
+    language: "el" | "en"
+): Metadata {
+    if (language !== "en") return buildMarketingMetadata(key)
+    const meta = buildMarketingMetadata(key, "en")
+    meta.alternates = buildMarketingMetadata(key).alternates
+    if (meta.openGraph) meta.openGraph.url = marketingPages[key].path
+    return meta
 }
 
 export function buildMarketingMetadata(

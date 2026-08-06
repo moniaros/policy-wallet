@@ -21,8 +21,10 @@ export default async function PricingPage() {
     // Live catalog prices (admin-managed) over the bilingual template.
     const pricingContent = buildPublicPricingContent(await getPlanCatalog())
     const partnerOffers = await getPublicPartnerOffers()
-    // The policyholder audience is the server-rendered default view, so its
-    // FAQ and plans are what crawlers see — the JSON-LD mirrors exactly that.
+    // Both audiences server-render (the inactive panel is `hidden`), so
+    // crawlers see agent tiers too. The JSON-LD stays scoped to the
+    // policyholder view — the default panel a visitor lands on — which keeps
+    // markup ⊆ rendered content.
     const { plans, faqItems } = pricingContent.policyholder
 
     return (

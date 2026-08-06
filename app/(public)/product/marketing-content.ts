@@ -11,67 +11,81 @@ export const PRODUCT_STEPS = [
     {
         n: "01",
         icon: Upload,
-        titleEl: "Ανεβάστε τα ασφαλιστήριά σας",
-        titleEn: "Upload your policies",
-        descEl: "Φωτογραφίστε ή μεταφορτώστε οποιοδήποτε PDF. Η AI μας εξάγει αυτόματα όλους τους βασικούς όρους.",
-        descEn: "Snap a photo or upload any PDF. Our AI automatically extracts every key term for you.",
+        titleEl: "Στείλτε τα συμβόλαιά σας",
+        titleEn: "Send us your policies",
+        descEl: "Βγάλτε φωτογραφία ή στείλτε το PDF. Βρίσκουμε μόνοι μας όλα τα σημαντικά σημεία.",
+        descEn: "Take a photo or send the PDF. We find every important point ourselves.",
     },
     {
         n: "02",
         icon: Sparkles,
-        titleEl: "Αφήστε την AI να εργαστεί",
-        titleEn: "Let the AI work",
-        descEl: "Ανάλυση κενών, σύγκριση καλύψεων και επισήμανση κινδύνων σε λίγα λεπτά, σε γλώσσα που καταλαβαίνετε.",
-        descEn: "Gap analysis, coverage comparison, and risk flagging in minutes, in language you actually understand.",
+        titleEl: "Τα διαβάζουμε για εσάς",
+        titleEn: "We read them for you",
+        // Gap & duplicate detection is Plus-only — the step names the plan.
+        // This text also ships verbatim inside the HowTo JSON-LD.
+        descEl: "Σας εξηγούμε τι καλύπτει και τι όχι, σε γλώσσα που καταλαβαίνετε — και, με το PolicyWallet Plus, βρίσκουμε κενά και διπλές καλύψεις.",
+        descEn: "We explain what is covered and what is not, in words you actually understand — and, with PolicyWallet Plus, we find gaps and doubled-up cover.",
     },
     {
         n: "03",
         icon: Bell,
-        titleEl: "Μείνετε ένα βήμα μπροστά",
-        titleEn: "Stay one step ahead",
-        descEl: "Λαμβάνετε έξυπνες υπενθυμίσεις ανανέωσης, ειδοποιήσεις αλλαγής τιμών και νέες συστάσεις κάλυψης.",
-        descEn: "Receive smart renewal reminders, price-change alerts, and new coverage recommendations.",
+        titleEl: "Σας κρατάμε ενήμερους",
+        titleEn: "We keep you in the loop",
+        descEl: "Σας ειδοποιούμε πριν λήξει κάτι και όταν βρούμε κάτι νέο στα έγγραφά σας — από το πλάνο Starter.",
+        descEn: "We warn you before something runs out, and when we find something new in your documents — from the Starter plan.",
     },
 ] as const
 
 export const PRODUCT_STATS = [
     {
-        valueEl: `${productCategories.length} κατηγορίες`,
-        valueEn: `${productCategories.length} categories`,
-        labelEl: "ασφάλισης σε μία πλατφόρμα",
-        labelEn: "of insurance in one place",
+        valueEl: `${productCategories.length} είδη`,
+        valueEn: `${productCategories.length} kinds`,
+        labelEl: "ασφάλισης, σε ένα μέρος",
+        labelEn: "of insurance, in one place",
     },
     {
-        valueEl: "< 30''",
-        valueEn: "< 30s",
-        labelEl: "για ανάλυση κάθε πολιτικής",
-        labelEn: "to analyze any policy",
+        // "πολιτική" is the Greek word for a political or company policy, not
+        // an insurance one. The label used to read "για ανάλυση κάθε
+        // πολιτικής" — a literal translation of "policy" that says the wrong
+        // thing in Greek.
+        // Minutes, not seconds — the one speed claim the whole site makes
+        // (SPEED_CLAIM in lib/marketing/positioning.ts).
+        valueEl: "Λίγα λεπτά",
+        valueEn: "A few minutes",
+        labelEl: "για να διαβαστεί ένα συμβόλαιο",
+        labelEn: "to read one policy",
     },
     {
-        valueEl: "100%",
-        valueEn: "100%",
-        labelEl: "δεδομένα υπό τον έλεγχό σας",
-        labelEn: "of your data under your control",
+        valueEl: "0",
+        valueEn: "0",
+        labelEl: "προμήθειες από ασφαλιστικές εταιρείες",
+        labelEn: "commissions from insurance companies",
     },
 ] as const
 
 export const PRODUCT_FAQS = [
     {
-        qEl: "Πού αποθηκεύονται τα έγγραφά μου;",
-        qEn: "Where are my documents stored?",
-        aEl: "Τα έγγραφά σας αποθηκεύονται σε κρυπτογραφημένα, ευρωπαϊκά servers. Δεν τα μοιραζόμαστε ποτέ χωρίς τη ρητή σας συγκατάθεση.",
-        aEn: "Your documents are stored on encrypted, EU-based servers. We never share them without your explicit consent.",
+        qEl: "Πού φυλάσσονται τα έγγραφά μου;",
+        qEn: "Where are my documents kept?",
+        aEl: "Σε κρυπτογραφημένους διακομιστές μέσα στην Ευρωπαϊκή Ένωση. Δεν τα δείχνουμε ποτέ σε κανέναν χωρίς τη ρητή σας άδεια, και τα διαγράφετε όποτε θέλετε.",
+        aEn: "On encrypted servers inside the European Union. We never show them to anyone without your explicit permission, and you can delete them whenever you want.",
     },
     {
-        qEl: "Λειτουργεί με όλες τις ασφαλιστικές εταιρείες;",
+        qEl: "Δουλεύει με όλες τις ασφαλιστικές εταιρείες;",
         qEn: "Does it work with all insurance companies?",
-        aEl: "Ναι. Εφόσον έχετε το ασφαλιστήριο σε PDF, η AI μας μπορεί να το αναλύσει, ανεξάρτητα από ασφαλιστή ή μεσίτη.",
-        aEn: "Yes. As long as you have the policy PDF, our AI can analyze it regardless of insurer or broker.",
+        aEl: "Ναι. Αρκεί να έχετε το συμβόλαιο σε αρχείο ή φωτογραφία. Δεν έχει σημασία ποια εταιρεία ή ποιος ασφαλιστής σας το πούλησε.",
+        aEn: "Yes. All we need is the policy as a file or a photo. It does not matter which company or which agent sold it to you.",
     },
     {
-        qEl: "Υπάρχει δωρεάν πρόσβαση;",
-        qEn: "Is there a free tier?",
-        aEl: "Ναι, μπορείτε να ξεκινήσετε δωρεάν. Ανεβάστε 1 ασφαλιστήριο με βασική AI σύνοψη, χωρίς πιστωτική κάρτα.",
-        aEn: "Yes, you can start for free. Upload 1 policy with a basic AI summary, no credit card required.",
+        qEl: "Πουλάτε ασφάλειες;",
+        qEn: "Do you sell insurance?",
+        aEl: "Όχι. Δεν είμαστε ασφαλιστική εταιρεία και δεν παίρνουμε προμήθεια από καμία. Πληρωνόμαστε μόνο από τη δική σας συνδρομή.",
+        aEn: "No. We are not an insurance company and we take no commission from any of them. We are paid only by your subscription.",
+    },
+    {
+        qEl: "Μπορώ να το δοκιμάσω δωρεάν;",
+        qEn: "Can I try it for free?",
+        aEl: "Ναι. Στείλτε 1 συμβόλαιο και πάρτε βασική σύνοψη, χωρίς πιστωτική κάρτα και χωρίς δέσμευση.",
+        aEn: "Yes. Send us 1 policy and get a basic summary, with no credit card and no commitment.",
     },
 ] as const

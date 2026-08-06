@@ -1,18 +1,35 @@
 import { Inter } from "next/font/google"
 import Link from "next/link"
-import { ArrowRight, Upload, Sparkles, CheckCircle } from "lucide-react"
+import { ArrowRight, FileText, Search, Sparkles } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
 import type { LandingLocale } from "@/types/landing-content"
 import { LandingHeader } from "@/components/landing/LandingHeader"
 import { LandingCtaLink } from "@/components/landing/LandingCtaLink"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { TrustBadges } from "@/components/landing/TrustBadges"
-import { TrustStrip } from "@/components/ui/TrustStrip"
+import { TrustRow } from "@/components/landing/TrustRow"
+import { WhyDifferent } from "@/components/landing/WhyDifferent"
+import { WhyNow } from "@/components/landing/WhyNow"
+import { PricingPreview } from "@/components/landing/PricingPreview"
+import { HomeFaq } from "@/components/landing/HomeFaq"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
 import type { PartnerOfferView } from "@/lib/partner-offers/matching"
+import type { PublicPricingPlan } from "@/lib/pricing/public-pricing-content"
 import { PolicyWalletWidget } from "@/components/landing/PolicyWalletWidget"
 import { ServicesGrid } from "@/components/landing/ServicesGrid"
 import { AudienceTabs } from "@/components/landing/AudienceTabs"
+import { landingContent } from "@/lib/landing/content"
+import { productCategories } from "@/lib/product/catalog"
+import {
+    CATEGORY_NAME,
+    CTA_REASSURANCE,
+    LIFE_CHANGES,
+    PRIMARY_ACTION,
+    PROMISE,
+    STORY,
+    WHAT_WE_DO,
+    pick,
+} from "@/lib/marketing/positioning"
 
 const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
@@ -21,141 +38,159 @@ interface WorldClassLandingProps {
     /** Live partner offers from getPublicPartnerOffers(); empty/omitted ⇒ the
      *  #perks section and its nav link render nothing (honesty rule). */
     partnerOffers?: PartnerOfferView[]
+    /** Live policyholder plans from the same catalog /pricing renders, so the
+     *  homepage price band can never quote a number the pricing page does not. */
+    pricingPlans?: PublicPricingPlan[]
 }
 
 /**
- * Server component. Every static section (hero copy, trust bar, services,
- * stats, how-it-works, final CTA) renders on the server; the only client
- * islands are LandingHeader (nav/mobile-menu state + analytics),
- * LandingCtaLink (tracked signup CTAs), PolicyWalletWidget, AudienceTabs
- * and PublicMegaFooter (newsletter form).
+ * The homepage. It tells one story, in order — life changes, your risks change
+ * with it, your insurance does not keep up, we tell you whether you are still
+ * protected — and the first screen already answers all four questions a
+ * visitor is asking:
+ *
+ *   what changed → the headline, expanded in #life-changes
+ *   why care     → the sentence under it, expanded in #why-now
+ *   why you      → the badge above it, expanded in #difference
+ *   what now     → the button, and the price band further down
+ *
+ * Server component. Every section renders on the server; the only client
+ * islands are LandingHeader (nav state + analytics), LandingCtaLink (tracked
+ * signup CTAs), PolicyWalletWidget, AudienceTabs and PublicMegaFooter.
  */
-export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLandingProps) {
+export function WorldClassLanding({
+    locale,
+    partnerOffers = [],
+    pricingPlans = [],
+}: WorldClassLandingProps) {
     const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
     // EN context navigates within the /en tree (unmirrored targets stay Greek).
     const l = (href: string) => localizeHref(href, locale)
 
+    const steps = landingContent.howItWorks.steps
+    const stepIcons = [FileText, Search, Sparkles] as const
+
     return (
         <div
-            className={`${inter.className} min-h-screen bg-white dark:bg-slate-900 text-[#0F172A] dark:text-white selection:bg-[#29685B]/20 selection:text-[#0F172A]`}
+            className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:bg-slate-900 dark:text-white`}
         >
             <LandingHeader locale={locale} showPerksLink={partnerOffers.length > 0} />
 
-            <main id="main-content" tabIndex={-1} className="pt-28 lg:pt-36">
+            <main id="main-content" tabIndex={-1} className="pt-24 sm:pt-28 lg:pt-36">
                 {/* ── 1. HERO ──────────────────────────────────────── */}
-                <section className="px-6 pb-20 lg:px-12 lg:pb-28">
-                    <div className="mx-auto grid max-w-page grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-                        {/* Copy */}
+                <section className="px-6 pb-16 lg:px-12 lg:pb-24">
+                    <div className="mx-auto grid max-w-page grid-cols-1 items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
                         <div>
-                            {/* Badge */}
-                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#A7F3D0] dark:border-[#29685B]/50 bg-[#ECFDF5] dark:bg-[#29685B]/15 px-3.5 py-1.5">
-                                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#29685B]" />
-                                <span className="text-body-sm font-medium text-[#166534] dark:text-[#A7F3D0]">
-                                    {t(
-                                        "Gap Engine — AI ανάλυση κενών κάλυψης",
-                                        "Gap Engine — AI coverage gap analysis"
-                                    )}
+                            {/* The category claim — the first thing on the page.
+                                The H1 + subline directly below are its decode. */}
+                            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-1 sm:mb-6 sm:px-3.5 sm:py-1.5 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
+                                <span className="text-caption font-semibold text-[#166534] sm:text-body-sm dark:text-[#A7F3D0]">
+                                    {pick(CATEGORY_NAME, locale)}
                                 </span>
-                            </div>
-
-                            {/* Headline */}
-                            <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-[-0.04em] text-[#0F172A] dark:text-white lg:text-display">
-                                {isGreek ? (
-                                    <>
-                                        Ξέρετε τι σας καλύπτει{" "}
-                                        <span className="text-[#29685B] dark:text-[#A7F3D0]">κάθε ασφαλιστήριο</span>;
-                                    </>
-                                ) : (
-                                    <>
-                                        Do you know what each{" "}
-                                        <span className="text-[#29685B] dark:text-[#A7F3D0]">policy covers</span>?
-                                    </>
-                                )}
-                            </h1>
-
-                            {/* Subheadline */}
-                            <p className="mb-8 max-w-[500px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t(
-                                    "Ανεβάστε τα ασφαλιστήριά σας. Η AI βρίσκει κενά, σας ειδοποιεί πριν τη λήξη, και σας δίνει καθαρή εικόνα της κάλυψής σας.",
-                                    "Upload your policies. AI finds gaps, alerts you before renewals, and keeps your cover in clear view."
-                                )}
                             </p>
 
-                            {/* CTAs */}
-                            <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+                            <h1 className="mb-4 text-h2 leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-[#0F172A] sm:mb-6 sm:text-h1 lg:text-display dark:text-white">
+                                {pick(PROMISE.lead, locale)}{" "}
+                                <span className="text-[#29685B] dark:text-[#A7F3D0]">
+                                    {pick(PROMISE.accent, locale)}
+                                </span>
+                            </h1>
+
+                            <p className="mb-6 max-w-[520px] text-body-lg leading-relaxed text-[#475569] sm:mb-8 sm:text-lead dark:text-slate-300">
+                                {pick(WHAT_WE_DO, locale)}
+                            </p>
+
+                            <div className="flex flex-col gap-3 sm:flex-row">
                                 <LandingCtaLink
                                     href="/auth/signup?role=policyholder&source=landing_hero"
                                     locale={locale}
                                     location="hero"
                                     className="pw-primary-button pw-btn-lg"
                                 >
-                                    {t("Ξεκινήστε Δωρεάν", "Start Free")}
+                                    {pick(PRIMARY_ACTION, locale)}
+                                    <ArrowRight aria-hidden className="h-4 w-4" />
                                 </LandingCtaLink>
                                 <Link href="#how-it-works" className="pw-secondary-button pw-btn-lg">
                                     {t("Πώς λειτουργεί", "How it works")}
                                 </Link>
                             </div>
 
-                            {/* Product facts — verifiable claims only, no fabricated social proof */}
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#29685B] text-kicker font-bold text-white">
-                                    20
-                                </div>
-                                <p className="text-body-sm text-[#5B6A7A] dark:text-slate-400">
-                                    <span className="font-semibold text-[#0F172A] dark:text-white">
-                                        {t("ασφαλιστικοί κλάδοι", "insurance branches")}
-                                    </span>{" "}
-                                    {t(
-                                        "— δωρεάν 1 συμβόλαιο με βασική AI σύνοψη, χωρίς κάρτα",
-                                        "— 1 policy free with a basic AI summary, no card required"
-                                    )}
-                                </p>
+                            {/* Nothing to lose by starting today. */}
+                            <p className="mt-3 text-body-sm text-[#5B6A7A] sm:mt-4 dark:text-slate-400">
+                                {pick(CTA_REASSURANCE, locale)}
+                            </p>
+
+                            {/* Why you can trust us — answered without scrolling. */}
+                            <div className="mt-5 border-t border-[#E2E8F0] pt-5 sm:mt-8 sm:pt-7 dark:border-slate-800">
+                                <TrustRow locale={locale} />
                             </div>
                         </div>
 
-                        {/* Widget */}
                         <PolicyWalletWidget isGreek={isGreek} />
                     </div>
                 </section>
 
-                {/* ── 2. TRUST BAR ─────────────────────────────────── */}
-                <div className="border-y border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 px-6 py-10 lg:px-12">
+                {/* ── 2. WHAT CHANGED ──────────────────────────────── */}
+                <section
+                    id="life-changes"
+                    aria-labelledby="life-changes-heading"
+                    className="border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-12 lg:px-12 dark:border-slate-800 dark:bg-slate-900"
+                >
                     <div className="mx-auto max-w-page space-y-6 text-center">
-                        <p className="text-caption font-semibold uppercase tracking-widest text-[#5B6A7A] dark:text-slate-400">
+                        <h2
+                            id="life-changes-heading"
+                            className="text-lead font-semibold text-balance text-[#0F172A] sm:text-title dark:text-white"
+                        >
                             {t(
-                                "Αναγνωρίζει συμβόλαια από όλες τις ασφαλιστικές",
-                                "Works with every Greek insurer"
+                                "Κάτι άλλαξε στη ζωή σας φέτος;",
+                                "Did something change in your life this year?",
                             )}
+                        </h2>
+                        <ul className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+                            {LIFE_CHANGES.map((change) => (
+                                <li
+                                    key={change.en}
+                                    className="flex h-10 items-center rounded-full border border-[#E2E8F0] bg-white px-4 text-body-sm font-semibold text-[#334155] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                >
+                                    {pick(change, locale)}
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="mx-auto max-w-[560px] text-body-lg text-[#475569] dark:text-slate-300">
+                            {pick(STORY.matters, locale)}
                         </p>
-                        <TrustBadges />
-                        <TrustStrip
-                            items={[
-                                { kind: "encryption", label: "AES-256" },
-                                { kind: "eu", label: t("Servers ΕΕ", "EU Servers") },
-                                { kind: "gdpr", label: "GDPR" },
-                            ]}
-                        />
                     </div>
-                </div>
+                </section>
 
-                {/* ── 3. SERVICES ──────────────────────────────────── */}
-                <section id="services" className="px-6 py-20 lg:px-12 lg:py-28">
+                {/* ── 3. WHY WE ARE DIFFERENT ──────────────────────── */}
+                <WhyDifferent locale={locale} />
+
+                {/* ── 4. WHAT YOU GET ──────────────────────────────── */}
+                <section
+                    id="services"
+                    aria-labelledby="services-heading"
+                    className="scroll-mt-28 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28"
+                >
                     <div className="mx-auto max-w-page">
-                        <div className="mb-12 max-w-[560px]">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                                {t("Υπηρεσίες", "Services")}
+                        <div className="mb-12 max-w-[600px]">
+                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                                {t("Τι παίρνετε", "What you get")}
                             </p>
-                            <h2 className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
+                            <h2
+                                id="services-heading"
+                                className="mb-4 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
+                            >
                                 {t(
-                                    "Ό,τι χρειάζεστε για τα ασφαλιστήριά σας",
-                                    "Everything you need for your policies"
+                                    "Πέντε απαντήσεις που δεν σας δίνει κανείς άλλος.",
+                                    "Five answers nobody else gives you.",
                                 )}
                             </h2>
                             <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Από το upload μέχρι την ανάλυση AI — το PolicyWallet αυτοματοποιεί κάθε βήμα.",
-                                    "From upload to AI analysis — PolicyWallet automates every step."
+                                    "Στείλτε ένα συμβόλαιο. Τα υπόλοιπα τα κάνουμε εμείς.",
+                                    "Send us one policy. We do the rest.",
                                 )}
                             </p>
                         </div>
@@ -163,20 +198,78 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                     </div>
                 </section>
 
-                {/* ── 4. AUDIENCE TABS ─────────────────────────────── */}
-                <section id="solutions" className="bg-[#F8FAFC] dark:bg-slate-900 px-6 py-20 lg:px-12 lg:py-28">
+                {/* ── 5. WHY IT MATTERS ────────────────────────────── */}
+                <WhyNow locale={locale} />
+
+                {/* ── 6. HOW IT WORKS ──────────────────────────────── */}
+                <section
+                    id="how-it-works"
+                    aria-labelledby="how-it-works-heading"
+                    className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
+                >
+                    <div className="mx-auto max-w-page">
+                        <div className="mb-14 text-center">
+                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                                {t("Πώς λειτουργεί", "How it works")}
+                            </p>
+                            <h2
+                                id="how-it-works-heading"
+                                className="text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
+                            >
+                                {t("Τρία βήματα. Λίγα λεπτά.", "Three steps. A few minutes.")}
+                            </h2>
+                        </div>
+
+                        <ol className="grid gap-6 md:grid-cols-3">
+                            {steps.map((step, index) => {
+                                const Icon = stepIcons[index] ?? FileText
+                                return (
+                                    <li
+                                        key={step.id}
+                                        className="flex flex-col rounded-2xl border border-[#E2E8F0] bg-white p-7 dark:border-slate-800 dark:bg-slate-950"
+                                    >
+                                        <div className="mb-5 flex items-center gap-3">
+                                            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#ECFDF5] dark:bg-[#29685B]/20">
+                                                <Icon aria-hidden className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                            </span>
+                                            <span className="text-micro font-bold tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
+                                                {String(index + 1).padStart(2, "0")}
+                                            </span>
+                                        </div>
+                                        <h3 className="mb-2 text-lead font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                                            {isGreek ? step.title.el : step.title.en}
+                                        </h3>
+                                        <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                                            {isGreek ? step.description.el : step.description.en}
+                                        </p>
+                                    </li>
+                                )
+                            })}
+                        </ol>
+                    </div>
+                </section>
+
+                {/* ── 7. WHO IT IS FOR ─────────────────────────────── */}
+                <section
+                    id="solutions"
+                    aria-labelledby="solutions-heading"
+                    className="scroll-mt-28 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28"
+                >
                     <div className="mx-auto max-w-page">
                         <div className="mb-12 text-center">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                                {t("Για εσάς", "For you")}
+                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                                {t("Για ποιον", "Who it is for")}
                             </p>
-                            <h2 className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
-                                {t("Ιδιώτης ή ασφαλιστής;", "Individual or insurance agent?")}
+                            <h2
+                                id="solutions-heading"
+                                className="mb-4 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
+                            >
+                                {t("Ασφαλισμένος ή ασφαλιστής;", "Are you insured, or do you insure others?")}
                             </h2>
-                            <p className="mx-auto max-w-[500px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                            <p className="mx-auto max-w-[520px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Δύο διαφορετικές εμπειρίες, σχεδιασμένες για τις ανάγκες σας.",
-                                    "Two distinct experiences, built around your needs."
+                                    "Δύο διαφορετικές εμπειρίες, φτιαγμένες για τη δουλειά που κάνετε.",
+                                    "Two different experiences, built for the job you are doing.",
                                 )}
                             </p>
                         </div>
@@ -184,146 +277,57 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                     </div>
                 </section>
 
-                {/* ── 4b. PARTNER PERKS (renders only with live partners) ── */}
+                {/* ── 7b. PARTNER PERKS (renders only with live partners) ── */}
                 <PartnerPerksSection offers={partnerOffers} isGreek={isGreek} />
 
-                {/* ── 5. STATS ─────────────────────────────────────── */}
-                <section className="border-y border-[#E2E8F0] dark:border-slate-800 px-6 py-16 lg:px-12">
-                    <div className="mx-auto grid max-w-page grid-cols-2 gap-8 text-center lg:grid-cols-4">
-                        {[
-                            {
-                                value: "20",
-                                labelEl: "Ασφαλιστικοί κλάδοι",
-                                labelEn: "Insurance branches",
-                            },
-                            {
-                                value: "€0",
-                                labelEl: "Δωρεάν συμβόλαιο με βασική AI σύνοψη",
-                                labelEn: "Free policy with basic AI summary",
-                            },
-                            {
-                                value: "<30s",
-                                labelEl: "Χρόνος ανάλυσης",
-                                labelEn: "Analysis time",
-                            },
-                            {
-                                value: "GDPR",
-                                labelEl: "Πλήρης συμμόρφωση",
-                                labelEn: "Fully compliant",
-                            },
-                        ].map((stat) => (
-                            <div key={stat.value}>
-                                <p className="text-h2 font-bold tracking-tight text-[#29685B] dark:text-[#A7F3D0] lg:text-h1">
-                                    {stat.value}
-                                </p>
-                                <p className="mt-1 text-body text-[#5B6A7A] dark:text-slate-400">
-                                    {t(stat.labelEl, stat.labelEn)}
-                                </p>
-                            </div>
-                        ))}
+                {/* ── 8. PRICE ─────────────────────────────────────── */}
+                <PricingPreview locale={locale} plans={pricingPlans} />
+
+                {/* ── 9. WILL IT WORK FOR ME ───────────────────────── */}
+                <section
+                    aria-labelledby="coverage-heading"
+                    className="border-t border-[#E2E8F0] px-6 py-14 lg:px-12 dark:border-slate-800"
+                >
+                    <div className="mx-auto max-w-page space-y-5 text-center">
+                        <h2
+                            id="coverage-heading"
+                            className="text-lead font-semibold text-balance text-[#0F172A] sm:text-title dark:text-white"
+                        >
+                            {t(
+                                "Δουλεύει με ό,τι κι αν έχετε, από όποια εταιρεία κι αν το πήρατε.",
+                                "It works with whatever you have, from whichever company you bought it.",
+                            )}
+                        </h2>
+                        <TrustBadges isGreek={isGreek} />
+                        <p className="mx-auto max-w-[560px] text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                            {t(
+                                `${productCategories.length} είδη ασφάλισης. Δεν συνεργαζόμαστε με καμία ασφαλιστική — γι' αυτό μπορούμε να σας πούμε την αλήθεια.`,
+                                `${productCategories.length} types of insurance. We do not work with any insurance company — that is why we can tell you the truth.`,
+                            )}
+                        </p>
                     </div>
                 </section>
 
-                {/* ── 6. HOW IT WORKS ──────────────────────────────── */}
-                <section id="how-it-works" className="px-6 py-20 lg:px-12 lg:py-28">
-                    <div className="mx-auto max-w-page">
-                        <div className="mb-14 text-center">
-                            <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                                {t("Πώς λειτουργεί", "How it works")}
-                            </p>
-                            <h2 className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
-                                {t("Τρία βήματα. Πλήρης έλεγχος.", "Three steps. Full control.")}
-                            </h2>
-                        </div>
+                {/* ── 10. QUESTIONS ────────────────────────────────── */}
+                <HomeFaq locale={locale} />
 
-                        <div className="flex flex-col gap-8 md:flex-row md:gap-0">
-                            {[
-                                {
-                                    Icon: Upload,
-                                    step: "01",
-                                    titleEl: "Ανεβάστε",
-                                    titleEn: "Upload",
-                                    descEl: "PDF ή φωτογραφία, οποιαδήποτε εταιρεία. Δεν χρειάζεται ειδική μορφή.",
-                                    descEn: "PDF or photo, any insurer. No special format required.",
-                                },
-                                {
-                                    Icon: Sparkles,
-                                    step: "02",
-                                    titleEl: "Η AI αναλύει",
-                                    titleEn: "AI analyzes",
-                                    descEl: "Εξάγει δεδομένα, συγκρίνει καλύψεις και εντοπίζει κενά σε δευτερόλεπτα.",
-                                    descEn: "Extracts data, compares coverage and detects gaps in seconds.",
-                                },
-                                {
-                                    Icon: CheckCircle,
-                                    step: "03",
-                                    titleEl: "Πάρτε τον έλεγχο",
-                                    titleEn: "Take control",
-                                    descEl: "Dashboard, ειδοποιήσεις ανανέωσης και σύνδεση με τον σύμβουλό σας.",
-                                    descEn: "Dashboard, renewal alerts and direct connection with your advisor.",
-                                },
-                            ].map((item, i, arr) => (
-                                <div key={item.step} className="flex flex-1 items-start md:flex-col">
-                                    <div className="flex flex-col items-center md:flex-row md:items-start md:w-full">
-                                        <div className="flex flex-col items-center md:flex-1">
-                                            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-[#ECFDF5] dark:bg-[#29685B]/15 md:mb-6">
-                                                <item.Icon className="h-6 w-6 text-[#29685B] dark:text-[#A7F3D0]" />
-                                            </div>
-                                            <div className="ml-5 md:ml-0 md:text-center">
-                                                <p className="mb-0.5 text-micro font-bold tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                                                    {item.step}
-                                                </p>
-                                                <h3 className="mb-2 text-lead font-semibold text-[#0F172A] dark:text-white">
-                                                    {t(item.titleEl, item.titleEn)}
-                                                </h3>
-                                                <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300 md:max-w-[220px]">
-                                                    {t(item.descEl, item.descEn)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        {/* Connector arrow (desktop only, between steps) */}
-                                        {i < arr.length - 1 && (
-                                            <div className="hidden items-center px-6 pt-7 md:flex">
-                                                <ArrowRight className="h-5 w-5 text-slate-300 dark:text-slate-500" />
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* ── 7. FINAL CTA ─────────────────────────────────── */}
+                {/* ── 11. WHAT TO DO NEXT ──────────────────────────── */}
                 <section className="px-6 pb-24 lg:px-12">
-                    <div className="relative mx-auto max-w-page overflow-hidden rounded-2xl bg-[#0F172A] px-8 py-20 text-center lg:py-28">
-                        {/* Radial glow */}
+                    <div className="relative mx-auto max-w-page overflow-hidden rounded-2xl bg-[#0F172A] px-6 py-20 text-center sm:px-8 lg:py-28">
                         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(41,104,91,0.30),transparent)]" />
 
                         <div className="relative">
-                            <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#89D9B2]">
+                            <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-[#89D9B2]">
                                 PolicyWallet
                             </p>
-                            <h2 className="mb-4 text-h2 font-semibold leading-tight tracking-[-0.03em] text-white lg:text-h1">
-                                {isGreek ? (
-                                    <>
-                                        Αρκεί ένα συμβόλαιο
-                                        <br />
-                                        για να δείτε τη διαφορά.
-                                    </>
-                                ) : (
-                                    <>
-                                        One policy is all it takes
-                                        <br />
-                                        to see the difference.
-                                    </>
+                            <h2 className="mb-4 text-h2 leading-tight font-semibold tracking-[-0.03em] text-balance text-white lg:text-h1">
+                                {t(
+                                    "Μάθετε σήμερα αν είστε ακόμη προστατευμένοι.",
+                                    "Find out today whether you are still protected.",
                                 )}
                             </h2>
-                            <p className="mx-auto mb-10 max-w-[440px] text-lead text-white/80">
-                                {t(
-                                    "Δωρεάν για 1 συμβόλαιο με βασική AI σύνοψη. Χωρίς πιστωτική κάρτα.",
-                                    "Free for 1 policy with a basic AI summary. No credit card required."
-                                )}
+                            <p className="mx-auto mb-10 max-w-[460px] text-lead text-white/80">
+                                {pick(CTA_REASSURANCE, locale)}
                             </p>
                             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                                 <LandingCtaLink
@@ -332,13 +336,14 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                     location="final_cta"
                                     className="pw-primary-button-inverse pw-btn-lg"
                                 >
-                                    {t("Ξεκινήστε Δωρεάν", "Start Free")}
+                                    {pick(PRIMARY_ACTION, locale)}
+                                    <ArrowRight aria-hidden className="h-4 w-4" />
                                 </LandingCtaLink>
                                 <Link
                                     href={l("/solutions/agents")}
                                     className="pw-secondary-button-inverse pw-btn-lg"
                                 >
-                                    {t("Είστε ασφαλιστής;", "Are you an agent?")}
+                                    {t("Είμαι ασφαλιστής", "I am an insurance agent")}
                                 </Link>
                             </div>
                         </div>

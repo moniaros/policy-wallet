@@ -1,53 +1,59 @@
+import { Bike, Briefcase, Car, Heart, Home, PawPrint, Plane, Umbrella } from "lucide-react"
+
 /**
- * Trust badges for Greek insurers used on the landing page hero section.
- * Each badge uses the insurer's brand color and a distinctive icon shape.
- * No "use client": purely static markup, server-rendered on the landing.
+ * What we can read, shown as insurance branches rather than insurer logos.
+ *
+ * This used to be a wall of six real insurer names (Ethniki, Interamerican,
+ * NN Hellas, Generali, Eurolife, Allianz) styled in each company's own brand
+ * colour. Two problems with that, and both are the kind that only surface
+ * after launch:
+ *
+ *  - A branded logo wall reads as "these companies endorse us". None of them
+ *    do, and the whole product story is that we are not connected to any
+ *    insurer. The strongest version of this section says exactly that.
+ *  - The chips were `bg-white/90` with `dark:text-slate-200`, so in dark mode
+ *    the labels rendered near-white on white — around 1.2:1, unreadable.
+ *
+ * Branches are ours to claim, carry the same "we handle your kind of policy"
+ * message, and cannot mislead anyone about who we work with.
+ *
+ * Server component: static markup, no JS shipped.
  */
 
-interface InsurerBadge {
-    name: string
-    color: string
-    bgColor: string
+interface BranchChip {
+    Icon: typeof Car
+    el: string
+    en: string
 }
 
-const GREEK_INSURERS: InsurerBadge[] = [
-    { name: "Ethniki", color: "#003DA5", bgColor: "#E8EEF7" },
-    { name: "Interamerican", color: "#E31937", bgColor: "#FDEDEF" },
-    { name: "NN Hellas", color: "#FF6200", bgColor: "#FFF2E8" },
-    { name: "Generali", color: "#C8102E", bgColor: "#FAE8EB" },
-    { name: "Eurolife", color: "#00529B", bgColor: "#E6EEF5" },
-    { name: "Allianz", color: "#003781", bgColor: "#E6EDF5" },
+const BRANCHES: BranchChip[] = [
+    { Icon: Car, el: "Αυτοκίνητο", en: "Car" },
+    { Icon: Home, el: "Σπίτι", en: "Home" },
+    { Icon: Heart, el: "Υγεία", en: "Health" },
+    { Icon: Umbrella, el: "Ζωή", en: "Life" },
+    { Icon: Plane, el: "Ταξίδι", en: "Travel" },
+    { Icon: Briefcase, el: "Επιχείρηση", en: "Business" },
+    { Icon: Bike, el: "Σκάφος", en: "Boat" },
+    { Icon: PawPrint, el: "Κατοικίδιο", en: "Pet" },
 ]
 
-function InsurerLogo({ insurer }: { insurer: InsurerBadge }) {
+export function TrustBadges({ isGreek }: { isGreek: boolean }) {
     return (
-        <div
-            className="group relative flex h-10 items-center gap-2 rounded-lg border border-slate-200/80 bg-white/90 px-4 py-2 backdrop-blur-sm transition-all duration-300 hover:border-slate-300 hover:shadow-md"
-            style={{ ['--brand' as string]: insurer.color }}
-        >
-            {/* Brand dot indicator */}
-            <span
-                className="h-2.5 w-2.5 rounded-full transition-transform duration-300 group-hover:scale-125"
-                style={{ backgroundColor: insurer.color }}
-            />
-            <span className="text-xs font-bold tracking-wide text-slate-700 dark:text-slate-200 transition-colors duration-300 group-hover:text-slate-900">
-                {insurer.name}
-            </span>
-            {/* Subtle color bar on hover */}
-            <span
-                className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{ backgroundColor: insurer.color }}
-            />
-        </div>
-    )
-}
-
-export function TrustBadges() {
-    return (
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-            {GREEK_INSURERS.map((insurer) => (
-                <InsurerLogo key={insurer.name} insurer={insurer} />
+        <ul className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            {BRANCHES.map((branch) => (
+                <li
+                    key={branch.en}
+                    className="flex h-10 items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-3.5 dark:border-slate-700 dark:bg-slate-800"
+                >
+                    <branch.Icon
+                        aria-hidden
+                        className="h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]"
+                    />
+                    <span className="text-body-sm font-semibold text-[#334155] dark:text-slate-100">
+                        {isGreek ? branch.el : branch.en}
+                    </span>
+                </li>
             ))}
-        </div>
+        </ul>
     )
 }

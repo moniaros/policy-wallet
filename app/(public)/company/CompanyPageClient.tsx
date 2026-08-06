@@ -4,6 +4,7 @@ import Link from "next/link"
 import { CheckCircle2, Globe, Shield, Users } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { CATEGORY_NAME } from "@/lib/marketing/positioning"
 import { siteConfig } from "@/lib/seo/site"
 import { teamMembers } from "@/lib/seo/team"
 
@@ -17,13 +18,18 @@ export default function CompanyPage() {
         <LoBPageShell activeNav="company" locale={language}>
             <main className="pb-24">
                 <section className="mx-auto mb-16 max-w-4xl px-6 text-center lg:px-12">
+                    {/* Category kicker — the company page opens by naming the
+                        category we created; the H1 is its human decode. */}
+                    <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
+                        {t(CATEGORY_NAME.el, CATEGORY_NAME.en)}
+                    </p>
                     <h1 className="mb-6 text-h1 font-semibold leading-[1.05] tracking-tight md:text-display">
-                        {t("Καινοτομώντας στην ψηφιακή ασφάλεια.", "Innovating digital trust.")}
+                        {t("Είμαστε με το μέρος σας. Μόνο.", "We are on your side. Only yours.")}
                     </h1>
                     <p className="mx-auto max-w-2xl text-lead leading-relaxed text-[#475569] dark:text-slate-300 md:text-title">
                         {t(
-                            "Η PolicyWallet δημιουργήθηκε για να κάνει τη διαχείριση ασφαλιστηρίων απλή, διαφανή και προσβάσιμη.",
-                            "PolicyWallet was built to make insurance management simple, transparent, and accessible."
+                            "Φτιάξαμε το PolicyWallet για να ξέρετε επιτέλους τι σας καλύπτει η ασφάλειά σας — και τι όχι.",
+                            "We built PolicyWallet so that you finally know what your insurance covers you for — and what it does not."
                         )}
                     </p>
                 </section>
@@ -45,16 +51,16 @@ export default function CompanyPage() {
                                     en: "We are not an insurance company and we do not sell insurance products — we are the policyholder's neutral tool.",
                                 },
                                 {
-                                    el: "Αναλύουμε συμβόλαια κάθε ασφαλιστικής εταιρείας: αυτοκίνητο, κατοικία, υγεία, ομαδικά, κυβερνοασφάλεια και κατοικίδια.",
-                                    en: "We analyze policies from any insurer: motor, home, health, group, cyber, and pet.",
+                                    el: "Διαβάζουμε συμβόλαια από κάθε ασφαλιστική εταιρεία: αυτοκίνητο, κατοικία, υγεία, ομαδικά, κυβερνοασφάλεια και κατοικίδια.",
+                                    en: "We read policies from any insurance company: car, home, health, group schemes, cyber and pets.",
                                 },
                                 {
-                                    el: "Εξυπηρετούμε τρεις ρόλους — ασφαλισμένους, ασφαλιστικούς πράκτορες και πρακτορεία — στα ελληνικά και στα αγγλικά.",
-                                    en: "We serve three roles — policyholders, insurance agents, and agencies — in Greek and English.",
+                                    el: "Δουλεύουμε για ασφαλισμένους, ασφαλιστές και ασφαλιστικά γραφεία — στα ελληνικά και στα αγγλικά.",
+                                    en: "We work for policyholders, insurance agents and agencies — in Greek and English.",
                                 },
                                 {
-                                    el: "Τα δεδομένα φιλοξενούνται κρυπτογραφημένα σε ευρωπαϊκούς servers, με πλήρη συμμόρφωση GDPR.",
-                                    en: "Data is hosted encrypted on EU servers, fully GDPR-compliant.",
+                                    el: "Τα δεδομένα σας φυλάσσονται κρυπτογραφημένα σε διακομιστές μέσα στην Ευρώπη — και τα εξάγετε ή τα διαγράφετε όποτε θέλετε.",
+                                    en: "Your data is kept encrypted on servers inside Europe — and you can export or delete it whenever you want.",
                                 },
                             ].map((item) => (
                                 <li key={item.en} className="flex items-start gap-3 text-body-lg leading-relaxed text-[#0F172A] dark:text-white">
@@ -71,12 +77,12 @@ export default function CompanyPage() {
                         <article className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-10">
                             <Shield className="mb-6 h-8 w-8 text-[#0F172A] dark:text-white" />
                             <h3 className="mb-3 text-h3 font-semibold tracking-tight">
-                                {t("Ασφάλεια Πρώτα", "Security First")}
+                                {t("Πρώτα η ασφάλεια των δεδομένων σας", "Your data's security comes first")}
                             </h3>
                             <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Κρυπτογράφηση enterprise επιπέδου και αρχιτεκτονική privacy-by-design.",
-                                    "Enterprise-grade encryption and privacy-by-design architecture."
+                                    "Τα αρχεία σας είναι κρυπτογραφημένα και μένουν σε διακομιστές μέσα στην Ευρώπη. Τα διαγράφετε όποτε θέλετε.",
+                                    "Your files are encrypted and stay on servers inside Europe. You can delete them whenever you want."
                                 )}
                             </p>
                         </article>
@@ -84,12 +90,12 @@ export default function CompanyPage() {
                         <article className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-10">
                             <Globe className="mb-6 h-8 w-8 text-[#0F172A] dark:text-white" />
                             <h3 className="mb-3 text-h3 font-semibold tracking-tight">
-                                {t("Διαφάνεια", "Transparency")}
+                                {t("Καμία κρυφή ατζέντα", "No hidden agenda")}
                             </h3>
                             <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Ο χρήστης βλέπει καθαρά καλύψεις, εξαιρέσεις και ενέργειες χωρίς κρυφές πολυπλοκότητες.",
-                                    "Users get clear visibility across coverage, exclusions, and actions without hidden complexity."
+                                    "Σας δείχνουμε τι καλύπτεστε, τι εξαιρείται και τι μπορείτε να κάνετε. Χωρίς αστερίσκους.",
+                                    "We show you what you are covered for, what is excluded, and what you can do about it. No asterisks."
                                 )}
                             </p>
                         </article>
@@ -97,12 +103,12 @@ export default function CompanyPage() {
                         <article className="rounded-2xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 p-10">
                             <Users className="mb-6 h-8 w-8 text-[#0F172A] dark:text-white" />
                             <h3 className="mb-3 text-h3 font-semibold tracking-tight">
-                                {t("Πελατοκεντρική Προσέγγιση", "Customer Obsessed")}
+                                {t("Φτιαγμένο για ανθρώπους, όχι για ειδικούς", "Built for people, not for experts")}
                             </h3>
                             <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Κάθε ροή και κάθε οθόνη βελτιώνεται με πραγματικά σενάρια χρήσης από πελάτες και συνεργάτες.",
-                                    "Every workflow and screen is refined with real customer and advisor usage patterns."
+                                    "Αν μια πρόταση χρειάζεται ασφαλιστικές γνώσεις για να τη διαβάσετε, την ξαναγράφουμε.",
+                                    "If a sentence needs insurance knowledge to read, we rewrite it."
                                 )}
                             </p>
                         </article>
@@ -111,25 +117,25 @@ export default function CompanyPage() {
 
                 <section className="mx-auto mb-24 max-w-4xl px-6 lg:px-12">
                     <h2 className="mb-6 text-h2 font-semibold tracking-tight text-[#0F172A] dark:text-white md:text-h1">
-                        {t("Γιατί το φτιάξαμε;", "Why did we build it?")}
+                        {t("Γιατί το φτιάξαμε", "Why we built it")}
                     </h2>
                     <div className="space-y-5 text-lead leading-[1.75] text-[#334155] dark:text-slate-300">
                         <p>
                             {t(
-                                "Η Ελλάδα έχει από τα χαμηλότερα ποσοστά ιδιωτικής ασφάλισης στην Ευρώπη — και όσοι ασφαλίζονται, σπάνια γνωρίζουν τι ακριβώς καλύπτει το συμβόλαιό τους. Οι όροι είναι μακροσκελείς, οι εξαιρέσεις κρυμμένες και η σύγκριση σχεδόν αδύνατη για έναν μη ειδικό.",
-                                "Greece has one of the lowest private-insurance penetration rates in Europe — and those who do insure rarely know what their policy actually covers. Terms run long, exclusions hide in the fine print, and comparison is nearly impossible for a non-expert."
+                                "Όσοι έχουν ιδιωτική ασφάλιση στην Ελλάδα σπάνια ξέρουν τι ακριβώς καλύπτει το συμβόλαιό τους. Οι όροι είναι μακροσκελείς, οι εξαιρέσεις κρυμμένες και η σύγκριση σχεδόν αδύνατη για έναν μη ειδικό.",
+                                "People with private insurance in Greece rarely know what their policy actually covers. Terms run long, exclusions stay hidden, and comparison is nearly impossible for a non-expert."
                             )}
                         </p>
                         <p>
                             {t(
-                                "Το PolicyWallet αναπτύσσεται στην Ελλάδα, για την ελληνική αγορά, από ομάδα με εμπειρία σε λογισμικό και χρηματοοικονομικές υπηρεσίες. Χτίζουμε το εργαλείο που θα θέλαμε να έχουμε ως ασφαλισμένοι: ένα ουδέτερο ψηφιακό πορτοφόλι που διαβάζει τα συμβόλαια για εσάς, εξηγεί τι σημαίνουν και σας προειδοποιεί πριν μείνετε ακάλυπτοι.",
-                                "PolicyWallet is developed in Greece, for the Greek market, by a team with experience in software and financial services. We are building the tool we wished we had as policyholders: a neutral digital wallet that reads policies for you, explains what they mean, and warns you before you are left uncovered."
+                                "Το PolicyWallet φτιάχνεται στην Ελλάδα, για την ελληνική αγορά, από ανθρώπους με εμπειρία στο λογισμικό και στις χρηματοοικονομικές υπηρεσίες. Φτιάχνουμε το εργαλείο που θα θέλαμε να έχουμε εμείς ως ασφαλισμένοι: κάτι που διαβάζει τα συμβόλαια για εσάς, εξηγεί τι λένε και σας ειδοποιεί πριν μείνετε ακάλυπτοι.",
+                                "PolicyWallet is built in Greece, for the Greek market, by people with a background in software and financial services. We are building the tool we wish we had as policyholders. Something that reads the policies for you, explains what they say, and warns you before you are left uncovered."
                             )}
                         </p>
                         <p>
                             {t(
-                                "Το επιχειρηματικό μας μοντέλο είναι συνειδητά απλό: συνδρομές. Δεν παίρνουμε προμήθειες από ασφαλιστικές, δεν πουλάμε δεδομένα και δεν προωθούμε προϊόντα — έτσι η ανάλυση που βλέπετε έχει πάντα το δικό σας συμφέρον ως μοναδικό κριτήριο.",
-                                "Our business model is deliberately simple: subscriptions. We take no commissions from insurers, sell no data, and promote no products — so the analysis you see always has your interest as its only criterion."
+                                "Ο τρόπος που βγάζουμε λεφτά είναι επίτηδες απλός: συνδρομές. Δεν παίρνουμε προμήθεια από ασφαλιστικές, δεν πουλάμε δεδομένα και δεν προωθούμε προϊόντα. Κανείς δεν μας πληρώνει για να σας πούμε κάτι συγκεκριμένο.",
+                                "The way we make money is deliberately simple: subscriptions. We take no commission from insurance companies, we sell no data, and we push no products. Nobody pays us to tell you a particular thing."
                             )}
                         </p>
                     </div>
@@ -182,23 +188,23 @@ export default function CompanyPage() {
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-[#64748B]/20 to-transparent" />
                         <div className="relative z-10 mx-auto max-w-2xl px-6 text-center">
                             <h2 className="mb-6 text-h2 font-semibold tracking-tight md:text-h1">
-                                {t("Ελάτε στην ομάδα μας", "Join our mission")}
+                                {t("Ελάτε στην ομάδα μας", "Join our team")}
                             </h2>
-                            <p className="mb-10 text-lead leading-relaxed text-[#5B6A7A] dark:text-slate-400">
+                            <p className="mb-10 text-lead leading-relaxed text-white/75">
                                 {t(
-                                    "Αναζητούμε ανθρώπους που θέλουν να εξελίξουν την εμπειρία ασφάλισης στην Ελλάδα και διεθνώς.",
-                                    "We are hiring people who want to modernize insurance experiences in Greece and beyond."
+                                    "Ψάχνουμε ανθρώπους που θέλουν να κάνουν την ασφάλιση κατανοητή. Γράψτε μας — ακόμη κι αν δεν βλέπετε θέση που σας ταιριάζει.",
+                                    "We are looking for people who want to make insurance make sense. Write to us — even if you do not see a role that fits."
                                 )}
                             </p>
                             <Link
                                 href={`mailto:${siteConfig.careersEmail}`}
                                 className="pw-primary-button-inverse pw-btn-lg"
                             >
-                                {t("Δείτε τις ανοιχτές θέσεις", "View open roles")}
+                                {t("Στείλτε μας email", "Send us an email")}
                             </Link>
                             {/* Plain-text address so crawlers can read it despite
                                 CDN-level email obfuscation of mailto links. */}
-                            <p className="mt-6 text-body text-[#5B6A7A] dark:text-slate-400">{siteConfig.careersEmail}</p>
+                            <p className="mt-6 text-body text-white/75">{siteConfig.careersEmail}</p>
                         </div>
                     </div>
                 </section>

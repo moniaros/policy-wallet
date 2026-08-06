@@ -2,6 +2,7 @@ import React from "react"
 import Link from "next/link"
 import { Building2, Wrench, Package, TimerOff, Scale, HardHat } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
+import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
 export default function BusinessProductPage({ locale }: { locale: "el" | "en" }) {
@@ -40,9 +41,9 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
         {
             icon: Scale,
             titleEl: "Αστική Ευθύνη",
-            titleEn: "General Liability",
+            titleEn: "Liability",
             descEl: "Ζημιές σε πελάτες και τρίτους μέσα και έξω από τον χώρο σας — γενική και επαγγελματική ευθύνη.",
-            descEn: "Injuries or damage to customers and third parties in and around your premises — general and professional liability.",
+            descEn: "Damage to customers and third parties inside and outside your premises — general and professional liability.",
         },
         {
             icon: HardHat,
@@ -60,19 +61,22 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
                     <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Ασφάλεια Επιχείρησης", "Business Insurance")}
+                        {t("Ασφάλεια επιχείρησης", "Business insurance")}
                     </span>
-                    <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8">
+                    <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
                         {t("Έξι κίνδυνοι, ένα πολυασφαλιστήριο, μηδέν ασάφεια.", "Six risks, one multi-risk policy, zero ambiguity.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Το πολυασφαλιστήριο μιας μικρής επιχείρησης καλύπτει στέγη, εξοπλισμό, εμπορεύματα, διακοπή εργασιών και ευθύνες — αλλά όχι πάντα όλα μαζί. Η AI δείχνει ποια σκέλη έχετε αγοράσει και ποια λείπουν.", "A small business multi-risk policy covers premises, equipment, stock, interruption and liabilities — but rarely all of them at once. Our AI shows which sections you actually bought and which are missing.")}
+                        {t("Το πολυασφαλιστήριο μιας μικρής επιχείρησης καλύπτει στέγη, εξοπλισμό, εμπορεύματα, διακοπή εργασιών και ευθύνες — αλλά όχι πάντα όλα μαζί. Σας δείχνουμε ποια σκέλη έχετε αγοράσει και ποια λείπουν.", "A small business multi-risk policy covers premises, equipment, stock, business interruption and liabilities — but not always all of them together. We show you which sections you bought and which are missing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε δωρεάν", "Get Started Free")}
+                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
+                    <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                        {t("Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.", "Free for 1 policy. No card.")}
+                    </p>
                 </div>
             </section>
 
@@ -80,7 +84,7 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white">
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
                             {t("Τα σκέλη που πρέπει να ξέρει κάθε ΜμΕ.", "The sections every SME should know.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
@@ -105,15 +109,17 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
                 </div>
             </section>
 
+            <LobFaq categoryId="business" locale={locale} />
+
             <ProductCategoryExplorer currentCategoryId="business" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">
-                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
-                    {t("Η επιχείρησή σας δεν χωράει «μάλλον καλυπτόμαστε».", "Your business can't run on “we're probably covered”.")}
+                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
+                    {t("Η επιχείρησή σας δεν χωράει «μάλλον καλυπτόμαστε».", "Your business has no room for “we're probably covered”.")}
                 </h2>
                 <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
-                    {t("Χαρτογραφήστε τις καλύψεις σας", "Map your coverages")}
+                    {t("Χαρτογραφήστε τις καλύψεις σας", "Map your coverage")}
                 </Link>
             </section>
 

@@ -13,6 +13,9 @@ const policyholderIgnores = [
     '**/agent-journey.spec.ts',
     '**/agent-viewport-overflow.spec.ts',
     '**/admin-auth.setup.ts',
+    // public-marketing asserts ANONYMOUS behavior (own `public-anon` project);
+    // a signed-in header state would audit a page no anonymous visitor sees.
+    '**/public-marketing.spec.ts',
 ];
 
 export default defineConfig({
@@ -133,11 +136,23 @@ export default defineConfig({
                 launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
         },
+        {
+            // Anonymous sweep of the public marketing site — no storageState,
+            // no auth dependency, so it runs without the test-user setup.
+            name: 'public-anon',
+            testMatch: /public-marketing\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+        },
     ],
 
     webServer: {
         command: 'npm run dev',
-        url: 'http://localhost:3000',
+        // Follows BASE_URL so a run can reuse a dev server another session
+        // already has up (Next allows one dev server per project directory).
+        url: process.env.BASE_URL || 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
         env: {

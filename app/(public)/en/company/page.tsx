@@ -10,7 +10,7 @@ export default function CompanyPageEnglish() {
     return (
         <StaticLanguageProvider language="en" counterpartPath="/company">
             <CompanyPageClient />
-            <JsonLd data={[breadcrumbEnJsonLd(["company"]), organizationJsonLd(), ...teamJsonLd()]} />
+            <JsonLd data={[breadcrumbEnJsonLd(["company"]), organizationJsonLd("en"), ...teamJsonLd()]} />
         </StaticLanguageProvider>
     )
 }

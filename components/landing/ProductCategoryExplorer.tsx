@@ -13,6 +13,13 @@ interface ProductCategoryExplorerProps {
     locale: "el" | "en"
 }
 
+// NOTE ON COLOUR: `category.surface` is a FIXED light tint (bg-[#DCEBDA] and
+// friends) declared in lib/product/catalog.tsx, which the authenticated app
+// shares — it has no dark-mode variant. The card text used to carry
+// `dark:text-white` / `dark:text-slate-300`, which in dark mode painted white
+// text onto a pale green card: a serious contrast failure axe flagged on every
+// one of the 15 product pages. The surface is light in BOTH themes, so the text
+// on it stays dark in both themes.
 export function ProductCategoryExplorer({
     currentCategoryId,
     locale,
@@ -36,24 +43,19 @@ export function ProductCategoryExplorer({
                             )}
                         </h2>
                         <p className="mt-4 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                            {currentCategory
-                                ? t(
-                                    `Βρίσκεστε στο ${currentCategory.labelEl}. Συγκρίνετέ το με τις υπόλοιπες λύσεις χωρίς να επιστρέψετε στην αρχική σελίδα προϊόντων.`,
-                                    `You're viewing ${currentCategory.labelEn}. Compare it with the rest of the suite without going back to the main product page.`
-                                )
-                                : t(
-                                    "Συγκρίνετε τις κατηγορίες σας χωρίς να χάνετε τη ροή περιήγησης.",
-                                    "Compare categories without breaking your browsing flow."
-                                )}
+                            {t(
+                                "Η ίδια ανάλυση ισχύει για κάθε συμβόλαιο που έχετε.",
+                                "The same analysis applies to every policy you have."
+                            )}
                         </p>
                     </div>
 
                     <Link
                         href={localizeHref("/product", locale)}
-                        className="inline-flex min-h-[24px] items-center inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-3 text-body font-semibold text-[#0F172A] dark:text-white transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
+                        className="inline-flex min-h-11 items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-body font-semibold text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC] dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
                     >
                         {t("Όλες οι κατηγορίες", "All categories")}
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight aria-hidden className="h-4 w-4" />
                     </Link>
                 </div>
 
@@ -74,24 +76,24 @@ export function ProductCategoryExplorer({
                                 >
                                     <div className="mb-5 flex items-start justify-between gap-3">
                                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
-                                            <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
+                                            <Icon className="h-5 w-5 text-[#0F172A]" />
                                         </div>
                                         <span className="rounded-full bg-[#29685B] px-3 py-1 text-micro font-semibold uppercase tracking-wide text-white">
                                             {t("Τρέχουσα κατηγορία", "Current category")}
                                         </span>
                                     </div>
 
-                                    <h3 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                                    <h3 className="text-title font-semibold tracking-tight text-[#0F172A]">
                                         {t(category.labelEl, category.labelEn)}
                                     </h3>
-                                    <p className="mt-3 text-body font-semibold leading-snug text-[#0F172A] dark:text-white">
+                                    <p className="mt-3 text-body font-semibold leading-snug text-[#0F172A]">
                                         {t(category.headlineEl, category.headlineEn)}
                                     </p>
-                                    <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569] dark:text-slate-300">
+                                    <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569]">
                                         {t(category.descEl, category.descEn)}
                                     </p>
-                                    <div className="mt-5 text-body font-semibold text-[#29685B] dark:text-[#A7F3D0]">
-                                        {t("Την βλέπετε τώρα", "You're here")}
+                                    <div className="mt-5 text-body font-semibold text-[#29685B]">
+                                        {t("Τη βλέπετε τώρα", "You're here")}
                                     </div>
                                 </div>
                             )
@@ -105,25 +107,25 @@ export function ProductCategoryExplorer({
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">
                                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
-                                        <Icon className="h-5 w-5 text-[#0F172A] dark:text-white" />
+                                        <Icon className="h-5 w-5 text-[#0F172A]" />
                                     </div>
                                     <span className={`rounded-full px-2.5 py-1 text-micro font-semibold uppercase tracking-wide ${category.tagBg}`}>
                                         {t(category.tagEl, category.tagEn)}
                                     </span>
                                 </div>
 
-                                <h3 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                                <h3 className="text-title font-semibold tracking-tight text-[#0F172A]">
                                     {t(category.labelEl, category.labelEn)}
                                 </h3>
-                                <p className="mt-3 text-body font-semibold leading-snug text-[#0F172A] dark:text-white">
+                                <p className="mt-3 text-body font-semibold leading-snug text-[#0F172A]">
                                     {t(category.headlineEl, category.headlineEn)}
                                 </p>
-                                <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569] dark:text-slate-300">
+                                <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569]">
                                     {t(category.descEl, category.descEn)}
                                 </p>
-                                <div className="mt-5 inline-flex items-center gap-2 text-body font-semibold text-[#0F172A] dark:text-white transition-all duration-150 group-hover:gap-3">
-                                    {t("Μετάβαση", "Open category")}
-                                    <ArrowRight className="h-4 w-4" />
+                                <div className="mt-5 inline-flex items-center gap-2 text-body font-semibold text-[#0F172A] transition-all duration-150 group-hover:gap-3">
+                                    {t("Δείτε την κατηγορία", "See this category")}
+                                    <ArrowRight aria-hidden className="h-4 w-4" />
                                 </div>
                             </Link>
                         )

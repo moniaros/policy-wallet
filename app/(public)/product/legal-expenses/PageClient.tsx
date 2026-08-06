@@ -2,6 +2,7 @@ import React from "react"
 import Link from "next/link"
 import { Check, X } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
+import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
 export default function LegalExpensesProductPage({ locale }: { locale: "el" | "en" }) {
@@ -13,7 +14,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
             titleEl: "Τροχαίες διαφορές",
             titleEn: "Traffic disputes",
             descEl: "Διεκδίκηση αποζημίωσης μετά από ατύχημα, υπεράσπιση σε ποινικές διώξεις από παραβάσεις και προσφυγές κατά προστίμων.",
-            descEn: "Claiming compensation after an accident, defence against traffic-related prosecutions and appeals against fines.",
+            descEn: "Claiming compensation after an accident, defense in criminal prosecutions over traffic offenses, and appeals against fines.",
         },
         {
             titleEl: "Εργασιακές διαφορές",
@@ -33,8 +34,8 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
         {
             titleEl: "Διαφορές που ξεκίνησαν πριν το συμβόλαιο",
             titleEn: "Disputes that began before the policy",
-            descEl: "Η κάλυψη αφορά μελλοντικές διαφορές. Ό,τι είχε ήδη ξεκινήσει πριν την έναρξη —ή μέσα στην περίοδο αναμονής— μένει συνήθως απέξω.",
-            descEn: "Cover applies to future disputes. Anything already underway before inception — or during a waiting period — usually stays out.",
+            descEl: "Η κάλυψη αφορά μελλοντικές διαφορές. Ό,τι είχε ήδη ξεκινήσει πριν την έναρξη — ή μέσα στην περίοδο αναμονής — μένει συνήθως απέξω.",
+            descEn: "Cover applies to future disputes. Anything already underway before the start date — or during the waiting period — usually stays out.",
         },
         {
             titleEl: "Οικογενειακό και κληρονομικό δίκαιο",
@@ -57,9 +58,9 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-form text-center">
                     <span className="inline-flex bg-[#DCEBDA] dark:bg-[#29685B]/30 text-[#166534] dark:text-[#A7F3D0] px-3 py-1 rounded-full text-caption font-semibold tracking-wider uppercase mb-6">
-                        {t("Νομική Προστασία", "Legal Expenses Insurance")}
+                        {t("Νομική προστασία", "Legal expenses insurance")}
                     </span>
-                    <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8">
+                    <h1 className="text-h1 lg:text-display [overflow-wrap:anywhere] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] dark:text-white mb-8 text-balance">
                         {t("«Έχω νομική προστασία.» Ξέρετε όμως για τι;", "“I have legal cover.” But do you know for what?")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
@@ -67,9 +68,12 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε δωρεάν", "Get Started Free")}
+                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
+                    <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                        {t("Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.", "Free for 1 policy. No card.")}
+                    </p>
                 </div>
             </section>
 
@@ -77,8 +81,8 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC] dark:bg-slate-900">
                 <div className="mx-auto max-w-page">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white">
-                            {t("Ο πιο παρεξηγημένος κλάδος της ελληνικής αγοράς.", "The most misunderstood line in the Greek market.")}
+                        <h2 className="text-h2 font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A] dark:text-white text-balance">
+                            {t("Ο πιο παρεξηγημένος κλάδος της ελληνικής αγοράς.", "The most misunderstood line of insurance in the Greek market.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Δεν καλύπτει «ό,τι νομικό προκύψει». Κάθε πρόγραμμα ορίζει κατηγορίες διαφορών, περιόδους αναμονής και όρια εξόδων. Έτσι μοιάζει συνήθως η εικόνα:", "It does not cover “whatever legal issue comes up”. Every plan defines dispute categories, waiting periods and cost limits. This is what the picture usually looks like:")}
@@ -126,16 +130,18 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                     </div>
 
                     <p className="mt-10 max-w-[820px] text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                        {t("Ανεβάστε το συμβόλαιό σας και δείτε τη δική σας στήλη «καλύπτεται» και «εξαιρείται» — με τα όρια, τις αναμονές και τα ελάχιστα ποσά όπως ισχύουν για εσάς, σε απλά ελληνικά.", "Upload your policy and see your own “covered” and “excluded” columns — with the limits, waiting periods and thresholds as they apply to you, in plain language.")}
+                        {t("Στείλτε μας το συμβόλαιό σας. Θα δείτε δύο καθαρές στήλες: τι καλύπτεται και τι όχι. Με τα όρια, τις αναμονές και τα ελάχιστα ποσά, σε απλά ελληνικά.", "Send us your policy. You will see two clear columns: what is covered and what is not. With the limits, the waiting periods and the minimum amounts, in plain words.")}
                     </p>
                 </div>
             </section>
+
+            <LobFaq categoryId="legal-expenses" locale={locale} />
 
             <ProductCategoryExplorer currentCategoryId="legal-expenses" locale={locale} />
 
             {/* CTA */}
             <section className="bg-[#1A2420] text-white py-24 text-center px-6">
-                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+                <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μάθετε τι πληρώνει το συμβόλαιο πριν χρειαστείτε δικηγόρο.", "Learn what your policy pays before you need a lawyer.")}
                 </h2>
                 <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">

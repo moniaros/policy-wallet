@@ -64,9 +64,9 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                     </p>
                     <Link
                         href={`/auth/signup?role=policyholder&source=lexiko_${entry.slug}`}
-                        className="pw-primary-button pw-btn-md mt-5"
+                        className="pw-primary-button pw-btn-lg mt-5"
                     >
-                        {t("Ανεβάστε το συμβόλαιό σας — δωρεάν ανάλυση", "Upload your policy — free analysis")}
+                        {t("Ανεβάστε το συμβόλαιό σας — δωρεάν σύνοψη", "Upload your policy — free summary")}
                         <ArrowRight className="h-4 w-4" />
                     </Link>
                 </div>
