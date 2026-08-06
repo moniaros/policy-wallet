@@ -38,15 +38,18 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
         : LEGAL_LAST_UPDATED
     const versionDisplay = documentMeta?.version ?? LEGAL_CONTENT_VERSION
 
-    // In-document links between the legal set (preserve the ?lang= mechanism so
-    // a direct link keeps its language). The site header/logo/language toggle
-    // are now provided by the shared PublicHeader.
+    // In-document links between the legal set. English readers go to the real
+    // /en documents rather than the Greek route's ?lang=en variant, which
+    // served English under `lang="el"` with a canonical pointing at the Greek
+    // doc. Greek keeps ?lang=el so a direct link holds its language.
+    const legalHref = (kind: LegalDocumentKind) =>
+        language === "en" ? `/en/${kind}` : `/${kind}?lang=el`
     const legalNavLinks: { href: string; label: string; kind: LegalDocumentKind }[] = [
-        { href: `/terms?lang=${language}`, label: content.ui.openTerms, kind: "terms" },
-        { href: `/privacy?lang=${language}`, label: content.ui.openPrivacy, kind: "privacy" },
-        { href: `/cookies?lang=${language}`, label: content.ui.openCookies, kind: "cookies" },
+        { href: legalHref("terms"), label: content.ui.openTerms, kind: "terms" },
+        { href: legalHref("privacy"), label: content.ui.openPrivacy, kind: "privacy" },
+        { href: legalHref("cookies"), label: content.ui.openCookies, kind: "cookies" },
         {
-            href: `/subprocessors?lang=${language}`,
+            href: legalHref("subprocessors"),
             label: content.ui.openSubprocessors,
             kind: "subprocessors",
         },
