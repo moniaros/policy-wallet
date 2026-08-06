@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { landingContent } from "@/lib/landing/content"
 import type { LandingLocale } from "@/types/landing-content"
-import { getSiteOrigin, getSiteUrl, OG_IMAGES, siteConfig, TWITTER_IMAGES } from "@/lib/seo/site"
+import { getSiteOrigin, getSiteUrl, ogImagesFor, siteConfig, twitterImagesFor } from "@/lib/seo/site"
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/jsonld"
 
 export function buildLandingMetadata(locale: LandingLocale): Metadata {
@@ -29,13 +29,13 @@ export function buildLandingMetadata(locale: LandingLocale): Metadata {
             description: meta.ogDescription,
             url: canonical,
             siteName: landingContent.productName,
-            images: OG_IMAGES,
+            images: ogImagesFor(locale),
         },
         twitter: {
             card: "summary_large_image",
             title: meta.twitterTitle,
             description: meta.twitterDescription,
-            images: TWITTER_IMAGES,
+            images: twitterImagesFor(locale),
         },
     }
 }
