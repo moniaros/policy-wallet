@@ -944,7 +944,9 @@ describe("fuzz: partially-answered profiles behave", () => {
         "chronicConditions", "petsCount", "occupation", "ownsBoat",
     ]
 
-    it("never leaves an applicable risk pointing at nothing", () => {
+    // Fuzz sweep — same CI-timing story as the catalog sweep in
+    // life-context-risk-engine.test.ts; assertion unchanged.
+    it("never leaves an applicable risk pointing at nothing", { timeout: 30_000 }, () => {
         let seed = 20260804
         const rnd = () => {
             seed = (seed * 1103515245 + 12345) & 0x7fffffff
