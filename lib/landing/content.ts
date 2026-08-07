@@ -129,9 +129,16 @@ export const landingContent: LandingContentModel = {
             {
                 id: "faq-no-agent",
                 question: { el: "Τι γίνεται αν δεν έχω ασφαλιστή;", en: "What if I do not have an agent?" },
+                // Working with an agent is `agentCollaboration`, which is true
+                // only on the `pro` plan — displayed as PolicyWallet Plus. This
+                // is the answer the anxious free-signup reader lands on, and it
+                // was the one agent claim on the site with no plan named, while
+                // the "Who can help you?" card and the pricing table both fence
+                // the same capability to Plus. It also ships inside FAQPage
+                // JSON-LD, so an unqualified version travels further than the page.
                 answer: {
-                    el: "Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε με ένα κλικ.",
-                    en: "You do not need one. PolicyWallet works completely on its own. If you later want to work with an agent, you can connect one with a single click.",
+                    el: "Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε με ένα κλικ — με το πλάνο PolicyWallet Plus.",
+                    en: "You do not need one. PolicyWallet works completely on its own. If you later want to work with an agent, you can connect one with a single click — on the PolicyWallet Plus plan.",
                 },
             },
             {

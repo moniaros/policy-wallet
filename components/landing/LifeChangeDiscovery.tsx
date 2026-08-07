@@ -49,6 +49,10 @@ export function LifeChangeDiscovery({ locale }: { locale: MarketingLocale }) {
     // DESCENDANT of the label, so `peer-checked:` (a sibling combinator) can
     // never reach it, and stacking `forced-colors:` on `peer-checked:` leaves
     // the emitted selector up to variant ordering. Both are spelled out.
+    //
+    // The scroll-margin that keeps a focused control out from under the fixed
+    // header is NOT here: it belongs to every focusable on the page, not just
+    // these, and lives once in WorldClassLanding.
     const revealCss = `@supports selector(:has(*)){
 #life-changes [data-lc-effect]{display:none}
 ${LIFE_CHANGE_EFFECTS.map(
@@ -85,7 +89,7 @@ ${LIFE_CHANGE_EFFECTS.map(
                         <input type="checkbox" id={`lc-${i}`} className="peer sr-only" />
                         <label
                             htmlFor={`lc-${i}`}
-                            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-3 text-body-sm font-semibold text-[#334155] transition-colors select-none hover:border-[#29685B]/40 peer-checked:border-[#29685B] peer-checked:bg-[#29685B] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#29685B] sm:px-4 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:peer-checked:border-[#A7F3D0] dark:peer-checked:bg-[#29685B]"
+                            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-3 text-body-sm font-semibold text-[#334155] transition-colors select-none hover:border-[#29685B]/40 peer-checked:border-[#29685B] peer-checked:bg-[#29685B] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#29685B] sm:px-4 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:peer-checked:border-[#A7F3D0] dark:peer-checked:bg-[#29685B] dark:peer-focus-visible:outline-[#A7F3D0]"
                         >
                             <span
                                 aria-hidden
