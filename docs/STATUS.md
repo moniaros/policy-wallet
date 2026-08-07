@@ -60,6 +60,25 @@ documented cron 307 trap. One line in the `proxy.ts` allowlist — deliberately
 NOT applied: `proxy.ts` is auth middleware, outside this brief's stated scope,
 and widening a fail-closed allowlist is the owner's call.
 
+**Assessment loop, against production.** Round 1 clean across axe (WCAG 2.1 AA,
+8 page/viewport/scheme combinations × rest and selected states — zero
+violations), a nine-breakpoint responsive sweep incl. landscape, real keyboard
+Tab, reduced-motion, forced-colors, structured data (all 8 FAQ questions and all
+3 HowTo steps verified visible with the JSON-LD stripped first), and payload.
+Four apparent findings were **my own faulty checks** and were disproved rather
+than "fixed": hreflang is present (Next emits `hrefLang`, my regex was
+case-sensitive), the sitemap `<loc>` simply has no trailing slash, focus IS
+visible (I had measured programmatic focus, which does not trigger
+`:focus-visible`), and the "1651KB of JS" was uncompressed — the wire is 539KB
+brotli with **0 long tasks and 0ms total blocking time**.
+
+Round 2 found a real one, so the counter reset to 0: `AudienceTabs` hard-coded
+the CTA label that `PRIMARY_ACTION` used to hold, so after the rename the
+homepage showed **two different primary promises**, and the stale one claimed a
+PolicyWallet Plus outcome on a free signup. It now reads the constant, and
+`tests/unit/landing-primary-cta-single-source.test.ts` pins the invariant —
+verified to fail against the old code before being accepted.
+
 **Blocked:** unchanged — legal-entity details (ΓΕΜΗ/ΑΦΜ, registered office).
 
 **Top risks:** 1) the consent-record gap above; 2) at 320×568 the last chip row
