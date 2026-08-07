@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
@@ -67,25 +67,30 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
         return () => window.removeEventListener("scroll", onScroll)
     }, [])
 
+    // One way to close, so the two paths cannot drift apart again. Escape used
+    // to call setOpen(false) on its own and skip the focus restore the Close
+    // button did, dropping focus onto document.body — the ring vanished and a
+    // screen reader lost its place, which is exactly what the dialog pattern
+    // requires closing to avoid.
+    const closeMenu = useCallback(() => {
+        setOpen(false)
+        triggerRef.current?.focus()
+    }, [])
+
     // Open dialog: lock scroll, move focus in, ESC closes. Restore on cleanup.
     useEffect(() => {
         if (!open) return
         document.body.style.overflow = "hidden"
         closeRef.current?.focus()
         const onKey = (event: KeyboardEvent) => {
-            if (event.key === "Escape") setOpen(false)
+            if (event.key === "Escape") closeMenu()
         }
         document.addEventListener("keydown", onKey)
         return () => {
             document.body.style.overflow = "unset"
             document.removeEventListener("keydown", onKey)
         }
-    }, [open])
-
-    const closeMenu = () => {
-        setOpen(false)
-        triggerRef.current?.focus()
-    }
+    }, [open, closeMenu])
 
     // Keep Tab focus inside the open dialog (lightweight trap).
     const onDialogKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {

@@ -69,6 +69,14 @@ export default function PricingPage({
             el: "Ασφαλιστές & γραφεία",
             en: "Agents & agencies",
         },
+        audienceGroup: {
+            el: "Για ποιον είναι",
+            en: "Who this is for",
+        },
+        billingGroup: {
+            el: "Συχνότητα χρέωσης",
+            en: "Billing period",
+        },
         monthly: {
             el: "Μηνιαία χρέωση",
             en: "Monthly billing",
@@ -212,9 +220,21 @@ export default function PricingPage({
                         {labels.subtitle[language]}
                     </p>
 
+                    {/* Which one is chosen was carried by background colour and
+                        nothing else, so a screen reader heard two plain buttons
+                        and no state — WCAG 2.1 SC 4.1.2 — on the page where
+                        money is decided, and this toggle swaps the entire body
+                        of the page beneath it. `aria-pressed` states it, and the
+                        group names what is being chosen. */}
                     <div className="mb-10 flex justify-center">
-                        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
+                        <div
+                            role="group"
+                            aria-label={labels.audienceGroup[language]}
+                            className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900"
+                        >
                             <button
+                                type="button"
+                                aria-pressed={audience === "policyholder"}
                                 onClick={() => setAudience("policyholder")}
                                 className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors ${
                                     audience === "policyholder"
@@ -225,6 +245,8 @@ export default function PricingPage({
                                 {labels.audiencePolicyholder[language]}
                             </button>
                             <button
+                                type="button"
+                                aria-pressed={audience === "agent"}
                                 onClick={() => setAudience("agent")}
                                 className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors ${
                                     audience === "agent"
@@ -250,9 +272,19 @@ export default function PricingPage({
                         </div>
                     ))}
 
+                    {/* Same defect as the audience toggle, and worse here: the
+                        only cue that €79 is a yearly figure rather than a
+                        tenfold monthly increase was which pill happened to be
+                        green. */}
                     <div className="mb-12 flex justify-center">
-                        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
+                        <div
+                            role="group"
+                            aria-label={labels.billingGroup[language]}
+                            className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900"
+                        >
                             <button
+                                type="button"
+                                aria-pressed={billingPeriod === "monthly"}
                                 onClick={() => setBillingPeriod("monthly")}
                                 className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors ${
                                     billingPeriod === "monthly"
@@ -263,6 +295,8 @@ export default function PricingPage({
                                 {labels.monthly[language]}
                             </button>
                             <button
+                                type="button"
+                                aria-pressed={billingPeriod === "annual"}
                                 onClick={() => setBillingPeriod("annual")}
                                 className={`relative inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors ${
                                     billingPeriod === "annual"
