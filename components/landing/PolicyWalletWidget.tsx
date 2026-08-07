@@ -10,8 +10,14 @@ interface PolicyWalletWidgetProps {
 
 /**
  * The hero illustration: what PolicyWallet gives back after it has read your
- * policies. Three things it deliberately does NOT do:
+ * policies. Four things it deliberately does NOT do:
  *
+ *  - **It shows no score.** Every tile used to carry a percentage under a
+ *    progress bar, headlined by "Protection Score: 84%". A stranger cannot
+ *    check any of those numbers, and a two-digit grade is what every fintech
+ *    dashboard leads with — so it read as decoration, not evidence. What is
+ *    left is the thing a person actually wants: which cover is fine, which one
+ *    has a hole, and what the hole is.
  *  - **It names no real insurer.** It used to label fabricated policies with
  *    "Interamerican", "Εθνική" and "Eurolife". Putting invented data under a
  *    real company's trademark, in a product shot, is a claim about that
@@ -39,7 +45,6 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
             note: t("Καλυμμένο", "Covered"),
             status: t("Εντάξει", "All good"),
             type: "ok" as const,
-            score: 92,
         },
         {
             Icon: Home,
@@ -47,7 +52,6 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
             note: t("Λείπει κάλυψη πλημμύρας", "Flood cover is missing"),
             status: t("Κενό", "Gap"),
             type: "gap" as const,
-            score: 61,
         },
         {
             Icon: Heart,
@@ -55,14 +59,20 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
             note: t("Καλυμμένο", "Covered"),
             status: t("Εντάξει", "All good"),
             type: "ok" as const,
-            score: 98,
         },
     ]
 
+    // Counted off the tiles below, so the summary can never drift from what the
+    // illustration actually shows.
+    const okCount = covers.filter((cover) => cover.type === "ok").length
+
     // One sentence that carries the same information as the whole illustration.
+    // It names the plan for the same reason the caption below does: finding the
+    // gap is a PolicyWallet Plus job, and this mock sits beside a free-tier
+    // promise.
     const alternative = t(
-        "Παράδειγμα αποτελέσματος: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το συμβόλαιο λήγει σε 14 μέρες.",
-        "Example result: car and health are covered, while the home is missing flood cover and that policy runs out in 14 days.",
+        "Παράδειγμα αποτελέσματος με το PolicyWallet Plus: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το συμβόλαιο λήγει σε 14 μέρες.",
+        "Example result with PolicyWallet Plus: car and health are covered, while the home is missing flood cover and that policy runs out in 14 days.",
     )
 
     // Entrance transitions are cosmetic. Everything is readable at rest, so
@@ -75,156 +85,158 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
     })
 
     return (
-        <div
-            role="img"
-            aria-label={alternative}
-            className="relative mx-auto w-full max-w-[480px] px-5 pb-8 pt-5 lg:mr-0 lg:ml-auto"
-        >
-            <div className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_24px_64px_rgba(0,0,0,0.09),0_0_0_1px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-slate-900">
-                {/* Browser bar */}
-                <div className="flex items-center gap-2 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
-                    <div className="flex gap-1.5">
-                        <span className="h-3 w-3 rounded-full bg-[#FF5F57]" />
-                        <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
-                        <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
-                    </div>
-                    <div className="ml-3 min-w-0 flex-1 truncate rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#5B6A7A] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
-                        {`${PRODUCT_DISPLAY_HOST}/wallet`}
-                    </div>
-                </div>
-
-                <div className="p-5">
-                    {/* Header */}
-                    <div className="mb-4 flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                            <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">
-                                {t("Η εικόνα ρίσκου σας", "Your risk picture")}
-                            </p>
-                            <p className="text-micro text-[#5B6A7A] dark:text-slate-400">
-                                {t("3 ασφάλειες, 1 κενό", "3 policies, 1 gap")}
-                            </p>
+        <div className="mx-auto w-full max-w-[480px] lg:mr-0 lg:ml-auto">
+            <div role="img" aria-label={alternative} className="relative px-5 pb-8 pt-5">
+                <div className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_24px_64px_rgba(0,0,0,0.09),0_0_0_1px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-slate-900">
+                    {/* Browser bar */}
+                    <div className="flex items-center gap-2 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+                        <div className="flex gap-1.5">
+                            <span className="h-3 w-3 rounded-full bg-[#FF5F57]" />
+                            <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
+                            <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                         </div>
-                        <div className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
-                            <ShieldCheck className="h-3 w-3 text-[#29685B] dark:text-[#A7F3D0]" />
-                            <span className="text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0]">
-                                {t("Σκορ Προστασίας: 84%", "Protection Score: 84%")}
-                            </span>
+                        <div className="ml-3 min-w-0 flex-1 truncate rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#5B6A7A] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+                            {`${PRODUCT_DISPLAY_HOST}/wallet`}
                         </div>
                     </div>
 
-                    {/* Cover tiles */}
-                    <div className="space-y-2">
-                        {covers.map((cover, index) => {
-                            const anim = reveal(index * 100 + 400)
-                            return (
-                                <div
-                                    key={cover.name}
-                                    className={`flex items-center gap-3 rounded-xl border p-3 ${
-                                        cover.type === "gap"
-                                            ? "border-[#FDE68A] dark:border-amber-500/40"
-                                            : "border-[#E2E8F0] dark:border-slate-800"
-                                    } ${anim.className}`}
-                                    style={anim.style}
-                                >
+                    <div className="p-5">
+                        {/* Header */}
+                        <div className="mb-4 flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                                <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">
+                                    {t("Η εικόνα ρίσκου σας", "Your risk picture")}
+                                </p>
+                                <p className="text-micro text-[#5B6A7A] dark:text-slate-400">
+                                    {t("3 ασφάλειες, 1 κενό", "3 policies, 1 gap")}
+                                </p>
+                            </div>
+                            {/* A count, not a score. The chip used to read "84%",
+                                which was a number nobody could check and which read
+                                like every other fintech health grade. This one is
+                                the tiles below, added up. */}
+                            <div className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                                <ShieldCheck className="h-3 w-3 text-[#29685B] dark:text-[#A7F3D0]" />
+                                <span className="text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0]">
+                                    {t(
+                                        `${okCount} στα ${covers.length} εντάξει`,
+                                        `${okCount} of ${covers.length} all good`,
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Cover tiles */}
+                        <div className="space-y-2">
+                            {covers.map((cover, index) => {
+                                const anim = reveal(index * 100 + 400)
+                                return (
                                     <div
-                                        className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
+                                        key={cover.name}
+                                        className={`flex items-center gap-3 rounded-xl border p-3 ${
                                             cover.type === "gap"
-                                                ? "bg-[#FEF3C7] dark:bg-amber-900/30"
-                                                : "bg-[#F0FDF4] dark:bg-[#29685B]/15"
-                                        }`}
+                                                ? "border-[#FDE68A] dark:border-amber-500/40"
+                                                : "border-[#E2E8F0] dark:border-slate-800"
+                                        } ${anim.className}`}
+                                        style={anim.style}
                                     >
-                                        <cover.Icon
-                                            className={`h-5 w-5 ${
+                                        <div
+                                            className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
                                                 cover.type === "gap"
-                                                    ? "text-[#92400E] dark:text-amber-200"
-                                                    : "text-[#29685B] dark:text-[#A7F3D0]"
+                                                    ? "bg-[#FEF3C7] dark:bg-amber-900/30"
+                                                    : "bg-[#F0FDF4] dark:bg-[#29685B]/15"
                                             }`}
-                                        />
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                        <div className="mb-0.5 flex items-center justify-between gap-2">
-                                            <span className="truncate text-body-sm font-semibold text-[#0F172A] dark:text-white">
-                                                {cover.name}
-                                            </span>
-                                            <span
-                                                className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
+                                        >
+                                            <cover.Icon
+                                                className={`h-5 w-5 ${
                                                     cover.type === "gap"
-                                                        ? "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-500/15 dark:text-amber-200"
-                                                        : "bg-[#F0FDF4] text-[#166534] dark:bg-[#29685B]/15 dark:text-[#A7F3D0]"
+                                                        ? "text-[#92400E] dark:text-amber-200"
+                                                        : "text-[#29685B] dark:text-[#A7F3D0]"
                                                 }`}
-                                            >
-                                                {cover.status}
-                                            </span>
+                                            />
                                         </div>
-                                        <p className="mb-1.5 truncate text-micro text-[#5B6A7A] dark:text-slate-400">
-                                            {cover.note}
-                                        </p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#F1F5F9] dark:bg-slate-800">
-                                                <div
-                                                    className={`h-full rounded-full transition-all duration-1000 ease-out motion-reduce:transition-none ${
-                                                        cover.type === "gap" ? "bg-[#F59E0B]" : "bg-[#29685B]"
+                                        <div className="min-w-0 flex-1">
+                                            <div className="mb-0.5 flex items-center justify-between gap-2">
+                                                <span className="truncate text-body-sm font-semibold text-[#0F172A] dark:text-white">
+                                                    {cover.name}
+                                                </span>
+                                                <span
+                                                    className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
+                                                        cover.type === "gap"
+                                                            ? "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-500/15 dark:text-amber-200"
+                                                            : "bg-[#F0FDF4] text-[#166534] dark:bg-[#29685B]/15 dark:text-[#A7F3D0]"
                                                     }`}
-                                                    style={{
-                                                        width: loaded ? `${cover.score}%` : "0%",
-                                                        transitionDelay: `${index * 100 + 700}ms`,
-                                                    }}
-                                                />
+                                                >
+                                                    {cover.status}
+                                                </span>
                                             </div>
-                                            <span className="text-kicker font-medium text-[#5B6A7A] dark:text-slate-400">
-                                                {cover.score}%
-                                            </span>
+                                            <p className="truncate text-micro text-[#5B6A7A] dark:text-slate-400">
+                                                {cover.note}
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
-                            )
-                        })}
-                    </div>
+                                )
+                            })}
+                        </div>
 
-                    {/* The finding */}
-                    <div
-                        className={`mt-3 flex items-start gap-2.5 rounded-xl border border-[#FDE68A] bg-[#FFFBEB] p-3 dark:border-amber-500/40 dark:bg-amber-500/10 ${reveal(900).className}`}
-                        style={reveal(900).style}
-                    >
-                        <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-200" />
-                        <div className="min-w-0 flex-1">
-                            <p className="text-caption font-semibold text-[#92400E] dark:text-amber-200">
-                                {t("Βρήκαμε ένα κενό", "We found a gap")}
-                            </p>
-                            <p className="text-micro leading-snug text-[#92400E] dark:text-amber-200">
-                                {t(
-                                    "Το σπίτι σας δεν καλύπτεται για πλημμύρα.",
-                                    "Your home is not covered for flooding.",
-                                )}
-                            </p>
+                        {/* The finding */}
+                        <div
+                            className={`mt-3 flex items-start gap-2.5 rounded-xl border border-[#FDE68A] bg-[#FFFBEB] p-3 dark:border-amber-500/40 dark:bg-amber-500/10 ${reveal(900).className}`}
+                            style={reveal(900).style}
+                        >
+                            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#92400E] dark:text-amber-200" />
+                            <div className="min-w-0 flex-1">
+                                <p className="text-caption font-semibold text-[#92400E] dark:text-amber-200">
+                                    {t("Βρήκαμε ένα κενό", "We found a gap")}
+                                </p>
+                                <p className="text-micro leading-snug text-[#92400E] dark:text-amber-200">
+                                    {t(
+                                        "Το σπίτι σας δεν καλύπτεται για πλημμύρα.",
+                                        "Your home is not covered for flooding.",
+                                    )}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Floating: analysis finished. Even inside a mock, a duration
+                    reads as a speed claim — the only claim the site makes is
+                    "minutes", so the chip states completion, not a stopwatch. */}
+                <div
+                    className={`absolute top-0 right-0 flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 shadow-md dark:border-slate-800 dark:bg-slate-900 ${reveal(1100).className}`}
+                    style={reveal(1100).style}
+                >
+                    <span className="h-2 w-2 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
+                    <span className="text-micro text-[#5B6A7A] dark:text-slate-400">
+                        {t("Η ανάλυση ολοκληρώθηκε", "Analysis complete")}
+                    </span>
+                </div>
+
+                {/* Floating: renewal warning */}
+                <div
+                    className={`absolute bottom-0 left-0 flex items-center gap-1.5 rounded-full border border-[#FDE68A] bg-white px-3 py-1.5 shadow-md dark:border-amber-500/40 dark:bg-slate-900 ${reveal(1300).className}`}
+                    style={reveal(1300).style}
+                >
+                    <Clock className="h-3.5 w-3.5 text-[#92400E] dark:text-amber-200" />
+                    <span className="text-micro font-semibold text-[#92400E] dark:text-amber-200">
+                        {t("Λήγει σε 14 μέρες", "Runs out in 14 days")}
+                    </span>
+                </div>
             </div>
 
-            {/* Floating: analysis finished. Even inside a mock, a duration
-                reads as a speed claim — the only claim the site makes is
-                "minutes", so the chip states completion, not a stopwatch. */}
-            <div
-                className={`absolute top-0 right-0 flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 shadow-md dark:border-slate-800 dark:bg-slate-900 ${reveal(1100).className}`}
-                style={reveal(1100).style}
-            >
-                <span className="h-2 w-2 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
-                <span className="text-micro text-[#5B6A7A] dark:text-slate-400">
-                    {t("Η ανάλυση ολοκληρώθηκε", "Analysis complete")}
-                </span>
-            </div>
-
-            {/* Floating: renewal warning */}
-            <div
-                className={`absolute bottom-0 left-0 flex items-center gap-1.5 rounded-full border border-[#FDE68A] bg-white px-3 py-1.5 shadow-md dark:border-amber-500/40 dark:bg-slate-900 ${reveal(1300).className}`}
-                style={reveal(1300).style}
-            >
-                <Clock className="h-3.5 w-3.5 text-[#92400E] dark:text-amber-200" />
-                <span className="text-micro font-semibold text-[#92400E] dark:text-amber-200">
-                    {t("Λήγει σε 14 μέρες", "Runs out in 14 days")}
-                </span>
-            </div>
+            {/* Finding the gap is a PolicyWallet Plus job — Free and Starter
+                both sit at zero gap analyses. This mock renders in the hero,
+                inches from "Free for 1 policy", so it has to say whose result
+                it is or it reads as a free-tier promise. It sits OUTSIDE the
+                role="img" wrapper so assistive tech hears it as a caption
+                rather than having it swallowed by the image label. */}
+            <p className="text-center text-micro text-[#5B6A7A] dark:text-slate-400">
+                {t(
+                    "Παράδειγμα αποτελέσματος με το PolicyWallet Plus.",
+                    "Example result with PolicyWallet Plus.",
+                )}
+            </p>
         </div>
     )
 }
