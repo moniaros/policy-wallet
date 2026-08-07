@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { localizeHref } from "@/lib/seo/locale-links"
+import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 
 interface AudienceTabsProps {
     isGreek: boolean
@@ -157,11 +158,17 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                         </li>
                     ))}
                 </ul>
+                {/* Reads PRIMARY_ACTION rather than its own wording. This
+                    button sits on the SAME page as the hero and the closing
+                    CTA, and it used to hard-code the label those two have since
+                    moved off — so the homepage showed two different primary
+                    promises, the older of which claimed a PolicyWallet Plus
+                    outcome on a free signup. */}
                 <Link
                     href="/auth/signup?role=policyholder&source=landing_audience"
                     className="pw-primary-button"
                 >
-                    {t("Δείτε αν είστε καλυμμένοι", "See if you are covered")}
+                    {pick(PRIMARY_ACTION, isGreek ? "el" : "en")}
                     <ArrowRight aria-hidden className="h-4 w-4" />
                 </Link>
             </div>
