@@ -2,8 +2,9 @@
 
 ## Session wrap — 2026-08-07 (Homepage hero: the first screen is now the product)
 
-**Current phase:** hero rebuild done and gate-green, **uncommitted on NEW-UI**
-(a parallel session shares the tree — stage selectively, never `git add -A`).
+**Current phase:** **shipped and verified live** — PR #255, squashed as
+`434d9c04`, CI green, `deploy.yml` deployed it, and the new fold is confirmed on
+www.policywallet.gr in both locales.
 
 **Why.** A competitor-CEO review scored the live homepage 7.0/10: the first
 screen *told* instead of *showed*, led with a category label nobody can act on,
@@ -40,18 +41,38 @@ trust row and pricing provably below the fold) · real Chrome at
 targets, the reveal works, mock hidden below `lg`) · the repo's own
 `public-anon` sweep, 63/63.
 
+**CWV measured on production, finally** (390px, 4× CPU throttle, ~1.6 Mbps):
+**LCP 1080 ms · CLS 0.0000 · FCP 1080 ms.** The long-standing "predicted green,
+never measured" risk is closed — and it survived putting an interaction in the
+fold.
+
+**NEW — anonymous cookie consent is never recorded server-side (found while
+verifying prod, pre-existing, NOT from this change).** `app/api/v1/consents`
+is declared `auth: mode "public"` in the CI-enforced route inventory, but
+`proxy.ts` does not allowlist it and fails closed — so every anonymous call is
+307'd to `/auth/signin`, and the banner's POST dies as a **405**. Verified live
+for GET, POST and `/consents/current`. **Visitor choice IS honoured**:
+`CookieConsentBanner` writes the cookie and emits the change *before* the fetch
+(the POST is commented as best-effort audit logging), so analytics start/stop
+correctly. What is missing is the server-side record GDPR Art. 7(1) wants, plus
+a console error on every visitor who touches the banner. Same class as the
+documented cron 307 trap. One line in the `proxy.ts` allowlist — deliberately
+NOT applied: `proxy.ts` is auth middleware, outside this brief's stated scope,
+and widening a fail-closed allowlist is the owner's call.
+
 **Blocked:** unchanged — legal-entity details (ΓΕΜΗ/ΑΦΜ, registered office).
 
-**Top risks:** 1) at 320×568 the last chip row falls ~23px (EL) / ~75px (EN)
-below the fold — the heading and first rows are above it, and six Greek phrases
-cannot fit a 272px column, so this is accepted, not unnoticed; 2) CWV still
-never measured on production; 3) large uncommitted set shared with a parallel
-session.
+**Top risks:** 1) the consent-record gap above; 2) at 320×568 the last chip row
+falls ~23px (EL) / ~75px (EN) below the fold — heading and first rows are above
+it, and six Greek phrases cannot fit a 272px column, so this is accepted, not
+unnoticed; 3) `/product`, `/compare`, `/company` and the OG cards still lead
+with the category label, which the same review called unmemorable — the
+homepage now leads with the decode, so those surfaces are inconsistent with it.
 
-**Next 3 actions:** 1) commit selectively and let deploy.yml ship it; 2) verify
-the new fold on policywallet.gr and measure CWV there; 3) run the seven-lens
-assessment loop against production — the clean-round counter resets to 0,
-because this is a structural change.
+**Next 3 actions:** 1) decide the `proxy.ts` consent allowlist; 2) run the
+seven-lens assessment loop against production — the clean-round counter resets
+to **0**, because this is a structural change; 3) decide whether the
+badge-leads-with-decode treatment should propagate to /product and /compare.
 
 ## Session wrap — 2026-08-06 (Marketing site: launch-readiness loop closed — GO)
 
