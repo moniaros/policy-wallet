@@ -1019,9 +1019,26 @@ function assertLegalParity() {
 
 assertLegalParity()
 
-export function resolveLegalLanguage(langFromQuery: string | null | undefined, acceptLanguage: string | null | undefined): LegalLanguage {
+/**
+ * The URL decides the language of a legal document. `?lang=` is an explicit
+ * override — nothing else is consulted.
+ *
+ * This used to fall back to `Accept-Language`, which meant /privacy, /terms,
+ * /cookies and /subprocessors served the ENGLISH document to anyone whose
+ * browser was set to English — very common in Greece, where the OS and the
+ * browser usually ship in English. A Greek reader browsing the Greek site
+ * clicked a Greek-labelled footer link and got the English Privacy Policy,
+ * with the entire header and footer relocated to /en/*, and the ΕΛ toggle
+ * could not bring them back. Meanwhile the page still declared
+ * `<html lang="el">`, a canonical pointing at itself and `hrefLang="el"` —
+ * so it advertised itself as the Greek alternate while serving English.
+ *
+ * These are the GDPR privacy policy, the terms a Greek consumer is entitled
+ * to read in Greek, the cookie policy and the subprocessor list. The /en/*
+ * twins are hard-pinned to "en"; these are now hard-pinned to "el" to match.
+ */
+export function resolveLegalLanguage(langFromQuery: string | null | undefined): LegalLanguage {
     if (langFromQuery === "el" || langFromQuery === "en") return langFromQuery
-    if (acceptLanguage?.toLowerCase().includes("en")) return "en"
     return "el"
 }
 

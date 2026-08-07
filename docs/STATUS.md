@@ -130,6 +130,41 @@ route to read it, and both are outside a marketing-only brief. Recoverable in
 one tap via the EN toggle, but it is the highest-intent moment on the English
 journey.
 
+**Round 7 deliberately looked away from the hero** — journeys between pages,
+the other public pages, EL/EN meaning parity, the non-hero interactive
+components, the transport layer, and structured data sitewide. 23 candidates,
+8 verified, **6 confirmed, 2 refuted**. All six fixed:
+
+- **The four Greek legal URLs served the ENGLISH document to any browser whose
+  Accept-Language was not Greek** — /privacy, /terms, /cookies, /subprocessors.
+  A Greek reader on an English-configured laptop (the norm in Greece) clicked a
+  Greek-labelled footer link and got the English Privacy Policy **plus ~52 links
+  silently relocated to /en/**, with no way back: the ΕΛ toggle was a no-op. The
+  page still declared `<html lang="el">`, `hrefLang="el"` and a self-canonical
+  while serving English. These are the GDPR privacy policy and the terms a Greek
+  consumer is entitled to read in Greek. The URL now decides, as it already does
+  for /en/*; `?lang=` stays an explicit override. The leaked-link count is now 1
+  — the language toggle itself.
+- **Both pricing segmented controls exposed no selected state** (WCAG 2.1 SC
+  4.1.2) on the page where money is decided: a screen reader heard two plain
+  buttons and no indication that €79 was the yearly figure. Now `aria-pressed`
+  on each, inside labelled groups.
+- **An English guide dropped the «από το πλάνο Starter» qualifier** its Greek
+  twin carries, promising renewal alerts on a page whose CTA is "start free" —
+  free has notifications off. Pinned by
+  `tests/unit/guides-plan-qualifier-parity.test.ts`, which compares the COUNT of
+  plan mentions per EL/EN pair (length comparison is useless: Greek runs longer).
+- **A 404 under /en offered one door and it opened onto the Greek homepage.**
+- **Escape closed the mobile drawer without restoring focus**, dropping it on
+  `document.body` while the Close button did it correctly. Both paths now run
+  one `close()`.
+
+Three of the checks I wrote to verify these fixes were themselves wrong before
+they were right — the language switcher is a group of LINKS using `aria-current`
+(correct, and my assertion swept it in), unknown Greek paths are 307'd by
+proxy.ts before any 404 renders, and my drawer selector matched a desktop
+dropdown. Same pattern as every round: verify the harness before the finding.
+
 **Not verified:** WebKit and Firefox engines are not installed locally, so the
 `:has()` path is confirmed in Chrome only. The `@supports` guard is what makes
 that acceptable rather than a gamble.

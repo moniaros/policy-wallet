@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { ShieldAlert } from "lucide-react"
 
 /**
@@ -14,6 +15,14 @@ import { ShieldAlert } from "lucide-react"
  * insurer's 404 is calm and plain, not cute.
  */
 export default function NotFound() {
+    // The single door used to open onto the Greek homepage from everywhere,
+    // including /en/*: an English visitor who mistyped a URL was moved to the
+    // Greek site and had to notice the EN toggle to get back. The path is the
+    // only locale signal available above the LanguageProvider, so use it.
+    const pathname = usePathname()
+    const isEnglishTree = pathname === "/en" || pathname?.startsWith("/en/")
+    const homeHref = isEnglishTree ? "/en" : "/"
+
     return (
         // A 404 still needs a main landmark: without one, screen-reader users
         // have no "skip to content" destination and no way to jump past the
@@ -33,8 +42,9 @@ export default function NotFound() {
                 The page or policy you are looking for doesn’t exist or has been moved.
             </p>
 
-            <Link href="/" className="pw-primary-button justify-center">
-                Αρχική · Home
+            {/* Bilingual label either way — the destination is what changes. */}
+            <Link href={homeHref} className="pw-primary-button justify-center">
+                {isEnglishTree ? "Home · Αρχική" : "Αρχική · Home"}
             </Link>
         </main>
     )

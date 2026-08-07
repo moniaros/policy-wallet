@@ -1,15 +1,14 @@
 import type { Metadata } from "next"
-import { headers } from "next/headers"
 import { LegalDocumentPage } from "@/components/legal/LegalDocumentPage"
 import { resolveLegalLanguage } from "@/lib/legal/legal-content"
 import { buildLegalPageMetadata } from "@/lib/seo/marketing-pages"
 
-// Copy follows the served language (?lang= / Accept-Language) so the tab
-// title matches the content; see buildLegalPageMetadata for the mechanics.
+// Greek is the language of this URL. `?lang=` is the only override —
+// Accept-Language used to decide, which served the English document to
+// English-locale browsers on the Greek route; see resolveLegalLanguage.
 export async function generateMetadata({ searchParams }: PrivacyPageProps): Promise<Metadata> {
     const params = await resolveSearchParams(searchParams)
-    const requestHeaders = await headers()
-    const language = resolveLegalLanguage(params.lang, requestHeaders.get("accept-language"))
+    const language = resolveLegalLanguage(params.lang)
     return buildLegalPageMetadata("privacy", language)
 }
 
@@ -27,8 +26,7 @@ async function resolveSearchParams(searchParams: PrivacyPageProps["searchParams"
 
 export default async function PrivacyPage({ searchParams }: PrivacyPageProps) {
     const params = await resolveSearchParams(searchParams)
-    const requestHeaders = await headers()
-    const language = resolveLegalLanguage(params.lang, requestHeaders.get("accept-language"))
+    const language = resolveLegalLanguage(params.lang)
 
     return <LegalDocumentPage language={language} documentKind="privacy" />
 }
