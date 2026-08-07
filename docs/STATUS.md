@@ -79,6 +79,27 @@ PolicyWallet Plus outcome on a free signup. It now reads the constant, and
 `tests/unit/landing-primary-cta-single-source.test.ts` pins the invariant —
 verified to fail against the old code before being accepted.
 
+Rounds 3 and 4 were clean (accessibility tree proving the live region really
+does announce, all-six-selected layout, client-side nav, a 21-route production
+sweep, WCAG 1.4.4 reflow at 320/640 CSS px, and the 1.4.12 text-spacing
+override). Two apparent findings there were again harness error, not product
+defects, and were disproved.
+
+Round 5 found the last real one: **the hero interaction was painted long before
+it worked.** Measured against production, the chips were inert for **843ms on
+fast 4G with 4x CPU throttling and 2,420ms on slow 4G with 6x** — and they are
+now the first control on the page, so that is exactly when a visitor taps.
+Rewritten from React state onto checkboxes plus a `:has()` rule: the same
+measurement now reads **48ms / 70ms**, the section works with JavaScript
+disabled, and it ships **no client JavaScript at all**. The reveal rules sit
+inside `@supports selector(:has(*))`, so a browser without `:has()` shows every
+effect line rather than none — degraded to a plain list, never a dead control.
+Pinned by `tests/unit/life-change-discovery-no-js.test.tsx`.
+
+**Not verified:** WebKit and Firefox engines are not installed locally, so the
+`:has()` path is confirmed in Chrome only. The `@supports` guard is what makes
+that acceptable rather than a gamble.
+
 **Blocked:** unchanged — legal-entity details (ΓΕΜΗ/ΑΦΜ, registered office).
 
 **Top risks:** 1) the consent-record gap above; 2) at 320×568 the last chip row
