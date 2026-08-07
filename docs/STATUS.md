@@ -1,5 +1,58 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-07 (Homepage hero: the first screen is now the product)
+
+**Current phase:** hero rebuild done and gate-green, **uncommitted on NEW-UI**
+(a parallel session shares the tree — stage selectively, never `git add -A`).
+
+**Why.** A competitor-CEO review scored the live homepage 7.0/10: the first
+screen *told* instead of *showed*, led with a category label nobody can act on,
+and put AES-256/GDPR/EU-servers above the fold where they prove nothing. The
+interaction shipped in #253 sat below all of it.
+
+**Done.** The fold is now badge (the plain-language decode) → H1 → the six
+life-change chips → the effect their own pick reveals → the argument → one
+tracked CTA. `TrustRow` moved down beside the other "is this real" evidence;
+`PricingPreview` moved below the FAQ; the mock is desktop-only so a phone leads
+with the interaction rather than a screenshot. The widget's «Σκορ Προστασίας:
+84%» and its three per-branch percentages are gone — it is a coverage map now
+(Εντάξει / Κενό), and its summary chip is **counted off the tiles** rather than
+invented. `WHAT_WE_DO` was deleted: the chips, `CATEGORY` and `STORY.matters`
+now say all three of its sentences, and an unrendered claim in the claims file
+misreports what the site promises.
+
+**Two honesty findings, both caught before shipping.** The review asked for
+"See your first gap free" and CTAs like *Reveal my gaps* — both false:
+`gapAnalysisPerDay` is 0 on **Free and Starter**, so gap detection is
+PolicyWallet Plus only. The planned replacement CTA («Δείτε τι δεν καλύπτει η
+ασφάλειά σας») was **also** rejected mid-implementation, because
+`COMPARISON_ROWS` already rules "shows you what is NOT covered" a `plus` job.
+`PRIMARY_ACTION` is now «Δείτε τι λέει το συμβόλαιό σας», which Free genuinely
+delivers. Separately, the hero mock says «Βρήκαμε ένα κενό» inches from a
+free-tier promise — it now carries a plan-named caption, in the accessible name
+too.
+
+**Verification.** 3,770 unit tests · lint · i18n · UTF-8 · encoding ·
+audit:api-auth · production build · prerendered HTML in both locales (one h1,
+no heading skips, all six chips and all six effect lines in the server HTML,
+trust row and pricing provably below the fold) · real Chrome at
+320/390/390-short/768/1440 × both locales (zero horizontal overflow, 44px
+targets, the reveal works, mock hidden below `lg`) · the repo's own
+`public-anon` sweep, 63/63.
+
+**Blocked:** unchanged — legal-entity details (ΓΕΜΗ/ΑΦΜ, registered office).
+
+**Top risks:** 1) at 320×568 the last chip row falls ~23px (EL) / ~75px (EN)
+below the fold — the heading and first rows are above it, and six Greek phrases
+cannot fit a 272px column, so this is accepted, not unnoticed; 2) CWV still
+never measured on production; 3) large uncommitted set shared with a parallel
+session.
+
+**Next 3 actions:** 1) commit selectively and let deploy.yml ship it; 2) verify
+the new fold on policywallet.gr and measure CWV there; 3) run the seven-lens
+assessment loop against production — the clean-round counter resets to 0,
+because this is a structural change.
+
 ## Session wrap — 2026-08-06 (Marketing site: launch-readiness loop closed — GO)
 
 **Current phase:** marketing website **launch-ready**, uncommitted on NEW-UI

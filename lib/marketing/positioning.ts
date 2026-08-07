@@ -19,7 +19,7 @@
  *
  *     What changed?    →  STORY.changed  /  LIFE_CHANGES
  *     Why care?        →  STORY.matters  /  WHY_NOW
- *     How do you help? →  STORY.helps    /  WHAT_WE_DO
+ *     How do you help? →  STORY.helps    /  CATEGORY
  *     What do I do?    →  STORY.next     /  PRIMARY_ACTION
  *
  * Rules for anything added here:
@@ -46,10 +46,14 @@ export function pick(value: Bilingual, locale: MarketingLocale): string {
 /**
  * The category we are CREATING, by name. You cannot lead a category you do
  * not name: the label renders wherever a page states what PolicyWallet IS —
- * the hero badge, the sitewide footer identity line, the company kicker —
- * and CATEGORY below is its plain-language decode, always within one glance.
+ * the sitewide footer identity line, the company kicker, /product, /compare
+ * and the OG cards — and CATEGORY below is its plain-language decode.
  * Must stay aligned with the definitional sentence in lib/seo/site.ts
  * («προσωπικής ανάλυσης ρίσκου» ↔ "personal risk intelligence").
+ *
+ * It is NOT in the homepage hero. A stranger giving the page three seconds
+ * cannot do anything with a category label, so the hero leads with the decode
+ * and lets the label do its work where it is being looked up rather than read.
  */
 export const CATEGORY_NAME: Bilingual = {
     el: "Πλατφόρμα προσωπικής ανάλυσης ρίσκου",
@@ -69,7 +73,7 @@ export const CATEGORY: Bilingual = {
 /**
  * The four beats of the story, as sentences. Pages tell the beats through the
  * derived constants — LIFE_CHANGES for "changed", WHY_NOW for "matters",
- * WHAT_WE_DO for "helps", PRIMARY_ACTION for "next" — and may also render a
+ * CATEGORY for "helps", PRIMARY_ACTION for "next" — and may also render a
  * beat verbatim: the homepage renders `matters` word for word.
  */
 export const STORY: Record<"changed" | "matters" | "helps" | "next", Bilingual> = {
@@ -176,16 +180,6 @@ export const PROMISE: { lead: Bilingual; accent: Bilingual } = {
     // The no-break spaces keep "ασφάλειά σας" / "your insurance" from
     // splitting across lines when the hero headline wraps.
     accent: { el: "Η ασφάλειά σας το ξέρει;", en: "Does your insurance know?" },
-}
-
-/**
- * What we actually do, in one sentence. Used under the headline.
- * Deliberately baseline: "what to fix first" is a Plus-plan output and this
- * sentence shares its span with the free-CTA reassurance line.
- */
-export const WHAT_WE_DO: Bilingual = {
-    el: "Παιδί, νέο σπίτι, νέα δουλειά. Κάθε αλλαγή αλλάζει και τα ρίσκα σας. Δεν πουλάμε ασφάλειες — σας λέμε αν είστε ακόμη καλυμμένοι.",
-    en: "A child, a new home, a new job. Every change changes your risks. We do not sell insurance — we tell you whether you are still covered.",
 }
 
 /**
@@ -312,10 +306,18 @@ export const CTA_REASSURANCE: Bilingual = {
     en: "Free for 1 policy. No card. Delete everything whenever you want.",
 }
 
-/** Primary call to action, worded as the outcome the visitor gets. */
+/**
+ * Primary call to action, worded as the outcome the visitor gets.
+ *
+ * It has to survive the free tier. "See what is NOT covered" reads stronger,
+ * but COMPARISON_ROWS already rules that job a PolicyWallet Plus one, so a CTA
+ * that opens a free signup must not promise it. Reading back what a policy
+ * actually says is baseline behaviour — Free stores one policy and gets its
+ * basic parsed summary — and it is the question every policyholder has.
+ */
 export const PRIMARY_ACTION: Bilingual = {
-    el: "Δείτε αν είστε καλυμμένοι",
-    en: "See if you are covered",
+    el: "Δείτε τι λέει το συμβόλαιό σας",
+    en: "See what your policy says",
 }
 
 /**

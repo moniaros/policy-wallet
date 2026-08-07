@@ -4,18 +4,16 @@ import { useState } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
-import {
-    CTA_REASSURANCE,
-    LIFE_CHANGE_EFFECTS,
-    PRIMARY_ACTION,
-    STORY,
-    pick,
-    type MarketingLocale,
-} from "@/lib/marketing/positioning"
+import { LIFE_CHANGE_EFFECTS, STORY, pick, type MarketingLocale } from "@/lib/marketing/positioning"
 
 /**
  * "What changed?" — the visitor picks the changes that happened to them and
  * discovers, one line at a time, why their cover may no longer fit.
+ *
+ * This is the first screen, not a mid-page band: the headline asks whether your
+ * insurance knows your life changed, and this answers it with the visitor's own
+ * answer instead of a paragraph about us. It carries no CTA of its own — the
+ * hero owns the single tracked button directly below.
  *
  * Design notes that are easy to undo by accident:
  *
@@ -41,107 +39,85 @@ export function LifeChangeDiscovery({ locale }: { locale: MarketingLocale }) {
             current.includes(key) ? current.filter((entry) => entry !== key) : [...current, key]
         )
 
-    const chosen = LIFE_CHANGE_EFFECTS.filter((entry) => selected.includes(entry.change.en))
-
     return (
         <section
             id="life-changes"
             aria-labelledby="life-changes-heading"
-            className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-12 lg:scroll-mt-36 lg:px-12 lg:py-16 dark:border-slate-800 dark:bg-slate-900"
+            className="mt-5 scroll-mt-28 sm:mt-7 lg:scroll-mt-36"
         >
-            <div className="mx-auto max-w-page space-y-6 text-center">
-                <h2
-                    id="life-changes-heading"
-                    className="text-lead font-semibold text-balance text-[#0F172A] sm:text-title dark:text-white"
-                >
-                    {t("Κάτι άλλαξε στη ζωή σας φέτος;", "Did something change in your life this year?")}
-                </h2>
+            {/* The H1 above already asks the question; this is the invitation. */}
+            <h2
+                id="life-changes-heading"
+                className="mb-3 text-body-lg font-semibold text-[#0F172A] sm:text-lead dark:text-white"
+            >
+                {t("Διαλέξτε τι άλλαξε φέτος.", "Pick what changed this year.")}
+            </h2>
 
-                <p className="text-body-sm text-[#5B6A7A] dark:text-slate-400">
-                    {t("Διαλέξτε ό,τι ισχύει. Θα δείτε τι αλλάζει.", "Pick what applies. You will see what changes.")}
-                </p>
-
-                <ul className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-                    {LIFE_CHANGE_EFFECTS.map((entry) => {
-                        const key = entry.change.en
-                        const active = selected.includes(key)
-                        return (
-                            <li key={key}>
-                                <button
-                                    type="button"
-                                    onClick={() => toggle(key)}
-                                    aria-pressed={active}
-                                    className={`flex min-h-11 items-center gap-2 rounded-full border px-4 text-body-sm font-semibold transition-colors ${
-                                        active
-                                            ? "border-[#29685B] bg-[#29685B] text-white forced-colors:border-[3px] forced-colors:border-double dark:border-[#A7F3D0] dark:bg-[#29685B]"
-                                            : "border-[#E2E8F0] bg-white text-[#334155] hover:border-[#29685B]/40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                                    }`}
-                                >
-                                    <span
-                                        aria-hidden
-                                        className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                                            active ? "bg-[#A7F3D0]" : "bg-[#CBD5E1] dark:bg-slate-600"
-                                        }`}
-                                    />
-                                    {pick(entry.change, locale)}
-                                </button>
-                            </li>
-                        )
-                    })}
-                </ul>
-
-                {/* Every line ships in the HTML; selection only unhides one. */}
-                <ul
-                    aria-live="polite"
-                    className="mx-auto flex max-w-[640px] flex-col gap-2.5 text-left"
-                >
-                    {LIFE_CHANGE_EFFECTS.map((entry) => {
-                        const key = entry.change.en
-                        const active = selected.includes(key)
-                        return (
-                            <li
-                                key={key}
-                                hidden={!active}
-                                className="flex flex-col items-start gap-2 rounded-2xl border border-[#DCEBDA] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 dark:border-[#29685B]/40 dark:bg-slate-800"
+            {/* Narrower on phones: at 320px the column is 272px wide and every
+                Greek phrase claimed a row of its own. The label keeps its 13px
+                and the target keeps its 44px — only the padding gives way. */}
+            <ul className="flex flex-wrap gap-2 sm:gap-3">
+                {LIFE_CHANGE_EFFECTS.map((entry) => {
+                    const key = entry.change.en
+                    const active = selected.includes(key)
+                    return (
+                        <li key={key}>
+                            <button
+                                type="button"
+                                onClick={() => toggle(key)}
+                                aria-pressed={active}
+                                className={`flex min-h-11 items-center gap-2 rounded-full border px-3 text-body-sm font-semibold transition-colors sm:px-4 ${
+                                    active
+                                        ? "border-[#29685B] bg-[#29685B] text-white forced-colors:border-[3px] forced-colors:border-double dark:border-[#A7F3D0] dark:bg-[#29685B]"
+                                        : "border-[#E2E8F0] bg-white text-[#334155] hover:border-[#29685B]/40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                }`}
                             >
-                                <span className="text-body text-[#0F172A] dark:text-white">
-                                    {pick(entry.effect, locale)}
-                                </span>
-                                <Link
-                                    href={localizeHref(entry.href, locale)}
-                                    className="inline-flex min-h-11 flex-shrink-0 items-center gap-1 text-body-sm font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
-                                >
-                                    {t("Δείτε τι μετράει", "See what matters")}
-                                    {/* Six links otherwise share one accessible
-                                        name; the change makes each unique. */}
-                                    <span className="sr-only"> — {pick(entry.change, locale)}</span>
-                                    <ArrowRight aria-hidden className="h-3.5 w-3.5" />
-                                </Link>
-                            </li>
-                        )
-                    })}
-                </ul>
+                                <span
+                                    aria-hidden
+                                    className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                                        active ? "bg-[#A7F3D0]" : "bg-[#CBD5E1] dark:bg-slate-600"
+                                    }`}
+                                />
+                                {pick(entry.change, locale)}
+                            </button>
+                        </li>
+                    )
+                })}
+            </ul>
 
-                {/* The argument itself — always readable, with or without JS. */}
-                <p className="mx-auto max-w-[560px] text-body-lg text-[#475569] dark:text-slate-300">
-                    {pick(STORY.matters, locale)}
-                </p>
-
-                {chosen.length > 0 ? (
-                    <div className="mx-auto flex max-w-[560px] flex-col items-center gap-3 pt-1">
-                        <Link
-                            href={`/auth/signup?role=policyholder&source=landing_life_changes`}
-                            className="pw-primary-button pw-btn-lg w-full sm:w-auto"
+            {/* Every line ships in the HTML; selection only unhides one. */}
+            <ul aria-live="polite" className="mt-4 flex max-w-[560px] flex-col gap-2.5">
+                {LIFE_CHANGE_EFFECTS.map((entry) => {
+                    const key = entry.change.en
+                    const active = selected.includes(key)
+                    return (
+                        <li
+                            key={key}
+                            hidden={!active}
+                            className="flex flex-col items-start gap-2 rounded-2xl border border-[#DCEBDA] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 dark:border-[#29685B]/40 dark:bg-slate-800"
                         >
-                            {pick(PRIMARY_ACTION, locale)}
-                            <ArrowRight aria-hidden className="h-4 w-4" />
-                        </Link>
-                        <p className="text-body-sm text-[#5B6A7A] dark:text-slate-400">
-                            {pick(CTA_REASSURANCE, locale)}
-                        </p>
-                    </div>
-                ) : null}
-            </div>
+                            <span className="text-body text-[#0F172A] dark:text-white">
+                                {pick(entry.effect, locale)}
+                            </span>
+                            <Link
+                                href={localizeHref(entry.href, locale)}
+                                className="inline-flex min-h-11 flex-shrink-0 items-center gap-1 text-body-sm font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
+                            >
+                                {t("Δείτε τι μετράει", "See what matters")}
+                                {/* Six links otherwise share one accessible
+                                    name; the change makes each unique. */}
+                                <span className="sr-only"> — {pick(entry.change, locale)}</span>
+                                <ArrowRight aria-hidden className="h-3.5 w-3.5" />
+                            </Link>
+                        </li>
+                    )
+                })}
+            </ul>
+
+            {/* The argument itself — always readable, with or without JS. */}
+            <p className="mt-5 max-w-[520px] text-body-lg leading-relaxed text-[#475569] sm:text-lead dark:text-slate-300">
+                {pick(STORY.matters, locale)}
+            </p>
         </section>
     )
 }

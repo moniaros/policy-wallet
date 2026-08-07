@@ -21,16 +21,7 @@ import { ServicesGrid } from "@/components/landing/ServicesGrid"
 import { AudienceTabs } from "@/components/landing/AudienceTabs"
 import { landingContent } from "@/lib/landing/content"
 import { productCategories } from "@/lib/product/catalog"
-import {
-    CATEGORY_NAME,
-    CTA_REASSURANCE,
-    LIFE_CHANGES,
-    PRIMARY_ACTION,
-    PROMISE,
-    STORY,
-    WHAT_WE_DO,
-    pick,
-} from "@/lib/marketing/positioning"
+import { CATEGORY, CTA_REASSURANCE, PRIMARY_ACTION, PROMISE, pick } from "@/lib/marketing/positioning"
 
 const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
@@ -47,17 +38,21 @@ interface WorldClassLandingProps {
 /**
  * The homepage. It tells one story, in order — life changes, your risks change
  * with it, your insurance does not keep up, we tell you whether you are still
- * protected — and the first screen already answers all four questions a
- * visitor is asking:
+ * protected — and the first screen answers all four questions a visitor is
+ * asking, with the visitor doing three of the four:
  *
- *   what changed → the headline, expanded in #life-changes
- *   why care     → the sentence under it, expanded in #why-now
- *   why you      → the badge above it, expanded in #difference
- *   what now     → the button, and the price band further down
+ *   why you      → the badge, expanded in #difference
+ *   what changed → the headline, answered by the chips they pick
+ *   why care     → the effect their own pick reveals, expanded in #why-now
+ *   what now     → the button under it
+ *
+ * Everything that is us talking about ourselves comes after that: what you get,
+ * how it works, who it is for, whether you can trust us, what it costs.
  *
  * Server component. Every section renders on the server; the only client
  * islands are LandingHeader (nav state + analytics), LandingCtaLink (tracked
- * signup CTAs), PolicyWalletWidget, AudienceTabs and PublicMegaFooter.
+ * signup CTAs), LifeChangeDiscovery, PolicyWalletWidget, AudienceTabs and
+ * PublicMegaFooter.
  */
 export function WorldClassLanding({
     locale,
@@ -78,32 +73,42 @@ export function WorldClassLanding({
         >
             <LandingHeader locale={locale} showPerksLink={partnerOffers.length > 0} />
 
-            <main id="main-content" tabIndex={-1} className="pt-24 sm:pt-28 lg:pt-36">
+            {/* The floating header ends at 72px, so pt-20 clears it with room to
+                spare. The old pt-24 left 24px of nothing on phones — cheap to
+                give back now that the first screen has to hold an interaction. */}
+            <main id="main-content" tabIndex={-1} className="pt-20 sm:pt-28 lg:pt-36">
                 {/* ── 1. HERO ──────────────────────────────────────── */}
+                {/* The first screen IS the product. Badge, headline, then the
+                    visitor's own answer — nothing between arriving and doing.
+                    What used to sit here (a paragraph restating the story, and
+                    the security row) moved down: both were us talking, and both
+                    pushed the one interactive thing below the fold. */}
                 <section className="px-6 pb-16 lg:px-12 lg:pb-24">
-                    <div className="mx-auto grid max-w-page grid-cols-1 items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
+                    <div className="mx-auto grid max-w-page grid-cols-1 items-start gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
                         <div>
-                            {/* The category claim — the first thing on the page.
-                                The H1 + subline directly below are its decode. */}
-                            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-1 sm:mb-6 sm:px-3.5 sm:py-1.5 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
+                            {/* What we are, in the words a person would use. The
+                                formal category name still carries the SEO/AEO
+                                job in the footer, the OG cards and the JSON-LD
+                                entity — it is just not what a human reads first.
+                                Rounds on mobile because a sentence wraps. */}
+                            <p className="mb-4 inline-flex max-w-full items-start gap-2 rounded-2xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-1.5 sm:mb-6 sm:rounded-full sm:px-3.5 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                                <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
                                 <span className="text-caption font-semibold text-[#166534] sm:text-body-sm dark:text-[#A7F3D0]">
-                                    {pick(CATEGORY_NAME, locale)}
+                                    {pick(CATEGORY, locale)}
                                 </span>
                             </p>
 
-                            <h1 className="mb-4 text-h2 leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-[#0F172A] sm:mb-6 sm:text-h1 lg:text-display dark:text-white">
+                            <h1 className="text-h2 leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-[#0F172A] sm:text-h1 lg:text-display dark:text-white">
                                 {pick(PROMISE.lead, locale)}{" "}
                                 <span className="text-[#29685B] dark:text-[#A7F3D0]">
                                     {pick(PROMISE.accent, locale)}
                                 </span>
                             </h1>
 
-                            <p className="mb-6 max-w-[520px] text-body-lg leading-relaxed text-[#475569] sm:mb-8 sm:text-lead dark:text-slate-300">
-                                {pick(WHAT_WE_DO, locale)}
-                            </p>
+                            {/* The answer to the headline, given by the visitor. */}
+                            <LifeChangeDiscovery locale={locale} />
 
-                            <div className="flex flex-col gap-3 sm:flex-row">
+                            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                                 <LandingCtaLink
                                     href="/auth/signup?role=policyholder&source=landing_hero"
                                     locale={locale}
@@ -122,28 +127,21 @@ export function WorldClassLanding({
                             <p className="mt-3 text-body-sm text-[#5B6A7A] sm:mt-4 dark:text-slate-400">
                                 {pick(CTA_REASSURANCE, locale)}
                             </p>
-
-                            {/* Why you can trust us — answered without scrolling. */}
-                            <div className="mt-5 border-t border-[#E2E8F0] pt-5 sm:mt-8 sm:pt-7 dark:border-slate-800">
-                                <TrustRow locale={locale} />
-                            </div>
                         </div>
 
-                        <PolicyWalletWidget isGreek={isGreek} />
+                        {/* Desktop only. On a phone the mock would take the
+                            whole first screen and push the interaction under
+                            it — the exact problem this layout removes. */}
+                        <div className="hidden lg:block">
+                            <PolicyWalletWidget isGreek={isGreek} />
+                        </div>
                     </div>
                 </section>
 
-                {/* ── 2. WHAT CHANGED ──────────────────────────────── */}
-                {/* Interactive: the visitor picks their own changes and reads
-                    what each one does to their cover. Every line is in the
-                    server HTML, so this section still argues its case with
-                    JavaScript off. */}
-                <LifeChangeDiscovery locale={locale} />
-
-                {/* ── 3. WHY WE ARE DIFFERENT ──────────────────────── */}
+                {/* ── 2. WHY WE ARE DIFFERENT ──────────────────────── */}
                 <WhyDifferent locale={locale} />
 
-                {/* ── 4. WHAT YOU GET ──────────────────────────────── */}
+                {/* ── 3. WHAT YOU GET ──────────────────────────────── */}
                 <section
                     id="services"
                     aria-labelledby="services-heading"
@@ -174,10 +172,10 @@ export function WorldClassLanding({
                     </div>
                 </section>
 
-                {/* ── 5. WHY IT MATTERS ────────────────────────────── */}
+                {/* ── 4. WHY IT MATTERS ────────────────────────────── */}
                 <WhyNow locale={locale} />
 
-                {/* ── 6. HOW IT WORKS ──────────────────────────────── */}
+                {/* ── 5. HOW IT WORKS ──────────────────────────────── */}
                 <section
                     id="how-it-works"
                     aria-labelledby="how-it-works-heading"
@@ -225,7 +223,7 @@ export function WorldClassLanding({
                     </div>
                 </section>
 
-                {/* ── 7. WHO IT IS FOR ─────────────────────────────── */}
+                {/* ── 6. WHO IT IS FOR ─────────────────────────────── */}
                 <section
                     id="solutions"
                     aria-labelledby="solutions-heading"
@@ -253,13 +251,15 @@ export function WorldClassLanding({
                     </div>
                 </section>
 
-                {/* ── 7b. PARTNER PERKS (renders only with live partners) ── */}
+                {/* ── 6b. PARTNER PERKS (renders only with live partners) ── */}
                 <PartnerPerksSection offers={partnerOffers} isGreek={isGreek} />
 
-                {/* ── 8. PRICE ─────────────────────────────────────── */}
-                <PricingPreview locale={locale} plans={pricingPlans} />
-
-                {/* ── 9. WILL IT WORK FOR ME ───────────────────────── */}
+                {/* ── 7. WILL IT WORK FOR ME, AND CAN I TRUST YOU ───── */}
+                {/* TrustRow used to sit in the hero. Encryption and data
+                    residency are what every SaaS claims, so leading with them
+                    proved nothing and cost the fold. They belong here, next to
+                    the other "is this for real" evidence, once the visitor has
+                    a reason to care. */}
                 <section
                     aria-labelledby="coverage-heading"
                     className="border-t border-[#E2E8F0] px-6 py-14 lg:px-12 dark:border-slate-800"
@@ -281,13 +281,21 @@ export function WorldClassLanding({
                                 `${productCategories.length} types of insurance. We do not work with any insurance company — that is why we can tell you the truth.`,
                             )}
                         </p>
+                        <div className="mx-auto max-w-[640px] border-t border-[#E2E8F0] pt-6 text-left dark:border-slate-800">
+                            <TrustRow locale={locale} />
+                        </div>
                     </div>
                 </section>
 
-                {/* ── 10. QUESTIONS ────────────────────────────────── */}
+                {/* ── 8. QUESTIONS ─────────────────────────────────── */}
                 <HomeFaq locale={locale} />
 
-                {/* ── 11. WHAT TO DO NEXT ──────────────────────────── */}
+                {/* ── 9. PRICE ────────────────────────────────────── */}
+                {/* After the questions, not before them: nobody weighs a
+                    subscription while they are still deciding what this is. */}
+                <PricingPreview locale={locale} plans={pricingPlans} />
+
+                {/* ── 10. WHAT TO DO NEXT ──────────────────────────── */}
                 <section className="px-6 pb-24 lg:px-12">
                     <div className="relative mx-auto max-w-page overflow-hidden rounded-2xl bg-[#0F172A] px-6 py-20 text-center sm:px-8 lg:py-28">
                         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(41,104,91,0.30),transparent)]" />
