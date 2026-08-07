@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Heart, ShieldAlert, CheckCircle2 } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Δείτε ποιες παθήσεις εξαιρεί το συμβόλαιό σας, ποια είναι τα ετήσια όριά του και αν καλύπτεται η λεϊσμανίαση — πριν το χρειαστείτε.", "See which conditions your policy excludes, what its yearly limits are, and whether leishmaniasis is covered — before you need it.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -98,7 +99,7 @@ export default function PetProductPage({ locale }: { locale: "el" | "en" }) {
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μάθετε τι καλύπτεται πριν τον κτηνίατρο.", "Know what's covered before the vet visit.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο του κατοικιδίου", "Upload your pet policy")}
                 </Link>
             </section>

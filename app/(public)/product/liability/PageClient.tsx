@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Copy, Dog, Droplets, Bike, ShieldCheck } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -49,7 +50,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                         {t("Η αστική ευθύνη καλύπτει ζημιές που προκαλείτε εσείς, το παιδί ή ο σκύλος σας σε τρίτους. Συχνά όμως υπάρχει ήδη μέσα στο συμβόλαιο κατοικίας σας — και την ξαναγοράζετε χωρίς να το ξέρετε.", "Liability cover pays for damage you, your child or your dog cause to others. But it often already sits inside your home policy — and you buy it again without knowing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -150,7 +151,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μία κάλυψη αρκεί. Δύο είναι σπατάλη.", "One cover is enough. Two is a waste.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ελέγξτε τι έχετε ήδη", "Check what you already have")}
                 </Link>
             </section>

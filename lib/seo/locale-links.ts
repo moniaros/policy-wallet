@@ -51,3 +51,23 @@ export function localizeHref(href: string, locale: MarketingLocale): string {
 
     return path === "/" ? `/en${suffix}` : `/en${path}${suffix}`
 }
+
+/**
+ * Locale-aware href for links from the marketing site INTO the auth tree.
+ *
+ * There is no /en/auth mirror — the auth pages are one tree that renders in
+ * whichever language it is told — so `localizeHref` deliberately leaves
+ * /auth/* alone. That left a hole: every auth link on the English site dropped
+ * the locale, so a visitor reading "We do not sell insurance" in English
+ * clicked the hero CTA and landed on an account-creation form entirely in
+ * Greek, at the highest-intent moment of the journey. Nothing carried the
+ * language across, because the /en tree gets its locale from
+ * StaticLanguageProvider, which is scoped to that subtree.
+ *
+ * `?lang=` is that carrier: app/auth/AuthLanguageProvider reads it and pins the
+ * auth tree to the same language. Greek needs no marker — it is the default.
+ */
+export function authHref(href: string, locale: MarketingLocale): string {
+    if (locale !== "en" || !href.startsWith("/auth/")) return href
+    return `${href}${href.includes("?") ? "&" : "?"}lang=en`
+}

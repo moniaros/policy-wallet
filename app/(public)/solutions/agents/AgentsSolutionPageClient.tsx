@@ -4,7 +4,7 @@ import Link from "next/link"
 import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { AGENT_FAQS } from "./faqs"
 import { productCategories } from "@/lib/product/catalog"
 import { DEFAULT_PLAN_FACTS } from "@/lib/pricing/plan-defaults"
@@ -52,7 +52,7 @@ export default function AgentSolutionsPage() {
                         </p>
 
                         <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                            <Link href={localizeHref("/auth/signup?role=agent", language)} className="pw-primary-button pw-btn-lg">
+                            <Link href={authHref("/auth/signup?role=agent", language)} className="pw-primary-button pw-btn-lg">
                                 {t("Ξεκινήστε δωρεάν", "Start free")}
                                 <ArrowRight aria-hidden className="h-4 w-4" />
                             </Link>
@@ -247,7 +247,7 @@ export default function AgentSolutionsPage() {
                     <h3 className="mb-4 text-h2 font-semibold leading-tight tracking-[-0.03em] text-[#0F172A] dark:text-white">
                         {t("Δοκιμάστε το με έναν πελάτη.", "Try it with one client.")}
                     </h3>
-                    <Link href={localizeHref("/auth/signup?role=agent", language)} className="pw-primary-button pw-btn-lg">
+                    <Link href={authHref("/auth/signup?role=agent", language)} className="pw-primary-button pw-btn-lg">
                         {t("Ανοίξτε δωρεάν λογαριασμό", "Open a free account")}
                         <ArrowRight aria-hidden className="h-4 w-4" />
                     </Link>

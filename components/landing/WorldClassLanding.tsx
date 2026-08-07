@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google"
 import Link from "next/link"
 import { ArrowRight, FileText, Search, Sparkles } from "lucide-react"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import type { LandingLocale } from "@/types/landing-content"
 import { LandingHeader } from "@/components/landing/LandingHeader"
 import { LandingCtaLink } from "@/components/landing/LandingCtaLink"
@@ -127,7 +127,7 @@ export function WorldClassLanding({
 
                             <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                                 <LandingCtaLink
-                                    href="/auth/signup?role=policyholder&source=landing_hero"
+                                    href={authHref("/auth/signup?role=policyholder&source=landing_hero", locale)}
                                     locale={locale}
                                     location="hero"
                                     className="pw-primary-button pw-btn-lg"
@@ -332,7 +332,7 @@ export function WorldClassLanding({
                             </p>
                             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                                 <LandingCtaLink
-                                    href="/auth/signup?role=policyholder&source=landing_cta"
+                                    href={authHref("/auth/signup?role=policyholder&source=landing_cta", locale)}
                                     locale={locale}
                                     location="final_cta"
                                     className="pw-primary-button-inverse pw-btn-lg"

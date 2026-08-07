@@ -4,7 +4,7 @@ import { Umbrella, Users, TrendingUp, ArrowRight } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 
 export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }) {
     const isGreek = locale === "el"
@@ -55,7 +55,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                         {t("Η ομαδική ασφάλιση ζωής δίνει σε κάθε εργαζόμενο κεφάλαιο ζωής και ανικανότητας με έξοδα εργοδότη. Οργανώστε το συμβόλαιο, δείτε ποιος καλύπτεται και με πόσα — χωρίς να ψάχνετε πίνακες σε PDF.", "Group life insurance gives every employee life and disability capital at the employer's expense. Organize the policy and see who is covered and for how much — without digging through PDF tables.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                         <Link href={localizeHref("/solutions/agents", locale)} className="pw-secondary-button pw-btn-lg w-full sm:w-auto">
@@ -145,7 +145,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                     {t("Μια παροχή που κανείς δεν διαβάζει αξίζει να τη βλέπουν όλοι.", "A benefit nobody reads deserves to be seen by everyone.")}
                 </h2>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                    <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                         {t("Ανεβάστε το ομαδικό σας", "Upload your group policy")}
                     </Link>
                     <Link href={localizeHref("/solutions/agents", locale)} className="pw-secondary-button-inverse pw-btn-lg">

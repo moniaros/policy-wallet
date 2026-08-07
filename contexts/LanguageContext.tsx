@@ -52,6 +52,16 @@ export function StaticLanguageProvider({
         const html = document.documentElement
         html.setAttribute('lang', language === 'el' ? 'el' : 'en')
         html.setAttribute('data-locale', language === 'el' ? 'el-GR' : 'en-US')
+        // Claim ownership of <html lang> while this provider is mounted. The
+        // global LanguageProvider used to stand down for /en/* by matching the
+        // PATH, which left the auth tree unprotected: /auth/signup?lang=en is
+        // pinned to English here, then the global effect stamped its Greek
+        // default straight over it. Ownership is the honest signal — the path
+        // never was.
+        html.dataset.langOwner = 'static'
+        return () => {
+            delete html.dataset.langOwner
+        }
     }, [language])
 
     const value = React.useMemo(
@@ -79,10 +89,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     useEffect(() => {
-        // The /en/* routes own their lang attribute (StaticLanguageProvider +
-        // HtmlLang stamp "en"). This provider's default is "el", and under
-        // chunked hydration its effect can land AFTER theirs — which stamped
-        // the Greek default onto English pages (WCAG 3.1.1). Never fight them.
+        // Wherever a StaticLanguageProvider is mounted it owns <html lang>.
+        // This provider's default is "el", and under chunked hydration its
+        // effect can land AFTER theirs — which stamped the Greek default onto
+        // English pages (WCAG 3.1.1). Never fight them.
+        //
+        // The path check is kept as a belt-and-braces guard for the /en tree
+        // (it holds even before the static provider's effect runs); the
+        // ownership flag is what also covers /auth/*?lang=en, which is pinned
+        // by AuthLanguageProvider and has no /en prefix to match on.
+        if (document.documentElement.dataset.langOwner === 'static') return
         const path = window.location.pathname
         if (path === '/en' || path.startsWith('/en/')) return
 

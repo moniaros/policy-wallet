@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Plane, Stethoscope, CalendarX2, Luggage } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Η ταξιδιωτική ασφάλεια αγοράζεται σε δύο κλικ μαζί με το εισιτήριο — και συνήθως κανείς δεν βλέπει τα όρια, τις εξαιρέσεις ή την απαλλαγή — το ποσό που μένει πάνω σας. Σας τα δείχνουμε πριν φύγετε, όχι στο ταμείο ενός νοσοκομείου στο εξωτερικό.", "Travel cover is bought in two clicks with the ticket — and usually nobody looks at the limits, the exclusions or the deductible — the amount that stays with you. We show them to you before you leave, not at the cashier's desk of a hospital abroad.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -88,7 +89,7 @@ export default function TravelProductPage({ locale }: { locale: "el" | "en" }) {
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Ταξιδέψτε ξέροντας τι ισχύει.", "Travel knowing what applies.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     <Plane className="h-5 w-5" />
                     {t("Ανεβάστε την ταξιδιωτική σας", "Upload your travel policy")}
                 </Link>

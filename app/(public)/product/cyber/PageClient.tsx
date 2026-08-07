@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Shield, CheckCircle2 } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Δείτε τι καλύπτεται αν κλειδώσουν τα δεδομένα σας, μέχρι ποιο ποσό, και πόσο πληρώνεστε για κάθε μέρα που η δουλειά σταματά.", "See what is covered if your data is locked, up to what amount, and how much you are paid for every day the business stops.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -97,7 +98,7 @@ export default function CyberProductPage({ locale }: { locale: "el" | "en" }) {
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μάθετε τι ισχύει πριν συμβεί.", "Find out what applies before it happens.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο κυβερνοασφάλειας", "Upload your cyber policy")}
                 </Link>
             </section>

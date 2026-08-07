@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Activity, CheckCircle2 } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Δείτε πόσα θα πληρώσετε από την τσέπη σας στη χειρότερη περίπτωση, ποια νοσοκομεία είναι συμβεβλημένα και πού μένετε ακάλυπτοι.", "See how much you would pay yourself in the worst case, which hospitals bill your insurer directly, and where you are left uncovered.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -97,7 +98,7 @@ export default function HealthProductPage({ locale }: { locale: "el" | "en" }) {
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μάθετε τι πληρώνει το συμβόλαιο υγείας σας.", "Know what your health policy pays.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο υγείας", "Upload your health policy")}
                 </Link>
             </section>

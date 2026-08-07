@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { PublicHeader } from "@/components/public/PublicHeader"
 import { PricingCard } from "@/components/pricing/PricingCard"
@@ -165,7 +165,7 @@ export default function PricingPage({
             const role = audience === "agent" ? "agent" : "policyholder"
             const planParam = plan.checkoutPlanId ?? plan.key
             router.push(
-                `/auth/signup?role=${role}&plan=${encodeURIComponent(planParam)}&billing=${billingPeriod}`
+                authHref(`/auth/signup?role=${role}&plan=${encodeURIComponent(planParam)}&billing=${billingPeriod}`, language)
             )
             return
         }

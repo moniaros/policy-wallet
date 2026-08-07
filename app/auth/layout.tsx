@@ -1,4 +1,5 @@
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
+import { AuthLanguageProvider } from "./AuthLanguageProvider"
 
 /**
  * Exists solely to mount the translation dictionary for the auth tree
@@ -13,5 +14,9 @@ export default function AuthLayout({
 }: {
     children: React.ReactNode
 }) {
-    return <TranslationsProvider>{children}</TranslationsProvider>
+    return (
+        <TranslationsProvider>
+            <AuthLanguageProvider>{children}</AuthLanguageProvider>
+        </TranslationsProvider>
+    )
 }

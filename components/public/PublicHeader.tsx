@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { normalizeHeaderPath } from "@/lib/nav/header-path"
 import {
     PRIMARY_CTA,
@@ -50,8 +50,17 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
     const enPath = elPath === "/" ? "/en" : `/en${elPath}`
     const isActive = (href: string) => elPath === href || elPath.startsWith(`${href}/`)
 
-    const primaryHref = ctaSource ? `${PRIMARY_CTA.href}&source=${ctaSource}` : PRIMARY_CTA.href
-    const secondaryHref = ctaSource ? `${SECONDARY_CTA.href}?source=${ctaSource}_login` : SECONDARY_CTA.href
+    // authHref, not localizeHref: there is no /en/auth mirror, so the locale
+    // rides as ?lang= and the auth tree pins itself to it. Without this the
+    // English header dropped a visitor into a Greek signup form.
+    const primaryHref = authHref(
+        ctaSource ? `${PRIMARY_CTA.href}&source=${ctaSource}` : PRIMARY_CTA.href,
+        locale
+    )
+    const secondaryHref = authHref(
+        ctaSource ? `${SECONDARY_CTA.href}?source=${ctaSource}_login` : SECONDARY_CTA.href,
+        locale
+    )
 
     const [open, setOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)

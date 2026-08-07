@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Check, X } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -67,7 +68,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                         {t("Η νομική προστασία πληρώνει δικηγόρους, δικαστικά έξοδα και πραγματογνώμονες — αλλά μόνο για τις κατηγορίες διαφορών που γράφει το συμβόλαιο. Δείτε τις δικές σας, όχι τις υποθετικές.", "Legal expenses insurance pays for lawyers, court costs and expert witnesses — but only for the dispute categories written in your policy. See yours, not the hypothetical ones.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -144,7 +145,7 @@ export default function LegalExpensesProductPage({ locale }: { locale: "el" | "e
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μάθετε τι πληρώνει το συμβόλαιο πριν χρειαστείτε δικηγόρο.", "Learn what your policy pays before you need a lawyer.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε τη νομική σας προστασία", "Upload your legal expenses policy")}
                 </Link>
             </section>
