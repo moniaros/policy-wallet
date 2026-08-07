@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowRight, Check, Minus, X } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import {
     CATEGORY_NAME,
     COMPARISON_COLUMNS,
@@ -344,7 +344,7 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                         )}
                     </h2>
                     <Link
-                        href="/auth/signup?role=policyholder&source=compare_cta"
+                        href={authHref("/auth/signup?role=policyholder&source=compare_cta", locale)}
                         className="pw-primary-button pw-btn-lg"
                     >
                         {pick(PRIMARY_ACTION, locale)}

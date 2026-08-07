@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Activity, CheckCircle2, Users } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function GroupHealthProductPage({ locale }: { locale: "el" | "en"
                         {t("Δείτε τι σας δίνει το ομαδικό της δουλειάς σας, τι προσθέτει το ατομικό σας, και — με το PolicyWallet Plus — τι πληρώνετε δύο φορές χωρίς να το ξέρετε.", "See what your workplace group plan gives you, what your personal policy adds, and — with PolicyWallet Plus — what you are paying for twice without knowing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -98,7 +99,7 @@ export default function GroupHealthProductPage({ locale }: { locale: "el" | "en"
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Δείτε τι σας καλύπτει ήδη ο εργοδότης σας.", "See what your employer already covers.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το ομαδικό σας", "Upload your group policy")}
                 </Link>
             </section>

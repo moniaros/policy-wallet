@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Bike, Car, CheckCircle2, Wrench } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Δείτε τι θα πλήρωνε το συμβόλαιο, τι περιλαμβάνει η οδική βοήθεια και πότε λήγει.", "See what the policy would pay, what your roadside assistance includes, and when it runs out.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -136,7 +137,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Δείτε αν η κάλυψη φτάνει για το όχημά σας σήμερα.", "See whether your cover is still enough for your vehicle today.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο του οχήματος", "Upload your motor policy")}
                 </Link>
             </section>

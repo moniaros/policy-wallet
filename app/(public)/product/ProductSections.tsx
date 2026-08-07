@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 import type { Language } from "@/lib/i18n"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { productCategories } from "@/lib/product/catalog"
 import {
     PRODUCT_FAQS as FAQS,
@@ -79,7 +79,7 @@ export function ProductSections({ language }: { language: Language }) {
                     </p>
 
                     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", language)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                             <ArrowRight aria-hidden className="h-4 w-4" />
                         </Link>
@@ -400,7 +400,7 @@ export function ProductSections({ language }: { language: Language }) {
                         )}
                     </p>
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", language)} className="pw-primary-button-mint pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                             <ArrowRight aria-hidden className="h-4 w-4" />
                         </Link>

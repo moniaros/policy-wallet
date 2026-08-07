@@ -24,6 +24,19 @@ export function HtmlLang() {
     useEffect(() => {
         const isEnglishRoute = pathname === "/en" || pathname.startsWith("/en/")
         const html = document.documentElement
+
+        // A mounted StaticLanguageProvider owns the attribute — stand down.
+        // Rendering last is what makes this leaf win the initial paint on
+        // /en/*, and it is also what made it clobber the auth tree: leaving
+        // /en for /auth/signup?lang=en, the branch below restored the Greek
+        // default over the English the auth provider had just pinned. The
+        // bookkeeping still has to run, or the next route would think it was
+        // never on an English page.
+        if (html.dataset.langOwner === "static") {
+            html.dataset.htmlLangEnRoute = String(isEnglishRoute)
+            return
+        }
+
         if (isEnglishRoute) {
             html.setAttribute("lang", "en")
             html.setAttribute("data-locale", "en-GB")

@@ -11,7 +11,7 @@ import {
     TrendingUp,
 } from "lucide-react"
 import Link from "next/link"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 
 interface AudienceTabsProps {
@@ -165,7 +165,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     promises, the older of which claimed a PolicyWallet Plus
                     outcome on a free signup. */}
                 <Link
-                    href="/auth/signup?role=policyholder&source=landing_audience"
+                    href={authHref("/auth/signup?role=policyholder&source=landing_audience", isGreek ? "el" : "en")}
                     className="pw-primary-button"
                 >
                     {pick(PRIMARY_ACTION, isGreek ? "el" : "en")}

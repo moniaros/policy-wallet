@@ -90,6 +90,16 @@ export async function proxy(request: NextRequest) {
         "/api/auth",
         // English marketing-page variants (/en/product, /en/pricing, …)
         "/en/",
+        // Cookie consent from anonymous visitors — POST /api/v1/consents and
+        // GET /api/v1/consents/current, hence a PREFIX rather than an exact
+        // entry. Same class as the cron trap: the route inventory declares
+        // both `auth: public` with a rate limit, CI enforces that, and the
+        // proxy still 307'd them to signin, so the banner's POST died as a 405
+        // on every page of the site. The visitor's CHOICE was never lost (the
+        // banner writes the cookie and emits the change before the fetch) —
+        // what was missing is the server-side record GDPR Art. 7(1) wants.
+        // Both routes rate-limit and zod-validate themselves.
+        "/api/v1/consents",
         // Invite redemption: anonymous recipients must reach the token page,
         // which itself redirects them to signup with the invite pre-filled.
         // Blocking this here bounced every agent→client invite to signin.

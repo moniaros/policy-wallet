@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { Sailboat, Anchor, LifeBuoy, CheckCircle2 } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Η αστική ευθύνη σκάφους αναψυχής είναι υποχρεωτική στα ελληνικά ύδατα — αλλά το τι καλύπτεται πέρα από αυτήν διαφέρει από συμβόλαιο σε συμβόλαιο. Εμείς διαβάζουμε το δικό σας και σας δείχνουμε τι ισχύει για σκάφος, μηχανή και τρίτους.", "Third-party liability for leisure boats is mandatory in Greek waters — but what is covered beyond it varies from contract to contract. We read yours and show you what applies to hull, machinery and third parties.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -113,7 +114,7 @@ export default function BoatProductPage({ locale }: { locale: "el" | "en" }) {
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Στη θάλασσα με σιγουριά, όχι με υποθέσεις.", "At sea with certainty, not assumptions.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο του σκάφους", "Upload your boat policy")}
                 </Link>
             </section>

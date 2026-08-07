@@ -5,7 +5,7 @@ import { ArrowRight, ArrowUpRight, Check, ChevronRight, ShieldCheck } from "luci
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { GlossaryTerm } from "@/lib/glossary/content"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 
 export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
     const { language } = useLanguage()
@@ -63,7 +63,7 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                         {entry.howToCheck[lang]}
                     </p>
                     <Link
-                        href={`/auth/signup?role=policyholder&source=lexiko_${entry.slug}`}
+                        href={authHref(`/auth/signup?role=policyholder&source=lexiko_${entry.slug}`, language)}
                         className="pw-primary-button pw-btn-lg mt-5"
                     >
                         {t("Ανεβάστε το συμβόλαιό σας — δωρεάν σύνοψη", "Upload your policy — free summary")}

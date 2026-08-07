@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { CheckCircle2, TrendingUp, PieChart } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function GroupPensionProductPage({ locale }: { locale: "el" | "en
                         {t("Δείτε πόσα έχουν μαζευτεί, πόσα βάζει η εταιρεία και ποιο ποσό μπορείτε να δηλώσετε στη φορολογική σας δήλωση.", "See how much has built up, how much the company adds, and what amount you can put on your tax return.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -98,7 +99,7 @@ export default function GroupPensionProductPage({ locale }: { locale: "el" | "en
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Δείτε τι χτίζει το ομαδικό σας πρόγραμμα.", "See what your group plan is building.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το ομαδικό συνταξιοδοτικό", "Upload your group pension plan")}
                 </Link>
             </section>

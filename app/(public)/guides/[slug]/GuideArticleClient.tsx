@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, CalendarDays, Check, Clock3, ExternalLink, X } f
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { Guide, GuideTable, LocalizedString } from "@/lib/guides/content"
-import { localizeHref } from "@/lib/seo/locale-links"
+import { localizeHref, authHref } from "@/lib/seo/locale-links"
 
 function formatDate(iso: string, language: string): string {
     return new Date(`${iso}T00:00:00Z`).toLocaleDateString(
@@ -261,7 +261,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                         )}
                     </p>
                     <Link
-                        href="/auth/signup"
+                        href={authHref("/auth/signup", language)}
                         className="pw-primary-button-mint"
                     >
                         {t("Ξεκινήστε δωρεάν", "Get started free")}

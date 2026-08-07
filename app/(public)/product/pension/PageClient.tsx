@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { PiggyBank, CheckCircle2, AlertTriangle } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                         {t("Τα αποταμιευτικά και συνταξιοδοτικά προγράμματα είναι δεσμεύσεις δεκαετιών με εισφορές, όρους ωρίμανσης και ρήτρες εξαγοράς. Τα μεταφράζουμε σε καθαρή εικόνα: τι πληρώνετε, τι χτίζετε, τι χάνετε αν σταματήσετε.", "Savings and pension plans are decade-long commitments with contributions, maturity terms and surrender clauses. We turn them into a clear picture: what you pay, what you build, and what you lose if you stop.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -113,7 +114,7 @@ export default function PensionProductPage({ locale }: { locale: "el" | "en" }) 
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Δεκαετίες αποταμίευσης αξίζουν λίγα λεπτά ανάλυσης.", "Decades of saving deserve a few minutes of analysis.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Αναλύστε το πρόγραμμά σας", "Analyze your plan")}
                 </Link>
             </section>

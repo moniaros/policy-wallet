@@ -1,4 +1,5 @@
 import React from "react"
+import { authHref } from "@/lib/seo/locale-links"
 import Link from "next/link"
 import { HeartHandshake, ShieldAlert, CheckCircle2 } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
@@ -25,7 +26,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                         {t("Υπόλοιπο στεγαστικού, έξοδα οικογένειας, σπουδές παιδιών: βάλτε το κεφάλαιο κάλυψης δίπλα στις πραγματικές σας υποχρεώσεις και δείτε αν στέκει.", "Outstanding mortgage, family expenses, children's education: place your coverage amount next to your real obligations and see if it holds up.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
+                        <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
                         </Link>
                     </div>
@@ -114,7 +115,7 @@ export default function LifeProductPage({ locale }: { locale: "el" | "en" }) {
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Δώστε στην οικογένειά σας απαντήσεις, όχι ερωτηματικά.", "Give your family answers, not question marks.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
+                <Link href={authHref("/auth/signup", locale)} className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο ζωής σας", "Upload your life policy")}
                 </Link>
             </section>

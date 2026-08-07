@@ -183,6 +183,48 @@ seven-lens assessment loop against production — the clean-round counter resets
 to **0**, because this is a structural change; 3) decide whether the
 badge-leads-with-decode treatment should propagate to /product and /compare.
 
+## Session wrap — 2026-08-07 (Two owner decisions executed: consent records and locale)
+
+**Both open decisions are closed, and both were one root cause wearing two faces.**
+
+**Anonymous cookie consent is recorded again.** `/api/v1/consents` is declared
+`auth: "public"` with a rate limit in the CI-enforced route inventory, but
+`proxy.ts` fails closed and never allowlisted it — so the banner's POST was
+307'd to `/auth/signin` and died as a **405 on every page of the site**. The
+visitor's choice was always honoured (the banner writes the cookie and emits the
+change *before* the fetch), so what was missing is the server-side record GDPR
+Art. 7(1) wants. Added as a **prefix**, not an exact entry: `/consents/current`
+is a second real route and exact matching would still have 307'd it. Measured
+after: POST 200, `/current` 200.
+
+Testing all nine declared-public routes turned up two more, neither a defect:
+`/api/health` is blocked **deliberately** — `tests/e2e/sentry-api.spec.ts:56`
+asserts it — so the inventory calling it `public` contradicts a passing test,
+and `scripts/load/public-surface.js` measures a 307 in its pre-launch smoke set.
+`/api/v1/auth/magic-link/request` is blocked and has **no caller anywhere** in
+the repo; it will fail the day someone wires passwordless sign-in.
+
+**The English journey no longer falls into a Greek signup form.** All 37 auth
+links across 20 public files now carry the locale via a new `authHref`, and the
+auth tree pins itself to it (`AuthLanguageProvider`). Persisting the language
+instead would have been the obvious fix and the wrong one: the **Greek** tree has
+no `StaticLanguageProvider` and relies on the global default, so writing "en"
+into shared state would have turned Greek marketing pages English on the next
+visit. The URL is the only signal that stays where it is put.
+
+That exposed a two-layer clobber worth recording. `<html lang>` has **four**
+writers, and the last one wins by design: `HtmlLang` renders last in `<body>`
+precisely so it beats the providers on /en/*. Leaving /en for
+`/auth/signup?lang=en`, its "restore the Greek default" branch overwrote the
+English the auth provider had just pinned — and the global `LanguageProvider`
+would have too. Both now stand down when `documentElement.dataset.langOwner` is
+`"static"`. Ownership is the honest signal; the path check they used never was.
+
+Verified end to end: the English hero CTA carries the locale, lands on an
+English signup with `<html lang="en">`; the Greek journey is untouched, marker
+free, `lang="el"`; and /, /pricing, /privacy and /product/motor are all still
+Greek under an English browser locale.
+
 ## Session wrap — 2026-08-06 (Marketing site: launch-readiness loop closed — GO)
 
 **Current phase:** marketing website **launch-ready**, uncommitted on NEW-UI
