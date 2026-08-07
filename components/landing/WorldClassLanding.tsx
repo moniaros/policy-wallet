@@ -71,6 +71,23 @@ export function WorldClassLanding({
         <div
             className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:bg-slate-900 dark:text-white`}
         >
+            {/* The header floats 16px from the top and is 56px tall, so the
+                browser's scroll-on-focus could park a focused control right
+                underneath it — the ring simply vanished, which a keyboard user
+                cannot tell apart from focus being lost (WCAG 2.2 SC 2.4.11).
+                Reproduced by tabbing deep into the page and reversing out.
+                Scoped to this page's main content: one rule for every focusable
+                rather than a patch per component, since the next section added
+                would have the same problem. `:where()` keeps specificity at 0
+                so nothing here overrides a component's own scroll-margin. */}
+            <style
+                dangerouslySetInnerHTML={{
+                    __html:
+                        "#main-content :where(a,button,input,select,textarea,summary,[tabindex])" +
+                        "{scroll-margin-top:88px;scroll-margin-bottom:24px}",
+                }}
+            />
+
             <LandingHeader locale={locale} showPerksLink={partnerOffers.length > 0} />
 
             {/* The floating header ends at 72px, so pt-20 clears it with room to

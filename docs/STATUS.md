@@ -96,6 +96,40 @@ inside `@supports selector(:has(*))`, so a browser without `:has()` shows every
 effect line rather than none — degraded to a plain list, never a dead control.
 Pinned by `tests/unit/life-change-discovery-no-js.test.tsx`.
 
+**Round 6 ran as a 14-agent workflow** — six independent lenses against live
+production, then an adversarial checker per finding instructed to refute it. It
+produced 18 candidates, 8 verified, **5 confirmed and 3 refuted**. Four confirmed
+findings were fixed here:
+
+- **Dark-mode focus ring measured 2.74:1** on the six hero chips and eight FAQ
+  summaries — under the 3:1 floor WCAG 2.1 SC 1.4.11 sets for focus indicators,
+  on the one control the hero exists to have people use. axe reported zero
+  violations throughout because it has no focus-indicator-contrast rule. Now
+  15.98:1 and 20.49:1, pinned by
+  `tests/unit/landing-focus-ring-dark-mode.test.ts`.
+- **Shift+Tab parked focus entirely under the floating header** (WCAG 2.2 SC
+  2.4.11) — the ring simply vanished, which a keyboard user cannot tell apart
+  from focus being lost. Fixed once for the whole page with a `scroll-margin`
+  rule rather than per component.
+- **The FAQ answer "What if I do not have an agent?"** promised connecting an
+  agent "with a single click" with no plan named, while the sibling card and the
+  pricing table both fence `agentCollaboration` to PolicyWallet Plus. It shipped
+  inside FAQPage JSON-LD too, so the unqualified claim travelled further than
+  the page.
+- **The cookie consent sheet rendered in Greek on /en**, covering the CTA on a
+  phone. Cause: the banner is mounted in the ROOT layout, above the
+  `StaticLanguageProvider` that gives /en its locale, so it read the global
+  provider's Greek default. It now takes the language from the route, and its
+  privacy/terms links stop hard-coding `?lang=el`.
+
+The fifth confirmed finding is **not** fixed: from /en, every auth link drops
+the locale, so the hero CTA lands on a Greek signup page — and `?lang=en` is
+ignored there. The marketing half alone cannot fix it; the minimal repair is
+either persisting the locale in `StaticLanguageProvider` or teaching the signup
+route to read it, and both are outside a marketing-only brief. Recoverable in
+one tap via the EN toggle, but it is the highest-intent moment on the English
+journey.
+
 **Not verified:** WebKit and Firefox engines are not installed locally, so the
 `:has()` path is confirmed in Chrome only. The `@supports` guard is what makes
 that acceptable rather than a gamble.

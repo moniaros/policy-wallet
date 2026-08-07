@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { usePathname } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getCookieBannerCopy } from "@/components/compliance/cookie-banner-copy"
 import {
@@ -23,7 +24,17 @@ export function CookieConsentBanner() {
     // layout, so it renders on marketing routes where the dictionary is not
     // loaded. Its copy is co-located instead — see cookie-banner-copy.ts.
     const { language } = useLanguage()
-    const copy = getCookieBannerCopy(language)
+
+    // …and being in the ROOT layout is also why it needs the path. The /en tree
+    // gets its locale from StaticLanguageProvider, which is mounted INSIDE that
+    // subtree — this banner sits above it and therefore reads the global
+    // provider, whose default is Greek. Result: an English page with a Greek
+    // consent sheet covering the CTA on a phone. The route is the honest signal
+    // here, and a consent dialog nobody can read is not "clear and plain
+    // language" under GDPR Art. 7(2), quite apart from the confusion.
+    const pathname = usePathname()
+    const routeLanguage = pathname === "/en" || pathname?.startsWith("/en/") ? "en" : language
+    const copy = getCookieBannerCopy(routeLanguage)
     const [visible, setVisible] = useState(false)
     const [expanded, setExpanded] = useState(false)
     const [saving, setSaving] = useState(false)
@@ -46,7 +57,7 @@ export function CookieConsentBanner() {
         setSaving(true)
         const payload: ConsentCookiePayload = {
             consentType: "cookie",
-            locale: language,
+            locale: routeLanguage,
             policyVersion: LEGAL_POLICY_VERSIONS.cookie,
             categories: nextCategories,
             acceptedAt: new Date().toISOString(),
@@ -63,7 +74,7 @@ export function CookieConsentBanner() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     consentType: "cookie",
-                    locale: language,
+                    locale: routeLanguage,
                     source,
                     policyVersion: LEGAL_POLICY_VERSIONS.cookie,
                     categories: nextCategories,
@@ -100,10 +111,10 @@ export function CookieConsentBanner() {
                         >
                             {expanded ? copy.hidePreferences : copy.managePreferences}
                         </button>
-                        <a href={`/privacy?lang=${language}`} className="inline-flex min-h-11 items-center font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
+                        <a href={`/privacy?lang=${routeLanguage}`} className="inline-flex min-h-11 items-center font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
                             {copy.privacyLink}
                         </a>
-                        <a href={`/terms?lang=${language}`} className="inline-flex min-h-11 items-center font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
+                        <a href={`/terms?lang=${routeLanguage}`} className="inline-flex min-h-11 items-center font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
                             {copy.termsLink}
                         </a>
                     </div>

@@ -44,7 +44,7 @@ export function HomeFaq({ locale }: { locale: MarketingLocale }) {
                 <div className="divide-y divide-[#E2E8F0] border-y border-[#E2E8F0] dark:divide-slate-800 dark:border-slate-800">
                     {items.map((item) => (
                         <details key={item.id} id={item.id} className="group scroll-mt-28 lg:scroll-mt-36">
-                            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-body-lg font-semibold text-[#0F172A] transition-colors hover:text-[#29685B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] [&::-webkit-details-marker]:hidden dark:text-white dark:hover:text-[#A7F3D0]">
+                            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-body-lg font-semibold text-[#0F172A] transition-colors hover:text-[#29685B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] [&::-webkit-details-marker]:hidden dark:text-white dark:hover:text-[#A7F3D0] dark:focus-visible:outline-[#A7F3D0]">
                                 {locale === "el" ? item.question.el : item.question.en}
                                 <ChevronDown
                                     aria-hidden
