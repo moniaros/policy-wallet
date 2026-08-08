@@ -94,7 +94,7 @@ export async function POST(req: Request) {
         parsedBody = bodySchema.parse(json)
     } catch {
         return NextResponse.json(
-            { success: false, message: "Μη έγκυρο αίτημα επαναφοράς κωδικού." },
+            { success: false, code: "invalid_request", message: "Μη έγκυρο αίτημα επαναφοράς κωδικού." },
             { status: 400 }
         )
     }
@@ -112,6 +112,7 @@ export async function POST(req: Request) {
             if (!existingUser) {
                 return NextResponse.json({
                     success: true,
+                    code: "otp_sent",
                     message: "Αν το email υπάρχει, θα λάβετε κωδικό OTP.",
                 })
             }
@@ -132,19 +133,20 @@ export async function POST(req: Request) {
             const sent = await sendResetOtpEmail(parsedBody.email, otp)
             if (!sent.success) {
                 return NextResponse.json(
-                    { success: false, message: "Αποτυχία αποστολής OTP. Παρακαλώ δοκιμάστε ξανά." },
+                    { success: false, code: "otp_send_failed", message: "Αποτυχία αποστολής OTP. Παρακαλώ δοκιμάστε ξανά." },
                     { status: 500 }
                 )
             }
 
             return NextResponse.json({
                 success: true,
+                code: "otp_sent",
                 message: "Στάλθηκε κωδικός OTP στο email σας.",
             })
         } catch (error) {
             console.error("request_otp failed", error)
             return NextResponse.json(
-                { success: false, message: "Παρουσιάστηκε σφάλμα κατά την αποστολή OTP." },
+                { success: false, code: "otp_send_failed", message: "Παρουσιάστηκε σφάλμα κατά την αποστολή OTP." },
                 { status: 500 }
             )
         }
@@ -163,7 +165,7 @@ export async function POST(req: Request) {
 
     if (!record) {
         return NextResponse.json(
-            { success: false, message: "Ο κωδικός OTP δεν είναι έγκυρος." },
+            { success: false, code: "otp_invalid", message: "Ο κωδικός OTP δεν είναι έγκυρος." },
             { status: 400 }
         )
     }
@@ -171,7 +173,7 @@ export async function POST(req: Request) {
     if (new Date() > record.expires) {
         await db.verificationToken.deleteMany({ where: { identifier } }).catch(() => { })
         return NextResponse.json(
-            { success: false, message: "Ο κωδικός OTP έληξε. Ζητήστε νέο κωδικό." },
+            { success: false, code: "otp_expired", message: "Ο κωδικός OTP έληξε. Ζητήστε νέο κωδικό." },
             { status: 400 }
         )
     }
@@ -179,7 +181,7 @@ export async function POST(req: Request) {
     const supabaseUserId = await findSupabaseUserIdByEmail(parsedBody.email)
     if (!supabaseUserId) {
         return NextResponse.json(
-            { success: false, message: "Δεν βρέθηκε λογαριασμός για αυτό το email." },
+            { success: false, code: "account_not_found", message: "Δεν βρέθηκε λογαριασμός για αυτό το email." },
             { status: 400 }
         )
     }
@@ -188,7 +190,7 @@ export async function POST(req: Request) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!serviceRoleKey || !supabaseUrl) {
         return NextResponse.json(
-            { success: false, message: "Η υπηρεσία επαναφοράς δεν είναι διαθέσιμη." },
+            { success: false, code: "service_unavailable", message: "Η υπηρεσία επαναφοράς δεν είναι διαθέσιμη." },
             { status: 503 }
         )
     }
@@ -206,7 +208,7 @@ export async function POST(req: Request) {
 
     if (updateError) {
         return NextResponse.json(
-            { success: false, message: "Αποτυχία ενημέρωσης κωδικού. Δοκιμάστε ξανά." },
+            { success: false, code: "update_failed", message: "Αποτυχία ενημέρωσης κωδικού. Δοκιμάστε ξανά." },
             { status: 500 }
         )
     }
@@ -215,6 +217,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
         success: true,
+        code: "password_updated",
         message: "Ο κωδικός σας ενημερώθηκε επιτυχώς.",
     })
 }

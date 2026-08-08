@@ -183,6 +183,33 @@ seven-lens assessment loop against production — the clean-round counter resets
 to **0**, because this is a structural change; 3) decide whether the
 badge-leads-with-decode treatment should propagate to /product and /compare.
 
+## Session wrap — 2026-08-08 (Round 11: converging — 7 candidates, one gating)
+
+**Round 11: 7 candidates (28 → 12 → 7), 7 confirmed, 0 refuted.** One gating:
+the **password-reset (OTP) modal on the English sign-in page showed raw Greek
+server messages** — the API returns Greek-only strings in every branch and the
+client rendered `payload.message` verbatim (with hardcoded-English fallbacks
+that would leak the other way). The same defect class round 9 fixed on the same
+page's main form, in the opposite direction, on the account-recovery path. The
+API now returns stable machine codes alongside its (unchanged) messages, and
+the modal maps codes to the bilingual dictionary.
+
+The other six, all inconsistency-grade: /auth/verify-email had **no h1** (the
+only such page in a 135-route sweep — its state cards used h2); the newsletter
+field never got `aria-invalid`/`aria-describedby` when its error showed; the
+footer CTA pair computed ~40px on mobile (`.pw-btn-sm` now floors at
+`min-h-11`, which also fixes the header CTA); **apple-icon.png was JPEG data
+served as image/png** (now a real 1.3KB PNG of the brand tile); and two EN copy
+items on /product/motor — "Expires in 14 days" vs the site's "runs out", and
+"Not only driving a car?", a word-for-word rendering of the Greek (now "More
+than just a car?").
+
+All verified against a production build, including driving the OTP modal on the
+English UI (rejection now reads "OTP request failed.", not «Μη έγκυρο αίτημα»).
+3,785 unit tests, full guardrail gate. **Counter: 0 of 3** — but the funnel is
+converging hard: 28 → 12 → 7 candidates, and round 11's findings were all
+polish-grade except the OTP modal.
+
 ## Session wrap — 2026-08-08 (Round 10: the favicon was still the Vercel triangle)
 
 **Round 10: 12 candidates, 9 confirmed, 0 refuted** — half the candidate volume

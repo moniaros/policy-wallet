@@ -67,9 +67,9 @@ function VerifyEmailContent() {
                 {status === "loading" && (
                     <div className="flex flex-col items-center py-8">
                         <Loader2 className="h-12 w-12 animate-spin text-primary mb-6" />
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                        <h1 className="text-xl font-bold text-slate-900 dark:text-white">
                             {t("Επαλήθευση email...", "Verifying your email...")}
-                        </h2>
+                        </h1>
                     </div>
                 )}
 
@@ -80,9 +80,9 @@ function VerifyEmailContent() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
                             {t("Το email επαληθεύτηκε!", "Email Verified!")}
-                        </h2>
+                        </h1>
                         <p className="text-slate-600 dark:text-slate-400 mb-8">
                             {t(
                                 "Το email σας επαληθεύτηκε επιτυχώς. Μπορείτε πλέον να χρησιμοποιήσετε όλες τις λειτουργίες.",
@@ -102,9 +102,9 @@ function VerifyEmailContent() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
                             {t("Η επαλήθευση απέτυχε", "Verification Failed")}
-                        </h2>
+                        </h1>
                         <p className="text-slate-600 dark:text-slate-400 mb-8">
                             {message}. {t("Ο σύνδεσμος μπορεί να μην είναι έγκυρος ή να έχει λήξει.", "The link may be invalid or expired.")}
                         </p>

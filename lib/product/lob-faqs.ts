@@ -39,7 +39,7 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
             q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλεια αυτοκινήτου;", en: "How does PolicyWallet help with car insurance?" },
             a: {
                 el: "Στέλνετε το ασφαλιστήριο και το διαβάζουμε για εσάς: τι καλύπτει, τι όχι, πότε λήγει. Δωρεάν για 1 ασφαλιστήριο, χωρίς κάρτα. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "You send us the policy and we read it for you: what it covers, what it does not, and when it expires. Free for 1 policy, no card. We do not sell insurance and take no commission.",
+                en: "You send us the policy and we read it for you: what it covers, what it does not, and when it runs out. Free for 1 policy, no card. We do not sell insurance and take no commission.",
             },
         },
     ],

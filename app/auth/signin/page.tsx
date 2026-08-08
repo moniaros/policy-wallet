@@ -141,6 +141,25 @@ export default function SignInPage() {
         }
     }
 
+    // The API's `message` is Greek in every branch — rendering it verbatim put
+    // Greek rejections inside the English dialog (and the old English literals
+    // "OTP error"/"OTP sent" would leak the other way). `code` is the contract;
+    // copy stays bilingual on this side.
+    const otpCopyForCode = (code: string | undefined, fallback: string) => {
+        switch (code) {
+            case "otp_sent": return copy.otpSentIfExists
+            case "otp_invalid": return copy.otpInvalid
+            case "otp_expired": return copy.otpExpired
+            case "invalid_request": return copy.otpRequestFailed
+            case "otp_send_failed": return copy.otpRequestFailed
+            case "service_unavailable": return copy.resetUnavailable
+            case "password_updated": return copy.passwordUpdated
+            case "account_not_found": return copy.resetFailed
+            case "update_failed": return copy.resetFailed
+            default: return fallback
+        }
+    }
+
     const requestOtp = async () => {
         setResetLoading(true); setResetError(null); setResetNotice(null)
         try {
@@ -150,8 +169,8 @@ export default function SignInPage() {
                 body: JSON.stringify({ action: "request_otp", email: resetEmail.trim() }),
             })
             const payload = await response.json()
-            if (!response.ok || !payload.success) { setResetError(payload.message || "OTP error"); return }
-            setResetNotice(payload.message || "OTP sent")
+            if (!response.ok || !payload.success) { setResetError(otpCopyForCode(payload.code, copy.otpRequestFailed)); return }
+            setResetNotice(otpCopyForCode(payload.code, copy.otpSentIfExists))
             setResetStep("verify")
         } catch { setResetError(copy.otpRequestFailed) } finally { setResetLoading(false) }
     }
@@ -168,8 +187,8 @@ export default function SignInPage() {
                 body: JSON.stringify({ action: "reset_with_otp", email: resetEmail.trim(), otp: resetOtp.trim(), password: resetPassword }),
             })
             const payload = await response.json()
-            if (!response.ok || !payload.success) { setResetError(payload.message || "Reset failed."); return }
-            setResetNotice(payload.message); setResetStep("success")
+            if (!response.ok || !payload.success) { setResetError(otpCopyForCode(payload.code, copy.resetFailed)); return }
+            setResetNotice(otpCopyForCode(payload.code, copy.passwordUpdated)); setResetStep("success")
         } catch { setResetError(copy.resetFailed) } finally { setResetLoading(false) }
     }
 
