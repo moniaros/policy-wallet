@@ -99,28 +99,35 @@ export default function ForgotPasswordPage() {
         setSubmittedEmail(values.email)
     }
 
-    const inputBase = "pw-input text-[#0F172A]"
+    // Colour comes from .pw-input itself now — pinning #0F172A here is
+    // what made typed text unreadable in dark mode.
+    const inputBase = "pw-input"
 
     return (
         <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
             {/* Header bar */}
-            <header className="flex items-center justify-between px-6 py-4">
-                <Link
-                    href="/"
-                    className="text-body-sm font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
-                >
-                    {copy.backHome}
-                </Link>
-                <LocaleToggle ariaLabel={uiText.userMenu.language} />
-            </header>
-
-            {/* Card */}
+            {/* Card. The back-link and language switcher used to sit in a
+                full-width <header> above this, so arriving here from sign-in
+                made the chrome jump from a centred column to the whole 1440px
+                viewport — it read as landing on a different site rather than
+                the next step of the same task. They now ride in the column,
+                exactly as sign-in and sign-up do. */}
             <div className="flex flex-1 items-center justify-center px-4 py-10">
+                <div className="w-full max-w-[440px]">
+                <div className="mb-6 flex items-center justify-between">
+                    <Link
+                        href="/"
+                        className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"
+                    >
+                        ← {copy.backHome}
+                    </Link>
+                    <LocaleToggle ariaLabel={uiText.userMenu.language} />
+                </div>
                 <motion.div
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full max-w-[440px] rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-10"
+                    className="w-full rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-10"
                 >
                     {/* Top meta row */}
                     <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#5B6A7A] dark:text-white/60">
@@ -138,7 +145,9 @@ export default function ForgotPasswordPage() {
                         <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-[#F8FAFC] px-3 py-2 dark:bg-white/5">
                             <PolicyWalletLogo size="md" language={language} />
                         </div>
-                        <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] dark:text-white">{copy.title}</h1>
+                        {/* text-title/600, the same as sign-in and sign-up. Three pages in one
+                            flow were showing three heading treatments. */}
+                        <h1 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">{copy.title}</h1>
                         <p className="mt-1.5 text-sm text-[#5B6A7A] dark:text-white/65">{copy.subtitle}</p>
                     </div>
 
@@ -206,7 +215,7 @@ export default function ForgotPasswordPage() {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="pw-primary-button w-full"
+                                className="pw-primary-button pw-btn-lg w-full"
                             >
                                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                                 {submitting ? copy.sending : copy.send}
@@ -222,6 +231,7 @@ export default function ForgotPasswordPage() {
                         </form>
                     )}
                 </motion.div>
+                </div>
             </div>
         </div>
     )

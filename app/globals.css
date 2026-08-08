@@ -452,14 +452,22 @@ pre {
      placeholder. At zero specificity any utility class wins, which is the
      behaviour a base recipe should have. Verified in the browser, not just in
      the stylesheet — source order made this invisible to a text search. */
+  /* The text colour lives HERE, not at the call site. It used to be the
+     caller's job, and the auth forms only ever supplied the light half — so
+     every field on sign-in, sign-up and password reset rendered #0F172A on
+     neutral-800 in dark mode: 1.22:1, i.e. a visitor could not read the email
+     address they were typing. The public pages had solved it one route
+     earlier with `dark:text-white` on the identical utility.
+     `:where()` keeps specificity at 0, so any caller that still passes its own
+     text colour continues to win. */
   :where(.pw-input) {
-    @apply w-full rounded-2xl border-none bg-neutral-50 px-6 py-4 text-sm outline-none transition-all;
+    @apply w-full rounded-2xl border-none bg-neutral-50 px-6 py-4 text-sm text-[#0F172A] outline-none transition-all;
     @apply focus:ring-4 focus:ring-primary/10;
     @apply disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   :where(.dark .pw-input) {
-    @apply bg-neutral-800;
+    @apply bg-neutral-800 text-white;
   }
 
   /* Compact variant for dense toolbars and table filters, where the roomy

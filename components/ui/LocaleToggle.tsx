@@ -78,7 +78,11 @@ export function LocaleToggle({
                         onClick={() => setLanguage(value)}
                         aria-pressed={language === value}
                         className={cn(
-                            "inline-flex min-w-[24px] min-h-[24px] items-center justify-center text-caption font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                            // Matches the public header exactly (PublicHeader.tsx): 44px target,
+                            // 13px label. It was a 24x24 box at the browser default size —
+                            // half the 44px the rest of the site enforces, and visibly larger
+                            // than the switcher the visitor just used one route earlier.
+                            "inline-flex min-h-11 min-w-[24px] items-center justify-center px-1 text-body-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                             language === value
                                 ? "text-[#0F172A] dark:text-white"
                                 : "text-[#5B6A7A] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"

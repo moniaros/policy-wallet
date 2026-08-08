@@ -183,6 +183,51 @@ seven-lens assessment loop against production — the clean-round counter resets
 to **0**, because this is a structural change; 3) decide whether the
 badge-leads-with-decode treatment should propagate to /product and /compare.
 
+## Session wrap — 2026-08-08 (Login & signup brought back into the product)
+
+**A 12-agent consistency audit of the auth island: 26 candidates, 9 verified,
+6 confirmed, 3 refuted. All six fixed.**
+
+**The gating one: in dark mode, text typed into every auth field was 1.22:1.**
+`.pw-input` set a background for both schemes but no text colour, leaving that
+to the caller — the public pages remembered (`dark:text-white`, 14.63:1), the
+auth forms supplied only the light half. A visitor whose OS is in dark mode
+could not read the email address, phone number or reset code they were typing,
+at the one moment the product asks them to type carefully. `defaultTheme:
+"system"` means no action on their part was required to hit it. The colour now
+lives in the utility, so a new caller inherits a readable field without knowing
+any of this — and the light-only pins are gone from the three auth files,
+because `:where()` keeps the utility at specificity 0 and a caller's own colour
+would otherwise still win.
+
+**Five consistency fixes**, all measured against the public header rather than
+guessed: the wordmark was 24px/900 with a 2px word gap versus the header's
+20px/700 tight — now identical; the signup submit was hand-rolled and the only
+font-weight-700 button in the product, at the moment of conversion; the three
+submits in one flow were three different sizes; password reset used a raw type
+scale where its two siblings use the named ladder; and its back-link and
+language switcher sat in a full-width header while sign-in and sign-up keep the
+same two controls inside the 420px column.
+
+**One root cause worth keeping.** The language switcher rendered at 16px in a
+**24×24px** box — half the 44px the rest of the site enforces — because
+`tailwind-merge` does not know this design system's named type ladder and was
+silently DROPPING `text-caption` as an unrecognised class. `cn()` now registers
+the ladder via `extendTailwindMerge`, so every `text-*` in the system resolves
+instead of being discarded. That bug was invisible in source and only showed up
+as a measured font size.
+
+**Three findings were refuted** by the adversarial pass — a claim that the
+cookie banner permanently covers the auth CTA on phones, one about hand-rolled
+secondary buttons, and one about the card shadow.
+
+**And a guard that lied.** The regression test written for the contrast bug
+passed against the bug. `[^"]*` spans newlines, so a match started at an
+unrelated quote pages earlier and swallowed everything up to the class string —
+it matched nothing and reported success. Anchoring to `[^"\n]*` made it fail
+correctly. Third guard this session to need its own bug fixed before being
+trusted; see the browser-measurement-traps note.
+
 ## Session wrap — 2026-08-07 (Two owner decisions executed: consent records and locale)
 
 **Both open decisions are closed, and both were one root cause wearing two faces.**
