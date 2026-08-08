@@ -18,7 +18,11 @@ export function PolicyWalletLogo({
 }: LogoProps) {
     const sizeClasses = {
         sm: { container: 'h-8', icon: 'w-6 h-6', iconBox: 'w-7 h-7', text: 'text-xl' },
-        md: { container: 'h-10', icon: 'w-6 h-6', iconBox: 'w-9 h-9', text: 'text-2xl' },
+        // `md` is the wordmark every auth screen and the app shell render.
+        // text-title is 20px — the public header's size — so the mark does not
+        // change size when a visitor crosses from the marketing site into the
+        // product. It was text-2xl (24px).
+        md: { container: 'h-10', icon: 'w-6 h-6', iconBox: 'w-9 h-9', text: 'text-title' },
         lg: { container: 'h-14', icon: 'w-8 h-8', iconBox: 'w-12 h-12', text: 'text-3xl' },
         xl: { container: 'h-20', icon: 'w-12 h-12', iconBox: 'w-16 h-16', text: 'text-5xl' }
     }
@@ -43,14 +47,18 @@ export function PolicyWalletLogo({
             : 'text-slate-900 dark:text-white'
 
     const walletTextColor = variant === 'light'
-        ? 'text-slate-500'
-        : 'text-slate-500'
+        ? 'text-[#5B6A7A] dark:text-slate-400'
+        : 'text-[#5B6A7A] dark:text-slate-400'
 
     return (
+        // One wordmark across the product. This used to render 24px/900 with
+        // -1.2px tracking and a 2px word gap, while the public header rendered
+        // 20px/700 tight with none — so clicking "Σύνδεση" swapped the mark and
+        // read as a different product's login page. Matched to PublicHeader.
         <div className={`flex items-center ${sizes.container} ${className}`}>
-            <span className={`font-black tracking-tighter leading-none ${sizes.text} ${policyTextColor}`}>
+            <span className={`font-bold tracking-tight leading-none ${sizes.text} ${policyTextColor}`}>
                 Policy
-                <span className={`ml-0.5 ${walletTextColor}`}>Wallet</span>
+                <span className={walletTextColor}>Wallet</span>
             </span>
         </div>
     )

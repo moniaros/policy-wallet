@@ -163,7 +163,9 @@ export default function SignInPage() {
         } catch { setResetError(copy.resetFailed) } finally { setResetLoading(false) }
     }
 
-    const inputBase = "pw-input text-[#0F172A]"
+    // Colour comes from .pw-input itself now — pinning #0F172A here is
+    // what made typed text unreadable in dark mode.
+    const inputBase = "pw-input"
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black">
@@ -258,7 +260,7 @@ export default function SignInPage() {
                         </div>
 
                         {/* Submit */}
-                        <button type="submit" disabled={loading} className="pw-primary-button w-full">
+                        <button type="submit" disabled={loading} className="pw-primary-button pw-btn-lg w-full">
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                             {loading ? (copy.signingIn) : t.auth.signIn}
                         </button>

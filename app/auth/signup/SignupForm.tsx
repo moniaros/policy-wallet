@@ -191,7 +191,9 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
         }
     }
 
-    const inputBase = "pw-input text-[#0F172A]"
+    // Colour comes from .pw-input itself now — pinning #0F172A here is
+    // what made typed text unreadable in dark mode.
+    const inputBase = "pw-input"
 
     const strengthColors = ["bg-rose-400", "bg-amber-400", "bg-primary"]
     const strengthLabel = strength === 0 ? "" : strength === 1 ? t("Αδύναμος", "Weak") : strength === 2 ? t("Μέτριος", "Fair") : t("Ισχυρός", "Strong")
@@ -374,7 +376,11 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                             transition={{ delay: 0.1 }}
                             type="submit"
                             disabled={isSubmitting || signupSuccess}
-                            className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-4 text-body font-bold text-white transition-all hover:bg-primary-hover hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-70 dark:text-[#1A2420]"
+                            // The design system's primary button, not a hand-rolled one. This was
+                            // the only font-weight-700 button in the product, at the exact
+                            // moment of conversion, one route after a marketing site where
+                            // every primary button is 600.
+                            className="pw-primary-button pw-btn-lg w-full"
                         >
                             {isSubmitting || signupSuccess ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                             {signupSuccess ? t("Πορτοφόλι δημιουργήθηκε", "Wallet Created") : t("Δημιουργία Πορτοφολιού", "Create My Wallet")}
