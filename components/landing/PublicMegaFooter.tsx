@@ -266,6 +266,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                     type="email"
                                     value={email}
                                     onChange={(event) => setEmail(event.target.value)}
+                                    aria-invalid={status === "error" ? true : undefined}
+                                    aria-describedby={status === "error" ? "footer-newsletter-status" : undefined}
                                     placeholder={t("Το email σας", "Your email")}
                                     className="pw-input pw-input-sm text-[#0F172A] dark:text-white"
                                     autoComplete="email"
@@ -281,6 +283,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                             </div>
                             {statusMessage ? (
                                 <p
+                                    id="footer-newsletter-status"
                                     className={`text-body-sm ${
                                         status === "success" ? "text-[#166534] dark:text-[#A7F3D0]" : "text-[#B91C1C]"
                                     }`}

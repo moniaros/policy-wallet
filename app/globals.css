@@ -519,7 +519,10 @@ pre {
   /* Size modifiers for the CTA pair — nav/footer (sm) and hero/final (lg).
      Declared after the button bases so they win within the layer. */
   .pw-btn-sm {
-    @apply px-5 py-2.5 text-sm;
+    /* min-h-11: the compact padding computed to ~40px, so the footer's
+       conversion CTA pair (and the header CTA) sat under the 44px tap-target
+       floor every sibling control meets on mobile. */
+    @apply min-h-11 px-5 py-2.5 text-sm;
   }
 
   .pw-btn-lg {

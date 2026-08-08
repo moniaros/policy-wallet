@@ -69,7 +69,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-4">
                             <div>
                                 <p className="text-body font-bold text-[#0F172A] dark:text-white uppercase tracking-wider">{t("Tesla Model 3", "Tesla Model 3")}</p>
-                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Λήγει σε 14 μέρες", "Expires in 14 days")}</p>
+                                <p className="text-body-sm text-gray-500 dark:text-gray-400">{t("Λήγει σε 14 μέρες", "Runs out in 14 days")}</p>
                             </div>
                             <div className="text-right">
                                 <div className="text-title font-medium text-[#0F172A] dark:text-white">{t("35.000 €", "€35,000")}</div>
@@ -102,7 +102,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             {t("Μοτοσικλέτα & οδική βοήθεια", "Motorbike & roadside assistance")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
-                            {t("Δεν οδηγείτε μόνο αυτοκίνητο; Η ίδια ανάλυση διαβάζει και τα υπόλοιπα συμβόλαια των οχημάτων σας.", "Not only driving a car? The same analysis reads the rest of your vehicle policies too.")}
+                            {t("Δεν οδηγείτε μόνο αυτοκίνητο; Η ίδια ανάλυση διαβάζει και τα υπόλοιπα συμβόλαια των οχημάτων σας.", "More than just a car? The same analysis reads the rest of your vehicle policies too.")}
                         </p>
                     </div>
                     <div className="grid gap-6 md:grid-cols-2">
