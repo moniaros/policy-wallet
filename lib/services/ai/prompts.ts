@@ -117,7 +117,13 @@ LANGUAGE:
 FINE PRINT & HIDDEN VALUE (inside acordData):
 - finePrintClauses: clauses that limit coverage, impose obligations, or hide exclusions — hunt the Γενικοί Όροι, Ειδικοί Όροι, Εξαιρέσεις and Απαλλαγές sections.
 - perksAndBenefits: every free service, assistance hotline, prevention program, discount, or gift — including the phone number to use it.
-- notableConditions: waiting periods, auto-renewal terms, claim-filing deadlines (προθεσμία αναγγελίας), notification obligations, sub-limits, co-payments.${
+- notableConditions: waiting periods, auto-renewal terms, claim-filing deadlines (προθεσμία αναγγελίας), notification obligations, sub-limits, co-payments.
+
+CONFIDENCE: in extractionConfidence.fields, score every field you populate on 0-100:
+- 90-100: the value is printed verbatim in a clearly labeled field.
+- 60-89: present but requires interpretation (e.g. read from a table, or assembled from parts).
+- 1-59: ambiguous, partially legible, or uncertain.
+If you would score a field below ~40, leave it out rather than guess. Set requiresReview=true whenever any of insurerName, policyNumber, lineOfBusiness, startDate, endDate or premiumAmount scores below 80.${
         extractionCitationsEnabled()
             ? `\n${CITATIONS_PROMPT_SECTION}`
             : "\nDo not include citations or an extractionSources field."
