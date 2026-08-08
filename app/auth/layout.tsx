@@ -15,8 +15,15 @@ export default function AuthLayout({
     children: React.ReactNode
 }) {
     return (
-        <TranslationsProvider>
-            <AuthLanguageProvider>{children}</AuthLanguageProvider>
-        </TranslationsProvider>
+        // Order is load-bearing. TranslationsProvider picks its dictionary by
+        // reading LanguageStateContext from ABOVE itself — mounted outside the
+        // pin, it read the global provider's Greek default and resolved the
+        // Greek dictionary before AuthLanguageProvider set "en" below it. Only
+        // /auth/signin consumes `t`, so ?lang=en produced <html lang="en">
+        // over an entirely Greek page there while its siblings (which call
+        // getTranslations(language) directly) rendered English.
+        <AuthLanguageProvider>
+            <TranslationsProvider>{children}</TranslationsProvider>
+        </AuthLanguageProvider>
     )
 }

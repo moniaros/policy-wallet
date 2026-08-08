@@ -183,6 +183,42 @@ seven-lens assessment loop against production — the clean-round counter resets
 to **0**, because this is a structural change; 3) decide whether the
 badge-leads-with-decode treatment should propagate to /product and /compare.
 
+## Session wrap — 2026-08-08 (Round 9: two of my own regressions, and seven more)
+
+**Round 9 = a regression sweep of everything just shipped + five untouched
+lenses** (guides/glossary, error states, mobile reality, social cards, copy
+quality): 28 candidates, 9 verified, **9 confirmed, 0 refuted** — the first
+round where nothing died in refutation, i.e. every finding was real.
+
+**Two were regressions of this session's own work.** (1) `/auth/signin?lang=en`
+rendered `<html lang="en">` over an entirely Greek page: in `app/auth/layout.tsx`
+the TranslationsProvider sat ABOVE the language pin, so it chose the Greek
+dictionary from the global default before AuthLanguageProvider set "en" below
+it — and signin is the only auth page that consumes `t`, which is why its
+siblings looked fine. Provider order swapped; pinned by
+`tests/unit/auth-layout-provider-order.test.ts`. (2) The consent sheet was
+still Greek on English AUTH pages: the banner read only the /en path prefix,
+and the auth tree signals English via `?lang=en`. It now reads both signals.
+
+**The rest:** guide comparison tables blew out PAGE-level horizontal scroll
+(869px of blank white at 320px) — `[contain:paint]` on the scroll wrapper;
+`/lexiko/prasini-karta` **wrongly said some EU countries require a Green Card**
+(they never do inside the EU/EEA — corrected to match the car guide, in both
+languages and in the FAQPage JSON-LD); `/lexiko/odiki-voitheia` listed
+«Φροντίδα ατυχήματος» as a synonym — the exact confusion the entry exists to
+correct — alias removed; two guides promised AI Q&A, advisor sharing and report
+export with **no plan named** (all PolicyWallet Plus — now attributed in both
+languages); `/auth/forgot-password` **hung forever** on any transport failure
+(the awaited server action REJECTS, skipping `setSubmitting(false)` — now
+try/catch/finally); and the Greek sign-in page showed **raw English Supabase
+error text**, including the project hostname on network failures — error codes
+now map to localized copy, generic fallback for everything unmapped.
+
+All verified against a production build: signin English under ?lang=en and
+Greek without, banner English on English auth pages, zero page-level scroll on
+the guide at 320/375/1280, both glossary fixes live, and forgot-password
+recovering with a visible error under a blocked POST.
+
 ## Session wrap — 2026-08-08 (Login & signup brought back into the product)
 
 **A 12-agent consistency audit of the auth island: 26 candidates, 9 verified,

@@ -91,11 +91,21 @@ export default function SignInPage() {
             const resolved = resolveAuthEmailIdentifier(identifier)
             const { data, error: signInError } = await supabase.auth.signInWithPassword({ email: resolved.email, password })
             if (signInError) {
+                // Never surface signInError.message raw: it is English on a
+                // Greek-default product, and on a network failure
+                // (AuthRetryableFetchError comes back through this same
+                // return) it contains the Supabase project hostname —
+                // infrastructure detail a visitor should never see. Map the
+                // stable error code to localized copy and fall back generic.
                 if (signInError.message.toLowerCase().includes("confirm")) {
                     setError(copy.accountNotVerified)
                     setShowResend(true)
+                } else if (signInError.code === "invalid_credentials") {
+                    setError(copy.invalidCredentials)
+                } else if (signInError.code === "over_request_rate_limit") {
+                    setError(copy.tooManyRequests)
                 } else {
-                    setError(signInError.message)
+                    setError(copy.signInFailed)
                 }
                 return
             }

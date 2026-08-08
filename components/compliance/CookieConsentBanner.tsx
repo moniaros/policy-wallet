@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { usePathname } from "next/navigation"
+import { Suspense, useEffect, useMemo, useState } from "react"
+import { usePathname, useSearchParams } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getCookieBannerCopy } from "@/components/compliance/cookie-banner-copy"
 import {
@@ -20,6 +20,17 @@ function writeCookieConsent(payload: ConsentCookiePayload) {
 }
 
 export function CookieConsentBanner() {
+    // useSearchParams() opts the tree out of static rendering unless it sits
+    // under a boundary; the fallback (nothing, for one paint) is harmless for
+    // a banner that pops in client-side anyway.
+    return (
+        <Suspense fallback={null}>
+            <CookieConsentBannerInner />
+        </Suspense>
+    )
+}
+
+function CookieConsentBannerInner() {
     // Reads only `language`, never `t`: this banner is mounted in the ROOT
     // layout, so it renders on marketing routes where the dictionary is not
     // loaded. Its copy is co-located instead — see cookie-banner-copy.ts.
@@ -33,7 +44,18 @@ export function CookieConsentBanner() {
     // here, and a consent dialog nobody can read is not "clear and plain
     // language" under GDPR Art. 7(2), quite apart from the confusion.
     const pathname = usePathname()
-    const routeLanguage = pathname === "/en" || pathname?.startsWith("/en/") ? "en" : language
+    // Two signals, because the site has two English surfaces: the /en tree
+    // (path prefix) and the auth tree, which has no prefix and is pinned by
+    // ?lang=en instead. Reading only the path left the English signup form
+    // with a Greek consent sheet whose legal links forced ?lang=el — on the
+    // highest-intent screen in the funnel.
+    const requestedLang = useSearchParams().get("lang")
+    const routeLanguage =
+        pathname === "/en" || pathname?.startsWith("/en/")
+            ? "en"
+            : requestedLang === "en"
+              ? "en"
+              : language
     const copy = getCookieBannerCopy(routeLanguage)
     const [visible, setVisible] = useState(false)
     const [expanded, setExpanded] = useState(false)
