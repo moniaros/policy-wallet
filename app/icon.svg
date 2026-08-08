@@ -1,0 +1,6 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#29685B"/>
+  <text x="256" y="256" text-anchor="middle" dominant-baseline="central"
+        font-family="Inter, -apple-system, 'Segoe UI', Roboto, sans-serif"
+        font-size="300" font-weight="700" fill="#89D9B2">P</text>
+</svg>

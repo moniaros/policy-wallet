@@ -1,7 +1,7 @@
 {
     "name": "PolicyWallet",
     "short_name": "PolicyWallet",
-    "description": "The neutral digital wallet for all your insurance policies. Secure, smart, and always accessible.",
+    "description": "Ανεξάρτητος έλεγχος ρίσκου: δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλειες.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
@@ -16,29 +16,27 @@
             "src": "/icons/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
         },
         {
             "src": "/icons/icon-512x512.png",
             "sizes": "512x512",
-            "type": "image/png"
-        }
-    ],
-    "screenshots": [
-        {
-            "src": "/screenshots/mobile-dashboard.png",
-            "sizes": "1170x2532",
             "type": "image/png",
-            "form_factor": "narrow",
-            "label": "Your Insurance Dashboard"
+            "purpose": "any"
         },
         {
-            "src": "/screenshots/desktop-dashboard.png",
-            "sizes": "2880x1800",
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
             "type": "image/png",
-            "form_factor": "wide",
-            "label": "Comprehensive Policy Management"
+            "purpose": "maskable"
         }
     ],
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "lang": "el"
 }

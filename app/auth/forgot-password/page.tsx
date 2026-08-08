@@ -210,12 +210,16 @@ export default function ForgotPasswordPage() {
                                         type="email"
                                         autoComplete="email"
                                         placeholder={copy.emailPlaceholder}
+                                        aria-invalid={errors.email ? true : undefined}
+                                        aria-describedby={errors.email ? "forgot-email-error" : undefined}
                                         {...register("email")}
                                         className={`${inputBase} pl-9 ${errors.email ? "border-rose-300 dark:border-rose-800/40 focus-visible:border-rose-400 focus-visible:ring-rose-200" : ""}`}
                                     />
                                 </div>
                                 {errors.email ? (
-                                    <p className="mt-1 text-xs text-rose-600">{errors.email.message}</p>
+                                    <p id="forgot-email-error" role="alert" className="mt-1 text-xs text-rose-600">
+                                        {errors.email.message}
+                                    </p>
                                 ) : null}
                             </div>
 

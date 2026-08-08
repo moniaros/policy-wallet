@@ -150,6 +150,18 @@ export default function ContactPage({ locale = "el" }: { locale?: "el" | "en" })
         const nextErrors = validate(form)
         if (Object.keys(nextErrors).length > 0) {
             setErrors(nextErrors)
+            // Without this, a screen-reader user who activates submit hears
+            // NOTHING: the fields get aria-invalid but focus stays on the
+            // button and no live region fires. Moving focus to the first
+            // invalid control both announces its error (via aria-describedby)
+            // and puts the keyboard where the work is.
+            const firstInvalid = (event.currentTarget as HTMLFormElement).querySelector<HTMLElement>(
+                '[aria-invalid="true"], input[id], textarea[id]'
+            )
+            requestAnimationFrame(() => {
+                const target = document.querySelector<HTMLElement>('[aria-invalid="true"]')
+                ;(target ?? firstInvalid)?.focus()
+            })
             return
         }
 
