@@ -136,6 +136,8 @@ export const en: TranslationKeys = {
         signInPage: {
             accountNotVerified: 'Account is not verified.',
             signInFailed: 'Sign in failed.',
+            invalidCredentials: 'Wrong sign-in details. Check your email and password.',
+            tooManyRequests: 'Too many attempts. Wait a moment and try again.',
             verificationEmailSent: 'Verification email sent.',
             otpRequestFailed: 'OTP request failed.',
             passwordMinLength: 'Min 8 chars.',

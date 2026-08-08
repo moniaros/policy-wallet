@@ -88,15 +88,22 @@ export default function ForgotPasswordPage() {
     const onSubmit = async (values: ForgotPasswordValues) => {
         setServerError(null)
         setSubmitting(true)
-        const result = await resetPasswordForEmail(values.email, language)
-        setSubmitting(false)
-
-        if (!result.success) {
-            setServerError(result.error || copy.genericError)
-            return
+        // The await REJECTS when the server-action transport fails (offline,
+        // function error) — without the try/finally that rejection skipped
+        // setSubmitting(false) and locked the page at "Αποστολή..." forever,
+        // on exactly the page a locked-out user is standing on.
+        try {
+            const result = await resetPasswordForEmail(values.email, language)
+            if (!result.success) {
+                setServerError(result.error || copy.genericError)
+                return
+            }
+            setSubmittedEmail(values.email)
+        } catch {
+            setServerError(copy.genericError)
+        } finally {
+            setSubmitting(false)
         }
-
-        setSubmittedEmail(values.email)
     }
 
     // Colour comes from .pw-input itself now — pinning #0F172A here is

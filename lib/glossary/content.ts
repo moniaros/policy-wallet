@@ -462,7 +462,11 @@ export const glossaryTerms: GlossaryTerm[] = [
     {
         slug: "odiki-voitheia",
         term: { el: "Οδική βοήθεια", en: "Roadside assistance (odiki voitheia)" },
-        aliases: [{ el: "Φροντίδα ατυχήματος", en: "Accident care" }],
+        // No alias, deliberately. It used to read «Γνωστό και ως: Φροντίδα
+        // ατυχήματος» — asserting as synonyms the two covers this entry, its
+        // title and its meta description all exist to SEPARATE. The alias chip
+        // is the one line a skimmer takes away; several entries carry none.
+        aliases: [],
         metaTitle: {
             el: "Οδική βοήθεια ή φροντίδα ατυχήματος;",
             en: "Roadside assistance vs accident care",
@@ -579,9 +583,15 @@ export const glossaryTerms: GlossaryTerm[] = [
                     el: "Χρειάζομαι πράσινη κάρτα για να οδηγήσω στην ΕΕ;",
                     en: "Do I need a Green Card to drive in the EU?",
                 },
+                // Matches the car-insurance guide's (correct) framing: inside
+                // the EU/EEA the Greek policy itself is proof — no EU country
+                // requires the card. The old answer said "some [EU countries]
+                // require it", a factual error about a legal requirement that
+                // also shipped inside FAQPage structured data and contradicted
+                // /guides/ti-kalyptei-i-asfaleia-aytokinitou.
                 answer: {
-                    el: "Για πολλές χώρες η ελληνική ασφάλιση αναγνωρίζεται χωρίς αυτήν, αλλά για ορισμένες απαιτείται. Ελέγξτε τη λίστα χωρών με την εταιρεία σας.",
-                    en: "For many countries Greek insurance is recognised without it, but some require it. Check the country list with your insurer.",
+                    el: "Όχι — εντός ΕΕ και ΕΟΧ η ελληνική ασφάλιση αναγνωρίζεται χωρίς πράσινη κάρτα. Τη χρειάζεστε για χώρες του συστήματος εκτός ΕΟΧ, όπως η Αλβανία, η Βόρεια Μακεδονία ή η Τουρκία. Ελέγξτε και τη γεωγραφική ισχύ του συμβολαίου σας πριν το ταξίδι.",
+                    en: "No — within the EU and EEA your Greek insurance is recognised without one. You need it for Green Card countries outside the EEA, such as Albania, North Macedonia or Turkey. Also check your policy's territorial scope before travelling.",
                 },
             },
         ],

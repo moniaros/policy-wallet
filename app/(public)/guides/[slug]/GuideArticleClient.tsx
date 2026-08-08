@@ -46,7 +46,12 @@ function GuideTableBlock({ table, lang }: { table: GuideTable; lang: "el" | "en"
             <figcaption className="mb-3 text-body-sm font-medium leading-relaxed text-[#5B6A7A] dark:text-slate-400">
                 {table.caption[lang]}
             </figcaption>
-            <div className="overflow-x-auto rounded-[14px] border border-[#E2E8F0] dark:border-slate-800">
+            {/* [contain:paint] is load-bearing: without it the wide table's
+                overflow escaped this scroll container and became PAGE-level
+                horizontal scroll — 869px of blank white at 320px, the classic
+                "site is broken on my phone". Wide content must scroll inside
+                its own container; the page body never scrolls sideways. */}
+            <div className="overflow-x-auto rounded-[14px] border border-[#E2E8F0] [contain:paint] dark:border-slate-800">
                 <table
                     className="w-full border-collapse text-left"
                     aria-label={table.caption[lang]}

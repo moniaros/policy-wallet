@@ -133,6 +133,8 @@ export const el = {
         signInPage: {
             accountNotVerified: 'Ο λογαριασμός δεν έχει επιβεβαιωθεί.',
             signInFailed: 'Αποτυχία σύνδεσης.',
+            invalidCredentials: 'Λάθος στοιχεία σύνδεσης. Ελέγξτε το email και τον κωδικό σας.',
+            tooManyRequests: 'Πολλές προσπάθειες. Περιμένετε λίγο και δοκιμάστε ξανά.',
             verificationEmailSent: 'Στάλθηκε email επιβεβαίωσης.',
             otpRequestFailed: 'Σφάλμα αποστολής OTP.',
             passwordMinLength: 'Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες.',
