@@ -183,6 +183,40 @@ seven-lens assessment loop against production — the clean-round counter resets
 to **0**, because this is a structural change; 3) decide whether the
 badge-leads-with-decode treatment should propagate to /product and /compare.
 
+## Session wrap — 2026-08-08 (Round 10: the favicon was still the Vercel triangle)
+
+**Round 10: 12 candidates, 9 confirmed, 0 refuted** — half the candidate volume
+of round 9, and the second consecutive round with a 100% confirmation rate.
+
+**The install surface was unrebranded template debris.** The production favicon
+was the **Next.js starter triangle**; the PWA icons were wrong-brand template
+art; the manifest carried fabricated US-product screenshots with declared sizes
+that did not match the files, an English-only description with stale "digital
+wallet" positioning, and no `lang`. Now: a brand ICO (P-tile, 1.7KB vs 25KB),
+an `app/icon.svg` for modern browsers, full-bleed maskable PWA icons with
+purposes split honestly, the screenshots deleted rather than faked better, and
+a Greek manifest aligned with the risk-check positioning.
+
+**A dead end every invitee could hit:** an invalid/consumed/expired invite link
+rendered an **English-only card with no navigation** on the Greek-default site
+— and every redeemed invite email leaves a consumed link behind, so clicking
+it twice landed there. Now bilingual (Greek leads, like the 404), with a home
+link, a "ask for a fresh invitation" hint, and `noindex` on the whole token
+route, which should never be indexed anyway.
+
+**The rest:** the payments-guide FAQ promised reminders with no plan named —
+the one remaining unattributed instance, sitting inside FAQPage JSON-LD; the
+contact form's client-side validation announced nothing to a screen reader
+(focus now moves to the first invalid field); forgot-password's error had no
+aria linkage (now aria-invalid + describedby + role=alert, the signup
+pattern); the newsletter form let the browser's native locale bubble preempt
+its own localized error (noValidate); and the consent buttons shrank below
+44px in phone landscape (min-h-11 floor).
+
+All verified against a production build, plus 3,785 unit tests and the full
+guardrail gate. **Clean-round counter: 0 of 3** — but candidate volume halved
+and both remaining discovery lenses are converging.
+
 ## Session wrap — 2026-08-08 (Round 9: two of my own regressions, and seven more)
 
 **Round 9 = a regression sweep of everything just shipped + five untouched

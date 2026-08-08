@@ -129,7 +129,7 @@ function CookieConsentBannerInner() {
                         <button
                             type="button"
                             onClick={() => setExpanded((current) => !current)}
-                            className="rounded-full border border-slate-300 px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                            className="min-h-11 rounded-full border border-slate-300 px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
                             {expanded ? copy.hidePreferences : copy.managePreferences}
                         </button>
@@ -197,7 +197,7 @@ function CookieConsentBannerInner() {
                                     "banner_necessary_only"
                                 )
                             }
-                            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                            className="min-h-11 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
                             {copy.necessaryOnly}
                         </button>
@@ -214,7 +214,7 @@ function CookieConsentBannerInner() {
                                     "banner_accept_all"
                                 )
                             }
-                            className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60 dark:text-[#1A2420]"
+                            className="min-h-11 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60 dark:text-[#1A2420]"
                         >
                             {copy.acceptAll}
                         </button>

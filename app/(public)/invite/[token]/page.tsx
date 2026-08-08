@@ -4,6 +4,13 @@ import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
+import type { Metadata } from "next"
+
+// Invite URLs carry single-use tokens — no branch of this page belongs in a
+// search index, least of all the dead-link card the invalid branch renders.
+export const metadata: Metadata = {
+    robots: { index: false, follow: false },
+}
 
 export default async function InviteRedeemPage({ params }: { params: Promise<{ token: string }> }) {
     const { token } = await params
@@ -13,12 +20,31 @@ export default async function InviteRedeemPage({ params }: { params: Promise<{ t
     const invite = await db.invite.findUnique({ where: { token } })
 
     if (!invite || invite.consumedAt || invite.expiresAt < new Date()) {
+        // This is a ROUTINE path, not an exotic one: every redeemed invite
+        // email leaves behind a consumed link, so any recipient who clicks it
+        // twice lands here. It used to be an English-only card with no way
+        // out, on a Greek-default site. We cannot know the reader's language
+        // before the invite resolves, so Greek leads and English follows —
+        // the same convention as app/not-found.tsx — and the card offers the
+        // two useful moves: go home, or ask for a fresh invitation.
         return (
             <div className="min-h-screen flex items-center justify-center bg-background p-4">
-                <div className="bg-card border border-border p-8 rounded-2xl shadow-xl text-center max-w-md">
-                    <h1 className="text-xl font-bold text-red-700 dark:text-rose-200 mb-2">Invalid or Expired Link</h1>
-                    <p className="text-muted-foreground">This invitation link is invalid or has already been used.</p>
-                </div>
+                <main className="bg-card border border-border p-8 rounded-2xl shadow-xl text-center max-w-md">
+                    <h1 className="text-xl font-bold text-red-700 dark:text-rose-200 mb-2">
+                        Μη έγκυρος ή ληγμένος σύνδεσμος
+                    </h1>
+                    <p className="text-muted-foreground mb-2">
+                        Ο σύνδεσμος πρόσκλησης δεν ισχύει ή έχει ήδη χρησιμοποιηθεί. Ζητήστε
+                        από όποιον σας τον έστειλε μια καινούργια πρόσκληση.
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-6">
+                        This invitation link is invalid or has already been used. Ask the
+                        person who sent it for a fresh invitation.
+                    </p>
+                    <Link href="/" className="pw-primary-button justify-center">
+                        Αρχική · Home
+                    </Link>
+                </main>
             </div>
         )
     }

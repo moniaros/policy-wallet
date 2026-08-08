@@ -244,7 +244,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 "What changes in insurance, and what it means for you. Few emails, no selling."
                             )}
                         </p>
-                        <form onSubmit={handleSubmit} className="space-y-3">
+                        <form noValidate onSubmit={handleSubmit} className="space-y-3">
                             <label htmlFor="footer-newsletter-email" className="sr-only">
                                 {t("Email για ενημερώσεις", "Newsletter email")}
                             </label>
