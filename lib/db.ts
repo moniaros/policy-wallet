@@ -20,10 +20,55 @@ export function isUniqueConstraintViolation(error: unknown): boolean {
 //                        fine at low volume, exhausts Postgres connections at scale).
 //   DATABASE_URL         last resort (may be a prisma:// Accelerate URL in some setups).
 // Migrations always use DIRECT_URL via prisma/schema.prisma's `directUrl`.
-const dbUrl =
+const rawDbUrl =
   process.env.POOLED_DATABASE_URL ||
   process.env.DIRECT_URL ||
   process.env.DATABASE_URL
+
+/**
+ * Force `pgbouncer=true` when we are talking to a TRANSACTION-mode pooler.
+ *
+ * Transaction pooling hands a server connection back after every transaction,
+ * so there is no guarantee that PREPARE and EXECUTE land on the same backend.
+ * Prisma must therefore stop using prepared statements — and if it doesn't,
+ * Postgres answers `prepared statement "s0" already exists` intermittently,
+ * under concurrency, on queries that are individually fine. It is a horrible
+ * thing to debug from the application side because nothing in the code is wrong.
+ *
+ * This is enforced here rather than left to the connection string because the
+ * string is edited by hand in a dashboard, by whoever is on shift, usually while
+ * something is already broken. Supabase's own copyable "Transaction pooler" URL
+ * does NOT include the parameter, so the default path silently omits it — which
+ * is exactly what happened in production on 2026-08-10.
+ *
+ * Scoped to Postgres URLs on the transaction pooler: a direct/session connection
+ * keeps prepared statements (they are a real performance win there), and a
+ * `prisma://` Accelerate URL is left untouched.
+ */
+function ensurePoolerCompatibility(url: string | undefined): string | undefined {
+  if (!url || !/^postgres(ql)?:\/\//i.test(url)) return url
+
+  try {
+    const parsed = new URL(url)
+    const isTransactionPooler =
+      parsed.port === "6543" || /(^|\.)pooler\.supabase\.com$/i.test(parsed.hostname)
+
+    if (!isTransactionPooler) return url
+    if (parsed.searchParams.get("pgbouncer") === "true") return url
+
+    parsed.searchParams.set("pgbouncer", "true")
+    return parsed.toString()
+  } catch {
+    // A URL we cannot parse is one we must not rewrite — hand it back untouched
+    // and let Prisma report the real problem.
+    return url
+  }
+}
+
+const dbUrl = ensurePoolerCompatibility(rawDbUrl)
+
+/** Exported for the guard test; not part of the runtime contract. */
+export const __ensurePoolerCompatibility = ensurePoolerCompatibility
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
