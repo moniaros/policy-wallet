@@ -1,5 +1,6 @@
 import { authorizeCronRequest } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { withJobRun } from "@/lib/jobs/run-record"
 import { logger } from "@/lib/logger"
 
 // Backstop for orphaned analysis runs: a serverless executor killed at the
@@ -25,31 +26,39 @@ export async function POST(req: Request) {
     if (authError) return authError
 
     try {
-        const { PolicyAnalysisOrchestratorService } = await import(
-            "@/lib/services/analysis/policy-analysis-orchestrator.service"
-        )
-        const { clearOrphanedReservations } = await import("@/lib/token-tracking")
+        // Recorded so the admin console can show that this ran, what it
+        // did, and how long it took — and so an operator can pause it
+        // without a redeploy.
+        const { result, paused } = await withJobRun("reap-stale-analyses", async () => {
+            const { PolicyAnalysisOrchestratorService } = await import(
+                "@/lib/services/analysis/policy-analysis-orchestrator.service"
+            )
+            const { clearOrphanedReservations } = await import("@/lib/token-tracking")
 
-        const orchestrator = new PolicyAnalysisOrchestratorService()
-        const { staleCandidates, reaped } = await orchestrator.reapStaleRuns({
-            graceMs: LEASE_EXPIRY_GRACE_MS,
-            limit: 50,
-        })
-        const tokenRowsCleared = await clearOrphanedReservations()
+            const orchestrator = new PolicyAnalysisOrchestratorService()
+            const { staleCandidates, reaped } = await orchestrator.reapStaleRuns({
+                graceMs: LEASE_EXPIRY_GRACE_MS,
+                limit: 50,
+            })
+            const tokenRowsCleared = await clearOrphanedReservations()
 
-        logger("info", "Stale analysis reaper completed", {
-            staleCandidates,
-            reaped,
-            tokenRowsCleared,
-        })
-
-        return createApiResponse({
-            summary: {
-                stale_candidates: staleCandidates,
+            logger("info", "Stale analysis reaper completed", {
+                staleCandidates,
                 reaped,
-                token_rows_cleared: tokenRowsCleared,
-            },
+                tokenRowsCleared,
+            })
+
+            return createApiResponse({
+                summary: {
+                    stale_candidates: staleCandidates,
+                    reaped,
+                    token_rows_cleared: tokenRowsCleared,
+                },
+            })
         })
+        if (paused) return createApiResponse({ paused: true })
+        // The wrapped body builds the route response; the wrapper only observes.
+        return result!
     } catch (error) {
         logger("error", "Stale analysis reaper failed", { error })
         return createApiError("INTERNAL_ERROR", "Failed to reap stale analyses", 500, String(error))

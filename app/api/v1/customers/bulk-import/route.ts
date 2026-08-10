@@ -1,6 +1,7 @@
 import { requireApiUser } from '@/lib/api-auth'
 import { db } from '@/lib/db'
 import * as Sentry from '@sentry/nextjs'
+import { emailDomain, emailFingerprint } from '@/lib/observability/pii'
 import { z } from 'zod'
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { rateLimit } from "@/lib/rate-limit"
@@ -126,7 +127,11 @@ export async function POST(req: Request) {
                 Sentry.captureException(error, {
                     tags: {
                         endpoint: '/api/v1/customers/bulk-import',
-                        email: customer.email
+                        // Fingerprint, not the address: a Sentry tag is indexed
+                        // and searchable, and an imported customer never agreed
+                        // to appear in our error tracker.
+                        recipient: emailFingerprint(customer.email),
+                        recipient_domain: emailDomain(customer.email)
                     }
                 })
                 errors.push(`Failed to import ${customer.email}`)

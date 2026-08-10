@@ -1,6 +1,7 @@
 // Sentry initialization for the edge runtime (middleware, edge routes).
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 import * as Sentry from "@sentry/nextjs";
+import { scrubEvent } from "./lib/observability/sentry-scrub";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
@@ -12,4 +13,5 @@ Sentry.init({
 
   // GDPR: no PII to Sentry by default.
   sendDefaultPii: false,
+  beforeSend: scrubEvent,
 });

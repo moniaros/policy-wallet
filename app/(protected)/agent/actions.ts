@@ -2,6 +2,7 @@
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { emit } from "@/lib/notifications/dispatch"
 import { notifyCounterparty } from "@/lib/notifications"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { revalidatePath } from "next/cache"
@@ -977,16 +978,23 @@ export async function addPolicyForCustomer(data: {
         // revocable grant above); it never extends to policies the customer
         // uploaded themselves.
         const agentLabel = agentUser?.name || agentUser?.email || 'Your agent'
-        await db.notificationEvent.create({
-            data: {
-                userId: data.customerId,
-                eventType: 'policy_added',
-                channel: 'in_app',
-                title: 'New Policy Added',
-                message: `${agentLabel} added a ${normalizeBranch(data.policy.lineOfBusiness).label.en} policy from ${data.policy.insurerName} to your wallet and can view and manage that policy. You can revoke this access at any time from My Agent.`,
-                relatedObjectType: 'policy',
-                relatedObjectId: policy.id
-            }
+        const addedBranch = normalizeBranch(data.policy.lineOfBusiness)
+        await emit({
+            event: 'policy_added',
+            userId: data.customerId,
+            title: {
+                el: 'Προστέθηκε νέο ασφαλιστήριο',
+                en: 'New Policy Added',
+            },
+            // Greek-default product, and this is the notification that tells
+            // someone another party can now see their policy — it was
+            // English-only, branch label included.
+            message: {
+                el: `Ο/Η ${agentLabel} πρόσθεσε ένα ασφαλιστήριο ${addedBranch.label.el} από ${data.policy.insurerName} στο wallet σας και μπορεί να το βλέπει και να το διαχειρίζεται. Μπορείτε να ανακαλέσετε αυτή την πρόσβαση οποτεδήποτε από «Ο σύμβουλός μου».`,
+                en: `${agentLabel} added a ${addedBranch.label.en} policy from ${data.policy.insurerName} to your wallet and can view and manage that policy. You can revoke this access at any time from My Agent.`,
+            },
+            relatedObjectType: 'policy',
+            relatedObjectId: policy.id,
         })
 
         // 8. Persist the scanned document (if provided), then run analysis
@@ -1663,16 +1671,16 @@ export async function requestAiConsent(policyId: string) {
 
     const hasAccount = Boolean(owner.emailVerified || owner.lastActiveAt)
     if (hasAccount) {
-        await db.notificationEvent.create({
-            data: {
-                userId: owner.id,
-                eventType: "ai_consent_request",
-                channel: "in_app",
-                title: t.common.aiConsentRequestTitle,
-                message: `${agentName}: ${t.common.aiConsentRequestMessage}`,
-                relatedObjectType: "policy",
-                relatedObjectId: policy.id,
-            },
+        await emit({
+            event: "ai_consent_request",
+            userId: owner.id,
+            title: t.common.aiConsentRequestTitle,
+            message: `${agentName}: ${t.common.aiConsentRequestMessage}`,
+            relatedObjectType: "policy",
+            relatedObjectId: policy.id,
+            // One standing consent request per policy: an advisor clicking twice
+            // must not put two identical asks in front of the customer.
+            dedupeKey: `ai_consent:${policy.id}`,
         })
         let emailDelivered = false
         if (owner.email) {

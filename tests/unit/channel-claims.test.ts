@@ -2,13 +2,21 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from "node:fs"
 import { globSync } from "../helpers/glob"
 import { helpArticles } from '@/lib/help-content'
+import { IMPLEMENTED_CHANNELS } from '@/lib/notifications/channels'
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 
-/** Channels the notification dispatcher can actually deliver on. */
+/**
+ * Channels the dispatcher can actually deliver on.
+ *
+ * Read from the channel registry rather than regex-matched out of
+ * lib/notifications.ts. The old version looked for `channel === 'sms'` in that
+ * one file, so it asserted against the location of the code instead of its
+ * meaning — and reported "SMS is not implemented" for the wrong reason the
+ * moment delivery moved into per-channel adapters.
+ */
 function implementedChannels(): string[] {
-    const src = strip(readFileSync('lib/notifications.ts', 'utf-8'))
-    return ['email', 'push', 'sms'].filter((c) => new RegExp(`channel === '${c}'`).test(src))
+    return IMPLEMENTED_CHANNELS as string[]
 }
 
 /**

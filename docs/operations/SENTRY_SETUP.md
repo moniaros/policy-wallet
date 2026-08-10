@@ -11,7 +11,7 @@
 - `@sentry/nextjs` - Official Sentry SDK for Next.js
 
 ### Configuration Files Created
-1. `sentry.client.config.ts` - Client-side error tracking
+1. `instrumentation-client.ts` - Client-side error tracking (Next 16 loads this automatically; the older `sentry.client.config.ts` convention is NOT read and was deleted)
 2. `sentry.server.config.ts` - Server-side error tracking
 3. `sentry.edge.config.ts` - Edge runtime error tracking
 4. `instrumentation.ts` - Server initialization
@@ -62,7 +62,7 @@ SENTRY_AUTH_TOKEN="your-auth-token"
 
 In development, errors are logged to console but NOT sent to Sentry (to avoid noise).
 
-To test, temporarily comment out this line in `sentry.client.config.ts`:
+To test, temporarily comment out this line in `instrumentation-client.ts`:
 ```typescript
 // return null; // Don't send to Sentry in development
 ```
@@ -338,7 +338,7 @@ Shows user's journey:
 
 ### Too Many Errors?
 
-1. **Add Filters**: Update `ignoreErrors` in `sentry.client.config.ts`
+1. **Add Filters**: Update `ignoreErrors` in `instrumentation-client.ts`
 2. **Reduce Sample Rate**: Lower `tracesSampleRate`
 3. **Set Up Rate Limiting**: In Sentry dashboard
 

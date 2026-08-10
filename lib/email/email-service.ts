@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs"
+import { emailDomain, emailFingerprint, redactEmails } from "@/lib/observability/pii"
 
 export interface EmailOptions {
     to: string
@@ -97,11 +98,14 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
             }
 
             const errorMessage = `Brevo send failed (${response.status}): ${parsedMessage}`
-            Sentry.captureMessage(errorMessage, {
+            // Brevo quotes the rejected address back at us, so the provider's own
+            // message is redacted too — not just the fields we chose.
+            Sentry.captureMessage(redactEmails(errorMessage), {
                 level: "error",
                 tags: {
-                    email_to: options.to,
-                    email_subject: options.subject.slice(0, 100),
+                    email_domain: emailDomain(options.to),
+                    email_recipient: emailFingerprint(options.to),
+                    brevo_status: String(response.status),
                 },
             })
             return { success: false, error: errorMessage }
@@ -112,8 +116,8 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     } catch (error) {
         Sentry.captureException(error, {
             tags: {
-                email_to: options.to,
-                email_subject: options.subject.slice(0, 100),
+                email_domain: emailDomain(options.to),
+                email_recipient: emailFingerprint(options.to),
             },
         })
         return {

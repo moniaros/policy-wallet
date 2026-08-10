@@ -13,8 +13,14 @@ export async function getNotificationData() {
 
     // 1. Fetch History — bounded to recent events; this table grows unbounded
     // per user (every reminder, gap alert, share, quote request).
+    //
+    // Notification CHANNELS only, so the `analytics` mirror stays out: those
+    // rows carry a machine code as their title and a JSON blob as their body,
+    // and this page was rendering `conv_checkout_completed` to customers as a
+    // notification. Email and push rows are kept — this is the delivery history,
+    // and "we emailed you about this" is exactly what it should show.
     const history = await db.notificationEvent.findMany({
-        where: { userId },
+        where: { userId, channel: { not: 'analytics' } },
         orderBy: { createdAt: 'desc' },
         take: 50,
     })
@@ -178,7 +184,10 @@ export async function getRecentNotifications(limit = 10): Promise<{ items: Recen
     if (!authResult) return { items: [] }
 
     const events = await db.notificationEvent.findMany({
-        where: { userId: authResult.dbUser.id },
+        // in_app only: the watcher raises live toasts, and an email row is not
+        // something to toast about — it would have fired a second toast for the
+        // same event, and a third for the analytics mirror.
+        where: { userId: authResult.dbUser.id, channel: "in_app" },
         orderBy: { createdAt: "desc" },
         take: Math.min(Math.max(limit, 1), 25),
         select: {
@@ -231,6 +240,10 @@ export async function markAllNotificationsRead() {
     await db.notificationEvent.updateMany({
         where: {
             userId: authResult.dbUser.id,
+            // Read state exists on in-app rows only. Stamping `readAt` on email
+            // rows would claim the user "read" an email we have no way of
+            // knowing they opened.
+            channel: "in_app",
             readAt: null,
         },
         data: { readAt: new Date() },

@@ -25,7 +25,10 @@ export async function GET(req: Request) {
 
     try {
         const notifications = await (db as any).notificationEvent.findMany({
-            where: { userId: authResult.dbUser.id },
+            // Delivery history across real channels. The `analytics` mirror
+            // shares this table but is not a notification and must not be
+            // served as one.
+            where: { userId: authResult.dbUser.id, channel: { not: "analytics" } },
             take: limit + 1,
             cursor: cursor ? { id: cursor } : undefined,
             orderBy: { createdAt: "desc" }

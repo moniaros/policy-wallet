@@ -1,6 +1,7 @@
 // Sentry initialization for the server runtime (see instrumentation.ts).
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 import * as Sentry from "@sentry/nextjs";
+import { scrubEvent } from "./lib/observability/sentry-scrub";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
@@ -14,4 +15,10 @@ Sentry.init({
 
   // GDPR: do NOT ship IPs/headers/cookies to Sentry by default.
   sendDefaultPii: false,
+
+  // ...and scrub the fields we pass DELIBERATELY. `sendDefaultPii` only covers
+  // what the SDK collects on its own; an address a call site puts in a tag or
+  // an upstream provider quotes back in an error message sails straight past
+  // it into a searchable third-party index.
+  beforeSend: scrubEvent,
 });

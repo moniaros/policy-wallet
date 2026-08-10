@@ -1,12 +1,21 @@
-import { db } from "@/lib/db"
+import { emit } from "@/lib/notifications/dispatch"
+import { getEventDefinition } from "@/lib/notifications/registry"
 import { logger } from "@/lib/logger"
 
 /**
  * Server-side conversion-event mirror. GA/Vercel Analytics only see what the
- * browser sends; these rows (NotificationEvent, eventType "conv_*" — the
- * zero-migration store the feedback route also uses) make the admin funnel
- * measurable without any client analytics. Never throws: analytics must not
- * break a money path.
+ * browser sends; these rows make the admin funnel measurable without any client
+ * analytics. Never throws: analytics must not break a money path.
+ *
+ * These share the notification table (the "zero-migration store" the feedback
+ * route also uses) but they are NOT notifications, and they used to be written
+ * as though they were: `channel: 'in_app'`, `title: 'conv_checkout_completed'`,
+ * a JSON blob as the body. So the notification centre rendered a machine code
+ * to the customer as a notification, and the unread badge counted it — 12 of
+ * one production account's 141 phantom unread items.
+ *
+ * They now go out on the `analytics` channel, which every notification surface
+ * filters out. Same table, same zero migrations, no lie.
  */
 
 export type ConversionEventType =
@@ -40,19 +49,20 @@ export async function recordConversionEvent(
     type: ConversionEventType,
     details: ConversionEventDetails = {}
 ) {
+    const event = `conv_${type}`
     try {
-        await db.notificationEvent.create({
-            data: {
-                userId,
-                eventType: `conv_${type}`,
-                channel: "in_app",
-                status: "sent",
-                sentAt: new Date(),
-                title: `conv_${type}`,
-                message: JSON.stringify(details),
-                relatedObjectType: details.source || details.kind || null,
-                relatedObjectId: details.plan || (details.tokens ? String(details.tokens) : null),
-            },
+        const def = getEventDefinition(event)
+        await emit({
+            event,
+            userId,
+            // The registry's businessEvent is a readable sentence, so even the
+            // analytics rows stop being machine codes in the admin funnel view.
+            title: def?.businessEvent ?? event,
+            message: JSON.stringify(details),
+            // relatedObject* is deliberately NOT set from `details.source`.
+            // `relatedObjectType` is a closed vocabulary the UI switches on to
+            // build a deep link, and stuffing "upgrade_modal" into it produced
+            // rows whose type no link builder could recognise.
         })
     } catch (error) {
         logger("warn", "Failed to record conversion event", {

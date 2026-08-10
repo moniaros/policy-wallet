@@ -4,10 +4,14 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
-import { formatCurrency } from "@/lib/i18n/format"
+import { formatCurrency, formatDate } from "@/lib/i18n/format"
+import { calendarDaysUntil } from "@/lib/policy-status"
 import { getTranslations } from "@/lib/i18n"
 import type { User } from "@prisma/client"
 import { getCachedProtectionScore } from "@/lib/services/gap-engine"
+import { getOpenReview } from "@/lib/services/risk-review/service"
+import { getReviewPolicy } from "@/lib/services/risk-review/policy"
+import { RiskReviewCard } from "@/components/risk/RiskReviewCard"
 import { provisionalProtectionScore } from "@/lib/services/gap-engine/protection-score"
 import { CircleHelp, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -31,8 +35,26 @@ import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidg
 import { RecentChangesWidget } from "@/components/dashboard/home/RecentChangesWidget"
 import { RecommendedActionsWidget } from "@/components/dashboard/home/RecommendedActionsWidget"
 
+/**
+ * Calendar days until a date, in Athens.
+ *
+ * This used to be `Math.ceil((date - Date.now()) / 86_400_000)` — a duration in
+ * 24-hour units, not a count of calendar days. Two ways that is wrong on the
+ * screen where someone learns when their cover ends:
+ *
+ * - Policy end dates are stored at midnight UTC, which is 03:00 Athens. A policy
+ *   ending "tomorrow" was routinely off by one, and this number picks the
+ *   urgency colour on the renewals card (red ≤30, amber ≤89) shown beside the
+ *   end date — so the badge and the date could contradict each other.
+ * - A 24-hour unit drifts a whole day across a DST boundary, and Greece changes
+ *   clocks twice a year.
+ *
+ * `calendarDaysUntil` is the helper the rest of the product already uses, and it
+ * exists with a comment explaining exactly this trap. Being a day out on a
+ * COMPULSORY motor policy is not cosmetic here.
+ */
 function daysUntil(date: Date) {
-    return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    return calendarDaysUntil(date, new Date())
 }
 
 /**
@@ -78,6 +100,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         entitlements,
         openGaps,
         cachedScore,
+        openReview,
         hasAnalysisRun,
         hasNotificationPref,
     ] = await Promise.all([
@@ -104,6 +127,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         // Protection score: READ-ONLY cached score (never runs the engine on a
         // GET render). Freshness is the cron / upload pipeline's job.
         getCachedProtectionScore(dbUser.id).catch(() => null),
+        getOpenReview(dbUser.id).catch(() => null),
         db.policyAnalysisRun.findFirst({
             where: { userId: dbUser.id, status: { in: ["completed", "completed_with_warnings"] } },
             select: { id: true },
@@ -260,7 +284,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             insurerName: policy.insurerName,
             icon: getBranchIcon(branch.id),
             typeLabel: branch.label[lang],
-            endDateLabel: endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB"),
+            // Athens-pinned: a bare toLocaleDateString resolves against the
+            // RUNTIME zone, which is UTC on Vercel, so this rendered the
+            // previous day for anything ending near Athens midnight.
+            endDateLabel: formatDate(endDate, lang),
             days: daysUntil(endDate),
             premiumLabel: formatCurrencyValue(policy.premiumAmount, lang, policy.premiumCurrency || "EUR"),
         }
@@ -349,6 +376,25 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         {home.title}
                     </h1>
                 </div>
+
+                {/* The review, when one is open. Above the checklist on
+                    purpose: a review responds to something that happened in the
+                    customer's life, and onboarding guidance does not. */}
+                {openReview && getReviewPolicy(openReview.trigger) && (
+                    <div className="mb-4">
+                        <RiskReviewCard
+                            review={{
+                                id: openReview.id,
+                                trigger: openReview.trigger,
+                                dueAt: openReview.dueAt.toISOString(),
+                                scoreAtOpen: openReview.scoreAtOpen,
+                                findingsAtOpen: openReview.findingsAtOpen,
+                            }}
+                            label={getReviewPolicy(openReview.trigger)!.label}
+                            rationale={getReviewPolicy(openReview.trigger)!.rationale}
+                        />
+                    </div>
+                )}
 
                 {/* Getting Started Checklist */}
                 <div className="mb-4">

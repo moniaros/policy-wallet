@@ -7,13 +7,23 @@ import { en } from '@/lib/i18n/translations/en'
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 
-/** Every eventType any sender actually passes. */
+/**
+ * Every event type any sender actually passes.
+ *
+ * Two spellings, because notifications now go through the bus: `emit({ event:
+ * "..." })` at call sites, and `eventType: "..."` on the remaining shims and in
+ * queries. Scanning only the old one reported every migrated sender as an
+ * orphan — the guard would have failed for the opposite of the reason it
+ * exists.
+ *
+ * Digits matter: engagement_day3 / engagement_day7 exist, and an extractor
+ * without \d silently reported them as orphan keys.
+ */
 function sentEventTypes(): Set<string> {
     const found = new Set<string>()
     for (const f of [...globSync('lib/**/*.ts'), ...globSync('app/**/*.ts')]) {
-        for (const m of strip(readFileSync(f, 'utf-8')).matchAll(// Digits matter: engagement_day3 / engagement_day7 exist, and an
-        // extractor without \\d silently reported them as orphan keys.
-        /eventType: *["']([A-Za-z0-9_]+)["']/g)) {
+        const src = strip(readFileSync(f, 'utf-8'))
+        for (const m of src.matchAll(/(?:eventType|event): *["']([A-Za-z0-9_]+)["']/g)) {
             found.add(m[1])
         }
     }

@@ -1,0 +1,21 @@
+-- Drop a dead table that still holds personal data.
+--
+-- `protection_score_history` was superseded by `risk_profile_versions` — "two
+-- histories of one number are two answers waiting to disagree in front of an
+-- advisor" (see app/(protected)/agent/actions.ts). Its Prisma model was removed
+-- at that point but the table was not, so it has been sitting in production
+-- since 2026-08-05 seeded with every user's protection score, written by
+-- nothing and read by nothing.
+--
+-- It matters beyond tidiness: the DSR export enumerates Prisma models, so a
+-- user-keyed table with no model is personal data outside the subject-access
+-- path. Dropping it IS the erasure.
+--
+-- SEPARATE from the additive notification-bus migration on purpose. Destructive
+-- statements should never ride along with additive ones — this is the file
+-- someone has to consciously decide to run.
+--
+-- Rollback: there is none, and there does not need to be. The data is a
+-- duplicate of what risk_profile_versions already holds, at lower fidelity.
+
+DROP TABLE IF EXISTS "protection_score_history";

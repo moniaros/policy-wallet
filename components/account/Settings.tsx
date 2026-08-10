@@ -11,6 +11,8 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { toast } from 'sonner'
 import { NOTIFICATION_PREFERENCE_GROUPS, eventTypesFor } from "@/lib/notifications/preference-registry"
+import { PushOptIn } from "@/components/notifications/PushOptIn"
+import { QuietHours } from "@/components/notifications/QuietHours"
 
 /**
  * One icon per switch. The list itself comes from the registry — see
@@ -29,6 +31,7 @@ export function Settings({
     activeSessions,
     securityEvents,
     notificationPreferences,
+    quietHours,
     pendingDeletion,
     onUpdateEmail,
     onUpdateProfile,
@@ -369,6 +372,16 @@ export function Settings({
                                     </button>
                                 </div>
                             ))}
+
+                            {/* Per-DEVICE, unlike the switches above which are
+                                per-account: a push subscription belongs to this
+                                browser, so it cannot be a preference row. */}
+                            <PushOptIn />
+
+                            {/* WHEN, next to WHETHER. Quiet hours belong beside
+                                the per-stream switches: both answer "how do you
+                                want to hear from us". */}
+                            {quietHours && <QuietHours initial={quietHours} />}
                         </div>
                     </motion.div>
 

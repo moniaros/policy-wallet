@@ -1,6 +1,6 @@
 import { db } from "../db"
 import { startOfAthensDay , NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
-import { sendEmail } from "../email/email-service"
+import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { calculateEngagementScore } from "./engagement-scoring"
 import {
     getChurnDay7Email,
@@ -37,6 +37,11 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
     }
 
     const now = new Date()
+    // Date-bucket for the idempotency keys below. These exist so a cron RETRY
+    // on the same day cannot double-send; the 30-day, per-tier check further
+    // down is the actual business rule. A permanent key would silence the tier
+    // for that user for ever.
+    const runDay = now.toISOString().slice(0, 10)
 
     // Fetch users with lastActiveAt between 7 and 90 days ago
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -85,13 +90,26 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
             continue
         }
 
-        // Check if this tier email was already sent
-        const eventType = `churn_prevention_${tier}`
+        // One event type, `churn_prevention`, with the tier carried on the
+        // dedupe key rather than baked into the event name.
+        //
+        // This used to write `churn_prevention_${tier}` while checking the
+        // preference under plain `churn_prevention` — the written key was not
+        // the read key, which is the exact defect the preference registry
+        // exists to prevent. The settings toggle writes `churn_prevention`, so
+        // the tier-suffixed rows it produced were addressable by nothing.
+        // Scoped to THIS tier, and to the last 30 days — the drip is meant to
+        // step day7 -> day14 -> day30 -> day60 as someone stays away, so a
+        // check spanning all tiers would silently collapse it into one email.
         const alreadySent = await db.notificationEvent.findFirst({
             where: {
                 userId: user.id,
-                eventType,
                 createdAt: { gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) },
+                OR: [
+                    { dedupeKey: { startsWith: `churn:${tier}:` } },
+                    // Rows written before the event-name cutover.
+                    { eventType: `churn_prevention_${tier}` },
+                ],
             },
             select: { id: true },
         })
@@ -100,18 +118,8 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
             continue
         }
 
-        // Check user notification preferences
-        const pref = await db.notificationPreference.findUnique({
-            where: {
-                userId_eventType_channel: {
-                    userId: user.id,
-                    eventType: "churn_prevention",
-                    channel: "email",
-                },
-            },
-            select: { enabled: true },
-        })
-        if (pref?.enabled === false) {
+        // Pre-filter; `emit` asks the same question again and is authoritative.
+        if (await isChannelSuppressed(user.id, "churn_prevention", "email")) {
             summary.skipped++
             continue
         }
@@ -171,18 +179,20 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 html = email.html
 
                 // Record the bonus token grant (integrate with actual billing/token system)
-                await db.notificationEvent.create({
-                    data: {
-                        userId: user.id,
-                        eventType: "bonus_credits_granted",
-                        channel: "in_app",
-                        title: `${BONUS_TOKENS} bonus AI credits`,
-                        message: `Re-engagement bonus: ${BONUS_TOKENS} credits added, expires in 30 days`,
-                        relatedObjectType: "credit",
-                        relatedObjectId: String(BONUS_TOKENS),
-                        status: "sent",
-                        sentAt: now,
+                await emit({
+                    event: "bonus_credits_granted",
+                    userId: user.id,
+                    title: {
+                        el: `${BONUS_TOKENS} επιπλέον credits AI`,
+                        en: `${BONUS_TOKENS} bonus AI credits`,
                     },
+                    message: {
+                        el: `Μπόνους επανασύνδεσης: ${BONUS_TOKENS} credits προστέθηκαν, λήγουν σε 30 ημέρες`,
+                        en: `Re-engagement bonus: ${BONUS_TOKENS} credits added, expires in 30 days`,
+                    },
+                    // The grant happens once per re-engagement cycle; the key
+                    // stops a re-run of the cron granting it twice.
+                    dedupeKey: `churn_bonus:${tier}:${runDay}`,
                 })
                 summary.day30Sent++
             } else {
@@ -192,18 +202,13 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 summary.day60Sent++
             }
 
-            await sendEmail({ to: user.email, subject, html })
-
-            await db.notificationEvent.create({
-                data: {
-                    userId: user.id,
-                    eventType,
-                    channel: "email",
-                    title: subject,
-                    message: `Churn prevention ${tier} email sent (${daysSinceActive} days inactive)`,
-                    status: "sent",
-                    sentAt: now,
-                },
+            await emit({
+                event: "churn_prevention",
+                userId: user.id,
+                title: subject,
+                message: `Churn prevention ${tier} email sent (${daysSinceActive} days inactive)`,
+                dedupeKey: `churn:${tier}:${runDay}`,
+                content: { email: { subject, html } },
             })
         } catch {
             summary.errors++

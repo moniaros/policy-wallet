@@ -114,7 +114,17 @@ export function FloatingActionButton({
                 />
             )}
 
-            {/* FAB Container */}
+            {/* FAB Container.
+                `--pw-bottom-obstruction` is published by whatever is currently
+                occupying the bottom of the screen — today the cookie consent
+                banner, which is `fixed inset-x-0 bottom-0 z-[120]` and was
+                covering this button entirely. A first-time customer with an
+                empty wallet could not press the one control that adds a policy,
+                which is the product's whole job.
+
+                Raising z-index instead would have put this button on top of the
+                consent text; sitting clear of it keeps both usable. Defaults to
+                0px, so nothing changes once consent is given. */}
             <div className={`fixed ${getPositionClasses()} z-50`}>
                 {/* Action Menu */}
                 {actions.length > 0 && isExpanded && (

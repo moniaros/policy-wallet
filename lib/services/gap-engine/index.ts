@@ -68,6 +68,20 @@ import {
 
 export interface GapEngineResult {
     protectionScore: ProtectionScoreResult
+    /**
+     * The risk-profile version this run wrote, when it wrote one.
+     *
+     * `written: false` means the assessment was unchanged (contextHash matched)
+     * and the history correctly recorded nothing. Exposed so a caller that
+     * needs the movement — the life-event flow reports it back to the customer
+     * — can have the real numbers rather than re-reading the table.
+     */
+    version: {
+        written: boolean
+        version: number | null
+        previousScore: number | null
+        delta: number | null
+    } | null
     scoreTier: ReturnType<typeof getScoreTier>
     profileGaps: ProfileGap[]
     /**
@@ -115,6 +129,16 @@ export interface RunGapEngineOptions {
      * score movement say the wrong thing.
      */
     trigger?: "life_event" | "policy_change" | "profile_update" | "cron" | "manual"
+    /**
+     * The life event that caused this run, when one did.
+     *
+     * Stamped on the risk-profile version so the timeline can say "this risk
+     * opened because you declared a mortgage on the 14th" rather than only
+     * "a recalculation happened". Without this the life-event path had to call
+     * a reduced, version-only recompute in order to keep the link — which is
+     * how it came to skip the score cache and the recommendation sync.
+     */
+    lifeEventId?: string | null
 }
 
 export interface CachedProtectionScore {
@@ -483,22 +507,44 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
 
     // 7. Cache protection score, and version it.
     //
-    // Versioning is fire-and-forget and fingerprinted: an unchanged assessment
-    // writes no row, so a nightly cron over a stable book costs nothing and the
-    // history records CHANGES rather than ticks. It must never block or fail an
-    // upload — the score is the product of this function; the history is
-    // observability about it.
+    // Fingerprinted: an unchanged assessment writes no row, so a nightly cron
+    // over a stable book costs nothing and the history records CHANGES rather
+    // than ticks.
+    //
+    // AWAITED, not fire-and-forget. This used to be
+    // `void import(...).then(...).catch(() => {})` on the reasoning that
+    // versioning is observability and must never block an upload. That was true
+    // when the only consumer was the timeline. It stopped being true when the
+    // risk NOTIFICATIONS — GAP_DETECTED, protection_score_changed,
+    // risk_level_changed — were hung off `recordRiskProfileVersion`: a floating
+    // promise in a serverless function may be terminated when the response
+    // returns, so the customer-facing consequence of an upload could simply
+    // never fire. Awaiting costs one write on the path that just ran an AI
+    // extraction.
+    //
+    // Still non-fatal: `recordRiskProfileVersion` never throws into its caller
+    // (it catches internally and returns `written: false`), and the try/catch
+    // here is the belt to that braces — the score is the product of this
+    // function, and no failure downstream of it may lose that.
     await cacheProtectionScore(userId, protectionScore)
-    void import("@/lib/services/life-events/risk-profile-version")
-        .then(({ recordRiskProfileVersion }) =>
-            recordRiskProfileVersion({
-                userId,
-                assessments: riskAssessments,
-                score: protectionScore,
-                trigger: opts?.trigger ?? "policy_change",
-            })
+    let versionResult: GapEngineResult["version"] = null
+    try {
+        const { recordRiskProfileVersion } = await import(
+            "@/lib/services/life-events/risk-profile-version"
         )
-        .catch(() => {})
+        versionResult = await recordRiskProfileVersion({
+            userId,
+            assessments: riskAssessments,
+            score: protectionScore,
+            trigger: opts?.trigger ?? "policy_change",
+            lifeEventId: opts?.lifeEventId ?? null,
+        })
+    } catch (error) {
+        logger("warn", "risk profile versioning failed (non-blocking)", {
+            userId,
+            error: error instanceof Error ? error.message : String(error),
+        })
+    }
 
     // 8. Fetch final recommendation list (includes existing + newly created),
     // then attach the four context fields from the LIVE assessment.
@@ -534,6 +580,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
 
     return {
         protectionScore,
+        version: versionResult,
         scoreTier,
         profileGaps,
         riskAssessments,
@@ -551,7 +598,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
 
 // ── Read-only snapshot ───────────────────────────────────────────────
 
-export type GapEngineSnapshot = Omit<GapEngineResult, "syncStats" | "aiInsights">
+export type GapEngineSnapshot = Omit<GapEngineResult, "syncStats" | "aiInsights" | "version">
 
 /**
  * Read-only counterpart of runGapEngine for page renders: identical

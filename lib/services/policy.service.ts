@@ -7,6 +7,7 @@
  */
 
 import { BaseService } from './base.service'
+import { emit } from '@/lib/notifications/dispatch'
 import { AppError } from '@/lib/errors'
 import { uploadFile, deleteFile } from '@/lib/storage'
 import { sanitizeDisplayName, validateUploadFile } from '@/lib/security/file-upload'
@@ -346,7 +347,18 @@ export class PolicyService extends BaseService {
         try {
             policy = await this.create(userId, {
                 insurerName: 'AI Analyzing...',
-                policyNumber: `PENDING-${Math.random().toString(36).substring(7).toUpperCase()}`,
+                // A collision here is not cosmetic. The duplicate check below
+                // matches on (ownerUserId, policyNumber, insurerName), and every
+                // placeholder shares the insurer 'AI Analyzing...' — so two
+                // in-flight uploads for the same owner that drew the same suffix
+                // look like the same policy, and a merge request goes to the
+                // other party for approval. Approving it would fold two genuinely
+                // different policies into one.
+                //
+                // `Math.random().toString(36).substring(7)` yields fewer than
+                // four characters about once in 4,800 and can in principle yield
+                // none at all, which a batch upload makes concurrent by design.
+                policyNumber: `PENDING-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
                 lineOfBusiness: 'other',
                 startDate: new Date().toISOString(),
                 endDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString(),
@@ -601,18 +613,19 @@ export class PolicyService extends BaseService {
                         }
                     )
 
-                    await this.db.notificationEvent.create({
-                        data: {
-                            userId,
-                            eventType: 'policy_merged',
-                            channel: 'in_app',
-                            title: language === 'el' ? 'Η ανάλυση ολοκληρώθηκε' : 'Policy Analysis Complete',
-                            message: language === 'el'
-                                ? `Η νέα μεταφόρτωση ενσωματώθηκε στο υπάρχον συμβόλαιο ${currentPolicy.policyNumber}.`
-                                : `Your upload was merged into existing policy ${currentPolicy.policyNumber}.`,
-                            relatedObjectType: 'policy',
-                            relatedObjectId: existingPolicy.id
-                        }
+                    await emit({
+                        event: 'policy_merged',
+                        userId,
+                        title: {
+                            el: 'Η ανάλυση ολοκληρώθηκε',
+                            en: 'Policy Analysis Complete',
+                        },
+                        message: {
+                            el: `Η νέα μεταφόρτωση ενσωματώθηκε στο υπάρχον συμβόλαιο ${currentPolicy.policyNumber}.`,
+                            en: `Your upload was merged into existing policy ${currentPolicy.policyNumber}.`,
+                        },
+                        relatedObjectType: 'policy',
+                        relatedObjectId: existingPolicy.id,
                     })
 
                     logger('info', 'Deduplication merge complete', { policyId: existingPolicy.id })
@@ -650,37 +663,56 @@ export class PolicyService extends BaseService {
                 }
             })
 
-            await this.db.notificationEvent.create({
-                data: {
-                    userId,
-                    eventType: 'policy_analyzed',
-                    channel: 'in_app',
-                    title: language === 'el' ? 'Η ανάλυση ολοκληρώθηκε' : 'Policy Analysis Complete',
-                    message: language === 'el'
-                        ? `Το ασφαλιστήριο συμβόλαιο ${updatedPolicy?.policyNumber} (${updatedPolicy?.insurerName}) αναλύθηκε επιτυχώς.`
-                        : `Policy ${updatedPolicy?.policyNumber} (${updatedPolicy?.insurerName}) has been successfully analyzed.`,
-                    relatedObjectType: 'policy',
-                    relatedObjectId: policyId
-                }
+            // Publish the FACT — the notification and the recomputation are
+            // consequences the decision engine decides. Dual-written alongside
+            // the direct calls during the migration.
+            const { publishAnalysisCompleted } = await import('@/lib/events/publishers')
+            await publishAnalysisCompleted({
+                policyId,
+                ownerUserId: updatedPolicy?.ownerUserId ?? userId,
+                runId: policyId,
+                actor: {
+                    type: updatedPolicy?.ownerUserId === userId ? 'customer' : 'advisor',
+                    id: userId,
+                },
+                insurerName: updatedPolicy?.insurerName,
+                policyNumber: updatedPolicy?.policyNumber,
+            })
+
+            await emit({
+                event: 'policy_analyzed',
+                userId,
+                title: {
+                    el: 'Η ανάλυση ολοκληρώθηκε',
+                    en: 'Policy Analysis Complete',
+                },
+                message: {
+                    el: `Το ασφαλιστήριο συμβόλαιο ${updatedPolicy?.policyNumber} (${updatedPolicy?.insurerName}) αναλύθηκε επιτυχώς.`,
+                    en: `Policy ${updatedPolicy?.policyNumber} (${updatedPolicy?.insurerName}) has been successfully analyzed.`,
+                },
+                relatedObjectType: 'policy',
+                relatedObjectId: policyId,
             })
 
             // Break the silent handoff: when someone other than the owner (e.g. an
             // agent uploading on the client's behalf) triggered this analysis, the
-            // owner never hears about it. Notify them too, in their own language.
+            // owner never hears about it. Notify them too — the bus resolves the
+            // language against the RECIPIENT, so the hand-rolled `ownerLang`
+            // lookup this used to need is gone.
             if (updatedPolicy?.ownerUserId && updatedPolicy.ownerUserId !== userId) {
-                const ownerLang = updatedPolicy.owner?.preferredLanguage === 'el' ? 'el' : 'en'
-                await this.db.notificationEvent.create({
-                    data: {
-                        userId: updatedPolicy.ownerUserId,
-                        eventType: 'policy_analyzed',
-                        channel: 'in_app',
-                        title: ownerLang === 'el' ? 'Η ανάλυση ολοκληρώθηκε' : 'Policy Analysis Complete',
-                        message: ownerLang === 'el'
-                            ? `Το ασφαλιστήριο συμβόλαιο ${updatedPolicy.policyNumber} (${updatedPolicy.insurerName}) αναλύθηκε από τον σύμβουλό σας.`
-                            : `Policy ${updatedPolicy.policyNumber} (${updatedPolicy.insurerName}) was analyzed by your advisor.`,
-                        relatedObjectType: 'policy',
-                        relatedObjectId: policyId
-                    }
+                await emit({
+                    event: 'policy_analyzed',
+                    userId: updatedPolicy.ownerUserId,
+                    title: {
+                        el: 'Η ανάλυση ολοκληρώθηκε',
+                        en: 'Policy Analysis Complete',
+                    },
+                    message: {
+                        el: `Το ασφαλιστήριο συμβόλαιο ${updatedPolicy.policyNumber} (${updatedPolicy.insurerName}) αναλύθηκε από τον σύμβουλό σας.`,
+                        en: `Policy ${updatedPolicy.policyNumber} (${updatedPolicy.insurerName}) was analyzed by your advisor.`,
+                    },
+                    relatedObjectType: 'policy',
+                    relatedObjectId: policyId,
                 })
             }
 
@@ -749,18 +781,19 @@ export class PolicyService extends BaseService {
             const label = [policy?.policyNumber, policy?.insurerName ? `(${policy.insurerName})` : null]
                 .filter(Boolean)
                 .join(' ')
-            await this.db.notificationEvent.create({
-                data: {
-                    userId,
-                    eventType: 'policy_analysis_failed',
-                    channel: 'in_app',
-                    title: language === 'el' ? 'Η ανάλυση δεν ολοκληρώθηκε' : 'Analysis not completed',
-                    message: language === 'el'
-                        ? `Η ανάλυση του συμβολαίου ${label} δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.`
-                        : `Analysis of policy ${label} could not be completed. You can retry.`,
-                    relatedObjectType: 'policy',
-                    relatedObjectId: policyId,
+            await emit({
+                event: 'policy_analysis_failed',
+                userId,
+                title: {
+                    el: 'Η ανάλυση δεν ολοκληρώθηκε',
+                    en: 'Analysis not completed',
                 },
+                message: {
+                    el: `Η ανάλυση του συμβολαίου ${label} δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.`,
+                    en: `Analysis of policy ${label} could not be completed. You can retry.`,
+                },
+                relatedObjectType: 'policy',
+                relatedObjectId: policyId,
             })
         } catch (error) {
             logger('error', 'Failed to emit analysis-failed notification', {
@@ -967,19 +1000,21 @@ export class PolicyService extends BaseService {
                 }
             })
 
-            // Create notification
-            await this.db.notificationEvent.create({
-                data: {
-                    userId: recipient.id,
-                    eventType: 'policy_shared',
-                    channel: 'in_app',
-                    title: language === 'el' ? 'Νέα κοινή πολιτική' : 'New Shared Policy',
-                    message: language === 'el'
-                        ? `Μια πολιτική έχει κοινοποιηθεί μαζί σας: ${policy.policyNumber}`
-                        : `A policy has been shared with you: ${policy.policyNumber}`,
-                    relatedObjectType: 'policy',
-                    relatedObjectId: policyId
-                }
+            // The RECIPIENT's language, not the sharer's — this used to render in
+            // whichever language the person doing the sharing happened to use.
+            await emit({
+                event: 'policy_shared',
+                userId: recipient.id,
+                title: {
+                    el: 'Νέο κοινόχρηστο συμβόλαιο',
+                    en: 'New Shared Policy',
+                },
+                message: {
+                    el: `Ένα ασφαλιστήριο κοινοποιήθηκε μαζί σας: ${policy.policyNumber}`,
+                    en: `A policy has been shared with you: ${policy.policyNumber}`,
+                },
+                relatedObjectType: 'policy',
+                relatedObjectId: policyId,
             })
 
             await this.logActivity(

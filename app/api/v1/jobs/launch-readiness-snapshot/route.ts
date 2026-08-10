@@ -1,5 +1,6 @@
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { withJobRun } from "@/lib/jobs/run-record"
 import { logger } from "@/lib/logger"
 import { getLaunchReadinessSnapshot } from "@/lib/services/ops/launch-readiness.service"
 
@@ -32,31 +33,39 @@ export async function POST(req: Request) {
     }
 
     try {
-        const snapshot = await getLaunchReadinessSnapshot({
-            windowHours: resolveWindowHours(req.url),
-        })
+        // Recorded so the admin console can show that this ran, what it
+        // did, and how long it took — and so an operator can pause it
+        // without a redeploy.
+        const { result, paused } = await withJobRun("launch-readiness-snapshot", async () => {
+            const snapshot = await getLaunchReadinessSnapshot({
+                windowHours: resolveWindowHours(req.url),
+            })
 
-        const blockerCount = snapshot.signals.filter((signal) => signal.severity === "blocker").length
-        const warningCount = snapshot.signals.filter((signal) => signal.severity === "warning").length
+            const blockerCount = snapshot.signals.filter((signal) => signal.severity === "blocker").length
+            const warningCount = snapshot.signals.filter((signal) => signal.severity === "warning").length
 
-        logger("info", "Launch readiness snapshot generated", {
-            generatedAt: snapshot.generatedAt,
-            level: snapshot.level,
-            blockerCount,
-            warningCount,
-        })
+            logger("info", "Launch readiness snapshot generated", {
+                generatedAt: snapshot.generatedAt,
+                level: snapshot.level,
+                blockerCount,
+                warningCount,
+            })
 
-        return createApiResponse({
-            generated_at: snapshot.generatedAt,
-            window_hours: snapshot.windowHours,
-            level: snapshot.level,
-            blocker_count: blockerCount,
-            warning_count: warningCount,
-            signals: snapshot.signals,
-            synthetic: snapshot.synthetic,
-            billing: snapshot.billing,
-            dsr: snapshot.dsr,
+            return createApiResponse({
+                generated_at: snapshot.generatedAt,
+                window_hours: snapshot.windowHours,
+                level: snapshot.level,
+                blocker_count: blockerCount,
+                warning_count: warningCount,
+                signals: snapshot.signals,
+                synthetic: snapshot.synthetic,
+                billing: snapshot.billing,
+                dsr: snapshot.dsr,
+            })
         })
+        if (paused) return createApiResponse({ paused: true })
+        // The wrapped body builds the route response; the wrapper only observes.
+        return result!
     } catch (error) {
         logger("error", "Launch readiness snapshot failed", { error })
         return createApiError("INTERNAL_ERROR", "Failed to generate launch readiness snapshot", 500, String(error))

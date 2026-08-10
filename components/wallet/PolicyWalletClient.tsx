@@ -19,6 +19,7 @@ import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { usePolling } from "@/hooks/usePolling"
+import { getOrRegisterServiceWorker } from "@/lib/push/register"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -87,15 +88,59 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
 
     const copy = t.wallet.analysisNotifications
 
+    /**
+     * Raise the "your analysis finished" notification.
+     *
+     * Android forbids `new Notification()` outright — Chrome there throws
+     * `TypeError: Failed to construct 'Notification': Illegal constructor. Use
+     * ServiceWorkerRegistration.showNotification() instead.` (Sentry
+     * POLICYWALLET-11, Chrome Mobile on Android 10). So on the platform where
+     * most of this product's customers actually are, we asked them to turn
+     * notifications on, they granted permission, and then every completed
+     * analysis threw instead of telling them. The promise was made and silently
+     * broken on exactly the devices it mattered for.
+     *
+     * The service worker is the supported path, and it is better anyway: the
+     * notification survives the tab being closed, and `sw.js` already handles
+     * `notificationclick` by focusing an existing tab and navigating it rather
+     * than opening a tenth copy of the app.
+     *
+     * The constructor stays as a fallback for desktop browsers with no service
+     * worker registered, wrapped — a notification failing to appear must never
+     * take out the poll that renders the wallet.
+     */
     const fireBrowserNotification = (title: string, message: string, policyId: string) => {
         if (typeof window === 'undefined' || !('Notification' in window)) return
         if (Notification.permission !== 'granted') return
 
-        const notification = new Notification(title, { body: message })
-        notification.onclick = () => {
-            window.focus()
-            router.push(`/wallet/${policyId}`)
-        }
+        const url = `/wallet/${policyId}`
+
+        void (async () => {
+            try {
+                const registration = await getOrRegisterServiceWorker()
+                if (registration?.showNotification) {
+                    await registration.showNotification(title, {
+                        body: message,
+                        icon: '/icons/icon-192x192.png',
+                        badge: '/icons/icon-192x192.png',
+                        // One notification per policy: a poll that fires twice
+                        // should replace, not stack.
+                        tag: `analysis:${policyId}`,
+                        data: { url },
+                    })
+                    return
+                }
+
+                const notification = new Notification(title, { body: message })
+                notification.onclick = () => {
+                    window.focus()
+                    router.push(url)
+                }
+            } catch {
+                // Every platform refuses this somewhere. The in-app toast has
+                // already told them, so there is nothing worth surfacing.
+            }
+        })()
     }
 
     // The poll below calls router.refresh(), which yields a new `policies`

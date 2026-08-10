@@ -9,7 +9,9 @@ vi.mock('@/lib/db', () => ({
         user: { findUnique: vi.fn() },
         accessGrant: { findFirst: vi.fn() },
         customerRelationship: { findFirst: vi.fn() },
-        notificationEvent: { create: vi.fn() },
+        // The bus reads preferences and checks the dedupe key before writing.
+        notificationEvent: { create: vi.fn(), findFirst: vi.fn() },
+        notificationPreference: { findMany: vi.fn() },
         invite: { create: vi.fn() },
     },
 }))
@@ -47,6 +49,8 @@ beforeEach(() => {
     mockPolicyFind.mockResolvedValue(POLICY)
     mockGrantFind.mockResolvedValue({ id: 'grant-1' } as any)
     mockNotifCreate.mockResolvedValue({} as any)
+    vi.mocked(db.notificationEvent.findFirst).mockResolvedValue(null as any)
+    vi.mocked(db.notificationPreference.findMany).mockResolvedValue([] as any)
     mockInviteCreate.mockImplementation((async ({ data }: any) => ({ id: 'inv-1', ...data })) as any)
 })
 

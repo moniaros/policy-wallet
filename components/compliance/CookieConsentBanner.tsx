@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getCookieBannerCopy } from "@/components/compliance/cookie-banner-copy"
@@ -61,6 +61,7 @@ function CookieConsentBannerInner() {
     const [expanded, setExpanded] = useState(false)
     const [saving, setSaving] = useState(false)
     const [categories, setCategories] = useState<ConsentCategories>(DEFAULT_CATEGORIES)
+    const bannerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const existingConsent = readConsentFromDocument()
@@ -72,6 +73,47 @@ function CookieConsentBannerInner() {
             setCategories(existingConsent.categories)
         }
     }, [])
+
+    /**
+     * Publish how much of the bottom of the screen this banner is occupying.
+     *
+     * The banner is `fixed inset-x-0 bottom-0 z-[120]` — a full-width strip
+     * above everything else. The wallet's "Add policy" floating button is
+     * `fixed bottom-6 right-6 z-50`, so until someone dismissed the banner the
+     * primary call to action on the page was covered and unclickable. That is
+     * the first thing a brand-new customer with an empty wallet tries to press,
+     * and the consent banner is showing for exactly that person.
+     *
+     * Raising the button's z-index would have floated it OVER the consent text,
+     * which is not an improvement — consent UI should not be obscured either.
+     * So the banner states its height and anything anchored to the bottom sits
+     * clear of it; `useLayoutEffect` would be wrong here because the value is
+     * consumed by CSS on a separate fixed element, not by this render.
+     */
+    useEffect(() => {
+        const root = document.documentElement
+        if (!visible) {
+            root.style.removeProperty("--pw-bottom-obstruction")
+            return
+        }
+
+        const measure = () => {
+            const height = bannerRef.current?.offsetHeight ?? 0
+            root.style.setProperty("--pw-bottom-obstruction", `${height}px`)
+        }
+        measure()
+
+        // The card grows when preferences expand, and reflows on rotate.
+        const observer = new ResizeObserver(measure)
+        if (bannerRef.current) observer.observe(bannerRef.current)
+        window.addEventListener("resize", measure)
+
+        return () => {
+            observer.disconnect()
+            window.removeEventListener("resize", measure)
+            root.style.removeProperty("--pw-bottom-obstruction")
+        }
+    }, [visible, expanded])
 
     const canSave = useMemo(() => !saving, [saving])
 
@@ -117,8 +159,23 @@ function CookieConsentBannerInner() {
     if (!visible) return null
 
     return (
-        <div className="fixed inset-x-0 bottom-0 z-[120] p-4 md:p-6">
-            <div className="mx-auto max-w-4xl rounded-3xl border border-slate-200/70 bg-white/95 p-5 shadow-2xl backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/95">
+        // `pointer-events-none` on the wrapper, `pointer-events-auto` on the card.
+        //
+        // This element is `inset-x-0` — full width — at z-120, but the card
+        // inside it is `max-w-4xl mx-auto`. So on a wide screen the strip either
+        // side of the card is INVISIBLE and still on top of everything, and it
+        // was swallowing clicks: measured at 1280px, `elementFromPoint` over the
+        // wallet's "Add policy" button returned this div, not the button. The
+        // button looked perfectly clickable and did nothing.
+        <div
+            ref={bannerRef}
+            className="pointer-events-none fixed inset-x-0 bottom-0 z-[120] p-4 md:p-6"
+        >
+            {/* max-h + scroll: with preferences expanded on a 320x568 phone the
+                card ran to 890px and its top 338px — including the collapse
+                button — sat above the viewport with no way to reach them.
+                dvh, not vh, so the mobile URL bar cannot eat the cap. */}
+            <div className="pointer-events-auto mx-auto max-h-[calc(100dvh-2rem)] max-w-4xl overflow-y-auto rounded-3xl border border-slate-200/70 bg-white/95 p-5 shadow-2xl backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/95">
                 <div className="flex flex-col gap-4">
                     <div>
                         <h2 className="text-lg font-black text-slate-900 dark:text-white">{copy.title}</h2>
@@ -223,7 +280,7 @@ function CookieConsentBannerInner() {
                                 type="button"
                                 disabled={!canSave}
                                 onClick={() => persistConsent(categories, "banner_preferences")}
-                                className="rounded-xl border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary-tint disabled:cursor-not-allowed disabled:opacity-60 dark:border-mint/40 dark:text-mint dark:hover:bg-primary/15"
+                                className="min-h-11 rounded-xl border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary-tint disabled:cursor-not-allowed disabled:opacity-60 dark:border-mint/40 dark:text-mint dark:hover:bg-primary/15"
                             >
                                 {copy.savePreferences}
                             </button>

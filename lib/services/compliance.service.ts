@@ -23,6 +23,15 @@ export async function buildUserDataExportPayload(userId: string) {
         accessGrants,
         analysisRuns,
         advisorOpportunities,
+        notificationHistory,
+        pushDevices,
+        riskReviews,
+        businessEvents,
+        notificationSettings,
+        questionnaireResponses,
+        collaborationMessages,
+        referralsMade,
+        exportRequests,
     ] = await Promise.all([
         db.user.findUnique({
             where: { id: userId },
@@ -345,6 +354,147 @@ export async function buildUserDataExportPayload(userId: string) {
             orderBy: { createdAt: "desc" },
             take: 200,
         }),
+
+        // Everything we have SENT this person, and whether they read it. If a
+        // record is personal enough to erase on request — and these are — it is
+        // personal enough to disclose on request. The asymmetry was the bug.
+        db.notificationEvent.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                eventType: true,
+                channel: true,
+                title: true,
+                message: true,
+                status: true,
+                priority: true,
+                createdAt: true,
+                sentAt: true,
+                readAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 1000,
+        }),
+        // Registered push subscriptions. The endpoint identifies a specific
+        // browser on a specific device; the encryption keys are deliberately
+        // NOT disclosed — they are a credential, and Art. 15(4) does not oblige
+        // us to hand back material that would let anyone push to that device.
+        db.pushDevice.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                userAgent: true,
+                createdAt: true,
+                lastSeenAt: true,
+                failureCount: true,
+            },
+            orderBy: { createdAt: "desc" },
+        }),
+        // When we asked this person to review their cover, why, and what the
+        // review concluded.
+        db.riskReview.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                trigger: true,
+                status: true,
+                openedAt: true,
+                dueAt: true,
+                completedAt: true,
+                scoreAtOpen: true,
+                scoreAtClose: true,
+                findingsAtOpen: true,
+                outcome: true,
+            },
+            orderBy: { openedAt: "desc" },
+            take: 200,
+        }),
+        // The event log: the product's own record of what happened to this
+        // person and when.
+        db.businessEvent.findMany({
+            where: { subjectUserId: userId },
+            select: {
+                id: true,
+                name: true,
+                aggregateType: true,
+                occurredAt: true,
+                recordedAt: true,
+                payload: true,
+            },
+            orderBy: { occurredAt: "desc" },
+            take: 1000,
+        }),
+        // Delivery preferences, including quiet hours and timezone — which
+        // describe someone's daily routine.
+        db.userNotificationSettings.findUnique({
+            where: { userId },
+            select: {
+                timezone: true,
+                quietHoursEnabled: true,
+                quietHoursStart: true,
+                quietHoursEnd: true,
+                maxPerDay: true,
+                digestMode: true,
+                updatedAt: true,
+            },
+        }),
+        // Answers the person gave us themselves, which can include health
+        // questions under Art. 9. Erased on request but never disclosed.
+        db.questionnaireResponse.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                instanceId: true,
+                answers: true,
+                submittedAt: true,
+            },
+            orderBy: { submittedAt: "desc" },
+            take: 200,
+        }),
+
+        // Messages this person WROTE in a shared-policy thread. Authored content
+        // is their personal data as squarely as anything they filled into a
+        // form; the eraser already scrubs it, so withholding it here was the
+        // asymmetry, not a policy.
+        db.collaborationMessage.findMany({
+            where: { senderUserId: userId },
+            select: {
+                id: true,
+                threadId: true,
+                messageType: true,
+                body: true,
+                isPrivate: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 1000,
+        }),
+        // Referrals this person made. The referred address is someone ELSE's
+        // personal data, so it is disclosed only as a domain-less status — the
+        // subject learns what we hold about their referrals without our handing
+        // them a third party's contact details.
+        db.referral.findMany({
+            where: { referrerUserId: userId },
+            select: { id: true, status: true, creditsEarned: true, creditedAt: true, createdAt: true },
+            orderBy: { createdAt: "desc" },
+            take: 500,
+        }),
+        // The accountability trail of this person's own data requests. Retained
+        // for five years, so it must also be disclosable — `deletionRequest`
+        // already was, and this is its twin.
+        db.dataExportRequest.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                status: true,
+                requestSource: true,
+                requestedAt: true,
+                completedAt: true,
+                expiresAt: true,
+            },
+            orderBy: { requestedAt: "desc" },
+            take: 200,
+        }),
     ])
 
     if (!user) {
@@ -416,6 +566,50 @@ export async function buildUserDataExportPayload(userId: string) {
             ...grant,
             grantedAt: toIso(grant.grantedAt),
             revokedAt: toIso(grant.revokedAt),
+        })),
+        notificationHistory: notificationHistory.map((n) => ({
+            ...n,
+            createdAt: toIso(n.createdAt),
+            sentAt: toIso(n.sentAt),
+            readAt: toIso(n.readAt),
+        })),
+        pushDevices: pushDevices.map((d) => ({
+            ...d,
+            createdAt: toIso(d.createdAt),
+            lastSeenAt: toIso(d.lastSeenAt),
+        })),
+        riskReviews: riskReviews.map((r) => ({
+            ...r,
+            openedAt: toIso(r.openedAt),
+            dueAt: toIso(r.dueAt),
+            completedAt: toIso(r.completedAt),
+        })),
+        businessEvents: businessEvents.map((e) => ({
+            ...e,
+            occurredAt: toIso(e.occurredAt),
+            recordedAt: toIso(e.recordedAt),
+        })),
+        notificationSettings: notificationSettings
+            ? { ...notificationSettings, updatedAt: toIso(notificationSettings.updatedAt) }
+            : null,
+        questionnaireResponses: questionnaireResponses.map((q) => ({
+            ...q,
+            submittedAt: toIso(q.submittedAt),
+        })),
+        collaborationMessages: collaborationMessages.map((m) => ({
+            ...m,
+            createdAt: toIso(m.createdAt),
+        })),
+        referralsMade: referralsMade.map((r) => ({
+            ...r,
+            creditedAt: toIso(r.creditedAt),
+            createdAt: toIso(r.createdAt),
+        })),
+        dataExportRequests: exportRequests.map((r) => ({
+            ...r,
+            requestedAt: toIso(r.requestedAt),
+            completedAt: toIso(r.completedAt),
+            expiresAt: toIso(r.expiresAt),
         })),
         analysisArtifacts: analysisRuns.map((run) => ({
             ...run,

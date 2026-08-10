@@ -64,7 +64,9 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
         )
 
     const processFile = async (file: File): Promise<ExtractedPolicy> => {
-        const id = Math.random().toString(36).substring(7)
+        // See the note on the batch id below: this value is matched on, not
+        // just rendered, so a short or colliding draw edits the wrong file.
+        const id = crypto.randomUUID()
 
         try {
             const formData = new FormData()
@@ -126,7 +128,13 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
         setIsProcessing(true)
 
         const initialPolicies: ExtractedPolicy[] = fileArray.map((file) => ({
-            id: Math.random().toString(36).substring(7),
+            // `Math.random().toString(36).substring(7)` returned fewer than four
+            // characters roughly once in 4,800 — and this id is not just the
+            // React key, it is the identity `handleRemove` and
+            // `handleUpdatePolicy` match on. Two rows sharing one means removing
+            // a document removes someone else's, or a policy number typed into
+            // one file lands on another and gets submitted that way.
+            id: crypto.randomUUID(),
             fileName: file.name,
             status: "processing",
         }))

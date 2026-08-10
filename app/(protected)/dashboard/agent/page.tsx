@@ -1,6 +1,7 @@
 export const runtime = "nodejs"
 
 import { redirect } from "next/navigation"
+import { formatDate } from "@/lib/i18n/format"
 import { getActivityFeed } from "../../activity/actions"
 import { DashboardClient } from "../DashboardClient"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -273,7 +274,10 @@ export default async function DashboardPage() {
                 type: "expiring_policy",
                 clientId: ownerRel?.customer.id || policy.ownerUserId,
                 clientName: presentName(ownerRel?.customer.id),
-                description: `${lobLabel} expires ${endDate.toLocaleDateString("el-GR")}`,
+                // Athens-pinned via the shared formatter; a bare call resolves
+                // against the runtime zone (UTC on Vercel) and dated a policy
+                // ending at Athens midnight to the previous day.
+                description: `${lobLabel} expires ${formatDate(endDate, "el")}`,
                 // The card localizes from this + dueDate; `description` above is
                 // only a fallback (see ActionQueueItem).
                 lineOfBusiness: policy.lineOfBusiness,

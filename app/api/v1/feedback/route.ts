@@ -1,6 +1,6 @@
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
-import { db } from "@/lib/db"
+import { emit } from "@/lib/notifications/dispatch"
 import { z } from "zod"
 
 const FeedbackSchema = z.object({
@@ -28,23 +28,21 @@ export async function POST(req: Request) {
 
         const { type, score, comment, articleId, articleTitle, helpful } = parsed.data
 
-        // Store feedback as a notification event for now (lightweight, no schema migration needed)
-        await db.notificationEvent.create({
-            data: {
-                userId: user.id,
-                eventType: type === "nps" ? "feedback_nps" : "feedback_article",
-                channel: "in_app",
-                title: type === "nps"
-                    ? `NPS Score: ${score}`
-                    : `Article feedback: ${articleTitle || articleId}`,
-                message: type === "nps"
-                    ? `Score: ${score}${comment ? ` — ${comment}` : ""}`
-                    : `${helpful ? "👍 Helpful" : "👎 Not helpful"}${comment ? ` — ${comment}` : ""}`,
-                relatedObjectType: type,
-                relatedObjectId: type === "nps" ? String(score) : articleId || "unknown",
-                status: "sent",
-                sentAt: new Date(),
-            },
+        // Recorded on the `analytics` channel: this is the customer's own
+        // feedback coming back at us, not a notification to them. It used to be
+        // written as `channel: 'in_app'`, so submitting an NPS score put "NPS
+        // Score: 7" in your own notification centre.
+        await emit({
+            event: type === "nps" ? "feedback_nps" : "feedback_article",
+            userId: user.id,
+            title: type === "nps"
+                ? `NPS Score: ${score}`
+                : `Article feedback: ${articleTitle || articleId}`,
+            message: type === "nps"
+                ? `Score: ${score}${comment ? ` — ${comment}` : ""}`
+                : `${helpful ? "👍 Helpful" : "👎 Not helpful"}${comment ? ` — ${comment}` : ""}`,
+            relatedObjectType: "feedback",
+            relatedObjectId: type === "nps" ? String(score) : articleId || "unknown",
         })
 
         return createApiResponse({

@@ -21,7 +21,9 @@
     "audit:api-auth": "node scripts/audit-api-auth.js",
     "verify:migrations": "node scripts/verify-migration-sync.js",
     "eval": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts",
-    "eval:ci": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts --provider=mock --suite=all"
+    "eval:ci": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts --provider=mock --suite=all",
+    "docs:notifications": "node scripts/generate-notification-matrix.mjs",
+    "docs:reviews": "node scripts/generate-review-matrix.mjs"
   },
   "prisma": {
     "seed": "ts-node -P prisma/tsconfig.seed.json prisma/seed.ts"

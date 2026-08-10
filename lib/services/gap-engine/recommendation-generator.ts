@@ -743,6 +743,26 @@ export async function syncRecommendations(
         await applySync()
     }
 
+    // ONE notification for the run, never one per card. Someone who gains six
+    // recommendations has learned one thing, not six, and six separate pings
+    // is how a useful signal becomes something people switch off.
+    if (created > 0) {
+        const { emit } = await import("@/lib/notifications/dispatch")
+        await emit({
+            event: "recommendation_generated",
+            userId,
+            title:
+                created === 1
+                    ? { el: "Νέα πρόταση για εσάς", en: "A new recommendation for you" }
+                    : { el: `${created} νέες προτάσεις για εσάς`, en: `${created} new recommendations for you` },
+            message: {
+                el: "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.",
+                en: "Based on what we know about your life and your policies.",
+            },
+            relatedObjectType: "recommendation",
+        })
+    }
+
     return { created, dismissed }
 }
 
