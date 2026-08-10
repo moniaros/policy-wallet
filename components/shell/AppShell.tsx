@@ -373,7 +373,7 @@ export function AppShell({
                 {hasBottomNav && (
                     <nav
                         aria-label={t.nav.bottomNavigation}
-                        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 border-t border-black/10 dark:border-white/10 safe-area-inset-bottom shadow-xl backdrop-blur-xl"
+                        className="pw-above-consent lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 border-t border-black/10 dark:border-white/10 safe-area-inset-bottom shadow-xl backdrop-blur-xl"
                     >
                         <div
                             className="grid gap-1.5 px-2 py-2 min-h-[76px]"

@@ -164,6 +164,22 @@ export async function declareLifeEvent(
         })
     })
 
+    // Publish the FACT. The recalculation, the confirmation notification and
+    // the advisor's visibility of it are all CONSEQUENCES, decided by the
+    // decision engine — this code says what happened and stops there.
+    //
+    // Dual-write during the migration: the direct calls below still run, so
+    // nothing depends on the event yet and either path alone is sufficient.
+    const { publishLifeEventDeclared } = await import("@/lib/events/publishers")
+    await publishLifeEventDeclared({
+        lifeEventId: event.id,
+        userId,
+        definitionId,
+        occurredAt,
+        label: definition.label?.en ?? definitionId,
+        backfilled,
+    })
+
     // Recalculate. Non-blocking by design: the declaration has already
     // succeeded, and a scoring failure must not lose the customer's statement
     // about their own life.
@@ -178,6 +194,28 @@ export async function declareLifeEvent(
         })
     }
 
+    // Confirm we heard them. Deliberately separate from the risk events the
+    // recalculation above emits: "we recorded what you told us" and "this
+    // changed your exposure" are different claims, and collapsing them would
+    // make the confirmation sound like a finding.
+    const { emit } = await import("@/lib/notifications/dispatch")
+    const label = getLifeEvent(definitionId)?.label
+    await emit({
+        event: "life_event_recorded",
+        userId,
+        title: {
+            el: "Καταγράψαμε την αλλαγή σας",
+            en: "We recorded your update",
+        },
+        message: {
+            el: `${label?.el ?? definitionId} — ενημερώσαμε την εικόνα κινδύνου σας.`,
+            en: `${label?.en ?? definitionId} — we have updated your risk picture.`,
+        },
+        // One confirmation per declared event, so a retry of the action cannot
+        // tell the customer twice that we heard them once.
+        dedupeKey: `life_event:${event.id}`,
+    })
+
     return {
         ok: true,
         eventId: event.id,
@@ -189,30 +227,40 @@ export async function declareLifeEvent(
 }
 
 /**
- * Re-run the assessment and version the result.
+ * Re-run the assessment and apply the result everywhere it is read.
  *
  * The gap engine is imported lazily: this module is also read by the API route
  * and the UI for the registry alone, and eagerly pulling in Prisma, the taxonomy
  * and the whole risk catalog for a list of event labels is wasteful.
  *
- * Uses the READ-ONLY snapshot. `runGapEngine` would additionally sync
- * recommendations and cache the score — correct on an upload, but a recursive
- * write path here, since a profile update is itself a recalculation trigger.
+ * This used to take the READ-ONLY snapshot and record a version from it,
+ * skipping the score cache and the recommendation sync, on the reasoning that
+ * the full engine "would be a recursive write path here, since a profile update
+ * is itself a recalculation trigger".
+ *
+ * That reasoning did not hold, and it cost two consumers. `runGapEngine` writes
+ * exactly three things — the cached ProtectionScore, RecommendationInstance rows
+ * and a RiskProfileVersion — and none of them can re-enter `declareLifeEvent`.
+ * Meanwhile the dashboard reads the CACHED score, so the omission was visible to
+ * customers: declare "a child was born", receive a notification that a coverage
+ * gap opened, open the dashboard, and see the pre-event score with
+ * recommendations that do not mention the new gap.
+ *
+ * `lifeEventId` is now plumbed through the full engine, so the causal link the
+ * timeline draws survives — which is the only thing the reduced path was really
+ * protecting.
  */
 export async function recalculateRiskProfile(
     userId: string,
     trigger: "life_event" | "policy_change" | "profile_update" | "cron" | "manual",
     lifeEventId?: string | null
 ) {
-    const { getGapEngineSnapshot } = await import("@/lib/services/gap-engine")
-    const snapshot = await getGapEngineSnapshot(userId)
-    return recordRiskProfileVersion({
-        userId,
-        assessments: snapshot.riskAssessments,
-        score: snapshot.protectionScore,
-        trigger,
-        lifeEventId: lifeEventId ?? null,
-    })
+    const { runGapEngine } = await import("@/lib/services/gap-engine")
+    const result = await runGapEngine(userId, { trigger, lifeEventId: lifeEventId ?? null })
+    // The engine's own version result, not a reconstruction: `written: false`
+    // with a real version number means the assessment genuinely did not move,
+    // which is a different statement from "we did not look".
+    return result.version ?? { written: false, version: null, previousScore: null, delta: null }
 }
 
 export interface RecordedLifeEvent {

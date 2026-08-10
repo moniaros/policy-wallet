@@ -2,6 +2,7 @@ import { calendarDaysUntil, startOfAthensDay, NON_LIVE_POLICY_STATUSES } from "@
 import { formatDate } from "@/lib/i18n/format"
 import { db } from "../db"
 import { sendNotification } from "../notifications"
+import { emit } from "../notifications/dispatch"
 import { logger } from "../logger"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
@@ -294,6 +295,31 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
         // at 05:00 UTC, end dates are stored at midnight, so a policy still in
         // force until tonight was reported "overdue" at 08:00 Athens that
         // morning — to the agent, and in the Overdue count on /insights.
+        //
+        // Read before writing: `updateMany` cannot tell us WHOSE cover just
+        // lapsed, and until now nothing did — a policy passed its end date, the
+        // row quietly turned "overdue", and the customer was never told. For
+        // motor in Greece that means driving uninsured, which is unlawful as
+        // well as uncovered.
+        const nowOverdue = await db.policyRenewal.findMany({
+            where: {
+                status: "pending",
+                policyEndDate: { lt: startOfToday },
+            },
+            select: {
+                id: true,
+                policyId: true,
+                policyEndDate: true,
+                policy: {
+                    select: {
+                        policyNumber: true,
+                        insurerName: true,
+                        ownerUserId: true,
+                    },
+                },
+            },
+        })
+
         const overdueCount = await db.policyRenewal.updateMany({
             where: {
                 status: "pending",
@@ -303,6 +329,32 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
         })
         if (overdueCount.count > 0) {
             logger("info", `Marked ${overdueCount.count} renewals as overdue`)
+        }
+
+        for (const renewal of nowOverdue) {
+            if (!renewal.policy?.ownerUserId) continue
+            const ref = [renewal.policy.policyNumber, renewal.policy.insurerName]
+                .filter(Boolean)
+                .join(" · ")
+            await emit({
+                event: "renewal_overdue",
+                userId: renewal.policy.ownerUserId,
+                title: {
+                    el: "Το ασφαλιστήριό σας έληξε",
+                    en: "Your policy has lapsed",
+                },
+                message: {
+                    el: `${ref} πέρασε την ημερομηνία λήξης χωρίς ανανέωση. Αν το ανανεώσατε αλλού, ενημερώστε το wallet σας.`,
+                    en: `${ref} passed its end date without being renewed. If you renewed elsewhere, update your wallet.`,
+                },
+                relatedObjectType: "policy",
+                relatedObjectId: renewal.policyId,
+                // Once per lapse, not once per cron run. The status flip above
+                // already makes this a one-shot, but the key is what survives a
+                // re-run that races it.
+                dedupeKey: `renewal_overdue:${renewal.id}`,
+            })
+            summary.policyholderNotificationsSent++
         }
     } catch (err) {
         const msg = `Renewal check job failed: ${err}`

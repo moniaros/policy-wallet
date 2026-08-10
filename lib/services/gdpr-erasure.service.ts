@@ -29,6 +29,13 @@
  *   about the user (Opportunity notes, Proposal, DocumentRequest — the
  *   agent's own records; owner decision 2026-07-21, audit H1). The
  *   CustomerRelationship row survives but is flipped to `terminated`.
+ *
+ * NOTHING NEW IS EXEMPT BY DEFAULT. Because this is anonymize-in-place, the
+ * User row survives and ON DELETE CASCADE never fires — so a store added
+ * without a line here does not get cleaned up by the database, it simply
+ * outlives the erasure silently. `tests/unit/erasure-covers-personal-data.test.ts`
+ * derives the model list from the schema and fails on any store that has
+ * neither an erasure nor a documented exemption.
  */
 
 import { db } from "@/lib/db"
@@ -75,6 +82,10 @@ export type ErasureSummary = {
     deletedRecommendations: number
     deletedLifeEvents: number
     deletedRiskProfileVersions: number
+    deletedPushDevices: number
+    deletedBusinessEvents: number
+    deletedRiskReviews: number
+    deletedNotificationSettings: number
     deletedFormSubmissions: number
     scrubbedCollaborationMessages: number
     scrubbedReferrals: number
@@ -211,6 +222,10 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedRecommendations,
                 deletedLifeEvents,
                 deletedRiskProfileVersions,
+                deletedPushDevices,
+                deletedBusinessEvents,
+                deletedRiskReviews,
+                deletedNotificationSettings,
                 deletedFormSubmissions,
                 cancelledSubscriptions,
                 sanitizedPolicyholderProfiles,
@@ -249,6 +264,20 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 // divorce, children and health changes.
                 tx.lifeEventInstance.deleteMany({ where: { userId } }),
                 tx.riskProfileVersion.deleteMany({ where: { userId } }),
+                // A push subscription is a LIVE delivery address plus the keys to
+                // encrypt for it. Left behind, an erased person can still be sent
+                // a notification — the most visible possible breach of Art. 17,
+                // and one they would experience on their own phone.
+                tx.pushDevice.deleteMany({ where: { userId } }),
+                // The event log is a durable record of what happened to this
+                // person: policies, life events, score movements. `subjectUserId`
+                // is the field that makes it theirs.
+                tx.businessEvent.deleteMany({ where: { subjectUserId: userId } }),
+                // Reviews hold protection scores, finding counts and free-text
+                // outcomes written about the person.
+                tx.riskReview.deleteMany({ where: { userId } }),
+                // Quiet hours and timezone describe someone's daily routine.
+                tx.userNotificationSettings.deleteMany({ where: { userId } }),
                 // Contact/newsletter submissions have no userId — match by email.
                 tx.formSubmission.deleteMany({
                     where: { email: { equals: originalEmail, mode: "insensitive" } },
@@ -387,6 +416,10 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 deletedRecommendations: deletedRecommendations.count,
                 deletedLifeEvents: deletedLifeEvents.count,
                 deletedRiskProfileVersions: deletedRiskProfileVersions.count,
+                deletedPushDevices: deletedPushDevices.count,
+                deletedBusinessEvents: deletedBusinessEvents.count,
+                deletedRiskReviews: deletedRiskReviews.count,
+                deletedNotificationSettings: deletedNotificationSettings.count,
                 deletedFormSubmissions: deletedFormSubmissions.count,
                 scrubbedCollaborationMessages: scrubbedCollaborationMessages.count,
                 scrubbedReferrals: scrubbedReferrals.count,

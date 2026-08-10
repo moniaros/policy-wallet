@@ -1,4 +1,8 @@
 import { absoluteUrl } from "./seo/site"
+// Deep links live in lib/notifications/links.ts — one switch shared by the email
+// CTA, the in-app bell and the push payload, so a new object type reaches all
+// three at once instead of only the two that happened to be updated.
+import { notificationActionPath } from "./notifications/links"
 
 export type Language = "el" | "en"
 
@@ -75,21 +79,6 @@ const NOTIF_EMAIL_COPY: Record<Language, { view: string; footer: string }> = {
     },
 }
 
-function notificationActionPath(relatedObjectType?: string, relatedObjectId?: string): string | undefined {
-    if (!relatedObjectType || !relatedObjectId) return undefined
-    switch (relatedObjectType) {
-        case "policy":
-            return `/wallet/${relatedObjectId}`
-        case "customer":
-            return `/customers/${relatedObjectId}`
-        case "thread":
-            return `/collaboration/threads/${relatedObjectId}`
-        case "questionnaire":
-            return `/tasks/${relatedObjectId}`
-        default:
-            return undefined
-    }
-}
 
 /**
  * Branded HTML for a transactional notification email. EVERY notification email

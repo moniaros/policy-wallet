@@ -39,6 +39,12 @@ const tx = {
     gapInstance: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     lifeEventInstance: { deleteMany: vi.fn(async (_a?: any) => count(2)) },
     riskProfileVersion: { deleteMany: vi.fn(async (_a?: any) => count(3)) },
+    // Added when these stores were found surviving erasure: the User row is
+    // anonymized rather than deleted, so no FK cascade cleans them up.
+    pushDevice: { deleteMany: vi.fn(async (_a?: any) => count(2)) },
+    businessEvent: { deleteMany: vi.fn(async (_a?: any) => count(5)) },
+    riskReview: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
+    userNotificationSettings: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     user: { update: vi.fn(async (_a?: any) => ({})) },
 }
 

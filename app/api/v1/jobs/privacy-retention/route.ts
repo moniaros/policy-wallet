@@ -30,6 +30,7 @@
 
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { withJobRun } from "@/lib/jobs/run-record"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { Prisma } from "@prisma/client"
@@ -64,70 +65,78 @@ export async function POST(req: Request) {
     }
 
     try {
-        const now = new Date()
-        const inviteCutoff = new Date(now.getTime() - INVITE_RETENTION_DAYS * DAY_MS)
-        const formCutoff = new Date(now.getTime() - FORM_SUBMISSION_RETENTION_DAYS * DAY_MS)
-        const adminAuditCutoff = new Date(now.getTime() - ADMIN_AUDIT_RETENTION_DAYS * DAY_MS)
-        const userActivityCutoff = new Date(now.getTime() - USER_ACTIVITY_RETENTION_DAYS * DAY_MS)
+        // Recorded so the admin console can show that this ran, what it
+        // did, and how long it took — and so an operator can pause it
+        // without a redeploy.
+        const { result, paused } = await withJobRun("privacy-retention", async () => {
+            const now = new Date()
+            const inviteCutoff = new Date(now.getTime() - INVITE_RETENTION_DAYS * DAY_MS)
+            const formCutoff = new Date(now.getTime() - FORM_SUBMISSION_RETENTION_DAYS * DAY_MS)
+            const adminAuditCutoff = new Date(now.getTime() - ADMIN_AUDIT_RETENTION_DAYS * DAY_MS)
+            const userActivityCutoff = new Date(now.getTime() - USER_ACTIVITY_RETENTION_DAYS * DAY_MS)
 
-        const [
-            purgedExports,
-            purgedInvites,
-            purgedFormSubmissions,
-            purgedAdminAudit,
-            purgedUserActivity,
-        ] = await Promise.all([
-            db.dataExportRequest.updateMany({
-                where: {
-                    status: { in: ["completed", "expired"] },
-                    expiresAt: { lte: now },
-                },
-                data: {
-                    status: "expired",
-                    payloadJson: Prisma.JsonNull,
-                    downloadToken: null,
-                },
-            }),
-            db.invite.deleteMany({
-                where: {
-                    OR: [
-                        { consumedAt: { lte: inviteCutoff } },
-                        { consumedAt: null, expiresAt: { lte: inviteCutoff } },
-                    ],
-                },
-            }),
-            db.formSubmission.deleteMany({
-                where: { createdAt: { lte: formCutoff } },
-            }),
-            db.activityLog.deleteMany({
-                where: {
-                    timestamp: { lte: adminAuditCutoff },
-                    metadata: { path: ["_audit"], not: Prisma.DbNull },
-                } as any,
-            }),
-            db.activityLog.deleteMany({
-                where: {
-                    timestamp: { lte: userActivityCutoff },
-                    metadata: { path: ["_audit"], equals: Prisma.DbNull },
-                } as any,
-            }),
-        ])
+            const [
+                purgedExports,
+                purgedInvites,
+                purgedFormSubmissions,
+                purgedAdminAudit,
+                purgedUserActivity,
+            ] = await Promise.all([
+                db.dataExportRequest.updateMany({
+                    where: {
+                        status: { in: ["completed", "expired"] },
+                        expiresAt: { lte: now },
+                    },
+                    data: {
+                        status: "expired",
+                        payloadJson: Prisma.JsonNull,
+                        downloadToken: null,
+                    },
+                }),
+                db.invite.deleteMany({
+                    where: {
+                        OR: [
+                            { consumedAt: { lte: inviteCutoff } },
+                            { consumedAt: null, expiresAt: { lte: inviteCutoff } },
+                        ],
+                    },
+                }),
+                db.formSubmission.deleteMany({
+                    where: { createdAt: { lte: formCutoff } },
+                }),
+                db.activityLog.deleteMany({
+                    where: {
+                        timestamp: { lte: adminAuditCutoff },
+                        metadata: { path: ["_audit"], not: Prisma.DbNull },
+                    } as any,
+                }),
+                db.activityLog.deleteMany({
+                    where: {
+                        timestamp: { lte: userActivityCutoff },
+                        metadata: { path: ["_audit"], equals: Prisma.DbNull },
+                    } as any,
+                }),
+            ])
 
-        logger("info", "Privacy retention sweep completed", {
-            purgedExportPayloads: purgedExports.count,
-            purgedInvites: purgedInvites.count,
-            purgedFormSubmissions: purgedFormSubmissions.count,
-            purgedAdminAuditLogs: purgedAdminAudit.count,
-            purgedUserActivityLogs: purgedUserActivity.count,
+            logger("info", "Privacy retention sweep completed", {
+                purgedExportPayloads: purgedExports.count,
+                purgedInvites: purgedInvites.count,
+                purgedFormSubmissions: purgedFormSubmissions.count,
+                purgedAdminAuditLogs: purgedAdminAudit.count,
+                purgedUserActivityLogs: purgedUserActivity.count,
+            })
+
+            return createApiResponse({
+                purged_export_payloads: purgedExports.count,
+                purged_invites: purgedInvites.count,
+                purged_form_submissions: purgedFormSubmissions.count,
+                purged_admin_audit_logs: purgedAdminAudit.count,
+                purged_user_activity_logs: purgedUserActivity.count,
+            })
         })
-
-        return createApiResponse({
-            purged_export_payloads: purgedExports.count,
-            purged_invites: purgedInvites.count,
-            purged_form_submissions: purgedFormSubmissions.count,
-            purged_admin_audit_logs: purgedAdminAudit.count,
-            purged_user_activity_logs: purgedUserActivity.count,
-        })
+        if (paused) return createApiResponse({ paused: true })
+        // The wrapped body builds the route response; the wrapper only observes.
+        return result!
     } catch (error) {
         logger("error", "Privacy retention sweep failed", { error })
         return createApiError("INTERNAL_ERROR", "Privacy retention sweep failed", 500, String(error))

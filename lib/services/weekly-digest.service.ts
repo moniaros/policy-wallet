@@ -1,9 +1,31 @@
 import { calendarDaysUntil, startOfAthensDay, athensWeekday, NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
 import { provisionalProtectionScore } from "./gap-engine/protection-score"
 import { db } from "../db"
-import { sendEmail } from "../email/email-service"
+import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
 import { getActiveRecommendations } from "./gap-engine/recommendation-generator"
+
+/**
+ * ISO-week stamp (`2026-W32`) used as the digest's idempotency key, so a cron
+ * that fires twice on a Monday — a retry, a manual run — cannot send two.
+ * Computed in Athens, like every other calendar decision in this file.
+ */
+function isoWeekKey(date: Date): string {
+    const d = startOfAthensDay(date)
+    // Thursday of the current week determines the ISO year.
+    const thursday = new Date(d)
+    thursday.setUTCDate(d.getUTCDate() + 3 - ((d.getUTCDay() + 6) % 7))
+    const firstThursday = new Date(Date.UTC(thursday.getUTCFullYear(), 0, 4))
+    const week =
+        1 +
+        Math.round(
+            ((thursday.getTime() - firstThursday.getTime()) / 86400000 -
+                3 +
+                ((firstThursday.getUTCDay() + 6) % 7)) /
+                7
+        )
+    return `${thursday.getUTCFullYear()}-W${String(week).padStart(2, "0")}`
+}
 
 type WeeklyDigestSummary = {
     emailsSent: number
@@ -67,18 +89,11 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             continue
         }
 
-        // Check notification preferences
-        const pref = await db.notificationPreference.findUnique({
-            where: {
-                userId_eventType_channel: {
-                    userId: user.id,
-                    eventType: "weekly_digest",
-                    channel: "email",
-                },
-            },
-            select: { enabled: true },
-        })
-        if (pref?.enabled === false) {
+        // Pre-filter only, so we do not gather a digest's worth of data for
+        // someone who has switched it off. `emit` asks the same question again
+        // and is authoritative — this shares its implementation rather than
+        // being a second copy of the rule.
+        if (await isChannelSuppressed(user.id, "weekly_digest", "email")) {
             skipped++
             continue
         }
@@ -206,20 +221,22 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 profileCompleteness,
             })
 
-            await sendEmail({ to: user.email, subject, html })
-
-            await db.notificationEvent.create({
-                data: {
-                    userId: user.id,
-                    eventType: "weekly_digest",
-                    channel: "email",
-                    title: subject,
-                    message: `Weekly digest: ${renewals.length} renewals, ${newGaps} new gaps, score ${healthScore === null ? 'n/a' : `${healthScore}%`}`,
-                    status: "sent",
-                    sentAt: now,
-                },
+            // Through the bus, with the digest's own HTML as the email content.
+            // It used to sendEmail() directly and then log a row claiming
+            // `status: "sent"` unconditionally — the row said "sent" even when
+            // the provider had rejected it, because the result was discarded.
+            const result = await emit({
+                event: "weekly_digest",
+                userId: user.id,
+                title: subject,
+                message: `Weekly digest: ${renewals.length} renewals, ${newGaps} new gaps, score ${healthScore === null ? 'n/a' : `${healthScore}%`}`,
+                // One digest per user per ISO week, however often the cron runs.
+                dedupeKey: `weekly_digest:${isoWeekKey(now)}`,
+                content: { email: { subject, html } },
             })
-            emailsSent++
+            if (result.delivered.length > 0) emailsSent++
+            else if (result.failed.length > 0) errors++
+            else skipped++
         } catch {
             errors++
         }

@@ -2,6 +2,19 @@ import { NextRequest, NextResponse } from "next/server"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
+/**
+ * The bell dropdown's feed.
+ *
+ * Read state is `readAt`, and only `readAt`. This route used to overload
+ * `status` — `queued` meant unread, `sent` meant read — while the shell badge
+ * and the /notifications page both used `readAt`, so the two disagreed about
+ * the same user and neither mark-read path moved the other's number. Worse, any
+ * in-app row written with `status: 'sent'` (which the dispatcher did for every
+ * collaboration notification) was born already read and never appeared here at
+ * all.
+ *
+ * `status` is now delivery state and nothing else.
+ */
 export async function GET(request: NextRequest) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) {
@@ -9,28 +22,21 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '10', 10) || 10, 1), 50)
     const unreadOnly = searchParams.get('unreadOnly') === 'true'
 
-    // Fetch notifications for the user
-    const notifications = await db.notificationEvent.findMany({
-        where: {
-            userId: authResult.dbUser.id,
-            channel: 'in_app',
-            ...(unreadOnly ? { status: 'queued' } : {})
-        },
-        orderBy: { createdAt: 'desc' },
-        take: limit
-    })
+    // in_app only: an email is delivered, not read, and the analytics mirror
+    // that shares this table is not a notification at all.
+    const scope = { userId: authResult.dbUser.id, channel: 'in_app' as const }
 
-    // Get unread count
-    const unreadCount = await db.notificationEvent.count({
-        where: {
-            userId: authResult.dbUser.id,
-            channel: 'in_app',
-            status: 'queued' // Using 'queued' as unread, 'sent' as read
-        }
-    })
+    const [notifications, unreadCount] = await Promise.all([
+        db.notificationEvent.findMany({
+            where: { ...scope, ...(unreadOnly ? { readAt: null } : {}) },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+        }),
+        db.notificationEvent.count({ where: { ...scope, readAt: null } }),
+    ])
 
     return NextResponse.json({
         notifications: notifications.map(n => ({
@@ -40,7 +46,7 @@ export async function GET(request: NextRequest) {
             message: n.message,
             relatedObjectType: n.relatedObjectType,
             relatedObjectId: n.relatedObjectId,
-            isRead: n.status === 'sent',
+            isRead: n.readAt !== null,
             createdAt: n.createdAt.toISOString()
         })),
         unreadCount

@@ -78,6 +78,20 @@ const envSchema = z.object({
     // Escape hatch: allow a single-instance production deploy without Upstash.
     RATELIMIT_ALLOW_LOCAL: z.string().optional(),
 
+    // Web Push (RFC 8292 VAPID). Optional: without them the push channel
+    // reports itself unconfigured and is simply not attempted, rather than
+    // recording deliveries that never happened.
+    VAPID_PUBLIC_KEY: z.string().min(1).optional(),
+    VAPID_PRIVATE_KEY: z.string().min(1).optional(),
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().min(1).optional(),
+    VAPID_SUBJECT: z.string().min(1).optional(),
+
+    // Legacy FCM push, for tokens registered before the Web Push cutover.
+    // Read by lib/services/push.service.ts and, until now, declared nowhere.
+    FCM_PROJECT_ID: z.string().min(1).optional(),
+    FCM_CLIENT_EMAIL: z.string().min(1).optional(),
+    FCM_PRIVATE_KEY: z.string().min(1).optional(),
+
     // RevenueCat (webhooks)
     REVENUECAT_WEBHOOK_AUTH_VALUE: z.string().min(1).optional(),
 

@@ -1,5 +1,570 @@
 # PolicyWallet — Project Status
 
+## Production readiness assessment — 2026-08-10
+
+**Six full assessment rounds across 20 areas. 14 issues found, explained, fixed
+and validated; rounds 4, 5 and 6 were clean.** Every fix carries a guard that
+was *proven to fail* against the original defect before being kept — 10 new
+suites, 55 assertions. Full report:
+[audits/production-readiness-2026-08.md](audits/production-readiness-2026-08.md).
+
+**The three that mattered most.**
+
+1. **Production served fabricated AI analysis when no API key was set.** The
+   provider factory fell through to the mock in every environment, so a rotated
+   or mistyped env var meant customers uploading real policies got an invented
+   insurer, a €500 premium and invented coverages at 88–96% confidence — with one
+   `warn` line and analyses showing as complete. For an insurance product that is
+   the most harmful output the system can produce. Production now refuses;
+   `AI_SERVICE_TYPE=mock` still works as a deliberate choice.
+2. **Four personal-data stores survived GDPR erasure.** Erasure is
+   anonymize-in-place, so the `User` row lives and **no FK cascade ever fires** —
+   `push_devices`, `business_events`, `risk_reviews` and
+   `user_notification_settings` simply outlived Art. 17 requests. The push one
+   retained a live delivery endpoint and its encryption keys, so a forgotten
+   customer could still be sent a notification. All four are now erased and
+   disclosed, and the guard derives its model list from the schema rather than a
+   hand-written list, which is why the old one could not see them.
+3. **Customer emails were shipped to Sentry as indexed tags** on every send
+   failure, defeating the codebase's own `sendDefaultPii: false`. Call sites now
+   log a domain and a fingerprint; a `beforeSend` scrubber on all three runtimes
+   is the net under that.
+
+**Also fixed:** an unbounded in-memory rate-limit map that leaked precisely when
+Redis was down; a dead `sentry.client.config.ts` that meant dev errors reached
+production Sentry and the noise filter never ran; escalations that re-fired every
+night for ever; three server-rendered dates and day-counts that were a day out
+near the Athens boundary (compulsory motor cover); a DST hole that delivered
+inside quiet hours once a year; the API-auth audit being blind to re-export
+alias routes; an admin action that read the database before authorizing; and
+`next-pwa`, which generated nothing under Turbopack while being configured to
+overwrite the push service worker.
+
+**Measured in a real browser:** the cookie consent banner's invisible full-width
+wrapper was swallowing clicks on every bottom-right control at desktop widths,
+and covered the entire bottom navigation on mobile. Both fixed and verified with
+`elementFromPoint` before and after.
+
+**Corrections I made to my own work:** two guards passed vacuously on first
+write (an `indexOf(-1) < n` comparison, and an over-broad date matcher flagging
+number formatting) and were rewritten; a portal attempt on the batch-upload modal
+broke the page and was reverted.
+
+**Known, measured, NOT fixed:** the consent banner still covers the batch-upload
+modal's "Save all" button — the modal is trapped in an app-shell stacking
+context, so raising its z-index does nothing and the real fix is a portal or a
+deliberate restack. `tests/wallet-batch-upload.spec.ts` fails for this reason;
+it is pre-existing (verified identical before and after every change here).
+
+**Top risks:** 1) **six migrations unapplied in prod** — confirmed against the
+live database, whose newest migration is `20260804140000_life_event_engine`;
+2) the batch-upload modal overlap above; 3) VAPID keys unset, so push stays
+honestly unconfigured.
+
+**Next 3 actions:** 1) apply the six migrations to prod in order; 2) portal the
+batch-upload modal (or restack the consent layer) and re-run its spec; 3) cut
+over — delete the direct notification calls the decision engine now duplicates.
+
+
+## Session wrap — 2026-08-10 (Risk Review: the platform now initiates)
+
+**Current phase:** implemented and verified against dev. **Six migrations
+unapplied in prod.** Spec + matrix:
+[architecture/risk-review.md](architecture/risk-review.md).
+
+**The audit found no review concept at all.** `scheduled_review` was an action
+type that created a `UserTask` — no lifecycle, no deadline, no customer-facing
+review, no record of whether reviewing helped. `scheduled_review_due` sat
+`planned`, blocked on exactly the cadence policy this work decides.
+
+**The sharpest finding: `age` is a declared risk factor** — it gates two risks in
+the catalog and refines four more — **and nothing recomputed on a birthday.** A
+customer's assessment went quietly stale every year with no trigger to notice.
+
+**The design decision everything rests on:** *recalculation is automatic,
+continuous and silent; a review is a human checkpoint.* Conflating them is the
+obvious mistake — if every coverage gap opened a review, a review would become
+the thing people dismiss unread. **Of the brief's 20 triggers, 16 open a review
+and 4 deliberately do not**: a policy upload (the customer just acted; the
+findings ARE the response), a questionnaire update (they have just reviewed
+their own facts), an AI confidence drop (our reading failed, not their
+circumstances — the work belongs to a human reading the document), and a travel
+increase (a real but narrow exposure change).
+
+**Reviews stay rare enough to be read.** A cooldown keeps a busy fortnight to one
+conversation; a heavier trigger supersedes lighter open reviews rather than
+queueing behind them, so a child being born is never silenced by a quarterly
+check; and overdue reviews expire so a declined prompt does not become permanent
+furniture blocking the next genuine one.
+
+**Periodic cadence, each justified:** annual as the backstop; quarterly only
+where assessment coverage is too thin to score honestly (prompting a complete
+profile quarterly would teach people to ignore reviews); birthday only on a
+**decade boundary**, with leap-day birthdays falling back to 1 March so the
+trigger never skips three years in four.
+
+**Measuring whether it helps.** Each review stores the score and open-finding
+count at open and the score at close — the only way to answer "did reviewing
+change anything?", and "no change" is a legitimate answer worth recording.
+
+**UI:** the card sits above the onboarding checklist (a review responds to
+something that happened; onboarding does not), mobile-first with full-width 44px
+actions and the two justifying facts above the fold at 320px. **"Not now" is a
+first-class action** — a prompt you cannot decline is one people resent, and a
+dismissal is signal that we asked at the wrong moment.
+
+**A guard caught my own change:** the bus-invariant test flagged
+`scheduled_review_due` as live-with-no-emitter, because its scan predated the
+orchestrator and only recognised `emit()`. Fixed to recognise `orchestrate()`
+too — the sanctioned path.
+
+**Verification.** 3,933 unit tests (+19 review-policy assertions) · full
+guardrail gate · migration applied to dev and ledgered · **and the review rules
+driven against the real dev database**: a recalculate-only trigger declined with
+`policy`; a life event opened one; a lighter trigger was declined as `outranked`;
+a heavier one superseded it and the lighter went to `superseded`; completing
+recorded score-at-close beside score-at-open; an overdue review expired.
+
+**Blocked:** claims — no `Claim` aggregate, so `claim` is declared with the
+heaviest weight and honestly unwired.
+
+**Top risks:** 1) **six migrations unapplied in prod** — `notification_bus`,
+`notification_admin`, `business_events`, `notification_orchestrator`,
+`automation_console`, `risk_review`; they must land in order before any deploy
+including a Vercel Preview; 2) event publishers remain dual-written alongside the
+direct calls; 3) VAPID keys unset, so push stays honestly unconfigured.
+
+**Next 3 actions:** 1) apply the six migrations to prod in order; 2) cut over —
+delete the direct notification calls now duplicated by the decision engine;
+3) build the advisor "reviews across my book" surface.
+
+## Session wrap — 2026-08-10 (Automation Console: the schedules can finally be seen)
+
+**Current phase:** implemented and verified against dev. **Five
+notification/event migrations are unapplied in prod.**
+
+**Audited before building, again.** Most of the brief already existed —
+templates (preview, test, version), automation rules, escalation, retry,
+thresholds, feature flags, notification history, automation logs, delivery
+failures. **The real gap was six things:** schedules, queues, clone,
+per-schedule pause/resume, localization coverage, and business-event
+enable/disable.
+
+**The finding that mattered: 17 job routes with zero run history.** The console
+could only have rendered `vercel.json` back at the operator — a list of cron
+expressions with no evidence any of them executed. *A schedule you cannot
+observe is a schedule you cannot trust*, and that is exactly how two job routes
+came to exist for weeks that no cron had ever invoked. `JobSchedule` + `JobRun`
+now record every run: status, duration, the job's own summary, and whether it
+was cron- or operator-triggered — kept distinct, because an operator pressing a
+button proves the job works, not that the schedule fires.
+
+**Pause is recorded, not silent.** A paused job writes a `paused` run rather
+than returning quietly: "this did not happen because you paused it" is precisely
+what an operator needs when a customer asks why nothing arrived.
+
+**Disabling a business event stops the reactions, not the record.** The event is
+still written — the fact happened, and denying it would corrupt the log — but the
+decision engine takes no actions. Deliberately different from disabling a
+notification, which only stops the telling.
+
+**Queues report age, not just depth.** A queue with a hundred items that drains
+hourly is fine; one with three that has not moved since Tuesday is not. Each
+queue shows its oldest waiting item, and deferred notifications are labelled as
+*not a problem* — they are held for quiet hours and will send.
+
+**Localization coverage is the number nobody had.** Not "how many templates
+exist" but "how many exist in ONE language only" — a Greek-only template means
+Greek readers get the operator's copy and English readers get the code's
+fallback, for the same event on the same day. Invisible on the template list,
+where both look like a template that exists.
+
+**A clone arrives inactive.** A copy is almost always about to be translated;
+publishing Greek copy to English readers the moment it is cloned is the obvious
+way for that feature to cause harm.
+
+**The console links out rather than rebuilding.** Templates, triggers, history,
+workflows, AI prompts and gap definitions all already existed — a console that
+recreated them would be two places to change one rule.
+
+**A guard caught my own code again:** the design-system sweep rejected a
+`grid-cols-3` at 375px (~105px per cell) on the localization page. Fixed to
+`grid-cols-1 sm:grid-cols-3`.
+
+**Verification.** 3,914 unit tests (+15 console assertions) · full guardrail gate
+· production build exit 0 · migration applied to dev and ledgered · **and the
+schedule contract driven against the real dev database**: first run created the
+schedule and recorded the summary with a duration; pausing stopped the work and
+recorded a `paused` run; resuming ran it again; a throwing job recorded `failed`
+with its message and re-threw.
+
+**Blocked:** nothing.
+
+**Top risks:** 1) **five migrations unapplied in prod** — `notification_bus`,
+`notification_admin`, `business_events`, `notification_orchestrator`,
+`automation_console`; the code expects tables prod lacks and these must land in
+order before any deploy, including a Vercel Preview; 2) event publishers remain
+dual-written alongside the direct calls, so the cutover is still pending;
+3) VAPID keys unset, so push stays honestly unconfigured.
+
+**Next 3 actions:** 1) apply the five migrations to prod in order; 2) cut over —
+delete the direct notification calls now duplicated by the decision engine;
+3) build digest mode (`digestMode` exists in the schema and nothing reads it).
+
+## Session wrap — 2026-08-10 (Notification Orchestrator: who, when, whether)
+
+**Current phase:** implemented and verified against dev. **Four
+notification/event migrations are unapplied in prod.**
+Spec: [architecture/notification-automation.md](architecture/notification-automation.md)
+§The Orchestrator.
+
+**Audited before building.** Most of the brief already existed from earlier this
+session — priority, expiration, localization, retry, deduplication, user
+preferences, delivery status, read status, audit trail, templates, and the
+in-app/email/push channels. Building those again would have been the duplication
+the brief forbids. **The real gap was five things:** scheduling, quiet hours,
+rate limiting, Slack/Teams, and multi-recipient fan-out.
+
+**`emit()` answers *how*. The orchestrator answers *who*, *when* and *whether*,**
+then hands delivery to the bus unchanged. Nothing in it re-decides a channel,
+re-resolves a language or re-renders a template — a guard test forbids the event
+layer from calling `emit` directly, because that would be a second delivery path
+with none of the new policies.
+
+**The registry's `recipients` field is finally load-bearing.** It has been
+declared on every event since the registry was written and nothing read it —
+which is why `policy_analyzed` was emitted twice from one function with two
+copies of the copy. One event now reaches everyone it concerns, with the
+recipient appended to the dedupe key so each is told once.
+
+**Deferral, never suppression.** Quiet hours and the daily cap defer; they never
+drop. *A policy about timing that silently discarded the message would be a
+policy about existence* — and a customer would never learn their cover lapsed
+because it lapsed at 23:40. A deferred notification is written immediately as
+`queued` with `scheduledFor`, so the decision is auditable before the send, and
+the existing retry sweep delivers it when its hour comes. Expiry is re-checked
+then: a reminder deferred overnight can expire while it waits.
+
+**Urgency overrides politeness.** Critical and transactional events — failed
+payment, credential change, lapsed motor policy — ignore quiet hours and the cap
+entirely.
+
+**Quiet hours are timezone-real**, resolved through `Intl` rather than a fixed
+offset: Greece observes daylight saving, so `+2` would put the window an hour
+wrong for half the year. Deferral targets the *start of the morning*, so
+notifications raised at 23:00 and 03:00 arrive together.
+
+**One settings model, two defaults.** `UserNotificationSettings` serves customers
+and advisors — same settings, role-derived starting points (an advisor is handed
+work and wants it in working hours, with a higher ceiling). A null cap means "use
+the role default", so raising a default reaches everyone who never overrode it.
+Quiet hours default ON at 22:00–08:00.
+
+**UI:** quiet hours in Settings, mobile-first (the two hour pickers sit side by
+side from the smallest width because they are one thought), native `<select>` so
+phones get the platform wheel, 44px targets, `aria-invalid`/`role="alert"` on the
+equal-hours case, bilingual. Admin gets the global switches and the default cap.
+
+**Verification.** 3,899 unit tests (+16 orchestrator assertions) · full guardrail
+gate · production build exit 0 · migration applied to dev and ledgered · **and the
+orchestrator driven against the real dev database**: quiet hours deferred both
+channels rather than dropping them; `payment_failed` ignored quiet hours and
+delivered; the sweep picked the deferred rows up and sent them (`scheduled: 2`);
+`renewal_overdue` resolved its declared `["owner","advisor"]`; a cap of 1 deferred
+rather than dropped.
+
+**Blocked:** nothing.
+
+**Top risks:** 1) **four migrations unapplied in prod** — `notification_bus`,
+`notification_admin`, `business_events`, `notification_orchestrator`; the code
+expects tables prod lacks and this must land before any deploy, including a
+Vercel Preview; 2) event publishers are still dual-written alongside the direct
+calls, so the cutover is the next real risk; 3) VAPID keys still unset, so push
+stays honestly unconfigured.
+
+**Next 3 actions:** 1) apply the four migrations to prod in order; 2) cut over —
+delete the direct notification calls now duplicated by the decision engine, one
+event at a time; 3) build the digest mode the schema reserves (`digestMode`
+exists and nothing reads it yet).
+
+## Session wrap — 2026-08-10 (Event-driven: the facts now drive the reactions)
+
+**Current phase:** implemented and verified against dev. **Three notification/event
+migrations are unapplied in prod.** Spec + implementation map:
+[architecture/business-events.md](architecture/business-events.md).
+
+**Two live defects fixed first**, because building an event architecture on top of
+known bugs would encode them:
+
+1. **Risk notifications rode a floating promise.** `runGapEngine` fired the version
+   write — and therefore `GAP_DETECTED`, `protection_score_changed` and
+   `risk_level_changed` — as `void import(…).then(…).catch(() => {})`. On Vercel a
+   promise not awaited before the response may be terminated, so the
+   customer-facing consequence of an upload could simply never fire. Now awaited
+   and still non-fatal. *(Defect introduced earlier this same session: I hung
+   notifications off a seam that was deliberately fire-and-forget because it
+   carried only observability. It stopped carrying only observability.)*
+2. **The life-event path left a stale score on screen.** It recorded a version but
+   refreshed neither the cached score nor the recommendations, and the dashboard
+   reads the cache — so a customer who declared "a child was born" was told a gap
+   had opened, opened the dashboard, and saw the pre-event number. The documented
+   reason (recursion) did not hold: `runGapEngine` writes only ProtectionScore,
+   RecommendationInstance and RiskProfileVersion, none of which re-enter
+   `declareLifeEvent`. `lifeEventId` is now plumbed through the full engine, so the
+   causal link the timeline draws — the only thing the reduced path was really
+   protecting — survives.
+
+**Then the architecture.** Every workflow is now
+**Business Event → Decision Engine → Actions**:
+
+- **`BusinessEvent` outbox**, written in the same transaction as the fact, so the
+  two cannot disagree. An in-process emitter has the exact failure mode fixed
+  above, by construction.
+- **`subject` vs `actor`** on every event — the field most systems omit and
+  insurance cannot. An advisor uploading for a customer is actor=advisor,
+  subject=customer; collapsing them misattributes the DSR record, misroutes the
+  notification and loses the GDPR access log.
+- **`occurredAt` vs `recordedAt`** — a life event declared today may have happened
+  last year. Verified live: a lapse recorded 9 Aug, occurred 1 Aug.
+- **27 live events** in a catalog that describes facts, not messages, with claims
+  declared `planned` because no claims model exists.
+- **Decision engine** with rules as typed functions, bounded by the catalog: an
+  event cannot acquire a consequence it does not declare.
+- **Twelve action executors**, each delegating to machinery that already exists —
+  this changes how work is *triggered*, not how it is *done*.
+- **Replays never reach a customer.** State actions still run; customer-facing ones
+  are refused with reason `replay`, so backfilling a subscriber cannot email two
+  years of notifications.
+
+**First new capability: advisory work is now created by events.** `userTask.create`
+had two call sites and neither was a coverage gap, a failed extraction, a lapsed
+policy or a failed payment. All four now raise advisor tasks, priority-aware,
+skipped honestly with `no_advisor` when there is nobody to assign to.
+
+**A guard caught my own code.** The branch-family sweep rejected
+`lineOfBusiness === "motor"` in a decision rule — the exact defect class it
+documents, since a lapsed *motorbike* is as compulsory as a lapsed car. Now
+`branchFamilyId`. A second guard caught a catalog entry whose rule planned an
+action the entry did not declare.
+
+**Verification.** 3,883 unit tests (+23 event-architecture assertions) · full
+guardrail gate · production build exit 0 · migration applied to dev and ledgered ·
+**and the whole workflow driven against the real dev database**: publish → dedupe
+on re-publish → four actions decided from one fact → replay refuses the two
+customer-facing ones → execute with risk recalculation ordered *before* the
+notification → advisor task skipped `no_advisor` → sweep idempotent.
+
+**Blocked:** nothing.
+
+**Top risks:** 1) **three migrations unapplied in prod**
+(`20260809120000_notification_bus`, `20260809140000_notification_admin`,
+`20260810120000_business_events`) — the code expects tables prod lacks, and this
+must land before any deploy including a Vercel Preview; 2) publishers are
+dual-written alongside the direct calls, so nothing depends on events yet — the
+cutover (deleting the direct calls) is the next real risk; 3) VAPID keys still
+unset, so push stays honestly unconfigured.
+
+**Next 3 actions:** 1) apply the three migrations to prod in order via Supabase MCP
++ `_prisma_migrations` rows; 2) cut over — delete the direct calls now duplicated by
+the decision engine, one event at a time; 3) add the webhook subscriber, which turns
+partner integrations into a subscription rather than a project.
+
+## Session wrap — 2026-08-09 (Notification admin console: the rules left the code)
+
+**Current phase:** implemented and verified against dev. **Neither prod
+migration is applied.** Spec:
+[architecture/notification-automation.md](architecture/notification-automation.md)
+§Administration.
+
+**The brief:** every notification, automation and trigger manageable from the
+Admin Console, with no code change needed to modify business rules. The registry
+shipped earlier in this session was code-only, so this is the override layer on
+top of it.
+
+**The design decision that carries everything else:** the registry stays the
+source of truth for an event's SHAPE; the database overrides only its
+OPERATIONAL parameters, merged at read time. Every override column is nullable
+and **null means inherit**, so an override is a set of deltas rather than a copy
+— an operator who retunes one threshold does not silently freeze the other nine
+against future improvements to the code default. Same pattern as
+`AiPromptOverride`, revisions included.
+
+**What an operator may not change, and why.** `transactional`, `category` and
+`recipients` are code-only, and a transactional event cannot be switched off —
+enforced in the validator, in the toggle action, and by a test that sweeps every
+security and billing event. *A rule the operator can bend must never be the rule
+protecting the customer FROM the operator.* Channels can only be **narrowed** to
+a subset of what the event declares; widening would let an operator route an
+in-app-only event to email, which is a product decision, not a setting. The
+validator also rejects a retry schedule that would outlive its own expiry — the
+same invariant the registry guard test enforces on the code defaults, so a form
+cannot reach a state the source forbids.
+
+**Suppression stays honest.** An admin action never makes a notification vanish:
+`trigger_disabled`, `automations_paused` and `channel_disabled` join
+`preference_off` and `no_device`. That distinction is what tells a paused system
+apart from a broken one when somebody asks why a customer heard nothing.
+`channel_disabled` is deliberately separate from `transport_not_configured` —
+one means an operator switched it off, the other that it was never built.
+
+**Degradation is the point.** `getNotificationConfig` never throws; a DB error
+resolves to registry defaults and the console says so in a banner. Templates
+degrade the same way — missing, unparseable, or rendering empty all fall back to
+the caller's own copy, with `flag.templatesEnabled` as the kill switch.
+
+**Templates are closed over their variables.** `{{name}}` resolves from a
+per-event allowlist; anything else renders empty. Handing a template the whole
+payload would let a typo publish an internal id onto a lock screen. Test sends go
+to the **administrator themselves** and the recipient is not a form field — a
+test-send that can address anyone is a phishing primitive, not a preview.
+
+**Shipped:** `/admin/notifications` (health, skip-reason breakdown, top failing
+events, run-sweep-now, global settings), `/triggers` (all 74 with inline
+enable/disable), `/triggers/[event]` (full rule editor + version history),
+`/templates` (coverage grid across channel × language), `/templates/[event]`
+(editor, live preview with fake sample data, test send, version history), and
+`/history` (filterable delivery log with per-row retry). Thresholds that were
+constants — score materiality, gaps named per notification, risk-change
+notifications — are now settings, as are the channel toggles, retry/escalation
+switches and batch size.
+
+**Three guards caught real defects in my own work**, which is the useful part:
+the design-system tests rejected arbitrary `text-[10px]` sizes and a 4.34:1
+stone-500-on-stone-100 chip; seven suites failed because the config module
+imported `unstable_cache` at module scope, making the whole delivery path depend
+on a Next runtime that crons and scripts do not have (now lazily wrapped, and
+reading through uncached outside a request); and a leaked mock implementation
+between dispatch tests exposed that `clearAllMocks` does not reset
+`mockResolvedValue`.
+
+**Verification.** 3,857 unit tests (+34: override precedence, safety
+invariants, settings validation, template allowlist, admin-driven suppression) ·
+full guardrail gate · production build exit 0 · both migrations applied to dev
+and ledgered · **and the whole admin loop driven against the real dev database**:
+disable a trigger → both channels record `trigger_disabled`; override
+priority+channels → one row at the new priority with
+`overriddenFields: [priority, channels]`; write a Greek template → copy rendered
+as «Έτοιμο: POL-9» while the untemplated channel kept the caller's own; global
+pause → every channel `automations_paused` even on a critical transactional
+event; delete the overrides → straight back to the registry default.
+
+**Blocked:** nothing.
+
+**Top risks:** 1) **neither notification migration is applied to prod** — the
+code expects tables and columns production does not have, and this must land
+before any deploy including a Vercel Preview (previews write to the prod DB);
+2) VAPID keys still unset everywhere, so push stays honestly unconfigured;
+3) the destructive `20260809130000_drop_dead_protection_score_history` remains
+deliberately unapplied pending an owner decision.
+
+**Next 3 actions:** 1) apply `20260809120000_notification_bus` then
+`20260809140000_notification_admin` to prod via Supabase MCP + the
+`_prisma_migrations` rows, exactly as on dev; 2) generate VAPID keys and set them
+in Vercel; 3) decide on dropping the dead `protection_score_history` table.
+
+## Session wrap — 2026-08-09 (Notification architecture: one bus, and the badge finally tells the truth)
+
+**Current phase:** implemented and verified against dev. **Prod migration not
+applied** — one command, listed under Next actions. Spec:
+[architecture/notification-automation.md](architecture/notification-automation.md).
+
+**The brief:** every notification must originate from a business event, the same
+event must reach any channel, and business logic must never be duplicated per
+channel. The audit found the opposite on all three counts.
+
+**There was no bus — there were three ways to emit**, and which one a caller
+reached for decided whether preferences were honoured and which channels were
+reachable at all: `sendNotification` (11 sites, email+push), `notifyCounterparty`
+(7 sites, email+in-app), and **~20 direct `db.notificationEvent.create` calls
+that checked no preferences and hardcoded `channel: 'in_app'` at the call site**.
+That is per-channel business logic copied across the codebase. All ~20 are now
+migrated; a guard test forbids the pattern outside `lib/notifications/`.
+
+**The read model was split across two columns, and both were live.** `status`
+meant delivery state *and*, on the bell API, read state (`queued` = unread);
+`readAt` meant read everywhere else. The two mark-read implementations wrote
+**different columns**, so reading a notification in the bell never moved the
+shell badge, and "mark all read" on /notifications never moved the bell's count.
+Measured on **production**: the badge read **141 against a true count of 8** — 84
+email rows (every marketing message ever sent), 45 real in-app rows, and 12
+analytics rows. `readAt` is now the only definition of read, scoped to in-app.
+
+**Analytics were being rendered to customers as notifications.**
+`recordConversionEvent` wrote `channel: 'in_app'`, `title:
+'conv_checkout_completed'` — a machine code as the user-facing subject — with a
+JSON blob as the body. 26 such rows in prod. They now use an `analytics` channel
+that every notification surface filters out.
+
+**Push was declared everywhere and structurally dead.** Nothing registered a
+token: no service worker, no permission prompt, and
+`POST /api/v1/notifications/device-token` had **zero callers**, so
+`User.pushToken` was null for every user in both environments — and the
+dispatcher's `else if` fell through and recorded the row as **`sent`**, a
+delivery record for a push never attempted. Now built on **standard Web Push
+(VAPID/RFC 8291)** rather than FCM: no client SDK, and the only path that works
+for installed PWAs on iOS 16.4+. `push_devices` replaces the single-token column
+(registering a laptop used to evict the phone). `tests/unit/web-push-crypto.test.ts`
+**plays the browser** — generates a subscription keypair, hands the public half
+to our sender, and decrypts the result, because hand-rolled crypto that merely
+"does not throw" produces well-formed records every push service silently rejects.
+
+**Eleven required triggers emitted nothing.** The sharpest: a failed payment
+flipped the subscription to `past_due` — which pauses entitlements — and told the
+customer **nothing**; they lost paid features mid-session with no idea why (the
+lifecycle handler's own comment conceded "no dunning"). Also silent:
+protection-score movement (the daily cron recomputed everyone and notified
+nobody), gaps found by the engine rather than an upload, renewal lapse,
+recommendation lifecycle, life events, policy removal, advisor assignment. All
+now wired. **Risk events hang off ONE seam** — `recordRiskProfileVersion`, which
+already fires only on a material change — and reuse the timeline's own
+`diffVersions`, so an alert cannot contradict the history it links to.
+
+**Retry, expiry and escalation did not exist**: `failureReason` was written and
+never read, so a failed notification was lost silently and for ever. New
+`notification-retry` cron expires first (never spend a retry on a message that is
+no longer true), then escalates, then retries on registry backoff. Two job routes
+that no cron ever invoked (`billing-reconciliation`, `launch-readiness-snapshot`)
+were also found; the former is now scheduled.
+
+**The deliverable is `lib/notifications/registry.ts`** — 74 business events
+declared once with all ten required fields, `live | planned` per event so a
+missing trigger is visible and test-enforced instead of silently absent.
+`docs/architecture/notification-automation.md` is **generated from it**
+(`npm run docs:notifications`), so the matrix cannot drift.
+
+**Deliberately NOT wired, and why:** claims (the product has no claims model —
+inventing an emitter for an unreachable state is worse than the gap);
+`profile_updated` (the risk consequence is already the notification that matters;
+a second ping for an edit made ten seconds ago is noise);
+`admin_action_on_account` and `scheduled_review_due` (both need a policy decision
+first). Each is `planned` with the reason next to it, enforced by a test.
+
+**Verification.** 3,823 unit tests (up from 3,785; 38 new across bus invariants,
+dispatch behaviour and Web Push crypto) · lint · i18n · UTF-8 · encoding ·
+audit:api-auth · production build exit 0 · migration applied to **dev** and
+verified (6/6 columns, 3/3 indexes, FK `confdeltype=c` so GDPR erasure cascades,
+backfill leaves 0 rows, row counts unchanged) · **and `emit` exercised against the
+real dev database**: two rows written, dedupe returns `deduped: true` on the
+repeat, priority and expiry denormalized from the registry, copy resolved to the
+recipient's Greek, push correctly *not* attempted with VAPID unset — and unread
+in-app went 0→1 while the old all-channel query counted 2, which is the 141-vs-8
+bug reproduced and fixed in one line.
+
+**Blocked:** nothing.
+
+**Top risks:** 1) **the prod migration is not applied**, so the code expects
+columns production does not have — this must land before any deploy, including a
+Vercel Preview (previews write to the prod DB); 2) VAPID keys are not set in any
+environment, so push stays honestly unconfigured until they are — the channel
+records nothing rather than lying; 3) the destructive
+`20260809130000_drop_dead_protection_score_history` is deliberately unapplied and
+needs an explicit owner decision.
+
+**Next 3 actions:** 1) apply `20260809120000_notification_bus` to prod via
+Supabase MCP + the `_prisma_migrations` row, exactly as dev; 2) generate VAPID
+keys (`node scripts/generate-vapid-keys.mjs`) and set them in Vercel; 3) decide
+on dropping the dead `protection_score_history` table.
+
 ## Session wrap — 2026-08-07 (Homepage hero: the first screen is now the product)
 
 **Current phase:** **shipped and verified live** — PR #255, squashed as

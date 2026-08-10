@@ -22,7 +22,13 @@ vi.mock('@/lib/db', () => ({
             update: (...a: any[]) => mergeUpdate(...a),
             findMany: vi.fn(),
         },
-        notificationEvent: { create: (...a: any[]) => notificationCreate(...a) },
+        notificationEvent: {
+            create: (...a: any[]) => notificationCreate(...a),
+            findFirst: vi.fn(async () => null),
+        },
+        // The bus resolves the recipient and their preferences before writing.
+        notificationPreference: { findMany: vi.fn(async () => []) },
+        user: { findUnique: vi.fn(async () => ({ email: 'u@example.com', preferredLanguage: 'en' })) },
         policyDocument: { updateMany: (...a: any[]) => documentUpdateMany(...a) },
         $transaction: async (fn: any) =>
             fn({

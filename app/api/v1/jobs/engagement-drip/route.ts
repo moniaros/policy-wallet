@@ -1,5 +1,6 @@
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { withJobRun } from "@/lib/jobs/run-record"
 import { runEngagementDripJobs } from "@/lib/services/engagement-drip.service"
 
 export async function POST(req: Request) {
@@ -23,8 +24,16 @@ export async function POST(req: Request) {
     }
 
     try {
-        const summary = await runEngagementDripJobs()
-        return createApiResponse({ summary })
+        // Recorded so the admin console can show that this ran, what it
+        // did, and how long it took — and so an operator can pause it
+        // without a redeploy.
+        const { result, paused } = await withJobRun("engagement-drip", async () => {
+            const summary = await runEngagementDripJobs()
+            return createApiResponse({ summary })
+        })
+        if (paused) return createApiResponse({ paused: true })
+        // The wrapped body builds the route response; the wrapper only observes.
+        return result!
     } catch (error) {
         return createApiError("INTERNAL_ERROR", "Failed to run engagement drip jobs", 500, String(error))
     }

@@ -61,6 +61,22 @@
     {
       "path": "/api/v1/jobs/reap-stale-analyses",
       "schedule": "15 5 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/notification-retry",
+      "schedule": "30 5 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/billing-reconciliation",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/event-sweep",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/risk-review-scan",
+      "schedule": "0 2 * * *"
     }
   ]
 }

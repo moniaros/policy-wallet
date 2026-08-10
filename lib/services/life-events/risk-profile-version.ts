@@ -16,6 +16,7 @@ import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import type { RiskAssessment } from "@/lib/services/gap-engine/risk-types"
 import type { ProtectionScoreResult } from "@/lib/services/gap-engine/protection-score"
+import type { RiskSnapshot } from "@/lib/services/timeline/diff"
 
 export type RecalculationTrigger =
     | "life_event"
@@ -43,6 +44,21 @@ export function fingerprintAssessment(
         .update(`${score.overallScore}::${score.indeterminate ? 1 : 0}::${material}`)
         .digest("hex")
         .slice(0, 32)
+}
+
+/**
+ * Read back a stored snapshot.
+ *
+ * `risks` is a Json column, so it is `unknown` until proven otherwise — a row
+ * written by an older shape must degrade to "no previous snapshot" rather than
+ * throw through the version writer.
+ */
+function parseSnapshot(raw: unknown): RiskSnapshot[] | null {
+    if (!Array.isArray(raw)) return null
+    return raw.filter(
+        (r): r is RiskSnapshot =>
+            Boolean(r) && typeof r === "object" && typeof (r as RiskSnapshot).riskId === "string"
+    )
 }
 
 /** The per-risk snapshot stored on a version. Prose is deliberately excluded. */
@@ -90,7 +106,16 @@ export async function recordRiskProfileVersion(
         const latest = await db.riskProfileVersion.findFirst({
             where: { userId },
             orderBy: { version: "desc" },
-            select: { version: true, contextHash: true, overallScore: true },
+            // `risks` and `indeterminate` are selected so the notifications
+            // below can be DERIVED from the same diff the timeline draws,
+            // rather than from a second opinion about what changed.
+            select: {
+                version: true,
+                contextHash: true,
+                overallScore: true,
+                risks: true,
+                indeterminate: true,
+            },
         })
 
         if (latest?.contextHash === contextHash) {
@@ -107,6 +132,7 @@ export async function recordRiskProfileVersion(
         }
 
         const version = (latest?.version ?? 0) + 1
+        const risks = snapshotRisks(assessments)
         await db.riskProfileVersion.create({
             data: {
                 userId,
@@ -116,11 +142,29 @@ export async function recordRiskProfileVersion(
                 overallScore: score.overallScore,
                 assessmentCoverage: score.assessmentCoverage ?? null,
                 indeterminate: score.indeterminate ?? false,
-                risks: snapshotRisks(assessments) as any,
+                risks: risks as any,
                 categoryScores: categoryScores as any,
                 openFindingCount,
                 contextHash,
             },
+        })
+
+        // A material change just landed, so this is where the risk
+        // notifications belong — one seam, after the row is committed. The
+        // whole family (new gaps, risk-level movement, score movement) derives
+        // from the same diff the timeline uses, so an alert cannot contradict
+        // the history it links to. `emit` never throws, and the outer catch
+        // here means versioning still cannot fail an upload or a cron batch.
+        const { emitRiskEvents } = await import("@/lib/notifications/risk-events")
+        await emitRiskEvents({
+            userId,
+            current: risks,
+            previous: latest ? parseSnapshot(latest.risks) : null,
+            overallScore: score.overallScore,
+            previousScore: latest?.overallScore ?? null,
+            indeterminate: score.indeterminate ?? false,
+            previousIndeterminate: latest?.indeterminate ?? false,
+            version,
         })
 
         return {

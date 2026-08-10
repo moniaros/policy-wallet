@@ -29,6 +29,8 @@ import { motion } from 'framer-motion'
 
 interface Props {
     initialData: any
+    /** Resolved server-side so the control never flashes a wrong default. */
+    quietHours?: { enabled: boolean; start: number; end: number; timezone: string }
     mobileProps?: {
         policies: Policy[]
         user: {
@@ -48,7 +50,7 @@ interface Props {
     }
 }
 
-export function AccountClientPage({ initialData, mobileProps }: Props) {
+export function AccountClientPage({ initialData, mobileProps, quietHours }: Props) {
     const router = useRouter()
     const { t } = useLanguage()
     // NOTE: the Referrals tab is intentionally not rendered — the referral
@@ -247,6 +249,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             activeSessions={initialData.activeSessions}
                             securityEvents={initialData.securityEvents}
                             notificationPreferences={initialData.notificationPreferences || []}
+                            quietHours={quietHours}
                             pendingDeletion={initialData.pendingDeletion}
                             onUpdateLanguage={handleLanguageUpdate}
                             onUpdateProfile={handleUpdateProfile}

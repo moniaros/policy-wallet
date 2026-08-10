@@ -15,10 +15,18 @@ import { extractPolicySections, pickLang } from "@/lib/wallet/policy-detail"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { BranchEmptyState } from "@/components/branches/BranchEmptyState"
-import { effectivePolicyStatus } from "@/lib/policy-status"
+import { calendarDaysUntil, effectivePolicyStatus } from "@/lib/policy-status"
 
+/**
+ * Calendar days until a date, in Athens — not a duration in 24-hour blocks.
+ *
+ * This drives the "expires in N days" badge a customer reads. Millisecond
+ * division is off by one for anything ending near the Athens day boundary
+ * (end dates are stored at midnight UTC, which is 03:00 Athens) and drifts a
+ * whole day across the two clock changes a year.
+ */
 function daysUntil(date: Date): number {
-    return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    return calendarDaysUntil(date, new Date())
 }
 
 function SectionCard({

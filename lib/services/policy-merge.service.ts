@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { emit } from "@/lib/notifications/dispatch"
 import { logger } from "@/lib/logger"
 import { resolveCoverageEndDate } from "@/lib/policy-status"
 
@@ -64,16 +65,22 @@ export async function requestPolicyMerge(input: MergeRequestInput): Promise<stri
     })
 
     if (request.status === "pending") {
-        await db.notificationEvent.create({
-            data: {
-                userId: approverUserId,
-                eventType: "policy_merge_requested",
-                channel: "in_app",
-                title: "Duplicate policy detected",
-                message: `The policy ${existing.policyNumber} (${existing.insurerName}) exists twice — uploaded by both you and the other party. Merging the two records needs your approval.`,
-                relatedObjectType: "policy_merge_request",
-                relatedObjectId: request.id,
+        await emit({
+            event: "policy_merge_requested",
+            userId: approverUserId,
+            title: {
+                el: "Εντοπίστηκε διπλό ασφαλιστήριο",
+                en: "Duplicate policy detected",
             },
+            message: {
+                el: `Το ασφαλιστήριο ${existing.policyNumber} (${existing.insurerName}) υπάρχει δύο φορές — ανέβηκε και από εσάς και από το άλλο μέρος. Η συγχώνευση των δύο εγγραφών χρειάζεται την έγκρισή σας.`,
+                en: `The policy ${existing.policyNumber} (${existing.insurerName}) exists twice — uploaded by both you and the other party. Merging the two records needs your approval.`,
+            },
+            relatedObjectType: "policy_merge_request",
+            relatedObjectId: request.id,
+            // The request is upserted, so this path can be re-entered for the
+            // same pending request; ask once.
+            dedupeKey: `merge_request:${request.id}`,
         })
     }
 
@@ -235,16 +242,16 @@ export async function decidePolicyMerge(
             where: { id: request.id },
             data: { status: "rejected", decidedAt: new Date() },
         })
-        await db.notificationEvent.create({
-            data: {
-                userId: request.requestedByUserId,
-                eventType: "policy_merge_rejected",
-                channel: "in_app",
-                title: "Merge declined",
-                message: "The duplicate policy stays as a separate record.",
-                relatedObjectType: "policy_merge_request",
-                relatedObjectId: request.id,
+        await emit({
+            event: "policy_merge_rejected",
+            userId: request.requestedByUserId,
+            title: { el: "Η συγχώνευση απορρίφθηκε", en: "Merge declined" },
+            message: {
+                el: "Το διπλό ασφαλιστήριο παραμένει ως ξεχωριστή εγγραφή.",
+                en: "The duplicate policy stays as a separate record.",
             },
+            relatedObjectType: "policy_merge_request",
+            relatedObjectId: request.id,
         })
         return { ok: true }
     }
@@ -258,16 +265,16 @@ export async function decidePolicyMerge(
         approverUserId,
     })
 
-    await db.notificationEvent.create({
-        data: {
-            userId: request.requestedByUserId,
-            eventType: "policy_merged",
-            channel: "in_app",
-            title: "Policies merged",
-            message: `The duplicate of ${result.policyNumber} was merged into one record.`,
-            relatedObjectType: "policy",
-            relatedObjectId: result.mergedIntoPolicyId!,
+    await emit({
+        event: "policy_merged",
+        userId: request.requestedByUserId,
+        title: { el: "Τα ασφαλιστήρια συγχωνεύτηκαν", en: "Policies merged" },
+        message: {
+            el: `Το διπλότυπο του ${result.policyNumber} συγχωνεύτηκε σε μία εγγραφή.`,
+            en: `The duplicate of ${result.policyNumber} was merged into one record.`,
         },
+        relatedObjectType: "policy",
+        relatedObjectId: result.mergedIntoPolicyId!,
     })
 
     return { ok: true, mergedIntoPolicyId: result.mergedIntoPolicyId }

@@ -72,20 +72,26 @@ const nextConfig: NextConfig = {
   },
 };
 
-import withPWAInit from "@ducanh2912/next-pwa";
-
-const withPWA = withPWAInit({
-  dest: "public",
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  disable: process.env.NODE_ENV === "development",
-  workboxOptions: {
-    disableDevLogs: true,
-  },
-});
-
-let finalConfig: NextConfig = withPWA(nextConfig);
+// `@ducanh2912/next-pwa` used to wrap the config here. It has been removed
+// deliberately, for two reasons.
+//
+// 1. **It generated nothing.** It is a webpack plugin, and Next 16 builds with
+//    Turbopack — no service worker and no workbox asset was emitted by any
+//    build. Every option below it (`cacheOnFrontEndNav`, `reloadOnOnline`,
+//    `aggressiveFrontEndNavCaching`) read like offline support the product had,
+//    and none of it existed.
+//
+// 2. **It was aimed at the file push depends on.** `dest: "public"` means it
+//    writes `public/sw.js` — the hand-written push service worker. The moment a
+//    build went through webpack again (a flag, a downgrade, a plugin), it would
+//    have overwritten that file and push notifications would have stopped with
+//    no error, no failing test, and no diff to notice.
+//
+// The product does not want precaching in any case: `public/sw.js` says so in
+// its own header — an offline cache for an app whose job is showing CURRENT
+// policy data is a way to show someone stale cover. Installability comes from
+// `public/manifest.json` plus that service worker, neither of which needed this.
+let finalConfig: NextConfig = nextConfig;
 
 if (process.env.SENTRY_ORG && process.env.SENTRY_PROJECT) {
   const { withSentryConfig } = require("@sentry/nextjs");

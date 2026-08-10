@@ -745,3 +745,26 @@ pre {
     scroll-behavior: auto !important;
   }
 }
+
+/* Bottom-anchored chrome that must stay clear of the consent banner.
+ *
+ * The banner is `fixed inset-x-0 bottom-0 z-[120]`; on a phone its card is
+ * effectively full width. Measured at 375x667, it left BOTH the wallet's
+ * add-policy button and the entire mobile bottom navigation unreachable —
+ * `elementFromPoint` over each returned a banner control. The banner is not
+ * modal (no scrim, the rest of the page stays interactive), so disabling the
+ * primary navigation was an accident of stacking, not a decision.
+ *
+ * The banner publishes its own height into this variable while it is visible
+ * and clears it afterwards, so this collapses to 0 the moment consent is given.
+ *
+ * Applied to the mobile bottom NAVIGATION only. The floating action buttons
+ * already sit at `bottom-28`, so adding the banner height on top parked them a
+ * third of the way up the screen — measured, and worse than the problem. They
+ * become reachable the moment consent is given, and the click-interception fix
+ * (`pointer-events-none` on the banner wrapper) already covers them everywhere
+ * the banner is not literally on top of them.
+ */
+.pw-above-consent {
+    margin-bottom: var(--pw-bottom-obstruction, 0px);
+}

@@ -66,6 +66,26 @@ export const PATCH = withApiGuard(
             )
         }
 
+        // Recorded on the analytics channel, not delivered: notifying someone
+        // about their own click is noise. But a dismissal is the clearest
+        // signal a customer ever gives us — "I have considered this and it is
+        // not for me" — and the advisory surfaces need it on the record.
+        const { emit } = await import("@/lib/notifications/dispatch")
+        await emit({
+            event: parsed.data.action === "dismiss" ? "recommendation_dismissed" : "recommendation_accepted",
+            userId,
+            title:
+                parsed.data.action === "dismiss"
+                    ? "Recommendation dismissed"
+                    : "Recommendation actioned",
+            message: parsed.data.reason || parsed.data.action,
+            relatedObjectType: "recommendation",
+            relatedObjectId: recommendationId,
+            // `result.count === 0` already blocks a repeat, so the key only has
+            // to survive two requests racing the same transition.
+            dedupeKey: `recommendation:${recommendationId}:${parsed.data.action}`,
+        })
+
         return createApiResponse({ success: true })
     }
 )

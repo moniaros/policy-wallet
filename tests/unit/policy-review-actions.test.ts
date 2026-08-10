@@ -16,7 +16,10 @@ vi.mock('@/lib/db', () => ({
         accessGrant: { create: vi.fn(), findFirst: vi.fn() },
         invite: { create: vi.fn() },
         customerRelationship: { findUnique: vi.fn(), create: vi.fn() },
-        notificationEvent: { create: vi.fn() },
+        // Defaults matter: the bus awaits each of these, so a bare vi.fn()
+        // resolving undefined makes emit throw and silently write nothing.
+        notificationEvent: { create: vi.fn(), findFirst: vi.fn(async () => null) },
+        notificationPreference: { findMany: vi.fn(async () => []) },
         activityLog: { create: vi.fn() },
         gapInstance: { findUnique: vi.fn(), update: vi.fn(), findFirst: vi.fn() },
         opportunity: { findFirst: vi.fn(), create: vi.fn() },
@@ -115,6 +118,11 @@ beforeEach(() => {
     // Default happy path: a managing agent with write access.
     mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: AGENT })
     mockGetPolicyAccess.mockResolvedValue(WRITE_ACCESS)
+    // vi.clearAllMocks() wipes the factory defaults, so the bus's lookups have
+    // to be re-armed here or emit resolves undefined and writes nothing.
+    ;(db.user.findUnique as any).mockResolvedValue({ email: 'a@x.gr', preferredLanguage: 'en' })
+    ;(db.notificationEvent.findFirst as any).mockResolvedValue(null)
+    ;(db.notificationPreference.findMany as any).mockResolvedValue([])
 })
 
 describe('confirmPolicyReview', () => {

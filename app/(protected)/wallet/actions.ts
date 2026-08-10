@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
+import { emit } from "@/lib/notifications/dispatch"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -437,20 +438,6 @@ export async function flagPolicyExtraction(policyId: string, reason?: string) {
                 where: { id: policyId },
                 data: { acordData: nextAcord },
             }),
-            // Triage signal for the reviewing agent (dbUser), not the owner.
-            db.notificationEvent.create({
-                data: {
-                    userId: dbUser.id,
-                    eventType: "extraction_flagged",
-                    channel: "in_app",
-                    title: "AI extraction flagged",
-                    message: `Policy ${policy.policyNumber}: ${trimmedReason || "flagged as incorrect"}`,
-                    relatedObjectType: "policy",
-                    relatedObjectId: policyId,
-                    status: "sent",
-                    sentAt: new Date(),
-                },
-            }),
             (db as any).activityLog.create({
                 data: {
                     adminUserId: dbUser.id,
@@ -470,6 +457,35 @@ export async function flagPolicyExtraction(policyId: string, reason?: string) {
         logger('error', 'Flag policy extraction failed', { policyId, error: e.message })
         return { error: "Flag failed" }
     }
+
+    const { publishExtractionFlagged } = await import("@/lib/events/publishers")
+    await publishExtractionFlagged({
+        policyId,
+        ownerUserId: policy.ownerUserId,
+        actor: { type: "advisor", id: dbUser.id },
+        reason: trimmedReason || "flagged as incorrect",
+        overallConfidence: acord?.extraction?.confidence?.overall ?? null,
+    })
+
+    // AFTER the transaction, never inside it: a notification is a consequence of
+    // the flag, not a precondition of it, and a mail provider having a bad
+    // minute must not roll back the flag itself. (It also cannot be inside —
+    // `emit` performs its own writes, and this used to be a bare create in the
+    // transaction array, which is what kept it on one channel.)
+    await emit({
+        event: "extraction_flagged",
+        userId: dbUser.id, // triage signal for the reviewing agent, not the owner
+        title: {
+            el: "Επισημάνθηκε εξαγωγή AI",
+            en: "AI extraction flagged",
+        },
+        message: {
+            el: `Ασφαλιστήριο ${policy.policyNumber}: ${trimmedReason || "επισημάνθηκε ως λανθασμένο"}`,
+            en: `Policy ${policy.policyNumber}: ${trimmedReason || "flagged as incorrect"}`,
+        },
+        relatedObjectType: "policy",
+        relatedObjectId: policyId,
+    })
 
     revalidatePath("/wallet")
     revalidatePath(`/wallet/${policyId}`)
@@ -502,19 +518,6 @@ export async function requestRenewalQuote(policyId: string) {
 
     try {
         const writes: any[] = [
-            db.notificationEvent.create({
-                data: {
-                    userId: dbUser.id,
-                    eventType: "renewal_quote_requested",
-                    channel: "in_app",
-                    title: "Renewal quote requested",
-                    message: `Policy ${policyRef}: renewal quote requested`,
-                    relatedObjectType: "policy",
-                    relatedObjectId: policyId,
-                    status: "sent",
-                    sentAt: new Date(),
-                },
-            }),
             (db as any).activityLog.create({
                 data: {
                     adminUserId: dbUser.id,
@@ -530,27 +533,46 @@ export async function requestRenewalQuote(policyId: string) {
                 },
             }),
         ]
-        if (relationship) {
-            writes.push(
-                db.notificationEvent.create({
-                    data: {
-                        userId: relationship.agentUserId,
-                        eventType: "renewal_quote_requested",
-                        channel: "in_app",
-                        title: "Client requested a renewal quote",
-                        message: `${dbUser.name || dbUser.email || "A client"} requested a renewal quote for policy ${policyRef}`,
-                        relatedObjectType: "policy",
-                        relatedObjectId: policyId,
-                        status: "sent",
-                        sentAt: new Date(),
-                    },
-                })
-            )
-        }
         await db.$transaction(writes)
     } catch (e: any) {
         logger('error', 'Renewal quote request failed', { policyId, error: e.message })
         return { error: "Request failed" }
+    }
+
+    // Both notifications AFTER the commit. The advisor's copy used to sit inside
+    // the transaction array, which meant a quote request could only ever reach
+    // the advisor through the bell — never email, never push — on an event whose
+    // whole value is that a human sees it quickly.
+    await emit({
+        event: "renewal_quote_requested",
+        userId: dbUser.id,
+        title: {
+            el: "Ζητήθηκε προσφορά ανανέωσης",
+            en: "Renewal quote requested",
+        },
+        message: {
+            el: `Ασφαλιστήριο ${policyRef}: ζητήθηκε προσφορά ανανέωσης`,
+            en: `Policy ${policyRef}: renewal quote requested`,
+        },
+        relatedObjectType: "policy",
+        relatedObjectId: policyId,
+    })
+
+    if (relationship) {
+        await emit({
+            event: "renewal_quote_requested",
+            userId: relationship.agentUserId,
+            title: {
+                el: "Πελάτης ζήτησε προσφορά ανανέωσης",
+                en: "Client requested a renewal quote",
+            },
+            message: {
+                el: `${dbUser.name || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`,
+                en: `${dbUser.name || dbUser.email || "A client"} requested a renewal quote for policy ${policyRef}`,
+            },
+            relatedObjectType: "policy",
+            relatedObjectId: policyId,
+        })
     }
 
     revalidatePath(`/wallet/${policyId}`)
@@ -634,7 +656,30 @@ export async function updatePolicy(policyId: string, formData: FormData) {
         const policyService = new PolicyService()
         const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
 
-        await policyService.update(policyId, authResult.dbUser.id, data, language)
+        const updated = await policyService.update(policyId, authResult.dbUser.id, data, language)
+
+        // Notify the OWNER, who is not necessarily the editor: a managing agent
+        // can update a policy, and a change to cover, dates or premium made by
+        // someone else is something the owner should hear about rather than
+        // discover. Skipped when the owner is the one who just made the edit —
+        // telling someone what they did ten seconds ago is noise.
+        const ownerUserId = (updated as { ownerUserId?: string } | null)?.ownerUserId
+        if (ownerUserId && ownerUserId !== authResult.dbUser.id) {
+            await emit({
+                event: "policy_updated",
+                userId: ownerUserId,
+                title: {
+                    el: "Ένα ασφαλιστήριό σας ενημερώθηκε",
+                    en: "One of your policies was updated",
+                },
+                message: {
+                    el: `${authResult.dbUser.name || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`,
+                    en: `${authResult.dbUser.name || "Your advisor"} updated the details on this policy.`,
+                },
+                relatedObjectType: "policy",
+                relatedObjectId: policyId,
+            })
+        }
 
         revalidatePath("/wallet")
         revalidatePath(`/wallet/${policyId}`)
@@ -837,6 +882,41 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
             }
         })
         relationshipId = createdRel.id
+
+        const { publishAdvisorLinked } = await import("@/lib/events/publishers")
+        await publishAdvisorLinked({
+            relationshipId: createdRel.id,
+            customerUserId: authResult.dbUser.id,
+            advisorUserId: agent.id,
+            actor: { type: "customer", id: authResult.dbUser.id },
+        })
+
+        // A relationship becoming active is the moment another person gains
+        // sight of this customer's policies. They are entitled to know it
+        // happened, so this is transactional and audit-logged — both sides get
+        // it, each in their own language.
+        await emit({
+            event: "advisor_assigned",
+            userId: authResult.dbUser.id,
+            title: { el: "Συνδεθήκατε με σύμβουλο", en: "You are connected to an advisor" },
+            message: {
+                el: `${agent.name || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`,
+                en: `${agent.name || agent.email || "Your advisor"} can now work with you. You can revoke this at any time.`,
+            },
+            dedupeKey: `advisor_assigned:${createdRel.id}`,
+        })
+        await emit({
+            event: "advisor_assigned",
+            userId: agent.id,
+            title: { el: "Νέος πελάτης συνδέθηκε", en: "A new client connected" },
+            message: {
+                el: `${authResult.dbUser.name || "Ένας πελάτης"} συνδέθηκε μαζί σας.`,
+                en: `${authResult.dbUser.name || "A client"} is now connected to you.`,
+            },
+            relatedObjectType: "customer",
+            relatedObjectId: authResult.dbUser.id,
+            dedupeKey: `advisor_assigned_agent:${createdRel.id}`,
+        })
     }
 
     if (relationshipId) {
@@ -856,17 +936,24 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         select: { policyNumber: true, insurerName: true, lineOfBusiness: true }
     })
 
-    // 5. Create notification for the agent
-    await db.notificationEvent.create({
-        data: {
-            userId: agent.id,
-            eventType: 'policy_shared',
-            channel: 'in_app',
-            title: 'New Policy Shared With You',
-            message: `${authResult.dbUser.name || 'A customer'} has shared their ${policy?.lineOfBusiness ? normalizeBranch(policy.lineOfBusiness).label.en : 'insurance'} policy (${policy?.insurerName}) with you with ${permissions} access.`,
-            relatedObjectType: 'policy',
-            relatedObjectId: policyId
-        }
+    // 5. Notify the agent, in their own language. The branch label is resolved
+    // per language too — this used to interpolate `.label.en` into a message a
+    // Greek advisor would read.
+    const branch = policy?.lineOfBusiness ? normalizeBranch(policy.lineOfBusiness) : null
+    const sharer = authResult.dbUser.name
+    await emit({
+        event: 'policy_shared',
+        userId: agent.id,
+        title: {
+            el: 'Νέο ασφαλιστήριο κοινοποιήθηκε μαζί σας',
+            en: 'New Policy Shared With You',
+        },
+        message: {
+            el: `${sharer || 'Ένας πελάτης'} κοινοποίησε το ασφαλιστήριό του ${branch ? branch.label.el : 'ασφάλισης'} (${policy?.insurerName}) μαζί σας με δικαιώματα ${permissions}.`,
+            en: `${sharer || 'A customer'} has shared their ${branch ? branch.label.en : 'insurance'} policy (${policy?.insurerName}) with you with ${permissions} access.`,
+        },
+        relatedObjectType: 'policy',
+        relatedObjectId: policyId,
     })
 
     try {
@@ -1061,6 +1148,41 @@ export async function deletePolicy(policyId: string) {
                 }
             })
         } catch (e) { /* ignore */ }
+
+        // Publish the FACT. The notification and the risk recomputation are
+        // consequences the decision engine decides — dual-written alongside the
+        // direct calls below during the migration.
+        const { publishPolicyDeleted } = await import("@/lib/events/publishers")
+        await publishPolicyDeleted({
+            policyId,
+            ownerUserId: policy.ownerUserId,
+            actor: {
+                type: policy.ownerUserId === authResult.dbUser.id ? "customer" : "advisor",
+                id: authResult.dbUser.id,
+            },
+            insurerName: policy.insurerName,
+            policyNumber: policy.policyNumber,
+        })
+
+        // Tell the owner their policy is gone — HIGH, and emailed, because it
+        // is destructive and may not have been them: a managing agent with a
+        // "manage" grant can reach this branch. This is the notification that
+        // lets someone notice.
+        await emit({
+            event: "policy_removed",
+            userId: policy.ownerUserId,
+            title: {
+                el: "Ένα ασφαλιστήριο διαγράφηκε",
+                en: "A policy was removed",
+            },
+            message: {
+                el: `Το ασφαλιστήριο ${policy.policyNumber} (${policy.insurerName}) διαγράφηκε από το wallet σας.`,
+                en: `Policy ${policy.policyNumber} (${policy.insurerName}) was removed from your wallet.`,
+            },
+            // No relatedObject: the policy no longer exists, and a link to a
+            // deleted record is a 404 at the worst possible moment.
+            dedupeKey: `policy_removed:${policyId}`,
+        })
 
         // A deleted policy's own gaps cascade away, but the OWNER's portfolio
         // gaps and score do not: delete one of two motor policies and the
@@ -1617,16 +1739,19 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     })
 
     // Notify Agent
-    await db.notificationEvent.create({
-        data: {
-            userId: relationship.agentUserId,
-            eventType: 'opportunity_created',
-            channel: 'in_app',
-            title: 'New Opportunity Detected',
-            message: `${authResult.dbUser.name || 'Customer'} requested details on a coverage gap.`,
-            relatedObjectType: 'opportunity',
-            relatedObjectId: opportunity.id
-        }
+    await emit({
+        event: 'opportunity_created',
+        userId: relationship.agentUserId,
+        title: {
+            el: 'Νέα ευκαιρία εντοπίστηκε',
+            en: 'New Opportunity Detected',
+        },
+        message: {
+            el: `${authResult.dbUser.name || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`,
+            en: `${authResult.dbUser.name || 'Customer'} requested details on a coverage gap.`,
+        },
+        relatedObjectType: 'opportunity',
+        relatedObjectId: opportunity.id,
     })
 
     revalidatePath("/wallet")

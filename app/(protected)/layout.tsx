@@ -18,7 +18,7 @@ import { signOut } from "@/app/auth/actions"
 import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, Gift, FileText, Inbox, Coins, History } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, Gift, FileText, Inbox, Coins, History, Zap } from 'lucide-react'
 
 export default async function ProtectedLayout({
     children,
@@ -39,9 +39,16 @@ export default async function ProtectedLayout({
     // does not add a per-request DB round-trip.
     const planFacts = await getClientPlanFacts()
 
-    // Query unread notification count
+    // Unread = an IN-APP notification the user has not opened.
+    //
+    // This used to count `readAt: null` across every channel, so each email we
+    // ever sent — every weekly digest, every drip, every renewal reminder — sat
+    // on the badge as an unread notification that nothing in the UI could clear.
+    // On production that read 141 against a true count of 8. The `analytics`
+    // channel is excluded by the same filter: the conversion mirror shares this
+    // table and its rows were being counted too.
     const unreadNotificationCount = await db.notificationEvent.count({
-        where: { userId: dbUser.id, readAt: null }
+        where: { userId: dbUser.id, channel: "in_app", readAt: null }
     })
 
     // Construct navigation based on roles.
@@ -127,6 +134,8 @@ export default async function ProtectedLayout({
                 { label: t.nav.billingReconciliation, href: "/admin/billing-reconciliation", icon: <ReceiptText className="w-5 h-5" /> },
                 { label: t.nav.launchReadiness, href: "/admin/launch-readiness", icon: <Shield className="w-5 h-5" /> },
                 { label: t.nav.extractionFlags, href: "/admin/extraction-flags", icon: <Flag className="w-5 h-5" /> },
+                { label: t.nav.notificationAdmin, href: "/admin/notifications", icon: <Bell className="w-5 h-5" /> },
+                { label: t.nav.automation, href: "/admin/automation", icon: <Zap className="w-5 h-5" /> },
                 { label: t.nav.plans, href: "/admin/plans", icon: <Euro className="w-5 h-5" /> },
                 { label: t.nav.partners, href: "/admin/partners", icon: <Handshake className="w-5 h-5" /> },
                 { label: t.nav.insurers, href: "/admin/insurers", icon: <Building2 className="w-5 h-5" /> },

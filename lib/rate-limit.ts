@@ -38,8 +38,54 @@ function getLimiter(limit: number, durationMs: number): Ratelimit | null {
     return limiter
 }
 
-// 2. Local Fallback Cache for Dev
+// 2. Local fallback cache.
+//
+// Named "for Dev" originally, but it is a PRODUCTION path in two situations:
+// Upstash unconfigured (see `warnedUnconfigured` below) and Upstash unreachable
+// (the catch in `rateLimit`). Fluid Compute reuses a function instance across
+// requests, so this module scope outlives the request that created it — and
+// public routes key on IP, so a bot sweep mints one entry per source address.
+//
+// Unbounded, that is a memory leak on precisely the path that engages when Redis
+// is ALREADY down: the degraded mode would then take the instance out entirely.
+// So it is bounded two ways — a periodic sweep of expired entries, and a hard
+// cap that evicts the soonest-to-expire when the sweep cannot keep up.
 const localCache = new Map<string, { count: number; expires: number }>()
+
+/** Entries retained before eviction. ~100 bytes each: a few MB at the ceiling. */
+const LOCAL_CACHE_MAX = 20_000
+/** Sweeping on every call would be O(n) per request; once a minute is enough. */
+const LOCAL_SWEEP_INTERVAL_MS = 60_000
+let lastSweep = 0
+
+/**
+ * Entry count, for the test that proves the cache stays bounded.
+ *
+ * The alternative is asserting on process memory, which is flaky and would not
+ * fail for the right reason.
+ */
+export function __localCacheSize(): number {
+    return localCache.size
+}
+
+function pruneLocalCache(now: number) {
+    if (now - lastSweep > LOCAL_SWEEP_INTERVAL_MS) {
+        lastSweep = now
+        for (const [key, record] of localCache) {
+            if (now > record.expires) localCache.delete(key)
+        }
+    }
+
+    if (localCache.size <= LOCAL_CACHE_MAX) return
+
+    // Still over after sweeping: an active flood of live keys. Evict the ones
+    // closest to expiring — they are the entries whose loss costs the least
+    // enforcement, since they were about to reset anyway.
+    const byExpiry = [...localCache.entries()].sort((a, b) => a[1].expires - b[1].expires)
+    for (let i = 0; i < byExpiry.length - LOCAL_CACHE_MAX; i += 1) {
+        localCache.delete(byExpiry[i][0])
+    }
+}
 
 /**
  * Distributed Rate Limiter
@@ -106,8 +152,9 @@ export async function rateLimit(ip: string, limit: number = 10, durationMs: numb
         }
     }
 
-    // Fallback Code (In-Memory for Dev)
+    // Fallback: per-instance in-memory limiting.
     const now = Date.now()
+    pruneLocalCache(now)
     const record = localCache.get(key)
 
     if (!record || now > record.expires) {

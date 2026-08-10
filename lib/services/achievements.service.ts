@@ -1,4 +1,5 @@
 import { db } from "../db"
+import { emit } from "../notifications/dispatch"
 
 /**
  * Achievement definitions for PolicyWallet gamification.
@@ -166,7 +167,11 @@ export async function checkAndAwardAchievements(userId: string): Promise<string[
     const now = new Date()
     const awarded: string[] = []
 
-    // Get currently earned achievements
+    // Currently earned. `startsWith` deliberately spans the cutover: rows
+    // written before the registry existed carry a per-achievement event type
+    // (`achievement_first_policy`), and new ones carry `achievement_unlocked`.
+    // Both hold the achievement id in relatedObjectId, so nobody re-earns a
+    // badge they already have.
     const existing = await db.notificationEvent.findMany({
         where: {
             userId,
@@ -182,18 +187,20 @@ export async function checkAndAwardAchievements(userId: string): Promise<string[
         const achievement = ACHIEVEMENTS.find((a) => a.id === id)
         if (!achievement) return
 
-        await db.notificationEvent.create({
-            data: {
-                userId,
-                eventType: `achievement_${id}`,
-                channel: "in_app",
-                title: `🏆 ${achievement.titleEn}`,
-                message: achievement.descriptionEn,
-                relatedObjectType: "achievement",
-                relatedObjectId: id,
-                status: "sent",
-                sentAt: now,
-            },
+        await emit({
+            event: "achievement_unlocked",
+            userId,
+            // These definitions have carried Greek strings all along; the writer
+            // only ever used the English ones, so a Greek user — the default —
+            // was congratulated in English. The bus resolves to whichever
+            // language the recipient actually reads.
+            title: { el: `🏆 ${achievement.titleEl}`, en: `🏆 ${achievement.titleEn}` },
+            message: { el: achievement.descriptionEl, en: achievement.descriptionEn },
+            relatedObjectType: "achievement",
+            relatedObjectId: id,
+            // One achievement is awarded once, ever. The `earned` set above is
+            // the fast path; this is the guarantee.
+            dedupeKey: `achievement:${id}`,
         })
         awarded.push(id)
     }

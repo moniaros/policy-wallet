@@ -785,20 +785,23 @@
     },
     {
       "route": "v1/contact/route.ts",
-      "methods": [],
+      "methods": [
+        "POST"
+      ],
       "policy": {
         "auth": {
           "mode": "public"
         },
         "rateLimit": {
-          "required": false,
-          "profile": "none"
+          "required": true,
+          "profile": "public-contact"
         },
         "validation": {
-          "required": false,
-          "profile": "optional"
+          "required": true,
+          "profile": "zod-or-guard"
         }
-      }
+      },
+      "note": "Alias: re-exports POST from api/contact/route.ts. Controls are audited through the alias target."
     },
     {
       "route": "v1/customers/bulk-import/route.ts",
@@ -1035,6 +1038,75 @@
     {
       "route": "v1/jobs/launch-readiness-snapshot/route.ts",
       "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/notification-retry/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/event-sweep/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/risk-review-scan/route.ts",
+      "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -1448,6 +1520,7 @@
     {
       "route": "v1/notifications/device-token/route.ts",
       "methods": [
+        "DELETE",
         "POST"
       ],
       "policy": {

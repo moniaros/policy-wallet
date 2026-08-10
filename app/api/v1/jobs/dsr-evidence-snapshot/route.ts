@@ -1,5 +1,6 @@
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { withJobRun } from "@/lib/jobs/run-record"
 import { logger } from "@/lib/logger"
 import { getDsrEvidenceSnapshot } from "@/lib/services/compliance/dsr-evidence.service"
 import * as Sentry from "@sentry/nextjs"
@@ -26,30 +27,38 @@ export async function POST(req: Request) {
     }
 
     try {
-        const snapshot = await getDsrEvidenceSnapshot({ windowHours: 24, sampleLimit: 25, pendingSlaHours: 24 })
+        // Recorded so the admin console can show that this ran, what it
+        // did, and how long it took — and so an operator can pause it
+        // without a redeploy.
+        const { result, paused } = await withJobRun("dsr-evidence-snapshot", async () => {
+            const snapshot = await getDsrEvidenceSnapshot({ windowHours: 24, sampleLimit: 25, pendingSlaHours: 24 })
 
-        logger("info", "DSR evidence snapshot generated", {
-            generatedAt: snapshot.generatedAt,
-            needsAttention: snapshot.needsAttention,
-            summary: snapshot.summary,
+            logger("info", "DSR evidence snapshot generated", {
+                generatedAt: snapshot.generatedAt,
+                needsAttention: snapshot.needsAttention,
+                summary: snapshot.summary,
+            })
+
+            // GDPR requests carry a legal deadline — a stale or failed request has
+            // to page someone, not sit in a JSON nobody reads.
+            if (snapshot.needsAttention) {
+                Sentry.captureMessage(
+                    `DSR queue needs attention: ${snapshot.summary.pendingBeyondSla} beyond SLA, ${snapshot.summary.failedInWindow} failed in window`,
+                    "warning"
+                )
+            }
+
+            return createApiResponse({
+                generated_at: snapshot.generatedAt,
+                needs_attention: snapshot.needsAttention,
+                summary: snapshot.summary,
+                data_export_status_breakdown: snapshot.dataExportStatusBreakdown,
+                deletion_status_breakdown: snapshot.deletionStatusBreakdown,
+            })
         })
-
-        // GDPR requests carry a legal deadline — a stale or failed request has
-        // to page someone, not sit in a JSON nobody reads.
-        if (snapshot.needsAttention) {
-            Sentry.captureMessage(
-                `DSR queue needs attention: ${snapshot.summary.pendingBeyondSla} beyond SLA, ${snapshot.summary.failedInWindow} failed in window`,
-                "warning"
-            )
-        }
-
-        return createApiResponse({
-            generated_at: snapshot.generatedAt,
-            needs_attention: snapshot.needsAttention,
-            summary: snapshot.summary,
-            data_export_status_breakdown: snapshot.dataExportStatusBreakdown,
-            deletion_status_breakdown: snapshot.deletionStatusBreakdown,
-        })
+        if (paused) return createApiResponse({ paused: true })
+        // The wrapped body builds the route response; the wrapper only observes.
+        return result!
     } catch (error) {
         logger("error", "DSR evidence snapshot job failed", { error })
         return createApiError("INTERNAL_ERROR", "Failed to generate DSR evidence snapshot", 500, String(error))

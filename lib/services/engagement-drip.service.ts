@@ -1,5 +1,5 @@
 import { db } from "../db"
-import { sendEmail } from "../email/email-service"
+import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWelcomeEmail, getDay3Email, getDay7Email } from "../email/templates/engagement-drip"
 import { provisionalProtectionScore } from "./gap-engine/protection-score"
 
@@ -52,26 +52,22 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
         })
         if (alreadySent) continue
 
-        const respectsPref = await isEmailEnabled(user.id, "engagement_welcome")
-        if (!respectsPref) continue
+        // Pre-filter; `emit` asks the same question again and is authoritative.
+        if (await isChannelSuppressed(user.id, "engagement_welcome", "email")) continue
 
         try {
             const lang = user.preferredLanguage === "el" ? "el" as const : "en" as const
             const { subject, html } = getWelcomeEmail(lang, user.name || undefined)
-            await sendEmail({ to: user.email, subject, html })
-
-            await db.notificationEvent.create({
-                data: {
-                    userId: user.id,
-                    eventType: "engagement_welcome",
-                    channel: "email",
-                    title: subject,
-                    message: "Welcome email sent",
-                    status: "sent",
-                    sentAt: now,
-                },
+            const result = await emit({
+                event: "engagement_welcome",
+                userId: user.id,
+                title: subject,
+                message: "Welcome email sent",
+                dedupeKey: "engagement_welcome",
+                content: { email: { subject, html } },
             })
-            welcomeEmailsSent++
+            if (result.delivered.length > 0) welcomeEmailsSent++
+            else if (result.failed.length > 0) errors++
         } catch {
             errors++
         }
@@ -105,26 +101,22 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
         })
         if (policyCount > 0) continue
 
-        const respectsPref = await isEmailEnabled(user.id, "engagement_day3")
-        if (!respectsPref) continue
+        // Pre-filter; `emit` asks the same question again and is authoritative.
+        if (await isChannelSuppressed(user.id, "engagement_day3", "email")) continue
 
         try {
             const lang = user.preferredLanguage === "el" ? "el" as const : "en" as const
             const { subject, html } = getDay3Email(lang, user.name || undefined)
-            await sendEmail({ to: user.email, subject, html })
-
-            await db.notificationEvent.create({
-                data: {
-                    userId: user.id,
-                    eventType: "engagement_day3",
-                    channel: "email",
-                    title: subject,
-                    message: "Day 3 follow-up sent",
-                    status: "sent",
-                    sentAt: now,
-                },
+            const result = await emit({
+                event: "engagement_day3",
+                userId: user.id,
+                title: subject,
+                message: "Day 3 follow-up sent",
+                dedupeKey: "engagement_day3",
+                content: { email: { subject, html } },
             })
-            day3EmailsSent++
+            if (result.delivered.length > 0) day3EmailsSent++
+            else if (result.failed.length > 0) errors++
         } catch {
             errors++
         }
@@ -152,8 +144,8 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
         })
         if (alreadySent) continue
 
-        const respectsPref = await isEmailEnabled(user.id, "engagement_day7")
-        if (!respectsPref) continue
+        // Pre-filter; `emit` asks the same question again and is authoritative.
+        if (await isChannelSuppressed(user.id, "engagement_day7", "email")) continue
 
         // Gather stats
         const policies = await db.policy.findMany({
@@ -181,20 +173,16 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
                 healthScore,
                 gapCount,
             })
-            await sendEmail({ to: user.email, subject, html })
-
-            await db.notificationEvent.create({
-                data: {
-                    userId: user.id,
-                    eventType: "engagement_day7",
-                    channel: "email",
-                    title: subject,
-                    message: `Coverage snapshot: ${policyCount} policies, ${healthScore === null ? 'n/a' : `${healthScore}%`} provisional score, ${gapCount} gaps`,
-                    status: "sent",
-                    sentAt: now,
-                },
+            const result = await emit({
+                event: "engagement_day7",
+                userId: user.id,
+                title: subject,
+                message: `Coverage snapshot: ${policyCount} policies, ${healthScore === null ? 'n/a' : `${healthScore}%`} provisional score, ${gapCount} gaps`,
+                dedupeKey: "engagement_day7",
+                content: { email: { subject, html } },
             })
-            day7EmailsSent++
+            if (result.delivered.length > 0) day7EmailsSent++
+            else if (result.failed.length > 0) errors++
         } catch {
             errors++
         }
@@ -203,20 +191,8 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
     return { welcomeEmailsSent, day3EmailsSent, day7EmailsSent, errors }
 }
 
-/**
- * Check if user has opted into email for a given event type.
- * Defaults to enabled if no preference is set.
- */
-async function isEmailEnabled(userId: string, eventType: string): Promise<boolean> {
-    const pref = await db.notificationPreference.findUnique({
-        where: {
-            userId_eventType_channel: {
-                userId,
-                eventType,
-                channel: "email",
-            },
-        },
-        select: { enabled: true },
-    })
-    return pref?.enabled !== false // default to true
-}
+// `isEmailEnabled` lived here — the third implementation of "has the user
+// switched this off", alongside one inlined in the weekly digest and one in the
+// dispatcher. It is now `isChannelSuppressed` in lib/notifications/dispatch,
+// which is also what `emit` itself consults, so the pre-filter and the
+// authoritative check can no longer disagree.

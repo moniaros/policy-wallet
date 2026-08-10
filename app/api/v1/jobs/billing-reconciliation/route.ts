@@ -1,5 +1,6 @@
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { withJobRun } from "@/lib/jobs/run-record"
 import { logger } from "@/lib/logger"
 import { getBillingReconciliationSnapshot } from "@/lib/services/billing/reconciliation.service"
 
@@ -25,20 +26,28 @@ export async function POST(req: Request) {
     }
 
     try {
-        const snapshot = await getBillingReconciliationSnapshot({ windowHours: 24, sampleLimit: 25 })
+        // Recorded so the admin console can show that this ran, what it
+        // did, and how long it took — and so an operator can pause it
+        // without a redeploy.
+        const { result, paused } = await withJobRun("billing-reconciliation", async () => {
+            const snapshot = await getBillingReconciliationSnapshot({ windowHours: 24, sampleLimit: 25 })
 
-        logger("info", "Billing reconciliation job completed", {
-            generatedAt: snapshot.generatedAt,
-            needsAttention: snapshot.needsAttention,
-            summary: snapshot.summary,
-        })
+            logger("info", "Billing reconciliation job completed", {
+                generatedAt: snapshot.generatedAt,
+                needsAttention: snapshot.needsAttention,
+                summary: snapshot.summary,
+            })
 
-        return createApiResponse({
-            generated_at: snapshot.generatedAt,
-            needs_attention: snapshot.needsAttention,
-            summary: snapshot.summary,
-            provider_breakdown: snapshot.providerBreakdown,
+            return createApiResponse({
+                generated_at: snapshot.generatedAt,
+                needs_attention: snapshot.needsAttention,
+                summary: snapshot.summary,
+                provider_breakdown: snapshot.providerBreakdown,
+            })
         })
+        if (paused) return createApiResponse({ paused: true })
+        // The wrapped body builds the route response; the wrapper only observes.
+        return result!
     } catch (error) {
         logger("error", "Billing reconciliation job failed", { error })
         return createApiError("INTERNAL_ERROR", "Failed to run billing reconciliation job", 500, String(error))

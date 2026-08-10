@@ -20,7 +20,13 @@ const { dbMock, sendEmail } = vi.hoisted(() => ({
 
 vi.mock('@/lib/db', () => ({ db: dbMock }))
 vi.mock('@/lib/email/email-service', () => ({ sendEmail }))
-vi.mock('@/lib/mail-templates', () => ({ templates: {} }))
+// buildNotificationEmail is what the email adapter renders through; leaving it
+// off the mock made the adapter throw and report `failed`, which looks exactly
+// like "no email was sent".
+vi.mock('@/lib/mail-templates', () => ({
+    templates: {},
+    buildNotificationEmail: vi.fn(({ title, message }: any) => ({ subject: title, html: message })),
+}))
 vi.mock('@/lib/services/push.service', () => ({ sendPushNotification: vi.fn(async () => ({ success: true })) }))
 
 import { notifyCounterparty } from '@/lib/notifications'
@@ -74,7 +80,7 @@ describe('notifyCounterparty', () => {
         expect(inAppCalls()[0]![0].data.title).toBe('Title')
     })
 
-    it('with email:false, writes only the in-app event and sends no email', async () => {
+    it('the registry decides the channels, not the caller', async () => {
         dbMock.user.findUnique.mockResolvedValue({ preferredLanguage: 'en', email: 'c@x.com' })
 
         await notifyCounterparty({
@@ -82,11 +88,40 @@ describe('notifyCounterparty', () => {
             eventType: 'renewal_outcome',
             title: 'Renewal update',
             message: 'Renewed',
-            email: false,
         })
 
-        expect(dbMock.notificationEvent.create).toHaveBeenCalledTimes(1)
-        expect(inAppCalls()).toHaveLength(1)
+        // `renewal_outcome` is declared in_app + email, so both are attempted.
+        // This case used to pass `email: false` — a parameter no production
+        // caller ever set, and one that could only lie once an event's channels
+        // became a property of the event.
+        const channels = dbMock.notificationEvent.create.mock.calls.map(
+            (c: any[]) => c[0].data.channel
+        )
+        expect(channels).toContain('in_app')
+        expect(channels).toContain('email')
+        expect(sendEmail).toHaveBeenCalledTimes(1)
+    })
+
+    it('records a suppressed channel as skipped rather than sent', async () => {
+        dbMock.user.findUnique.mockResolvedValue({ preferredLanguage: 'en', email: 'c@x.com' })
+        // `renewal_outcome` is transactional, so pick a suppressible one.
+        dbMock.notificationPreference.findMany.mockResolvedValue([
+            { channel: 'email', enabled: false },
+        ])
+
+        await notifyCounterparty({
+            userId: 'cust-5',
+            eventType: 'proposal_received',
+            title: 'Proposal',
+            message: 'A proposal arrived',
+        })
+
+        const rows = dbMock.notificationEvent.create.mock.calls.map((c: any[]) => c[0].data)
+        const email = rows.find((r: any) => r.channel === 'email')
+        // Honouring a choice is worth recording: this row is the evidence the
+        // preference works.
+        expect(email.status).toBe('skipped')
+        expect(email.skipReason).toBe('preference_off')
         expect(sendEmail).not.toHaveBeenCalled()
     })
 

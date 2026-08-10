@@ -15,9 +15,18 @@ const userFindMany = vi.fn(async (..._a: any[]) => [
 
 vi.mock('@/lib/db', () => ({
     db: {
-        user: { findMany: (...a: any[]) => userFindMany(...a) },
-        notificationEvent: { findFirst: vi.fn(async () => null), count: vi.fn(async () => 0) },
-        notificationPreference: { findUnique: vi.fn(async () => null) },
+        notificationEvent: {
+            findFirst: vi.fn(async () => null),
+            count: vi.fn(async () => 0),
+            create: vi.fn(async () => ({})),
+        },
+        // The bus reads preferences per (user, event) across channels and
+        // resolves the recipient's language before delivering.
+        notificationPreference: { findUnique: vi.fn(async () => null), findMany: vi.fn(async () => []) },
+        user: {
+            findMany: (...a: any[]) => userFindMany(...a),
+            findUnique: vi.fn(async () => ({ email: 'u@example.com', preferredLanguage: 'en' })),
+        },
         policy: { findMany: (...a: any[]) => policyFindMany(...a) },
         gapInstance: { count: vi.fn(async () => 0) },
         protectionScore: { findUnique: vi.fn(() => ({ catch: (_f: any) => Promise.resolve(null) })) },

@@ -79,9 +79,15 @@ export default async function AccountPage() {
         acordData: p.acordData
     }))
 
+    // Resolved server-side so the control renders with the real (role-derived)
+    // default instead of flashing "off" and then correcting itself.
+    const { getQuietHours } = await import("./quiet-hours-actions")
+    const quietHours = await getQuietHours()
+
     return (
         <AccountClientPage
             initialData={data}
+            quietHours={quietHours ?? undefined}
             mobileProps={{
                 policies: mappedPolicies,
                 user,

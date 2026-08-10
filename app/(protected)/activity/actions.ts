@@ -42,8 +42,12 @@ export async function getActivityFeed(limit = 50): Promise<ActivityEvent[]> {
 
     // Fetch every section first so identity can be resolved in ONE batch.
     const [notifications, relationships, opportunities, questionnaires] = await Promise.all([
+        // in_app only. One emission writes one row per channel, so an unscoped
+        // read listed the same event two or three times in the feed — once for
+        // the in-app card, again for the email — and swept in the `analytics`
+        // mirror, whose rows carry a machine code as their title.
         prisma.notificationEvent.findMany({
-            where: { userId: agentId },
+            where: { userId: agentId, channel: 'in_app' },
             orderBy: { createdAt: 'desc' },
             take: limit,
         }),
@@ -128,7 +132,10 @@ export async function getActivityFeed(limit = 50): Promise<ActivityEvent[]> {
             policyId: n.relatedObjectType === 'policy' ? n.relatedObjectId || undefined : undefined,
             customerId: n.relatedObjectType === 'customer' ? n.relatedObjectId || undefined : undefined,
             opportunityId: n.relatedObjectType === 'opportunity' ? n.relatedObjectId || undefined : undefined,
-            isUnread: n.status === 'queued' || n.status === 'unread',
+            // `readAt` is the one definition of read. This was a THIRD one —
+            // `status === 'queued' || status === 'unread'` — and nothing has
+            // ever written the status `'unread'`, so half of it was dead.
+            isUnread: n.readAt === null,
         })
     }
 

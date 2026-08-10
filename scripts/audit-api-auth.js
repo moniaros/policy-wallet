@@ -8,6 +8,53 @@ const HTTP_METHOD_EXPORT_REGEXES = [
   /export\s+const\s+(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)\s*=/g,
 ];
 
+/**
+ * A route file that only re-exports another route's handlers.
+ *
+ * `app/api/v1/contact/route.ts` is one line: `export { POST } from "@/app/api/contact/route"`.
+ * Auditing that file's own text finds no guard, no rate limit and no validation
+ * — not because the endpoint lacks them, but because they live one file away.
+ * Left unresolved, the audit records a public POST endpoint as needing no
+ * controls, and the method-drift check can never fire for it. Following the
+ * alias is what makes the guardrail actually guard the alias.
+ */
+const REEXPORT_REGEX = /export\s*\{([^}]*)\}\s*from\s*["']([^"']+)["']/g;
+
+function resolveAliasTarget(specifier, fromFile) {
+  const base = specifier.startsWith("@/")
+    ? path.join(process.cwd(), specifier.slice(2))
+    : specifier.startsWith(".")
+      ? path.resolve(path.dirname(fromFile), specifier)
+      : null;
+  if (!base) return null;
+
+  for (const candidate of [base, `${base}.ts`, `${base}.tsx`, path.join(base, "route.ts")]) {
+    if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) return candidate;
+  }
+  return null;
+}
+
+/**
+ * The content the audit should reason about: this file, plus any route file it
+ * re-exports handlers from. Concatenated rather than substituted, so a route
+ * that both re-exports AND adds its own handler is judged on all of it.
+ */
+function resolveAuditableContent(filePath, content, seen = new Set()) {
+  if (seen.has(filePath)) return content;
+  seen.add(filePath);
+
+  let combined = content;
+  for (const match of content.matchAll(REEXPORT_REGEX)) {
+    const exported = match[1];
+    if (!/\b(?:GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)\b/.test(exported)) continue;
+
+    const target = resolveAliasTarget(match[2], filePath);
+    if (!target) continue;
+    combined += "\n" + resolveAuditableContent(target, fs.readFileSync(target, "utf8"), seen);
+  }
+  return combined;
+}
+
 function getRouteFiles(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const files = [];
@@ -52,6 +99,14 @@ function extractMethods(content) {
   for (const regex of HTTP_METHOD_EXPORT_REGEXES) {
     for (const match of content.matchAll(regex)) {
       methods.add(match[1]);
+    }
+  }
+
+  // `export { POST } from "..."` serves POST just as surely as declaring it.
+  for (const match of content.matchAll(REEXPORT_REGEX)) {
+    for (const name of match[1].split(",")) {
+      const method = name.trim().split(/\s+as\s+/).pop().trim();
+      if (/^(?:GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)$/.test(method)) methods.add(method);
     }
   }
 
@@ -189,11 +244,13 @@ function main() {
 
   for (const filePath of routeFiles) {
     const route = normalizeRoute(filePath);
-    const content = fs.readFileSync(filePath, "utf8");
+    const ownContent = fs.readFileSync(filePath, "utf8");
+    // Judge an alias route on the handler it actually serves.
+    const content = resolveAuditableContent(filePath, ownContent);
     discoveredByRoute.set(route, {
       filePath,
       content,
-      methods: extractMethods(content),
+      methods: extractMethods(ownContent),
       authSignals: analyzeAuthSignals(content),
     });
   }

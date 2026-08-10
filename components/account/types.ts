@@ -227,6 +227,11 @@ export interface ReferralsProps {
 }
 
 export interface SettingsProps {
+    /**
+     * Quiet-hours state, resolved server-side so the control renders with the
+     * role default rather than flashing "off" before the real value arrives.
+     */
+    quietHours?: { enabled: boolean; start: number; end: number; timezone: string }
     /** The current user */
     currentUser: User
     /** User's active sessions */

@@ -72,14 +72,29 @@ export class AIServiceFactory {
     }
 
     /**
-     * Determines which AI service type to use
-     * 
+     * Determines which AI service type to use.
+     *
      * Priority:
-     * 1. Environment variable AI_SERVICE_TYPE
-     * 2. Gemini if API key is available
-     * 3. Mock as fallback
-     * 
-     * @returns Service type to use
+     * 1. `AI_SERVICE_TYPE` — an explicit operator choice, including `mock`.
+     * 2. Whichever provider key is present.
+     * 3. Mock — but ONLY outside production.
+     *
+     * That last line is the important one. This used to fall through to mock in
+     * every environment, so a missing or rotated key on a deploy meant customers
+     * uploading real insurance policies got fabricated analysis back: an invented
+     * insurer, a €500 premium, invented coverages, all stamped with 88–96%
+     * confidence. For an insurance product, telling someone what their policy
+     * covers when we have not read it is the single most harmful thing this
+     * system can output — worse by far than telling them the analysis failed.
+     *
+     * It also failed invisibly: one `warn` line, and an operator watching the
+     * dashboard would see analyses completing normally.
+     *
+     * Refusing in production matches what the rest of the codebase already does
+     * with a missing dependency — `lib/storage.ts` refuses the local-public
+     * fallback, `lib/email/email-service.ts` returns an error rather than
+     * pretending to send. A deliberate `AI_SERVICE_TYPE=mock` is still honoured,
+     * because that is someone choosing it rather than nobody noticing.
      */
     private static determineServiceType(): AIServiceType {
         // Check environment variable
@@ -99,7 +114,16 @@ export class AIServiceFactory {
             return 'openai'
         }
 
-        // Fallback to mock
+        if (process.env.NODE_ENV === 'production') {
+            logger('error', 'No AI provider configured in production — refusing to serve mock analysis', {
+                reason: 'GEMINI_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY not found',
+            })
+            throw new Error(
+                'No AI provider configured. Set GEMINI_API_KEY, ANTHROPIC_API_KEY or ' +
+                'OPENAI_API_KEY, or set AI_SERVICE_TYPE=mock to opt in deliberately.'
+            )
+        }
+
         logger('warn', 'No AI service configured, using mock', {
             reason: 'GEMINI_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY not found'
         })
