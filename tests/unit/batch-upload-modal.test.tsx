@@ -70,6 +70,25 @@ function rowFor(fileName: string): HTMLElement {
     return found
 }
 
+/**
+ * The save-all button exists only once at least one row is READY, and stays
+ * disabled while any row is still extracting. Several tests used to wait for
+ * the ROWS and click immediately — rows render in 'extracting' status, so on a
+ * slow worker the click ran before the button existed and the test failed in
+ * milliseconds (the flake that failed the 71b943f2 merge CI). Wait for the
+ * button to be present AND enabled, then click a fresh query of it.
+ */
+async function clickSaveAll() {
+    await waitFor(
+        () => {
+            const btn = screen.getByTestId('batch-upload-save-all') as HTMLButtonElement
+            expect(btn.disabled).toBe(false)
+        },
+        { timeout: 5000 }
+    )
+    fireEvent.click(screen.getByTestId('batch-upload-save-all'))
+}
+
 beforeEach(() => {
     extractCalls = []
     batchCreatePayloads = []
@@ -336,7 +355,7 @@ describe('partial success is preserved', () => {
         expect(summary.textContent).toContain('2')
         expect(summary.textContent).toContain('1')
 
-        fireEvent.click(screen.getByTestId('batch-upload-save-all'))
+        await clickSaveAll()
         await waitFor(() => expect(batchCreatePayloads).toHaveLength(1))
 
         // Only the ready rows are sent — the failed one is not smuggled in.
@@ -372,7 +391,7 @@ describe('partial success is preserved', () => {
         await upload([pdf('new.pdf'), pdf('dupe.pdf')])
         await waitFor(() => expect(screen.getAllByTestId('batch-upload-row')).toHaveLength(2))
 
-        fireEvent.click(screen.getByTestId('batch-upload-save-all'))
+        await clickSaveAll()
 
         await waitFor(() => expect(screen.getAllByTestId('batch-upload-row')).toHaveLength(1))
         const row = rowFor('dupe.pdf')
@@ -424,7 +443,7 @@ describe('every saved policy keeps its source document', () => {
         await upload([pdf('one.pdf'), pdf('two.pdf')])
         await waitFor(() => expect(screen.getAllByTestId('batch-upload-row')).toHaveLength(2))
 
-        fireEvent.click(screen.getByTestId('batch-upload-save-all'))
+        await clickSaveAll()
         await waitFor(() => expect(documentUploads).toHaveLength(2), { timeout: 5000 })
 
         // Each document goes to ITS policy — the index mapping is what makes
@@ -452,7 +471,7 @@ describe('every saved policy keeps its source document', () => {
         await upload([pdf('dupe.pdf'), pdf('keep.pdf')])
         await waitFor(() => expect(screen.getAllByTestId('batch-upload-row')).toHaveLength(2))
 
-        fireEvent.click(screen.getByTestId('batch-upload-save-all'))
+        await clickSaveAll()
         await waitFor(() => expect(documentUploads).toHaveLength(1), { timeout: 5000 })
 
         // The surviving row is index 1 — attaching by position in the SENT array
@@ -467,7 +486,7 @@ describe('every saved policy keeps its source document', () => {
         await upload([pdf('solo.pdf')])
         await waitFor(() => expect(rowFor('solo.pdf')).toHaveAttribute('data-status', 'ready'))
 
-        fireEvent.click(screen.getByTestId('batch-upload-save-all'))
+        await clickSaveAll()
         await waitFor(() => expect(rowFor('solo.pdf')).toHaveAttribute('data-status', 'failed'), { timeout: 5000 })
 
         const row = rowFor('solo.pdf')
@@ -483,7 +502,7 @@ describe('every saved policy keeps its source document', () => {
         renderModal()
         await upload([pdf('solo.pdf')])
         await waitFor(() => expect(rowFor('solo.pdf')).toHaveAttribute('data-status', 'ready'))
-        fireEvent.click(screen.getByTestId('batch-upload-save-all'))
+        await clickSaveAll()
         await waitFor(() => expect(rowFor('solo.pdf')).toHaveAttribute('data-code', 'DOCUMENT_UPLOAD_FAILED'), { timeout: 5000 })
 
         batchCreatePayloads = []
