@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { __ensurePoolerCompatibility as ensure } from "@/lib/db"
+import { __ensurePoolerCompatibility as ensure, assessConnectionStrategy as assess } from "@/lib/db"
 
 /**
  * Production incident, 2026-08-10.
@@ -94,5 +94,71 @@ describe("the pooler is recognised by port as well as host", () => {
         // still identifies the shared pooler.
         const out = ensure("postgresql://u:p@aws-0-eu-west-3.pooler.supabase.com/postgres")!
         expect(out).toContain("pgbouncer=true")
+    })
+})
+
+/**
+ * Sentry POLICYWALLET-5, first seen 2026-07-11 and still firing a month later:
+ *
+ *   PrismaClientInitializationError: Error querying the database:
+ *   FATAL: (EMAXCONNSESSION) max clients reached in session mode
+ *          - max clients are limited to pool_size: 15
+ *
+ * `POOLED_DATABASE_URL` was set on Production and never on Preview, so Preview
+ * silently fell back to `DIRECT_URL` — the SESSION-mode pooler, capped at 15
+ * clients — and exhausted it as soon as anything ran concurrently. Nothing said
+ * so. The fallback is deliberate and correct at low volume; being silent about
+ * it in a deployed environment is what made a configuration fault look like a
+ * database fault for a month.
+ */
+describe("a deployed instance says so when it is not on the pooled connection", () => {
+    it("warns when a deployment falls back to DIRECT_URL", () => {
+        const { source, warning } = assess({
+            direct: "postgresql://u:p@aws-1-eu-west-3.pooler.supabase.com:5432/postgres",
+            isDeployed: true,
+        })
+        expect(source).toBe("direct")
+        expect(warning).toContain("POOLED_DATABASE_URL is not set")
+        // Names the consequence, so the reader does not have to already know it.
+        expect(warning).toMatch(/session-mode|exhaust/i)
+    })
+
+    it("stays quiet when the pooled URL is present", () => {
+        expect(
+            assess({
+                pooled: "postgresql://u:p@aws-1-eu-west-3.pooler.supabase.com:6543/postgres?pgbouncer=true",
+                direct: "postgresql://u:p@db.example.supabase.co:5432/postgres",
+                isDeployed: true,
+            })
+        ).toEqual({ source: "pooled", warning: null })
+    })
+
+    it("stays quiet locally, where the fallback is the right answer", () => {
+        // One process, a handful of connections. Warning here would be noise,
+        // and noise is how the real warning gets ignored.
+        expect(assess({ direct: "postgresql://u:p@localhost:5432/postgres", isDeployed: false }).warning)
+            .toBeNull()
+    })
+
+    it("reports a total absence of configuration as its own fault", () => {
+        expect(assess({ isDeployed: true })).toEqual({
+            source: "none",
+            warning: "database: no connection string configured",
+        })
+    })
+
+    it("prefers pooled over direct over database, in that order", () => {
+        expect(assess({ pooled: "a", direct: "b", database: "c" }).source).toBe("pooled")
+        expect(assess({ direct: "b", database: "c" }).source).toBe("direct")
+        expect(assess({ database: "c" }).source).toBe("database")
+    })
+
+    it("never puts the connection string itself in the warning", () => {
+        // Warnings land in logs and in Sentry breadcrumbs; a DSN carries the
+        // database password.
+        const secret = "postgresql://postgres.abc:sup3rs3cr3t@host:5432/postgres"
+        const { warning } = assess({ direct: secret, isDeployed: true })
+        expect(warning).not.toContain("sup3rs3cr3t")
+        expect(warning).not.toContain("postgres.abc")
     })
 })
