@@ -77,3 +77,9 @@ ds-bundle/
 .design-sync/.cache/
 .design-sync/learnings/
 .design-sync/node_modules
+
+# Claude Code personal settings — machine-local permissions and MCP toggles.
+# Was tracked by mistake, so one person's allow-rules and enabled servers
+# arrived in everybody else's checkout. settings.json stays tracked for
+# anything the team genuinely shares.
+.claude/settings.local.json
