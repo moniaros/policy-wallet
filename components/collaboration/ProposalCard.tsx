@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { INSURANCE_BRANCHES, normalizeBranch } from "@/lib/insurance/taxonomy"
 import {
     Send,
     CheckCircle2,
@@ -39,13 +39,13 @@ interface ProposalCreateProps {
     isSubmitting?: boolean
 }
 
-const LOB_OPTIONS = [
-    { value: "motor", en: "Motor", el: "Αυτοκίνητο" },
-    { value: "health", en: "Health", el: "Υγεία" },
-    { value: "home", en: "Home", el: "Κατοικία" },
-    { value: "life", en: "Life", el: "Ζωή" },
-    { value: "travel", en: "Travel", el: "Ταξίδι" },
-]
+/**
+ * Derived from the taxonomy rather than a five-value literal: a proposal for a
+ * boat, pension or cyber policy could not previously name its own line.
+ */
+const LOB_OPTIONS = INSURANCE_BRANCHES
+    .filter((branch) => branch.writeEnabled)
+    .map((branch) => ({ value: branch.id, en: branch.label.en, el: branch.label.el }))
 
 const PROPOSAL_TYPE_LABELS: Record<ProposalType, { en: string; el: string }> = {
     new_policy: { en: "New Policy", el: "Νέο ασφαλιστήριο" },

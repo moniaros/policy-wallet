@@ -66,6 +66,8 @@ export const RiskProfileSchema = z.object({
   activities: z.array(z.enum(HIGH_RISK_ACTIVITIES)).max(HIGH_RISK_ACTIVITIES.length).optional(),
   cyberExposure: z.enum(['low', 'moderate', 'high']).optional(),
   retirementPlanning: z.boolean().optional(),
+  /** Acts as the manager (διαχειριστής) of a block of flats. */
+  isBuildingManager: z.boolean().optional(),
   coverHeldElsewhere: z.array(z.enum(WRITE_BRANCH_IDS)).max(WRITE_BRANCH_IDS.length).optional(),
 
   /**

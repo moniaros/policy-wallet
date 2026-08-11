@@ -233,6 +233,18 @@ const ESTIMATED_ANNUAL_PREMIUMS: Record<string, number> = {
     personal_accident: 150,
     pension: 600,
     business: 700,
+    // Consumer specialty lines. Wide ranges in the market, so these sit at the
+    // low end of what a small craft or a modest collection costs to insure —
+    // an indicative floor is more useful than a blank, and less misleading than
+    // a midpoint drawn from superyachts.
+    boat: 400,
+    boat_tpl: 150,
+    boat_hull: 900,
+    fine_art: 250,
+    // Commercial specialty lines are deliberately ABSENT. A cargo premium is a
+    // function of shipment value and route, a fidelity premium of headcount and
+    // controls; any single number here would be fiction, and `getEstimatedPremium`
+    // returning null renders as "not estimated" rather than as a wrong figure.
 }
 
 export function getEstimatedPremium(lob: string): number | null {

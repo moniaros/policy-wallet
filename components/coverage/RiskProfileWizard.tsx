@@ -8,6 +8,7 @@ import { ACTIVITY_LABELS, HIGH_RISK_ACTIVITIES } from "@/lib/services/gap-engine
 import {
     Baby,
     Briefcase,
+    Building2,
     Car,
     Heart,
     Home,
@@ -58,6 +59,7 @@ interface RiskProfileWizardProps {
         activities?: string[] | null
         cyberExposure?: string | null
         retirementPlanning?: boolean
+        isBuildingManager?: boolean
     }
     language?: "en" | "el"
 }
@@ -98,6 +100,7 @@ const FIELD_LABELS: Record<string, { el: string; en: string }> = {
     activities: { el: "Δραστηριότητες", en: "Activities" },
     cyberExposure: { el: "Διαδικτυακή έκθεση", en: "Online exposure" },
     coverHeldElsewhere: { el: "Καλύψεις εκτός PolicyWallet", en: "Cover held elsewhere" },
+    isBuildingManager: { el: "Διαχειριστής πολυκατοικίας", en: "Building manager" },
     // Bookkeeping rather than a question, but it is schema-constrained and a
     // rejection has to name something the reader can act on rather than a key.
     answeredFields: { el: "Απαντημένα πεδία", en: "Answered fields" },
@@ -127,7 +130,7 @@ const ACTIVITY_OPTIONS = HIGH_RISK_ACTIVITIES.map((value) => ({
  */
 const DEFINITE_WIZARD_FIELDS = [
     "ownsHome", "rentsOutProperty", "ownsBoat", "ownsBusiness", "hasLoans",
-    "hasPets", "travelsFrequently", "retirementPlanning",
+    "hasPets", "travelsFrequently", "retirementPlanning", "isBuildingManager",
     // Multi-selects: an empty list is the answer "none of these".
     "activities", "chronicConditions", "familyMedicalHistory",
 ]
@@ -221,6 +224,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
     const [activities, setActivities] = useState<string[]>(initialData?.activities ?? [])
     const [cyberExposure, setCyberExposure] = useState(initialData?.cyberExposure || "")
     const [retirementPlanning, setRetirementPlanning] = useState(initialData?.retirementPlanning ?? false)
+    const [isBuildingManager, setIsBuildingManager] = useState(initialData?.isBuildingManager ?? false)
 
     function toggleActivity(value: string) {
         setActivities((prev) =>
@@ -283,6 +287,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                     activities,
                     cyberExposure: cyberExposure || undefined,
                     retirementPlanning,
+                    isBuildingManager,
                     // Only what they actually answered. A skipped select stays
                     // unknown rather than becoming a declaration of "none".
                     answeredFields: answeredFieldsFrom({
@@ -610,6 +615,14 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                             <input type="checkbox" checked={hasLoans} onChange={(e) => setHasLoans(e.target.checked)} className={checkboxClass} />
                             <Briefcase className="h-4 w-4 text-black/60 dark:text-white/50" />
                             <span className="text-sm text-black/75 dark:text-white/75">{t("Δάνεια", "Have loans")}</span>
+                        </label>
+                        {/* The διαχειριστής role carries personal liability for the
+                            common areas and is not implied by owning the flat — it
+                            falls to tenants just as readily. */}
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked={isBuildingManager} onChange={(e) => setIsBuildingManager(e.target.checked)} className={checkboxClass} />
+                            <Building2 className="h-4 w-4 text-black/60 dark:text-white/50" />
+                            <span className="text-sm text-black/75 dark:text-white/75">{t("Διαχειριστής πολυκατοικίας", "Manager of a block of flats")}</span>
                         </label>
                     </div>
 

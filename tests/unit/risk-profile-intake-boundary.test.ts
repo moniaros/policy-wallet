@@ -118,6 +118,7 @@ describe("the intake vocabularies stay in step with the engine", () => {
             // Art. 9 data: accepted here, but only from the explicitly consented
             // B2C surface — the advisor questionnaire deliberately cannot write it.
             health: { chronicConditions: [] },
+            buildingManagerRole: { isBuildingManager: false },
         }
         for (const factor of CONTEXT_FACTORS) {
             const payload = answerable[factor]

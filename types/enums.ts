@@ -4,32 +4,43 @@
  * Type-safe enums for all domain concepts in the application
  */
 
-// Lines of Business
-export const LINES_OF_BUSINESS = [
-    'motor',
-    'health',
-    'home',
-    'life',
-    'travel',
-    'liability',
-    'pet',
-    'breakdown',
-    'legal_expenses',
-    'income_protection',
-    'gadget',
-    'bicycle',
-    'business',
-    'cyber',
-    'motorbike',
-    'public_liability',
-    'renters',
-    'other'
-] as const
+import { INSURANCE_BRANCHES } from '@/lib/insurance/taxonomy'
 
-export type LineOfBusiness = typeof LINES_OF_BUSINESS[number]
+/**
+ * Lines of business accepted across the typed API surface.
+ *
+ * DERIVED from `lib/insurance/taxonomy.ts`, which is the single source of
+ * truth. This list used to be a hand-maintained second taxonomy, and it had
+ * drifted in both directions: it carried `breakdown` and `public_liability`,
+ * which are ALIASES rather than branch ids, while missing `pension`, `boat`,
+ * `roadside`, `personal_accident` and every `group_*` line — so the public API
+ * rejected filters for branches the app could perfectly well store.
+ *
+ * The two legacy aliases stay accepted deliberately: they are live values in
+ * older API clients and in i18n keys, and `normalizeBranch` resolves them
+ * correctly. Removing them would be a breaking narrowing; keeping them costs
+ * nothing because nothing writes them.
+ */
+const LEGACY_ACCEPTED_ALIASES = ['breakdown', 'public_liability'] as const
+
+export const LINES_OF_BUSINESS = [
+    ...INSURANCE_BRANCHES.map((branch) => branch.id),
+    ...LEGACY_ACCEPTED_ALIASES,
+] as const as readonly string[]
+
+/**
+ * The compile-time type stays a broad `string` rather than a literal union:
+ * `Policy.lineOfBusiness` is a free-form column by design (the taxonomy is the
+ * read-side adapter), and pinning a union here would make every DB row need a
+ * cast. Runtime validation is `isLineOfBusiness`; the write-side literal union
+ * lives in `lib/validations/policy.ts` as `WriteBranchId`.
+ */
+export type LineOfBusiness = string
+
+const LINE_OF_BUSINESS_SET: ReadonlySet<string> = new Set(LINES_OF_BUSINESS)
 
 export function isLineOfBusiness(value: string): value is LineOfBusiness {
-    return LINES_OF_BUSINESS.includes(value as LineOfBusiness)
+    return LINE_OF_BUSINESS_SET.has(value)
 }
 
 // Policy Status

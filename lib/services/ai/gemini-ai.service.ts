@@ -28,9 +28,8 @@ import type {
 } from './ai-service.interface'
 import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
-import { extractionCitationsEnabled, ExtractionSourcesSchema } from './extraction-citations'
+import { buildExtractionSchema } from './extraction-schema'
 import { schemaPromptBlock, validateJsonModeObject, coercedGreekString, normalizeClarityShape } from './json-mode-schema'
-import { WRITE_BRANCH_IDS } from '@/lib/insurance/taxonomy'
 import {
   buildExtractionPrompt,
   buildGapAnalysisPrompt,
@@ -156,7 +155,7 @@ export class GeminiAIService implements IAIService {
 
       // Shared canonical extraction prompt (lib/services/ai/prompts.ts) —
       // the output contract is the schema block appended below.
-      const prompt = buildExtractionPrompt(options?.operatorGuidance)
+      const prompt = buildExtractionPrompt(options?.operatorGuidance, options?.lineOfBusinessHint)
 
       logger('info', 'Starting Gemini extraction', {
         fileName: document.fileName,
@@ -164,33 +163,8 @@ export class GeminiAIService implements IAIService {
         model: modelName
       })
 
-      // Schema-driven extraction: .describe() annotations guide the AI on what to look for
-      const ExtractionSchema = z.object({
-        insurerName: z.string().optional().describe("Insurance company name from logo, letterhead, or header"),
-        policyNumber: z.string().optional().describe("Policy number from headers, footers, or labeled fields"),
-        lineOfBusiness: z.string().optional().describe(`Exactly one of: ${WRITE_BRANCH_IDS.join(', ')}`),
-        startDate: z.string().optional().describe("Policy start date in YYYY-MM-DD (look for Ισχύς, Period, Validity)"),
-        endDate: z.string().optional().describe("Policy end date in YYYY-MM-DD"),
-        premiumAmount: z.number().optional().describe("Annual premium amount, numeric only (look for Ασφάλιστρο, Premium)"),
-        premiumCurrency: z.string().optional().describe("Currency code, e.g. EUR"),
-        issueDate: z.string().optional().describe("Policy issue/signature date in YYYY-MM-DD (look for Ημερομηνία έκδοσης, Issue date)"),
-        premiumFrequency: z.enum(["annual", "semiannual", "quarterly", "monthly", "one_off"]).optional().describe("Premium payment frequency (look for Συχνότητα καταβολής, δόσεις, payment frequency/installments)"),
-        renewalDate: z.string().optional().describe("Policy renewal date in YYYY-MM-DD if stated (look for Ημερομηνία ανανέωσης, Renewal)"),
-        coverageSummary: z.string().optional().describe("Brief summary of main coverages, max 200 chars"),
-        customerName: z.string().optional().describe("Policyholder first name"),
-        customerSurname: z.string().optional().describe("Policyholder surname"),
-        customerEmail: z.string().optional(),
-        customerPhone: z.string().optional().describe("Policyholder phone number (look for Τηλέφωνο, Κινητό, Phone)"),
-        customerTaxId: z.string().optional().describe("Policyholder VAT / tax number — 9-digit Greek ΑΦΜ (look for ΑΦΜ, Α.Φ.Μ., ΔΟΥ, VAT, Tax ID)"),
-        exclusions: z.array(z.string()).optional().describe("Top exclusions from Εξαιρέσεις/Exclusions sections"),
-        extractionConfidence: z.object({
-          overall: z.number().describe("0-100 confidence score"),
-          requiresReview: z.boolean().describe("True if overall < 80 or critical fields missing"),
-          fields: z.record(z.string(), z.number()).describe("Per-field confidence scores 0-100 for: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate")
-        }).optional(),
-        ...(extractionCitationsEnabled() ? { extractionSources: ExtractionSourcesSchema } : {}),
-        acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness")
-      })
+      // Shared with every provider — see lib/services/ai/extraction-schema.ts
+      const ExtractionSchema = buildExtractionSchema()
 
       // JSON mode: the schema travels in the prompt and validation happens
       // locally — Gemini rejects AcordDataSchema-sized response_schemas with
@@ -269,6 +243,8 @@ ${schemaPromptBlock(ExtractionSchema)}`
         customerEmail: extracted.customerEmail,
         customerPhone: extracted.customerPhone,
         customerTaxId: extracted.customerTaxId,
+        documentKind: enriched.documentKind,
+        evidence: enriched.evidence,
         exclusions: enriched.exclusions,
         extractionMeta: enriched.extractionMeta,
         acordData: enriched.acordData,

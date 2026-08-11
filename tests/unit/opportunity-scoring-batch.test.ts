@@ -74,6 +74,7 @@ beforeEach(() => {
             ownsBusiness: false, businessEmployees: 0, savingsAmount: 5000,
             mortgageAmount: null, hasLoans: false, loanAmount: null, travelsFrequently: false,
             activities: [], valuablesValue: 0, cyberExposure: 'low', retirementPlanning: false,
+            isBuildingManager: false,
             chronicConditions: [],
             answeredFields: [
                 'maritalStatus', 'employmentStatus', 'dateOfBirth', 'annualIncome',
@@ -82,6 +83,7 @@ beforeEach(() => {
                 'ownsBusiness', 'businessEmployees', 'savingsAmount', 'mortgageAmount',
                 'hasLoans', 'loanAmount', 'travelsFrequently', 'activities',
                 'valuablesValue', 'cyberExposure', 'retirementPlanning', 'chronicConditions',
+                'isBuildingManager',
             ],
         },
     ])

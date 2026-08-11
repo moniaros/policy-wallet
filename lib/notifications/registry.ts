@@ -676,6 +676,42 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         emittedBy: "lib/services/perk-reminder.service.ts",
     },
 
+    /**
+     * A recurring condition of cover is coming due.
+     *
+     * The one genuinely new trigger the specialty lines introduce, and it exists
+     * because those policies do not just pay out — they REQUIRE things, on a
+     * schedule: annual servicing to the maker's instructions, certificates valid
+     * throughout the period, an alarm that stays linked to a monitoring centre.
+     * Breaching one of these does not reduce a claim, it removes the cover, and
+     * nothing else in this registry watches for it.
+     *
+     * `high` rather than `normal`: the customer is paying for cover they may not
+     * have. Deliberately NOT transactional — it is a reminder about their own
+     * obligation, not a record of ours.
+     *
+     * Declared `planned` until the compliance scan that emits it ships. The
+     * derivation is built (lib/insurance/policy-conditions.ts →
+     * complianceObligations); what is missing is the cron that walks it.
+     */
+    obligation_due: {
+        businessEvent: "A policy condition the customer must keep is coming due",
+        triggerCondition:
+            "a compliance scan finds an acordData.conditions entry with a recurrence inside its reminder window",
+        category: "policy",
+        priority: "high",
+        channels: EMAIL_LED,
+        recipients: ["owner"],
+        transactional: false,
+        requiredAction: "confirm_condition_met",
+        escalation: null,
+        retry: STANDARD_RETRY,
+        expiresAfterHours: 14 * DAY,
+        audit: "notification_event",
+        status: "live",
+        emittedBy: "lib/services/compliance/obligation-scan.ts",
+    },
+
     // ── Claims ───────────────────────────────────────────────────────────────
     //
     // The brief asks for "new claim" and "claim status changes". This product has

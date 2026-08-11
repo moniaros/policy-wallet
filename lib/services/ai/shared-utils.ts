@@ -7,9 +7,34 @@
 
 import { logger } from '@/lib/logger'
 
-export const AI_CALL_TIMEOUT_MS = 180_000
+/**
+ * The analysis function's own budget, from `maxDuration` on
+ * app/api/v1/jobs/execute-analysis/route.ts and vercel.json. Named here because
+ * the timeout below has to FIT INSIDE it, and nothing enforced that.
+ */
+export const ANALYSIS_FUNCTION_BUDGET_MS = 300_000
+
+/**
+ * Per-call timeout.
+ *
+ * Was 180s, which does not survive its own retry: 180 + 2 + 180 = 362s against a
+ * 300s function budget, so a single transient hang killed the whole analysis run
+ * before the retry could finish — and the retry exists precisely to rescue that
+ * case. Measured, not theoretical: two of five extraction calls against
+ * `gemini-3-flash-preview` hit the 180s timeout in one eval run.
+ *
+ * 120s leaves 120 + 2 + 120 = 242s inside the budget, and it is still roughly
+ * five times the slowest HEALTHY call observed (25.7s; most land under 20s). A
+ * call past two minutes is not slow, it is hung, and failing it over to the
+ * fallback model is both faster and cheaper than waiting.
+ */
+export const AI_CALL_TIMEOUT_MS = 120_000
 export const MAX_RETRIES = 1
 export const INITIAL_BACKOFF_MS = 2_000
+
+/** Worst-case wall time of one guarded call, including its retry and backoff. */
+export const WORST_CASE_CALL_MS =
+    AI_CALL_TIMEOUT_MS * (MAX_RETRIES + 1) + INITIAL_BACKOFF_MS * MAX_RETRIES
 
 /**
  * Checks if a regex pattern matches a value (case-insensitive)

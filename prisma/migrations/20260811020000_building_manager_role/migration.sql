@@ -1,0 +1,31 @@
+-- Building-manager role on the policyholder profile.
+--
+-- Every Greek πολυκατοικία has a διαχειριστής, and the role carries PERSONAL
+-- liability for the common areas — a fall on a wet stairwell, a lift failure, a
+-- burst riser that floods the flat below. The claim is brought against the
+-- person holding the role, not against the building.
+--
+-- WHY THIS NEEDS A COLUMN OF ITS OWN rather than being inferred:
+--
+--   * It is not implied by ownership. A home policy answers damage to YOUR
+--     property, not what the building's common parts do to a visitor.
+--   * It is not implied by tenancy either — the role rotates between residents
+--     and falls to tenants as readily as to owners.
+--   * It is not implied by anything else on the profile. There is no existing
+--     column whose value could stand in for it, which is exactly the test the
+--     risk engine applies before a factor earns its own field.
+--
+-- The engine's central guarantee depends on this being a real, askable column:
+-- a risk whose `requires` factor is unknown reports `needs_review` and can never
+-- become a protection gap. Without somewhere to record the answer, the
+-- `common_areas_liability` risk would sit permanently grey for everyone.
+--
+-- NOT NULL DEFAULT false matches every other boolean on this table. As with
+-- those, the default is indistinguishable from an answered "no", which is why
+-- `answered_fields` carries the explicit record and why `DEFAULTED_COLUMNS` in
+-- lib/services/gap-engine/life-context.ts treats only `true` as proof of an
+-- answer. Existing rows are therefore unaffected: they read as "never asked",
+-- and every existing protection score stays exactly where it is until the
+-- customer answers.
+ALTER TABLE "policyholder_profiles"
+    ADD COLUMN "is_building_manager" BOOLEAN NOT NULL DEFAULT false;

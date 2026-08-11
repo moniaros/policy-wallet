@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
 import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
 import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
+import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 
 // Mirrors the maxBytes parsePolicyPdfWithGemini validates with, and stays under
 // next.config.ts's serverActions.bodySizeLimit so we own the rejection message.
@@ -332,12 +333,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, lineOfBusiness: e.target.value } })}
                                                 className="pw-input appearance-none"
                                             >
-                                                <option value="motor">{t.agentModals.addCustomer.lobMotor}</option>
-                                                <option value="health">{t.agentModals.addCustomer.lobHealth}</option>
-                                                <option value="home">{t.agentModals.addCustomer.lobHome}</option>
-                                                <option value="life">{t.agentModals.addCustomer.lobLife}</option>
-                                                <option value="travel">{t.agentModals.addCustomer.lobTravel}</option>
-                                                <option value="liability">{t.agentModals.addCustomer.lobLiability}</option>
+                                                {WRITE_BRANCH_IDS.map((id) => (
+                                                    <option key={id} value={id}>{t.policyTypes[id] ?? id}</option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div className="space-y-1.5">

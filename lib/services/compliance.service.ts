@@ -104,6 +104,7 @@ export async function buildUserDataExportPayload(userId: string) {
                         activities: true,
                         cyberExposure: true,
                         retirementPlanning: true,
+                        isBuildingManager: true,
                         coverHeldElsewhere: true,
                         answeredFields: true,
                         createdAt: true,

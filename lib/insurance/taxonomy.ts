@@ -11,6 +11,16 @@
  *
  * Keep this module free of React/DOM imports so node scripts (seeds, tests)
  * can consume it. Icons live in lib/insurance/branch-icons.ts.
+ *
+ * TWO INVARIANTS THAT ARE EASY TO BREAK:
+ *
+ * 1. **The tree is two levels deep, and that is load-bearing.** `branchFamilyId`
+ *    is `parentId ?? id`, so a grandchild resolves to its parent rather than to
+ *    the root and silently stops matching the root's cover checks. New branches
+ *    go exactly one level below a root.
+ * 2. **Never re-parent an existing branch.** Every risk in the catalog matches
+ *    cover by branch family; giving `gadget` a parent would detach the
+ *    `valuables_loss` risk from every gadget policy already in the database.
  */
 
 export type BranchSegment = 'b2c' | 'b2b'
@@ -45,13 +55,13 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'motor', segment: 'b2c',
         label: { el: 'Αυτοκίνητο', en: 'Motor' }, genitiveEl: 'αυτοκινήτου',
-        aliases: ['auto', 'car', 'vehicle'],
+        aliases: ['auto', 'car', 'vehicle', 'αυτοκινητου', 'κλαδος_αυτοκινητων'],
         scoreCategory: 'property', writeEnabled: true, contentTier: 'rich', marketingSlug: 'motor',
     },
     {
         id: 'motorbike', segment: 'b2c', parentId: 'motor',
         label: { el: 'Μοτοσικλέτα', en: 'Motorbike' }, genitiveEl: 'μοτοσικλέτας',
-        aliases: ['moto', 'motorcycle'],
+        aliases: ['moto', 'motorcycle', 'μοτοσικλετα', 'μηχανακι'],
         scoreCategory: 'property', writeEnabled: true, contentTier: 'basic',
     },
     {
@@ -63,13 +73,13 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'roadside', segment: 'b2c',
         label: { el: 'Οδική Βοήθεια', en: 'Roadside Assistance' }, genitiveEl: 'οδικής βοήθειας',
-        aliases: ['breakdown', 'assistance'],
+        aliases: ['breakdown', 'assistance', 'οδικη_βοηθεια'],
         scoreCategory: 'property', writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'home', segment: 'b2c',
         label: { el: 'Κατοικία', en: 'Home' }, genitiveEl: 'κατοικίας',
-        aliases: ['property', 'house', 'household', 'residence'],
+        aliases: ['property', 'house', 'household', 'residence', 'κατοικιας', 'περιουσιας', 'πυρος'],
         scoreCategory: 'property', writeEnabled: true, contentTier: 'rich', marketingSlug: 'property',
     },
     {
@@ -81,13 +91,13 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'health', segment: 'b2c',
         label: { el: 'Υγεία', en: 'Health' }, genitiveEl: 'υγείας',
-        aliases: ['medical'],
+        aliases: ['medical', 'υγειας', 'νοσοκομειακη'],
         scoreCategory: 'health', writeEnabled: true, contentTier: 'rich', marketingSlug: 'health',
     },
     {
         id: 'life', segment: 'b2c',
         label: { el: 'Ζωή', en: 'Life' }, genitiveEl: 'ζωής',
-        aliases: [],
+        aliases: ['ζωης', 'ασφαλιση_ζωης'],
         scoreCategory: 'life', writeEnabled: true, contentTier: 'rich', marketingSlug: 'life',
     },
     {
@@ -105,25 +115,25 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'personal_accident', segment: 'b2c', parentId: 'life',
         label: { el: 'Προσωπικό Ατύχημα', en: 'Personal Accident' }, genitiveEl: 'προσωπικού ατυχήματος',
-        aliases: ['accident'],
+        aliases: ['accident', 'προσωπικο_ατυχημα', 'ατυχηματων'],
         scoreCategory: 'life', writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'pension', segment: 'b2c',
         label: { el: 'Σύνταξη & Αποταμίευση', en: 'Pension & Savings' }, genitiveEl: 'σύνταξης',
-        aliases: ['retirement', 'savings'],
+        aliases: ['retirement', 'savings', 'συνταξης', 'αποταμιευσης'],
         scoreCategory: 'income', writeEnabled: true, contentTier: 'rich', marketingSlug: 'pension',
     },
     {
         id: 'travel', segment: 'b2c',
         label: { el: 'Ταξιδιωτική', en: 'Travel' }, genitiveEl: 'ταξιδιού',
-        aliases: ['trip'],
+        aliases: ['trip', 'ταξιδιωτικη', 'ταξιδιου'],
         scoreCategory: 'other', writeEnabled: true, contentTier: 'rich', marketingSlug: 'travel',
     },
     {
         id: 'pet', segment: 'b2c',
         label: { el: 'Κατοικίδιο', en: 'Pet' }, genitiveEl: 'κατοικιδίου',
-        aliases: [],
+        aliases: ['κατοικιδιου', 'κατοικιδιο'],
         scoreCategory: 'other', writeEnabled: true, contentTier: 'rich', marketingSlug: 'pet',
     },
     {
@@ -135,20 +145,52 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'liability', segment: 'b2c',
         label: { el: 'Αστική Ευθύνη', en: 'Liability' }, genitiveEl: 'αστικής ευθύνης',
-        aliases: ['public_liability', 'private_liability'],
+        aliases: [
+            'public_liability', 'private_liability', 'general_liability',
+            'αστικη_ευθυνη', 'αστικης_ευθυνης', 'γενικη_αστικη_ευθυνη',
+            // Common-areas liability for a block of flats: the διαχειριστής is a
+            // mass-market Greek consumer product, not a commercial line.
+            'αστικη_ευθυνη_διαχειριστη', 'ευθυνη_κοινοχρηστων_χωρων',
+        ],
         scoreCategory: 'liability', writeEnabled: true, contentTier: 'basic', marketingSlug: 'liability',
     },
     {
         id: 'legal_expenses', segment: 'b2c',
         label: { el: 'Νομική Προστασία', en: 'Legal Expenses' }, genitiveEl: 'νομικής προστασίας',
-        aliases: ['legal'],
+        aliases: ['legal', 'νομικη_προστασια', 'νομικης_προστασιας'],
         scoreCategory: 'liability', writeEnabled: true, contentTier: 'basic', marketingSlug: 'legal-expenses',
     },
     {
         id: 'boat', segment: 'b2c',
         label: { el: 'Σκάφος', en: 'Boat' }, genitiveEl: 'σκάφους',
-        aliases: ['marine', 'yacht'],
+        aliases: ['marine', 'yacht', 'σκαφους', 'σκαφος', 'σκαφη_αναψυχης'],
         scoreCategory: 'property', writeEnabled: true, contentTier: 'basic', marketingSlug: 'boat',
+    },
+    {
+        // Ίδιες ζημιές — Institute Yacht Clauses hull & machinery. Kept apart
+        // from boat_tpl because they are sold, priced and lapsed separately:
+        // a boat can carry the compulsory liability with no hull cover at all.
+        id: 'boat_hull', segment: 'b2c', parentId: 'boat',
+        label: { el: 'Σκάφος — Ίδιες Ζημιές', en: 'Boat Hull & Machinery' }, genitiveEl: 'ιδίων ζημιών σκάφους',
+        aliases: ['yacht_hull', 'hull_and_machinery', 'ιδιες_ζημιες_σκαφους'],
+        scoreCategory: 'property', writeEnabled: true, contentTier: 'basic',
+    },
+    {
+        // Compulsory for Greek recreational craft under Ν.4926/2022 and ΓΚΛ 20 —
+        // its absence is a legal exposure, not a preference.
+        id: 'boat_tpl', segment: 'b2c', parentId: 'boat',
+        label: { el: 'Σκάφος — Αστική Ευθύνη', en: 'Boat Third-Party Liability' }, genitiveEl: 'αστικής ευθύνης σκάφους',
+        aliases: ['yacht_tpl', 'boat_third_party', 'αστικη_ευθυνη_σκαφους'],
+        scoreCategory: 'liability', writeEnabled: true, contentTier: 'basic',
+    },
+    {
+        // Scheduled fine art and valuables at agreed values. Deliberately NOT a
+        // child of `gadget`: re-parenting gadget would detach the existing
+        // valuables_loss risk from every gadget policy already stored.
+        id: 'fine_art', segment: 'b2c',
+        label: { el: 'Έργα Τέχνης & Τιμαλφή', en: 'Fine Art & Valuables' }, genitiveEl: 'έργων τέχνης',
+        aliases: ['specie', 'artwork', 'valuables', 'εργα_τεχνης', 'τιμαλφη'],
+        scoreCategory: 'other', writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'gadget', segment: 'b2c',
@@ -167,7 +209,7 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'business', segment: 'b2b',
         label: { el: 'Επιχείρηση', en: 'Business' }, genitiveEl: 'επιχείρησης',
-        aliases: ['commercial', 'sme'],
+        aliases: ['commercial', 'sme', 'επιχειρησης', 'επαγγελματικη'],
         scoreCategory: null, writeEnabled: true, contentTier: 'rich', marketingSlug: 'business',
     },
     {
@@ -197,14 +239,14 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'professional_liability', segment: 'b2b', parentId: 'business',
         label: { el: 'Επαγγελματική Αστική Ευθύνη', en: 'Professional Liability' }, genitiveEl: 'επαγγελματικής αστικής ευθύνης',
-        aliases: ['professional_indemnity'],
-        scoreCategory: null, writeEnabled: false, contentTier: 'basic',
+        aliases: ['professional_indemnity', 'επαγγελματικη_αστικη_ευθυνη'],
+        scoreCategory: null, writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'employer_liability', segment: 'b2b', parentId: 'business',
         label: { el: 'Ευθύνη Εργοδότη', en: 'Employer Liability' }, genitiveEl: 'ευθύνης εργοδότη',
-        aliases: [],
-        scoreCategory: null, writeEnabled: false, contentTier: 'basic',
+        aliases: ['ευθυνη_εργοδοτη', 'εργατικο_ατυχημα'],
+        scoreCategory: null, writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'technical_works', segment: 'b2b', parentId: 'business',
@@ -221,8 +263,8 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'transports', segment: 'b2b', parentId: 'business',
         label: { el: 'Μεταφορές', en: 'Transports' }, genitiveEl: 'μεταφορών',
-        aliases: ['cargo', 'freight'],
-        scoreCategory: null, writeEnabled: false, contentTier: 'basic',
+        aliases: ['cargo', 'freight', 'carriers_liability', 'ευθυνη_μεταφορεα'],
+        scoreCategory: null, writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'guarantees', segment: 'b2b', parentId: 'business',
@@ -233,8 +275,41 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
     {
         id: 'special_risks', segment: 'b2b', parentId: 'business',
         label: { el: 'Ειδικοί Κίνδυνοι', en: 'Special Risks' }, genitiveEl: 'ειδικών κινδύνων',
-        aliases: [],
+        aliases: ['ειδικοι_κινδυνοι'],
         scoreCategory: null, writeEnabled: false, contentTier: 'basic',
+    },
+    // ── Commercial specialty lines ───────────────────────────────────
+    // All are direct children of `business` so branchFamilyId collapses them to
+    // 'business' and every existing B2B aggregation picks them up unchanged.
+    {
+        id: 'marine_hull', segment: 'b2b', parentId: 'business',
+        label: { el: 'Σκάφη & Πλοία (Επαγγελματικά)', en: 'Marine Hull (Commercial)' }, genitiveEl: 'επαγγελματικού σκάφους',
+        aliases: ['port_risks', 'brownwater', 'κλαδος_πλοιων', 'πλοιων'],
+        scoreCategory: null, writeEnabled: true, contentTier: 'basic',
+    },
+    {
+        id: 'marine_cargo', segment: 'b2b', parentId: 'business',
+        label: { el: 'Μεταφορές Εμπορευμάτων', en: 'Marine Cargo' }, genitiveEl: 'μεταφοράς εμπορευμάτων',
+        aliases: ['cargo_insurance', 'goods_in_transit', 'κλαδος_μεταφορων', 'μεταφορων', 'εμπορευματων'],
+        scoreCategory: null, writeEnabled: true, contentTier: 'basic',
+    },
+    {
+        id: 'marine_crew', segment: 'b2b', parentId: 'business',
+        label: { el: 'Πληρώματα Πλοίων', en: "Ships' Crew" }, genitiveEl: 'πληρωμάτων πλοίων',
+        aliases: ['crew', 'seafarers', 'κλαδος_πληρωματων', 'πληρωματων'],
+        scoreCategory: null, writeEnabled: true, contentTier: 'basic',
+    },
+    {
+        id: 'money', segment: 'b2b', parentId: 'business',
+        label: { el: 'Χρήματα', en: 'Money' }, genitiveEl: 'χρημάτων',
+        aliases: ['cash', 'cash_in_transit', 'cash_in_safe', 'χρηματων', 'μεταφορα_χρηματων'],
+        scoreCategory: null, writeEnabled: true, contentTier: 'basic',
+    },
+    {
+        id: 'fidelity', segment: 'b2b', parentId: 'business',
+        label: { el: 'Εμπιστοσύνη Υπαλλήλων', en: 'Fidelity Guarantee' }, genitiveEl: 'εμπιστοσύνης υπαλλήλων',
+        aliases: ['fidelity_guarantee', 'employee_dishonesty', 'εμπιστοσυνης', 'εμπιστοσυνη_υπαλληλων'],
+        scoreCategory: null, writeEnabled: true, contentTier: 'basic',
     },
     {
         id: 'group_health', segment: 'b2b',
@@ -268,8 +343,34 @@ export const BRANCHES_BY_ID: Record<string, InsuranceBranch> = Object.fromEntrie
     INSURANCE_BRANCHES.map((branch) => [branch.id, branch])
 )
 
+/**
+ * Fold a free-form line-of-business string into a lookup key.
+ *
+ * Greek matters here, and used not to be handled at all: the alias table was
+ * English-only, so `ΑΣΤΙΚΗ ΕΥΘΥΝΗ` and `ΚΛΑΔΟΣ ΜΕΤΑΦΟΡΩΝ` — the words actually
+ * printed on Greek policy schedules — both normalized to `other`.
+ *
+ * Two Greek-specific folds beyond lowercasing:
+ *  - **accents**, because uppercase Greek drops them (`ΑΣΤΙΚΗ` → `αστικη`) while
+ *    title case keeps them (`Αστική` → `αστική`), so the same word arrives in two
+ *    spellings depending on how the insurer typeset the schedule;
+ *  - **final sigma**, since `ΠΛΟΙΩΝ`/`πλοίως` differ only in a positional form.
+ *
+ * Aliases are therefore stored already folded (unaccented, medial sigma).
+ */
+function foldKey(raw: string): string {
+    return raw
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/ς/g, 'σ')
+        .trim()
+        .replace(/[^\p{L}\p{N}_]+/gu, '_')
+        .replace(/^_+|_+$/g, '')
+}
+
 const BRANCHES_BY_ALIAS: Record<string, InsuranceBranch> = Object.fromEntries(
-    INSURANCE_BRANCHES.flatMap((branch) => branch.aliases.map((alias) => [alias, branch]))
+    INSURANCE_BRANCHES.flatMap((branch) => branch.aliases.map((alias) => [foldKey(alias), branch]))
 )
 
 /**
@@ -293,7 +394,18 @@ export const WRITE_BRANCH_IDS = [
     'legal_expenses',
     'roadside',
     'boat',
+    'boat_hull',
+    'boat_tpl',
+    'fine_art',
     'business',
+    'professional_liability',
+    'employer_liability',
+    'transports',
+    'marine_hull',
+    'marine_cargo',
+    'marine_crew',
+    'money',
+    'fidelity',
     'group_health',
     'group_life',
     'group_pension',
@@ -314,37 +426,62 @@ export function getBranch(id: string): InsuranceBranch | undefined {
 export function normalizeBranch(raw: string | null | undefined): InsuranceBranch {
     if (!raw) return BRANCHES_BY_ID.other
 
-    const key = raw.toLowerCase().trim().replace(/[-\s]+/g, '_')
+    const key = foldKey(raw)
     const exact = BRANCHES_BY_ID[key] || BRANCHES_BY_ALIAS[key]
     if (exact) return exact
 
     // Substring heuristics for legacy free-form values ("Auto Insurance",
     // "lifeAndInvestment", "group health plan"). Order matters: group and
     // two-wheeler checks must run before their broader substrings.
-    if (key.includes('group')) {
-        if (key.includes('health')) return BRANCHES_BY_ID.group_health
-        if (key.includes('life')) return BRANCHES_BY_ID.group_life
-        if (key.includes('pension')) return BRANCHES_BY_ID.group_pension
+    if (key.includes('group') || key.includes('ομαδικ')) {
+        if (key.includes('health') || key.includes('υγει')) return BRANCHES_BY_ID.group_health
+        if (key.includes('life') || key.includes('ζωη')) return BRANCHES_BY_ID.group_life
+        if (key.includes('pension') || key.includes('συνταξ')) return BRANCHES_BY_ID.group_pension
         return BRANCHES_BY_ID.business
     }
-    if (key.includes('motorbike') || key.includes('motorcycle') || key.includes('moped')) return BRANCHES_BY_ID.motorbike
-    if (key.includes('bicycle') || key.includes('bike')) return BRANCHES_BY_ID.bicycle
-    if (key.includes('motor') || key.includes('auto')) return BRANCHES_BY_ID.motor
-    if (key.includes('truck') || key.includes('agri')) return BRANCHES_BY_ID.truck
-    if (key.includes('roadside') || key.includes('breakdown')) return BRANCHES_BY_ID.roadside
-    if (key.includes('health') || key.includes('medical')) return BRANCHES_BY_ID.health
-    if (key.includes('home') || key.includes('property') || key.includes('house') || key.includes('condo')) return BRANCHES_BY_ID.home
-    if (key.includes('pension') || key.includes('retirement') || key.includes('saving')) return BRANCHES_BY_ID.pension
-    if (key.includes('income')) return BRANCHES_BY_ID.income_protection
-    if (key.includes('accident')) return BRANCHES_BY_ID.personal_accident
-    if (key.includes('life') || key.includes('invest')) return BRANCHES_BY_ID.life
-    if (key.includes('travel') || key.includes('trip')) return BRANCHES_BY_ID.travel
-    if (key.includes('pet') || key.includes('dog') || key.includes('cat')) return BRANCHES_BY_ID.pet
-    if (key.includes('cyber') || key.includes('online')) return BRANCHES_BY_ID.cyber
-    if (key.includes('legal')) return BRANCHES_BY_ID.legal_expenses
-    if (key.includes('liabilit')) return BRANCHES_BY_ID.liability
+
+    // ── Specialty lines, tested BEFORE the broad families they contain ──
+    // Every rule below used to fall through to a wrong answer: `marine cargo`
+    // and `marine crew` both landed on `boat`, so a truck transit and a
+    // shipowner's crew liability were filed as pleasure-craft cover.
+    if (key.includes('cash') || key.includes('χρηματ')) return BRANCHES_BY_ID.money
+    if (key.includes('fidelity') || key.includes('dishonest') || key.includes('εμπιστοσυν')) return BRANCHES_BY_ID.fidelity
+    if (key.includes('fine_art') || key.includes('specie') || key.includes('εργα_τεχν') || key.includes('τιμαλφ')) return BRANCHES_BY_ID.fine_art
+    if (key.includes('crew') || key.includes('seafarer') || key.includes('πληρωματ')) return BRANCHES_BY_ID.marine_crew
+    if (key.includes('cargo') || key.includes('freight') || key.includes('μεταφορ') || key.includes('εμπορευματ')) {
+        return BRANCHES_BY_ID.marine_cargo
+    }
+    // A hull is a hull; which book it sits in is decided by whether the craft is
+    // a pleasure yacht (b2c) or anything else (commercial).
+    if (key.includes('hull') || key.includes('σκαφ') || key.includes('πλοι')) {
+        if (key.includes('yacht') || key.includes('pleasure') || key.includes('αναψυχ')) {
+            return key.includes('hull') ? BRANCHES_BY_ID.boat_hull : BRANCHES_BY_ID.boat
+        }
+        if (key.includes('hull') || key.includes('πλοι')) return BRANCHES_BY_ID.marine_hull
+        return BRANCHES_BY_ID.boat
+    }
+
+    if (key.includes('motorbike') || key.includes('motorcycle') || key.includes('moped') || key.includes('μοτοσικλετ')) return BRANCHES_BY_ID.motorbike
+    if (key.includes('bicycle') || key.includes('bike') || key.includes('ποδηλατ')) return BRANCHES_BY_ID.bicycle
+    if (key.includes('motor') || key.includes('auto') || key.includes('αυτοκινητ')) return BRANCHES_BY_ID.motor
+    if (key.includes('truck') || key.includes('agri') || key.includes('φορτηγ')) return BRANCHES_BY_ID.truck
+    if (key.includes('roadside') || key.includes('breakdown') || key.includes('οδικη_βοηθ')) return BRANCHES_BY_ID.roadside
+    if (key.includes('health') || key.includes('medical') || key.includes('υγει') || key.includes('νοσοκομειακ')) return BRANCHES_BY_ID.health
+    // κατοικίδιο (pet) shares its first six letters with κατοικία (home).
+    if (key.includes('pet') || key.includes('dog') || key.includes('cat') || key.includes('κατοικιδ')) return BRANCHES_BY_ID.pet
+    if (key.includes('home') || key.includes('property') || key.includes('house') || key.includes('condo') || key.includes('κατοικι') || key.includes('περιουσι')) return BRANCHES_BY_ID.home
+    if (key.includes('pension') || key.includes('retirement') || key.includes('saving') || key.includes('συνταξ') || key.includes('αποταμιευ')) return BRANCHES_BY_ID.pension
+    if (key.includes('income') || key.includes('εισοδηματ')) return BRANCHES_BY_ID.income_protection
+    if (key.includes('accident') || key.includes('ατυχημ')) return BRANCHES_BY_ID.personal_accident
+    if (key.includes('life') || key.includes('invest') || key.includes('ζωη')) return BRANCHES_BY_ID.life
+    if (key.includes('travel') || key.includes('trip') || key.includes('ταξιδ')) return BRANCHES_BY_ID.travel
+    if (key.includes('cyber') || key.includes('online') || key.includes('διαδικτυ')) return BRANCHES_BY_ID.cyber
+    if (key.includes('legal') || key.includes('νομικ')) return BRANCHES_BY_ID.legal_expenses
+    if (key.includes('employer') || key.includes('εργοδοτ')) return BRANCHES_BY_ID.employer_liability
+    if (key.includes('professional') || key.includes('επαγγελματικ')) return BRANCHES_BY_ID.professional_liability
+    if (key.includes('liabilit') || key.includes('αστικ')) return BRANCHES_BY_ID.liability
     if (key.includes('marine') || key.includes('yacht') || key.includes('boat')) return BRANCHES_BY_ID.boat
-    if (key.includes('business') || key.includes('commercial') || key.includes('shop')) return BRANCHES_BY_ID.business
+    if (key.includes('business') || key.includes('commercial') || key.includes('shop') || key.includes('επιχειρησ')) return BRANCHES_BY_ID.business
 
     return BRANCHES_BY_ID.other
 }

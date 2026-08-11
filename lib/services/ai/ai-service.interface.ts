@@ -6,6 +6,8 @@
  * and mock implementations for testing.
  */
 
+import type { DocumentKind, EvidenceVerdict } from "./document-kind"
+
 /**
  * Document to be analyzed by AI
  */
@@ -90,6 +92,14 @@ export type PremiumFrequency = 'annual' | 'semiannual' | 'quarterly' | 'monthly'
  * Policy extraction result from AI
  */
 export interface AIPolicyExtractionResponse {
+    /** What kind of document this is. Absent on extractions predating the field. */
+    documentKind?: DocumentKind
+    /**
+     * Whether the document carries a policy at all — decided on the raw model
+     * output, before placeholder substitution. `sufficient: false` means the
+     * caller must NOT overwrite stored policy metadata from this result.
+     */
+    evidence?: EvidenceVerdict
     insurerName: string
     policyNumber: string
     lineOfBusiness: string
@@ -222,6 +232,12 @@ export interface AITrackingOptions {
      *  never replace the compliance persona. Resolved per call from
      *  lib/services/ai/prompt-overrides.ts (exact LoB match, then global). */
     operatorGuidance?: string
+    /** The line of business already believed to apply, used to select the
+     *  line-of-business knowledge pack composed into the extraction prompt
+     *  (lib/services/ai/lob-packs). A HINT, not a constraint: the model still
+     *  reports the lineOfBusiness it reads from the document, and a wrong hint
+     *  costs a paragraph of irrelevant guidance rather than a wrong answer. */
+    lineOfBusinessHint?: string
 }
 
 // ── Risk Profile Analysis (Phase 2) ─────────────────────────────────

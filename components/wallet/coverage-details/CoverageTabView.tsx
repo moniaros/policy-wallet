@@ -14,6 +14,8 @@ import { MotorCoverageDetails } from "./MotorCoverageDetails"
 import { HomeCoverageDetails } from "./HomeCoverageDetails"
 import { LifeCoverageDetails } from "./LifeCoverageDetails"
 import { PetCoverageDetails } from "./PetCoverageDetails"
+import { StructuredCoverageTable } from "./StructuredCoverageTable"
+import { PolicyConditionsCard } from "./PolicyConditionsCard"
 
 interface CoverageTabViewProps {
   hints?: PolicyGlossaryHints | null
@@ -93,6 +95,12 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
       {activeTab === "covered" && (
         <div className="space-y-4">
           {typeSpecific}
+
+          {/* Branch-agnostic, so a line with no typed panel above still shows
+              its limits, its deductibles and the conditions attached to them —
+              previously those lines rendered nothing at all here. */}
+          <StructuredCoverageTable acordData={acordData} language={language} />
+          <PolicyConditionsCard acordData={acordData} language={language} />
 
           {hasCoverages && (
             <div className="space-y-3">

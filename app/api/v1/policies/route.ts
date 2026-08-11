@@ -5,7 +5,7 @@ import { logger } from "@/lib/logger"
 import { createPolicySchema } from "@/lib/validations/policy"
 import * as Sentry from "@sentry/nextjs"
 import { requireApiUser } from "@/lib/api-auth"
-import { LINES_OF_BUSINESS } from "@/types/enums"
+import { isLineOfBusiness } from "@/types/enums"
 import { withApiGuard } from "@/lib/api-guard"
 
 const policyQueryStatuses = [
@@ -22,7 +22,11 @@ const policyQueryStatuses = [
 ] as const
 
 const policiesQuerySchema = z.object({
-    line_of_business: z.enum(LINES_OF_BUSINESS).optional(),
+    // Validated against the taxonomy rather than a literal tuple, so adding a
+    // branch does not silently leave the public filter unable to name it.
+    line_of_business: z.string().refine(isLineOfBusiness, {
+        message: "Unknown line of business",
+    }).optional(),
     status: z.enum(policyQueryStatuses).optional(),
     cursor: z.string().min(1).optional(),
     limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -43,8 +47,12 @@ const policiesQuerySchema = z.object({
  *         name: line_of_business
  *         schema:
  *           type: string
- *           enum: [motor, health, home, life, travel, liability, pet, breakdown, legal_expenses, income_protection, gadget, bicycle, business, cyber, motorbike, public_liability, renters, other]
- *         description: Filter by line of business
+ *         description: >
+ *           Filter by line of business. Accepts any canonical branch id from the
+ *           PolicyWallet insurance taxonomy (e.g. motor, health, home, life, boat,
+ *           boat_hull, boat_tpl, cyber, liability, marine_cargo, money, fidelity),
+ *           plus the legacy aliases `breakdown` and `public_liability`. The set is
+ *           derived at runtime from the taxonomy and grows without a breaking change.
  *       - in: query
  *         name: status
  *         schema:
