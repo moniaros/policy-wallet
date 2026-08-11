@@ -196,8 +196,12 @@ function lowHealthCoverageRule(
 /**
  * What a policy actually insures, when the document says so: the plate for a
  * vehicle, the address for a property. `null` means the subject is unknown.
+ *
+ * Exported (with `findSameSubjectOverlap` below) so the policy page's brief
+ * attributes overlaps by the SAME subject rule the engine fires on — a forked
+ * copy is how the brief and the recommendation would come to disagree.
  */
-function insuredSubject(p: PortfolioPolicyFacts): string | null {
+export function insuredSubject(p: PortfolioPolicyFacts): string | null {
     const family = branchFamilyId(p.lineOfBusiness)
     if (family === "motor") {
         const plate = clean(p.acordData?.vehicle?.plateNumber)
@@ -208,6 +212,37 @@ function insuredSubject(p: PortfolioPolicyFacts): string | null {
         return address ? `address:${address.replace(/\s+/g, " ").trim().toLowerCase()}` : null
     }
     return null
+}
+
+/** "Interamerican (POL-123)" — the label the brief shows for an overlap partner. */
+export function overlapPartnerLabel(p: PortfolioPolicyFacts): string {
+    return policyRef(p)
+}
+
+/**
+ * The same-subject overlap for ONE policy against its siblings — the per-policy
+ * projection of `duplicateCoverageRules`, sharing its subject rule, liveness
+ * rule and date-overlap window (unknown dates count as overlapping) so the
+ * brief can never assert an overlap the engine would not, or miss one it would.
+ */
+export function findSameSubjectOverlap(
+    policy: PortfolioPolicyFacts,
+    siblings: PortfolioPolicyFacts[]
+): { partner: PortfolioPolicyFacts } | null {
+    if (!isActive(policy)) return null
+    const subject = insuredSubject(policy)
+    if (!subject) return null
+    const family = branchFamilyId(policy.lineOfBusiness)
+    const partner = siblings.find(
+        (q) =>
+            q.id !== policy.id &&
+            isActive(q) &&
+            branchFamilyId(q.lineOfBusiness) === family &&
+            insuredSubject(q) === subject &&
+            (!policy.startDate || !q.endDate || policy.startDate <= q.endDate) &&
+            (!q.startDate || !policy.endDate || q.startDate <= policy.endDate)
+    )
+    return partner ? { partner } : null
 }
 
 /**

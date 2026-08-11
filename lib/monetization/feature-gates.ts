@@ -26,6 +26,7 @@ export type FeatureKey =
     | "duplicate_coverage_detection"
     | "claims_preparation_assistant"
     | "partner_offers"
+    | "protection_monitoring"
 
 /** Reasons understood by UpgradePrompt/LimitReachedModal (superset). */
 export type UpgradeTriggerReason =
@@ -143,6 +144,15 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     // includedInTiers — this gate drives only the locked-teaser upsell.
     partner_offers: {
         featureKey: "partner_offers",
+        requiredPlan: "pro",
+        upgradeReason: "feature_locked",
+        lockedViewedEvent: "feature_locked_viewed",
+    },
+    // The dashboard's standing watch (lapsing cover, movement, open serious
+    // exposures, freshness). Server truth: entitlements.limits.advancedAnalytics,
+    // pro-only — consistent with every other continuous/deep-AI gate.
+    protection_monitoring: {
+        featureKey: "protection_monitoring",
         requiredPlan: "pro",
         upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",

@@ -8,15 +8,24 @@ export interface RenewalItem {
     id: string
     insurerName: string | null
     icon: LucideIcon
-    typeLabel: string
+    /** The row headline, resolved by the server: "Motor renewal in 24 days". */
+    titleLabel: string
     endDateLabel: string
     days: number
     premiumLabel: string | null
+    /** Real points to check before renewing (open gaps on THIS policy); 0 renders nothing. */
+    checkpointCount: number
+    /** "2 points to check" — resolved by the server; null when count is 0. */
+    checkpointLabel: string | null
 }
 
 /**
  * Six-month renewal timeline on /home, with the free-tier smart-reminders
  * teaser (Trigger D). Server component — copy pre-resolved, items precomputed.
+ *
+ * Each row leads with what it means ("Motor renewal in 24 days") rather than
+ * with the document, and links to the policy's renewal section. The checkpoint
+ * chip renders only when something real was found — its absence claims nothing.
  */
 export function RenewalsTimelineCard({
     items,
@@ -35,7 +44,6 @@ export function RenewalsTimelineCard({
         addPolicy: string
         noExpirationsTitle: string
         noExpirationsBody: string
-        daysShort: string
     }
 }) {
     return (
@@ -79,33 +87,34 @@ export function RenewalsTimelineCard({
                     <div className="space-y-2">
                         {items.map((item) => {
                             const urgencyColor = item.days <= 30 ? "bg-rose-500" : item.days <= 89 ? "bg-amber-500" : "bg-primary"
-                            const urgencyText = item.days <= 30
-                                ? "text-rose-700 dark:text-rose-300"
-                                : item.days <= 89
-                                    ? "text-amber-700 dark:text-amber-300"
-                                    : "text-primary dark:text-mint"
 
                             return (
                                 <Link
                                     key={item.id}
-                                    href={`/wallet/${item.id}`}
+                                    href={`/wallet/${item.id}#renewal`}
                                     className="flex items-center gap-3 rounded-xl border border-black/8 bg-black/[0.03] p-2.5 transition hover:bg-black/[0.06] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
                                 >
-                                    <div className={`h-8 w-1 rounded-full ${urgencyColor}`} />
+                                    <div className={`h-8 w-1 flex-shrink-0 rounded-full ${urgencyColor}`} aria-hidden />
                                     <span className="grid h-7 w-7 flex-shrink-0 place-items-center rounded-lg bg-white text-black/70 dark:bg-black dark:text-white/70">
-                                        <item.icon className="h-3.5 w-3.5" />
+                                        <item.icon className="h-3.5 w-3.5" aria-hidden />
                                     </span>
                                     <div className="min-w-0 flex-1">
-                                        <p className="truncate text-xs font-semibold text-black dark:text-white">{item.insurerName}</p>
-                                        <p className="text-micro text-black/60 dark:text-white/55">{item.typeLabel} · {item.endDateLabel}</p>
-                                    </div>
-                                    <div className="flex-shrink-0 text-right">
-                                        <p className={`text-xs font-bold ${urgencyText}`}>
-                                            {item.days} {labels.daysShort}
+                                        <p className="text-xs font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+                                            {item.titleLabel}
                                         </p>
-                                        {item.premiumLabel && (
-                                            <p className="text-micro text-black/60 dark:text-white/55">{item.premiumLabel}</p>
+                                        <p className="truncate text-micro text-black/60 dark:text-white/55">
+                                            {[item.insurerName, item.endDateLabel, item.premiumLabel]
+                                                .filter(Boolean)
+                                                .join(" · ")}
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-shrink-0 items-center gap-2">
+                                        {item.checkpointLabel && (
+                                            <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-micro font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+                                                {item.checkpointLabel}
+                                            </span>
                                         )}
+                                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
                                     </div>
                                 </Link>
                             )

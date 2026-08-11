@@ -8,32 +8,41 @@ import { formatCurrency, formatDate } from "@/lib/i18n/format"
 import { calendarDaysUntil } from "@/lib/policy-status"
 import { getTranslations } from "@/lib/i18n"
 import type { User } from "@prisma/client"
-import { getCachedProtectionScore } from "@/lib/services/gap-engine"
+import { getCachedProtectionScore, getActiveRecommendations } from "@/lib/services/gap-engine"
 import { getOpenReview } from "@/lib/services/risk-review/service"
 import { getReviewPolicy } from "@/lib/services/risk-review/policy"
 import { RiskReviewCard } from "@/components/risk/RiskReviewCard"
-import { provisionalProtectionScore } from "@/lib/services/gap-engine/protection-score"
-import { CircleHelp, Upload } from "lucide-react"
+import { provisionalProtectionScore, SCORE_CATEGORIES } from "@/lib/services/gap-engine/protection-score"
+import { categoryMovements } from "@/lib/services/gap-engine/score-trend"
+import { getTimeline } from "@/lib/services/timeline/service"
+import { assembleWatch } from "@/lib/services/risk-dna/service"
+import { buildProtectionPlan } from "@/lib/services/protection-plan"
+import { declarableLifeEvents } from "@/lib/services/life-events/registry"
+import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
 import { premiumExclusionNote } from "@/lib/wallet/premium-exclusion-note"
+import { deriveRenewalChecklist } from "@/lib/wallet/renewal-outlook"
+import { deriveClaimDeadlines, extractPolicySections, hasAutoRenewal } from "@/lib/wallet/policy-detail"
+import { complianceObligations } from "@/lib/insurance/policy-conditions"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
-import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrapper"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { FREE_POLICY_LIMIT } from "@/lib/monetization/feature-gates"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { CarriedPlanCard } from "@/components/monetization/CarriedPlanCard"
 import { buildBranchOverview } from "@/lib/insurance/branch-page"
 import { BranchCoverageMap } from "@/components/branches/BranchCoverageMap"
-import { StatTiles } from "@/components/dashboard/home/StatTiles"
+import { ProtectionStatusHero } from "@/components/dashboard/home/ProtectionStatusHero"
+import { AttentionList, type AttentionItem } from "@/components/dashboard/home/AttentionList"
+import { ProtectionPlanCard, type ProtectionPlanStepView } from "@/components/dashboard/home/ProtectionPlanCard"
+import { ProtectionMonitorCard, type MonitorSignalView } from "@/components/dashboard/home/ProtectionMonitorCard"
+import { LifeEventPromptCard } from "@/components/dashboard/home/LifeEventPromptCard"
+import { AdvisorSupportRow } from "@/components/dashboard/home/AdvisorSupportRow"
 import { PortfolioSummaryCard } from "@/components/dashboard/home/PortfolioSummaryCard"
 import { RenewalsTimelineCard } from "@/components/dashboard/home/RenewalsTimelineCard"
-import { QuickActionsRow } from "@/components/dashboard/home/QuickActionsRow"
-import { StatusRow } from "@/components/dashboard/home/StatusRow"
 import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidget"
 import { RecentChangesWidget } from "@/components/dashboard/home/RecentChangesWidget"
-import { RecommendedActionsWidget } from "@/components/dashboard/home/RecommendedActionsWidget"
 
 /**
  * Calendar days until a date, in Athens.
@@ -87,13 +96,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     }
 
     const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
-    const isGreek = lang === 'el'
     const t = getTranslations(lang)
     const home = t.dashboard.home
 
-    // One parallel batch for every independent read — these ran strictly
-    // serially (~7 round-trips) on the hottest customer page, all keyed on the
-    // same user id with no ordering dependencies.
+    // One parallel batch for every independent read, all keyed on the same user
+    // id with no ordering dependencies. This page is READ-ONLY: never call
+    // getProtectionScore / runGapEngine / refreshProtectionScore here — a GET
+    // render must not write, and freshness is the cron / upload pipeline's job.
     const [
         policies,
         customerRelationship,
@@ -101,8 +110,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         openGaps,
         cachedScore,
         openReview,
-        hasAnalysisRun,
+        profile,
+        recentVersions,
+        analysisRunGroups,
         hasNotificationPref,
+        activeRecommendations,
+        recStatusGroups,
+        timelineEntries,
     ] = await Promise.all([
         db.policy.findMany({
             where: { ownerUserId: dbUser.id },
@@ -122,20 +136,61 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 policy: { ownerUserId: dbUser.id },
                 status: { in: ["open", "detected", "acknowledged"] },
             },
-            select: { severity: true },
+            select: { severity: true, policyId: true },
         }),
         // Protection score: READ-ONLY cached score (never runs the engine on a
         // GET render). Freshness is the cron / upload pipeline's job.
         getCachedProtectionScore(dbUser.id).catch(() => null),
         getOpenReview(dbUser.id).catch(() => null),
-        db.policyAnalysisRun.findFirst({
-            where: { userId: dbUser.id, status: { in: ["completed", "completed_with_warnings"] } },
-            select: { id: true },
-        }),
+        db.policyholderProfile.findUnique({ where: { userId: dbUser.id } }),
+        // Score history — the newest two versions carry the delta and the
+        // category movement. Fails soft: the table sits behind a migration some
+        // environments have not applied.
+        db.riskProfileVersion
+            .findMany({
+                where: { userId: dbUser.id },
+                orderBy: { version: "desc" },
+                take: 2,
+                select: {
+                    version: true,
+                    computedAt: true,
+                    overallScore: true,
+                    indeterminate: true,
+                    categoryScores: true,
+                    risks: true,
+                },
+            })
+            .catch(
+                () =>
+                    [] as Array<{
+                        version: number
+                        computedAt: Date
+                        overallScore: number
+                        indeterminate: boolean
+                        categoryScores: unknown
+                        risks: unknown
+                    }>
+            ),
+        db.policyAnalysisRun
+            .groupBy({
+                by: ["status"],
+                where: { userId: dbUser.id },
+                _count: { _all: true },
+            })
+            .catch(() => [] as Array<{ status: string; _count: { _all: number } }>),
         db.notificationPreference.findFirst({
             where: { userId: dbUser.id, enabled: true },
             select: { id: true },
         }),
+        getActiveRecommendations(dbUser.id).catch(() => []),
+        db.recommendationInstance
+            .groupBy({
+                by: ["status"],
+                where: { userId: dbUser.id },
+                _count: { _all: true },
+            })
+            .catch(() => [] as Array<{ status: string; _count: { _all: number } }>),
+        getTimeline(dbUser.id, { limit: 3 }).catch(() => []),
     ])
     const isFreeTier = entitlements.tier === "free"
 
@@ -143,10 +198,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     let carriedPlan: "ph-plus" | "ph-pro" | null = null
     let carriedBilling: "monthly" | "annual" = "monthly"
     if (isFreeTier) {
-        const profile = await db.policyholderProfile.findUnique({
-            where: { userId: dbUser.id },
-            select: { preferences: true },
-        })
         const prefs = (profile?.preferences ?? {}) as Record<string, unknown>
         if (prefs.selectedPlan === "ph-plus" || prefs.selectedPlan === "ph-pro") {
             carriedPlan = prefs.selectedPlan
@@ -186,18 +237,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime())
         .slice(0, 5)
 
-    const hasHealthPolicy = policies.some((policy) => normalizeBranch(policy.lineOfBusiness).id === "health")
-
-    // Branches where the user holds more than one active policy — surfaced
-    // as an honest "worth checking for overlaps" note (the old tile invented
-    // a €/year savings figure from a flat 12% multiplier).
-    const branchPolicyCounts = new Map<string, number>()
-    for (const policy of activePolicies) {
-        const branchId = normalizeBranch(policy.lineOfBusiness).id
-        branchPolicyCounts.set(branchId, (branchPolicyCounts.get(branchId) ?? 0) + 1)
-    }
-    const overlapBranchCount = [...branchPolicyCounts.values()].filter((count) => count > 1).length
-
     // Portfolio summary: total premium + LOB breakdown.
     //
     // The total is the audited footprint, not a raw sum. This card used to
@@ -225,45 +264,252 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
     const openGapCount = openGaps.length
 
+    // Open gaps per policy, for the renewal rows' honest "points to check".
+    // Profile-level gaps carry no policyId and deliberately attach to nothing.
+    const gapsByPolicy = new Map<string, number>()
+    for (const gap of openGaps) {
+        if (!gap.policyId) continue
+        gapsByPolicy.set(gap.policyId, (gapsByPolicy.get(gap.policyId) ?? 0) + 1)
+    }
+
+    // Analysis runs, grouped once: completed => the engine has read something;
+    // queued/running => the hero says so instead of leaving a silent gap.
+    const runCount = (statuses: string[]) =>
+        analysisRunGroups
+            .filter((group) => statuses.includes(group.status))
+            .reduce((sum, group) => sum + group._count._all, 0)
+    const hasCompletedAnalysis = runCount(["completed", "completed_with_warnings"]) > 0
+    const analyzingCount = runCount(["queued", "running"])
+
     /* Protection score.
      *
-     * Three states, because there were previously only one and it lied in two
-     * of them:
+     * Four states, because the score has four honest answers:
      *
      *  - No policies at all -> NO score. It used to render `0` with the red
      *    "Χρειάζεται προσοχή" verdict, which tells someone who has simply not
-     *    uploaded anything yet that they are badly protected. The same bug was
-     *    fixed on /coverage-insights in 65183b7; this page kept it, and this is
-     *    the page people land on.
-     *  - Engine score present -> the real, weighted, category-based figure.
+     *    uploaded anything yet that they are badly protected.
+     *  - Engine score present and determinate -> the real, weighted figure.
+     *  - Engine score present but indeterminate -> a verdict on our own
+     *    ignorance, not on their cover: no number renders.
      *  - Engine score absent but policies exist -> a DIFFERENT formula (flat
-     *    penalties per gap severity). It is not the same measure and can differ
-     *    materially for the same portfolio, so it is now labelled a provisional
-     *    estimate instead of being passed off as the score.
+     *    penalties per gap severity), labelled a provisional estimate.
      */
     const hasPolicies = policies.length > 0
     const isProvisionalScore = hasPolicies && !cachedScore
-    // A cached score computed from a life we know almost nothing about is a
-    // verdict on our own ignorance, not on their cover. StatTiles already knows
-    // how to render an unavailable score — give it null rather than a number.
     const healthScore: number | null = cachedScore
         ? cachedScore.indeterminate
             ? null
             : cachedScore.overallScore
         : provisionalProtectionScore(policies.length, openGaps.map(g => g.severity))
 
-    // Precomputed view models — components stay presentational
-    const portfolioChips = Object.entries(lobBreakdown)
-        .filter(([, amount]) => amount > 0)
-        .sort(([, a], [, b]) => b - a)
-        .map(([lob, amount]) => {
-            const branch = normalizeBranch(lob)
-            return {
-                id: lob,
-                icon: getBranchIcon(branch.id),
-                amountLabel: formatCurrencyValue(amount, lang, premiumCurrency) || '€0',
+    const heroState: "empty" | "provisional" | "indeterminate" | "scored" = !hasPolicies
+        ? "empty"
+        : cachedScore
+            ? cachedScore.indeterminate
+                ? "indeterminate"
+                : "scored"
+            : "provisional"
+
+    // Ring colour and verdict sentence derive from ONE conditional so they can
+    // never disagree about what the number means.
+    const ringToneClass =
+        healthScore === null
+            ? ""
+            : healthScore >= 70
+                ? "stroke-primary dark:stroke-mint"
+                : healthScore >= 40
+                    ? "stroke-amber-500"
+                    : "stroke-red-500"
+    const verdict =
+        healthScore === null
+            ? null
+            : healthScore >= 70
+                ? home.scoreGood
+                : healthScore >= 40
+                    ? home.scoreNeedsImprovement
+                    : home.scoreNeedsAttention
+
+    // Movement since the previous assessment. Needs two determinate versions —
+    // most accounts have fewer, and "no delta" is a first-class state, never a
+    // fabricated "±0".
+    const [newestVersion, previousVersion] = recentVersions
+    const scoreDelta =
+        heroState === "scored" && newestVersion && previousVersion &&
+        !newestVersion.indeterminate && !previousVersion.indeterminate
+            ? newestVersion.overallScore - previousVersion.overallScore
+            : null
+    const deltaLabel =
+        scoreDelta !== null && scoreDelta !== 0
+            ? home.heroDeltaSince
+                  .replace('{delta}', scoreDelta > 0 ? `+${scoreDelta}` : String(scoreDelta))
+                  .replace('{date}', formatDate(previousVersion!.computedAt, lang))
+            : null
+    const deltaDirection = scoreDelta === null || scoreDelta === 0 ? null : scoreDelta > 0 ? "up" : "down"
+
+    // The biggest factor behind the score: the largest category movement when
+    // history exists, else the top open recommendation, else nothing.
+    let keyReason: string | null = null
+    if (heroState === "scored") {
+        const movement = categoryMovements(
+            recentVersions.map((v) => ({ categoryScores: v.categoryScores, computedAt: v.computedAt }))
+        )[0]
+        if (movement) {
+            const category = SCORE_CATEGORIES.find((c) => c.key === movement.key)
+            if (category) {
+                keyReason = (movement.delta < 0 ? home.heroReasonFell : home.heroReasonRose)
+                    .replace('{category}', category.label[lang])
+                    .replace('{points}', String(Math.abs(movement.delta)))
             }
+        }
+        if (!keyReason && activeRecommendations.length > 0) {
+            keyReason = activeRecommendations[0].title[lang] || activeRecommendations[0].title.en
+        }
+    }
+
+    const areasLine =
+        heroState === "scored" || heroState === "provisional"
+            ? activeRecommendations.length === 0
+                ? null
+                : activeRecommendations.length === 1
+                    ? home.heroAreasOne
+                    : home.heroAreasMany.replace('{count}', String(activeRecommendations.length))
+            : null
+
+    const policyLine = hasPolicies
+        ? [
+              policies.length === 1
+                  ? home.heroPoliciesOne
+                  : home.heroPoliciesMany.replace('{count}', String(policies.length)),
+              analyzingCount === 0
+                  ? null
+                  : analyzingCount === 1
+                      ? home.heroAnalyzingOne
+                      : home.heroAnalyzingMany.replace('{count}', String(analyzingCount)),
+          ]
+              .filter(Boolean)
+              .join(' · ')
+        : null
+
+    // What needs my attention: the top findings as risk → why → next step.
+    const timingLabels: Record<string, string> = {
+        now: home.attentionTimingNow,
+        weeks: home.attentionTimingWeeks,
+        months: home.attentionTimingMonths,
+    }
+    const urgencyLabels = {
+        critical: home.recPriorityCritical,
+        high: home.recPriorityHigh,
+        medium: home.recPriorityMedium,
+        low: home.recPriorityLow,
+    } as const
+    const attentionItems: AttentionItem[] = activeRecommendations.slice(0, 3).map((rec) => ({
+        id: rec.id,
+        title: rec.title[lang] || rec.title.en,
+        reason: rec.personalReason ? rec.personalReason[lang] || rec.personalReason.en : null,
+        urgency: rec.urgency,
+        urgencyLabel: urgencyLabels[rec.urgency],
+        timingLabel: rec.timing && rec.timing.level !== "no_deadline" ? timingLabels[rec.timing.level] ?? null : null,
+    }))
+
+    // Your protection plan: recorded facts only, derived by one pure function.
+    const handledRecommendationCount = recStatusGroups
+        .filter((group) => group.status === "actioned" || group.status === "dismissed")
+        .reduce((sum, group) => sum + group._count._all, 0)
+    const plan = buildProtectionPlan({
+        policyCount: policies.length,
+        hasCompletedAnalysis,
+        openGapCount,
+        hasAgent: Boolean(customerRelationship),
+        notificationsEnabled: Boolean(hasNotificationPref),
+        activeRecommendationIds: activeRecommendations.map((rec) => rec.id),
+        handledRecommendationCount,
+    })
+    const recTitleById = new Map(activeRecommendations.map((rec) => [rec.id, rec.title[lang] || rec.title.en]))
+    const setupStepCopy: Record<string, { title: string; description: string }> = {
+        upload: { title: home.planStepUploadTitle, description: home.planStepUploadBody },
+        analysis: { title: home.planStepAnalysisTitle, description: home.planStepAnalysisBody },
+        gaps: { title: home.planStepGapsTitle, description: home.planStepGapsBody },
+        agent: { title: home.planStepAgentTitle, description: home.planStepAgentBody },
+        notifications: { title: home.planStepNotificationsTitle, description: home.planStepNotificationsBody },
+    }
+    const MAX_RECOMMENDATION_STEPS = 3
+    let shownRecommendationSteps = 0
+    const planStepViews: ProtectionPlanStepView[] = []
+    for (const step of plan.steps) {
+        if (step.kind === "setup") {
+            const copy = setupStepCopy[step.id]
+            planStepViews.push({
+                id: step.id,
+                kind: step.kind,
+                state: step.state,
+                href: step.href,
+                title: copy?.title ?? step.id,
+                description: step.state === "open" ? copy?.description ?? null : null,
+            })
+            continue
+        }
+        if (shownRecommendationSteps >= MAX_RECOMMENDATION_STEPS) continue
+        shownRecommendationSteps += 1
+        planStepViews.push({
+            id: step.id,
+            kind: step.kind,
+            state: step.state,
+            href: step.href,
+            title: recTitleById.get(step.id.replace(/^recommendation:/, "")) ?? "",
+            description: null,
         })
+    }
+    const hiddenRecommendationSteps =
+        plan.steps.filter((step) => step.kind === "recommendation").length - shownRecommendationSteps
+    const planMoreOpenLabel =
+        hiddenRecommendationSteps > 0
+            ? home.planMoreOpen.replace('{count}', String(hiddenRecommendationSteps))
+            : null
+
+    // The standing watch — computed only for entitled accounts (the capability
+    // is what the non-entitled card sells; rendering fabricated signals under a
+    // blur would be a lie about work never done). Assembly is pure CPU over the
+    // rows already fetched above.
+    const monitorEntitled = entitlements.limits.advancedAnalytics === true
+    let monitorSignals: MonitorSignalView[] | null = null
+    if (monitorEntitled && (hasPolicies || recentVersions.length > 0)) {
+        try {
+            const verdictLabels = {
+                clear: home.monitorVerdictClear,
+                attention: home.monitorVerdictAttention,
+                action: home.monitorVerdictAction,
+            } as const
+            monitorSignals = assembleWatch({
+                profile,
+                policies,
+                latestVersion: newestVersion
+                    ? { computedAt: newestVersion.computedAt, risks: newestVersion.risks }
+                    : null,
+                // The last engine RUN, not the last material change — versions
+                // only move when something moved.
+                lastAssessedAt: cachedScore?.computedAt ?? null,
+                now,
+            }).map((signal) => ({
+                id: signal.id,
+                label: signal.label[lang],
+                verdict: signal.verdict,
+                verdictLabel: verdictLabels[signal.verdict],
+                detail: signal.detail ? signal.detail[lang] : null,
+                action: signal.action ? signal.action[lang] : null,
+            }))
+        } catch (error) {
+            // Never render a broken watch — the section is omitted instead.
+            console.error("Failed to assemble protection watch:", error)
+            monitorSignals = null
+        }
+    }
+    const monitorLastCheckedLabel = cachedScore
+        ? home.monitorLastChecked.replace('{date}', formatDate(cachedScore.computedAt, lang))
+        : null
+
+    const lifeEventChips = declarableLifeEvents()
+        .slice(0, 4)
+        .map((event) => ({ id: event.id, label: event.label[lang] }))
 
     // Everything the total leaves out, said plainly — matching the wallet's
     // StatusSummary. A figure that silently drops a foreign-currency or
@@ -277,39 +523,65 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         t.status
     )
 
+    const portfolioChips = Object.entries(lobBreakdown)
+        .filter(([, amount]) => amount > 0)
+        .sort(([, a], [, b]) => b - a)
+        .map(([lob, amount]) => {
+            const branch = normalizeBranch(lob)
+            return {
+                id: lob,
+                icon: getBranchIcon(branch.id),
+                amountLabel: formatCurrencyValue(amount, lang, premiumCurrency) || '€0',
+            }
+        })
+
     const renewalItems = upcomingRenewals.slice(0, 6).map(({ policy, endDate }) => {
         const branch = normalizeBranch(policy.lineOfBusiness)
+        const days = daysUntil(endDate)
+        // The SAME derivation the policy page's renewal outlook renders — one
+        // module, one count, two surfaces that cannot disagree.
+        const sections = extractPolicySections(policy.acordData)
+        const checkpointCount = deriveRenewalChecklist({
+            openGapCount: gapsByPolicy.get(policy.id) ?? 0,
+            deadlineConditionCount: deriveClaimDeadlines(sections.notableConditions).length,
+            obligationCount: complianceObligations((policy.acordData as any)?.conditions).filter(
+                (o) => o.severity === "critical" || o.severity === "high"
+            ).length,
+            hasAutoRenewal: hasAutoRenewal(sections.notableConditions),
+            lastAnalyzedAt: policy.lastAnalyzedAt ?? null,
+            documentCount: policy.documents.length,
+        }).length
         return {
             id: policy.id,
             insurerName: policy.insurerName,
             icon: getBranchIcon(branch.id),
-            typeLabel: branch.label[lang],
+            titleLabel:
+                days === 0
+                    ? home.renewalToday.replace('{type}', branch.label[lang])
+                    : days === 1
+                        ? home.renewalInOneDay.replace('{type}', branch.label[lang])
+                        : home.renewalInDays
+                              .replace('{type}', branch.label[lang])
+                              .replace('{days}', String(days)),
             // Athens-pinned: a bare toLocaleDateString resolves against the
             // RUNTIME zone, which is UTC on Vercel, so this rendered the
             // previous day for anything ending near Athens midnight.
             endDateLabel: formatDate(endDate, lang),
-            days: daysUntil(endDate),
+            days,
             premiumLabel: formatCurrencyValue(policy.premiumAmount, lang, policy.premiumCurrency || "EUR"),
+            checkpointCount,
+            checkpointLabel:
+                checkpointCount === 0
+                    ? null
+                    : checkpointCount === 1
+                        ? home.renewalCheckpointsOne
+                        : home.renewalCheckpointsMany.replace('{count}', String(checkpointCount)),
         }
     })
-
-    const scoreSummary = healthScore === null
-        ? ''
-        : healthScore >= 70
-            ? home.scoreGood
-            : healthScore >= 40
-                ? home.scoreNeedsImprovement
-                : home.scoreNeedsAttention
 
     const agentName = customerRelationship
         ? customerRelationship.agent.name || customerRelationship.agent.email || ""
         : ""
-
-    const savingsLine = overlapBranchCount === 0
-        ? home.noSavings
-        : overlapBranchCount === 1
-            ? home.overlapOne
-            : home.overlapMany.replace('{count}', String(overlapBranchCount))
 
     // Branch coverage map: tile states from policies + the cached score's
     // expected lines (already fetched above — no extra engine work)
@@ -335,37 +607,33 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         low: openGaps.filter((gap) => gap.severity === "low").length,
     }
 
-    // Top persisted recommendations — read-only, never re-runs the engine
-    let recommendedActions: Array<{ id: string; title: string; urgency: "critical" | "high" | "medium" | "low" }> = []
-    try {
-        const { getActiveRecommendations } = await import("@/lib/services/gap-engine")
-        const recommendations = await getActiveRecommendations(dbUser.id)
-        recommendedActions = recommendations.slice(0, 3).map((rec) => ({
-            id: rec.id,
-            title: rec.title[lang] || rec.title.en,
-            urgency: rec.urgency,
-        }))
-    } catch (error) {
-        console.error("Failed to load home recommendations:", error)
-    }
-
     // The last few things that changed, and whether we recorded why. The
     // dashboard could show a score and a list of recommendations with no
     // account of how either got there; this is the way in to that account.
-    let recentChanges: Array<{ id: string; title: string; at: string; delta?: number | null; explained: boolean }> = []
-    try {
-        const { getTimeline } = await import("@/lib/services/timeline/service")
-        const entries = await getTimeline(dbUser.id, { limit: 3 })
-        recentChanges = entries.map((entry) => ({
-            id: entry.id,
-            title: entry.title[lang] || entry.title.en,
-            at: entry.at.toISOString(),
-            delta: entry.delta ?? null,
-            explained: entry.cause !== null,
-        }))
-    } catch (error) {
-        console.error("Failed to load recent changes:", error)
-    }
+    const recentChanges = timelineEntries.map((entry) => ({
+        id: entry.id,
+        title: entry.title[lang] || entry.title.en,
+        at: entry.at.toISOString(),
+        delta: entry.delta ?? null,
+        explained: entry.cause !== null,
+    }))
+
+    const planCard = (
+        <ProtectionPlanCard
+            steps={planStepViews}
+            completed={plan.completed}
+            total={plan.total}
+            allDone={plan.allDone}
+            moreOpenLabel={planMoreOpenLabel}
+            labels={{
+                kicker: home.planKicker,
+                progress: home.planProgress
+                    .replace('{done}', String(plan.completed))
+                    .replace('{total}', String(plan.total)),
+                upToDate: home.planUpToDate,
+            }}
+        />
+    )
 
     return (
         <div className="pw-page-shell">
@@ -377,9 +645,9 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </h1>
                 </div>
 
-                {/* The review, when one is open. Above the checklist on
+                {/* The review, when one is open. Above everything else on
                     purpose: a review responds to something that happened in the
-                    customer's life, and onboarding guidance does not. */}
+                    customer's life, and nothing below does. */}
                 {openReview && getReviewPolicy(openReview.trigger) && (
                     <div className="mb-4">
                         <RiskReviewCard
@@ -396,30 +664,45 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </div>
                 )}
 
-                {/* Getting Started Checklist */}
-                <div className="mb-4">
-                    <GettingStartedWrapper
-                        policyCount={policies.length}
-                        hasAnalysis={Boolean(hasAnalysisRun)}
-                        gapCount={openGapCount}
-                        hasAgent={Boolean(customerRelationship)}
-                        notificationsEnabled={Boolean(hasNotificationPref)}
+                <div className="space-y-4">
+                    <ProtectionStatusHero
+                        state={heroState}
+                        score={healthScore}
+                        ringToneClass={ringToneClass}
+                        verdict={verdict}
+                        deltaLabel={deltaLabel}
+                        deltaDirection={deltaDirection}
+                        keyReason={keyReason}
+                        areasLine={areasLine}
+                        policyLine={policyLine}
+                        language={lang}
+                        labels={{
+                            kicker: home.heroKicker,
+                            cta: home.heroCta,
+                            reasonKicker: home.heroReasonKicker,
+                            provisionalBadge: home.scoreProvisional,
+                            provisionalHint: home.scoreProvisionalHint,
+                            emptyTitle: home.heroEmptyTitle,
+                            emptyBody: home.heroEmptyBody,
+                            emptyCta: home.heroEmptyCta,
+                            indeterminateTitle: home.heroIndeterminateTitle,
+                            indeterminateBody: home.heroIndeterminateBody,
+                            indeterminateCta: home.heroIndeterminateCta,
+                            methodologyTitle: home.scoreMethodologyTitle,
+                            methodologyBody: home.scoreMethodologyBody,
+                            methodologyLimits: home.scoreMethodologyLimits,
+                            methodologyNotAdvice: home.scoreMethodologyNotAdvice,
+                        }}
                     />
-                </div>
 
-                {/* Signup-selected plan continuity (never activated → offer checkout) */}
-                {carriedPlan && (
-                    <div className="mb-4">
-                        <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />
-                    </div>
-                )}
+                    {/* Signup-selected plan continuity (never activated → offer checkout) */}
+                    {carriedPlan && <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />}
 
-                {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
-                    The meter counts every stored policy — that is what checkPolicyLimit
-                    blocks on. Metering only the in-force ones would promise headroom the
-                    next upload does not actually have. */}
-                {isFreeTier && policies.length >= 2 && (
-                    <div className="mb-4">
+                    {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
+                        The meter counts every stored policy — that is what checkPolicyLimit
+                        blocks on. Metering only the in-force ones would promise headroom the
+                        next upload does not actually have. */}
+                    {isFreeTier && policies.length >= 2 && (
                         <UpgradeTriggerCard
                             featureKey="policy_upload_limit"
                             triggerSource="home_usage_banner"
@@ -432,60 +715,80 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 hint: home.freePlanHint,
                             }}
                         />
-                    </div>
-                )}
+                    )}
 
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    <StatTiles
-                        activeCount={activePolicies.length}
-                        healthScore={healthScore}
-                        openGapCount={openGapCount}
-                        isProvisional={isProvisionalScore}
+                    {/* What needs my attention + the severity tally beside it */}
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        <AttentionList
+                            items={attentionItems}
+                            language={lang}
+                            labels={{
+                                kicker: home.attentionKicker,
+                                viewAll: home.viewAllActions,
+                                emptyTitle: home.attentionEmptyTitle,
+                                emptyBody: home.attentionEmptyBody,
+                                priorityNote: home.recPriorityNote,
+                            }}
+                        />
+                        <CoverageGapsWidget
+                            counts={gapSeverityCounts}
+                            labels={{
+                                kicker: home.gapsKicker,
+                                noGaps: home.noGaps,
+                                severity: {
+                                    critical: home.severityCritical,
+                                    high: home.severityHigh,
+                                    medium: home.severityMedium,
+                                    low: home.severityLow,
+                                },
+                                note: home.severityNote,
+                            }}
+                        />
+                    </div>
+
+                    {/* The plan, and the standing watch beside it. Non-entitled
+                        accounts see what monitoring IS — future tense, no
+                        fabricated signals. */}
+                    {monitorEntitled && !monitorSignals ? (
+                        planCard
+                    ) : (
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            {planCard}
+                            {monitorEntitled && monitorSignals ? (
+                                <ProtectionMonitorCard
+                                    signals={monitorSignals}
+                                    lastCheckedLabel={monitorLastCheckedLabel}
+                                    labels={{
+                                        kicker: home.monitorKicker,
+                                        notYetAssessed: home.monitorNotAssessed,
+                                        detailsLink: home.monitorDetailsLink,
+                                    }}
+                                />
+                            ) : (
+                                <UpgradeTriggerCard
+                                    featureKey="protection_monitoring"
+                                    triggerSource="home_protection_monitor"
+                                    returnTo="/dashboard"
+                                />
+                            )}
+                        </div>
+                    )}
+
+                    {/* Something changed? — the way into life-event reassessment */}
+                    <LifeEventPromptCard
+                        chips={lifeEventChips}
                         labels={{
-                            activePolicies: home.activePolicies,
-                            protectionScore: home.protectionScore,
-                            scoreSummary,
-                            gapsCount: home.coverageGapsCount.replace('{count}', String(openGapCount)),
-                            scoreUnavailable: home.scoreUnavailable,
-                            scoreUnavailableHint: home.scoreUnavailableHint,
-                            provisional: home.scoreProvisional,
-                            provisionalHint: home.scoreProvisionalHint,
-                            methodologyTitle: home.scoreMethodologyTitle,
-                            methodologyBody: home.scoreMethodologyBody,
-                            methodologyLimits: home.scoreMethodologyLimits,
-                            methodologyNotAdvice: home.scoreMethodologyNotAdvice,
+                            kicker: home.lifeEventKicker,
+                            body: home.lifeEventBody,
+                            cta: home.lifeEventCta,
                         }}
                     />
-
-                    {totalAnnualPremium > 0 && (
-                        <PortfolioSummaryCard
-                            totalLabel={formatCurrencyValue(totalAnnualPremium, lang, premiumCurrency) || '€0'}
-                            chips={portfolioChips}
-                            labels={{
-                                kicker: home.portfolioKicker,
-                                totalAnnualPremium: home.totalAnnualPremium,
-                            }}
-                            excludedNote={premiumExcludedNote}
-                        />
-                    )}
 
                     {/* Branch coverage map — every branch with its covered/gap state */}
                     <BranchCoverageMap
                         entries={coverageMapEntries}
                         labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
-                        className="lg:col-span-3"
                     />
-
-                    {/* Trigger G: multi-insurer portfolio insight for free tier */}
-                    {isFreeTier && insurerCount >= 2 && (
-                        <UpgradeTriggerCard
-                            featureKey="multi_insurer_insights"
-                            triggerSource="home_multi_insurer"
-                            returnTo="/coverage-insights"
-                            dismissible
-                            className="lg:col-span-3"
-                        />
-                    )}
 
                     <RenewalsTimelineCard
                         items={renewalItems}
@@ -499,88 +802,61 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             addPolicy: home.addPolicy,
                             noExpirationsTitle: home.noExpirationsTitle,
                             noExpirationsBody: home.noExpirationsBody,
-                            daysShort: home.daysShort,
                         }}
                     />
-                </div>
 
-                <QuickActionsRow
-                    openGapCount={openGapCount}
-                    recentDocuments={recentDocuments}
-                    labels={{
-                        aiAnalysis: home.aiAnalysis,
-                        aiSummary: openGapCount > 0
-                            ? home.gapsNeedReview.replace('{count}', String(openGapCount))
-                            : home.coverageStable,
-                        viewDetails: home.viewDetails,
-                        quickUpload: home.quickUpload,
-                        addNewPolicy: home.addNewPolicy,
-                        recentDocuments: home.recentDocuments,
-                        noDocuments: home.noDocuments,
-                    }}
-                />
-
-                {/* Detected gaps + top recommended actions (persisted engine output) */}
-                <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    <RecommendedActionsWidget
-                        items={recommendedActions}
-                        language={lang}
+                    {/* Portfolio: premium footprint + documents + upload entry */}
+                    <PortfolioSummaryCard
+                        totalLabel={
+                            totalAnnualPremium > 0
+                                ? formatCurrencyValue(totalAnnualPremium, lang, premiumCurrency) || '€0'
+                                : null
+                        }
+                        chips={portfolioChips}
+                        recentDocuments={recentDocuments}
                         labels={{
-                            kicker: home.actionsKicker,
-                            noActions: home.noActions,
-                            viewAll: home.viewAllActions,
+                            kicker: home.portfolioKicker,
+                            totalAnnualPremium: home.totalAnnualPremium,
+                            recentDocuments: home.recentDocuments,
+                            noDocuments: home.noDocuments,
+                            addNewPolicy: home.addNewPolicy,
                         }}
+                        excludedNote={premiumExcludedNote}
                     />
-                    <CoverageGapsWidget
-                        counts={gapSeverityCounts}
-                        labels={{
-                            kicker: home.gapsKicker,
-                            noGaps: home.noGaps,
-                            severity: {
-                                critical: home.severityCritical,
-                                high: home.severityHigh,
-                                medium: home.severityMedium,
-                                low: home.severityLow,
-                            },
-                            note: home.severityNote,
-                        }}
-                    />
-                    <RecentChangesWidget
-                        changes={recentChanges}
-                        labels={{
-                            kicker: home.recentChangesKicker,
-                            empty: home.recentChangesEmpty,
-                            viewAll: home.recentChangesViewAll,
-                            explained: home.recentChangesExplained,
-                        }}
-                    />
-                </div>
 
-                <StatusRow
-                    agentConnected={Boolean(customerRelationship)}
-                    labels={{
-                        agentStatus: home.agentStatus,
-                        agentLine: customerRelationship
-                            ? home.agentConnected.replace('{name}', agentName)
-                            : home.noAgent,
-                        checkupKicker: home.checkupKicker,
-                        checkupLine: hasHealthPolicy ? home.checkupAvailable : home.checkupAddHealth,
-                        savingsKicker: home.savingsKicker,
-                        savingsLine,
-                    }}
-                />
+                    {/* Trigger G: multi-insurer portfolio insight for free tier */}
+                    {isFreeTier && insurerCount >= 2 && (
+                        <UpgradeTriggerCard
+                            featureKey="multi_insurer_insights"
+                            triggerSource="home_multi_insurer"
+                            returnTo="/coverage-insights"
+                            dismissible
+                        />
+                    )}
 
-                <div className="mt-4">
-                    <Link
-                        href="/help"
-                        className="pw-card flex items-center justify-between px-5 py-3.5"
-                    >
-                        <div className="flex items-center gap-3">
-                            <CircleHelp className="h-5 w-5 text-black/60 dark:text-white/65" />
-                            <p className="text-sm font-semibold text-black dark:text-white">{home.helpTitle}</p>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{home.helpOpen}</p>
-                    </Link>
+                    {/* What changed lately + advisor + help */}
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        <RecentChangesWidget
+                            changes={recentChanges}
+                            labels={{
+                                kicker: home.recentChangesKicker,
+                                empty: home.recentChangesEmpty,
+                                viewAll: home.recentChangesViewAll,
+                                explained: home.recentChangesExplained,
+                            }}
+                        />
+                        <AdvisorSupportRow
+                            agentConnected={Boolean(customerRelationship)}
+                            labels={{
+                                agentStatus: home.agentStatus,
+                                agentLine: customerRelationship
+                                    ? home.agentConnected.replace('{name}', agentName)
+                                    : home.noAgent,
+                                helpTitle: home.helpTitle,
+                                helpOpen: home.helpOpen,
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
 

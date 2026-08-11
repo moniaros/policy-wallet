@@ -17,6 +17,8 @@ import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { PolicySectionNav, type PolicySectionNavItem } from "@/components/wallet/policy-detail/PolicySectionNav"
 import { PolicyHero } from "@/components/wallet/policy-detail/PolicyHero"
 import { SummaryCard } from "@/components/wallet/policy-detail/SummaryCard"
+import { PolicyBriefCard, type PolicyBriefRowView } from "@/components/wallet/policy-detail/PolicyBriefCard"
+import { RenewalOutlookCard } from "@/components/wallet/policy-detail/RenewalOutlookCard"
 import { KeyDatesCard } from "@/components/wallet/policy-detail/KeyDatesCard"
 import { ExclusionsCard } from "@/components/wallet/policy-detail/ExclusionsCard"
 import { PerksCard } from "@/components/wallet/policy-detail/PerksCard"
@@ -47,6 +49,9 @@ import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCar
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
+import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
+import { deriveRenewalChecklist, upcomingReminderMilestones } from "@/lib/wallet/renewal-outlook"
+import { complianceObligations } from "@/lib/insurance/policy-conditions"
 
 import type { GlossaryHintData } from "@/components/insurance/GlossaryHint"
 import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
@@ -111,6 +116,10 @@ interface PolicyDetailsClientProps {
     mergeRequest?: { id: string; requestedByLabel: string; policyLabel: string } | null
     /** Agent-only: viewer may open the extraction review for this policy. */
     canReviewExtraction?: boolean
+    /** Same-subject duplicate found by the engine's own rule (owner only). */
+    overlapFinding?: { partnerLabel: string } | null
+    /** True when this policy has a checkable insured subject (plate/address). */
+    overlapChecked?: boolean
 }
 
 export function PolicyDetailsClient({
@@ -134,6 +143,8 @@ export function PolicyDetailsClient({
     reportUnlocked = true,
     mergeRequest = null,
     canReviewExtraction = false,
+    overlapFinding = null,
+    overlapChecked = false,
     exclusionHint = null,
     glossaryHints = null,
 }: PolicyDetailsClientProps) {
@@ -283,6 +294,186 @@ export function PolicyDetailsClient({
     // resolution — upgrade or consent — read from the run's blockedReason.
     const lastRun = policy.analysisRuns?.[0]
     const absenceCopy = resolveCoverageAbsenceCopy(lastRun?.status, lastRun?.blockedReason, detailsCopy)
+
+    // ── AI Policy Brief: seven one-liners, every count with its evidence
+    //    boundary in the string. Coverage-status arithmetic is pure
+    //    (derivePolicyBriefCoverage); the honesty branching lives here where
+    //    absenceCopy and the analysis state are in hand.
+    const briefCoverage = useMemo(() => derivePolicyBriefCoverage(policy?.acordData), [policy])
+    const analyzed = Boolean(policy.lastAnalyzedAt)
+    const flaggedClauseCount = finePrint.filter(
+        (c) => c.riskLevel === "critical" || c.riskLevel === "warning"
+    ).length
+
+    // ── Renewal outlook: recorded facts only, shared derivation with the
+    //    dashboard's "points to check" chips.
+    const renewalObligations = complianceObligations(policy.acordData?.conditions).filter(
+        (o) => o.severity === "critical" || o.severity === "high"
+    )
+    const renewalChecklist = deriveRenewalChecklist({
+        openGapCount: gapReportItems.length,
+        deadlineConditionCount: claimDeadlines.length,
+        obligationCount: renewalObligations.length,
+        hasAutoRenewal: autoRenewal,
+        lastAnalyzedAt: policy.lastAnalyzedAt ?? null,
+        documentCount: policy.documents?.length ?? 0,
+    })
+    const renewalChecklistLabels = renewalChecklist.map((item) => {
+        switch (item.kind) {
+            case "gaps":
+                return item.count === 1
+                    ? detailsCopy.renewalOutlookCheckGapsOne
+                    : detailsCopy.renewalOutlookCheckGaps.replace("{count}", String(item.count))
+            case "deadline":
+                return item.count === 1
+                    ? detailsCopy.renewalOutlookCheckDeadlineOne
+                    : detailsCopy.renewalOutlookCheckDeadline.replace("{count}", String(item.count))
+            case "obligation":
+                return item.count === 1
+                    ? detailsCopy.renewalOutlookCheckObligationOne
+                    : detailsCopy.renewalOutlookCheckObligation.replace("{count}", String(item.count))
+            case "auto_renewal":
+                return detailsCopy.renewalOutlookCheckAutoRenewal
+            case "not_analyzed":
+                return detailsCopy.renewalOutlookCheckNotAnalyzed
+            case "no_document":
+                return detailsCopy.renewalOutlookCheckNoDocument
+        }
+    })
+    const renewalHeadline =
+        computedDaysLeft === null
+            ? detailsCopy.renewalOutlookNoEndDate
+            : computedDaysLeft < 0
+                ? detailsCopy.renewalOutlookExpired
+                : computedDaysLeft === 0
+                    ? detailsCopy.renewalOutlookToday
+                    : computedDaysLeft === 1
+                        ? detailsCopy.renewalOutlookTomorrow
+                        : detailsCopy.renewalOutlookInDays.replace("{days}", String(computedDaysLeft))
+    const renewalHeadlineTone: "critical" | "warning" | "neutral" =
+        computedDaysLeft === null
+            ? "neutral"
+            : computedDaysLeft < 0
+                ? "critical"
+                : computedDaysLeft <= 30
+                    ? "warning"
+                    : "neutral"
+    const sentMilestones = (renewals[0]?.remindersSent ?? []).map((m) => m.milestone)
+    const upcomingMilestones = upcomingReminderMilestones(
+        computedDaysLeft,
+        sentMilestones,
+        tierLimits?.notifications === true
+    )
+    const renewalReminderLine =
+        upcomingMilestones.length > 0
+            ? detailsCopy.renewalOutlookReminders.replace("{days}", upcomingMilestones.join(", "))
+            : null
+    const renewalPastPeriodsLine =
+        renewalHistory.length === 0
+            ? null
+            : renewalHistory.length === 1
+                ? detailsCopy.renewalOutlookPastPeriodsOne
+                : detailsCopy.renewalOutlookPastPeriods.replace("{count}", String(renewalHistory.length))
+
+    // Mirrors `showRecommendations` below — the brief row can only anchor to a
+    // section that will actually render.
+    const showRecommendationsForBrief = isOwner && relatedRecommendations.length > 0
+
+    const briefRows: PolicyBriefRowView[] = [
+        {
+            anchor: hasCoverageDetails || shouldShowReanalyzeHint ? "coverage" : null,
+            label: detailsCopy.briefCoveredLabel,
+            value: !briefCoverage.hasCoverages
+                ? absenceCopy.title
+                : !briefCoverage.hasStatuses
+                    // v2 extraction: no per-cover status exists — covered-as-stated hedge.
+                    ? detailsCopy.briefCoveredAsStated.replace("{count}", String(briefCoverage.coveredCount))
+                    : briefCoverage.coveredNames.length > 0
+                        ? detailsCopy.briefCoveredLine
+                              .replace("{count}", String(briefCoverage.coveredCount))
+                              .replace("{names}", briefCoverage.coveredNames.join(", "))
+                        : detailsCopy.briefCoveredLineNoNames.replace("{count}", String(briefCoverage.coveredCount)),
+            tone: briefCoverage.hasCoverages ? "positive" : "neutral",
+        },
+        {
+            anchor: hasCoverageDetails ? "coverage" : null,
+            label: detailsCopy.briefNotCoveredLabel,
+            value: !briefCoverage.hasCoverages
+                ? absenceCopy.title
+                : !briefCoverage.hasStatuses
+                    ? detailsCopy.briefNotCoveredNoStatuses
+                    : briefCoverage.excludedCount > 0 && briefCoverage.notTakenCount > 0
+                        ? detailsCopy.briefNotCoveredLine
+                              .replace("{excluded}", String(briefCoverage.excludedCount))
+                              .replace("{notTaken}", String(briefCoverage.notTakenCount))
+                        : briefCoverage.excludedCount > 0
+                            ? detailsCopy.briefNotCoveredExcludedOnly.replace("{excluded}", String(briefCoverage.excludedCount))
+                            : briefCoverage.notTakenCount > 0
+                                ? detailsCopy.briefNotCoveredNotTakenOnly.replace("{notTaken}", String(briefCoverage.notTakenCount))
+                                : detailsCopy.briefNotCoveredNoneMarked,
+            tone: briefCoverage.excludedCount > 0 ? "critical" : briefCoverage.notTakenCount > 0 ? "warning" : "neutral",
+        },
+        {
+            anchor: "exclusions",
+            label: detailsCopy.briefExclusionsLabel,
+            value:
+                exclusions.length === 0 && flaggedClauseCount === 0
+                    ? detailsCopy.noExclusionsDetected
+                    : flaggedClauseCount > 0
+                        ? detailsCopy.briefExclusionsLine
+                              .replace("{count}", String(exclusions.length))
+                              .replace("{flagged}", String(flaggedClauseCount))
+                        : detailsCopy.briefExclusionsOnly.replace("{count}", String(exclusions.length)),
+            tone: flaggedClauseCount > 0 ? "warning" : "neutral",
+        },
+        {
+            anchor: hasCoverageDetails ? "coverage" : null,
+            label: detailsCopy.briefLimitsLabel,
+            value:
+                briefCoverage.structuredAmountCount > 0
+                    ? detailsCopy.briefLimitsLine.replace("{count}", String(briefCoverage.structuredAmountCount))
+                    : briefCoverage.freeTextAmountCount > 0
+                        ? detailsCopy.briefLimitsFreeText
+                        : detailsCopy.briefLimitsNone,
+            tone: "neutral",
+        },
+        {
+            // "None found" carries its scope note in the value; there is nothing
+            // to open unless the engine's finding is on this page.
+            anchor: overlapFinding && showRecommendationsForBrief ? "recommendations" : null,
+            label: detailsCopy.briefOverlapsLabel,
+            value: overlapFinding
+                ? detailsCopy.briefOverlapFound.replace("{partner}", overlapFinding.partnerLabel)
+                : overlapChecked
+                    ? detailsCopy.briefOverlapNone
+                    : detailsCopy.briefOverlapUnchecked,
+            tone: overlapFinding ? "warning" : overlapChecked ? "positive" : "neutral",
+        },
+        {
+            anchor: "analysis",
+            label: detailsCopy.briefGapsLabel,
+            // Never "no gaps" for an unanalyzed policy — absence of a look is
+            // not absence of a finding.
+            value: !analyzed
+                ? detailsCopy.briefGapsNotAnalyzed
+                : gapReportItems.length === 0
+                    ? detailsCopy.briefGapsNone
+                    : detailsCopy.briefGapsLine.replace("{count}", String(gapReportItems.length)),
+            tone: !analyzed
+                ? "neutral"
+                : gapReportItems.length === 0
+                    ? "positive"
+                    : gapReportItems.some((g) => g.severity === "critical" || g.severity === "high")
+                        ? "critical"
+                        : "warning",
+        },
+        {
+            anchor: "renewal",
+            label: detailsCopy.briefRenewalLabel,
+            value: renewalHeadline,
+            tone: renewalHeadlineTone === "critical" ? "critical" : renewalHeadlineTone === "warning" ? "warning" : "neutral",
+        },
+    ]
 
     const gapsForAnalysis = (policy.gapInstances || []).map((gap: any) => ({
         id: gap.id,
@@ -497,6 +688,9 @@ export function PolicyDetailsClient({
     // ── Section navigation (only sections that actually render) ──
     const navItems: PolicySectionNavItem[] = [
         { id: "summary", label: detailsCopy.navSummary },
+        // Order must mirror the DOM below: #brief renders directly after
+        // #summary, before #key-dates.
+        { id: "brief", label: detailsCopy.navBrief },
         { id: "key-dates", label: detailsCopy.navDates },
         // Order must mirror the DOM below: #branch-actions renders directly
         // after #key-dates, before #coverage.
@@ -645,22 +839,11 @@ export function PolicyDetailsClient({
                                 summary={policy.coverageSummary || t.wallet.summaryFallback}
                                 health={health}
                                 isAnalyzing={isAnalyzing}
-                                coverageCount={coverageCount}
-                                exclusionCount={exclusions.length}
-                                conditionsCount={conditionsCount}
-                                perkCount={perks.length}
-                                daysLeft={computedDaysLeft}
                                 copy={{
                                     summaryTitle: detailsCopy.summaryTitle,
                                     summaryAiChip: detailsCopy.summaryAiChip,
                                     healthTitle: t.wallet.healthScore.title,
                                     healthLevels: detailsCopy.healthLevels,
-                                    atAGlance: detailsCopy.atAGlance,
-                                    glanceCoverages: detailsCopy.glanceCoverages,
-                                    glanceExclusions: detailsCopy.glanceExclusions,
-                                    glanceConditions: detailsCopy.glanceConditions,
-                                    glancePerks: detailsCopy.glancePerks,
-                                    days: t.wallet.days,
                                 }}
                                 methodology={{
                                     title: t.wallet.healthScore.methodologyTitle,
@@ -672,6 +855,19 @@ export function PolicyDetailsClient({
                                 }}
                             />
                         </section>
+
+                        {/* 1b ── The policy as a brief: seven honest one-liners ── */}
+                        {!isAnalyzing && (
+                            <section id="brief" className="scroll-mt-24">
+                                <PolicyBriefCard
+                                    rows={briefRows}
+                                    copy={{
+                                        title: detailsCopy.briefTitle,
+                                        subtitle: detailsCopy.briefSubtitle,
+                                    }}
+                                />
+                            </section>
+                        )}
 
                         {/* 2 ── Key dates & renewal status ────────────────── */}
                         {!isAnalyzing && (
@@ -718,6 +914,27 @@ export function PolicyDetailsClient({
                                         reminders: detailsCopy.renewalReminders,
                                     }}
                                 />
+                                {/* Renewal outlook — deep-linked from the dashboard
+                                    and the brief as #renewal. Facts only. */}
+                                <div id="renewal" className="mt-3 scroll-mt-24">
+                                    <RenewalOutlookCard
+                                        headline={renewalHeadline}
+                                        headlineTone={renewalHeadlineTone}
+                                        checklist={renewalChecklistLabels}
+                                        reminderLine={renewalReminderLine}
+                                        pastPeriodsLine={renewalPastPeriodsLine}
+                                        expired={isExpiredPolicy}
+                                        onRequestQuote={isOwner ? handleRequestQuote : undefined}
+                                        isRequestingQuote={isRequestingQuote}
+                                        copy={{
+                                            title: detailsCopy.renewalOutlookTitle,
+                                            checkTitle: detailsCopy.renewalOutlookCheckTitle,
+                                            checklistEmpty: detailsCopy.renewalOutlookChecklistEmpty,
+                                            requestQuote: detailsCopy.requestQuote,
+                                            requestingQuote: detailsCopy.requestingQuote,
+                                        }}
+                                    />
+                                </div>
                                 {/* Trigger D on the dedicated renewal surface:
                                     smart multi-milestone reminders are paid. */}
                                 {isOwner && isFreeTier && (

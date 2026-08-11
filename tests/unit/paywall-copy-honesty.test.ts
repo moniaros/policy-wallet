@@ -40,3 +40,31 @@ describe('paywall copy does not describe an allowance that never existed', () =>
         expect(en).toMatch(/included in the paid plans/i)
     })
 })
+
+/**
+ * The protection-monitoring upsell renders BEFORE any monitoring has run for
+ * the viewer — free accounts never compute watch signals. Its copy must
+ * describe the capability in the future tense: a past-tense detection claim
+ * ("we found", "we detected") on this card would assert work never done, and a
+ * cadence promise ("daily") would overstate a cron that only refreshes accounts
+ * which already hold a score row.
+ */
+describe('the protection-monitoring upsell never claims a check already ran', () => {
+    const block = (src: string) => {
+        const match = /protection_monitoring:\s*\{[\s\S]*?\n\s{4}\}/.exec(src)
+        expect(match, 'protection_monitoring entry missing').toBeTruthy()
+        return match![0]
+    }
+
+    it('EN: no past-tense detection, no daily promise', () => {
+        const entry = block(en)
+        expect(entry).not.toMatch(/we (found|detected|noticed)/i)
+        expect(entry).not.toMatch(/daily/i)
+    })
+
+    it('EL: no past-tense detection, no daily promise', () => {
+        const entry = block(el)
+        expect(entry).not.toMatch(/εντοπίσαμε|βρήκαμε/)
+        expect(entry).not.toMatch(/καθημεριν/)
+    })
+})

@@ -51,7 +51,7 @@ describe('the type scale means what it says', () => {
         // The label above it is a short uppercase eyebrow — micro is correct there.
         expect(meter).toMatch(/text-micro font-bold uppercase tracking-wider/)
 
-        const checklist = readFileSync('components/dashboard/GettingStartedChecklist.tsx', 'utf-8')
-        expect(checklist).toMatch(/mt-0\.5 text-caption text-black\/60/)
+        const planCard = readFileSync('components/dashboard/home/ProtectionPlanCard.tsx', 'utf-8')
+        expect(planCard).toMatch(/mt-0\.5 block text-caption text-black\/60/)
     })
 })

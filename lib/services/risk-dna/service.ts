@@ -11,10 +11,10 @@
 import { db } from "@/lib/db"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
 import { coverageEngineStatus, isPolicyCoverageActive } from "@/lib/policy-status"
-import { assembleRiskGraph } from "@/lib/services/risk-graph/service"
+import { assembleRiskGraph, type RiskGraphPolicyInput } from "@/lib/services/risk-graph/service"
 import { parseRisks } from "@/lib/services/timeline/diff"
 import { calculateScoreFromAssessments } from "@/lib/services/gap-engine/protection-score"
-import { computeRiskDna, type DimensionResult } from "./compute"
+import { computeRiskDna, type DimensionResult, type DnaHistoryPoint } from "./compute"
 import { RISK_DIMENSIONS, primaryDimensionOf, type RiskDimension } from "./dimensions"
 import {
     customerHealthIndex,
@@ -83,6 +83,76 @@ function dimensionScoresAt(risks: ReturnType<typeof parseRisks>): Partial<Record
     return scores
 }
 
+/**
+ * The shared dimension assembly both consumers below build on.
+ *
+ * `getRiskIntelligence` and `assembleWatch` MUST derive their dimensions
+ * through this one function — a second assembly path is how the dashboard's
+ * watch would come to disagree with /insights/risk-profile.
+ */
+function assembleDimensionPicture(
+    profile: unknown,
+    policies: RiskGraphPolicyInput[],
+    latestVersion: { computedAt: Date; risks: unknown } | null
+) {
+    const ctx = toLifeContext(profile as any)
+    const graph = assembleRiskGraph(profile, policies)
+    const activeLines = [
+        ...new Set(
+            policies
+                .filter((p) => isPolicyCoverageActive(p as any))
+                .map((p) => (p.lineOfBusiness ?? "").toLowerCase())
+                .filter(Boolean)
+        ),
+    ]
+    const previous: (DnaHistoryPoint & { at: Date }) | null = latestVersion
+        ? { at: latestVersion.computedAt, scores: dimensionScoresAt(parseRisks(latestVersion.risks)) }
+        : null
+    const dimensions = computeRiskDna({ assessments: graph.assessments, ctx, activeLines, previous })
+    return { ctx, graph, activeLines, previous, dimensions }
+}
+
+export interface WatchAssemblyInputs {
+    /** The policyholderProfile row, or null when none exists. */
+    profile: unknown
+    policies: RiskGraphPolicyInput[]
+    /** The newest RiskProfileVersion row, or null (table may be unmigrated). */
+    latestVersion: { computedAt: Date; risks: unknown } | null
+    /**
+     * When the picture was last actually computed. The dashboard passes
+     * ProtectionScore.computedAt — the last engine RUN — rather than the newest
+     * version's timestamp: versions are written only on MATERIAL change, so a
+     * customer whose stable profile the cron re-checked yesterday must not be
+     * told their position was last assessed 200 days ago.
+     */
+    lastAssessedAt: Date | null
+    now?: Date
+}
+
+/**
+ * The standing watch, assembled from data the caller already holds.
+ *
+ * Pure CPU — no queries. Exported for the dashboard, which has already loaded
+ * the profile, the full wallet and the newest version in its own batch;
+ * calling `getRiskIntelligence` there would re-fetch all three and compute
+ * household/trend/graph views the page never renders.
+ */
+export function assembleWatch(inputs: WatchAssemblyInputs): WatchSignal[] {
+    const now = inputs.now ?? new Date()
+    const { ctx, dimensions } = assembleDimensionPicture(inputs.profile, inputs.policies, inputs.latestVersion)
+    return monitorRisk({
+        ctx,
+        dimensions,
+        lastAssessedAt: inputs.lastAssessedAt,
+        policies: inputs.policies.map((p) => ({
+            id: p.id,
+            endDate: p.endDate ?? null,
+            lineOfBusiness: p.lineOfBusiness,
+        })),
+        now,
+    })
+}
+
 export async function getRiskIntelligence(userId: string, now: Date = new Date()): Promise<RiskIntelligence> {
     const [profile, policies, versions] = await Promise.all([
         db.policyholderProfile.findUnique({ where: { userId } }),
@@ -109,27 +179,15 @@ export async function getRiskIntelligence(userId: string, now: Date = new Date()
             .catch(() => [] as Array<{ computedAt: Date; risks: unknown }>),
     ])
 
-    const ctx = toLifeContext(profile)
-    const graph = assembleRiskGraph(profile, policies)
-    const activeLines = [
-        ...new Set(
-            policies
-                .filter((p) => isPolicyCoverageActive(p as any))
-                .map((p) => (p.lineOfBusiness ?? "").toLowerCase())
-                .filter(Boolean)
-        ),
-    ]
+    const latestVersion = versions.length > 0 ? versions[versions.length - 1] : null
+    const { ctx, graph, activeLines, previous, dimensions } = assembleDimensionPicture(
+        profile,
+        policies,
+        latestVersion
+    )
 
     const score = calculateScoreFromAssessments(graph.assessments, activeLines)
     const series = versions.map((v) => ({ at: v.computedAt, scores: dimensionScoresAt(parseRisks(v.risks)) }))
-    const previous = series.length > 0 ? series[series.length - 1] : null
-
-    const dimensions = computeRiskDna({
-        assessments: graph.assessments,
-        ctx,
-        activeLines,
-        previous,
-    })
 
     return {
         dimensions,

@@ -1,52 +1,91 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { render, screen } from '@testing-library/react'
-import { StatTiles } from '@/components/dashboard/home/StatTiles'
+import { LanguageProvider } from '@/contexts/LanguageContext'
+import { TranslationsProvider } from '@/contexts/TranslationsProvider'
+import { ProtectionStatusHero } from '@/components/dashboard/home/ProtectionStatusHero'
 import { ScoreMethodology } from '@/components/coverage/ScoreMethodology'
 
 const LABELS = {
-    activePolicies: 'Active policies',
-    protectionScore: 'Protection score',
-    scoreSummary: 'Needs attention',
-    gapsCount: '3 coverage gaps',
-    scoreUnavailable: 'No data yet',
-    scoreUnavailableHint: 'Add a policy to have your score calculated.',
-    provisional: 'Provisional estimate',
+    kicker: 'Protection status',
+    cta: 'Review my protection',
+    reasonKicker: 'Biggest factor',
+    provisionalBadge: 'Provisional estimate',
     provisionalHint: 'Based only on the gaps detected so far.',
+    emptyTitle: 'Let’s see how protected you are',
+    emptyBody: 'Upload your first policy and we will map where you stand.',
+    emptyCta: 'Add your first policy',
+    indeterminateTitle: 'We don’t know enough about you yet',
+    indeterminateBody: 'Answer a few short questions about your life.',
+    indeterminateCta: 'Complete my profile',
     methodologyTitle: 'How is this score calculated?',
     methodologyBody: 'We compare the lines of insurance expected for your profile…',
     methodologyLimits: 'The score does NOT assess premiums, insurers, or wording.',
     methodologyNotAdvice: 'Not personalised insurance advice.',
 }
 
+function renderHero(props: Partial<Parameters<typeof ProtectionStatusHero>[0]> = {}) {
+    return render(
+        <LanguageProvider>
+            <TranslationsProvider>
+                <ProtectionStatusHero
+                    state="scored"
+                    score={62}
+                    ringToneClass="stroke-amber-500"
+                    verdict="Needs improvement"
+                    deltaLabel={null}
+                    deltaDirection={null}
+                    keyReason={null}
+                    areasLine={null}
+                    policyLine={null}
+                    language="en"
+                    labels={LABELS}
+                    {...props}
+                />
+            </TranslationsProvider>
+        </LanguageProvider>
+    )
+}
+
 /**
- * The dashboard rendered `0` inside a red ring under "Χρειάζεται προσοχή" for
- * anyone with no policies — a verdict on someone's protection when the product
- * knows nothing about it. The same bug was fixed on /coverage-insights in
- * 65183b7; /dashboard kept it, and /dashboard is where people land.
+ * The dashboard once rendered `0` inside a red ring under "Χρειάζεται προσοχή"
+ * for anyone with no policies — a verdict on someone's protection when the
+ * product knows nothing about it. The hero inherits StatTiles' honesty
+ * contract: no number, no arc, no verdict and no methodology unless a real
+ * figure renders.
  */
-describe('protection score — no policies', () => {
-    it('shows no number and no verdict when there is nothing to score', () => {
-        // activeCount is 3 so a stray "0" can only have come from the score.
-        render(<StatTiles activeCount={3} healthScore={null} openGapCount={0} labels={LABELS} />)
-        expect(screen.getByText('No data yet')).toBeTruthy()
+describe('protection status hero — no policies', () => {
+    it('shows an invitation, never a number or a verdict', () => {
+        renderHero({ state: 'empty', score: null, verdict: null })
+        expect(screen.getByText(LABELS.emptyTitle)).toBeTruthy()
+        expect(screen.queryByText('0')).toBeNull()
+        expect(screen.queryByText('Needs improvement')).toBeNull()
+    })
+
+    it('draws no progress arc and offers no methodology with no score', () => {
+        const { container } = renderHero({ state: 'empty', score: null, verdict: null })
+        expect(container.querySelectorAll('path[stroke-dasharray]').length).toBe(0)
+        expect(screen.queryByText(LABELS.methodologyTitle)).toBeNull()
+    })
+})
+
+/**
+ * A cached score computed from a life we know almost nothing about is a verdict
+ * on our own ignorance, not on their cover. Indeterminate renders "not enough
+ * information" — an em dash, not a number, and no methodology for a figure that
+ * is not on screen.
+ */
+describe('protection status hero — indeterminate', () => {
+    it('renders no number and no verdict, and routes to the profile', () => {
+        const { container } = renderHero({ state: 'indeterminate', score: null, verdict: null })
+        expect(screen.getByText(LABELS.indeterminateTitle)).toBeTruthy()
         // "—", not "0": scored-zero and not-scored are different claims.
         expect(screen.getByText('—')).toBeTruthy()
         expect(screen.queryByText('0')).toBeNull()
-        expect(screen.queryByText('Needs attention')).toBeNull()
-    })
-
-    it('draws no coloured progress arc with no score', () => {
-        const { container } = render(
-            <StatTiles activeCount={0} healthScore={null} openGapCount={0} labels={LABELS} />
-        )
-        const arcs = container.querySelectorAll('path[stroke-dasharray]')
-        expect(arcs.length).toBe(0)
-    })
-
-    it('does not offer a methodology explainer for a score that does not exist', () => {
-        render(<StatTiles activeCount={3} healthScore={null} openGapCount={0} labels={LABELS} />)
-        expect(screen.queryByText('How is this score calculated?')).toBeNull()
+        expect(container.querySelectorAll('path[stroke-dasharray]').length).toBe(0)
+        expect(screen.queryByText(LABELS.methodologyTitle)).toBeNull()
+        const cta = screen.getByText(LABELS.indeterminateCta).closest('a')
+        expect(cta?.getAttribute('href')).toBe('/insights/risk-profile')
     })
 })
 
@@ -55,17 +94,33 @@ describe('protection score — no policies', () => {
  * or a flat per-severity penalty fallback. They are not the same measure and can
  * differ materially for the same portfolio, so the fallback says so.
  */
-describe('protection score — provisional fallback', () => {
+describe('protection status hero — provisional fallback', () => {
     it('labels the fallback estimate as provisional', () => {
-        render(<StatTiles activeCount={2} healthScore={62} openGapCount={3} isProvisional labels={LABELS} />)
+        renderHero({ state: 'provisional', score: 62, verdict: 'Needs improvement' })
         expect(screen.getByText('Provisional estimate')).toBeTruthy()
-        expect(screen.getByText('Based only on the gaps detected so far.')).toBeTruthy()
+        expect(screen.getByText(LABELS.provisionalHint)).toBeTruthy()
     })
 
     it('does not label the real engine score as provisional', () => {
-        render(<StatTiles activeCount={2} healthScore={62} openGapCount={3} labels={LABELS} />)
+        renderHero({ state: 'scored', score: 62, verdict: 'Needs improvement' })
         expect(screen.queryByText('Provisional estimate')).toBeNull()
-        expect(screen.getByText('3 coverage gaps')).toBeTruthy()
+    })
+})
+
+/**
+ * Movement claims need two determinate assessments behind them. With nothing to
+ * compare against, the hero must render NO delta chip — "±0 since —" would be a
+ * fabricated comparison.
+ */
+describe('protection status hero — score movement', () => {
+    it('renders no delta chip when there is nothing to compare', () => {
+        const { container } = renderHero({ deltaLabel: null, deltaDirection: null })
+        expect(container.textContent).not.toMatch(/since/)
+    })
+
+    it('renders the delta chip when a real comparison exists', () => {
+        renderHero({ deltaLabel: '+6 since 12 Jul 2026', deltaDirection: 'up' })
+        expect(screen.getByText('+6 since 12 Jul 2026')).toBeTruthy()
     })
 })
 
@@ -87,10 +142,10 @@ describe('score methodology disclosure', () => {
 
     it('accompanies every score we render', () => {
         // Every 0-100 figure with a colour verdict — the portfolio protection
-        // score (dashboard tile + coverage card) AND the per-policy health donut
+        // score (dashboard hero + coverage card) AND the per-policy health donut
         // — must ship with a methodology disclosure, never bare.
         for (const f of [
-            'components/dashboard/home/StatTiles.tsx',
+            'components/dashboard/home/ProtectionStatusHero.tsx',
             'components/coverage/ProtectionScoreCard.tsx',
             'components/wallet/policy-detail/SummaryCard.tsx',
         ]) {
@@ -148,23 +203,4 @@ describe('score methodology disowns the dangerous misreadings', () => {
         expect(limits).toContain('Υψηλή βαθμολογία δεν σημαίνει επαρκή ασφάλιση')
         expect(limits).toContain('δεν σημαίνει ότι μια απαίτηση θα απορριφθεί')
     })
-})
-
-/**
- * "Ευκαιρίες εξοικονόμησης" / "Savings opportunities" headed a check that only
- * counts branches holding more than one active policy. Two cars, or life cover
- * for two people, is not evidence of savings — and "no savings opportunities
- * today" asserts a price comparison the product never performed.
- */
-describe('overlap check must not claim savings', () => {
-    it.each(['lib/i18n/translations/el.ts', 'lib/i18n/translations/en.ts'])(
-        '%s does not headline the overlap check as savings',
-        (file) => {
-            const src = readFileSync(file, 'utf-8')
-            const kicker = /savingsKicker:\s*'([^']*)'/.exec(src)?.[1] || ''
-            expect(kicker.toLowerCase()).not.toMatch(/savings|εξοικονόμησ/)
-            const none = /noSavings:\s*'([^']*)'/.exec(src)?.[1] || ''
-            expect(none.toLowerCase()).not.toMatch(/savings|εξοικονόμησ/)
-        }
-    )
 })

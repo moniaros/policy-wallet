@@ -205,4 +205,22 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         successMessage: "Upgrade complete. Partner benefits are available.",
         successCta: "See your benefits",
     },
+    // Future-tense capability description on purpose: this card renders BEFORE
+    // any monitoring has run for the viewer, so it must never claim a check
+    // already happened or promise a cadence the jobs do not keep.
+    protection_monitoring: {
+        headline: "A standing watch over your protection",
+        body: "Plus keeps watching between your visits — after every change and on regular checks — and tells you when something deserves a look.",
+        primaryCta: "Turn on the protection monitor",
+        secondaryCta: "Not now",
+        benefits: [
+            "Flags cover that is about to lapse",
+            "Shows when your protection moves backwards",
+            "Keeps serious exposures visible until they are handled",
+            "Tells you how current your picture is",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. The protection monitor is on.",
+        successCta: "See your monitor",
+    },
 }

@@ -64,6 +64,79 @@ export function AgentListSkeleton() {
     )
 }
 
+/**
+ * Skeleton for the POLICYHOLDER dashboard only — mirrors PolicyholderHome's
+ * real layout (hero with score ring → attention 2/1 split → plan + monitor →
+ * full-width sections). `DashboardSkeleton` below is shared by three other
+ * routes and must not be reshaped to fit this one.
+ */
+export function PolicyholderHomeSkeleton() {
+    return (
+        <div role="status" aria-busy="true" className="mx-auto max-w-4xl px-4 py-6 pb-28 sm:px-6 lg:pb-6 animate-in fade-in duration-500">
+            <LoadingAnnouncement />
+            {/* Kicker + h1 */}
+            <div className="mb-5 space-y-2">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-7 w-48" />
+            </div>
+            <div className="space-y-4">
+                {/* Protection status hero: ring + verdict + CTA */}
+                <div className="rounded-2xl border border-black/10 bg-white p-6 dark:border-white/15 dark:bg-stone-900 sm:p-8">
+                    <Skeleton className="h-3 w-32" />
+                    <div className="mt-4 flex items-center gap-5">
+                        <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
+                        <div className="min-w-0 flex-1 space-y-2">
+                            <Skeleton className="h-6 w-2/3" />
+                            <Skeleton className="h-4 w-1/3" />
+                            <Skeleton className="h-4 w-1/2" />
+                        </div>
+                    </div>
+                    <Skeleton className="mt-5 h-11 w-48 rounded-full" />
+                </div>
+                {/* Attention (2) + gap tally (1) */}
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                    <div className="rounded-2xl border border-black/10 bg-white p-5 dark:border-white/15 dark:bg-stone-900 lg:col-span-2">
+                        <Skeleton className="h-3 w-40" />
+                        <div className="mt-3 space-y-2">
+                            {[...Array(3)].map((_, i) => (
+                                <Skeleton key={i} className="h-16 w-full rounded-xl" />
+                            ))}
+                        </div>
+                    </div>
+                    <div className="rounded-2xl border border-black/10 bg-white p-5 dark:border-white/15 dark:bg-stone-900">
+                        <Skeleton className="h-3 w-28" />
+                        <div className="mt-3 space-y-2">
+                            {[...Array(4)].map((_, i) => (
+                                <Skeleton key={i} className="h-5 w-full" />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                {/* Plan + monitor */}
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    {[...Array(2)].map((_, i) => (
+                        <div key={i} className="rounded-2xl border border-black/10 bg-white p-5 dark:border-white/15 dark:bg-stone-900">
+                            <Skeleton className="h-3 w-36" />
+                            <div className="mt-3 space-y-2">
+                                {[...Array(4)].map((_, j) => (
+                                    <Skeleton key={j} className="h-10 w-full rounded-xl" />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                {/* Full-width sections: coverage map, renewals, portfolio */}
+                {[...Array(3)].map((_, i) => (
+                    <div key={i} className="rounded-2xl border border-black/10 bg-white p-5 dark:border-white/15 dark:bg-stone-900">
+                        <Skeleton className="h-3 w-32" />
+                        <Skeleton className="mt-3 h-20 w-full rounded-xl" />
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
 export function DashboardSkeleton() {
     return (
         <div role="status" aria-busy="true" className="p-4 md:p-6 space-y-8 max-w-page-wide mx-auto animate-in fade-in duration-500">

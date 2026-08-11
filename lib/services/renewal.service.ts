@@ -7,14 +7,7 @@ import { logger } from "../logger"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
-
-// Milestone days before policy expiry when reminders are sent
-const RENEWAL_MILESTONES = [90, 60, 30, 15, 7] as const
-// Free plan floor (owner-approved, conversion audit 2026-07): one basic
-// reminder at 30 days; the full milestone ladder is a paid feature
-// (advanced_renewal_reminders / notifications entitlement).
-const BASIC_MILESTONES = [30] as const
-type Milestone = (typeof RENEWAL_MILESTONES)[number]
+import { RENEWAL_MILESTONES, BASIC_MILESTONES, type Milestone } from "@/lib/renewals/milestones"
 
 /**
  * Which milestone reminder to MAIL, and which milestones to MARK sent, for a

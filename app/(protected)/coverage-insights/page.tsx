@@ -274,12 +274,16 @@ export default async function CoverageInsightsPage() {
                         )}
 
                         {/* Declaring a change is the cheapest way to improve the
-                            assessment, so it sits above the assessment itself. */}
-                        <LifeEventsPanel
-                            options={lifeEventOptions}
-                            recent={recentLifeEvents}
-                            language={userLanguage}
-                        />
+                            assessment, so it sits above the assessment itself.
+                            The id anchors the dashboard's "Something changed?"
+                            card — keep it in sync with LifeEventPromptCard. */}
+                        <div id="life-events" className="scroll-mt-20">
+                            <LifeEventsPanel
+                                options={lifeEventOptions}
+                                recent={recentLifeEvents}
+                                language={userLanguage}
+                            />
+                        </div>
 
                         {/* The risk list and the risk graph used to sit here.
                             Both are now nested inside the nine dimensions on
