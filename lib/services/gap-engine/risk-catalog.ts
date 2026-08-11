@@ -829,7 +829,11 @@ export const RISK_CATALOG: RiskDefinition[] = [
         kind: "discretionary",
         requires: ["valuables"],
         supports: ["residence"],
-        alsoCoveredBy: ["home", "renters"],
+        // `fine_art` answers this risk directly and more completely than a
+        // contents policy does — it is the line whose whole purpose is the
+        // single-article limit this risk describes. Added rather than made the
+        // primary line so the existing attribution to `gadget` is unchanged.
+        alsoCoveredBy: ["home", "renters", "fine_art"],
         name: {
             en: "High-value possessions outside standard limits",
             el: "Αντικείμενα υψηλής αξίας εκτός τυπικών ορίων",
@@ -1514,6 +1518,85 @@ export const RISK_CATALOG: RiskDefinition[] = [
             },
         ],
         priority: (ctx) => (ctx.age != null && ctx.age >= 45 ? "medium" : "low"),
+    },
+
+    {
+        /**
+         * Building-manager liability — a mass-market Greek exposure that had no
+         * risk in this catalog and no branch the extractor could name.
+         *
+         * Every πολυκατοικία has a διαχειριστής. The role rotates between
+         * residents, is normally unpaid, and carries personal liability for the
+         * common areas: the lift, the stairwell, the pipework behind it. None of
+         * that is covered by owning the flat — a home policy answers damage to
+         * YOUR property, not what the building does to a visitor — and the role
+         * falls to tenants as readily as to owners, which is why no existing
+         * factor implies it and why it needed one of its own.
+         */
+        id: "common_areas_liability",
+        lineOfBusiness: "liability",
+        kind: "essential",
+        requires: ["buildingManagerRole"],
+        supports: ["savings", "residence"],
+        alsoCoveredBy: ["legal_expenses"],
+        name: {
+            en: "Liability for a building’s common areas",
+            el: "Ευθύνη για τους κοινόχρηστους χώρους",
+        },
+        applies: (ctx) => ctx.isBuildingManager,
+        riskExplanation: () => ({
+            en: "As the manager of a block of flats you can be held personally liable for injury or damage arising from the common areas — a fall on a wet stairwell, a lift failure, a burst riser that floods a flat below. The claim is brought against the person holding the role, not against the building.",
+            el: "Ως διαχειριστής πολυκατοικίας μπορεί να ευθύνεστε προσωπικά για τραυματισμό ή ζημιά που προκύπτει από τους κοινόχρηστους χώρους — πτώση σε βρεγμένο κλιμακοστάσιο, βλάβη ανελκυστήρα, διάρρηξη σωλήνα που πλημμυρίζει διαμέρισμα. Η απαίτηση στρέφεται κατά του προσώπου που κατέχει τη θέση, όχι κατά του κτιρίου.",
+        }),
+        whyItApplies: () => ({
+            en: "You told us you act as the manager of a block of flats.",
+            el: "Μας δηλώσατε ότι είστε διαχειριστής πολυκατοικίας.",
+        }),
+        expectedImpact: () => ({
+            en: "A single injury claim from a lift or stairwell incident routinely runs into tens of thousands of euros, and lift and pipework liability are the two heads Greek policies name specifically because they are the two that recur.",
+            el: "Μία μόνο απαίτηση για τραυματισμό από ανελκυστήρα ή κλιμακοστάσιο φτάνει συνήθως σε δεκάδες χιλιάδες ευρώ, και η ευθύνη από ανελκυστήρες και σωληνώσεις είναι οι δύο περιπτώσεις που τα ελληνικά ασφαλιστήρια κατονομάζουν ρητά, επειδή είναι αυτές που επαναλαμβάνονται.",
+        }),
+        mitigations: () => [
+            {
+                kind: "reduce",
+                label: {
+                    en: "Keep the lift and common-area maintenance current",
+                    el: "Κρατήστε ενήμερη τη συντήρηση ανελκυστήρα και κοινόχρηστων",
+                },
+                detail: {
+                    en: "A documented maintenance record for the lift, the lighting and the pipework is both the practical control and the first thing asked for when a claim is made.",
+                    el: "Το τεκμηριωμένο ιστορικό συντήρησης για τον ανελκυστήρα, τον φωτισμό και τις σωληνώσεις είναι ταυτόχρονα ο πρακτικός έλεγχος και το πρώτο που ζητείται όταν εγερθεί απαίτηση.",
+                },
+            },
+            {
+                kind: "avoid",
+                label: { en: "Hand the role on", el: "Παραδώστε τη διαχείριση" },
+                detail: {
+                    en: "The role usually rotates, and it is often taken on by a paid management company. Passing it on moves the personal exposure with it.",
+                    el: "Η θέση συνήθως εναλλάσσεται και συχνά αναλαμβάνεται από επαγγελματική εταιρεία διαχείρισης. Η παράδοσή της μεταφέρει μαζί και την προσωπική έκθεση.",
+                },
+            },
+            {
+                kind: "transfer",
+                label: {
+                    en: "Third-party liability for the common areas",
+                    el: "Αστική ευθύνη κοινόχρηστων χώρων",
+                },
+                detail: {
+                    en: "Written for the manager in that capacity, typically naming lift operation and pipe burst or leakage as separate heads, with limits per person, per event and for the year. The premium is commonly shared through the building’s common expenses.",
+                    el: "Εκδίδεται για τον διαχειριστή υπό αυτή την ιδιότητα, συνήθως κατονομάζοντας χωριστά τη λειτουργία ανελκυστήρων και τη διάρρηξη ή διαρροή σωληνώσεων, με όρια ανά άτομο, ανά γεγονός και για το έτος. Το ασφάλιστρο συνήθως επιμερίζεται στα κοινόχρηστα.",
+                },
+                line: "liability",
+            },
+        ],
+        priority: () => "medium",
+        eligibility: () => ({
+            blocking: false,
+            note: {
+                en: "Cover is written against the capacity you hold and the specific risks named — lifts and pipework are usually listed separately, so a policy that omits one may not answer it.",
+                el: "Η κάλυψη εκδίδεται με βάση την ιδιότητα που κατέχετε και τους κινδύνους που κατονομάζονται — οι ανελκυστήρες και οι σωληνώσεις αναγράφονται συνήθως χωριστά, οπότε ασφαλιστήριο που παραλείπει τον έναν ενδέχεται να μην τον καλύπτει.",
+            },
+        }),
     },
 
     {

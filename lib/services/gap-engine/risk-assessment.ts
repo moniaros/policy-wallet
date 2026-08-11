@@ -167,6 +167,10 @@ export const FACTOR_LABELS: Record<ContextFactorKey, Bilingual> = {
     cyberExposure: { en: "your online financial exposure", el: "τη διαδικτυακή οικονομική σας έκθεση" },
     retirementPlanning: { en: "retirement planning", el: "τον συνταξιοδοτικό σας σχεδιασμό" },
     health: { en: "any ongoing health conditions", el: "τυχόν χρόνιες παθήσεις" },
+    buildingManagerRole: {
+        en: "whether you act as the manager of a block of flats",
+        el: "αν είστε διαχειριστής πολυκατοικίας",
+    },
 }
 
 /**

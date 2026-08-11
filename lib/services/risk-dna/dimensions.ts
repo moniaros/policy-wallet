@@ -120,6 +120,10 @@ export const DIMENSION_DEFINITIONS: DimensionDefinition[] = [
             "employer_liability",
             "motor_legal_disputes",
             "home_legal_disputes",
+            // Personal liability held in the διαχειριστής role — primary rather
+            // than secondary because the claim is brought against the person,
+            // not the building, and no other cover in the dimension answers it.
+            "common_areas_liability",
             "pet_costs",
         ],
         secondary: ["motor_liability", "landlord_letting"],

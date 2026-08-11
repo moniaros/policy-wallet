@@ -28,9 +28,8 @@ import type {
     RiskProfileInput,
 } from "./ai-service.interface"
 import { AcordDataSchema } from "@/lib/schemas/acord-data"
-import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 import { enrichExtractionPayload } from "./extraction-enrichment"
-import { extractionCitationsEnabled, ExtractionSourcesSchema } from "./extraction-citations"
+import { buildExtractionSchema } from "./extraction-schema"
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
 import {
     buildExtractionPrompt,
@@ -130,31 +129,7 @@ export class AnthropicAIService implements IAIService {
         if (!this.aiProvider) throw new Error("Anthropic service not available")
         const modelName = options?.modelOverride || env.CLAUDE_MODEL_EXTRACTION
 
-        const ExtractionSchema = z.object({
-            insurerName: z.string().optional().describe("Insurance company name"),
-            policyNumber: z.string().optional().describe("Policy number"),
-            lineOfBusiness: z.string().optional().describe(`Exactly one of: ${WRITE_BRANCH_IDS.join(", ")}`),
-            startDate: z.string().optional().describe("Policy start date YYYY-MM-DD"),
-            endDate: z.string().optional().describe("Policy end date YYYY-MM-DD"),
-            premiumAmount: z.number().optional().describe("Annual premium, numeric only"),
-            issueDate: z.string().optional().describe("Policy issue/signature date YYYY-MM-DD (Ημερομηνία έκδοσης)"),
-            premiumFrequency: z.enum(["annual", "semiannual", "quarterly", "monthly", "one_off"]).optional().describe("Premium payment frequency (Συχνότητα καταβολής ασφαλίστρων)"),
-            renewalDate: z.string().optional().describe("Policy renewal date YYYY-MM-DD if stated (Ημερομηνία ανανέωσης)"),
-            coverageSummary: z.string().optional().describe("Brief summary of main coverages, max 200 chars"),
-            customerName: z.string().optional(),
-            customerSurname: z.string().optional(),
-            customerEmail: z.string().optional(),
-            customerPhone: z.string().optional().describe("Policyholder phone number (Τηλέφωνο, Κινητό)"),
-            customerTaxId: z.string().optional().describe("Policyholder VAT / 9-digit Greek ΑΦΜ (ΑΦΜ, Α.Φ.Μ., ΔΟΥ, VAT)"),
-            exclusions: z.array(z.string()).optional().describe("Top exclusions found"),
-            extractionConfidence: z.object({
-                overall: z.number().describe("0-100 confidence score"),
-                requiresReview: z.boolean(),
-                fields: z.record(z.string(), z.number()).describe("Per-field confidence 0-100 for: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate"),
-            }).optional(),
-            ...(extractionCitationsEnabled() ? { extractionSources: ExtractionSourcesSchema } : {}),
-            acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness"),
-        })
+        const ExtractionSchema = buildExtractionSchema()
 
         // Shared canonical extraction prompt (lib/services/ai/prompts.ts);
         // the output contract is the schema-constrained ExtractionSchema.
@@ -175,7 +150,7 @@ export class AnthropicAIService implements IAIService {
                         {
                             role: "user",
                             content: [
-                                { type: "text", text: buildExtractionPrompt(options?.operatorGuidance) },
+                                { type: "text", text: buildExtractionPrompt(options?.operatorGuidance, options?.lineOfBusinessHint) },
                                 {
                                     type: "file",
                                     data: document.data,
@@ -227,6 +202,8 @@ export class AnthropicAIService implements IAIService {
             customerEmail: extracted.customerEmail,
             customerPhone: extracted.customerPhone,
             customerTaxId: extracted.customerTaxId,
+            documentKind: enriched.documentKind,
+            evidence: enriched.evidence,
             exclusions: enriched.exclusions,
             extractionMeta: enriched.extractionMeta,
             acordData: enriched.acordData,

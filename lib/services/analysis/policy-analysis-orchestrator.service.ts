@@ -64,6 +64,7 @@ import {
     emitAnalysisStepTelemetry,
 } from "./step-telemetry"
 import { documentMimeType } from "@/lib/security/file-upload"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 
 const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
     document_load_and_validation: 1,
@@ -173,11 +174,51 @@ export class OrchestrationError extends Error {
 // shared-utils' isTransientError has since fixed.
 
 
+/**
+ * One classification, one module — this is now a thin alias over the canonical
+ * `normalizeBranch`.
+ *
+ * It used to be a second, much weaker normalizer that knew only `auto` and
+ * `vehicle`, which meant the AI write path and every read path could disagree
+ * about the same policy: an extraction emitting "Marine Cargo" was stored
+ * verbatim here while `normalizeBranch` resolved it elsewhere, so the branch a
+ * policy displayed under was decided by which code looked at it.
+ */
 function normalizeLineOfBusiness(value: string | null | undefined): string {
-    const lob = (value || "other").toLowerCase().trim()
-    if (lob === "auto") return "motor"
-    if (lob === "vehicle") return "motor"
-    return lob
+    return normalizeBranch(value).id
+}
+
+/**
+ * The line of business a re-analysis is allowed to write.
+ *
+ * A fresh extraction normally supersedes the stored values — that is deliberate,
+ * and `reviewState` is reset to `unconfirmed` so the customer re-reviews. The
+ * BRANCH is the one exception, because it is not just another field: it selects
+ * the score category, the coverage panel, the gap definitions that run and the
+ * commission rate an advisor is paid. A confirmed branch is a human answer to
+ * exactly the question the model is re-asking, and it wins.
+ *
+ * This matters more now than it did: widening the extractor's vocabulary means a
+ * policy the model previously had no word for — a cargo transit, a fidelity
+ * schedule — can come back classified differently on the next run. Where nobody
+ * confirmed the old value that is an improvement; where somebody did, it is a
+ * regression they already corrected once.
+ */
+function resolveLineOfBusiness(policy: any, extraction: AIPolicyExtractionResponse): string {
+    const confirmed = (policy?.acordData as any)?.extraction?.reviewState === "confirmed"
+    if (confirmed && policy?.lineOfBusiness) {
+        const stored = normalizeLineOfBusiness(policy.lineOfBusiness)
+        const proposed = normalizeLineOfBusiness(extraction.lineOfBusiness || policy.lineOfBusiness)
+        if (stored !== proposed) {
+            logger("info", "Keeping confirmed line of business over re-extraction", {
+                policyId: policy.id,
+                stored,
+                proposed,
+            })
+        }
+        return stored
+    }
+    return normalizeLineOfBusiness(extraction.lineOfBusiness || policy?.lineOfBusiness)
 }
 
 // Extracted dates arrive as ISO yyyy-MM-dd (prompt normalization — see
@@ -329,7 +370,11 @@ export class PolicyAnalysisOrchestratorService {
             const service = getAIService()
             // Meter the spend: without userId the provider records no TokenUsage
             // row, so this free/Starter parse ran entirely off the books.
-            const extraction = await service.extractPolicyData(prepared.document, { userId, policyId })
+            const extraction = await service.extractPolicyData(prepared.document, {
+                userId,
+                policyId,
+                lineOfBusinessHint: policy.lineOfBusiness,
+            })
             const metadata = this.buildMetadata(policy, extraction)
 
             await db.policy.update({
@@ -1266,6 +1311,11 @@ export class PolicyAnalysisOrchestratorService {
                                 ? remediationType
                                 : undefined,
                         operatorGuidance: guidanceFor("extractPolicyData"),
+                        // Selects the line-of-business knowledge pack composed
+                        // into the prompt. A hint only: the model still reports
+                        // the line it reads, so a stale column costs a paragraph
+                        // of irrelevant guidance rather than a wrong branch.
+                        lineOfBusinessHint: policy.lineOfBusiness,
                     })
 
                     const checks = [
@@ -2377,11 +2427,42 @@ export class PolicyAnalysisOrchestratorService {
         }
     }
 
+    /**
+     * Fold an extraction result into the policy's metadata.
+     *
+     * The evidence gate at the top is the guard against a document that is not a
+     * policy overwriting one that is. Two of the sixteen documents in the
+     * reference corpus are a terms-and-conditions booklet and a set of blank
+     * statutory forms; both name an insurer on every page, and the per-field
+     * fallbacks below cannot catch them because the providers substitute
+     * 'Unknown Insurer' and 'PENDING-<timestamp>' for empty values — which are
+     * truthy, and therefore win every `||`.
+     *
+     * When the evidence is insufficient the stored values stand unchanged. The
+     * document is still kept; it is simply not treated as a contract.
+     */
     private buildMetadata(policy: any, extraction: AIPolicyExtractionResponse): PolicyMetadata {
+        if (extraction.evidence && !extraction.evidence.sufficient) {
+            logger("warn", "Extraction rejected as non-policy evidence — keeping stored metadata", {
+                policyId: policy.id,
+                reason: extraction.evidence.reason,
+                documentKind: extraction.documentKind,
+            })
+            return {
+                insurerName: policy.insurerName,
+                policyNumber: policy.policyNumber,
+                lineOfBusiness: normalizeLineOfBusiness(policy.lineOfBusiness),
+                startDate: policy.startDate,
+                endDate: policy.endDate,
+                premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
+                coverageSummary: policy.coverageSummary,
+            }
+        }
+
         return {
             insurerName: extraction.insurerName || policy.insurerName,
             policyNumber: extraction.policyNumber || policy.policyNumber,
-            lineOfBusiness: normalizeLineOfBusiness(extraction.lineOfBusiness || policy.lineOfBusiness),
+            lineOfBusiness: resolveLineOfBusiness(policy, extraction),
             startDate: parseDateMaybe(extraction.startDate, policy.startDate),
             endDate: parseDateMaybe(extraction.endDate, policy.endDate),
             premiumAmount:
@@ -2598,7 +2679,10 @@ export class PolicyAnalysisOrchestratorService {
             })
         }
 
-        const normalizedLob = normalizeLineOfBusiness(extraction.lineOfBusiness || metadata.lineOfBusiness)
+        // `metadata.lineOfBusiness` has already been through resolveLineOfBusiness
+        // — it is normalized, evidence-gated and respects a confirmed branch.
+        // Reading `extraction.lineOfBusiness` again here would route around all three.
+        const normalizedLob = metadata.lineOfBusiness
         const now = new Date()
 
         // Resolve gap definitions BEFORE the transaction. They are shared

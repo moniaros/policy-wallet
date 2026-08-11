@@ -14,7 +14,9 @@
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 import { toIsoDateString } from "@/lib/dates/document-date"
 import type { InsuranceClarityChecklistPillar } from "@/lib/services/analysis/insurance-clarity-checklist"
+import { DOCUMENT_KIND_PROMPT_SECTION } from "./document-kind"
 import { extractionCitationsEnabled, CITATIONS_PROMPT_SECTION } from "./extraction-citations"
+import { lobPackBlock } from "./lob-packs"
 import { sanitizeStructuredContext, stripSpotlightDelimiters } from "./spotlight"
 import type {
     AIPolicyExtractionResponse,
@@ -94,11 +96,24 @@ function formatMetadataBlock(metadata: PolicyMetadata): string {
 /**
  * Canonical extraction prompt. The output shape is the provider's schema
  * (ExtractionSchema) — the prompt deliberately does not restate it.
+ *
+ * LAYERING: this function is Layer 1 — the insurance reasoning that holds for
+ * every policy. When `lineOfBusinessHint` names a line with a knowledge pack,
+ * Layer 2 is appended (lib/services/ai/lob-packs): the terminology, field
+ * mapping and traps for that family alone. With no hint, or a line with no pack,
+ * the prompt is byte-identical to what it was before packs existed — which is
+ * what keeps motor and health extraction unchanged.
+ *
+ * Layer 2 sits ABOVE operator guidance for a reason: packs are engineering
+ * artefacts under review, operator guidance is admin-authored and must stay the
+ * last, most subordinate word.
  */
-export function buildExtractionPrompt(operatorGuidance?: string): string {
+export function buildExtractionPrompt(operatorGuidance?: string, lineOfBusinessHint?: string): string {
     return `You are an expert insurance document parser for Greek-market policies.
 
 TASK: Read the ENTIRE document — policy schedule, General Terms (Γενικοί Όροι), Special Conditions (Ειδικοί Όροι), appendices and endorsements — and extract ALL insurance data into the structured JSON shape you are given. Do not summarize. Do not skip sections.
+
+${DOCUMENT_KIND_PROMPT_SECTION}
 
 ACCURACY RULES:
 - Extract only what the document states. Do NOT infer, assume, or invent values.
@@ -127,7 +142,7 @@ If you would score a field below ~40, leave it out rather than guess. Set requir
         extractionCitationsEnabled()
             ? `\n${CITATIONS_PROMPT_SECTION}`
             : "\nDo not include citations or an extractionSources field."
-    }${formatOperatorGuidance(operatorGuidance)}`
+    }${lobPackBlock(lineOfBusinessHint)}${formatOperatorGuidance(operatorGuidance)}`
 }
 
 // ── Gap analysis ────────────────────────────────────────────────────

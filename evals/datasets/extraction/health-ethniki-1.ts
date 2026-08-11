@@ -6,6 +6,7 @@
 
 import { HEALTH_ETHNIKI_1 } from "@/tests/fixtures/health-ethniki-1"
 import type { ExpectedExtraction } from "../../scorers/extraction-scorer"
+import { SPECIALTY_EXTRACTION_CASES } from "./specialty-lines"
 
 export interface ExtractionEvalCase {
     id: string
@@ -76,4 +77,16 @@ export const EXTRACTION_HEALTH_ETHNIKI_1: ExtractionEvalCase = {
     },
 }
 
-export const EXTRACTION_CASES: ExtractionEvalCase[] = [EXTRACTION_HEALTH_ETHNIKI_1]
+/**
+ * Every extraction case the harness runs.
+ *
+ * The specialty cases live in their own module because they exist for a
+ * different reason: health is the accuracy baseline, they are the CLASSIFICATION
+ * baseline. Each carries a line the extractor's vocabulary had no word for
+ * before the expansion, and each puts a sum insured next to a premium so the
+ * confusion the prompt warns about has somewhere to show up.
+ */
+export const EXTRACTION_CASES: ExtractionEvalCase[] = [
+    EXTRACTION_HEALTH_ETHNIKI_1,
+    ...SPECIALTY_EXTRACTION_CASES,
+]

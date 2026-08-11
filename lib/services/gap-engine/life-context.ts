@@ -65,6 +65,16 @@ export const CONTEXT_FACTORS = [
     "cyberExposure",
     "retirementPlanning",
     "health",
+    /**
+     * Acting as the manager (διαχειριστής) of a block of flats.
+     *
+     * A distinctly Greek exposure with no analogue in the other factors: the
+     * role is unpaid, usually rotates between residents, and carries personal
+     * liability for the common areas — lifts, stairwells, the pipework that
+     * runs behind them. It is not covered by owning a home, and it applies to
+     * tenants as readily as to owners, so no existing factor implies it.
+     */
+    "buildingManagerRole",
 ] as const
 
 export type ContextFactorKey = (typeof CONTEXT_FACTORS)[number]
@@ -174,6 +184,8 @@ export interface LifeContext {
 
     // Lifestyle
     travelsFrequently: boolean
+    /** Acts as the manager of a block of flats — see CONTEXT_FACTORS. */
+    isBuildingManager: boolean
     activities: HighRiskActivity[]
     cyberExposure: CyberExposureLevel | null
     retirementPlanning: boolean
@@ -268,6 +280,7 @@ const FACTOR_COLUMNS: Record<ContextFactorKey, string[]> = {
     // routinely unknown, and that must read as unknown. A `null` here means
     // nobody has asked; only an empty array means "I have no chronic condition".
     health: ["chronicConditions"],
+    buildingManagerRole: ["isBuildingManager"],
 }
 
 /**
@@ -283,6 +296,7 @@ const DEFAULTED_COLUMNS: Record<string, (v: unknown) => boolean> = {
     ownsBoat: (v) => v === true,
     ownsBusiness: (v) => v === true,
     retirementPlanning: (v) => v === true,
+    isBuildingManager: (v) => v === true,
     dependentsCount: (v) => typeof v === "number" && v > 0,
     childrenCount: (v) => typeof v === "number" && v > 0,
     vehiclesCount: (v) => typeof v === "number" && v > 0,
@@ -403,6 +417,7 @@ export function toLifeContext(
         loanAmount: p?.hasLoans === true || num(p?.loanAmount) ? num(p?.loanAmount) : null,
 
         travelsFrequently: p?.travelsFrequently === true,
+        isBuildingManager: p?.isBuildingManager === true,
         activities: stringArray(p?.activities).filter((a): a is HighRiskActivity =>
             (HIGH_RISK_ACTIVITIES as readonly string[]).includes(a)
         ),

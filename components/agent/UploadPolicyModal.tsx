@@ -10,6 +10,7 @@ import { useDialog } from '@/hooks/useDialog'
 import type { CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
 import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
 import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
+import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 
 interface Props {
     isOpen: boolean
@@ -424,12 +425,9 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
                                 <Field label={ac.policyNumber}><input required value={policy.policyNumber} onChange={e => setPolicy({ ...policy, policyNumber: e.target.value })} placeholder="POL-123456" className={INPUT_CLASS} /></Field>
                                 <Field label={ac.lineOfBusiness}>
                                     <select value={policy.lineOfBusiness} onChange={e => setPolicy({ ...policy, lineOfBusiness: e.target.value })} className={`${INPUT_CLASS} appearance-none`}>
-                                        <option value="motor">{ac.lobMotor}</option>
-                                        <option value="health">{ac.lobHealth}</option>
-                                        <option value="home">{ac.lobHome}</option>
-                                        <option value="life">{ac.lobLife}</option>
-                                        <option value="travel">{ac.lobTravel}</option>
-                                        <option value="liability">{ac.lobLiability}</option>
+                                        {WRITE_BRANCH_IDS.map((id) => (
+                                            <option key={id} value={id}>{t.policyTypes[id] ?? id}</option>
+                                        ))}
                                     </select>
                                 </Field>
                                 <Field label={ac.premium}><input type="number" value={policy.premiumAmount} onChange={e => setPolicy({ ...policy, premiumAmount: e.target.value })} placeholder="0.00" className={INPUT_CLASS} /></Field>

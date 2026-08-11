@@ -1,16 +1,80 @@
 import { z } from "zod";
 
 /**
- * ACORD Data Schema v2
+ * ACORD Data Schema v3
  *
  * Unified Zod schema for structured insurance policy data extracted by AI.
  * Enriched with Greek-market-specific fields (ENFIA, coordination centres,
  * leishmaniasis, green card, etc.) and deeper per-section detail.
  *
  * This is the single source of truth — the TypeScript type is derived via z.infer.
+ *
+ * ── v3: why the money fields grew structure ──────────────────────────────
+ *
+ * Through v2 a coverage carried `limit` and `deductible` as free TEXT. That is
+ * enough to show a customer a sentence and not enough to reason about anything,
+ * which is why the protection score could only ever measure whether cover was
+ * PRESENT and never whether it was ADEQUATE.
+ *
+ * Real schedules do not fit one number. A recreational-craft liability runs
+ * three parallel towers — per person, per event, per period — with a fourth for
+ * marine pollution under a single policy ceiling. A yacht hull carries six
+ * deductibles by type of damage plus a rule saying the largest applies. A health
+ * policy sets €750 with an overnight stay, €375 without, and nil in a public
+ * hospital. None of that survives being flattened into a string.
+ *
+ * v3 is PURELY ADDITIVE. Every new field is optional, `_version` is bumped, and
+ * the v2 `limit` / `deductible` strings stay populated as the human-readable
+ * rendering — so every existing reader keeps working untouched and stored v2
+ * documents remain valid.
  */
+
+/** ISO-4217. Greek retail is EUR; marine and crew business is frequently USD. */
+const CurrencySchema = z.string().length(3).describe("ISO-4217 code, e.g. EUR, USD, GBP");
+
+/**
+ * The dimension a monetary cap is measured on.
+ *
+ * Kept as a closed vocabulary because the whole point is to make two policies
+ * comparable; free text would reintroduce the problem this replaces.
+ */
+export const LIMIT_BASES = [
+    "per_claim",
+    "per_event",
+    "per_person",
+    "per_item",
+    "per_location",
+    "per_period_aggregate",
+    "daily",
+    "monthly",
+    "annual",
+] as const;
+
+const MonetaryLimitSchema = z.object({
+    basis: z.enum(LIMIT_BASES),
+    amount: z.number().optional().describe("Omit when unlimited is true"),
+    currency: CurrencySchema.optional(),
+    /** «Απεριόριστο» — an assistance benefit with no cap is not the same as an unknown one. */
+    unlimited: z.boolean().default(false),
+    /** What the cap is measured against, when the basis alone is ambiguous ("per safe", "per crew member"). */
+    appliesTo: z.string().optional(),
+});
+
+const DeductibleSchema = z.object({
+    basis: z.enum(LIMIT_BASES),
+    amount: z.number().optional(),
+    /** Percentage deductibles state what they are a percentage OF ("each material damage"). */
+    percentOf: z.string().optional(),
+    percent: z.number().optional(),
+    /** A percentage deductible is normally floored and sometimes capped. */
+    minimum: z.number().optional(),
+    maximum: z.number().optional(),
+    currency: CurrencySchema.optional(),
+    appliesTo: z.string().optional().describe("Which damage type or sub-cover this deductible attaches to"),
+});
+
 export const AcordDataSchema = z.object({
-    _version: z.number().default(2),
+    _version: z.number().default(3),
 
     // ─── Motor & Liability ──────────────────────────────────────────────
     vehicle: z.object({
@@ -132,6 +196,13 @@ export const AcordDataSchema = z.object({
         premium: z.object({
             amount: z.number().nullable().optional(),
         }).optional(),
+        /**
+         * Currency of the premium and of any amount in this envelope. Defaults
+         * to EUR at the read layer; stated explicitly because crew and hull
+         * business in the Greek market is routinely written in USD, and a
+         * benefit table read as euros overstates the cover by roughly a tenth.
+         */
+        currency: CurrencySchema.nullable().optional(),
     }).optional(),
 
     beneficiaries: z.array(z.object({
@@ -143,16 +214,218 @@ export const AcordDataSchema = z.object({
     coverages: z.array(z.object({
         name: z.string(),
         type: z.string().optional(),
+        /** v2 human-readable rendering. Still populated — every existing reader uses it. */
         limit: z.string().optional(),
+        /** v2 human-readable rendering. Still populated — every existing reader uses it. */
         deductible: z.string().optional(),
         description: z.string().optional(),
         explanation: z.object({
             en: z.string(),
             el: z.string(),
         }).optional(),
+
+        // ── v3 structure ────────────────────────────────────────────────
+        /**
+         * Every cap that applies to this cover. A liability section commonly has
+         * three (per person, per event, per period) and they are not
+         * interchangeable: an accident with several injured parties exhausts the
+         * per-event tower while the per-person one is barely touched.
+         */
+        limits: z.array(MonetaryLimitSchema).optional(),
+        deductibles: z.array(DeductibleSchema).optional(),
+        /** Percentage of recognised cost the insured carries (health «συμμετοχή»). */
+        coinsurancePercent: z.number().optional(),
+        waitingPeriodDays: z.number().optional(),
+        /**
+         * Whether the cover is actually ON. Optional covers that were offered and
+         * NOT taken are the quiet cause of "but I have all-risks" — earthquake is
+         * routinely optional on a Greek fine-art or property schedule.
+         */
+        status: z.enum([
+            "included",
+            "optional_taken",
+            "optional_not_taken",
+            "excluded",
+        ]).optional(),
     })).optional(),
 
+    /**
+     * How the schedule resolves overlapping deductibles. Stated explicitly on
+     * marine hull wordings ("where more than one applies, the largest single
+     * deductible applies") and materially changes what a claim returns.
+     */
+    deductibleResolution: z.enum(["largest_applies", "cumulative", "unknown"]).optional(),
+
     exclusions: z.array(z.string()).optional(),
+
+    /**
+     * Warranties and conditions of cover — the highest-value addition in v3.
+     *
+     * These are the terms that decide whether cover responds at all, and in v2
+     * they had nowhere to live but free text. Greek schedules carry them under
+     * «ΑΠΑΡΑΒΑΤΟΙ ΟΡΟΙ», «ΠΡΟΫΠΟΘΕΣΕΙΣ ΚΑΛΥΨΗΣ» and «ΕΙΔΙΚΕΣ ΣΥΜΦΩΝΙΕΣ»:
+     * an alarm linked to a monitoring centre, keys held off-premises out of
+     * hours, annual servicing to the maker's instructions, certificates valid
+     * throughout, a skipper licensed and aboard.
+     *
+     * Modelling them makes three things possible that were not: a condition gap
+     * (cover exists but rests on something the customer may not satisfy), a
+     * prevention action (the control IS the mitigation), and a compliance
+     * calendar (a recurring obligation has a due date).
+     */
+    conditions: z.array(z.object({
+        kind: z.enum([
+            "warranty",
+            "condition_precedent",
+            "security_requirement",
+            "maintenance",
+            "documentation",
+            "reporting",
+            "other",
+        ]),
+        text: z.string().describe("The condition as written, in the policy's own language"),
+        summary: z.object({ en: z.string(), el: z.string() }).optional(),
+        /** Continuous obligations differ from one-off ones: only some produce a reminder. */
+        recurrence: z.enum(["once", "annual", "periodic", "continuous"]).optional(),
+        dueBy: z.string().optional().describe("ISO date where the condition names one"),
+        /**
+         * What failing it does. Greek «απαράβατοι όροι» void cover outright;
+         * softer conditions reduce a claim. Say `unknown` rather than guess.
+         */
+        breachEffect: z.enum([
+            "voids_cover",
+            "suspends_cover",
+            "reduces_claim",
+            "unknown",
+        ]).default("unknown"),
+        /** True when the customer could confirm it themselves (alarm active, service done). */
+        verifiable: z.boolean().default(false),
+        /**
+         * Cross-policy dependency. Greek money and fidelity wordings routinely
+         * require a property policy in force for the same risk address, so the
+         * lapse of one contract silently undermines another.
+         */
+        dependsOnOtherPolicy: z.string().optional(),
+        relatedCoverage: z.string().optional(),
+    })).optional().describe("Warranties and conditions of cover — breach can remove cover entirely"),
+
+    /**
+     * Individually scheduled property at stated values: artworks, tenders and
+     * outboards, equipment. A total sum insured cannot express six paintings at
+     * six agreed values, and a set is normally settled piece by piece with
+     * nothing added for the loss of the set.
+     */
+    insuredItems: z.array(z.object({
+        description: z.string(),
+        category: z.string().optional().describe("e.g. artwork, tender, outboard, equipment, machinery"),
+        agreedValue: z.number().optional(),
+        currency: CurrencySchema.optional(),
+        valuationBasis: z.string().optional().describe("e.g. agreed value, market value at time of loss, replacement"),
+        identifier: z.string().optional().describe("Serial, registry or inventory number where stated"),
+        location: z.string().optional(),
+    })).optional(),
+
+    /**
+     * Insured persons as a CLASS, never as named individuals.
+     *
+     * Fidelity and crew schedules list real people; PolicyWallet has no basis to
+     * ingest a third party's name, so roles and counts are stored and the names
+     * are deliberately dropped. The benefit table is what the reasoning needs.
+     */
+    insuredPersons: z.array(z.object({
+        role: z.string().describe("Rank or function, e.g. master, chief engineer, cashier"),
+        classLabel: z.string().optional().describe("Benefit class the schedule groups them under"),
+        count: z.number().optional(),
+        benefits: z.array(z.object({
+            name: z.string(),
+            amount: z.number().optional(),
+            currency: CurrencySchema.optional(),
+            basis: z.enum(LIMIT_BASES).optional(),
+        })).optional(),
+    })).optional().describe("Roles and counts only — never the names printed in the schedule"),
+
+    /**
+     * Market-standard clause sets cited by code.
+     *
+     * The single highest-value inference available in a cargo policy is which
+     * Institute Cargo Clauses apply: (A) is all-risks, (C) is a short list of
+     * major casualties that leaves theft, non-delivery, water damage and
+     * handling damage outside. Two schedules can look identical and differ only
+     * by that letter.
+     */
+    namedClauses: z.array(z.object({
+        code: z.string().describe("As printed, e.g. 'Institute Cargo Clauses (C) 1.1.09', 'CL.311', 'LMA5403'"),
+        title: z.string().optional(),
+        family: z.enum([
+            "institute_cargo",
+            "institute_yacht",
+            "institute_hulls",
+            "institute_war_strikes",
+            "lma",
+            "greek_statutory",
+            "other",
+        ]).optional(),
+        /** Whether citing it widens cover, narrows it, or removes a peril outright. */
+        effect: z.enum(["grants", "restricts", "excludes", "unknown"]).default("unknown"),
+    })).optional(),
+
+    /** Where the cover applies, and where it stops. */
+    territorialScope: z.object({
+        description: z.string().optional().describe("e.g. Worldwide, Greek waters, Attica prefecture"),
+        includes: z.array(z.string()).optional(),
+        excludes: z.array(z.string()).optional(),
+        /** True when a sanctions limitation clause is attached. */
+        sanctionsClause: z.boolean().optional(),
+        navigationLimits: z.string().optional().describe("Marine: the area the craft may not sail beyond"),
+    }).optional(),
+
+    /**
+     * How the term is shaped. `annual` is the assumption everywhere else in the
+     * product — renewal reminders, expiry warnings, the renewal pipeline — and
+     * it is wrong for a three-month cargo transit or a 36-day crew period, which
+     * would otherwise generate renewal nagging for cover that was never meant to
+     * recur.
+     */
+    termBasis: z.enum([
+        "annual",
+        "short_period",
+        "voyage",
+        "single_transit",
+        "multi_year",
+    ]).optional(),
+
+    /** Populated for voyage and single-transit cover. */
+    transit: z.object({
+        from: z.string().optional(),
+        to: z.string().optional(),
+        mode: z.string().optional().describe("e.g. road, sea, air, rail, multimodal"),
+        conveyance: z.string().optional().describe("The named vessel or vehicle, where stated"),
+        packing: z.string().optional().describe("Packing and stowage as described in the schedule"),
+        valuationBasis: z.string().optional(),
+    }).optional(),
+
+    /**
+     * The insured object for marine risks — the one place v3 adds a typed
+     * section, because a vessel is genuinely not a vehicle or a property.
+     * Money, fidelity and fine art need no section of their own: they are fully
+     * described by `insuredItems`, `insuredPersons` and structured `coverages`.
+     */
+    marineVessel: z.object({
+        name: z.string().optional(),
+        vesselType: z.string().optional().describe("e.g. yacht, floating dock, bulk carrier"),
+        flag: z.string().optional(),
+        registryNumber: z.string().optional(),
+        yearBuilt: z.number().optional(),
+        lengthMetres: z.number().optional(),
+        enginePowerHp: z.number().optional(),
+        engineCount: z.number().optional(),
+        deadweightTonnes: z.number().optional(),
+        hullValue: z.number().optional(),
+        currency: CurrencySchema.optional(),
+        layUpPeriod: z.string().optional().describe("Lay-up terms as stated"),
+        berthingRequirement: z.string().optional().describe("Where the craft must be kept for cover to apply"),
+        skipperLicenceRequired: z.boolean().optional(),
+    }).optional(),
 
     finePrintClauses: z.array(z.object({
         clause: z.string().describe("Actual clause text or summary from the General Terms / Special Conditions"),
@@ -183,7 +456,13 @@ export const AcordDataSchema = z.object({
         conditionType: z.enum([
             "waiting_period", "auto_renewal", "cancellation_penalty",
             "sub_limit", "co_payment", "age_limit", "geographic_restriction",
-            "claim_deadline", "notification_obligation", "no_claims_bonus"
+            "claim_deadline", "notification_obligation", "no_claims_bonus",
+            // v3 additions. Widening a z.enum is read-compatible: stored v2
+            // documents never carry these values, and nothing narrows.
+            "warranty", "condition_precedent", "security_requirement",
+            // Fidelity cover turns on when a loss is DISCOVERED, and the window
+            // keeps running for months after the employee leaves.
+            "discovery_period",
         ]),
         summary: z.object({ en: z.string(), el: z.string() }),
         value: z.string().optional().describe("e.g. '90 days', '€200/day', '72 hours'"),
@@ -236,3 +515,12 @@ export const AcordDataSchema = z.object({
 });
 
 export type AcordData = z.infer<typeof AcordDataSchema>;
+
+/**
+ * The shape BEFORE defaults are applied — what a caller writes, and what the AI
+ * emits. Differs from `AcordData` wherever a field has a `.default()`: `effect`
+ * and `breachEffect` are required on the parsed type and optional here. Helpers
+ * that only read a subset should accept this, so they work on raw extraction
+ * output as well as on stored, parsed data.
+ */
+export type AcordDataInput = z.input<typeof AcordDataSchema>;

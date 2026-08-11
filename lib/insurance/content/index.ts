@@ -26,12 +26,23 @@ import { motorbikeContent } from './motorbike'
 import { incomeProtectionContent } from './income-protection'
 import { personalAccidentContent } from './personal-accident'
 import { boatContent } from './boat'
+import { boatHullContent } from './boat-hull'
+import { boatTplContent } from './boat-tpl'
+import { fineArtContent } from './fine-art'
 import { roadsideContent } from './roadside'
 import { liabilityContent } from './liability'
 import { legalExpensesContent } from './legal-expenses'
 import { groupHealthContent } from './group-health'
 import { groupLifeContent } from './group-life'
 import { groupPensionContent } from './group-pension'
+import { marineHullContent } from './marine-hull'
+import { marineCargoContent } from './marine-cargo'
+import { marineCrewContent } from './marine-crew'
+import { moneyContent } from './money'
+import { fidelityContent } from './fidelity'
+import { transportsContent } from './transports'
+import { employerLiabilityContent } from './employer-liability'
+import { professionalLiabilityContent } from './professional-liability'
 
 export type { Bilingual, BranchAction, BranchCommonGap, BranchContent } from './types'
 
@@ -56,12 +67,26 @@ export const RICH_BRANCH_CONTENT: Record<string, BranchContent> = {
     cyber: cyberContent,
     pet: petContent,
     boat: boatContent,
+    boat_hull: boatHullContent,
+    boat_tpl: boatTplContent,
+    fine_art: fineArtContent,
     business: businessContent,
     liability: liabilityContent,
     legal_expenses: legalExpensesContent,
     group_health: groupHealthContent,
     group_life: groupLifeContent,
     group_pension: groupPensionContent,
+    // Commercial specialty lines — authored rather than inherited from
+    // `business`, because a cargo policy that renders "protect your business"
+    // copy tells the reader nothing about the clause set that decides its claims.
+    marine_hull: marineHullContent,
+    marine_cargo: marineCargoContent,
+    marine_crew: marineCrewContent,
+    money: moneyContent,
+    fidelity: fidelityContent,
+    transports: transportsContent,
+    employer_liability: employerLiabilityContent,
+    professional_liability: professionalLiabilityContent,
 }
 
 function genitive(branch: InsuranceBranch): string {

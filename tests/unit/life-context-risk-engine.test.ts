@@ -34,6 +34,7 @@ const ALL_ANSWERED = [
     "ownsBusiness", "employmentStatus", "businessEmployees", "annualIncome",
     "savingsAmount", "mortgageAmount", "hasLoans", "loanAmount", "travelsFrequently",
     "activities", "valuablesValue", "cyberExposure", "retirementPlanning",
+    "isBuildingManager",
 ]
 
 /** A fully-answered profile that owns nothing and is responsible for nobody. */
@@ -62,6 +63,7 @@ function bareProfile(overrides: Record<string, unknown> = {}) {
         valuablesValue: 0,
         cyberExposure: "low",
         retirementPlanning: true,
+        isBuildingManager: false,
         ...overrides,
     } as any
 }
@@ -613,6 +615,7 @@ describe("catalog integrity", () => {
                     valuablesValue: 30_000,
                     chronicConditions: ["diabetes"],
                     retirementPlanning: false,
+                    isBuildingManager: true,
                     savingsAmount: 500,
                 })
             )

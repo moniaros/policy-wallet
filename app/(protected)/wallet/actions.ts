@@ -4,7 +4,8 @@ import { db } from "@/lib/db"
 import { emit } from "@/lib/notifications/dispatch"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { INSURANCE_BRANCHES, normalizeBranch } from "@/lib/insurance/taxonomy"
+import { lineOfBusinessEnum } from "@/lib/validations/policy"
 import { z } from "zod"
 
 import { createClient } from "@/lib/supabase/server"
@@ -40,12 +41,11 @@ import { isAcceptedImageFile, isPdfFile } from "@/lib/security/file-upload"
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
     policyNumber: z.string().min(1, "Policy number is required"),
-    lineOfBusiness: z.enum([
-        "motor", "health", "home", "life", "travel", "liability",
-        "pet", "breakdown", "legal_expenses", "income_protection",
-        "gadget", "bicycle", "business", "cyber", "motorbike",
-        "public_liability", "renters", "other"
-    ]),
+    // Shared with the API write path via lib/validations/policy.ts. Previously a
+    // hand-copied 18-value list that had drifted out of step with the taxonomy in
+    // both directions — it carried two aliases as ids and rejected `pension`,
+    // `boat`, `roadside`, `personal_accident` and every group line.
+    lineOfBusiness: lineOfBusinessEnum,
     startDate: z.string(),
     endDate: z.string(),
     premiumAmount: z.coerce.number().optional(),
@@ -250,12 +250,7 @@ export async function getPolicyReviewData(policyId: string) {
 const ConfirmReviewSchema = z.object({
     insurerName: z.string().min(1).max(200).optional(),
     policyNumber: z.string().min(1).max(100).optional(),
-    lineOfBusiness: z.enum([
-        "motor", "health", "home", "life", "travel", "liability",
-        "pet", "breakdown", "legal_expenses", "income_protection",
-        "gadget", "bicycle", "business", "cyber", "motorbike",
-        "public_liability", "renters", "other"
-    ]).optional(),
+    lineOfBusiness: lineOfBusinessEnum.optional(),
     startDate: z.string().optional(),
     endDate: z.string().optional(),
     issueDate: z.string().optional(),
@@ -742,29 +737,27 @@ export async function getInsurers() {
     })
 }
 
+/**
+ * The vocabulary behind the add/edit/review policy-type dropdown.
+ *
+ * Derived from the taxonomy's `writeEnabled` flag rather than hand-listed. The
+ * previous static list shadowed the `InsuranceType` table that `prisma/seed.ts`
+ * already generates from the very same flag, and it had fallen four branches
+ * behind: a user could have a `pension` or `boat` policy created by extraction
+ * and then be unable to keep that type when editing it.
+ *
+ * `id` keeps returning the slug so existing callers, which compare against
+ * `Policy.lineOfBusiness`, are unaffected.
+ */
 export async function getInsuranceTypes() {
-    // Return expanded static list (mocking DB for immediate availability)
-    const types = [
-        { name: "Motor", slug: "motor" },
-        { name: "Health", slug: "health" },
-        { name: "Home", slug: "home" },
-        { name: "Life", slug: "life" },
-        { name: "Travel", slug: "travel" },
-        { name: "Pet", slug: "pet" },
-        { name: "Breakdown", slug: "breakdown" },
-        { name: "Legal Expenses", slug: "legal_expenses" },
-        { name: "Income Protection", slug: "income_protection" },
-        { name: "Gadget", slug: "gadget" },
-        { name: "Bicycle", slug: "bicycle" },
-        { name: "Business", slug: "business" },
-        { name: "Cyber", slug: "cyber" },
-        { name: "Motorbike", slug: "motorbike" },
-        { name: "Public Liability", slug: "public_liability" },
-        { name: "Renters", slug: "renters" },
-        { name: "Other", slug: "other" },
-    ];
-
-    return types.map(t => ({ id: t.slug, ...t, isActive: true }));
+    return INSURANCE_BRANCHES
+        .filter((branch) => branch.writeEnabled)
+        .map((branch) => ({
+            id: branch.id,
+            slug: branch.id,
+            name: branch.label.en,
+            isActive: true,
+        }))
 }
 
 export async function sharePolicy(policyId: string, agentEmail: string, permissions: 'view' | 'edit' = 'view') {

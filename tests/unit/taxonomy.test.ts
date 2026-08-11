@@ -107,6 +107,68 @@ describe('insurance taxonomy — normalizeBranch', () => {
     })
 })
 
+/**
+ * Strings taken verbatim from the headings of real Greek policy schedules.
+ *
+ * Every case below was a VERIFIED failure before the specialty branches and the
+ * Greek alias folding existed. Two classes of defect:
+ *
+ *  - the substring ladder tested the broad `marine` before anything narrower, so
+ *    `marine cargo` (a truck transit of used machinery) and `marine crew` (a
+ *    shipowner's liability to seafarers) were both filed as pleasure-craft cover;
+ *  - the alias table was English-only, so the words actually printed on a Greek
+ *    schedule — `ΑΣΤΙΚΗ ΕΥΘΥΝΗ`, `ΚΛΑΔΟΣ ΜΕΤΑΦΟΡΩΝ` — resolved to `other`.
+ */
+describe('insurance taxonomy — Greek schedules and marine sub-lines', () => {
+    const cases: Array<[string, string]> = [
+        // Marine sub-lines must beat the generic marine → boat fallback
+        ['marine cargo', 'marine_cargo'],
+        ['MARINE CARGO POLICY', 'marine_cargo'],
+        ['ΑΣΦΑΛΙΣΤΗΡΙΟ ΚΛΑΔΟΥ ΜΕΤΑΦΟΡΩΝ', 'marine_cargo'],
+        ['marine crew', 'marine_crew'],
+        ['ΚΛΑΔΟΣ ΠΛΗΡΩΜΑΤΩΝ ΠΛΟΙΩΝ', 'marine_crew'],
+        ['ΚΛΑΔΟΣ ΠΛΟΙΩΝ', 'marine_hull'],
+        ['MARINE HULL DEPT', 'marine_hull'],
+        ['yacht hull', 'boat_hull'],
+        // Theft & fidelity department, and its three products
+        ['CASH IN SAFE', 'money'],
+        ['CASH IN TRANSIT', 'money'],
+        ['FIDELITY GUARANTEE', 'fidelity'],
+        ['ΚΛΑΔΟΣ ΚΛΟΠΗΣ & ΕΜΠΙΣΤΟΣΥΝΗΣ', 'fidelity'],
+        ['FINE ART', 'fine_art'],
+        // Greek headings for lines that already existed
+        ['ΑΣΤΙΚΗ ΕΥΘΥΝΗ', 'liability'],
+        ['ΑΣΦΑΛΙΣΤΗΡΙΟ ΑΣΤΙΚΗΣ ΕΥΘΥΝΗΣ ΠΡΟΣ ΤΡΙΤΟΥΣ', 'liability'],
+        ['ΑΣΦΑΛΙΣΤΗΡΙΟ ΚΛΑΔΟΥ ΑΥΤΟΚΙΝΗΤΩΝ', 'motor'],
+        ['Ασφαλιστήριο Συμβόλαιο Υγείας', 'health'],
+    ]
+
+    for (const [input, expected] of cases) {
+        it(`"${input}" → ${expected}`, () => {
+            expect(normalizeBranch(input).id).toBe(expected)
+        })
+    }
+
+    it('accented and unaccented Greek fold to the same branch', () => {
+        // Uppercase Greek drops its accents; title case keeps them. Both spellings
+        // reach a schedule depending on how the insurer typeset it.
+        expect(normalizeBranch('ΚΑΤΟΙΚΙΑ').id).toBe(normalizeBranch('Κατοικία').id)
+        expect(normalizeBranch('ΥΓΕΙΑ').id).toBe(normalizeBranch('Υγεία').id)
+    })
+
+    it('κατοικίδιο does not collapse into κατοικία', () => {
+        // The two share their first six letters; ordering in the ladder is what
+        // keeps a pet policy from being filed as a home policy.
+        expect(normalizeBranch('Κατοικίδιο').id).toBe('pet')
+        expect(normalizeBranch('Κατοικία').id).toBe('home')
+    })
+
+    it('bare "marine" still resolves to the consumer boat branch', () => {
+        // Guards the pre-existing contract while the narrower rules run first.
+        expect(normalizeBranch('marine').id).toBe('boat')
+    })
+})
+
 describe('insurance taxonomy — families', () => {
     it('motor family includes its two-wheeler and truck children', () => {
         const family = getBranchFamily('motor')

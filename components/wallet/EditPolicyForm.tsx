@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { updatePolicy } from "@/app/(protected)/wallet/actions"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 
 interface EditPolicyFormProps {
     policy: {
@@ -84,7 +85,11 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
         })
     }
 
-    const policyTypes = ["motor", "health", "home", "life", "travel", "business", "liability", "pet", "other"] as const
+    // Derived from the taxonomy, not hand-listed. The previous 9-value literal
+    // was narrower than the write enum the server accepts, so opening this form
+    // on a pension, boat or cyber policy offered no option matching its own
+    // type — saving silently changed it.
+    const policyTypes = WRITE_BRANCH_IDS
 
     const inputClass = "pw-input pw-input-sm flex"
     const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground"

@@ -9,6 +9,21 @@ import { branchFamilyId } from "@/lib/insurance/taxonomy"
  * Greek insurance coverage matrix.
  * Lines of business a typical Greek household/individual might hold,
  * ordered by prevalence and relevance.
+ *
+ * DELIBERATELY NOT EXTENDED with the specialty lines added in the insurance
+ * intelligence expansion (boat, fine_art, marine_*, money, fidelity).
+ *
+ * `analyzePortfolioGaps` is a pure set-difference against this list, so every
+ * entry here is recommended to every customer who does not already hold it.
+ * That is defensible for motor, home and health — a Greek household is presumed
+ * to have a car, a roof and a body. It is not defensible for a boat: adding it
+ * would tell an advisor to cross-sell marine cover to customers who own no
+ * vessel, which is the "recommend a product from the absence of that product"
+ * defect the risk-engine audit removed from the profile rules.
+ *
+ * The exposure-conditional lines belong in `RISK_CATALOG`, which gates on
+ * `requires` — `boat_liability` already fires only when `ownsBoat` is known and
+ * true, and matches a `boat_hull` or `boat_tpl` policy through the branch family.
  */
 export const GREEK_COVERAGE_MATRIX = [
     { lob: "motor", label: { en: "Motor", el: "Αυτοκίνητο" }, essential: true },

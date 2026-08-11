@@ -1,9 +1,12 @@
 import type { PremiumFrequency } from './ai-service.interface'
+import { assessExtractionEvidence, type DocumentKind, type EvidenceVerdict } from './document-kind'
 import { sanitizeExtractionSources } from './extraction-citations'
 import { parseDocumentDate, toIsoDateString } from '@/lib/dates/document-date'
 import { normalizeTaxId } from '@/lib/identity/tax-id'
 
 type RawExtractionPayload = {
+    /** What kind of document this is — see document-kind.ts. */
+    documentKind?: unknown
     insurerName?: unknown
     policyNumber?: unknown
     lineOfBusiness?: unknown
@@ -28,6 +31,17 @@ type RawExtractionPayload = {
 type EnrichedExtraction = {
     acordData: any
     exclusions: string[]
+    /** Only set when the model classified the document. */
+    documentKind?: DocumentKind
+    /**
+     * Whether there is a policy here at all.
+     *
+     * Computed on the RAW payload, before the provider substitutes its
+     * 'Unknown Insurer' / 'PENDING-<timestamp>' placeholders — after that
+     * substitution every result looks identified, which is precisely how a terms
+     * booklet used to overwrite a real policy's metadata.
+     */
+    evidence: EvidenceVerdict
     extractionMeta: {
         overallConfidence: number
         fieldConfidence: Record<string, number>
@@ -220,9 +234,23 @@ export function enrichExtractionPayload(
         }
     }
 
+    const documentKind = typeof payload.documentKind === 'string'
+        ? (payload.documentKind as DocumentKind)
+        : undefined
+
     return {
         acordData,
         exclusions,
+        documentKind,
+        evidence: assessExtractionEvidence({
+            documentKind,
+            policyNumber: asText(payload.policyNumber),
+            insurerName: asText(payload.insurerName),
+            customerName: asText(payload.customerName),
+            customerSurname: asText(payload.customerSurname),
+            startDate: asText(payload.startDate),
+            endDate: asText(payload.endDate),
+        }),
         extractionMeta: {
             overallConfidence: Math.round(overallConfidence),
             fieldConfidence,

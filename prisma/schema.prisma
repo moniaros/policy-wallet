@@ -260,6 +260,12 @@ model PolicyholderProfile {
   activities         Json?    @map("activities") // string[] — HIGH_RISK_ACTIVITIES ids
   cyberExposure      String?  @map("cyber_exposure") // 'low' | 'moderate' | 'high'
   retirementPlanning Boolean  @default(false) @map("retirement_planning")
+  /// Acts as the manager (διαχειριστής) of a block of flats. A distinctly Greek
+  /// exposure: the role is unpaid, usually rotates between residents, and
+  /// carries personal liability for the common areas — lifts, stairwells, the
+  /// pipework behind them. No other column implies it, because it applies to
+  /// tenants as readily as to owners.
+  isBuildingManager  Boolean  @default(false) @map("is_building_manager")
   /// Lines the customer holds OUTSIDE PolicyWallet (bank-assigned borrower
   /// cover, employer group scheme). Without this the engine reads "not in the
   /// wallet" as "does not exist" and manufactures a gap against a real policy.

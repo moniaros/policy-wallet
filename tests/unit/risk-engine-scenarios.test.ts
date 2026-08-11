@@ -80,6 +80,17 @@ const SCENARIOS: Scenario[] = [
         expected: ["renters", "income_protection"],
     },
     {
+        // A distinctly Greek persona and the reason `common_areas_liability`
+        // exists: the διαχειριστής role is unpaid, rotates between residents and
+        // attaches personal liability for the lift and the stairwell. It is
+        // NOT implied by owning the flat, so this renter carries it too.
+        id: "building-manager", label: "Renter who acts as manager of the block",
+        profile: p({ isBuildingManager: true }),
+        policies: [],
+        forbidden: ["motor", "home", "pet", "travel", "business"],
+        expected: ["liability"],
+    },
+    {
         id: "home-owner", band: [30, 55, "uninsured EUR150k mortgage and uninsured building"] as [number, number, string], label: "Home owner, mortgage, no dependants",
         profile: p({ residenceType: "owned", propertiesOwned: 1, mortgageAmount: 150000 }),
         policies: [],
