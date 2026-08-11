@@ -256,6 +256,29 @@ function auditStates() {
     const findings: any[] = []
     const seen = new Set<string>()
 
+    /**
+     * Companion rules that fire in the SAME state must be evaluated TOGETHER.
+     *
+     * The previous pass scored each rule alone, filling its missing property
+     * from the element's RESTING style — so `peer-checked:bg-[#29685B]` was
+     * paired with the unchecked slate text and the homepage chips reported
+     * 1.59:1, while the real checked state (which also applies
+     * `peer-checked:text-white`) renders white-on-green at ~5.8:1. Rules are
+     * therefore collected first and joined per (element, state signature);
+     * within a signature, later declarations win — for equal-specificity
+     * Tailwind utilities, sheet order IS the cascade.
+     */
+    const stateTokens = (sel: string): string =>
+        (
+            sel.match(
+                /:hover|:focus-visible|:focus|:active|:disabled|:checked|\[aria-pressed=["']?true["']?\]|\[aria-selected=["']?true["']?\]|\[aria-current[^\]]*\]|\[data-state=["']?[a-z]+["']?\]/g
+            ) || []
+        )
+            .sort()
+            .join('&')
+
+    const stateRules: Array<{ sel: string; base: string; sig: string; fgDecl: string; bgDecl: string }> = []
+
     for (const sheet of Array.from(document.styleSheets)) {
         let rules: CSSRule[]
         try {
@@ -296,58 +319,103 @@ function auditStates() {
                     .replace(/\[data-state=["']?[a-z]+["']?\]/g, '')
                     .trim()
                 if (!base || base === '*' || /^[>+~]/.test(base)) continue
-
-                let els: Element[]
-                try {
-                    els = Array.from(document.querySelectorAll(base)).slice(0, 6)
-                } catch {
-                    continue
-                }
-
-                for (const el of els) {
-                    const r = el.getBoundingClientRect()
-                    if (r.width < 8 || r.height < 8) continue
-                    const cs = getComputedStyle(el)
-                    if (cs.visibility === 'hidden' || cs.display === 'none') continue
-
-                    // Resolve the state's colours: the rule's own values where it
-                    // sets them, the element's current value where it does not.
-                    let fg = parse(fgDecl) || parse(cs.color)
-                    const ownBg = parse(bgDecl) || parse(cs.backgroundColor)
-                    if (!fg) continue
-
-                    // Background behind the element, then the element's own state bg.
-                    const behind = surface(el, true)
-                    let bg = ownBg && ownBg[3] > 0 ? over(ownBg, behind) : behind
-                    if (fg[3] < 1) fg = over(fg, bg)
-
-                    const fontPx = parseFloat(cs.fontSize) || 16
-                    const bold = parseInt(cs.fontWeight, 10) >= 700
-                    const large = fontPx >= 24 || (fontPx >= 18.66 && bold)
-                    const isDisabled = /:disabled/.test(sel)
-                    // Disabled text is allowed to be dimmer, but must not vanish.
-                    const need = isDisabled ? 2.5 : large ? 3 : 4.5
-
-                    const cr = ratio(fg, bg)
-                    if (cr >= need) continue
-
-                    const label = (el.textContent || '').trim().slice(0, 22)
-                    if (!label) continue
-                    const key = sel + '|' + label + '|' + hex(fg) + hex(bg)
-                    if (seen.has(key)) continue
-                    seen.add(key)
-
-                    findings.push({
-                        sel: sel.slice(0, 70),
-                        label,
-                        cr: Math.round(cr * 100) / 100,
-                        need,
-                        fg: hex(fg),
-                        bg: hex(bg),
-                        cls: String(el.className || '').slice(0, 55),
-                    })
-                }
+                stateRules.push({ sel, base, sig: stateTokens(sel), fgDecl, bgDecl })
             }
+        }
+    }
+
+    /**
+     * Resolve a DECLARED value to rgb. Tailwind emits named tokens as
+     * `var(--color-white)` (and could emit oklch/color-mix), none of which the
+     * numeric parser can read — the join must not fall back to the resting
+     * colour just because the state's own declaration is an indirection. A
+     * probe next to the element inherits its custom-property scope (`.dark`
+     * overrides included); a value that still refuses to serialize as rgb()
+     * returns null so the caller's fallback stays honest.
+     */
+    const resolveDecl = (decl: string, near: Element): number[] | null => {
+        if (!decl) return null
+        const direct = parse(decl)
+        if (direct) return direct
+        const probe = document.createElement('span')
+        probe.style.position = 'absolute'
+        probe.style.visibility = 'hidden'
+        probe.style.color = decl
+        ;(near.parentElement || document.body).appendChild(probe)
+        const got = getComputedStyle(probe).color
+        probe.remove()
+        return /^rgb/.test(got) ? parse(got) : null
+    }
+
+    // Join per (element, signature). The reported selector is the one that set
+    // the background when any did — that is the surface the reader sees.
+    const perEl = new Map<Element, Map<string, { fg: string; bg: string; sel: string; disabled: boolean }>>()
+    for (const r of stateRules) {
+        let els: Element[]
+        try {
+            els = Array.from(document.querySelectorAll(r.base)).slice(0, 6)
+        } catch {
+            continue
+        }
+        for (const el of els) {
+            let states = perEl.get(el)
+            if (!states) {
+                states = new Map()
+                perEl.set(el, states)
+            }
+            const st = states.get(r.sig) || { fg: '', bg: '', sel: r.sel, disabled: /:disabled/.test(r.sig) }
+            if (r.fgDecl) st.fg = r.fgDecl
+            if (r.bgDecl) {
+                st.bg = r.bgDecl
+                st.sel = r.sel
+            }
+            states.set(r.sig, st)
+        }
+    }
+
+    for (const entry of Array.from(perEl.entries())) {
+        const el = entry[0]
+        const r = el.getBoundingClientRect()
+        if (r.width < 8 || r.height < 8) continue
+        const cs = getComputedStyle(el)
+        if (cs.visibility === 'hidden' || cs.display === 'none') continue
+
+        for (const st of Array.from(entry[1].values())) {
+            // The state's colours: the joined declarations where the state sets
+            // them, the element's current value where it genuinely does not.
+            let fg = resolveDecl(st.fg, el) || parse(cs.color)
+            const ownBg = resolveDecl(st.bg, el) || parse(cs.backgroundColor)
+            if (!fg) continue
+
+            // Background behind the element, then the element's own state bg.
+            const behind = surface(el, true)
+            const bg = ownBg && ownBg[3] > 0 ? over(ownBg, behind) : behind
+            if (fg[3] < 1) fg = over(fg, bg)
+
+            const fontPx = parseFloat(cs.fontSize) || 16
+            const bold = parseInt(cs.fontWeight, 10) >= 700
+            const large = fontPx >= 24 || (fontPx >= 18.66 && bold)
+            // Disabled text is allowed to be dimmer, but must not vanish.
+            const need = st.disabled ? 2.5 : large ? 3 : 4.5
+
+            const cr = ratio(fg, bg)
+            if (cr >= need) continue
+
+            const label = (el.textContent || '').trim().slice(0, 22)
+            if (!label) continue
+            const key = st.sel + '|' + label + '|' + hex(fg) + hex(bg)
+            if (seen.has(key)) continue
+            seen.add(key)
+
+            findings.push({
+                sel: st.sel.slice(0, 70),
+                label,
+                cr: Math.round(cr * 100) / 100,
+                need,
+                fg: hex(fg),
+                bg: hex(bg),
+                cls: String(el.className || '').slice(0, 55),
+            })
         }
     }
     return { findings, ruleCount: seen.size }
