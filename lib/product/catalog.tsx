@@ -3,6 +3,7 @@ import {
     Briefcase,
     Car,
     Gavel,
+    Gem,
     Heart,
     HeartHandshake,
     Home,
@@ -253,6 +254,27 @@ export const productCategories = [
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
+    },
+    {
+        // Added with the insurance intelligence expansion: fine art is the one
+        // genuinely NEW consumer line it introduced (scheduled items at agreed
+        // values). The capability claims below stay inside what shipped — we
+        // read the schedule, the values and the security conditions; we do not
+        // value anything.
+        id: "fine-art",
+        href: "/product/fine-art",
+        icon: Gem,
+        labelEl: "Έργα Τέχνης & Τιμαλφή",
+        labelEn: "Fine Art & Valuables",
+        tagEl: "Συλλογές",
+        tagEn: "Collections",
+        headlineEl: "Κάθε έργο με τη δική του αξία — και τους όρους που την κρατούν σε ισχύ.",
+        headlineEn: "Each piece at its own value — and the conditions that keep it in force.",
+        descEl: "Διαβάζουμε την κατάσταση αντικειμένων, τις συμφωνημένες αξίες και τους όρους ασφαλείας — όπως τον συναγερμό που το συμβόλαιο θεωρεί δεδομένο.",
+        descEn: "We read the schedule of items, the agreed values and the security conditions — like the alarm your policy takes for granted.",
+        surface: "bg-white",
+        border: "border-[#E2E8F0]",
+        tagBg: "bg-[#F1F5F9] text-[#475569]",
     },
     {
         id: "business",
