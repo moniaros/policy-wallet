@@ -190,7 +190,7 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'fine_art', segment: 'b2c',
         label: { el: 'Έργα Τέχνης & Τιμαλφή', en: 'Fine Art & Valuables' }, genitiveEl: 'έργων τέχνης',
         aliases: ['specie', 'artwork', 'valuables', 'εργα_τεχνης', 'τιμαλφη'],
-        scoreCategory: 'other', writeEnabled: true, contentTier: 'basic',
+        scoreCategory: 'other', writeEnabled: true, contentTier: 'basic', marketingSlug: 'fine-art',
     },
     {
         id: 'gadget', segment: 'b2c',

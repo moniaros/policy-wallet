@@ -228,6 +228,13 @@ export default function AgentSolutionsPage() {
                                     `${productCategories.length} ασφαλιστικοί κλάδοι, κάθε ελληνική ασφαλιστική`,
                                     `${productCategories.length} lines of insurance, every Greek insurer`,
                                 ),
+                                // Verifiable: the extraction pipeline classifies these
+                                // specialty schedules into the advisor's book — measured
+                                // against real Greek policy wordings, not aspirational.
+                                t(
+                                    "Και εξειδικευμένοι κλάδοι: μεταφορές, σκάφη, πληρώματα πλοίων, χρήματα, εμπιστοσύνη υπαλλήλων",
+                                    "Specialty lines too: cargo, marine hull, ships' crews, money, fidelity",
+                                ),
                                 t("Δεδομένα πελατών σε διακομιστές στην ΕΕ, κρυπτογραφημένα", "Client data on servers in the EU, encrypted"),
                             ].map((fact) => (
                                 <li key={fact} className="flex items-start gap-3 text-body-lg leading-relaxed text-[#0F172A] dark:text-white">

@@ -28,6 +28,7 @@ export type MarketingPageKey =
     | "product-travel"
     | "product-pension"
     | "product-boat"
+    | "product-fine-art"
     | "product-business"
     | "product-liability"
     | "product-legal-expenses"
@@ -312,6 +313,20 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             description:
                 "Liability insurance is mandatory for pleasure craft in Greek waters. Review hull and engine cover, sea assistance and limits before you set sail.",
             breadcrumb: "Boat",
+        },
+    },
+    "product-fine-art": {
+        path: "/product/fine-art",
+        title: "Ασφάλεια έργων τέχνης: συμφωνημένη αξία",
+        description:
+            "Έργα τέχνης και τιμαλφή ασφαλίζονται ανά αντικείμενο, σε συμφωνημένη αξία. Δείτε την κατάσταση αντικειμένων, τους όρους ασφαλείας κι αν ο σεισμός έχει επιλεγεί.",
+        keywords: ["ασφάλεια έργων τέχνης", "ασφάλιση τιμαλφών", "συμφωνημένη αξία"],
+        breadcrumb: "Έργα Τέχνης & Τιμαλφή",
+        en: {
+            title: "Fine art insurance: agreed values & terms",
+            description:
+                "Artworks and valuables are insured item by item, at agreed values. See the schedule of items, the security conditions and whether earthquake cover was taken.",
+            breadcrumb: "Fine Art & Valuables",
         },
     },
     "product-business": {

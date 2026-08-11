@@ -326,6 +326,29 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
             },
         },
     ],
+    "fine-art": [
+        {
+            q: { el: "Δεν αρκεί η ασφάλεια περιεχομένου για τα έργα τέχνης;", en: "Isn't home contents insurance enough for artworks?" },
+            a: {
+                el: "Συνήθως όχι. Τα ασφαλιστήρια περιεχομένου θέτουν χαμηλό όριο ανά αντικείμενο για τιμαλφή, οπότε ένας πίνακας ή ένα κόσμημα αξίας αποζημιώνεται πολύ κάτω από την αξία του. Η ασφάλιση έργων τέχνης δηλώνει κάθε αντικείμενο χωριστά, με τη δική του αξία.",
+                en: "Usually not. Contents policies cap individual valuable items at a low per-item limit, so a painting or piece of jewellery is paid out well below its worth. Fine art insurance declares each item separately, at its own value.",
+            },
+        },
+        {
+            q: { el: "Τι σημαίνει «συμφωνημένη αξία»;", en: "What does \"agreed value\" mean?" },
+            a: {
+                el: "Ότι η αποζημίωση για κάθε έργο έχει οριστεί εκ των προτέρων στο συμβόλαιο, αντί να εκτιμηθεί η αγοραία αξία τη στιγμή της ζημιάς. Γι' αυτό η κατάσταση αντικειμένων και οι αξίες της πρέπει να μένουν ενημερωμένες.",
+                en: "That the payout for each piece is fixed in the policy in advance, instead of being valued at market price at the time of loss. That is why the schedule of items and its values need to stay current.",
+            },
+        },
+        {
+            q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλιση έργων τέχνης;", en: "How does PolicyWallet help with fine art insurance?" },
+            a: {
+                el: "Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απαλλαγή και τους όρους ασφαλείας — όπως τον συναγερμό που το συμβόλαιο απαιτεί — καθώς και αν προαιρετικές καλύψεις όπως ο σεισμός έχουν επιλεγεί. Δωρεάν για 1 ασφαλιστήριο, χωρίς κάρτα.",
+                en: "You send us the policy and we read the schedule of items, the values, the deductible and the security conditions — like the alarm the policy requires — plus whether optional covers such as earthquake were taken. Free for 1 policy, no card.",
+            },
+        },
+    ],
     business: [
         {
             q: { el: "Τι καλύπτει ένα πολυασφαλιστήριο επιχείρησης;", en: "What does a business multi-risk policy cover?" },
