@@ -70,6 +70,56 @@ const dbUrl = ensurePoolerCompatibility(rawDbUrl)
 /** Exported for the guard test; not part of the runtime contract. */
 export const __ensurePoolerCompatibility = ensurePoolerCompatibility
 
+/**
+ * Which connection a deployment actually ended up on, and whether that is safe.
+ *
+ * Falling back from `POOLED_DATABASE_URL` to `DIRECT_URL` is silent, and the
+ * consequence only shows up later as `(EMAXCONNSESSION) max clients reached in
+ * session mode` — a database-shaped error with a configuration-shaped cause,
+ * which is the expensive kind to diagnose. Sentry POLICYWALLET-5 carried exactly
+ * that for a MONTH (first seen 2026-07-11, 37 events) because Preview never got
+ * the pooled URL that Production was given.
+ *
+ * Same reasoning as the `rate-limit: Upstash not configured` warning: a degraded
+ * mode that nobody is told about is indistinguishable from a healthy one until
+ * it fails under load.
+ */
+export function assessConnectionStrategy(env: {
+    pooled?: string
+    direct?: string
+    database?: string
+    /** True on Vercel/CI — anywhere connections are shared across instances. */
+    isDeployed?: boolean
+}): { source: "pooled" | "direct" | "database" | "none"; warning: string | null } {
+    const source = env.pooled ? "pooled" : env.direct ? "direct" : env.database ? "database" : "none"
+
+    if (source === "none") {
+        return { source, warning: "database: no connection string configured" }
+    }
+    // Locally there is one process and a handful of connections; the fallback is
+    // fine and warning about it would be noise.
+    if (!env.isDeployed || source === "pooled") return { source, warning: null }
+
+    return {
+        source,
+        warning:
+            `database: POOLED_DATABASE_URL is not set — falling back to ${source === "direct" ? "DIRECT_URL" : "DATABASE_URL"}. ` +
+            "Serverless instances will exhaust the session-mode client limit under concurrency.",
+    }
+}
+
+const connection = assessConnectionStrategy({
+    pooled: process.env.POOLED_DATABASE_URL,
+    direct: process.env.DIRECT_URL,
+    database: process.env.DATABASE_URL,
+    isDeployed: Boolean(process.env.VERCEL),
+})
+if (connection.warning) {
+    // console rather than Sentry: this module is imported by seeds and node
+    // scripts, and pulling the Next-flavoured SDK into those breaks them.
+    console.warn(connection.warning)
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
