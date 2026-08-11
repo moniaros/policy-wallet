@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 
-const settings = readFileSync('app/(protected)/agent/settings/AgentSettingsClient.tsx', 'utf-8')
+const AGENT_SETTINGS = 'app/(protected)/agent/settings/AgentSettingsClient.tsx'
+const settings = readFileSync(AGENT_SETTINGS, 'utf-8')
 
 /**
  * Found by crawling ALL 42 static protected routes instead of the 12–17 I had
@@ -16,21 +17,33 @@ const settings = readFileSync('app/(protected)/agent/settings/AgentSettingsClien
  * In both cases the dimming was applied to the explanatory line while the label
  * above it stayed strong, so the product de-emphasised the part that carries the
  * meaning. Hierarchy is what the label is for.
+ *
+ * The assertions are on the ABSENCE of dimming rather than on one exact class
+ * string: the previous version pinned the markup, so any relayout of the page
+ * failed the test without a single sentence getting harder to read.
  */
 describe('trust and warning copy is not dimmed', () => {
-    it('states the licence verification result at full strength', () => {
-        expect(settings).not.toMatch(/text-xs opacity-80 font-medium/)
-        expect(settings).toMatch(/<p className="text-xs font-medium mt-0\.5">/)
-    })
-
-    it('states what a destructive action does at full strength', () => {
-        expect(settings).not.toMatch(/text-rose-700\/70/)
-        expect(settings).toMatch(/text-sm text-rose-700 dark:text-rose-400 mb-6 font-medium/)
+    it('carries no opacity utility at all', () => {
+        // `disabled:opacity-*` is a control state, not softened prose.
+        const dimmed = [...settings.matchAll(/(?<!disabled:)\bopacity-\d+/g)].map((m) => m[0])
+        expect(dimmed, `dimmed copy in ${AGENT_SETTINGS}`).toEqual([])
     })
 
     it('leaves no warning colour carrying an opacity suffix in light mode', () => {
         // An opacity suffix on red/rose text is always a warning being softened.
-        const src = readFileSync('app/(protected)/agent/settings/AgentSettingsClient.tsx', 'utf-8')
-        expect(src).not.toMatch(/(?<!dark:)text-(rose|red)-\d00\/\d+/)
+        expect(settings).not.toMatch(/(?<!dark:)text-(rose|red)-\d00\/\d+/)
+    })
+
+    it('states the licence verification result in body text, not a caption aside', () => {
+        // The status line and its explanation sit together in the banner; the
+        // explanation is never smaller than the design system's smallest
+        // functional size.
+        expect(settings).toMatch(/verifiedDescription/)
+        expect(settings).not.toMatch(/text-micro[^"]*verifiedDescription/)
+    })
+
+    it('the danger zone explains itself before offering the action', () => {
+        expect(settings).toMatch(/tone="danger"/)
+        expect(settings).toMatch(/description=\{copy\.dangerDescription\}/)
     })
 })

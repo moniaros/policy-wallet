@@ -151,9 +151,9 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                     // it was presented as a Premium benefit, i.e. a paid feature that
                     // does not exist. Push is FCM WEB push: there is no mobile app, so
                     // telling people they need one makes them dismiss a channel that
-                    // works in their browser. And "Account -> Notifications" is not a
-                    // tab; the switches live under Account -> Settings.
-                    text: 'Notifications arrive by email. If you allow them in your browser, you can also receive them as push notifications — no app required. Go to Account -> Settings to choose which kinds you want.',
+                    // works in their browser. The switches now have their own
+                    // route — Settings -> Notifications — so the path names it.
+                    text: 'Notifications arrive by email. If you allow them in your browser, you can also receive them as push notifications — no app required. Go to Settings -> Notifications to choose which kinds you want.',
                 }
             ]
         },
@@ -337,7 +337,7 @@ export const helpArticles: Record<string, Record<string, Article>> = {
                 },
                 {
                     heading: 'Προσαρμογή καναλιών',
-                    text: 'Οι ειδοποιήσεις έρχονται με email. Αν τις επιτρέψετε στον browser σας, μπορείτε να τις λαμβάνετε και ως push — δεν χρειάζεται εφαρμογή. Μεταβείτε στον Λογαριασμό -> Ρυθμίσεις για να επιλέξετε ποιες θέλετε.',
+                    text: 'Οι ειδοποιήσεις έρχονται με email. Αν τις επιτρέψετε στον browser σας, μπορείτε να τις λαμβάνετε και ως push — δεν χρειάζεται εφαρμογή. Μεταβείτε στις Ρυθμίσεις -> Ειδοποιήσεις για να επιλέξετε ποιες θέλετε.',
                 }
             ]
         },

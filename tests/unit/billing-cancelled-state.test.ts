@@ -4,26 +4,30 @@ import { el } from '@/lib/i18n/translations/el'
 import { en } from '@/lib/i18n/translations/en'
 
 /**
- * A cancelled subscription has next_billing_date === null (account/actions.ts
- * only sets it when autoRenew). The billing card showed "{renewsOn}
- * {formatDate(next_billing_date)}" unconditionally — so a user who had CANCELLED
- * read "Billing renews on —", the opposite of what's happening. It must instead
- * say when access ENDS.
+ * A cancelled subscription keeps its period-end date; what changes is the
+ * promise attached to it. The billing card once printed "{renewsOn} {date}"
+ * unconditionally, so a user who had CANCELLED read "renews on" — the opposite
+ * of what was happening.
+ *
+ * The plan section now branches on `autoRenew` directly rather than on the
+ * derived `next_billing_date`, which is the same decision one step closer to
+ * the source.
  */
-const SRC = readFileSync('components/account/Billing.tsx', 'utf-8')
+const SRC = readFileSync('components/settings/sections/PlanSection.tsx', 'utf-8')
 
-describe('billing card tells a cancelled subscriber when access ends, not "renews on —"', () => {
-    it('branches on next_billing_date between renewsOn and endsOn', () => {
-        // The renews/ends decision keys off next_billing_date (null ⇒ not renewing).
-        expect(SRC).toMatch(/currentSubscription\.next_billing_date\s*\n?\s*\?[^]*t\.billing\.renewsOn[^]*:[^]*t\.billing\.endsOn/)
-        // The ends branch dates from current_period_end, which is always present.
-        expect(SRC).toContain('t.billing.endsOn} ${formatDate(currentSubscription.current_period_end)')
+describe('the plan card tells a cancelled subscriber when access ends, not "renews on"', () => {
+    it('derives the renew/end decision from autoRenew', () => {
+        expect(SRC).toMatch(/const willRenew = Boolean\(data\.subscription\?\.autoRenew\)/)
     })
 
-    it('only shows the renewal/end date for PAID plans (free has a placeholder sub)', () => {
-        // The renews/ends <p> must be gated on price so a free user does not see
-        // "Access ends on {30 days}" from the placeholder subscription.
-        expect(SRC).toMatch(/currentPlan\.price > 0 && \(\s*\n\s*<p[^]*t\.billing\.renewsOn/)
+    it('branches between renewsOn and endsOn on that flag', () => {
+        expect(SRC).toMatch(/willRenew \?[^]*t\.billing\.renewsOn[^]*:[^]*t\.billing\.endsOn/)
+    })
+
+    it('only shows the renewal/end date for PAID plans', () => {
+        // A free account carries a placeholder subscription row with a period
+        // end; showing it would tell a free user their access "ends" in 30 days.
+        expect(SRC).toMatch(/data\.subscription && data\.isPaid && \(/)
     })
 
     it('t.billing.endsOn exists in both languages', () => {

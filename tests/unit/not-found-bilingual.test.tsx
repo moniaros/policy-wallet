@@ -59,7 +59,7 @@ describe('no error boundary is English-only', () => {
         const offenders = files.filter((file) => {
             const src = readFileSync(file, 'utf-8')
             const carriesGreek = greek.test(src)
-            const usesTranslations = /useLanguage|RouteError|\bt\.errors\b/.test(src)
+            const usesTranslations = /useLanguage|RouteError|SettingsError|\bt\.errors\b/.test(src)
             return !carriesGreek && !usesTranslations
         })
         expect(offenders, `English-only boundaries:\n${offenders.join('\n')}`).toEqual([])

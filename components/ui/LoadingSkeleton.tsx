@@ -23,6 +23,29 @@ function LoadingAnnouncement() {
 }
 
 /**
+ * The settings sections, which are cards of labelled rows. `cards` matches the
+ * number the route actually renders so the pane does not jump on load.
+ */
+export function SettingsSkeleton({ cards = 2 }: { cards?: number }) {
+    return (
+        <div role="status" aria-busy="true" className="space-y-4 animate-in fade-in duration-500">
+            <LoadingAnnouncement />
+            {Array.from({ length: cards }).map((_, index) => (
+                <div key={index} className="pw-card pw-pad">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="mt-2 h-3.5 w-64 max-w-full" />
+                    <div className="mt-5 space-y-4">
+                        <Skeleton className="h-11 w-full" />
+                        <Skeleton className="h-11 w-full" />
+                        <Skeleton className="h-11 w-3/4" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+/**
  * Generic skeleton for the agent's data-heavy list/insight routes (customers,
  * opportunities, commissions, insights) — header + stat row + a list of rows.
  * Visually text-free; the only text is the sr-only announcement.
