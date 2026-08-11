@@ -11,10 +11,16 @@ interface UsageMeterProps {
     limit: number | null
     /** Short line under the bar, e.g. «Η πλήρης ανάλυση είναι διαθέσιμη στο Plus». */
     hint?: string
+    /**
+     * What to print instead of `12 · ∞` when there is no limit. "0 · ∞" is not
+     * a fact anyone can act on — a reader wants to be told the allowance is
+     * unlimited, in words.
+     */
+    unlimitedLabel?: string
     className?: string
 }
 
-export function UsageMeter({ label, used, limit, hint, className = "" }: UsageMeterProps) {
+export function UsageMeter({ label, used, limit, hint, unlimitedLabel, className = "" }: UsageMeterProps) {
     const pct = limit && limit > 0 ? Math.min(Math.round((used / limit) * 100), 100) : 0
     // Being OVER the cap is a real state, not an edge case: FREE_POLICY_LIMIT is
     // 1, so any free account that downgraded — or that had policies added before
@@ -39,7 +45,7 @@ export function UsageMeter({ label, used, limit, hint, className = "" }: UsageMe
                     {label}
                 </p>
                 <p className="text-xs font-bold text-black/70 dark:text-white/75" aria-live="polite">
-                    {limit === null ? `${used} · ∞` : `${used} / ${limit}`}
+                    {limit === null ? (unlimitedLabel ?? `${used} · ∞`) : `${used} / ${limit}`}
                 </p>
             </div>
             {/* A progressbar with no accessible name is announced as a bare

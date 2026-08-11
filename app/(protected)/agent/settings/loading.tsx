@@ -1,5 +1,5 @@
-import { AgentListSkeleton } from "@/components/ui/LoadingSkeleton"
+import { SettingsSkeleton } from "@/components/ui/LoadingSkeleton"
 
 export default function AgentSettingsLoading() {
-    return <AgentListSkeleton />
+    return <SettingsSkeleton cards={3} />
 }

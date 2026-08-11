@@ -95,7 +95,7 @@ describe('the Q&A prompt keeps "not mentioned" apart from "not covered"', () => 
 describe('metered allowances reset on the reader clock, not the server clock', () => {
     const METERS = [
         'app/(protected)/wallet/actions.ts',        // AI questions/day, analyses/day, usage/month
-        'app/(protected)/account/actions.ts',       // usage/month
+        'app/(protected)/account/data.ts',          // usage/month (settings)
         'lib/subscription-entitlements.ts',         // the entitlement meter itself
     ]
 

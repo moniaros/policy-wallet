@@ -1,13 +1,12 @@
 "use client"
 
-import { RouteError } from "@/components/ui/RouteError"
+import { SettingsError } from "@/components/settings/SettingsFallbacks"
 
-// Scoped agent-route boundary: a failure here is contained to this screen and
-// retryable in place, and recovery returns to the agent dashboard (the app-wide
-// boundary sends everyone to /home).
-export default function AgentRouteError(props: {
+// Scoped to the settings pane: the shared RouteError opens its own
+// pw-page-shell, which would stack inside the settings shell.
+export default function AgentSettingsError(props: {
     error: Error & { digest?: string }
     reset: () => void
 }) {
-    return <RouteError {...props} homeHref="/dashboard/agent" />
+    return <SettingsError {...props} />
 }

@@ -1,5 +1,56 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-12 (Settings rebuilt: sub-routes, honest controls, one preference surface)
+
+**Current phase:** built and gated. 4,390 unit tests, full guardrail gate and production
+build green. Zero axe violations across all six settings routes at 375px and 1440px; zero
+horizontal overflow at 320/375/390/430/768/1024/1440.
+
+**What changed.** `/account` went from one route with three React-state tabs to a settings
+shell with five real sub-routes (`/profile`, `/plan`, `/security`, `/notifications`,
+`/privacy`), each with its own loading and error boundary and a focused loader in
+`app/(protected)/account/data.ts`. Desktop gets a persistent rail with per-section
+descriptions; mobile gets index → detail with a back header, switched in CSS. `/agent/settings`
+renders in the same shell, so an advisor sees one settings IA. Legacy `?tab=` links redirect
+(`lib/settings/sections.ts`), and the email footer now points straight at
+`/account/notifications`. New shared primitives: `ui/form/Switch`, `settings/SettingsShell`,
+`SettingsNav`, `SettingsSection`, `SettingRow`, `InlineEditRow` (idle→editing→saving→saved→
+error, inline not toast).
+
+**The honesty pass — controls removed because nothing backed them.** `ActiveSession` is
+written **only in `prisma/seed.ts`**, so the "active sessions" list was always empty and
+"sign out everywhere" deleted nothing and revoked no Supabase session; it now calls
+`signOut({scope:'others'|'global'})`, which is real. The audit trail hardcoded device
+"System", location "Unknown" and `success: true`, and had no label for `login_success` —
+**the only login event anything writes** — so every sign-in printed the raw key to the user.
+`Invoice` and `PaymentMethod` are written nowhere outside the seed (the invoice table and
+saved-card panel could never fill); billing now points at the Stripe portal, where they
+genuinely live. Also removed: always-zero wallet credits, the always-empty `usageMetrics`
+block, a "Download report" button with no handler, an unrendered phone-edit state, and a
+`mobileProps` prop costing two DB queries plus a full policy mapping that no component read.
+
+**New capability wired to existing backends.** Change password (the `updatePassword` action
+had worked with no UI for months — now behind a current-password re-auth and a rate limit),
+phone editing, and consent history from `ConsentAudit`, which has recorded every acceptance
+since launch and had never been shown to the person who gave it.
+
+**Notification preferences consolidated.** `/notifications` shipped a second, contradicting
+preferences UI whose catalog listed `pending_questionnaire` and `policy_reviewed` (no sender
+reads either) and exposed `renewal_milestone` standalone while the settings group governs it —
+so a stream switched off in one screen could be half-revived in the other. It now owns history
+only; the sender registry is the single catalog.
+
+**Latent CSS bugs fixed on the way past:** `.pw-btn` is not defined in `globals.css`, so the
+quiet-hours and push buttons **inside Settings** rendered with no fill or radius
+(`RiskReviewCard` too); `arc-text`/`arc-text-muted` were deleted from the stylesheet but still
+used in `TokenUsageCard`, flattening its hierarchy.
+
+**Open — owner decisions, not blockers:** email change still takes effect with no verification
+(`email_confirm: true`); the UI now states the consequence and confirms, but auth is unchanged.
+`wallet/[id]` still advertises a "free full analysis" that no code grants
+(`aiAnalysisPerMonth: 0` on free/plus, `FREE_LIFETIME_QUESTIONS = 0`) — not surfaced in
+Settings, worth fixing at the source.
+
 ## Session wrap — 2026-08-11 (Document storage: bulk-uploaded policies had no document at all)
 
 **Current phase:** fixed and tested. **4,296 unit tests** pass (+20), all guardrails

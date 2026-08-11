@@ -149,8 +149,8 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
         <div className={`pw-card pw-pad space-y-5 ${className}`}>
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold arc-text">{i18n.title}</h3>
-                <span className="text-xs font-semibold uppercase tracking-wider arc-text-muted">
+                <h3 className="text-base font-bold text-black dark:text-white">{i18n.title}</h3>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {tier.toUpperCase()}
                 </span>
             </div>
@@ -158,8 +158,8 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
             {/* Monthly subscription usage */}
             <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                    <span className="arc-text-muted font-medium">{i18n.monthlyUsage}</span>
-                    <span className="arc-text font-bold tabular-nums">
+                    <span className="text-muted-foreground font-medium">{i18n.monthlyUsage}</span>
+                    <span className="text-black dark:text-white font-bold tabular-nums">
                         {formatTokens(subscription.tokens_used)} / {formatTokens(subscription.monthly_limit)}
                     </span>
                 </div>
@@ -169,7 +169,7 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
                         style={{ width: `${usagePct}%` }}
                     />
                 </div>
-                <p className="text-xs arc-text-muted text-right">
+                <p className="text-xs text-muted-foreground text-right">
                     {formatTokens(subscription.tokens_remaining)} {i18n.remaining}
                 </p>
             </div>
@@ -213,7 +213,7 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
                             key={pkg.key}
                             onClick={() => handlePurchase(pkg.key)}
                             disabled={purchasing !== null}
-                            className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:border-primary hover:bg-primary-tint dark:hover:bg-primary/15 transition-colors text-sm arc-text disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:border-primary hover:bg-primary-tint dark:hover:bg-primary/15 transition-colors text-sm text-black dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="flex items-center gap-3">
                                 <span className="font-bold">{pkg.label}</span>
@@ -230,7 +230,7 @@ export function TokenUsageCard({ language = "el", className = "" }: Props) {
                     ))}
                     <button
                         onClick={() => setShowPackages(false)}
-                        className="w-full text-sm arc-text-muted hover:arc-text mt-1 py-1 transition-colors"
+                        className="mt-1 w-full py-1 text-sm text-muted-foreground transition-colors hover:text-black dark:hover:text-white"
                     >
                         {i18n.cancel}
                     </button>
