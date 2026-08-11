@@ -21,6 +21,12 @@ import {
     type GapReportItem,
 } from "@/lib/wallet/gap-report"
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
+import {
+    findSameSubjectOverlap,
+    insuredSubject,
+    overlapPartnerLabel,
+    type PortfolioPolicyFacts,
+} from "@/lib/services/gap-engine/portfolio-rules"
 
 export default async function PolicyDetailPage({
     params
@@ -230,6 +236,46 @@ export default async function PolicyDetailPage({
         }
     }
 
+    // Same-subject overlap for the brief — the engine's own duplicate rule
+    // projected onto this one policy (owner only; an unchecked branch renders
+    // "not checked", never an implied all-clear). Sibling fetch runs only when
+    // the document names a checkable subject (plate / address).
+    const policyFacts: PortfolioPolicyFacts = {
+        id: policy.id,
+        lineOfBusiness: policy.lineOfBusiness,
+        status: policy.status,
+        insurerName: policy.insurerName,
+        policyNumber: policy.policyNumber,
+        startDate: policy.startDate,
+        endDate: policy.endDate,
+        acordData: policy.acordData,
+    }
+    const overlapSubject = isOwner ? insuredSubject(policyFacts) : null
+    let overlapFinding: { partnerLabel: string } | null = null
+    if (overlapSubject) {
+        try {
+            const siblings = await db.policy.findMany({
+                where: { ownerUserId: policy.ownerUserId, id: { not: policy.id } },
+                select: {
+                    id: true,
+                    lineOfBusiness: true,
+                    status: true,
+                    insurerName: true,
+                    policyNumber: true,
+                    startDate: true,
+                    endDate: true,
+                    acordData: true,
+                },
+            })
+            const overlap = findSameSubjectOverlap(policyFacts, siblings as PortfolioPolicyFacts[])
+            if (overlap) {
+                overlapFinding = { partnerLabel: overlapPartnerLabel(overlap.partner) }
+            }
+        } catch (error) {
+            console.error("Failed to check same-subject overlap:", error)
+        }
+    }
+
     let relationshipId: string | null = null
     if (isOwner) {
         const rel = await db.customerRelationship.findFirst({
@@ -345,6 +391,8 @@ export default async function PolicyDetailPage({
             gapReportItems={gapReportItems}
             reportUnlocked={reportUnlocked}
             mergeRequest={mergeRequest}
+            overlapFinding={overlapFinding}
+            overlapChecked={overlapSubject !== null}
         />
     )
 }

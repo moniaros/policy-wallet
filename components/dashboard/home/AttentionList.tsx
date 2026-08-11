@@ -1,0 +1,122 @@
+import Link from "next/link"
+import { ArrowRight, ShieldCheck } from "lucide-react"
+
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import type { Language } from "@/lib/i18n"
+
+export interface AttentionItem {
+    id: string
+    /** The risk, in one line. Localised by the server. */
+    title: string
+    /** Why it matters to THIS customer; null when no assessment backs it. */
+    reason: string | null
+    urgency: "critical" | "high" | "medium" | "low"
+    urgencyLabel: string
+    /** How soon — resolved from the timing verdict; null for `no_deadline`. */
+    timingLabel: string | null
+}
+
+const URGENCY_DOTS: Record<AttentionItem["urgency"], string> = {
+    critical: "bg-rose-500",
+    high: "bg-amber-500",
+    medium: "bg-sky-500",
+    low: "bg-black/30 dark:bg-white/30",
+}
+
+/**
+ * "What needs my attention" — the top findings, each framed as
+ * risk → why it matters → next step.
+ *
+ * Advice surface: always carries the priority honesty note and the AI
+ * disclaimer. The empty state is a positive result with its evidence boundary
+ * stated — "based on what we have", never a bare all-clear.
+ */
+export function AttentionList({
+    items,
+    language,
+    labels,
+}: {
+    items: AttentionItem[]
+    language: Language
+    labels: {
+        kicker: string
+        viewAll: string
+        emptyTitle: string
+        emptyBody: string
+        priorityNote: string
+    }
+}) {
+    return (
+        <div className="pw-card pw-pad lg:col-span-2">
+            <div className="flex items-center justify-between">
+                <p className="pw-kicker">{labels.kicker}</p>
+                {items.length > 0 && (
+                    <Link
+                        href="/coverage-insights"
+                        className="pw-inline-action inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                    >
+                        {labels.viewAll}
+                        <ArrowRight className="h-3 w-3" aria-hidden />
+                    </Link>
+                )}
+            </div>
+            <div className="mt-3">
+                {items.length === 0 ? (
+                    <div className="flex items-start gap-3 rounded-xl border border-dashed border-black/10 bg-black/[0.02] p-3.5 dark:border-white/15 dark:bg-white/[0.03]">
+                        <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft dark:bg-primary/15">
+                            <ShieldCheck className="h-4 w-4 text-primary dark:text-mint" aria-hidden />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold text-black/75 dark:text-white/85">{labels.emptyTitle}</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">{labels.emptyBody}</p>
+                        </div>
+                    </div>
+                ) : (
+                    <ul className="space-y-2">
+                        {items.map((item) => (
+                            <li key={item.id}>
+                                <Link
+                                    href="/coverage-insights"
+                                    className="flex items-start gap-3 rounded-xl border border-black/8 bg-black/[0.03] p-3 transition hover:bg-black/[0.06] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+                                >
+                                    <span
+                                        className={`mt-1.5 h-2 w-2 flex-shrink-0 rounded-full ${URGENCY_DOTS[item.urgency]}`}
+                                        aria-hidden
+                                    />
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block text-sm font-semibold leading-snug text-black dark:text-white [overflow-wrap:anywhere]">
+                                            {item.title}
+                                        </span>
+                                        {item.reason && (
+                                            <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-black/65 dark:text-white/60">
+                                                {item.reason}
+                                            </span>
+                                        )}
+                                        <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                            <span className="inline-flex items-center gap-1 rounded-full border border-black/10 px-2 py-0.5 text-micro font-semibold text-black/60 dark:border-white/15 dark:text-white/60">
+                                                <span className={`h-1.5 w-1.5 rounded-full ${URGENCY_DOTS[item.urgency]}`} aria-hidden />
+                                                {item.urgencyLabel}
+                                            </span>
+                                            {item.timingLabel && (
+                                                <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-micro font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+                                                    {item.timingLabel}
+                                                </span>
+                                            )}
+                                        </span>
+                                    </span>
+                                    <ArrowRight className="mt-1 h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden />
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                {items.length > 0 && (
+                    // The qualifier that stops a priority badge reading as a risk
+                    // verdict — functional copy, so caption is its floor.
+                    <p className="mt-3 text-caption leading-snug text-muted-foreground">{labels.priorityNote}</p>
+                )}
+                <AiDisclaimer language={language} variant="inline" className="mt-2" />
+            </div>
+        </div>
+    )
+}

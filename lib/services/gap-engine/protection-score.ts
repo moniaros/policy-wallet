@@ -200,7 +200,7 @@ export function lobProtectionWeight(lob: string): number {
  * protected.
  *
  * So anything rendering this owes the reader the word "provisional". The
- * dashboard already does (StatTiles `isProvisional`); this exists so the other
+ * dashboard already does (ProtectionStatusHero's provisional state); this exists so the other
  * four callers stop each carrying their own copy of the arithmetic and their own
  * decision about whether to say so.
  *

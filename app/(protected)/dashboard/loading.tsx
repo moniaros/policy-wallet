@@ -1,5 +1,5 @@
-import { DashboardSkeleton } from "@/components/ui/LoadingSkeleton"
+import { PolicyholderHomeSkeleton } from "@/components/ui/LoadingSkeleton"
 
 export default function DashboardLoading() {
-    return <DashboardSkeleton />
+    return <PolicyholderHomeSkeleton />
 }
