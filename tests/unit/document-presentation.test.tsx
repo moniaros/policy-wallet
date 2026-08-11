@@ -10,14 +10,20 @@ const copy = {
     documentFormatPdf: 'Έγγραφο PDF',
     documentFormatImage: 'Εικόνα',
     documentFormatOther: 'Αρχείο',
+    documentKindLabels: {
+        policy_schedule: 'Πίνακας ασφαλιστηρίου',
+        renewal_notice: 'Ειδοποίηση ανανέωσης',
+        other: 'Έγγραφο',
+    },
     preview: 'Προεπισκόπηση',
     upgradeToPlusPreview: 'Plus',
     previewLabels: { download: 'Λήψη', previewUnavailable: '—', downloadFile: 'Λήψη αρχείου' },
 }
 
+// No fileUrl: the storage locator is no longer sent to the browser at all.
 const docs = [
-    { id: 'b', fileName: 'ΑΣΦΑΛΙΣΤΗΡΙΟ (1).pdf', fileUrl: '/b', uploadedAt: '2026-07-04T00:00:00.000Z' },
-    { id: 'a', fileName: 'ΑΣΦΑΛΙΣΤΗΡΙΟ.pdf', fileUrl: '/a', uploadedAt: '2025-06-19T00:00:00.000Z' },
+    { id: 'b', fileName: 'ΑΣΦΑΛΙΣΤΗΡΙΟ (1).pdf', uploadedAt: '2026-07-04T00:00:00.000Z' },
+    { id: 'a', fileName: 'ΑΣΦΑΛΙΣΤΗΡΙΟ.pdf', uploadedAt: '2025-06-19T00:00:00.000Z' },
 ]
 
 /**
@@ -26,7 +32,9 @@ const docs = [
  * DocumentPreview) do consume the language context, so the TREE needs the
  * provider even though the card does not.
  */
-function renderCard(documents: typeof docs | Array<{ id: string; fileName: string; fileUrl: string }>) {
+function renderCard(
+    documents: Array<{ id: string; fileName: string; uploadedAt?: string; documentKind?: string | null }>
+) {
     return render(
         <LanguageProvider>
             <DocumentsCard policyId="p1" documents={documents} isFreeTier={false} copy={copy} locale="el" />
@@ -59,15 +67,50 @@ describe('document presentation', () => {
     })
 
     it('still renders when a document has no date (rows predating the field)', () => {
-        renderCard([{ id: 'x', fileName: 'scan.pdf', fileUrl: '/x' }])
+        renderCard([{ id: 'x', fileName: 'scan.pdf' }])
         expect(screen.getByText('scan.pdf')).toBeTruthy()
     })
 
-    it('keeps stating the format it can actually see, not a guessed document type', () => {
-        // There is no schema field for a document's insurance type, so labelling
-        // every upload "Contract" would mislabel a receipt or a photo.
+    it('falls back to the file format when nothing recorded what the document IS', () => {
+        // Unchanged rule: never label a document with a type we do not have.
+        // Every legacy row is in this state, so it stays the default.
         renderCard(docs)
         expect(screen.getAllByText(/Έγγραφο PDF/).length).toBe(2)
+    })
+
+    it('names the document type when the classifier recorded one', () => {
+        // `documentKind` comes from the same classifier that decides whether an
+        // upload is a policy at all, so this is evidence, not a guess — which is
+        // why the card may now say it.
+        renderCard([
+            { id: 's', fileName: 'schedule.pdf', documentKind: 'policy_schedule' },
+            { id: 'r', fileName: 'renewal.pdf', documentKind: 'renewal_notice' },
+        ])
+        expect(screen.getByText('Πίνακας ασφαλιστηρίου')).toBeTruthy()
+        expect(screen.getByText('Ειδοποίηση ανανέωσης')).toBeTruthy()
+        expect(screen.queryByText(/Έγγραφο PDF/)).toBeNull()
+    })
+
+    it('falls back rather than printing a raw enum for an unknown kind', () => {
+        renderCard([{ id: 'u', fileName: 'odd.pdf', documentKind: 'something_new' }])
+        expect(screen.getByText(/Έγγραφο PDF/)).toBeTruthy()
+        expect(screen.queryByText('something_new')).toBeNull()
+    })
+
+    it('links every document through the authorized endpoint, never a storage URL', () => {
+        // The card is the one place a document is opened from. Its href must be
+        // the id-based API route, which re-checks access and signs a short-lived
+        // URL; a storage locator must never appear in the markup.
+        const { container } = renderCard(docs)
+        const links = Array.from(container.querySelectorAll('a[href]'))
+        expect(links.length).toBeGreaterThan(0)
+        for (const link of links) {
+            expect(link.getAttribute('href')).toMatch(
+                /^\/api\/v1\/policies\/p1\/documents\/[a-z0-9]+$/i
+            )
+        }
+        expect(container.innerHTML).not.toContain('supabase.co')
+        expect(container.innerHTML).not.toContain('/storage/v1/object')
     })
 
     it('is ordered newest-first at the source', () => {

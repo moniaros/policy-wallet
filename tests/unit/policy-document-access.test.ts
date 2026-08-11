@@ -6,7 +6,7 @@ const getPolicyAccess = vi.fn()
 const findFirstDocument = vi.fn()
 const deleteDocument = vi.fn()
 const createActivityLog = vi.fn()
-const createSignedUrlForStoredObject = vi.fn()
+const signStoredObject = vi.fn()
 const deleteFile = vi.fn()
 
 vi.mock('@/lib/api-auth', () => ({
@@ -30,7 +30,7 @@ vi.mock('@/lib/db', () => ({
     },
 }))
 vi.mock('@/lib/supabase/storage-download', () => ({
-    createSignedUrlForStoredObject: (...args: any[]) => createSignedUrlForStoredObject(...args),
+    signStoredObject: (...args: any[]) => signStoredObject(...args),
 }))
 vi.mock('@/lib/storage', () => ({
     deleteFile: (...args: any[]) => deleteFile(...args),
@@ -67,8 +67,8 @@ beforeEach(() => {
         roles: [],
     })
     rateLimit.mockResolvedValue({ success: true })
-    createSignedUrlForStoredObject.mockResolvedValue(SIGNED_URL)
-    findFirstDocument.mockResolvedValue({ id: 'd1', fileUrl: STORED_URL })
+    signStoredObject.mockResolvedValue({ ok: true, url: SIGNED_URL })
+    findFirstDocument.mockResolvedValue({ id: 'd1', fileUrl: STORED_URL, storageBucket: 'policies', storageKey: '9b2f2f2e-aaaa-bbbb-cccc-000000000001.pdf' })
 })
 
 describe('GET /api/v1/policies/[id]/documents/[docId] (authorized retrieval)', () => {
@@ -81,7 +81,10 @@ describe('GET /api/v1/policies/[id]/documents/[docId] (authorized retrieval)', (
         expect(response.headers.get('location')).toBe(SIGNED_URL)
         expect(response.headers.get('cache-control')).toBe('no-store')
         // 5-minute expiry — short-lived by design
-        expect(createSignedUrlForStoredObject).toHaveBeenCalledWith(STORED_URL, 300)
+        expect(signStoredObject).toHaveBeenCalledWith(
+            expect.objectContaining({ storageBucket: 'policies', storageKey: '9b2f2f2e-aaaa-bbbb-cccc-000000000001.pdf' }),
+            300
+        )
     })
 
     it('rejects an unauthenticated request before any document lookup', async () => {
@@ -93,7 +96,7 @@ describe('GET /api/v1/policies/[id]/documents/[docId] (authorized retrieval)', (
 
         expect(response.status).toBe(401)
         expect(findFirstDocument).not.toHaveBeenCalled()
-        expect(createSignedUrlForStoredObject).not.toHaveBeenCalled()
+        expect(signStoredObject).not.toHaveBeenCalled()
     })
 
     it('404s a cross-tenant viewer (no read access) without leaking existence', async () => {
@@ -103,7 +106,7 @@ describe('GET /api/v1/policies/[id]/documents/[docId] (authorized retrieval)', (
 
         expect(response.status).toBe(404)
         expect(findFirstDocument).not.toHaveBeenCalled()
-        expect(createSignedUrlForStoredObject).not.toHaveBeenCalled()
+        expect(signStoredObject).not.toHaveBeenCalled()
     })
 
     it('404s when the policy does not exist', async () => {
@@ -126,18 +129,51 @@ describe('GET /api/v1/policies/[id]/documents/[docId] (authorized retrieval)', (
         expect(findFirstDocument).toHaveBeenCalledWith(
             expect.objectContaining({ where: expect.objectContaining({ id: 'd1', policyId: 'p1' }) })
         )
-        expect(createSignedUrlForStoredObject).not.toHaveBeenCalled()
+        expect(signStoredObject).not.toHaveBeenCalled()
     })
 
     it('fails safely (no raw URL leak) when signing is unavailable', async () => {
         grantAccess()
-        createSignedUrlForStoredObject.mockResolvedValue(null)
+        signStoredObject.mockResolvedValue({ ok: false, reason: 'sign_failed' })
 
         const response = await GET(makeRequest(), ctx as any)
         const payload = await response.json()
 
-        expect(response.status).toBe(500)
+        // 503, not 500: the document exists and storage is the thing at fault.
+        expect(response.status).toBe(503)
         expect(JSON.stringify(payload)).not.toContain('supabase.co')
+    })
+
+    it('reports a deleted object as gone rather than as a server fault', async () => {
+        // Metadata present, bytes missing. Distinguishing this is what lets
+        // support answer "the file is gone" instead of "something broke".
+        grantAccess()
+        signStoredObject.mockResolvedValue({ ok: false, reason: 'object_missing' })
+
+        const response = await GET(makeRequest(), ctx as any)
+
+        expect(response.status).toBe(404)
+    })
+
+    it('gives a browser a readable page, not a JSON blob, when retrieval fails', async () => {
+        // This endpoint is opened by an anchor and by the preview frame, so a
+        // JSON error body lands in a tab as machine text.
+        grantAccess()
+        signStoredObject.mockResolvedValue({ ok: false, reason: 'object_missing' })
+
+        const response = await GET(
+            new Request('https://app.test/api/v1/policies/p1/documents/d1', {
+                headers: { accept: 'text/html', 'accept-language': 'el-GR,el;q=0.9' },
+            }) as any,
+            ctx as any
+        )
+        const body = await response.text()
+
+        expect(response.headers.get('content-type')).toContain('text/html')
+        expect(body).toContain('Το έγγραφο δεν είναι πλέον διαθέσιμο')
+        // Still no infrastructure detail, and no reason code.
+        expect(body).not.toContain('supabase.co')
+        expect(body).not.toContain('object_missing')
     })
 })
 

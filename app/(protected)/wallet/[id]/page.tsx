@@ -37,7 +37,22 @@ export default async function PolicyDetailPage({
             where: { id: policyId },
             include: {
                 documents: {
-                    orderBy: { uploadedAt: 'desc' }
+                    orderBy: { uploadedAt: 'desc' },
+                    // Display fields ONLY. `include` shipped the whole row to
+                    // the browser — fileUrl, storageBucket, storageKey, the
+                    // uploader's id and the cached extraction — as props on a
+                    // client component. None of it is renderable (every read
+                    // goes through the authorized endpoint by document id), and
+                    // handing the client a storage locator is exactly what
+                    // "never expose raw storage URLs" is about.
+                    select: {
+                        id: true,
+                        fileName: true,
+                        fileSize: true,
+                        uploadedAt: true,
+                        documentKind: true,
+                        mimeType: true,
+                    },
                 },
                 // The coverage section's fallback used to fire on "no coverage
                 // details" alone and always said "re-analyse". That conflates a

@@ -215,7 +215,18 @@ export function PolicyDetailsClient({
                 : claimsContact?.kind === "technical_assistance" ? t.coverageDetails.home.technicalAssistance
                     : claimsContact?.kind === "coordination_centre" ? t.coverageDetails.health.coordinationCentre
                         : detailsCopy.contactInsurer
-    const firstDocumentUrl = policy.documents?.[0]?.fileUrl
+    // The AUTHORIZED endpoint, not the stored object URL.
+    //
+    // This used to be `policy.documents[0].fileUrl` — a getPublicUrl() link into
+    // the PRIVATE 'policies' bucket. Opening it directly returns 400 from
+    // storage, so the primary "open my policy document" action on this page
+    // could never have worked, and it put a raw storage URL in the markup on the
+    // way to failing. The documents card below has always used this endpoint;
+    // this button simply did not.
+    const firstDocumentId = policy.documents?.[0]?.id
+    const firstDocumentHref = firstDocumentId
+        ? `/api/v1/policies/${policy.id}/documents/${firstDocumentId}`
+        : null
 
     // ── Extracted section data (perks / exclusions / conditions / fine print) ──
     const { exclusions, notableConditions, finePrintClauses: finePrint, perks } = useMemo(
@@ -325,11 +336,11 @@ export function PolicyDetailsClient({
     }
 
     const handleDownloadPrimaryDoc = () => {
-        if (!firstDocumentUrl) {
+        if (!firstDocumentHref) {
             toast.error(t.wallet.noDocuments)
             return
         }
-        window.open(firstDocumentUrl, "_blank", "noopener,noreferrer")
+        window.open(firstDocumentHref, "_blank", "noopener,noreferrer")
     }
 
     const coverageType = getCoverageType()
@@ -1055,6 +1066,7 @@ export function PolicyDetailsClient({
                                 copy={{
                                     documentsArea: detailsCopy.documentsArea,
                                     noDocuments: t.wallet.noDocuments,
+                                    documentKindLabels: t.wallet.documentKindLabels,
                                     documentFormatPdf: t.wallet.documentFormatPdf,
                                     documentFormatImage: t.wallet.documentFormatImage,
                                     documentFormatOther: t.wallet.documentFormatOther,

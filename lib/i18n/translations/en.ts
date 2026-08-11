@@ -293,6 +293,21 @@ export const en: TranslationKeys = {
         vehicle: "Vehicle",
         directSupport: "Direct Support",
         contract: "Policy",
+        /**
+         * What the document IS, when the classifier told us. Distinct from the
+         * format labels below, which only say what kind of file it is — the card
+         * fell back to those for every document because nothing recorded the
+         * type. Standalone labels, so they read correctly on their own.
+         */
+        documentKindLabels: {
+            policy_schedule: "Policy schedule",
+            terms_and_conditions: "Terms and conditions",
+            renewal_notice: "Renewal notice",
+            forms: "Form",
+            certificate: "Certificate of insurance",
+            invoice: "Invoice",
+            other: "Document",
+        },
         documentFormatPdf: "PDF document",
         documentFormatImage: "Image",
         documentFormatOther: "File",
@@ -763,9 +778,9 @@ export const en: TranslationKeys = {
         batchUpload: {
             badge: 'Batch Upload',
             title: 'Upload Multiple Policies.',
-            subtitle: 'Drop up to 10 policy documents and let AI extract the details.',
+            subtitle: 'Drop up to {max} documents and let AI extract and organise their details.',
             dropTitle: 'Drop files here or click to select',
-            dropSubtitle: 'PDF or image files (up to 10 at once)',
+            dropSubtitle: 'PDF or image files (up to {max} at once)',
             processing: 'Processing',
             ready: 'Ready',
             failed: 'Failed',
@@ -784,6 +799,160 @@ export const en: TranslationKeys = {
             saveNoneFailedValidation: 'No policies were saved. {failed} failed validation.',
             saveFailed: 'Failed to save policies',
             saveError: 'An error occurred while saving',
+            completed: 'Completed',
+            needsReview: 'Need review',
+            summaryReady: '{count} policies are ready to be added.',
+            summaryNeedsReview: '{count} files need review.',
+            addPolicies: 'Add {count} policies',
+            reviewFailed: 'Review {count} files',
+            whyItFailed: 'Why it failed',
+            hideDetails: 'Hide details',
+            retry: 'Retry',
+            retryAll: 'Retry {count} files',
+            retrying: 'Retrying...',
+            problemLabel: 'Problem',
+            whatToDo: 'What you can do',
+            referenceLabel: 'Reference',
+            stageLabel: 'Stage',
+            recognized: 'Recognised',
+            reviewNeededBadge: 'Needs review',
+            confidenceLabel: 'Confidence',
+            newLineOfBusiness: 'New line of business',
+            newLineOfBusinessHint: 'We do not have a specialised model for this line yet, but the policy is stored and tracked normally.',
+            completeFields: 'Fill in the missing details',
+            /** Stage names, shown only inside the "why it failed" disclosure. */
+            stages: {
+                validation: 'File check',
+                quota: 'Usage limits',
+                extraction: 'AI reading',
+                recognition: 'Document recognition',
+                data_quality: 'Data check',
+                portfolio: 'Portfolio check',
+                persistence: 'Saving',
+                network: 'Connection',
+            },
+            fieldNames: {
+                insurerName: 'insurer',
+                policyNumber: 'policy number',
+                startDate: 'start date',
+                endDate: 'end date',
+            },
+            documentKinds: {
+                policy_schedule: 'a policy schedule',
+                terms_and_conditions: 'a terms-and-conditions booklet',
+                renewal_notice: 'a renewal notice',
+                forms: 'a form',
+                certificate: 'a certificate of insurance',
+                invoice: 'an invoice',
+                other: 'another kind of document',
+            },
+            /**
+             * One entry per code in lib/wallet/batch-upload-errors.ts. Each
+             * answers the same three questions in the same order: what happened,
+             * why, and what the reader can do next.
+             */
+            failures: {
+                FILE_EMPTY: {
+                    title: 'The file is empty.',
+                    detail: 'The file you uploaded contains no data.',
+                    action: 'Check that it saved correctly and upload it again.',
+                },
+                FILE_TOO_LARGE: {
+                    title: 'The file is too large.',
+                    detail: 'It exceeds the maximum upload size.',
+                    action: 'Compress the PDF, or upload only the schedule pages.',
+                },
+                UNSUPPORTED_FORMAT: {
+                    title: 'Unsupported file type.',
+                    detail: 'We accept PDF files and images (JPG, PNG, WEBP, HEIC).',
+                    action: 'Convert the document to PDF and try again.',
+                },
+                FILE_UNREADABLE: {
+                    title: 'We could not read the file.',
+                    detail: 'Its contents do not match a PDF or an image — the file may be corrupt, or simply renamed.',
+                    action: 'Check that the PDF opens normally and try again.',
+                },
+                FILE_REJECTED_SECURITY: {
+                    title: 'The file did not pass the security check.',
+                    detail: 'For your protection we do not process files that fail this check.',
+                    action: 'Upload the original file as you received it from your insurer.',
+                },
+                BATCH_THROTTLED: {
+                    title: 'Too many documents at once.',
+                    detail: 'Processing was temporarily throttled because several files arrived together. The document was never read.',
+                    action: 'Try again shortly. Policies that already completed are kept.',
+                },
+                DAILY_LIMIT_REACHED: {
+                    title: 'You have reached today’s analysis limit.',
+                    detail: 'There is a daily cap on documents analysed automatically with AI.',
+                    action: 'Try again tomorrow, or add the policy manually.',
+                },
+                POLICY_LIMIT_REACHED: {
+                    title: 'You have reached your plan’s policy limit.',
+                    detail: 'Your current plan does not allow more policies in the Wallet.',
+                    action: 'Upgrade your plan to add more.',
+                },
+                AI_UNAVAILABLE: {
+                    title: 'Automatic reading is unavailable.',
+                    detail: 'The document analysis service is temporarily down.',
+                    action: 'Try again in a few minutes.',
+                },
+                AI_TIMEOUT: {
+                    title: 'Analysis took too long.',
+                    detail: 'The document did not finish analysis within the time available.',
+                    action: 'Try again. If it runs to many pages, upload just the schedule.',
+                },
+                AI_EXTRACTION_FAILED: {
+                    title: 'We could not extract the details.',
+                    detail: 'Reading the document did not complete.',
+                    action: 'Try again. If it keeps happening, upload a cleaner copy.',
+                },
+                NOT_AN_INSURANCE_POLICY: {
+                    title: 'This document is not a policy.',
+                    detail: 'We recognised it as {kind}, not a policy schedule with a number, a period and cover.',
+                    action: 'Upload the schedule page from the same document.',
+                },
+                DOCUMENT_NOT_RECOGNIZED: {
+                    title: 'No policy was recognised.',
+                    detail: 'We did not find enough information to recognise this document as an insurance policy.',
+                    action: 'Upload a clearer PDF, or check that the first page carries the key details.',
+                },
+                REQUIRED_DATA_MISSING: {
+                    title: 'Key details are missing.',
+                    detail: 'The policy was recognised, but we could not find: {fields}.',
+                    action: 'Fill these in below and the policy will be added normally.',
+                },
+                INVALID_POLICY_PERIOD: {
+                    title: 'Invalid policy period.',
+                    detail: 'The start and end dates do not form a valid period.',
+                    action: 'Correct the dates and try again.',
+                },
+                DUPLICATE_POLICY: {
+                    title: 'This policy is already here.',
+                    detail: 'The policy has already been added to your Wallet.',
+                    action: 'There is no need to upload it again.',
+                },
+                PERSISTENCE_FAILED: {
+                    title: 'Saving did not complete.',
+                    detail: 'The policy was read correctly but was not written to the Wallet.',
+                    action: 'Try again — this will not create a duplicate.',
+                },
+                DOCUMENT_UPLOAD_FAILED: {
+                    title: 'The policy was added, but its document was not.',
+                    detail: 'The details were saved normally. We could not store the PDF file alongside them.',
+                    action: 'Try again to attach the document. The policy will not be created a second time.',
+                },
+                NETWORK_ERROR: {
+                    title: 'The connection dropped.',
+                    detail: 'The upload was interrupted before it finished.',
+                    action: 'Check your connection and try again.',
+                },
+                UNKNOWN_ERROR: {
+                    title: 'Temporary error.',
+                    detail: 'Processing this document did not complete.',
+                    action: 'Try again.',
+                },
+            },
         },
         editPolicyForm: {
             title: 'Edit Policy',

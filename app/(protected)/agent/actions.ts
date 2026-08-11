@@ -1001,8 +1001,9 @@ export async function addPolicyForCustomer(data: {
         // attributed to the AGENT (agent-plan run count + token budget).
         let analysisState: 'started' | 'consent_required' | 'limit_reached' | 'none' = 'none'
         if (file) {
-            const { uploadFile, deleteFile } = await import("@/lib/storage")
-            const fileUrl = await uploadFile(file, "policies")
+            const { uploadFileDetailed, deleteFile } = await import("@/lib/storage")
+            const stored = await uploadFileDetailed(file, "policies")
+            const fileUrl = stored.url
             try {
                 await db.policyDocument.create({
                     data: {
@@ -1013,6 +1014,12 @@ export async function addPolicyForCustomer(data: {
                         source: 'agent',
                         uploadedByUserId: agentId,
                         processingStatus: 'pending',
+                        // Straight from the upload result — more authoritative
+                        // than parsing the locator back out of the URL.
+                        storageBucket: stored.bucket || null,
+                        storageKey: stored.key,
+                        storageProvider: stored.bucket ? 'supabase' : null,
+                        mimeType: stored.mimeType,
                     }
                 })
             } catch (dbError) {

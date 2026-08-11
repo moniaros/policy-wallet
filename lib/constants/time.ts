@@ -12,6 +12,42 @@ export const ALLOWED_UPLOAD_MIME_TYPES = [
     'image/heic',
 ] as const
 
+// ─── Bulk policy upload ───
+//
+// These three are one decision, not three, and separating them cost the product
+// four documents out of every ten. The modal advertised ten files and fired all
+// ten at once; the extract route allowed six a minute. Four were rejected with a
+// 429 before any PDF was opened — reproducibly, every batch, and reported to the
+// user as "saving policies failed". Production activity logs show exactly six
+// extractions per attempt across four separate batches.
+//
+// The invariant — per-minute allowance >= advertised batch size — is pinned by
+// tests/unit/batch-upload-capacity.test.ts. Raise the batch size and that test
+// fails until the allowance follows.
+
+/** Documents accepted in one bulk upload. The number shown in the UI copy. */
+export const BATCH_UPLOAD_MAX_FILES = 10
+
+/**
+ * Extract requests the client keeps in flight at once.
+ *
+ * Ten concurrent multimodal calls is a thundering herd at the AI provider and
+ * makes per-file progress meaningless — everything sits at 0% and then finishes
+ * together. A small window keeps the queue visibly draining.
+ */
+export const BATCH_UPLOAD_CONCURRENCY = 3
+
+/**
+ * Per-minute policy-extract allowance, per user.
+ *
+ * Sized as one full batch plus headroom for retrying part of it inside the same
+ * minute. Burst protection lives here; SPEND protection is the separate 30/day
+ * DB-backed backstop in the route, which this does not weaken.
+ */
+export const POLICY_EXTRACT_PER_MINUTE_LIMIT = BATCH_UPLOAD_MAX_FILES + 5
+
+export const POLICY_EXTRACT_RATE_WINDOW_MS = 60_000
+
 export const INVITE_EXPIRY_DAYS = 7
 export const TRIAL_PERIOD_DAYS = 30
 export const SUBSCRIPTION_PERIOD_DAYS = 30

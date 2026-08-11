@@ -10,10 +10,12 @@ import { isAcceptedImageFile, isBrowserRenderableImage, isPdfFile } from "@/lib/
 
 interface PolicyDocumentItem {
     id: string
+    /** The ORIGINAL filename. Never a storage key — those never reach the client. */
     fileName: string
-    fileUrl: string
     /** ISO string. Already loaded and ordered desc by the page — see below. */
     uploadedAt?: string
+    /** From the AI classifier, when it ran. Null on documents that predate it. */
+    documentKind?: string | null
 }
 
 interface DocumentsCardProps {
@@ -32,6 +34,8 @@ interface DocumentsCardProps {
         documentFormatPdf: string
         documentFormatImage: string
         documentFormatOther: string
+        /** Keyed by DocumentKind. Preferred over the format label when present. */
+        documentKindLabels: Record<string, string>
         preview: string
         upgradeToPlusPreview: string
         previewLabels: {
@@ -102,7 +106,12 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                             the card showed only the filename and format, so the
                                             reader could not tell which one is current. */}
                                         <p className="text-xs text-muted-foreground">
-                                            {isPdf ? copy.documentFormatPdf : isImage ? copy.documentFormatImage : copy.documentFormatOther}
+                                            {/* What the document IS, when we know; what
+                                                kind of FILE it is otherwise. The card only
+                                                ever had the latter, so a schedule and a
+                                                renewal notice both read "PDF document". */}
+                                            {(doc.documentKind && copy.documentKindLabels[doc.documentKind])
+                                                || (isPdf ? copy.documentFormatPdf : isImage ? copy.documentFormatImage : copy.documentFormatOther)}
                                             {doc.uploadedAt && (
                                                 <>
                                                     {" · "}
