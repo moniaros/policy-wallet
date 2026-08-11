@@ -11,7 +11,7 @@ const findUniquePolicy = vi.fn()
 const countDocuments = vi.fn()
 const createDocument = vi.fn()
 const createActivityLog = vi.fn()
-const uploadFile = vi.fn()
+const uploadFileDetailed = vi.fn()
 const deleteFile = vi.fn()
 const createSignedUrlForStoredObject = vi.fn()
 
@@ -35,7 +35,7 @@ vi.mock('@/lib/db', () => ({
     },
 }))
 vi.mock('@/lib/storage', () => ({
-    uploadFile: (...args: any[]) => uploadFile(...args),
+    uploadFileDetailed: (...args: any[]) => uploadFileDetailed(...args),
     deleteFile: (...args: any[]) => deleteFile(...args),
 }))
 vi.mock('@/lib/supabase/storage-download', () => ({
@@ -80,7 +80,14 @@ beforeEach(() => {
     })
     findUniquePolicy.mockResolvedValue({ id: 'p1', policyNumber: 'PN-1' })
     countDocuments.mockResolvedValue(0)
-    uploadFile.mockResolvedValue(STORED_URL)
+    // The route now records the locator, not just a URL.
+    uploadFileDetailed.mockResolvedValue({
+        url: STORED_URL,
+        bucket: 'policies',
+        key: '9b2f2f2e-aaaa-bbbb-cccc-000000000001.pdf',
+        mimeType: 'application/pdf',
+        size: 1024,
+    })
     deleteFile.mockResolvedValue(true)
     createDocument.mockResolvedValue({
         id: 'd1',
@@ -102,7 +109,7 @@ describe('POST /api/v1/policies/[id]/documents — abuse & failure handling', ()
         const response = await POST(makeUploadRequest(file), ctx as any)
 
         expect(response.status).toBe(200)
-        expect(uploadFile).toHaveBeenCalledTimes(1)
+        expect(uploadFileDetailed).toHaveBeenCalledTimes(1)
     })
 
     it('rejects an oversized upload before it reaches storage', async () => {
@@ -112,7 +119,7 @@ describe('POST /api/v1/policies/[id]/documents — abuse & failure handling', ()
         const response = await POST(makeUploadRequest(file), ctx as any)
 
         expect(response.status).toBe(400)
-        expect(uploadFile).not.toHaveBeenCalled()
+        expect(uploadFileDetailed).not.toHaveBeenCalled()
         expect(createDocument).not.toHaveBeenCalled()
     })
 
@@ -123,7 +130,7 @@ describe('POST /api/v1/policies/[id]/documents — abuse & failure handling', ()
         const response = await POST(makeUploadRequest(file), ctx as any)
 
         expect(response.status).toBe(429)
-        expect(uploadFile).not.toHaveBeenCalled()
+        expect(uploadFileDetailed).not.toHaveBeenCalled()
     })
 
     it('enforces the per-policy document count cap', async () => {
@@ -133,7 +140,7 @@ describe('POST /api/v1/policies/[id]/documents — abuse & failure handling', ()
         const response = await POST(makeUploadRequest(file), ctx as any)
 
         expect(response.status).toBe(400)
-        expect(uploadFile).not.toHaveBeenCalled()
+        expect(uploadFileDetailed).not.toHaveBeenCalled()
     })
 
     it('cleans up the stored object when the DB write fails after upload', async () => {
@@ -143,7 +150,7 @@ describe('POST /api/v1/policies/[id]/documents — abuse & failure handling', ()
         const response = await POST(makeUploadRequest(file), ctx as any)
 
         expect(response.status).toBe(500)
-        expect(uploadFile).toHaveBeenCalledTimes(1)
+        expect(uploadFileDetailed).toHaveBeenCalledTimes(1)
         // The orphan is removed — rejection leaves no residue in the bucket.
         expect(deleteFile).toHaveBeenCalledWith(STORED_URL)
     })
@@ -157,7 +164,7 @@ describe('POST /api/v1/policies/[id]/documents — abuse & failure handling', ()
         const response = await POST(makeUploadRequest(file), ctx as any)
 
         expect(response.status).toBe(400)
-        expect(uploadFile).not.toHaveBeenCalled()
+        expect(uploadFileDetailed).not.toHaveBeenCalled()
         expect(deleteFile).not.toHaveBeenCalled()
     })
 })

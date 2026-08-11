@@ -413,6 +413,8 @@ model PolicyDocument {
   id               String    @id @default(cuid()) @map("document_id")
   policyId         String    @map("policy_id")
   fileUrl          String    @map("file_url")
+  /// The ORIGINAL filename, as the user's device had it. Display only — never a
+  /// storage key, never used to locate the object.
   fileName         String    @map("file_name")
   fileSize         Int       @map("file_size")
   source           String
@@ -422,12 +424,41 @@ model PolicyDocument {
   documentHash     String?   @map("document_hash")
   extractionCache  Json?     @map("extraction_cache")
   extractedAt      DateTime? @map("extracted_at")
+
+  /// Storage bucket holding the object. Null on rows predating this column —
+  /// those are resolved by parsing fileUrl, which is exactly the fragility this
+  /// removes: a project-host change or a signed-URL variant makes the URL
+  /// unparseable, and the document becomes unreachable with no way back.
+  storageBucket    String?   @map("storage_bucket")
+  /// Object key WITHIN the bucket. The authoritative locator.
+  storageKey       String?   @map("storage_key")
+  /// Which storage system holds it. One value today; named so a second one can
+  /// be added without guessing at existing rows.
+  storageProvider  String?   @default("supabase") @map("storage_provider")
+  /// Canonical MIME type, derived from verified CONTENT at upload time — not
+  /// from the client's claim and not from the filename extension.
+  mimeType         String?   @map("mime_type")
+  /// What kind of document this is, from the AI classifier (see
+  /// lib/services/ai/document-kind.ts): policy_schedule, terms_and_conditions,
+  /// renewal_notice, forms, certificate, invoice, other.
+  documentKind     String?   @map("document_kind")
+  /// Monotonic per policy+document lineage. Everything is version 1 today; the
+  /// column exists so replacing a document can supersede rather than destroy,
+  /// without restructuring storage.
+  version          Int       @default(1)
+  /// Set when a newer version replaces this one, so history is preserved and
+  /// the current document is unambiguous.
+  supersededById   String?   @unique @map("superseded_by_id")
+  supersededBy     PolicyDocument?  @relation("DocumentVersion", fields: [supersededById], references: [id], onDelete: SetNull)
+  supersedes       PolicyDocument?  @relation("DocumentVersion")
+
   policy           Policy    @relation(fields: [policyId], references: [id], onDelete: Cascade)
   uploader         User      @relation(fields: [uploadedByUserId], references: [id])
 
   @@index([policyId])
   @@index([uploadedByUserId])
   @@index([documentHash])
+  @@index([storageBucket, storageKey])
   @@map("policy_documents")
 }
 

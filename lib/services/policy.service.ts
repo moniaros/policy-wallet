@@ -10,6 +10,7 @@ import { BaseService } from './base.service'
 import { emit } from '@/lib/notifications/dispatch'
 import { AppError } from '@/lib/errors'
 import { uploadFile, deleteFile } from '@/lib/storage'
+import { storageColumnsFor } from '@/lib/supabase/storage-download'
 import { sanitizeDisplayName, validateUploadFile } from '@/lib/security/file-upload'
 import { logger } from '@/lib/logger'
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from '@/lib/email/invite-emails'
@@ -135,7 +136,10 @@ export class PolicyService extends BaseService {
                             fileSize: doc.size,
                             source: 'policyholder',
                             uploadedByUserId: userId,
-                            processingStatus: data.status === 'analyzing' ? 'processing' : 'completed'
+                            processingStatus: data.status === 'analyzing' ? 'processing' : 'completed',
+                            // Resolve the locator ONCE, here, rather than
+                            // re-deriving it from the URL on every read.
+                            ...storageColumnsFor(doc.url),
                         }
                     })
                 }

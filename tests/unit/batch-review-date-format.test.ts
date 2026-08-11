@@ -19,8 +19,10 @@ describe('batch-upload review formats extracted dates', () => {
 
     it('the batch review routes dates through formatPolicyDate, not raw', () => {
         const src = readFileSync('components/wallet/BatchUploadModal.tsx', 'utf-8')
-        expect(src).not.toMatch(/\{policy\.data\.startDate\}\s*→\s*\{policy\.data\.endDate\}/)
-        expect(src).toContain('formatPolicyDate(policy.data.startDate')
-        expect(src).toContain('formatPolicyDate(policy.data.endDate')
+        // The row variable was renamed `policy` → `row` when the modal grew
+        // failure states; the rule is unchanged — no raw date reaches the DOM.
+        expect(src).not.toMatch(/\{row\.data\.startDate\}\s*→\s*\{row\.data\.endDate\}/)
+        expect(src).toContain('formatPolicyDate(row.data.startDate')
+        expect(src).toContain('formatPolicyDate(row.data.endDate')
     })
 })

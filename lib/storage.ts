@@ -28,7 +28,34 @@ import { scanUploadBuffer } from "@/lib/security/malware-scan"
 const POLICY_BUCKET = "policies"
 const DEFAULT_BUCKET = "uploads"
 
+/**
+ * Everything the caller needs to RECORD an upload, not just to link to it.
+ *
+ * `uploadFile` returns only a URL, so every reader has had to re-derive the
+ * bucket and object key by regex over that URL. That is the single point of
+ * failure between a customer and their insurance contract: change the project
+ * host, or write one `/sign/` variant, and the document is unreachable with
+ * nothing else on the row to recover from. Callers that persist a document
+ * should use `uploadFileDetailed` and store `bucket`/`key` alongside the URL.
+ */
+export interface StoredObject {
+    /** Public-STYLE object URL. The bucket is private; this is a reference, not a link. */
+    url: string
+    bucket: string
+    /** Object key within the bucket. The authoritative locator. */
+    key: string
+    /** MIME type derived from VERIFIED content, not the client's claim. */
+    mimeType: string
+    size: number
+}
+
+/** Back-compatible wrapper: the URL alone, for callers that store nothing else. */
 export async function uploadFile(file: File, folder: string = "policies"): Promise<string> {
+    const stored = await uploadFileDetailed(file, folder)
+    return stored.url
+}
+
+export async function uploadFileDetailed(file: File, folder: string = "policies"): Promise<StoredObject> {
     const isPolicyDoc = folder === "policies"
     // Central choke point: EVERY server-side upload is validated here — magic
     // bytes + extension allowlist + size + filename safety — regardless of
@@ -113,7 +140,13 @@ export async function uploadFile(file: File, folder: string = "policies"): Promi
                     .from(bucket)
                     .getPublicUrl(objectKey)
 
-                return publicUrlData.publicUrl
+                return {
+                    url: publicUrlData.publicUrl,
+                    bucket,
+                    key: objectKey,
+                    mimeType: validation.value.canonicalMime,
+                    size: file.size,
+                }
             }
         }
 
@@ -135,8 +168,16 @@ export async function uploadFile(file: File, folder: string = "policies"): Promi
 
         await fs.writeFile(filePath, buffer)
 
-        const publicUrl = `/uploads/${folder}/${localName}`
-        return publicUrl
+        // Local-dev objects are app-relative paths, not bucket objects. They get
+        // no bucket/key: readers fall back to serving the path directly, which
+        // is exactly what they did before.
+        return {
+            url: `/uploads/${folder}/${localName}`,
+            bucket: "",
+            key: localName,
+            mimeType: validation.value.canonicalMime,
+            size: file.size,
+        }
 
     } catch (error) {
         if (error instanceof UploadValidationError) throw error

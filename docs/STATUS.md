@@ -1,5 +1,320 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-11 (Document storage: bulk-uploaded policies had no document at all)
+
+**Current phase:** fixed and tested. **4,296 unit tests** pass (+20), all guardrails
+green. **Not committed.** ⚠ **A production migration is required BEFORE deploy** —
+see below.
+
+**The finding, from production data.** Seven policies have no source document.
+Not a corrupted link — no `policy_documents` row and no stored object. Every one
+was created through bulk upload, and the timestamps line up exactly with the
+batch-create runs (`14:50:28.499 → 14:50:30.665`, plus the single-file batch at
+`08:50:02`). The three policies that DO have documents all came through the
+single-upload path. Cause: `/api/policies/extract` read the bytes, sent them to
+the model and dropped them; `batch-create` wrote a Policy row and nothing else.
+
+**Second defect.** `PolicyDetailsClientView.handleDownloadPrimaryDoc` called
+`window.open(document.fileUrl)` — a `getPublicUrl()` link into the PRIVATE
+`policies` bucket. Storage answers 400. The page's primary "open my document"
+action could never have worked, and it put a storage URL in the markup on the way
+to failing. (The documents card beside it has always used the authorized
+endpoint; this one button did not.)
+
+**What was already right, and was left alone:** opaque UUID storage keys on both
+upload paths, all three buckets private, original filename preserved in
+`file_name`, `document_hash` populated, `deletePolicy` removing storage objects,
+and the retrieval endpoint's authorization (`getPolicyAccess` + policy-scoped
+lookup + short-lived signed URL + `no-store`).
+
+**Changes**
+- Bulk upload now attaches each file to the policy it became, via the existing
+  per-policy documents route — no second upload path, and bytes are only sent for
+  a file that already has a policy to own it, so nothing is orphaned.
+- `storage_bucket` / `storage_key` / `mime_type` / `document_kind` / `version` /
+  `superseded_by_id` on `policy_documents`, so retrieval stops re-deriving the
+  object path by regex over the URL. Legacy rows fall back to the URL parse.
+- The policy page shipped every document column to the browser (`fileUrl`,
+  `storageKey`, uploader id, cached extraction). Narrowed to display fields.
+- Retrieval failures now distinguish object-missing from misconfiguration, and
+  render a readable page instead of a JSON blob in a browser tab.
+
+**⚠ Deploy order (hard requirement)**
+`20260811120000_policy_document_storage_keys` is applied to **dev only**. The new
+code writes these columns, so deploying before the prod migration breaks every
+document write. Apply via Supabase MCP to `cquudefwfwrmvpftuhyl` + the manual
+`_prisma_migrations` row (the Prisma CLI cannot run here — `DIRECT_URL` is the
+transaction pooler). The backfill expression was validated read-only against all
+three production rows first.
+
+**Top risks ranked**
+1. The prod migration above, un-applied.
+2. The 7 existing document-less policies are not repaired by any of this — the
+   source PDFs were never stored, so there is nothing to recover. They need
+   re-uploading by hand.
+3. Document upload for a bulk batch re-sends the bytes once. Correct and
+   orphan-free, but it doubles upload traffic for saved files.
+
+**Next 3 actions:** apply the prod migration; commit and open a PR; decide what to
+tell the affected user about the seven policies.
+
+## Session wrap — 2026-08-11 (Bulk upload: four documents lost to a rate limit, not a save)
+
+**Current phase:** root cause found and fixed, with a structured failure model
+behind it. **4,276 unit tests** pass (+54 on a 4,222 baseline, zero regressions), guardrails green (`audit:api-auth`,
+`lint`, `lint:i18n-changed`, `lint:utf8`, `lint:encoding`, `type-check`).
+**Not committed.**
+
+**Root cause — measured, not inferred.** The bulk-upload modal accepts **10**
+documents and fires all ten at once; `/api/policies/extract` allowed **6 per
+minute per user**. Four of every ten were rejected with a 429 *before any PDF was
+opened*. The extract route writes an activity row only after that gate, and
+production shows exactly six per attempt across four separate batches
+(2026-08-10 08:46, 08:48, 14:49; 2026-08-11 09:12 — the screenshotted run).
+So `cyber policy.pdf`, `YACHT TPL.pdf`, `CASH IN TRANSIT.pdf` and
+`CASH IN SAFE.pdf` failed for no reason of their own. They lost a race.
+
+**Why it read as a save failure.** Three independent defects, all fixed:
+1. the client threw `new Error(response.statusText)` — always `""` on HTTP/2 —
+   discarding the server's error body entirely;
+2. `mapWalletErrorToMessage`'s fallback for the `batchUpload` context is
+   `saveFailed`, so any unmatched failure was labelled a *save* failure;
+3. the limiter answers `{ error: { code } }` — an object — and `normalizeError`
+   returns `""` for anything that is not a string or an Error.
+
+**Also found and fixed, unprompted by the screenshot**
+- **Fabrication:** the route substituted `TEMP-${Date.now()}` for a missing
+  policy number, `"Unknown Insurer"`, and `"motor"` for an unrecognised line.
+  Rows looked complete and saved silently.
+- **Partial success was a lie at the save step:** required-field checks lived in
+  the array-level Zod schema, so one undated document 400'd the whole request and
+  created **zero** policies.
+- **No duplicate check** in batch-create (the single-upload path has always had
+  one) — re-uploading produced a second copy, and retrying a partly-saved batch
+  produced one per attempt.
+- **"Add more files" replaced state**, destroying every result on screen.
+- The recognition gate (`documentKind` / `assessExtractionEvidence`) existed but
+  was never wired into this path, so a terms booklet became a policy.
+
+**Top risks ranked**
+1. The 30/day billable-extract backstop was sized for single uploads; three full
+   batches exhaust it. Message is now truthful and distinct, but the *policy* is
+   unchanged and is a product decision.
+2. E2E written but not executed here (needs the dev server + provisioned users).
+3. `lib/i18n/wallet-error.ts` still has the `saveFailed` fallback for other
+   `batchUpload` callers; the bulk path no longer routes through it.
+
+**Next 3 actions:** run the Playwright spec locally; decide the daily-cap policy;
+commit and open a PR.
+
+## Session wrap — 2026-08-11 (Insurance intelligence expansion: shipped, measured, migrated)
+
+**Current phase:** complete and verified end to end against a real model. **4,208
+unit tests** (+196 on the 4,012 baseline, zero regressions), production build exit
+0, full guardrail gate green. The migration is **applied to both databases**.
+**Code is not committed.**
+
+**Verified on the configured default model** (`gemini-3-flash-preview`), scored by
+the existing harness: **4/4 specialty cases at 100%** (7/7 fields), 97% aggregate.
+
+- `ΚΛΑΔΟΣ ΜΕΤΑΦΟΡΩΝ` → `marine_cargo` — the case that used to resolve to `boat`
+- `ΚΛΑΔΟΣ ΠΛΟΙΩΝ (YACHTS)` → `boat_hull`; `ΑΣΤΙΚΗ ΕΥΘΥΝΗ` → `liability`; cyber → `cyber`
+- `documentKind: policy_schedule` on all four
+- premium correct on all four, including where a sum insured sits alongside
+  (€31,500 cargo value vs €55; €540,000 hull value vs €5,100)
+- clause codes verbatim — ICC (C), strikes, sanctions, Institute Yacht + CL.332
+- liability returned all **three limit towers** correctly typed; cyber returned
+  per-claim and aggregate
+
+**The full chain, on a real model:** hull document → `boat_hull` → €540,000
+`per_event` limit → €15,000 worst-case deductible under `largest_applies` →
+`assessAdequacy` verdict `adequate`. Scheduled tender and outboard, the vessel
+block and the warranties all extracted alongside.
+
+**Marine pack tuned to v1.1.0.** The hull cover was emitting its deductible
+ladder but no limit, because a sum insured reads as a property of the vessel
+rather than of a coverage — so `marineVessel.hullValue` was populated and
+adequacy had nothing to judge. The pack now requires the limit on the coverage
+as well.
+
+**Database**
+
+`20260811020000_building_manager_role` applied via Supabase MCP to **both**
+`PolicyWallet-Prod` (`cquudefwfwrmvpftuhyl`) and the dev project
+(`lzqvtvjggylcujenlelh`), with the `_prisma_migrations` row added to each.
+Verified present as `boolean NOT NULL DEFAULT false`. Additive and defaulted, so
+the currently deployed code is unaffected and no existing protection score moves
+until a customer answers the new question.
+
+`verify:migrations` validates the schema but cannot complete its `migrate status`
+half here — `DIRECT_URL` is the transaction pooler, which the Prisma CLI cannot
+use. The Supabase-MCP verification above is the stronger evidence.
+
+**Observations, not defects introduced here**
+
+- `gemini-3-flash-preview` is **intermittently very slow**: two of five extraction
+  calls hit the 180s timeout and recovered on retry, while the same document
+  completed in 17.5s on a direct call and `gemini-2.5-flash` never timed out.
+  Worth watching; the retry ladder is currently absorbing it.
+- RLS is disabled on 85 of 86 public tables in prod, including
+  `policyholder_profiles`. Consistent with the Prisma-plus-app-guards
+  architecture rather than an outlier, but worth knowing given that table now
+  carries one more piece of personal data.
+
+**Deliberately not done, and why**
+
+`GREEK_COVERAGE_MATRIX` left alone: `analyzePortfolioGaps` is a pure
+set-difference, so adding `boat` would recommend marine cover to everyone without
+a vessel — the exact defect the risk-engine audit removed. Commercial premium
+estimates omitted: `getEstimatedPremium` returning null renders as "not
+estimated" rather than as a wrong figure.
+
+**Top risks, ranked**
+
+1. **The code is uncommitted, and the schema is already ahead of it.** The column
+   exists in prod; nothing reads it until this ships. Safe in that order, but the
+   two must not drift for long.
+2. **The `obligation_due` cron starts on the next deploy.** Low blast radius — the
+   scan is a no-op for any policy without ACORD v3 `conditions`, which is the
+   whole existing book until re-analysed — but it is outward-facing.
+3. `gemini-3-flash-preview` latency (above).
+
+**Committed**
+
+Two commits on `feat/insurance-intelligence-expansion`, branched from
+`prod-readiness-2026-08` at `d2244351`:
+
+- `e23d5bc4` — the expansion (74 files, +7,099/-227)
+- `2f9fe698` — the AI timeout fix and the coverage-panel render tests
+
+The parallel session's uncommitted work (auth pages, `instrumentation-client.ts`,
+landing/guides content, `gap-report.ts` and its two tests) was NOT swept in — it
+is still unstaged and intact in the working tree. **This file is also
+uncommitted on purpose**: it carries that session's 2026-08-10 Sentry entry
+alongside this one, and committing it would make the branch's documentation
+claim work the branch does not contain.
+
+**The timeout decision, resolved**
+
+Not pinning to `gemini-2.5-flash`. The preview model is intermittently slow, not
+wrong — 4/4 specialty cases at 100%, and FASTER than 2.5-flash when healthy
+(17.5s vs 25.7s). The real defect was arithmetic: a 180s per-call timeout with
+one retry needs 362s against a 300s function budget, so a transient hang killed
+the run before the retry could rescue it. Now 120s, with `WORST_CASE_CALL_MS`
+derived from the parts and a test that reads the route's own `maxDuration`.
+
+**Next 3 actions**
+
+1. Open a PR against `NEW-UI` and run the E2E suite locally (not in CI).
+2. Re-analyse a few real policies so ACORD v3 `conditions` populate, then look at
+   the coverage panel and conditions card in the running app — the render is
+   covered by component tests, the end-to-end path is not.
+3. Watch `gemini-3-flash-preview` latency now that a hang fails over at 120s.
+
+---
+
+## Session wrap — 2026-08-10 (Sentry triage: 22 unresolved → 12, and the live incident is closed)
+
+**Current phase:** all 22 unresolved Sentry issues read, classified and either
+fixed, resolved, or documented as not-actionable. Full guardrail gate green,
+**4,012 unit tests** (+5). Two fixes here are **not yet committed**.
+
+**The live production incident is over, and verified so.** When this triage
+started, `prepared statement "s0"/"s2" already exists` (42P05) was firing on the
+live release — POLICYWALLET-13 and -12, on `GET /wallet` and
+`POST /api/v1/consents`. Production had moved onto the Supabase transaction
+pooler at ~12:42 UTC without `?pgbouncer=true`; transaction pooling returns the
+server connection after every transaction, so Prisma's PREPARE and EXECUTE could
+land on different backends. **#266 (`eb306e12`) shipped the fix and has been live
+since 15:09 UTC.** Confirmed rather than assumed: the last error event was
+14:32:37 UTC on the old release `df5ba237`, and in the 4h40m since the deploy the
+new release has served continuous `http.server` traffic with **zero error
+events**. POLICYWALLET-13/12/11 and the 24-event POLICYWALLET-5 are all resolved.
+
+**Still broken**
+
+1. **A customer's email address is sitting in Sentry as an indexed tag** —
+   POLICYWALLET-K carries `email_to` and `email_subject` for a GDPR
+   *account-deletion completion* notice that timed out. The leak itself is closed
+   going forward (call sites removed, `scrubEvent` shipped in #266), but the
+   historical event is still in the index and should be deleted there. The
+   functional half — that erasure-complete email may never have been delivered —
+   is one handled event from 22 July and remains unverified.
+2. **POLICYWALLET-6, the only genuinely open user-facing one.** Server Components
+   render failure on `/wallet`, six events over a month, a real Greek customer in
+   Chios. Its last occurrence (08:53 UTC) **predates** the pooler switch, so it
+   was never fully explained by the incident above. Digest-only, no stack. It has
+   now been quiet for 10 hours including 4h40m of live traffic on the new
+   release — if it returns, the digest needs correlating server-side.
+
+**Fixed here (uncommitted)**
+
+- **POLICYWALLET-7 — 28 unmapped gap slugs, and only 3 still real.** The map had
+  already grown to cover 25 of them; the live release still missed
+  `maternity-coverage`, `no-glass-coverage`, `no-collision-coverage`. Each names
+  a cover the map already held under another spelling, so they are added as
+  concept *aliases*, not new concepts — otherwise a policy tripping both
+  spellings renders two cards saying the same thing. `prisma/product-catalog.ts`
+  sells «Ίδιες ζημιές / σύγκρουση» as one cover, which is what settles collision
+  onto `own-damage` rather than letting it mint a fourth motor concept.
+- **Our own Playwright audits were raising production incidents.**
+  POLICYWALLET-V and -Z are HeadlessChrome on `/auth/forgot-password`, a path the
+  `*-audit.spec.ts` suites enumerate. The client `beforeSend` now drops events
+  when `navigator.webdriver` is set — the automation signal itself, not a
+  user-agent guess. Safe against the E2E suites: every Sentry assertion in
+  `tests/e2e/sentry-*.spec.ts` expects **zero** events.
+- **Two noise classes the ignore-list missed:** Chrome's lowercase `network
+  error` (the existing `NetworkError` entry is a case-sensitive substring match,
+  POLICYWALLET-10) and React's `Connection closed` from a torn RSC stream
+  (POLICYWALLET-Q). Scoped to the client: `sentry.server.config.ts` has no
+  `ignoreErrors`, so server-side email timeouts like POLICYWALLET-K stay visible.
+
+**Both new guards were proven to fail against the defect first** — the slug guard
+against the pre-fix map, the webdriver guard against the pre-fix client init. The
+existing PII guard pinned the literal `beforeSend: scrubEvent`, which my wrapper
+broke; rather than relax it to a substring, `beforeSend` is now **executed** in
+the test with a mocked SDK, which proves a wrapper still scrubs where a source
+match cannot tell a call from a mention.
+
+**Resolved as not-defects, with reasons on each issue:** POLICYWALLET-8
+(hydration, killed by the #255 homepage rewrite — that section now ships no
+client JS); J/P/M/H/N (one 22–23 July **vercel-preview** connection-exhaustion
+burst, `EMAXCONNSESSION`, superseded release); R (one aborted-navigation session
+on flaky Android, sharing a trace parent with Q — `react-hooks/rules-of-hooks` is
+`error` repo-wide and passes clean, so there is no conditional hook to find).
+
+**Triaged, deliberately NOT fixed:** POLICYWALLET-S/Y/X/T ("RangeError", "Error:
+Ba/ga/Aa") — S, Y and X share **one replay on one iPhone**, carry no frames in
+our bundles (`undefined:196:249`) and arrive as `onunhandledrejection` with
+minified single-token messages. That is an injected third-party script, and
+inventing a filter for it would only hide the next real one. POLICYWALLET-D
+("Failed to find Server Action") is deployment skew and is left visible on
+purpose: it means a user's submit silently failed.
+
+**Blocked:** nothing.
+
+**The "six migrations unapplied in prod" risk is CLOSED** — carried at the top of
+this file for five sessions, and checked against the live database rather than
+the doc: all six landed on `PolicyWallet-Prod` between 09:57 and 10:03 UTC today,
+in order (`notification_bus`, `notification_admin`, `business_events`,
+`notification_orchestrator`, `automation_console`, `risk_review`), which is
+**before** #266 deployed at 15:09. The only local migration prod still lacks is
+`20260809130000_drop_dead_protection_score_history`, which is the destructive one
+deliberately held for an owner decision.
+
+**Top risks:** 1) `connection_limit` is still left to the hand-edited pooler URL —
+the same class of omission that caused today's outage, deliberately not forced in
+code because the right value depends on the pooler's `pool_size`;
+2) POLICYWALLET-K's leaked address is still in the Sentry index even though the
+code path that put it there is gone, and a GDPR-erasure email that may never have
+been delivered is unverified; 3) VAPID keys still unset, so push stays honestly
+unconfigured.
+
+**Next 3 actions:** 1) commit the two fixes here on top of `NEW-UI` (both are pure
+additions and apply cleanly); 2) delete the POLICYWALLET-K event so the address
+leaves the index, and confirm whether that erasure-complete email ever sent;
+3) decide `connection_limit` on the pooler URL.
+
 ## Production readiness assessment — 2026-08-10
 
 **Six full assessment rounds across 20 areas. 14 issues found, explained, fixed

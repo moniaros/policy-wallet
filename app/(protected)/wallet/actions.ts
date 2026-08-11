@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
 import { uploadFile, deleteFile } from "@/lib/storage"
 import { sanitizeDisplayName } from "@/lib/security/file-upload"
-import { isOwnedStorageUrl } from "@/lib/supabase/storage-download"
+import { isOwnedStorageUrl, storageColumnsFor } from "@/lib/supabase/storage-download"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
 import fs from "fs/promises"
@@ -176,6 +176,9 @@ export async function createPolicy(formData: FormData) {
                     source: "policyholder",
                     uploadedByUserId: userId,
                     processingStatus: 'processing',
+                    // Resolve the locator ONCE, here, rather than re-deriving it
+                    // from the URL on every read for the life of the document.
+                    ...storageColumnsFor(doc.fileUrl),
                 })),
             })
         }

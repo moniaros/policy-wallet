@@ -4,13 +4,14 @@ import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { msFromNow, SIGNED_URL_EXPIRY_MS } from "@/lib/constants/time"
 import { getPolicyAccess } from "@/lib/policy-access"
-import { uploadFile, deleteFile } from "@/lib/storage"
+import { uploadFileDetailed, deleteFile } from "@/lib/storage"
 import { createSignedUrlForStoredObject } from "@/lib/supabase/storage-download"
 import {
     validateUploadFile,
     REJECTION_MESSAGES,
     MAX_DOCUMENTS_PER_POLICY,
 } from "@/lib/security/file-upload"
+import { DOCUMENT_KINDS } from "@/lib/services/ai/document-kind"
 
 const policyDocumentParamsSchema = z.object({
     id: z.string().min(1),
@@ -51,6 +52,17 @@ export const POST = withApiGuard(
             }
             const displayName = validation.value.displayName
 
+            // Optional, and validated against the closed vocabulary rather than
+            // trusted: the bulk-upload flow already knows what the classifier
+            // decided this document was, and passing it through is the only way
+            // the record gets a real document type instead of a guess from the
+            // file extension.
+            const declaredKind = formData.get("documentKind")
+            const documentKind =
+                typeof declaredKind === "string" && (DOCUMENT_KINDS as readonly string[]).includes(declaredKind)
+                    ? declaredKind
+                    : null
+
             const access = await getPolicyAccess(id, {
                 id: authResult.dbUser.id,
                 roles: authResult.dbUser.roles,
@@ -81,13 +93,14 @@ export const POST = withApiGuard(
             // Real upload into the private 'policies' bucket (service-role),
             // replacing a fabricated storage.googleapis.com URL that persisted a
             // phantom document record no file ever backed.
-            let fileUrl: string
+            let stored
             try {
-                fileUrl = await uploadFile(file, "policies")
+                stored = await uploadFileDetailed(file, "policies")
             } catch (uploadError) {
                 console.error("Policy document upload failed:", uploadError)
                 return createApiError("INTERNAL_ERROR", "Document upload failed", 500)
             }
+            const fileUrl = stored.url
 
             // If the DB write fails AFTER the object landed, remove the object —
             // otherwise it sits orphaned (and unreferenced) in the bucket forever.
@@ -97,11 +110,21 @@ export const POST = withApiGuard(
                     data: {
                         policyId: id,
                         fileUrl,
+                        // The ORIGINAL name, for display. The stored object is
+                        // named by the server (an opaque UUID) and the two are
+                        // deliberately unrelated — see uploadFileDetailed.
                         fileName: displayName,
                         fileSize: file.size,
                         source: source as string,
                         uploadedByUserId: authResult.dbUser.id,
-                        processingStatus: "pending"
+                        processingStatus: "pending",
+                        // The authoritative locator, so retrieval never has to
+                        // parse it back out of the URL.
+                        storageBucket: stored.bucket || null,
+                        storageKey: stored.key,
+                        storageProvider: stored.bucket ? "supabase" : null,
+                        mimeType: stored.mimeType,
+                        documentKind: documentKind || null,
                     }
                 })
             } catch (dbError) {
