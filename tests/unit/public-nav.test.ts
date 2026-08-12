@@ -17,10 +17,15 @@ import {
 describe("canonical public navigation", () => {
     it("keeps the agreed order and keys", () => {
         expect(PUBLIC_NAV_ITEMS.map((item) => item.key)).toEqual([
-            "product",
-            "solutions",
+            "products",
+            // The only entry that is a tool rather than a page. It sits above
+            // the explanatory pages on purpose: it is the one thing a stranger
+            // can use before deciding anything about PolicyWallet.
+            "needs",
             "guides",
-            "company",
+            // "company" is deliberately absent: /company is a footer
+            // destination, not a primary nav one. It still exists, is still
+            // linked, and still carries the category positioning.
             "pricing",
         ])
     })
@@ -45,7 +50,7 @@ describe("canonical public navigation", () => {
     it("exactly one dropdown item (Solutions), the rest are links", () => {
         const dropdowns = PUBLIC_NAV_ITEMS.filter((item) => item.kind === "dropdown")
         expect(dropdowns).toHaveLength(1)
-        expect(dropdowns[0]?.key).toBe("solutions")
+        expect(dropdowns[0]?.key).toBe("products")
         expect(publicNavLinks()).toHaveLength(PUBLIC_NAV_ITEMS.length - 1)
     })
 

@@ -236,10 +236,10 @@ export default function PricingPage({
                                 type="button"
                                 aria-pressed={audience === "policyholder"}
                                 onClick={() => setAudience("policyholder")}
-                                className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors ${
+                                className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
                                     audience === "policyholder"
-                                        ? "bg-[#29685B] text-white"
-                                        : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                                        ? "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                                 }`}
                             >
                                 {labels.audiencePolicyholder[language]}
@@ -248,10 +248,10 @@ export default function PricingPage({
                                 type="button"
                                 aria-pressed={audience === "agent"}
                                 onClick={() => setAudience("agent")}
-                                className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors ${
+                                className={`inline-flex min-h-11 items-center rounded-full px-5 text-body font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
                                     audience === "agent"
-                                        ? "bg-[#29685B] text-white"
-                                        : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                                        ? "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                                 }`}
                             >
                                 {labels.audienceAgent[language]}
@@ -286,10 +286,10 @@ export default function PricingPage({
                                 type="button"
                                 aria-pressed={billingPeriod === "monthly"}
                                 onClick={() => setBillingPeriod("monthly")}
-                                className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors ${
+                                className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
                                     billingPeriod === "monthly"
-                                        ? "bg-[#29685B] text-white"
-                                        : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                                        ? "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                                 }`}
                             >
                                 {labels.monthly[language]}
@@ -298,10 +298,10 @@ export default function PricingPage({
                                 type="button"
                                 aria-pressed={billingPeriod === "annual"}
                                 onClick={() => setBillingPeriod("annual")}
-                                className={`relative inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors ${
+                                className={`relative inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] ${
                                     billingPeriod === "annual"
-                                        ? "bg-[#29685B] text-white"
-                                        : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                                        ? "bg-[#29685B] text-white hover:bg-[#1C4E44]"
+                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                                 }`}
                             >
                                 {labels.annual[language]}

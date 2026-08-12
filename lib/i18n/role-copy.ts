@@ -31,8 +31,6 @@ type RoleCopy = {
         title: string
         subtitle: string
         agencyProfile: string
-        verification: string
-        payouts: string
         status: string
         pending: string
         verifiedLabel: string
@@ -46,6 +44,16 @@ type RoleCopy = {
         licenseNumberPlaceholder: string
         saveChanges: string
         saving: string
+        commissionRatesTitle: string
+        commissionRatesDesc: string
+        saveCommissions: string
+        subscription: string
+        customers: string
+        aiAnalysesPerMonth: string
+        upgradePlan: string
+        personalSettingsTitle: string
+        personalSettingsDesc: string
+        personalSettingsCta: string
         dangerZone: string
         dangerDescription: string
         deactivateAccount: string
@@ -234,11 +242,9 @@ const roleCopy: Record<Language, RoleCopy> = {
             updating: "Ενημέρωση...",
         },
         agentSettings: {
-            title: "Ρυθμίσεις Συμβούλου",
-            subtitle: "Διαχειριστείτε το προφίλ πρακτορείου και τα επαγγελματικά στοιχεία σας.",
-            agencyProfile: "Προφίλ Πρακτορείου",
-            verification: "Πιστοποίηση",
-            payouts: "Εκκαθαρίσεις",
+            title: "Προφίλ γραφείου",
+            subtitle: "Τα στοιχεία του πρακτορείου σας και οι προμήθειες ανά κλάδο.",
+            agencyProfile: "Προφίλ γραφείου",
             status: "Κατάσταση",
             pending: "Σε αξιολόγηση",
             verifiedLabel: "Επιβεβαιωμένος",
@@ -246,15 +252,25 @@ const roleCopy: Record<Language, RoleCopy> = {
             verifiedDescription: "Τα επαγγελματικά σας στοιχεία έχουν επιβεβαιωθεί.",
             underReviewDescription: "Το προφίλ σας αξιολογείται από την ομάδα κανονιστικής συμμόρφωσης.",
             rejectedDescription: "Η ομάδα κανονιστικής συμμόρφωσης δεν ενέκρινε τα στοιχεία σας. Επικοινωνήστε μαζί μας για τα επόμενα βήματα.",
-            agencyName: "Επωνυμία Πρακτορείου",
+            agencyName: "Επωνυμία πρακτορείου",
             agencyNamePlaceholder: "π.χ. Alpha Insurance Advisors",
-            licenseNumber: "Αριθμός Άδειας",
+            licenseNumber: "Αριθμός άδειας",
             licenseNumberPlaceholder: "π.χ. LIC-12345678",
             saveChanges: "Αποθήκευση αλλαγών",
             saving: "Αποθήκευση...",
-            dangerZone: "Ζώνη Κινδύνου",
-            dangerDescription: "Η ενέργεια θα απενεργοποιήσει οριστικά τον λογαριασμό συμβούλου και τα σχετικά δεδομένα πελατών.",
-            deactivateAccount: "Απενεργοποίηση Λογαριασμού",
+            commissionRatesTitle: "Ποσοστά προμήθειας",
+            commissionRatesDesc: "Ορίστε το ποσοστό σας ανά κλάδο ασφάλισης. Χρησιμοποιείται στον υπολογισμό των προμηθειών σας.",
+            saveCommissions: "Αποθήκευση προμηθειών",
+            subscription: "Το πρόγραμμά σας",
+            customers: "Πελάτες",
+            aiAnalysesPerMonth: "Αναλύσεις AI ανά μήνα",
+            upgradePlan: "Δείτε τα προγράμματα",
+            personalSettingsTitle: "Ο προσωπικός σας λογαριασμός",
+            personalSettingsDesc: "Το όνομα, το email, ο κωδικός και τα δεδομένα σας βρίσκονται στις ρυθμίσεις λογαριασμού.",
+            personalSettingsCta: "Ρυθμίσεις λογαριασμού",
+            dangerZone: "Διαγραφή λογαριασμού",
+            dangerDescription: "Η διαγραφή του λογαριασμού σας γίνεται από τις ρυθμίσεις απορρήτου, όπου εξηγείται ακριβώς τι διαγράφεται και τι διατηρείται.",
+            deactivateAccount: "Απόρρητο και δεδομένα",
             updatedSuccess: "Το προφίλ ενημερώθηκε επιτυχώς.",
             updatedError: "Δεν ήταν δυνατή η ενημέρωση του προφίλ.",
         },
@@ -442,11 +458,9 @@ const roleCopy: Record<Language, RoleCopy> = {
             updating: "Updating...",
         },
         agentSettings: {
-            title: "Advisor Settings",
-            subtitle: "Manage your agency profile and professional credentials.",
-            agencyProfile: "Agency Profile",
-            verification: "Verification",
-            payouts: "Payouts",
+            title: "Agency profile",
+            subtitle: "Your agency details and your commission rates per line of business.",
+            agencyProfile: "Agency profile",
             status: "Status",
             pending: "Pending",
             verifiedLabel: "Verified",
@@ -454,15 +468,25 @@ const roleCopy: Record<Language, RoleCopy> = {
             verifiedDescription: "Your professional credentials have been verified.",
             underReviewDescription: "Your profile is currently under review by our compliance team.",
             rejectedDescription: "Our compliance team did not approve your credentials. Contact us for the next steps.",
-            agencyName: "Agency Name",
+            agencyName: "Agency name",
             agencyNamePlaceholder: "e.g. Acme Insurance Services",
-            licenseNumber: "License Number",
+            licenseNumber: "Licence number",
             licenseNumberPlaceholder: "e.g. LIC-12345678",
-            saveChanges: "Save Changes",
+            saveChanges: "Save changes",
             saving: "Saving...",
-            dangerZone: "Danger Zone",
-            dangerDescription: "This action permanently deactivates your advisor account and related customer data.",
-            deactivateAccount: "Deactivate Account",
+            commissionRatesTitle: "Commission rates",
+            commissionRatesDesc: "Set your percentage per line of business. It is used to calculate your commissions.",
+            saveCommissions: "Save commission rates",
+            subscription: "Your plan",
+            customers: "Customers",
+            aiAnalysesPerMonth: "AI analyses per month",
+            upgradePlan: "See the plans",
+            personalSettingsTitle: "Your personal account",
+            personalSettingsDesc: "Your name, email, password and data live in your account settings.",
+            personalSettingsCta: "Account settings",
+            dangerZone: "Delete account",
+            dangerDescription: "Deleting your account is done from your privacy settings, where exactly what is deleted and what is kept is spelled out.",
+            deactivateAccount: "Privacy & data",
             updatedSuccess: "Profile updated successfully.",
             updatedError: "Failed to update profile.",
         },

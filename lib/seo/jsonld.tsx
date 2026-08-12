@@ -337,3 +337,71 @@ export function articleJsonLd(input: {
         mainEntityOfPage: `${origin}${input.path}`,
     }
 }
+
+/**
+ * The guides index as an enumerable collection.
+ *
+ * A `Blog` with an `ItemList` of `BlogPosting` entries, each carrying its own
+ * headline, description and dates. Three different consumers want three
+ * different things from this page and all three are served by the same object:
+ *
+ *  - **Search** gets a list it can render as a set of results rather than one
+ *    opaque page, with per-item freshness from `dateModified`.
+ *  - **Answer engines** get `description` — the guide's own direct-answer
+ *    summary, the same 40–60 words the page shows — so a citation quotes what
+ *    we actually wrote instead of a scraped fragment of navigation.
+ *  - **Generative engines** get `position`, which is the editorial ordering.
+ *    Without it the list is a bag and the model picks whichever item its
+ *    chunker happened to keep.
+ *
+ * Everything here is rendered visibly on the page too. Structured data that
+ * claims more than the page shows is the one thing that reliably gets a site
+ * demoted, and it is also just lying in a machine-readable format.
+ */
+export function guideIndexJsonLd(input: {
+    path: string
+    name: string
+    description: string
+    inLanguage: "el" | "en"
+    items: {
+        path: string
+        headline: string
+        description: string
+        datePublished: string
+        dateModified?: string
+    }[]
+}) {
+    const origin = getSiteOrigin()
+    return {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "@id": `${origin}${input.path}#blog`,
+        url: `${origin}${input.path}`,
+        name: input.name,
+        description: input.description,
+        inLanguage: input.inLanguage === "el" ? "el-GR" : "en",
+        publisher: organizationRef(),
+        blogPost: input.items.map((item) => ({
+            "@type": "BlogPosting",
+            "@id": `${origin}${item.path}#article`,
+            url: `${origin}${item.path}`,
+            headline: item.headline,
+            description: item.description,
+            datePublished: item.datePublished,
+            ...(item.dateModified ? { dateModified: item.dateModified } : {}),
+            inLanguage: input.inLanguage === "el" ? "el-GR" : "en",
+            publisher: organizationRef(),
+        })),
+        mainEntity: {
+            "@type": "ItemList",
+            numberOfItems: input.items.length,
+            itemListOrder: "https://schema.org/ItemListOrderDescending",
+            itemListElement: input.items.map((item, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                url: `${origin}${item.path}`,
+                name: item.headline,
+            })),
+        },
+    }
+}

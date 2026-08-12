@@ -20,8 +20,6 @@ export default async function NotificationsPage() {
         )
     }
 
-    const activeRole = dbUser.roles.includes('agent') ? 'agent' : 'policyholder'
-
     return (
         <NotificationsClient
             initialData={{
@@ -35,11 +33,6 @@ export default async function NotificationsPage() {
                     read_at: e.read_at || null,
                     related_policy_id: e.related_policy_id,
                     related_policy_name: e.related_policy_name,
-                })),
-                preferences: data.preferences.map(p => ({
-                    event_type: p.event_type,
-                    email_enabled: p.channel_email,
-                    push_enabled: p.channel_push
                 })),
                 user: dbUser
             }}

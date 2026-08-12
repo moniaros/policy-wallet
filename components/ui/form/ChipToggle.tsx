@@ -48,7 +48,7 @@ export function ChipToggle({
 }: ChipToggleProps) {
     return (
         <label
-            className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg border px-3 text-caption font-medium transition-colors has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary has-[:focus-visible]:ring-offset-2 ${checked ? SELECTED[accent] : UNSELECTED} ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+            className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg border px-3 text-caption font-medium transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#29685B] dark:has-[:focus-visible]:outline-[#A7F3D0] ${checked ? SELECTED[accent] : UNSELECTED} ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
         >
             <input
                 type="checkbox"

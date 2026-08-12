@@ -8,9 +8,11 @@ import { LandingCtaLink } from "@/components/landing/LandingCtaLink"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { TrustBadges } from "@/components/landing/TrustBadges"
 import { TrustRow } from "@/components/landing/TrustRow"
-import { LifeChangeDiscovery } from "@/components/landing/LifeChangeDiscovery"
 import { WhyDifferent } from "@/components/landing/WhyDifferent"
 import { WhyNow } from "@/components/landing/WhyNow"
+import { ClearLimits } from "@/components/landing/ClearLimits"
+import { HomeContact } from "@/components/landing/HomeContact"
+import { HeroSlides } from "@/components/landing/HeroSlides"
 import { PricingPreview } from "@/components/landing/PricingPreview"
 import { HomeFaq } from "@/components/landing/HomeFaq"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
@@ -21,7 +23,7 @@ import { ServicesGrid } from "@/components/landing/ServicesGrid"
 import { AudienceTabs } from "@/components/landing/AudienceTabs"
 import { landingContent } from "@/lib/landing/content"
 import { productCategories } from "@/lib/product/catalog"
-import { CATEGORY, CTA_REASSURANCE, PRIMARY_ACTION, PROMISE, pick } from "@/lib/marketing/positioning"
+import { CATEGORY, CTA_REASSURANCE, PRIMARY_ACTION, PROMISE, STORY, pick } from "@/lib/marketing/positioning"
 
 const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
@@ -100,63 +102,68 @@ export function WorldClassLanding({
                     What used to sit here (a paragraph restating the story, and
                     the security row) moved down: both were us talking, and both
                     pushed the one interactive thing below the fold. */}
-                <section className="px-6 pb-16 lg:px-12 lg:pb-24">
-                    <div className="mx-auto grid max-w-page grid-cols-1 items-start gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
-                        <div>
-                            {/* What we are, in the words a person would use. The
-                                formal category name still carries the SEO/AEO
-                                job in the footer, the OG cards and the JSON-LD
-                                entity — it is just not what a human reads first.
-                                Rounds on mobile because a sentence wraps. */}
-                            <p className="mb-4 inline-flex max-w-full items-start gap-2 rounded-2xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-1.5 sm:mb-6 sm:rounded-full sm:px-3.5 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
-                                <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
-                                <span className="text-caption font-semibold text-[#166534] sm:text-body-sm dark:text-[#A7F3D0]">
-                                    {pick(CATEGORY, locale)}
-                                </span>
-                            </p>
+                <section className="px-6 pb-20 lg:px-12 lg:pb-28">
+                    <div className="mx-auto max-w-[820px] text-center">
+                        {/* What we are, in the words a person would use. The
+                            formal category name still carries the SEO/AEO job in
+                            the footer, the OG cards and the JSON-LD entity — it
+                            is just not what a human reads first. */}
+                        <p className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3.5 py-1.5 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                            <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
+                            <span className="text-caption font-semibold text-[#166534] sm:text-body-sm dark:text-[#A7F3D0]">
+                                {pick(CATEGORY, locale)}
+                            </span>
+                        </p>
 
-                            <h1 className="text-h2 leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-[#0F172A] sm:text-h1 lg:text-display dark:text-white">
-                                {pick(PROMISE.lead, locale)}{" "}
-                                <span className="text-[#29685B] dark:text-[#A7F3D0]">
-                                    {pick(PROMISE.accent, locale)}
-                                </span>
-                            </h1>
+                        {/* Three angles on the same argument, taken from
+                            /compare. ONLY the headline and lead rotate — the
+                            chip above and everything below stays put, so the
+                            primary action never moves under a cursor. */}
+                        <HeroSlides locale={locale} />
 
-                            {/* The answer to the headline, given by the visitor. */}
-                            <LifeChangeDiscovery locale={locale} />
-
-                            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
-                                <LandingCtaLink
-                                    href={authHref("/auth/signup?role=policyholder&source=landing_hero", locale)}
-                                    locale={locale}
-                                    location="hero"
-                                    className="pw-primary-button pw-btn-lg"
-                                >
-                                    {pick(PRIMARY_ACTION, locale)}
-                                    <ArrowRight aria-hidden className="h-4 w-4" />
-                                </LandingCtaLink>
-                                <Link href="#how-it-works" className="pw-secondary-button pw-btn-lg">
-                                    {t("Πώς λειτουργεί", "How it works")}
-                                </Link>
-                            </div>
-
-                            {/* Nothing to lose by starting today. */}
-                            <p className="mt-3 text-body-sm text-[#5B6A7A] sm:mt-4 dark:text-slate-400">
-                                {pick(CTA_REASSURANCE, locale)}
-                            </p>
+                        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                            <LandingCtaLink
+                                href={authHref("/auth/signup?role=policyholder&source=landing_hero", locale)}
+                                locale={locale}
+                                location="hero"
+                                className="pw-primary-button pw-btn-lg"
+                            >
+                                {pick(PRIMARY_ACTION, locale)}
+                                <ArrowRight aria-hidden className="h-4 w-4" />
+                            </LandingCtaLink>
+                            {/* The second action is now the ungated tool rather
+                                than a jump link. Someone who is not ready to
+                                hand over an email can still get something out of
+                                the site, which is the whole reason /needs was
+                                built. */}
+                            <Link href={l("/needs")} className="pw-secondary-button pw-btn-lg">
+                                {t("Έλεγχος αναγκών σε 6 ερωτήσεις", "Needs check in 6 questions")}
+                            </Link>
                         </div>
 
-                        {/* Desktop only. On a phone the mock would take the
-                            whole first screen and push the interaction under
-                            it — the exact problem this layout removes. */}
-                        <div className="hidden lg:block">
-                            <PolicyWalletWidget isGreek={isGreek} />
-                        </div>
+                        {/* What the paid product actually does, directly under
+                            the action. The free tier is real and still stated
+                            below — but it is the floor, not the offer, and
+                            leading with it sold the floor. No price here: the
+                            plan catalog is admin-managed and PricingPreview
+                            renders the live figures a few sections down. */}
+                        <p className="mx-auto mt-5 max-w-[540px] text-body-lg font-medium leading-relaxed text-[#334155] dark:text-slate-200">
+                            {t(
+                                "Με το PolicyWallet Plus διαβάζουμε κάθε ασφαλιστήριό σας, βρίσκουμε τι δεν καλύπτεται και σας ειδοποιούμε πριν λήξει κάτι.",
+                                "With PolicyWallet Plus we read every one of your policies, find what is not covered, and warn you before something runs out.",
+                            )}
+                        </p>
+
+                        {/* The free tier, kept accurate and kept findable, in the
+                            size it earns. */}
+                        <p className="mt-4 text-micro text-[#5B6A7A] dark:text-slate-400">
+                            {pick(CTA_REASSURANCE, locale)}
+                        </p>
                     </div>
                 </section>
 
-                {/* ── 2. WHY WE ARE DIFFERENT ──────────────────────── */}
-                <WhyDifferent locale={locale} />
+                {/* ── 2. WHY IT MATTERS ────────────────────────────── */}
+                <WhyNow locale={locale} />
 
                 {/* ── 3. WHAT YOU GET ──────────────────────────────── */}
                 <section
@@ -165,7 +172,7 @@ export function WorldClassLanding({
                     className="scroll-mt-28 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28"
                 >
                     <div className="mx-auto max-w-page">
-                        <div className="mb-12 max-w-[600px]">
+                        <div className="mb-12 max-w-[680px]">
                             <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
                                 {t("Τι παίρνετε", "What you get")}
                             </p>
@@ -174,14 +181,14 @@ export function WorldClassLanding({
                                 className="mb-4 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
                             >
                                 {t(
-                                    "Πέντε απαντήσεις που δεν σας δίνει κανείς άλλος.",
-                                    "Five answers nobody else gives you.",
+                                    "Αναλυτικές αναφορές σε γλώσσα που δεν χρειαζεται να εισαι ασφαλιστής για να καταλάβεις",
+                                    "Five things about exactly what you bought.",
                                 )}
                             </h2>
                             <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                                 {t(
-                                    "Στείλτε ένα συμβόλαιο. Τα υπόλοιπα τα κάνουμε εμείς.",
-                                    "Send us one policy. We do the rest.",
+                                    "Επιπλέον, ρωτήστε ό,τι θέλετε για το ασφαλιστήριό σας, όποια ώρα της ημέρας, με το PolicyWallet Plus.",
+                                    "Including the small print — not what you think you bought. And ask anything about your policy, at any hour of the day, with PolicyWallet Plus.",
                                 )}
                             </p>
                         </div>
@@ -189,14 +196,58 @@ export function WorldClassLanding({
                     </div>
                 </section>
 
-                {/* ── 4. WHY IT MATTERS ────────────────────────────── */}
-                <WhyNow locale={locale} />
+                {/* ── 4. WHAT IT WORKS WITH ─────────────────────────── */}
+                {/* TrustRow used to sit in the hero. Encryption and data
+                    residency are what every SaaS claims, so leading with them
+                    proved nothing and cost the fold. They belong here, next to
+                    the other "is this for real" evidence, once the visitor has
+                    a reason to care. */}
+                <section
+                    aria-labelledby="coverage-heading"
+                    className="px-6 py-20 lg:px-12 lg:py-28"
+                >
+                    {/* A stated panel rather than a thin strip wedged between two
+                        bands. It carries the widest promise on the page — every
+                        insurer, every branch — and it was set at `text-lead` in
+                        14px of padding, which read as a footnote. The green wash
+                        and mint edge are the brand's own emphasis surface, used
+                        here at full width; no shadow, because the design system
+                        keeps depth as a response to interaction and not as
+                        decoration. */}
+                    <div className="mx-auto max-w-[900px] space-y-7 rounded-3xl border border-[#A7F3D0] bg-[#ECFDF5] px-6 py-14 text-center sm:px-12 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
+                        <h2
+                            id="coverage-heading"
+                            className="mx-auto max-w-[720px] text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h2 dark:text-white"
+                        >
+                            {t(
+                                "Δουλεύει με ό,τι κι αν έχετε, από όποια εταιρεία κι αν το πήρατε.",
+                                "It works with whatever you have, from whichever company you bought it.",
+                            )}
+                        </h2>
+                        <TrustBadges isGreek={isGreek} />
+                        <p className="mx-auto max-w-[620px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-300">
+                            {t(
+                                `${productCategories.length} είδη ασφάλισης. Δεν συνεργαζόμαστε με καμία ασφαλιστική — γι' αυτό μπορούμε να σας πούμε την αλήθεια.`,
+                                `${productCategories.length} types of insurance. We do not work with any insurance company — that is why we can tell you the truth.`,
+                            )}
+                        </p>
+                        <div className="mx-auto max-w-[640px] border-t border-[#A7F3D0]/70 pt-7 text-left dark:border-[#29685B]/50">
+                            <TrustRow locale={locale} />
+                        </div>
+                    </div>
+                </section>
 
-                {/* ── 5. HOW IT WORKS ──────────────────────────────── */}
+                {/* ── 5. OUR APPROACH ──────────────────────────────── */}
+                <WhyDifferent locale={locale} />
+
+                {/* The product shot, once, where it is evidence for the claim
+                    just made rather than decoration beside a headline. */}
+
+                {/* ── 6. HOW IT WORKS ──────────────────────────────── */}
                 <section
                     id="how-it-works"
                     aria-labelledby="how-it-works-heading"
-                    className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
+                    className="scroll-mt-28 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28"
                 >
                     <div className="mx-auto max-w-page">
                         <div className="mb-14 text-center">
@@ -211,28 +262,26 @@ export function WorldClassLanding({
                             </h2>
                         </div>
 
-                        <ol className="grid gap-6 md:grid-cols-3">
+                        <ol className="mx-auto max-w-[760px] divide-y divide-[#E2E8F0] dark:divide-slate-800">
                             {steps.map((step, index) => {
                                 const Icon = stepIcons[index] ?? FileText
                                 return (
-                                    <li
-                                        key={step.id}
-                                        className="flex flex-col rounded-2xl border border-[#E2E8F0] bg-white p-7 dark:border-slate-800 dark:bg-slate-950"
-                                    >
-                                        <div className="mb-5 flex items-center gap-3">
-                                            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#ECFDF5] dark:bg-[#29685B]/20">
-                                                <Icon aria-hidden className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
-                                            </span>
-                                            <span className="text-micro font-bold tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                                                {String(index + 1).padStart(2, "0")}
-                                            </span>
-                                        </div>
+                                    <li key={step.id} className="flex gap-5 py-7">
+                                        {/* Was a bordered card in a 3-up grid —
+                                            the page's default container, used
+                                            five times over. A numbered row needs
+                                            no box to read as a step. */}
+                                        <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#ECFDF5] dark:bg-[#29685B]/20">
+                                            <Icon aria-hidden className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                        </span>
+                                        <div>
                                         <h3 className="mb-2 text-lead font-semibold tracking-tight text-[#0F172A] dark:text-white">
                                             {isGreek ? step.title.el : step.title.en}
                                         </h3>
                                         <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                             {isGreek ? step.description.el : step.description.en}
                                         </p>
+                                        </div>
                                     </li>
                                 )
                             })}
@@ -240,7 +289,10 @@ export function WorldClassLanding({
                     </div>
                 </section>
 
-                {/* ── 6. WHO IT IS FOR ─────────────────────────────── */}
+                {/* ── 6b. CLEAR LIMITS ─────────────────────────────── */}
+                <ClearLimits locale={locale} />
+
+                {/* ── 7. WHO IT IS FOR ─────────────────────────────── */}
                 <section
                     id="solutions"
                     aria-labelledby="solutions-heading"
@@ -268,41 +320,8 @@ export function WorldClassLanding({
                     </div>
                 </section>
 
-                {/* ── 6b. PARTNER PERKS (renders only with live partners) ── */}
+                {/* ── 7b. PARTNER PERKS (renders only with live partners) ── */}
                 <PartnerPerksSection offers={partnerOffers} isGreek={isGreek} />
-
-                {/* ── 7. WILL IT WORK FOR ME, AND CAN I TRUST YOU ───── */}
-                {/* TrustRow used to sit in the hero. Encryption and data
-                    residency are what every SaaS claims, so leading with them
-                    proved nothing and cost the fold. They belong here, next to
-                    the other "is this for real" evidence, once the visitor has
-                    a reason to care. */}
-                <section
-                    aria-labelledby="coverage-heading"
-                    className="border-t border-[#E2E8F0] px-6 py-14 lg:px-12 dark:border-slate-800"
-                >
-                    <div className="mx-auto max-w-page space-y-5 text-center">
-                        <h2
-                            id="coverage-heading"
-                            className="text-lead font-semibold text-balance text-[#0F172A] sm:text-title dark:text-white"
-                        >
-                            {t(
-                                "Δουλεύει με ό,τι κι αν έχετε, από όποια εταιρεία κι αν το πήρατε.",
-                                "It works with whatever you have, from whichever company you bought it.",
-                            )}
-                        </h2>
-                        <TrustBadges isGreek={isGreek} />
-                        <p className="mx-auto max-w-[560px] text-body-sm text-[#5B6A7A] dark:text-slate-400">
-                            {t(
-                                `${productCategories.length} είδη ασφάλισης. Δεν συνεργαζόμαστε με καμία ασφαλιστική — γι' αυτό μπορούμε να σας πούμε την αλήθεια.`,
-                                `${productCategories.length} types of insurance. We do not work with any insurance company — that is why we can tell you the truth.`,
-                            )}
-                        </p>
-                        <div className="mx-auto max-w-[640px] border-t border-[#E2E8F0] pt-6 text-left dark:border-slate-800">
-                            <TrustRow locale={locale} />
-                        </div>
-                    </div>
-                </section>
 
                 {/* ── 8. QUESTIONS ─────────────────────────────────── */}
                 <HomeFaq locale={locale} />
@@ -311,6 +330,9 @@ export function WorldClassLanding({
                 {/* After the questions, not before them: nobody weighs a
                     subscription while they are still deciding what this is. */}
                 <PricingPreview locale={locale} plans={pricingPlans} />
+
+                {/* ── 9b. CONTACT ──────────────────────────────────── */}
+                <HomeContact locale={locale} />
 
                 {/* ── 10. WHAT TO DO NEXT ──────────────────────────── */}
                 <section className="px-6 pb-24 lg:px-12">

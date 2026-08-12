@@ -113,8 +113,8 @@ export function ogImagesFor(locale: "el" | "en") {
             height: 630,
             alt:
                 locale === "en"
-                    ? "PolicyWallet — We do not sell insurance. We tell you if you are covered."
-                    : "PolicyWallet — Δεν πουλάμε ασφάλειες. Σας λέμε αν είστε καλυμμένοι.",
+                    ? "PolicyWallet — AI Personal Risk Intelligence"
+                    : "PolicyWallet — Δεν αξιολογούμε τα συμβόλαιά σας. Αξιολογούμε την προστασία της ζωής σας.",
         },
     ]
 }

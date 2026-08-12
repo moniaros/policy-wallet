@@ -25,11 +25,6 @@ export async function getNotificationData() {
         take: 50,
     })
 
-    // 2. Fetch Preferences
-    const preferences = await db.notificationPreference.findMany({
-        where: { userId }
-    })
-
     // 3. Fetch Policies (for filtering)
     const policies = await db.policy.findMany({
         where: { ownerUserId: userId },
@@ -124,53 +119,12 @@ export async function getNotificationData() {
         created_at: r.createdAt.toISOString()
     }))
 
-    const preferenceMap = new Map<string, {
-        preference_id: string
-        user_id: string
-        role: "policyholder"
-        event_category: "reminder"
-        event_type: string
-        channel_email: boolean
-        channel_push: boolean
-        always_sent: boolean
-        updated_at: string
-    }>()
-
-    for (const p of preferences) {
-        const existing = preferenceMap.get(p.eventType) || {
-            preference_id: p.id,
-            user_id: p.userId,
-            role: "policyholder" as const,
-            event_category: "reminder" as const,
-            event_type: p.eventType,
-            channel_email: true,
-            channel_push: true,
-            always_sent: false,
-            updated_at: p.updatedAt.toISOString(),
-        }
-
-        if (p.channel === "email") {
-            existing.channel_email = p.enabled
-        }
-        if (p.channel === "push") {
-            existing.channel_push = p.enabled
-        }
-        if (new Date(p.updatedAt).getTime() > new Date(existing.updated_at).getTime()) {
-            existing.updated_at = p.updatedAt.toISOString()
-            existing.preference_id = p.id
-        }
-
-        preferenceMap.set(p.eventType, existing)
-    }
-
-    const uiPreferences = Array.from(preferenceMap.values())
 
     return {
         user: uiUser,
         history: uiEvents,
         policies: uiPolicies,
         relationships: uiRelationships,
-        preferences: uiPreferences
     }
 }
 
@@ -253,27 +207,3 @@ export async function markAllNotificationsRead() {
     return { success: true }
 }
 
-export async function toggleNotificationPreference(eventType: string, channel: 'email' | 'push', enabled: boolean, role: 'policyholder' | 'agent') {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-
-    await db.notificationPreference.upsert({
-        where: {
-            userId_eventType_channel: {
-                userId: authResult.dbUser.id,
-                eventType,
-                channel
-            }
-        },
-        update: { enabled },
-        create: {
-            userId: authResult.dbUser.id,
-            eventType,
-            channel,
-            enabled
-        }
-    })
-
-    revalidatePath("/notifications")
-    return { success: true }
-}

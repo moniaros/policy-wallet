@@ -38,8 +38,11 @@ describe('the card status is judged on the Athens calendar', () => {
         expect(mapPolicyCardStatus('active', new Date('2026-08-23T00:00:00Z'), now)).toBe('active')
     })
 
-    it('is one implementation, imported by both routes', () => {
-        for (const f of ['app/(protected)/agent/page.tsx', 'app/(protected)/account/page.tsx']) {
+    it('is one implementation — no route redeclares it', () => {
+        // /account used to be the second call site, mapping every policy for a
+        // `mobileProps` prop its client component never read. The page no
+        // longer touches policies at all.
+        for (const f of ['app/(protected)/agent/page.tsx']) {
             const src = strip(readFileSync(f, 'utf-8'))
             expect(src, f).toMatch(/from '@\/lib\/wallet\/map-policy-card-status'/)
             expect(src, `${f} still declares its own copy`).not.toMatch(/function mapStatus\(/)

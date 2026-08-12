@@ -33,9 +33,6 @@ export function ProductCategoryExplorer({
             <div className="mx-auto max-w-page">
                 <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-[720px]">
-                        <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                            {t("Εξερευνήστε κι άλλα", "Explore more")}
-                        </p>
                         <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] text-[#0F172A] dark:text-white">
                             {t(
                                 "Δείτε και τις υπόλοιπες ασφαλιστικές κατηγορίες.",

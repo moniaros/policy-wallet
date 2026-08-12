@@ -34,6 +34,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const priorityByKey: Partial<Record<keyof typeof marketingPages, number>> = {
         product: 0.9,
         pricing: 0.9,
+        // The only ungated tool on the site and the intended entry point for
+        // "τι ασφάλεια χρειάζομαι" searches — ranked with the pillar pages.
+        needs: 0.9,
         // Linked from the homepage and the footer — a first-class landing page.
         compare: 0.8,
         "solutions-agents": 0.8,

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs"
 import { globSync } from "../helpers/glob"
 import { getBaseEmailTemplate } from '@/lib/email/templates/base-template'
 import { getLegalContent } from '@/lib/legal/legal-content'
+import { LEGACY_TAB_REDIRECTS, SETTINGS_SECTIONS } from '@/lib/settings/sections'
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 
@@ -11,10 +12,10 @@ const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\
  * "consent, with an unsubscribe option in every message" — «Συγκατάθεση, με
  * δυνατότητα απεγγραφής σε κάθε μήνυμα». No email carried one.
  *
- * The mechanism was already there and working: NotificationPreference toggles on
- * /account, honoured by the weekly digest, churn prevention, engagement drip,
- * and (via lib/notifications) everything that goes through sendNotification.
- * Nothing pointed a reader at it.
+ * The mechanism was already there and working: NotificationPreference toggles,
+ * honoured by the weekly digest, churn prevention, engagement drip, and (via
+ * lib/notifications) everything that goes through sendNotification. Nothing
+ * pointed a reader at it.
  */
 describe('every email offers the opt-out the privacy policy promises', () => {
     it('the policy does make that promise', () => {
@@ -22,13 +23,13 @@ describe('every email offers the opt-out the privacy policy promises', () => {
         expect(JSON.stringify(getLegalContent('en'))).toMatch(/unsubscribe option in every message/i)
     })
 
-    it('the footer links to the preferences screen in both languages', () => {
+    it('the footer links straight to the preferences screen in both languages', () => {
         const el = getBaseEmailTemplate('<p>x</p>', 'el')
-        expect(el).toMatch(/\/account\?tab=settings/)
+        expect(el).toMatch(/\/account\/notifications/)
         expect(el).toMatch(/Διαχείριση ειδοποιήσεων/)
 
         const en = getBaseEmailTemplate('<p>x</p>', 'en')
-        expect(en).toMatch(/\/account\?tab=settings/)
+        expect(en).toMatch(/\/account\/notifications/)
         expect(en).toMatch(/Manage notifications/)
     })
 
@@ -44,23 +45,36 @@ describe('every email offers the opt-out the privacy policy promises', () => {
 })
 
 /**
- * The link has to land where it says it lands. The account tab was local state
- * only, so /account?tab=settings opened the overview and left the reader hunting
- * for the toggles the email had just promised.
+ * The link has to land where it says it lands.
+ *
+ * It used to point at `/account?tab=settings`, where the tab was React state:
+ * the URL was honoured, but only because the page read the query param back on
+ * mount. Sections are real routes now, so the footer links directly — and the
+ * old query form still resolves, because those links sit in inboxes forever.
  */
-describe('the preferences link opens the preferences tab', () => {
-    const PAGE = strip(readFileSync('app/(protected)/account/AccountClientPage.tsx', 'utf-8'))
+describe('the preferences link opens the preferences screen', () => {
+    const PAGE = strip(readFileSync('app/(protected)/account/page.tsx', 'utf-8'))
 
-    it('reads the tab from the URL', () => {
-        expect(PAGE).toMatch(/useSearchParams/)
-        expect(PAGE).toMatch(/searchParams\.get\('tab'\)/)
+    it('every legacy tab still resolves to a real section', () => {
+        const routes = new Set<string>(['/account', ...SETTINGS_SECTIONS.map((s) => s.href)])
+        for (const [tab, target] of Object.entries(LEGACY_TAB_REDIRECTS)) {
+            expect(routes.has(target), `?tab=${tab} → ${target}`).toBe(true)
+        }
     })
 
-    it('accepts only real tabs, falling back to the overview', () => {
-        expect(PAGE).toMatch(/requestedTab === 'billing' \|\| requestedTab === 'settings'\s*\?\s*requestedTab\s*:\s*'overview'/)
+    it('?tab=settings lands on the notification preferences, not an overview', () => {
+        expect(LEGACY_TAB_REDIRECTS.settings).toBe('/account/notifications')
     })
 
-    it('the notification toggles are on that tab', () => {
-        expect(PAGE).toMatch(/toggleNotificationPreference/)
+    it('the index redirects those legacy tabs server-side', () => {
+        expect(PAGE).toMatch(/LEGACY_TAB_REDIRECTS/)
+        expect(PAGE).toMatch(/redirect\(legacyTarget\)/)
+    })
+
+    it('the notification toggles are on that route', () => {
+        const section = strip(
+            readFileSync('components/settings/sections/NotificationsSection.tsx', 'utf-8')
+        )
+        expect(section).toMatch(/toggleNotificationPreference/)
     })
 })

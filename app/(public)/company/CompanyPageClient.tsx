@@ -184,7 +184,7 @@ export default function CompanyPage() {
                 )}
 
                 <section className="mx-auto max-w-page-wide px-6 lg:px-12">
-                    <div className="relative overflow-hidden rounded-[32px] bg-[#1A2420] py-24 text-white">
+                    <div className="relative overflow-hidden rounded-[32px] bg-cta-dark py-24 text-white">
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-[#64748B]/20 to-transparent" />
                         <div className="relative z-10 mx-auto max-w-2xl px-6 text-center">
                             <h2 className="mb-6 text-h2 font-semibold tracking-tight md:text-h1">

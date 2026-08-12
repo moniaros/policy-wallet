@@ -126,18 +126,23 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
     const miniPolicies = [
         // Mock app UI speaks consumer words ("Car"); the product taxonomy
         // (catalog, footer) keeps the branch name "Motor".
-        { Icon: Car, name: t("Αυτοκίνητο", "Car"), score: 92, type: "ok" as const },
-        { Icon: Home, name: t("Σπίτι", "Home"), score: 71, type: "warn" as const },
-        { Icon: Heart, name: t("Υγεία", "Health"), score: 98, type: "ok" as const },
+        //
+        // These tiles used to read 92% / 71% / 98%. This is the ONLY product
+        // illustration a phone visitor ever sees — PolicyWalletWidget is
+        // `hidden lg:block` — so the one mock they get was the one carrying
+        // scores that PolicyWalletWidget had already removed on the grounds
+        // that a stranger cannot check any of those numbers, which makes them
+        // decoration rather than evidence. Same verdicts as the desktop mock
+        // now: which cover is fine, which one has a hole.
+        { Icon: Car, name: t("Αυτοκίνητο", "Car"), status: t("Εντάξει", "All good"), type: "ok" as const },
+        { Icon: Home, name: t("Σπίτι", "Home"), status: t("Κενό", "Gap"), type: "warn" as const },
+        { Icon: Heart, name: t("Υγεία", "Health"), status: t("Εντάξει", "All good"), type: "ok" as const },
     ]
 
     return (
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             {/* Copy */}
             <div>
-                <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                    {t("Για ιδιώτες", "For individuals")}
-                </p>
                 <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h2">
                     {t(
                         "Για ανθρώπους που θέλουν ηρεμία, όχι εκπλήξεις.",
@@ -173,6 +178,11 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                 </Link>
             </div>
 
+            {/* The illustration and its caption share one grid cell. As
+                siblings of the copy column they would be a third grid item and
+                the caption would drop beneath the text at lg, captioning
+                nothing. */}
+            <div>
             {/* Illustration. One role="img" with a plain-language alternative,
                 so assistive tech hears a description instead of reading the
                 example data as if it were the visitor's own policies. */}
@@ -216,12 +226,12 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                                 <div className="flex items-center gap-1">
                                     <AlertTriangle className="h-3.5 w-3.5 text-[#92400E] dark:text-amber-200" />
                                     <span className="text-micro font-semibold text-[#92400E] dark:text-amber-200">
-                                        {t("Κενό", "Gap")}
+                                        {p.status}
                                     </span>
                                 </div>
                             ) : (
                                 <span className="text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0]">
-                                    {p.score}%
+                                    {p.status}
                                 </span>
                             )}
                         </div>
@@ -236,6 +246,23 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                         )}
                     </p>
                 </div>
+            </div>
+
+            {/* The caption a sighted visitor gets. Until now "Παράδειγμα" lived
+                only in the role="img" label above, so a screen-reader user was
+                told this was an example and everyone else was not — on the one
+                product illustration a phone visitor ever sees. It names the
+                plan for the same reason PolicyWalletWidget's does: finding the
+                gap is a PolicyWallet Plus job, and this renders near "free",
+                so an unattributed mock reads as a free-tier promise. It sits
+                OUTSIDE the role="img" wrapper so assistive tech hears it as a
+                caption instead of having it swallowed by the image label. */}
+            <p className="mt-3 text-center text-micro text-[#5B6A7A] dark:text-slate-400">
+                {t(
+                    "Παράδειγμα αποτελέσματος με το PolicyWallet Plus.",
+                    "Example result with PolicyWallet Plus.",
+                )}
+            </p>
             </div>
         </div>
     )
@@ -261,29 +288,36 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
         },
     ]
 
+    // No scores here either. These rows used to end in 91% and 84% — the same
+    // uncheckable two-digit grade the policyholder mock above just lost, and
+    // the one PolicyWalletWidget removed on the record. A client whose cover is
+    // fine says so; a client with a renewal coming says how many days.
+    // Lettered placeholders, matching AgentWidgets and the «Ασφαλιστική Α»
+    // convention: a mock row needs a label, and an invented Greek surname reads
+    // as a real book of business a reader cannot check.
     const clients = [
-        { initials: t("ΓΚ", "GK"), name: t("Γ. Κυριακόπουλος", "G. Kyriakopoulos"), renewal: 7, score: 68, alert: true },
-        { initials: t("ΜΠ", "MP"), name: t("Μ. Παπαδοπούλου", "M. Papadopoulou"), renewal: 23, score: 91, alert: false },
-        { initials: t("ΑΔ", "AD"), name: t("Α. Δημητρίου", "A. Dimitriou"), renewal: 45, score: 84, alert: false },
-        { initials: t("ΝΣ", "NS"), name: t("Ν. Σταυρόπουλος", "N. Stavropoulos"), renewal: 62, score: 55, alert: true },
+        { initials: t("Α", "A"), name: t("Πελάτης Α", "Client A"), renewal: 7, alert: true },
+        { initials: t("Β", "B"), name: t("Πελάτης Β", "Client B"), renewal: 23, alert: false },
+        { initials: t("Γ", "C"), name: t("Πελάτης Γ", "Client C"), renewal: 45, alert: false },
+        { initials: t("Δ", "D"), name: t("Πελάτης Δ", "Client D"), renewal: 62, alert: true },
     ]
 
     return (
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             {/* Copy */}
             <div>
-                <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                    {t("Για ασφαλιστές", "For insurance agents")}
-                </p>
                 <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h2">
-                    {t("Λιγότερο τρέξιμο. Περισσότεροι πελάτες.", "Less running around. More clients.")}
-                </h3>
-                <p className="mb-7 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
-                    {t(
-                        "Πάρτε περισσότερους πελάτες χωρίς να πάρετε περισσότερο κόσμο. Κάθε συμβόλαιο διαβάζεται μόνο του μόλις το στείλετε.",
-                        "Take on more clients without taking on more staff. Every policy is read on its own the moment you send it."
-                    )}
-                </p>
+    {t(
+        "Δείτε ολόκληρο το risk profile του πελάτη σας — όχι απλώς τα μεμονωμένα συμβόλαιά του.",
+        "See your client's entire risk profile — not just their individual policies."
+    )}
+</h3>
+<p className="mb-7 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+    {t(
+        "Συγκεντρώστε τις καλύψεις του πελάτη σε μία ενιαία εικόνα, εντοπίστε κενά και επικαλύψεις και κατανοήστε τι πραγματικά χρειάζεται.",
+        "Bring your client's coverage into one complete view, identify gaps and overlaps, and understand what they actually need."
+    )}
+</p>
                 <ul className="mb-8 space-y-3.5">
                     {benefits.map((b, i) => (
                         <li key={i} className="flex items-start gap-3">
@@ -301,32 +335,25 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 </Link>
             </div>
 
+            {/* Illustration and caption share one grid cell — as siblings of
+                the copy column the caption becomes a third grid item and drops
+                beneath the text at lg. */}
+            <div>
             {/* Illustration — described once for assistive tech, so the example
                 client names are never read out as real people. */}
             <div
                 role="img"
                 aria-label={t(
-                    "Παράδειγμα: μία οθόνη με 47 πελάτες, 8 ασφάλειες που λήγουν σύντομα και 12 ευκαιρίες, με προτάσεις για το τι λείπει σε κάθε πελάτη.",
-                    "Example: one screen showing 47 clients, 8 policies running out soon and 12 opportunities, with suggestions for what each client is missing."
+                    "Παράδειγμα: μία οθόνη με τους πελάτες σας, ποιανού η ασφάλεια λήγει σύντομα, και μια πρόταση για το τι λείπει σε έναν από αυτούς.",
+                    "Example: one screen with your clients, whose cover runs out soon, and a suggestion for what one of them is missing."
                 )}
                 className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-5"
             >
-                {/* Stats row */}
-                <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {[
-                        { value: "47", label: t("Πελάτες", "Clients"), color: "text-[#0F172A] dark:text-white" },
-                        { value: "8", label: t("Ανανεώσεις", "Renewals"), color: "text-[#92400E] dark:text-amber-200" },
-                        { value: "12", label: t("Ευκαιρίες", "Opportunities"), color: "text-[#29685B] dark:text-[#A7F3D0]" },
-                    ].map((stat) => (
-                        <div
-                            key={stat.label}
-                            className="rounded-xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center"
-                        >
-                            <p className={`text-lead font-bold ${stat.color}`}>{stat.value}</p>
-                            <p className="text-kicker text-[#5B6A7A] dark:text-slate-400">{stat.label}</p>
-                        </div>
-                    ))}
-                </div>
+                {/* The three KPI tiles that led this mock — "47 Πελάτες · 8
+                    Ανανεώσεις · 12 Ευκαιρίες" — are gone. They were a portfolio
+                    size we invented, set in the largest type on the panel, and
+                    a stranger could check none of it. The list below is the
+                    thing the agent actually came for. */}
 
                 {/* Client list */}
                 <div className="space-y-2">
@@ -347,12 +374,8 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                                     {t(`${c.renewal} ημ.`, `${c.renewal}d`)}
                                 </span>
                             ) : (
-                                <span
-                                    className={`text-micro font-semibold ${
-                                        c.score >= 85 ? "text-[#29685B]" : "text-[#5B6A7A] dark:text-slate-400"
-                                    }`}
-                                >
-                                    {c.score}%
+                                <span className="text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0]">
+                                    {t("Εντάξει", "All good")}
                                 </span>
                             )}
                         </div>
@@ -367,11 +390,23 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     <TrendingUp className="h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
                     <p className="text-caption font-medium text-[#166534] dark:text-[#A7F3D0]">
                         {t(
-                            "Γ. Κυριακόπουλος — του λείπει ασφάλεια ζωής",
-                            "G. Kyriakopoulos — has no life cover"
+                            "Πελάτης Α — του λείπει ασφάλεια ζωής",
+                            "Client A — has no life cover"
                         )}
                     </p>
                 </div>
+            </div>
+
+            {/* Same reason as the policyholder panel: "Παράδειγμα" was in the
+                role="img" label only, so the one group told it was an example
+                was the one that could not see it. The client names here are
+                invented, and this is the line that says so. */}
+            <p className="mt-3 text-center text-micro text-[#5B6A7A] dark:text-slate-400">
+                {t(
+                    "Παράδειγμα οθόνης συμβούλου. Τα ονόματα είναι φανταστικά.",
+                    "Example advisor screen. The names are fictional.",
+                )}
+            </p>
             </div>
         </div>
     )

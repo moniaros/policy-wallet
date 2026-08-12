@@ -25,21 +25,66 @@ import { cn } from "@/lib/utils"
  */
 
 export const LOCALE_OPTIONS = [
-    { value: "el" as const, label: "ΕΛ" },
-    { value: "en" as const, label: "EN" },
+    { value: "el" as const, label: "ΕΛ", name: "Ελληνικά" },
+    { value: "en" as const, label: "EN", name: "English" },
 ]
 
 export function LocaleToggle({
     className,
-    /** "plain" = text buttons with a divider (auth pages); "group" = segmented pill (shell). */
+    /**
+     * "plain" = text buttons with a divider (auth pages); "group" = segmented
+     * pill (shell); "settings" = full language names, for the settings screen
+     * where this is a preference being set rather than a control being used.
+     */
     variant = "plain",
     ariaLabel,
 }: {
     className?: string
-    variant?: "plain" | "group"
+    variant?: "plain" | "group" | "settings"
     ariaLabel: string
 }) {
     const { language, setLanguage } = useLanguage()
+
+    if (variant === "settings") {
+        return (
+            <div
+                role="group"
+                aria-label={ariaLabel}
+                className={cn("grid grid-cols-1 gap-2 sm:grid-cols-2", className)}
+            >
+                {LOCALE_OPTIONS.map(({ value, name }) => {
+                    const selected = language === value
+                    return (
+                        <button
+                            key={value}
+                            type="button"
+                            onClick={() => setLanguage(value)}
+                            aria-pressed={selected}
+                            className={cn(
+                                "flex min-h-11 items-center gap-2.5 rounded-xl border px-4 py-3 text-left text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                                selected
+                                    ? "border-primary bg-primary-soft/60 font-semibold text-black dark:border-mint dark:bg-primary/15 dark:text-white"
+                                    : "border-black/10 font-medium text-black/80 hover:border-primary/40 dark:border-white/15 dark:text-white/80"
+                            )}
+                        >
+                            {/* A radio-style mark, so the chosen language is not
+                                signalled by colour alone. */}
+                            <span
+                                aria-hidden="true"
+                                className={cn(
+                                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border-2",
+                                    selected ? "border-primary dark:border-mint" : "border-black/30 dark:border-white/35"
+                                )}
+                            >
+                                {selected && <span className="h-2 w-2 rounded-full bg-primary dark:bg-mint" />}
+                            </span>
+                            {name}
+                        </button>
+                    )
+                })}
+            </div>
+        )
+    }
 
     if (variant === "group") {
         return (

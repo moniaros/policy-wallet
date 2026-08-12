@@ -90,9 +90,9 @@ export function PushOptIn() {
 
     if (state === "unsupported" || state === "unavailable" || state === "denied") {
         return (
-            <div className="flex items-start justify-between gap-3 p-3 rounded-2xl">
+            <div className="flex items-start justify-between gap-3">
                 <div>
-                    <p className="text-micro font-bold text-black/80 dark:text-white/70">
+                    <p className="text-sm font-semibold text-black dark:text-white">
                         {t.settings.push.title}
                     </p>
                     <p className="text-caption text-muted-foreground mt-1">
@@ -109,9 +109,9 @@ export function PushOptIn() {
 
     const isOn = state === "on"
     return (
-        <div className="flex items-center justify-between gap-3 p-3 hover:bg-black/5 dark:hover:bg-black/80 rounded-2xl transition-all">
+        <div className="flex items-center justify-between gap-3">
             <div>
-                <p className="text-micro font-bold text-black/80 dark:text-white/70">
+                <p className="text-sm font-semibold text-black dark:text-white">
                     {t.settings.push.title}
                 </p>
                 <p className="text-caption text-muted-foreground mt-1">
@@ -123,7 +123,7 @@ export function PushOptIn() {
                 onClick={isOn ? disable : enable}
                 disabled={state === "working"}
                 aria-label={isOn ? t.settings.push.disable : t.settings.push.enable}
-                className="pw-btn pw-btn-sm shrink-0 disabled:opacity-60"
+                className="pw-secondary-button pw-btn-sm shrink-0 disabled:opacity-60"
             >
                 {isOn ? t.settings.push.disable : t.settings.push.enable}
             </button>

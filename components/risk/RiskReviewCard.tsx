@@ -112,7 +112,7 @@ export function RiskReviewCard({ review, label, rationale }: RiskReviewCardProps
             <div className="flex flex-col sm:flex-row gap-2 mt-4">
                 <Link
                     href="/insights/risk-profile"
-                    className="pw-btn min-h-11 flex-1 inline-flex items-center justify-center"
+                    className="pw-primary-button min-h-11 flex-1 inline-flex items-center justify-center"
                 >
                     {copy.cta}
                 </Link>
@@ -121,7 +121,7 @@ export function RiskReviewCard({ review, label, rationale }: RiskReviewCardProps
                     <button
                         type="submit"
                         disabled={pending}
-                        className="pw-btn pw-btn-sm min-h-11 w-full disabled:opacity-60"
+                        className="pw-secondary-button pw-btn-sm min-h-11 w-full disabled:opacity-60"
                     >
                         {copy.complete}
                     </button>

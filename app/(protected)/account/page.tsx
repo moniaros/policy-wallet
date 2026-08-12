@@ -1,100 +1,41 @@
 export const runtime = 'nodejs'
 
-import { getAuthenticatedUser } from "@/lib/auth-helpers"
-import { db } from "@/lib/db"
-import { getAccountData } from "./actions"
-import { AccountClientPage } from "./AccountClientPage"
-import type { Policy } from "@/components/wallet/types"
-import { getRoleCopy } from "@/lib/i18n/role-copy"
-import { mapPolicyCardStatus } from '@/lib/wallet/map-policy-card-status'
+import { redirect } from "next/navigation"
+import { LEGACY_TAB_REDIRECTS } from "@/lib/settings/sections"
+import { SettingsNav } from "@/components/settings/SettingsNav"
+import { ProfileSection } from "@/components/settings/sections/ProfileSection"
+import { getProfileData } from "./data"
 
-export default async function AccountPage() {
-    const { dbUser } = await getAuthenticatedUser()
-    const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'el' | 'en') || 'el')
+/**
+ * The settings index.
+ *
+ * On a phone this is the menu you drill into; on a wide screen the rail is
+ * already beside you, so a menu here would just repeat it — the pane shows
+ * Profile instead, and `activeSectionFor` marks Profile active for both
+ * `/account` and `/account/profile`. Which one you see is decided in CSS, not
+ * by measuring the viewport.
+ */
+export default async function AccountPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ tab?: string }>
+}) {
+    // The three tabs this section replaced were addressable, and every email
+    // footer PolicyWallet has ever sent links to `?tab=settings`.
+    const { tab } = await searchParams
+    const legacyTarget = tab ? LEGACY_TAB_REDIRECTS[tab] : undefined
+    if (legacyTarget && legacyTarget !== "/account") redirect(legacyTarget)
 
-    const data = await getAccountData()
-    if (!data) {
-        return (
-            <div className="pw-page-shell px-4 py-8">
-                <div className="mx-auto max-w-2xl pw-card pw-pad text-sm text-black/70 dark:text-white/75">
-                    {roleCopy.defaults.loadingError}
-                </div>
-            </div>
-        )
-    }
-
-    // Fetch additional data for mobile view (policies & agent)
-    const policies = await db.policy.findMany({
-        where: { ownerUserId: dbUser.id },
-        orderBy: { endDate: 'asc' },
-        include: { documents: true }
-    })
-
-    const customerRelationship = await db.customerRelationship.findFirst({
-        where: {
-            policyholderUserId: dbUser.id,
-            status: 'active'
-        },
-        include: { agent: true }
-    })
-
-    const agent = customerRelationship?.agent ? {
-        id: customerRelationship.agent.id,
-        name: customerRelationship.agent.name || roleCopy.defaults.agentName,
-        phone: customerRelationship.agent.phoneNumber || '',
-        email: customerRelationship.agent.email || '',
-        company: roleCopy.defaults.agentCompany,
-        photoUrl: customerRelationship.agent.image || undefined,
-        isOnline: true
-    } : undefined
-
-    const user = {
-        id: dbUser.id,
-        name: dbUser.name || roleCopy.defaults.userName,
-        email: dbUser.email,
-        photoUrl: dbUser.image || undefined,
-        isOnline: true
-    }
-
-    // Map policies
-    const mappedPolicies: Policy[] = policies.map(p => ({
-        id: p.id,
-        userId: p.ownerUserId,
-        policyNumber: p.policyNumber,
-        insurerName: p.insurerName,
-        insurerLogo: null,
-        lineOfBusiness: p.lineOfBusiness as any,
-        status: mapPolicyCardStatus(p.status, p.endDate),
-        startDate: p.startDate.toISOString(),
-        endDate: p.endDate.toISOString(),
-        lastUpdated: p.updatedAt.toISOString(),
-        sharedWithAgents: [],
-        coverageHighlights: [],
-        documents: p.documents.map((d: any) => ({
-            id: d.id,
-            fileName: d.fileName,
-            uploadedAt: d.uploadedAt.toISOString(),
-            uploadedBy: d.source as any
-        })),
-        acordData: p.acordData
-    }))
-
-    // Resolved server-side so the control renders with the real (role-derived)
-    // default instead of flashing "off" and then correcting itself.
-    const { getQuietHours } = await import("./quiet-hours-actions")
-    const quietHours = await getQuietHours()
+    const profile = await getProfileData()
 
     return (
-        <AccountClientPage
-            initialData={data}
-            quietHours={quietHours ?? undefined}
-            mobileProps={{
-                policies: mappedPolicies,
-                user,
-                agent
-            }}
-        />
+        <>
+            <div className="lg:hidden">
+                <SettingsNav roles={profile.roles} variant="index" />
+            </div>
+            <div className="hidden space-y-4 lg:block">
+                <ProfileSection data={profile} />
+            </div>
+        </>
     )
 }
-
-

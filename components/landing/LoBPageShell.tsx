@@ -71,12 +71,9 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
                 {/* Pricing funnel — every LoB page routes to /pricing from the body, not only the nav */}
                 <section className="border-t border-[#E2E8F0] bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
                     <div className="mx-auto max-w-[760px]">
-                        <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                            {t("Τιμές", "Pricing")}
-                        </p>
                         <h2 className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white">
                             {isAgentAudience
-                                ? t("Ξεκινήστε δωρεάν. Αναβάθμιση όποτε τη χρειαστείτε.", "Start free. Upgrade whenever you need it.")
+                                ? t("Πλήρης ανάλυση κάθε ασφαλιστηρίου με το PolicyWallet Plus.", "Full analysis of every policy with PolicyWallet Plus.")
                                 : t("Δωρεάν για 1 συμβόλαιο. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 1 policy. Upgrade whenever you need it.")}
                         </h2>
                         <p className="mb-8 text-body-lg leading-relaxed text-[#475569] dark:text-slate-400">

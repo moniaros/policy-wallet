@@ -26,9 +26,6 @@ export default function GlossaryTermClient({ entry }: { entry: GlossaryTerm }) {
                     <span className="text-[#0F172A] dark:text-slate-300">{entry.term[lang]}</span>
                 </nav>
 
-                <p className="mb-3 text-body-sm font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                    {t("Ορισμός", "Definition")}
-                </p>
                 <h1 className="mb-6 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] md:text-h1 dark:text-white">
                     {entry.term[lang]}
                 </h1>

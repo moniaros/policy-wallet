@@ -69,16 +69,22 @@ describe('every switch writes a key some sender reads', () => {
         expect(sent.has('policy_expiry')).toBe(false)
     })
 
-    it('has a label for every group, in both languages', () => {
+    it('has a label AND an explanation for every group, in both languages', () => {
+        // A switch whose label is a category name ("Weekly summary") tells the
+        // reader nothing about what turning it off costs them. Every group
+        // carries a plain-language description for that reason.
         for (const group of NOTIFICATION_PREFERENCE_GROUPS) {
-            expect(el.settings.notificationGroups[group.labelKey], group.labelKey).toBeTruthy()
-            expect(en.settings.notificationGroups[group.labelKey], group.labelKey).toBeTruthy()
+            for (const dict of [el, en]) {
+                const entry = dict.settings.notificationGroups[group.labelKey]
+                expect(entry?.label, group.labelKey).toBeTruthy()
+                expect(entry?.description, group.labelKey).toBeTruthy()
+            }
         }
     })
 })
 
 describe('the settings screen is driven by the registry', () => {
-    const UI = strip(readFileSync('components/account/Settings.tsx', 'utf-8'))
+    const UI = strip(readFileSync('components/settings/sections/NotificationsSection.tsx', 'utf-8'))
 
     it('does not hardcode its own preference ids', () => {
         expect(UI).toMatch(/NOTIFICATION_PREFERENCE_GROUPS\.map/)
@@ -91,6 +97,17 @@ describe('the settings screen is driven by the registry', () => {
         // One switch covers a stream: renewal reminders govern policy_expiring,
         // renewal_milestone and perk_reminder. Writing only the group key would
         // leave the others still sending.
-        expect(UI).toMatch(/pref\.eventTypes\.forEach/)
+        expect(UI).toMatch(/eventTypesFor\(group\)\.map/)
+    })
+
+    it('is the only preference UI — /notifications must not ship a second catalog', () => {
+        // Two screens wrote the same table from disagreeing lists: the
+        // /notifications catalog exposed renewal_milestone on its own while the
+        // group switch here governs it, so a stream switched off in one place
+        // could be half-revived in the other.
+        // Stripped: the file's own header comment names the keys it dropped.
+        const history = strip(readFileSync('components/notifications/NotificationsClient.tsx', 'utf-8'))
+        expect(history).not.toMatch(/preferenceCatalog/)
+        expect(history).not.toMatch(/pending_questionnaire/)
     })
 })

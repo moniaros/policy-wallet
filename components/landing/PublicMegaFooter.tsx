@@ -136,9 +136,6 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                 <div className="mx-auto max-w-page-wide rounded-3xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 px-6 py-7 md:px-8">
                     <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <p className="mb-1 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                                {t("Ξεκινήστε", "Get started")}
-                            </p>
                             <h3 className="text-h3 font-medium leading-tight tracking-tight text-[#0F172A] dark:text-white">
                                 {t(
                                     "Ασφαλίζεστε ή ασφαλίζετε άλλους;",

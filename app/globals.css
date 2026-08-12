@@ -461,8 +461,20 @@ pre {
      `:where()` keeps specificity at 0, so any caller that still passes its own
      text colour continues to win. */
   :where(.pw-input) {
-    @apply w-full rounded-2xl border-none bg-neutral-50 px-6 py-4 text-sm text-[#0F172A] outline-none transition-all;
-    @apply focus:ring-4 focus:ring-primary/10;
+    /* `outline-none` is gone from the base on purpose: it sets
+       `outline-style: none`, which the focus rule below could not override —
+       the field ended up with the right outline WIDTH and COLOUR and a style of
+       `none`, so still nothing was drawn. Nothing needs suppressing here; at
+       rest an input has no outline, and on focus the rule below draws ours over
+       the browser's. */
+    @apply w-full rounded-2xl border-none bg-neutral-50 px-6 py-4 text-sm text-[#0F172A] transition-all;
+    /* Was `focus:ring-4 focus:ring-primary/10`, which painted nothing for the
+       same reason as the button recipes — leaving every input on the site,
+       including the public sign-in and sign-up forms, with no focus indicator
+       at all next to an unconditional `outline-none`. `focus:` rather than
+       `focus-visible:` is deliberate on a text field: a pointer user who clicks
+       into an input expects to see where they are typing. */
+    @apply focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#29685B] dark:focus:outline-[#A7F3D0];
     @apply disabled:cursor-not-allowed disabled:opacity-60;
   }
 
@@ -480,11 +492,37 @@ pre {
 
   /* Invalid state, paired with aria-invalid on the control itself. */
   .pw-input[aria-invalid="true"] {
-    @apply ring-2 ring-red-500/40 focus:ring-4 focus:ring-red-500/20;
+    /* Also a ring, so also invisible: measured `box-shadow: rgba(0,0,0,0) 0 0
+       0 0` with the attribute set. The field announced itself as invalid to a
+       screen reader and looked identical to a valid one on screen. Never the
+       only signal — the Field contract pairs this with `role="alert"` text —
+       but it is the one a sighted user scanning the form sees first. */
+    /* Plain properties, not `@apply outline outline-2 outline-red-500`: that
+       form landed `outline-style` only, leaving the field with the UA's 3px
+       default width in currentColor — a dark outline, not a red one. */
+    /* #B91C1C is the design system's `status-critical-fg`, the red 24 other
+       call sites already use. The `red-500` the old ring named is not in the
+       palette. 5.9:1 on white, well past the 3:1 non-text minimum. */
+    outline: 2px solid #B91C1C;
+    outline-offset: 2px;
   }
 
+  /* The focus indicator on both button recipes was `focus-visible:outline-none
+     focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`
+     and it painted NOTHING. Measured with the pseudo-state forced through CDP:
+     outline `1px none`, box-shadow `rgba(0,0,0,0) 0 0 0 0` — the `outline-none`
+     removed the browser's own ring and the Tailwind ring composed to fully
+     transparent inside these zero-specificity `:where()` recipes. Every primary
+     CTA on the site — header, hero, pricing — had no visible keyboard focus at
+     all (WCAG 2.4.7).
+
+     The `outline` utilities do paint here, and are already the pattern four
+     other public components use (HomeFaq, LifeChangeDiscovery, CompareSections,
+     FeatureComparison). Hex pair rather than a token because `--primary` flips
+     to mint in dark mode and the outline must stay visible against both
+     grounds. */
   :where(.pw-primary-button) {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] disabled:opacity-60 disabled:pointer-events-none;
     border-radius: var(--pw-radius-button);
     background: var(--pw-primary);
   }
@@ -498,7 +536,7 @@ pre {
   }
 
   :where(.pw-secondary-button) {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] disabled:opacity-60 disabled:pointer-events-none;
     border-radius: var(--pw-radius-button);
     border: 1px solid var(--pw-border);
     color: var(--pw-text-primary-light);

@@ -83,3 +83,16 @@ ds-bundle/
 # arrived in everybody else's checkout. settings.json stays tracked for
 # anything the team genuinely shares.
 .claude/settings.local.json
+
+# Vendored agent tooling — installed per-machine, not part of the product.
+# These carry their own bundled JS (hundreds of files) which ESLint lints and
+# fails on, so a `git add -A` here both commits another tool's source tree and
+# takes CI red on lint. Ignored rather than linted around.
+.agents/
+.claude/skills/
+.codex/
+.github/agents/
+.github/hooks/
+.github/skills/
+.impeccable/
+.playwright-mcp/

@@ -1,3 +1,4 @@
+import { PolicyWalletWidget } from "@/components/landing/PolicyWalletWidget"
 import { WHY_NOW, pick, type MarketingLocale } from "@/lib/marketing/positioning"
 
 /**
@@ -17,13 +18,21 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
         <section
             id="why-now"
             aria-labelledby="why-now-heading"
-            className="scroll-mt-28 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28"
+            /* Tinted, because this now sits directly under the hero. With the
+               section order changed, hero → why-it-matters → what-you-get were
+               three white bands in a row and the page read as one long column
+               with no joints. The site's rhythm is white/tint alternating, and
+               this is the band that restores it. */
+            className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
         >
-            <div className="mx-auto max-w-page">
-                <div className="mb-12 max-w-[640px]">
-                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                        {t("Γιατί τώρα", "Why now")}
-                    </p>
+            {/* Two columns from lg: the argument on the left, the result of it
+                on the right. The product shot used to sit in a band of its own
+                further down, where it was a picture between two pieces of
+                argument and belonged to neither. Here it is the evidence for
+                the sentence beside it. */}
+            <div className="mx-auto grid max-w-page items-start gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+                <div>
+                <div className="mb-10 max-w-[640px]">
                     <h2
                         id="why-now-heading"
                         className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white"
@@ -36,27 +45,37 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                     </h2>
                 </div>
 
-                <ol className="grid gap-5 md:grid-cols-3">
+                <ol className="divide-y divide-[#E2E8F0] dark:divide-slate-800">
                     {WHY_NOW.map((item, index) => (
                         <li
                             key={item.title.en}
-                            className="flex flex-col rounded-2xl border border-[#E2E8F0] bg-white p-7 dark:border-slate-800 dark:bg-slate-900"
+                            className="flex gap-4 py-6 first:pt-0"
                         >
                             <span
                                 aria-hidden
-                                className="mb-5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#ECFDF5] text-body font-bold text-[#29685B] dark:bg-[#29685B]/20 dark:text-[#A7F3D0]"
+                                className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF5] text-body font-bold text-[#29685B] dark:bg-[#29685B]/20 dark:text-[#A7F3D0]"
                             >
                                 {index + 1}
                             </span>
-                            <h3 className="mb-2 text-lead font-semibold leading-snug tracking-tight text-[#0F172A] dark:text-white">
+                            <div>
+                            <h3 className="mb-1.5 text-lead font-semibold leading-snug tracking-tight text-[#0F172A] dark:text-white">
                                 {pick(item.title, locale)}
                             </h3>
                             <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {pick(item.body, locale)}
                             </p>
+                            </div>
                         </li>
                     ))}
                 </ol>
+                </div>
+
+                {/* Desktop only. On a phone this would be a full screen of
+                    picture wedged between the argument and the next section —
+                    the same reason it was hidden in the hero. */}
+                <div className="hidden lg:block">
+                    <PolicyWalletWidget isGreek={locale === "el"} />
+                </div>
             </div>
         </section>
     )

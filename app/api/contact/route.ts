@@ -3,9 +3,10 @@ import { NextResponse } from "next/server"
 import * as Sentry from "@sentry/nextjs"
 import { db } from "@/lib/db"
 import { rateLimit } from "@/lib/rate-limit"
+import { createBrevoContact } from "@/lib/brevo"
 import { sendContactConfirmation, sendFormAdminAlert } from "@/lib/email/form-emails"
 
-// PUBLIC_ENDPOINT_AUTH_STRATEGY: rate_limit + zod_payload_validation + honeypot + db_persist + brevo_alert
+// PUBLIC_ENDPOINT_AUTH_STRATEGY: rate_limit + zod_payload_validation + honeypot + db_persist + brevo_alert + brevo_list_sink
 
 export const runtime = "nodejs"
 
@@ -154,6 +155,31 @@ export async function POST(req: Request) {
             tags: { context: "contact_form_alert", submission_id: submissionId },
         })
     }
+
+    // Store the person as a Brevo contact, not just as the recipient of an
+    // alert. Brevo was already used to SEND from this route; it now also holds
+    // who wrote in, which is what makes a reply from the owner possible without
+    // going back through /admin/submissions.
+    //
+    // Same guarantees as the newsletter sink: `createBrevoContact` swallows its
+    // own errors (including `duplicate_parameter` for someone who has written
+    // before), runs AFTER the row is persisted, and is awaited only so a
+    // failure is logged rather than dangling. A Brevo outage cannot lose the
+    // message or fail the submission — the row is already in form_submissions.
+    const contactListId = Number(process.env.BREVO_LIST_ID_NEWSLETTER)
+    await createBrevoContact({
+        email: submission.email,
+        attributes: {
+            FIRSTNAME: submission.name,
+            SOURCE: "contact_form",
+        },
+        listIds: Number.isFinite(contactListId) && contactListId > 0 ? [contactListId] : undefined,
+        updateEnabled: true,
+    }).catch((error) => {
+        Sentry.captureException(error, {
+            tags: { context: "contact_form_brevo_sync" },
+        })
+    })
 
     // Best-effort courtesy email; never let it fail the submission.
     const confirmation = await sendContactConfirmation({ to: submission.email, name: submission.name, language: "el" })

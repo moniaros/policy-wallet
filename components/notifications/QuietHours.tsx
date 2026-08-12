@@ -45,7 +45,7 @@ export function QuietHours({ initial }: QuietHoursProps) {
     const label = (h: number) => `${String(h).padStart(2, "0")}:00`
 
     return (
-        <form action={onSubmit} className="p-3 rounded-2xl space-y-3">
+        <form action={onSubmit} className="space-y-3">
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                     <label
@@ -132,7 +132,7 @@ export function QuietHours({ initial }: QuietHoursProps) {
             <button
                 type="submit"
                 disabled={pending || sameHour}
-                className="pw-btn pw-btn-sm disabled:opacity-60"
+                className="pw-primary-button pw-btn-sm disabled:opacity-60"
             >
                 {copy.save}
             </button>

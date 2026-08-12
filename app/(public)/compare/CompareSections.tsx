@@ -1,17 +1,9 @@
 import Link from "next/link"
-import { ArrowRight, Check, Minus, X } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
+import { Verdict } from "@/components/landing/ComparisonVerdict"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
-import {
-    CATEGORY_NAME,
-    COMPARISON_COLUMNS,
-    COMPARISON_ROWS,
-    PRIMARY_ACTION,
-    pick,
-    type Bilingual,
-    type ComparisonVerdict,
-    type MarketingLocale,
-} from "@/lib/marketing/positioning"
+import { CATEGORY_NAME, COMPARISON_COLUMNS, COMPARISON_ROWS, PRIMARY_ACTION, pick, type Bilingual, type ComparisonVerdict, type MarketingLocale } from "@/lib/marketing/positioning"
 
 /**
  * /compare — the honest answer to "why not just ask my agent?".
@@ -25,42 +17,6 @@ import {
  * Server component: static markup, no JS shipped.
  */
 
-const VERDICT_ICON: Record<ComparisonVerdict, typeof Check> = {
-    yes: Check,
-    plus: Check,
-    partial: Minus,
-    no: X,
-}
-
-const VERDICT_TONE: Record<ComparisonVerdict, string> = {
-    yes: "bg-[#ECFDF5] text-[#166534] dark:bg-[#29685B]/25 dark:text-[#A7F3D0]",
-    plus: "bg-[#ECFDF5] text-[#166534] dark:bg-[#29685B]/25 dark:text-[#A7F3D0]",
-    partial: "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-500/15 dark:text-amber-200",
-    no: "bg-[#F1F5F9] text-[#5B6A7A] dark:bg-slate-800 dark:text-slate-400",
-}
-
-const VERDICT_LABEL: Record<ComparisonVerdict, { el: string; en: string }> = {
-    yes: { el: "Ναι", en: "Yes" },
-    plus: { el: "Ναι, με το Plus", en: "Yes, with Plus" },
-    partial: { el: "Εν μέρει", en: "Partly" },
-    no: { el: "Όχι", en: "No" },
-}
-
-function Verdict({ value, locale }: { value: ComparisonVerdict; locale: MarketingLocale }) {
-    const Icon = VERDICT_ICON[value]
-    const label = pick(VERDICT_LABEL[value], locale)
-
-    return (
-        // The icon alone would leave a screen-reader user with a grid of
-        // unlabelled cells, so every cell carries its word too.
-        <span
-            className={`inline-flex min-h-8 items-center gap-1.5 rounded-full px-2.5 text-body-sm font-semibold ${VERDICT_TONE[value]}`}
-        >
-            <Icon aria-hidden className="h-3.5 w-3.5 flex-shrink-0" />
-            {label}
-        </span>
-    )
-}
 
 /**
  * The category defined by its EDGES: the five things PolicyWallet gets

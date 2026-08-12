@@ -5,6 +5,7 @@ import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExp
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
+import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 
 export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }) {
     const isGreek = locale === "el"
@@ -56,7 +57,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
+                            {pick(PRIMARY_ACTION, locale)}
                         </Link>
                         <Link href={localizeHref("/solutions/agents", locale)} className="pw-secondary-button pw-btn-lg w-full sm:w-auto">
                             {t("Είστε ασφαλιστής ομαδικών;", "Do you broker group plans?")}
@@ -140,7 +141,7 @@ export default function GroupLifeProductPage({ locale }: { locale: "el" | "en" }
             <ProductCategoryExplorer currentCategoryId="group-life" locale={locale} />
 
             {/* CTA */}
-            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
+            <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μια παροχή που κανείς δεν διαβάζει αξίζει να τη βλέπουν όλοι.", "A benefit nobody reads deserves to be seen by everyone.")}
                 </h2>
