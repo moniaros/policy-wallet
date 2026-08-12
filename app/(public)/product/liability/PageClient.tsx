@@ -5,6 +5,7 @@ import { Copy, Dog, Droplets, Bike, ShieldCheck } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
+import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 
 export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }) {
     const isGreek = locale === "el"
@@ -51,7 +52,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
+                            {pick(PRIMARY_ACTION, locale)}
                         </Link>
                     </div>
                     <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
@@ -147,7 +148,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
             <ProductCategoryExplorer currentCategoryId="liability" locale={locale} />
 
             {/* CTA */}
-            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
+            <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μία κάλυψη αρκεί. Δύο είναι σπατάλη.", "One cover is enough. Two is a waste.")}
                 </h2>

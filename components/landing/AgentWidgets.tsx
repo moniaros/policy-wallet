@@ -58,55 +58,43 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
         return () => clearTimeout(timer)
     }, [])
 
-    // Same fictional book as the homepage widget (AudienceTabs) — the two
-    // mocks must agree on the numbers or the demo reads as random.
-    const stats = [
-        { label: t("Πελάτες", "Clients"), value: "47" },
-        { label: t("Ανανεώσεις", "Renewals"), value: "8" },
-        { label: t("Ευκαιρίες", "Opportunities"), value: "12" },
-    ]
-
+    // Lettered placeholders, the same convention BrandedReportWidget already
+    // uses for insurers below. The mock needs a row label; inventing a person
+    // to fill it puts words in the mouth of a customer we do not have, and the
+    // reader has no way to tell the invention from a real book of business.
+    //
+    // The 0–100 score each row used to carry — with a filled progress bar and
+    // "94%" beside it — is gone for the reason PolicyWalletWidget states on the
+    // record: a stranger cannot check any of those numbers. What is left is
+    // what an agent actually opens this screen for — which client needs them
+    // today, and why. The three KPI tiles above it ("47 Πελάτες · 8 Ανανεώσεις
+    // · 12 Ευκαιρίες") went with it: a portfolio size we invented, presented as
+    // the page's biggest numbers.
     const clients = [
-        { name: t("Νικολαΐδης Γ.", "Nikolaidis G."), policies: t("Αυτοκίνητο + Σπίτι", "Car + Home"), score: 94, badge: t("Ενεργό", "Active"), type: "ok" as const },
-        { name: t("Παπαδοπούλου Μ.", "Papadopoulou M."), policies: t("Υγεία", "Health"), score: 68, badge: t("Λήγει σε 8 μέρες", "Runs out in 8 days"), type: "warn" as const },
-        { name: t("Καλογεράκης Π.", "Kalogerakis P."), policies: t("Αυτοκίνητο", "Car"), score: 82, badge: t("Ενεργό", "Active"), type: "ok" as const },
-        { name: t("Δημητρίου Α.", "Dimitriou A."), policies: t("Κατοικία", "Home"), score: 41, badge: t("Κενό κάλυψης", "Cover gap"), type: "critical" as const },
+        { initial: t("Α", "A"), name: t("Πελάτης Α", "Client A"), policies: t("Αυτοκίνητο + Σπίτι", "Car + Home"), badge: t("Ενεργό", "Active"), type: "ok" as const },
+        { initial: t("Β", "B"), name: t("Πελάτης Β", "Client B"), policies: t("Υγεία", "Health"), badge: t("Λήγει σε 8 μέρες", "Runs out in 8 days"), type: "warn" as const },
+        { initial: t("Γ", "C"), name: t("Πελάτης Γ", "Client C"), policies: t("Αυτοκίνητο", "Car"), badge: t("Ενεργό", "Active"), type: "ok" as const },
+        { initial: t("Δ", "D"), name: t("Πελάτης Δ", "Client D"), policies: t("Κατοικία", "Home"), badge: t("Κενό κάλυψης", "Cover gap"), type: "critical" as const },
     ]
 
     return (
         <BrowserChrome
             url={`${PRODUCT_DISPLAY_HOST}/agent/clients`}
             label={t(
-                "Παράδειγμα: μία οθόνη με 47 πελάτες, ποιος έχει ενεργή ασφάλεια, ποιος λήγει σε 8 μέρες και ποιος έχει κενό κάλυψης.",
-                "Example: one screen with 47 clients, showing who is active, whose cover runs out in 8 days, and who has a gap."
+                "Παράδειγμα: μία οθόνη με τους πελάτες σας — ποιος έχει ενεργή ασφάλεια, ποιανού λήγει σύντομα και ποιος έχει κενό κάλυψης.",
+                "Example: one screen with your clients — who is active, whose cover runs out soon, and who has a gap."
             )}
         >
             <div className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                     <div>
                         <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">{t("Οι πελάτες σας", "Your clients")}</p>
-                        <p className="text-micro text-[#5B6A7A] dark:text-slate-400">{t("47 ενεργοί πελάτες", "47 active clients")}</p>
+                        <p className="text-micro text-[#5B6A7A] dark:text-slate-400">{t("Πρώτα όποιος σας χρειάζεται", "Whoever needs you first")}</p>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full border border-[#A7F3D0] dark:border-[#29685B]/50 bg-[#ECFDF5] dark:bg-[#29685B]/15 px-2.5 py-1">
                         <Shield className="h-3 w-3 text-[#29685B] dark:text-[#A7F3D0]" />
                         <span className="text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0]">{t("Έλεγχος ενεργός", "Scan in progress")}</span>
                     </div>
-                </div>
-
-                {/* KPI tiles */}
-                <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {stats.map((s, i) => (
-                        <div
-                            key={i}
-                            className={`rounded-xl border border-[#E2E8F0] dark:border-slate-800 p-2.5 text-center transition-all motion-reduce:transition-none motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:opacity-100 duration-500 ${
-                                loaded ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
-                            }`}
-                            style={{ transitionDelay: `${i * 80 + 400}ms` }}
-                        >
-                            <p className="text-lead font-bold text-[#0F172A] dark:text-white">{s.value}</p>
-                            <p className="text-kicker text-[#5B6A7A] dark:text-slate-400">{s.label}</p>
-                        </div>
-                    ))}
                 </div>
 
                 {/* Client rows */}
@@ -132,7 +120,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                                           : "bg-[#F0FDF4] dark:bg-[#29685B]/15 text-[#166534] dark:text-[#A7F3D0]"
                                 }`}
                             >
-                                {c.name.charAt(0)}
+                                {c.initial}
                             </div>
                             <div className="min-w-0 flex-1">
                                 <div className="mb-0.5 flex items-center justify-between gap-2">
@@ -149,24 +137,11 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                                         {c.badge}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#F1F5F9] dark:bg-slate-800">
-                                        <div
-                                            className={`h-full rounded-full transition-all motion-reduce:transition-none motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:opacity-100 duration-1000 ease-out ${
-                                                c.type === "critical"
-                                                    ? "bg-[#EF4444]"
-                                                    : c.type === "warn"
-                                                      ? "bg-[#F59E0B]"
-                                                      : "bg-[#29685B]"
-                                            }`}
-                                            style={{
-                                                width: loaded ? `${c.score}%` : "0%",
-                                                transitionDelay: `${i * 100 + 900}ms`,
-                                            }}
-                                        />
-                                    </div>
-                                    <span className="text-kicker font-medium text-[#5B6A7A] dark:text-slate-400">{c.score}%</span>
-                                </div>
+                                {/* The policies themselves — already in the data
+                                    and never rendered, because the score bar
+                                    had the line. It is the honest second line:
+                                    what this client actually holds. */}
+                                <p className="truncate text-micro text-[#5B6A7A] dark:text-slate-400">{c.policies}</p>
                             </div>
                         </div>
                     ))}
@@ -238,7 +213,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                 <div className="mb-4 flex items-center justify-between">
                     <div>
                         <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">{t("Έλεγχος κενών", "Gap check")}</p>
-                        <p className="text-micro text-[#5B6A7A] dark:text-slate-400">{t("Ελέγχουμε: Παπαδοπούλου Μ.", "Checking: Papadopoulou M.")}</p>
+                        <p className="text-micro text-[#5B6A7A] dark:text-slate-400">{t("Ελέγχουμε: Πελάτης Α", "Checking: Client A")}</p>
                     </div>
                     <div
                         className={`flex items-center gap-1.5 transition-all motion-reduce:transition-none motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:opacity-100 duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
@@ -301,8 +276,13 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
                     }`}
                     style={{ transitionDelay: "2400ms" }}
                 >
+                    {/* Was "3 κενά σε 47 πελάτες". It contradicted this very
+                        widget's own caption — "έλεγχος ενός πελάτη" — and the
+                        47 was a portfolio we invented. The three is now the
+                        three rows directly above it, which the reader can
+                        count. */}
                     <p className="text-micro font-semibold text-[#166534] dark:text-[#A7F3D0]">
-                        {t("3 κενά σε 47 πελάτες", "3 gaps across 47 clients")}
+                        {t("3 κενά σε αυτόν τον πελάτη", "3 gaps on this client")}
                     </p>
                 </div>
             </div>
@@ -323,11 +303,15 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
         return () => clearTimeout(timer)
     }, [])
 
+    // Lettered placeholders for the same reason as the portfolio widget above.
+    // The day counts stay: they are the feature being demonstrated, not a
+    // result we are claiming — the same standing as the gap widget's "missing
+    // earthquake cover".
     const renewals = [
-        { name: t("Παπαδοπούλου Μ.", "Papadopoulou M."), policy: t("Αυτοκίνητο", "Car"), days: 8, urgency: "critical" as const },
-        { name: t("Νικολαΐδης Γ.", "Nikolaidis G."), policy: t("Κατοικία", "Home"), days: 22, urgency: "warn" as const },
-        { name: t("Καλογεράκης Π.", "Kalogerakis P."), policy: t("Υγεία", "Health"), days: 29, urgency: "warn" as const },
-        { name: t("Θεοδωρίδης Κ.", "Theodoridis K."), policy: t("Αυτοκίνητο", "Car"), days: 45, urgency: "ok" as const },
+        { name: t("Πελάτης Α", "Client A"), policy: t("Αυτοκίνητο", "Car"), days: 8, urgency: "critical" as const },
+        { name: t("Πελάτης Β", "Client B"), policy: t("Κατοικία", "Home"), days: 22, urgency: "warn" as const },
+        { name: t("Πελάτης Γ", "Client C"), policy: t("Υγεία", "Health"), days: 29, urgency: "warn" as const },
+        { name: t("Πελάτης Δ", "Client D"), policy: t("Αυτοκίνητο", "Car"), days: 45, urgency: "ok" as const },
     ]
 
     const cfg = {
@@ -468,7 +452,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                     >
                         <p className="text-kicker uppercase tracking-wider text-[#5B6A7A] dark:text-slate-400">{t("Πελάτης", "Client")}</p>
                         <p className="text-body font-semibold text-[#0F172A] dark:text-white">
-                            {t("Νικολαΐδης Γεώργιος", "Nikolaidis Georgios")}
+                            {t("Πελάτης Α", "Client A")}
                         </p>
                     </div>
 

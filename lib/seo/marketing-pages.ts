@@ -13,6 +13,7 @@ import { ogImagesFor, siteConfig, twitterImagesFor } from "@/lib/seo/site"
 export type MarketingPageKey =
     | "product"
     | "pricing"
+    | "needs"
     | "compare"
     | "company"
     | "contact"
@@ -96,6 +97,25 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             description:
                 "Clear PolicyWallet pricing: a free plan for 1 policy, Starter at €2.99/month and PolicyWallet Plus at €7.99/month with full AI analysis. Cancel anytime.",
             breadcrumb: "Pricing",
+        },
+    },
+    needs: {
+        path: "/needs",
+        title: "Έλεγχος αναγκών ασφάλισης σε 6 ερωτήσεις",
+        description:
+            "Έξι ερωτήσεις που απαντάτε από μνήμη, και μια λίστα με το τι αξίζει να ελέγξετε στα ασφαλιστήριά σας. Χωρίς βαθμολογίες και χωρίς λογαριασμό.",
+        keywords: [
+            "ανάγκες ασφάλισης",
+            "τι ασφάλεια χρειάζομαι",
+            "έλεγχος ασφαλιστικών αναγκών",
+            "κενά κάλυψης",
+        ],
+        breadcrumb: "Έλεγχος αναγκών",
+        en: {
+            title: "Insurance needs check in six questions",
+            description:
+                "Six questions you can answer from memory, and a list of what is worth checking on your own policies. No grade, no account, and nothing to upload.",
+            breadcrumb: "Needs check",
         },
     },
     compare: {

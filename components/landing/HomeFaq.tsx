@@ -30,9 +30,6 @@ export function HomeFaq({ locale }: { locale: MarketingLocale }) {
         >
             <div className="mx-auto max-w-[820px]">
                 <div className="mb-10 text-center">
-                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                        {t("Ερωτήσεις", "Questions")}
-                    </p>
                     <h2
                         id="faq-heading"
                         className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white"

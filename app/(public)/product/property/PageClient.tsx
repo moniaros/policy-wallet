@@ -5,6 +5,7 @@ import { Shield, CheckCircle2 } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
+import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 
 export default function PropertyProductPage({ locale }: { locale: "el" | "en" }) {
     const isGreek = locale === "el"
@@ -27,7 +28,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
+                            {pick(PRIMARY_ACTION, locale)}
                         </Link>
                     </div>
                     <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
@@ -106,7 +107,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
             <ProductCategoryExplorer currentCategoryId="property" locale={locale} />
 
             {/* CTA */}
-            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
+            <section className="bg-cta-dark text-white py-24 text-center px-6">
                 <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto text-balance">
                     {t("Μάθετε αν το σπίτι σας είναι ασφαλισμένο στη σωστή αξία.", "Find out whether your home is insured at the right value.")}
                 </h2>

@@ -8,6 +8,7 @@ import { getPrimaryRole } from "@/lib/auth/role-routing"
 import { ACTIVE_ROLE_COOKIE } from "@/lib/auth/active-role"
 import { AppShell } from "@/components/shell"
 import { NotificationWatcher } from "@/components/notifications/NotificationWatcher"
+import { NeedsClaim } from "@/components/needs/NeedsClaim"
 import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
 import { getClientPlanFacts } from "@/lib/pricing/plan-catalog"
@@ -176,6 +177,11 @@ export default async function ProtectedLayout({
             {/* Live analysis-completion toasts for agents (b2c uses the wallet
                 page's own analyzing poller). */}
             {currentRole === "agent" && <NotificationWatcher userId={dbUser.id} />}
+            {/* Carries the public /needs answers into the profile on the first
+                authenticated render after signup, so nobody is asked the same
+                six questions twice. Policyholders only — the risk profile is a
+                household, and an agent's own is not what /needs described. */}
+            {currentRole !== "agent" && <NeedsClaim />}
             <PlanFactsProvider facts={planFacts}>{children}</PlanFactsProvider>
         </AppShell>
         </TranslationsProvider>

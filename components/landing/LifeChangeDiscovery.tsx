@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { localizeHref } from "@/lib/seo/locale-links"
-import { LIFE_CHANGE_EFFECTS, STORY, pick, type MarketingLocale } from "@/lib/marketing/positioning"
+import { LIFE_CHANGE_EFFECTS, pick, type MarketingLocale } from "@/lib/marketing/positioning"
 
 /**
  * "What changed?" — the visitor picks the changes that happened to them and
@@ -11,6 +11,17 @@ import { LIFE_CHANGE_EFFECTS, STORY, pick, type MarketingLocale } from "@/lib/ma
  * insurance knows your life changed, and this answers it with the visitor's own
  * answer instead of a paragraph about us. It carries no CTA of its own — the
  * hero owns the single tracked button directly below.
+ *
+ * **The reveal must not push that button away.** Each effect used to be a
+ * bordered card carrying its own 44px link, so the section grew ~120px per
+ * selection: measured at 390x844, the hero CTA sat at y=591 unselected, 935 at
+ * three chips and 1333 at six — the visitor who engaged MOST was the one who
+ * could no longer see the thing to do next, and what filled the space was six
+ * near-identical links leaving the page. Each effect is now a single quiet row
+ * and the six links are one link under the group, so the whole set costs less
+ * than half of what three used to. If a future change gives these rows chrome
+ * or a per-row action again, re-measure the CTA at six selections before
+ * shipping it.
  *
  * **It runs on CSS, not JavaScript, and that is the point.** It used to be a
  * client component holding the selection in React state, which meant the chips
@@ -29,8 +40,9 @@ import { LIFE_CHANGE_EFFECTS, STORY, pick, type MarketingLocale } from "@/lib/ma
  * - Every effect line is in the server HTML from the first byte, so a raw-HTML
  *   reader gets the whole argument without the interaction. Note the honest
  *   limit: a crawler that *renders* the page sees only what is selected, the
- *   same as a person. The chip labels, the invitation and STORY.matters below
- *   carry the argument for those readers.
+ *   same as a person. The chip labels, the invitation, and the STORY.matters
+ *   paragraph the hero renders below the CTA carry the argument for those
+ *   readers.
  * - The chips are checkboxes with real labels, so keyboard and screen-reader
  *   users get multi-select semantics for free; the revealed lines sit in a
  *   polite live region, and going from `display:none` to `display:flex` is an
@@ -58,6 +70,8 @@ export function LifeChangeDiscovery({ locale }: { locale: MarketingLocale }) {
 ${LIFE_CHANGE_EFFECTS.map(
     (_, i) => `#life-changes:has(#lc-${i}:checked) [data-lc-effect="${i}"]{display:flex}`
 ).join("\n")}
+#life-changes .lc-more{display:none}
+#life-changes:has(input:checked) .lc-more{display:inline-flex}
 }
 #life-changes input:checked+label .lc-dot{background:#A7F3D0}
 @media (forced-colors:active){#life-changes input:checked+label{border-width:3px;border-style:double}}`
@@ -101,35 +115,45 @@ ${LIFE_CHANGE_EFFECTS.map(
                 ))}
             </ul>
 
-            {/* Every line ships in the HTML; the CSS above unhides the picked one. */}
-            <ul aria-live="polite" className="mt-4 flex max-w-[560px] flex-col gap-2.5">
+            {/* Every line ships in the HTML; the CSS above unhides the picked one.
+                Quiet rows, not cards: this is the consequence of the visitor's
+                own answer, and it sits between them and the button. A row costs
+                one line of text — the card chrome and the per-row link that used
+                to live here cost roughly three. */}
+            <ul aria-live="polite" className="mt-4 flex max-w-[560px] flex-col gap-1.5">
                 {LIFE_CHANGE_EFFECTS.map((entry, i) => (
                     <li
                         key={entry.change.en}
                         data-lc-effect={i}
-                        className="flex flex-col items-start gap-2 rounded-2xl border border-[#DCEBDA] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 dark:border-[#29685B]/40 dark:bg-slate-800"
+                        /* `flex` is for the no-`:has()` fallback, where the ID
+                           rules above never apply and this class governs. */
+                        className="flex items-start gap-2.5 py-1 text-body text-[#0F172A] dark:text-white"
                     >
-                        <span className="text-body text-[#0F172A] dark:text-white">
-                            {pick(entry.effect, locale)}
-                        </span>
-                        <Link
-                            href={localizeHref(entry.href, locale)}
-                            className="inline-flex min-h-11 flex-shrink-0 items-center gap-1 text-body-sm font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
-                        >
-                            {t("Δείτε τι μετράει", "See what matters")}
-                            {/* Six links otherwise share one accessible
-                                name; the change makes each unique. */}
-                            <span className="sr-only"> — {pick(entry.change, locale)}</span>
-                            <ArrowRight aria-hidden className="h-3.5 w-3.5" />
-                        </Link>
+                        <span
+                            aria-hidden
+                            className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]"
+                        />
+                        <span>{pick(entry.effect, locale)}</span>
                     </li>
                 ))}
             </ul>
 
-            {/* The argument itself — always readable, with or without JS. */}
-            <p className="mt-5 max-w-[520px] text-body-lg leading-relaxed text-[#475569] sm:text-lead dark:text-slate-300">
-                {pick(STORY.matters, locale)}
-            </p>
+            {/* One way out, not six. Six per-row links all read "Δείτε τι
+                μετράει", all left the page, and all sat between the visitor and
+                the primary action; the branch index is where a curious reader
+                actually wants to land.
+
+                It appears only once something is selected: before that it
+                explains nothing, and an always-on link costs ~52px of the
+                distance between the headline and the button for every visitor,
+                including the ones who never touch a chip. */}
+            <Link
+                href={localizeHref("/product", locale)}
+                className="lc-more mt-2 inline-flex min-h-11 items-center gap-1 text-body-sm font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
+            >
+                {t("Δείτε τι μετράει", "See what matters")}
+                <ArrowRight aria-hidden className="h-3.5 w-3.5" />
+            </Link>
         </section>
     )
 }

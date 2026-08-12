@@ -86,6 +86,10 @@ export async function proxy(request: NextRequest) {
         // Insurance glossary hub + term pages (/lexiko, /lexiko/<term>) — public
         // AEO content; without this the proxy 307s crawlers to signin.
         "/lexiko",
+        // The public needs check. The whole point of the page is that a
+        // stranger can use it before deciding anything, so a signin redirect
+        // here would remove the only ungated thing on the site.
+        "/needs",
         "/auth",
         "/api/auth",
         // English marketing-page variants (/en/product, /en/pricing, …)

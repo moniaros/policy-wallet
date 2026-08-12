@@ -32,10 +32,6 @@ export function PartnerPerksSection({
         <section id={id} className="px-6 py-20 lg:px-12">
             <div className="mx-auto max-w-page">
                 <div className="mb-10 text-center">
-                    <p className="pw-kicker mb-3 inline-flex items-center gap-1.5">
-                        <Gift className="h-4 w-4" />
-                        {t("Παροχές συνεργατών", "Partner benefits")}
-                    </p>
                     <h2 className="text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white sm:text-4xl">
                         {t("Περισσότερα από ένα πορτοφόλι", "More than a wallet")}
                     </h2>

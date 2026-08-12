@@ -171,7 +171,14 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                             >
                                 ΕΛ
                             </Link>
-                            <span className="select-none text-[#E2E8F0] dark:text-slate-700">|</span>
+                            {/* Decoration between two links, so `aria-hidden`:
+                                a screen reader announcing "vertical line"
+                                between ΕΛ and EN adds nothing, and the group
+                                already has a name. At #E2E8F0 it also sat at
+                                1.23:1 on white — invisible to the sighted
+                                reader it exists for. #CBD5E1 / slate-600 keeps
+                                it a hairline that can actually be seen. */}
+                            <span aria-hidden className="select-none text-[#CBD5E1] dark:text-slate-600">|</span>
                             <Link
                                 href={enPath}
                                 aria-current={!isGreek ? "true" : undefined}

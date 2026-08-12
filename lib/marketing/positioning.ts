@@ -66,8 +66,8 @@ export const CATEGORY_NAME: Bilingual = {
  * (footer identity line) and anywhere the plain claim carries alone.
  */
 export const CATEGORY: Bilingual = {
-    el: "Δεν πουλάμε ασφάλειες. Σας λέμε αν είστε καλυμμένοι.",
-    en: "We do not sell insurance. We tell you if you are covered.",
+    el: "Δεν αξιολογούμε συμβόλαια. Αξιολογούμε την προστασία σας.",
+    en: "AI Personal Risk Intelligence",
 }
 
 /**
@@ -316,8 +316,36 @@ export const CTA_REASSURANCE: Bilingual = {
  * basic parsed summary — and it is the question every policyholder has.
  */
 export const PRIMARY_ACTION: Bilingual = {
-    el: "Δείτε τι λέει το συμβόλαιό σας",
-    en: "See what your policy says",
+    // Was «Δείτε τι λέει το συμβόλαιό σας» — an invitation to look, which asks
+    // for nothing and promises nothing. The button now names the action the
+    // visitor is actually being asked to take, and the value argument sits in
+    // the copy around it rather than inside the label.
+    el: "Δημιουργήστε λογαριασμό",
+    en: "Create your account",
+}
+
+/**
+ * The SAME action, in the words that fit a fixed-width header.
+ *
+ * The header is a flex row beside five nav links: with the full PRIMARY_ACTION
+ * in it, at 1024px the logo overlapped the first nav item and the button
+ * wrapped out of the bar. That constraint is real, so the short form stays —
+ * but it lives HERE, next to the long form, instead of being invented in the
+ * nav module.
+ *
+ * Two sanctioned wordings for one action, and no third. Before this, three
+ * different strings sent a visitor to the same signup — «Δείτε πού είστε» in
+ * the header, «Δείτε τι λέει το συμβόλαιό σας» in the hero, and «Ξεκινήστε τον
+ * δωρεάν έλεγχο» hardcoded on all fifteen branch pages — so someone who tapped
+ * one could not tell it was the button they had just decided against.
+ * tests/unit/primary-action-single-source.test.ts holds the line.
+ */
+export const PRIMARY_ACTION_SHORT: Bilingual = {
+    // NOT «Εγγραφή»: the footer's newsletter button already uses that word for
+    // a different action, and one Greek label pointing at two destinations is
+    // the drift this constant exists to stop.
+    el: "Δημιουργία λογαριασμού",
+    en: "Create account",
 }
 
 /**

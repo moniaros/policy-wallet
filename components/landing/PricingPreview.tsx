@@ -25,7 +25,25 @@ export function PricingPreview({
     const pick = (value: { el: string; en: string }) => (locale === "el" ? value.el : value.en)
 
     // Contact-sales tiers have no public price and belong on /pricing, not here.
-    const visiblePlans = plans.filter((plan) => !plan.isContactPlan).slice(0, 3)
+    //
+    // The two PAID plans get the billing, side by side and cheapest first, so a
+    // visitor reads the ladder in the direction it climbs. The free tier is
+    // real and stated — but underneath, as one line with a quiet link, because
+    // leading with the floor anchors everything after it as an upsell off zero.
+    //
+    // Selected by PRICE, not by key: the internal keys are `free` / `plus` /
+    // `pro`, where `plus` is the plan displayed as "Starter" and `pro` is the
+    // one displayed as "PolicyWallet Plus". Sorting on those names would be a
+    // trap for whoever edits this next.
+    const amountOf = (plan: PublicPricingPlan) => {
+        const digits = plan.pricing.monthly.amount.replace(/[^\d.,]/g, "").replace(",", ".")
+        const value = Number.parseFloat(digits)
+        return Number.isFinite(value) ? value : 0
+    }
+    const bookable = plans.filter((plan) => !plan.isContactPlan)
+    const freePlan = bookable.find((plan) => amountOf(plan) === 0)
+    const paidPlans = bookable.filter((plan) => amountOf(plan) > 0).sort((a, b) => amountOf(a) - amountOf(b))
+    const visiblePlans = paidPlans
     if (visiblePlans.length === 0) return null
 
     return (
@@ -36,24 +54,24 @@ export function PricingPreview({
         >
             <div className="mx-auto max-w-page">
                 <div className="mb-12 text-center">
-                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                        {t("Τιμές", "Pricing")}
-                    </p>
                     <h2
                         id="pricing-preview-heading"
                         className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white"
                     >
-                        {t("Ξεκινάτε δωρεάν. Πληρώνετε μόνο αν θέλετε παραπάνω.", "Start free. Pay only if you want more.")}
+                        {t(
+                            "Μία συνδρομή, όλα τα ασφαλιστήριά σας διαβασμένα.",
+                            "One subscription, every policy of yours read.",
+                        )}
                     </h2>
                     <p className="mx-auto max-w-[560px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                         {t(
-                            "Καμία κρυφή χρέωση. Ακυρώνετε όποτε θέλετε.",
-                            "No hidden charges. Cancel whenever you want.",
+                            "Πλήρης ανάλυση, κενά κάλυψης και υπενθυμίσεις πριν λήξει κάτι. Καμία κρυφή χρέωση, ακυρώνετε όποτε θέλετε.",
+                            "Full analysis, coverage gaps and reminders before something runs out. No hidden charges, cancel whenever you want.",
                         )}
                     </p>
                 </div>
 
-                <ul className="grid gap-5 md:grid-cols-3">
+                <ul className="grid gap-5 md:grid-cols-2">
                     {visiblePlans.map((plan) => {
                         const topFeature = plan.features.find((feature) => feature.included)
                         return (
@@ -105,6 +123,31 @@ export function PricingPreview({
                         )
                     })}
                 </ul>
+
+                {/* The free tier, underneath and deliberately quiet: one row,
+                    no card, a text link rather than a button. It stays fully
+                    stated — the price and what it covers — because a plan that
+                    exists has to be findable, and the honesty rule does not
+                    bend for conversion. */}
+                {freePlan ? (
+                    <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-2xl border border-dashed border-[#E2E8F0] px-6 py-5 dark:border-slate-700">
+                        <p className="text-body text-[#475569] dark:text-slate-300">
+                            <span className="font-semibold text-[#0F172A] dark:text-white">
+                                {pick(freePlan.name)}
+                            </span>{" "}
+                            · {freePlan.pricing.monthly.amount}
+                            {pick(freePlan.pricing.monthly.period)} ·{" "}
+                            {pick(freePlan.description)}
+                        </p>
+                        <Link
+                            href={localizeHref("/pricing", locale)}
+                            className="inline-flex min-h-11 items-center gap-1.5 text-body font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
+                        >
+                            {t("Ξεκινήστε δωρεάν", "Start free")}
+                            <ArrowRight aria-hidden className="h-4 w-4" />
+                        </Link>
+                    </div>
+                ) : null}
 
                 <div className="mt-10 text-center">
                     <Link href={localizeHref("/pricing", locale)} className="pw-secondary-button pw-btn-lg">

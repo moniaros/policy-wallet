@@ -18,7 +18,7 @@ import {
     PRODUCT_STATS as STATS,
     PRODUCT_STEPS as STEPS,
 } from "./marketing-content"
-import { CATEGORY_NAME } from "@/lib/marketing/positioning"
+import { CATEGORY_NAME, PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
 import { ProductFaqList } from "./ProductFaqList"
 import { ProductPageView } from "./ProductPageView"
 import { ProductScrollButton } from "./ProductScrollButton"
@@ -80,7 +80,7 @@ export function ProductSections({ language }: { language: Language }) {
 
                     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                         <Link href={authHref("/auth/signup", language)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
+                            {pick(PRIMARY_ACTION, language)}
                             <ArrowRight aria-hidden className="h-4 w-4" />
                         </Link>
                         <ProductScrollButton
@@ -108,9 +108,6 @@ export function ProductSections({ language }: { language: Language }) {
             <section className="mx-auto max-w-page px-6 py-20 md:px-12 lg:py-28">
                 <div className="grid items-center gap-16 md:grid-cols-2 lg:gap-24">
                     <div>
-                        <p className="mb-4 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                            {t("Τι σας δίνει", "What it gives you")}
-                        </p>
                         <h2 className="mb-6 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1 text-balance">
                             {t(
                                 "Καθαρές απαντήσεις, χωρίς να διαβάσετε ούτε μία σελίδα.",
@@ -258,9 +255,6 @@ export function ProductSections({ language }: { language: Language }) {
             <section id="product-categories" className="scroll-mt-32 bg-[#F8FAFC] dark:bg-slate-900 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mx-auto max-w-page">
                     <div className="mb-14">
-                        <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                            {t("Κατηγορίες", "Categories")}
-                        </p>
                         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                             <h2
                                 id="product-categories-heading"
@@ -325,9 +319,6 @@ export function ProductSections({ language }: { language: Language }) {
 
             <section id="how-it-works" className="mx-auto max-w-page scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-16 text-center">
-                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                        {t("Η διαδικασία", "The process")}
-                    </p>
                     <h2
                         id="how-it-works-heading"
                         tabIndex={-1}
@@ -372,9 +363,6 @@ export function ProductSections({ language }: { language: Language }) {
 
             <section id="product-faq" className="mx-auto max-w-[860px] scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-12 text-center">
-                    <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                        {t("Ερωτήσεις", "Questions")}
-                    </p>
                     <h2 className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1 text-balance">
                         {t("Συχνές ερωτήσεις", "Frequently asked questions")}
                     </h2>
@@ -385,7 +373,7 @@ export function ProductSections({ language }: { language: Language }) {
                 />
             </section>
 
-            <section className="bg-[#1A2420] px-6 py-20 text-white md:px-12 lg:py-28">
+            <section className="bg-cta-dark px-6 py-20 text-white md:px-12 lg:py-28">
                 <div className="mx-auto max-w-[860px] text-center">
                     <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white [overflow-wrap:anywhere] md:text-h1 lg:text-display">
                         {t(
@@ -401,7 +389,7 @@ export function ProductSections({ language }: { language: Language }) {
                     </p>
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                         <Link href={authHref("/auth/signup", language)} className="pw-primary-button-mint pw-btn-lg w-full sm:w-auto">
-                            {t("Ξεκινήστε τον δωρεάν έλεγχο", "Start your free check")}
+                            {pick(PRIMARY_ACTION, language)}
                             <ArrowRight aria-hidden className="h-4 w-4" />
                         </Link>
                         <Link

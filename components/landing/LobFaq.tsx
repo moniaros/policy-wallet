@@ -34,9 +34,6 @@ export function LobFaq({
             className="px-6 py-24 lg:px-12"
         >
             <div className="mx-auto max-w-[860px]">
-                <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-[#29685B] dark:text-[#A7F3D0]">
-                    {t("Συχνές ερωτήσεις", "Common questions")}
-                </p>
                 <h2
                     id={`lob-faq-heading-${categoryId}`}
                     className="mb-10 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-balance text-[#0F172A] dark:text-white"

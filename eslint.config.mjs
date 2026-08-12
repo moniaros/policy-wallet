@@ -7,7 +7,14 @@ import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 
 export default [
     {
-        ignores: [".next/**/*", "node_modules/**/*", "public/**/*", ".ds-sync/**/*", "ds-bundle/**/*", ".design-sync/.cache/**/*", "playwright-report/**/*", "test-results/**/*", "playwright/.auth/**/*"],
+        ignores: [".next/**/*", "node_modules/**/*", "public/**/*", ".ds-sync/**/*", "ds-bundle/**/*", ".design-sync/.cache/**/*", "playwright-report/**/*", "test-results/**/*", "playwright/.auth/**/*",
+            // Vendored agent tooling. Installed per machine, carries its own
+            // bundled JS, and is not part of the product — linting it produced
+            // 423 errors in files nobody here wrote or ships. Also gitignored,
+            // but ESLint's flat config does not read .gitignore.
+            ".agents/**/*", ".claude/**/*", ".codex/**/*",
+            ".github/agents/**/*", ".github/hooks/**/*", ".github/skills/**/*",
+            ".impeccable/**/*", ".playwright-mcp/**/*"],
     },
     js.configs.recommended,
     {

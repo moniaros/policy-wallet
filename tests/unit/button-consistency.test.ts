@@ -137,9 +137,18 @@ describe('chip toggles', () => {
         expect(src).toContain('min-h-11')
     })
 
-    it('gives the sr-only checkbox a visible focus ring on the chip', () => {
+    it('gives the sr-only checkbox a visible focus indicator on the chip', () => {
+        // Was asserted as `has-[:focus-visible]:ring-2`, which is why nobody
+        // noticed it drew NOTHING. Measured with the pseudo-state forced
+        // through CDP, the Tailwind ring on these recipes composes to a fully
+        // transparent box-shadow — the same failure that left every
+        // `.pw-primary-button` and every `.pw-input` on the site with no
+        // keyboard focus at all. The outline utilities do paint; a string test
+        // cannot tell the difference, so it now pins the form that works.
         const src = readFileSync('components/ui/form/ChipToggle.tsx', 'utf-8')
-        expect(src).toContain('has-[:focus-visible]:ring-2')
+        expect(src).toContain('has-[:focus-visible]:outline-2')
+        expect(src).toContain('has-[:focus-visible]:outline-[#29685B]')
+        expect(src).not.toContain('has-[:focus-visible]:ring-2')
     })
 
     it('leaves no hand-rolled sr-only chip toggles behind', () => {
