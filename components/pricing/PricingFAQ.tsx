@@ -8,9 +8,20 @@ export interface PricingFAQProps {
     language: "el" | "en"
     items: PublicPricingFaqItem[]
     className?: string
+    /**
+     * Namespace for the generated element ids.
+     *
+     * /pricing renders this list ONCE PER AUDIENCE and hides the inactive one
+     * with the `hidden` attribute, so both are in the DOM. With the index alone
+     * the two lists minted the same `pricing-faq-button-0…3` ids — sixteen
+     * duplicates per page. `getElementById` answers with the FIRST match, so
+     * the visible agent panel's `aria-labelledby` resolved to the HIDDEN
+     * policyholder question: a screen reader would read out the wrong one.
+     */
+    idPrefix?: string
 }
 
-export function PricingFAQ({ language, items, className = "" }: PricingFAQProps) {
+export function PricingFAQ({ language, items, className = "", idPrefix = "pricing-faq" }: PricingFAQProps) {
     const [openIndex, setOpenIndex] = useState<number | null>(0)
 
     return (
@@ -18,8 +29,8 @@ export function PricingFAQ({ language, items, className = "" }: PricingFAQProps)
             <div className="space-y-4">
                 {items.map((item, idx) => {
                     const isOpen = openIndex === idx
-                    const panelId = `pricing-faq-panel-${idx}`
-                    const buttonId = `pricing-faq-button-${idx}`
+                    const panelId = `${idPrefix}-panel-${idx}`
+                    const buttonId = `${idPrefix}-button-${idx}`
                     return (
                         <div
                             key={`${item.question.en}-${idx}`}

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
 import { db } from "@/lib/db"
+import { retryDeadDelivery } from "../actions"
 
 // Admin-only internal tooling — English-only per the admin-page precedent.
 // i18n-hardcoded-ignore — admin-only internal tooling
@@ -31,6 +32,7 @@ export default async function QueuesPage() {
         deferredNotifications, oldestDeferred,
         failedNotifications, oldestFailed,
         queuedAnalyses, oldestAnalysis,
+        deadList,
     ] = await Promise.all([
         db.businessEvent.count({ where: { dispatchState: "pending" } }),
         db.businessEvent.findFirst({ where: { dispatchState: "pending" }, orderBy: { recordedAt: "asc" }, select: { recordedAt: true } }),
@@ -43,6 +45,24 @@ export default async function QueuesPage() {
         db.notificationEvent.findFirst({ where: { status: "failed" }, orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
         db.policyAnalysisRun.count({ where: { status: { in: ["queued", "running"] } } }),
         db.policyAnalysisRun.findFirst({ where: { status: { in: ["queued", "running"] } }, orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
+        // Ordered by the LAST ATTEMPT, not completedAt: the dispatcher's catch
+        // branch sets only status, lastError and nextAttemptAt when a delivery
+        // dies, so completedAt stays null on every dead row and sorting by it
+        // would have been arbitrary while claiming to be newest-first.
+        // `startedAt` is stamped on each attempt, so for a dead row it is when
+        // it died — which is the cause still worth fixing.
+        db.businessEventDelivery.findMany({
+            where: { status: "dead" },
+            orderBy: { startedAt: "desc" },
+            take: 20,
+            select: {
+                id: true,
+                subscriber: true,
+                attempts: true,
+                lastError: true,
+                event: { select: { name: true, occurredAt: true } },
+            },
+        }),
     ])
 
     const age = (at: Date | null | undefined) => {
@@ -156,9 +176,66 @@ export default async function QueuesPage() {
                 })}
             </div>
 
-            <p className="text-xs text-stone-500 dark:text-stone-400">
-                Dead deliveries have exhausted their retries. They do not resolve on their own.
-            </p>
+            {/*
+             * The dead letters themselves, not just a count.
+             *
+             * What died here is a CONSEQUENCE — a notification never sent, an
+             * advisor task never raised, a score never recomputed. The page used
+             * to say these "do not resolve on their own" and then offer nothing,
+             * which is a diagnosis without a treatment. Each row now shows what
+             * failed and why, and can be put back on the queue.
+             */}
+            <section className="space-y-2">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
+                    Dead letters
+                </h2>
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                    Exhausted their retries and will not resolve on their own. Reviving one puts it
+                    back on the queue with a fresh attempt count — fix the cause first, or it will
+                    simply die again.
+                </p>
+
+                {deadList.length === 0 ? (
+                    <p className={`${card} p-3 sm:p-4 text-sm text-stone-500 dark:text-stone-400`}>
+                        Nothing dead. Every published fact reached its subscriber.
+                    </p>
+                ) : (
+                    <ul className="space-y-2">
+                        {deadList.map((d) => (
+                            <li key={d.id} className={`${card} p-3 sm:p-4`}>
+                                <div className="flex flex-wrap items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <p className="font-mono text-sm font-semibold text-stone-900 dark:text-white break-all">
+                                            {d.event.name}
+                                        </p>
+                                        <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                                            to {d.subscriber} · {d.attempts} attempts ·{" "}
+                                            {d.event.occurredAt.toISOString().slice(0, 16).replace("T", " ")}
+                                        </p>
+                                    </div>
+                                    <form action={retryDeadDelivery} className="shrink-0">
+                                        <input type="hidden" name="deliveryId" value={d.id} />
+                                        <button type="submit" className="pw-btn pw-btn-sm min-h-11">
+                                            Retry
+                                        </button>
+                                    </form>
+                                </div>
+                                {d.lastError && (
+                                    <p className="text-xs text-red-700 dark:text-red-300 mt-2 font-mono break-all border-l-2 border-red-300 dark:border-red-700 pl-2">
+                                        {d.lastError}
+                                    </p>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                {deadDeliveries > deadList.length && (
+                    // Never imply the list is the whole story.
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
+                        Showing {deadList.length} of {deadDeliveries}. The rest are older.
+                    </p>
+                )}
+            </section>
         </div>
     )
 }

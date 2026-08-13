@@ -13,6 +13,26 @@ import { test, expect, type Page } from '@playwright/test'
 import { dismissCookieBanner } from './helpers/ui'
 import { E2E_POLICYHOLDER } from './e2e-users'
 
+/**
+ * Serial for the whole FILE, not per describe.
+ *
+ * Every block here reads or writes the subscription of the SAME provisioned
+ * policyholder — there is one fixture user, and a plan is global state on it.
+ * With per-describe serial and `fullyParallel`, "Billing management" created an
+ * active ph-plus subscription while "Feature gates … (free tier)" was rendering
+ * the policy page eight tests later, so the locked PDF preview came back
+ * unlocked and the gate test failed for a reason that had nothing to do with
+ * gates. Isolation, not ordering, is the constraint: these tests cannot share a
+ * user and run at the same time.
+ *
+ * `default`, not `serial`: both pin the file to one worker in declaration
+ * order, but serial also SKIPS every later test once one fails — which would
+ * turn a single gate regression into a blank report for the rest of the money
+ * path. The blocks that genuinely depend on each other declare serial
+ * themselves.
+ */
+test.describe.configure({ mode: 'default' })
+
 const FIXTURE_POLICY = 'E2E-MOT-001'
 const EXTRA_POLICY = 'E2E-MOT-002'
 
@@ -431,22 +451,26 @@ test.describe('Billing management (cancel honesty)', () => {
         }
     })
 
-    test('cancel from the Billing tab stops auto-renewal in the DB', async ({ page }) => {
+    test('cancel from plan settings stops auto-renewal in the DB', async ({ page }) => {
         // This test stacks page navigation + a server action + poll iterations
         // that each open a fresh Prisma client — every hop a round trip to the
         // remote pooler. The default 30s budget expired mid-poll while the
         // flip landed late (verified: the exact DB sequence succeeds in ~5s
         // standalone). Give the trans-continental path a realistic budget.
         test.setTimeout(90_000)
-        await page.goto('/account')
+        // /account's three React-state tabs became five real sub-routes, so
+        // there is no "Billing" tab to click any more — billing lives at
+        // /account/plan. Navigating straight there is also what the redirect
+        // for the legacy ?tab= links resolves to.
+        await page.goto('/account/plan')
         await dismissCookieBanner(page)
 
-        await page.getByRole('tab', { name: /Χρέωση|Billing/i }).first().click()
-        // The trigger now opens a branded confirmation that discloses the
-        // consequences (access until period end, no partial refund) instead of
-        // cancelling instantly — click through it.
+        // Two different strings by design: the row's control states what it
+        // does ("Διακοπή αυτόματης ανανέωσης"), and the dialog that follows
+        // discloses the consequences — access until period end, no partial
+        // refund — before its confirm ("Ακύρωση ανανέωσης") commits it.
         await page
-            .getByRole('button', { name: /Ακύρωση ανανέωσης|Cancel renewal/i })
+            .getByRole('button', { name: /Διακοπή αυτόματης ανανέωσης|Stop auto-renewal/i })
             .first()
             .click()
         await page

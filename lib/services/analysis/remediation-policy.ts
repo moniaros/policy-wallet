@@ -1,3 +1,19 @@
+/**
+ * What the analysis pipeline is allowed to do when a step fails.
+ *
+ * These five predicates used to read `process.env` directly. They now read the
+ * feature-flag layer (lib/flags/config.ts), which resolves DB row → environment
+ * variable → the default declared in lib/flags/registry.ts. With no row and no
+ * database, every answer below is byte-for-byte what it was when these were env
+ * reads — the flags table is an override layer, not a replacement.
+ *
+ * They are async for that reason. `getFlags()` is cached per request and never
+ * throws, so the three calls the orchestrator makes in a row cost one query at
+ * most, and a database outage degrades to environment variables rather than to
+ * an exception on the remediation path.
+ */
+
+import { flagAppliesTo, getFlags, type FlagState } from "@/lib/flags/config"
 import type { PolicyAnalysisStepKey } from "./token-budget-estimator"
 
 const CRITICAL_STEPS = new Set<PolicyAnalysisStepKey>([
@@ -14,44 +30,6 @@ const DEGRADABLE_STEPS = new Set<PolicyAnalysisStepKey>([
     "checklist_scoring_and_actions",
 ])
 
-function parseFlag(value: string | undefined, defaultValue = false): boolean {
-    if (!value) return defaultValue
-    const normalized = value.trim().toLowerCase()
-    return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on"
-}
-
-function hashUserToPercent(userId: string): number {
-    let hash = 0
-    for (let i = 0; i < userId.length; i++) {
-        hash = (hash * 31 + userId.charCodeAt(i)) % 10000
-    }
-    return hash % 100
-}
-
-function isInternalUser(roles: string | undefined): boolean {
-    if (!roles) return false
-    return roles
-        .split(",")
-        .map((r) => r.trim().toLowerCase())
-        .some((r) => r === "admin" || r === "internal")
-}
-
-function resolveCanaryPercent(mode: string | undefined): number {
-    const normalized = (mode || "off").trim().toLowerCase()
-    if (normalized === "100" || normalized === "all") return 100
-    if (normalized === "50") return 50
-    if (normalized === "10") return 10
-    if (normalized === "internal") return -1
-    return 0
-}
-
-function isInCanary(userId: string, roles: string | undefined, mode: string | undefined): boolean {
-    const percent = resolveCanaryPercent(mode)
-    if (percent === 0) return false
-    if (percent === -1) return isInternalUser(roles)
-    return hashUserToPercent(userId) < percent
-}
-
 export function isCriticalStep(step: PolicyAnalysisStepKey): boolean {
     return CRITICAL_STEPS.has(step)
 }
@@ -60,27 +38,57 @@ export function isDegradableStep(step: PolicyAnalysisStepKey): boolean {
     return DEGRADABLE_STEPS.has(step)
 }
 
-export function isOpenAIFailoverEnabled(userId: string, roles: string | undefined): boolean {
-    if (!parseFlag(process.env.FF_AI_FAILOVER_OPENAI, false)) return false
-    return isInCanary(userId, roles, process.env.FF_AI_REMEDIATION_CANARY_MODE)
+/**
+ * Every remediation behaviour is gated by BOTH its own switch and the shared
+ * canary audience, which is why each predicate asks two questions. `off` on the
+ * audience disables remediation wholesale regardless of the individual
+ * switches — the single lever to pull when the failover path itself is the
+ * problem.
+ */
+function gatedBy(
+    flags: FlagState,
+    key: string,
+    userId: string,
+    roles: string | undefined
+): boolean {
+    if (!flags.flags[key]?.enabled) return false
+    return flagAppliesTo(flags, "ai.remediation_canary", userId, roles)
 }
 
-export function isAnthropicFailoverEnabled(userId: string, roles: string | undefined): boolean {
+export async function isOpenAIFailoverEnabled(
+    userId: string,
+    roles: string | undefined
+): Promise<boolean> {
+    return gatedBy(await getFlags(), "ai.failover_openai", userId, roles)
+}
+
+export async function isAnthropicFailoverEnabled(
+    userId: string,
+    roles: string | undefined
+): Promise<boolean> {
+    // A credential, not a flag: no switch can conjure an API key, so this stays
+    // an environment read and is deliberately absent from the registry.
     if (!process.env.ANTHROPIC_API_KEY) return false
-    return isInCanary(userId, roles, process.env.FF_AI_REMEDIATION_CANARY_MODE)
+    return flagAppliesTo(await getFlags(), "ai.remediation_canary", userId, roles)
 }
 
-export function isDegradedCompletionEnabled(userId: string, roles: string | undefined): boolean {
-    if (!parseFlag(process.env.FF_AI_DEGRADED_COMPLETION, true)) return false
-    return isInCanary(userId, roles, process.env.FF_AI_REMEDIATION_CANARY_MODE)
+export async function isDegradedCompletionEnabled(
+    userId: string,
+    roles: string | undefined
+): Promise<boolean> {
+    return gatedBy(await getFlags(), "ai.degraded_completion", userId, roles)
 }
 
-export function isRemediationAlertingEnabled(userId: string, roles: string | undefined): boolean {
-    if (!parseFlag(process.env.FF_AI_REMEDIATION_ALERTS, false)) return false
-    return isInCanary(userId, roles, process.env.FF_AI_REMEDIATION_CANARY_MODE)
+export async function isRemediationAlertingEnabled(
+    userId: string,
+    roles: string | undefined
+): Promise<boolean> {
+    return gatedBy(await getFlags(), "ai.remediation_alerts", userId, roles)
 }
 
-export function isFullFailoverAllowed(userId: string, roles: string | undefined): boolean {
-    if (!isInCanary(userId, roles, process.env.FF_AI_REMEDIATION_CANARY_MODE)) return false
-    return parseFlag(process.env.AI_ALLOW_FULL_FAILOVER, true)
+export async function isFullFailoverAllowed(
+    userId: string,
+    roles: string | undefined
+): Promise<boolean> {
+    return gatedBy(await getFlags(), "ai.full_failover", userId, roles)
 }

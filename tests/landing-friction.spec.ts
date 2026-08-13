@@ -1,4 +1,17 @@
 import { expect, test } from "@playwright/test"
+import { PUBLIC_NAV_ITEMS } from "@/lib/nav/public-nav"
+
+/**
+ * Read the trigger's name from the nav's own source instead of repeating it.
+ *
+ * This test used to hardcode "Λύσεις", and when that dropdown absorbed the
+ * neighbouring "Προϊόντα" link and took its name, the test reported the header
+ * as MISSING on four public pages — a rename read as a regression. The thing
+ * being guarded is that the dropdown is rendered everywhere, not what it is
+ * called this quarter.
+ */
+const navDropdown = PUBLIC_NAV_ITEMS.find((item) => item.kind === "dropdown")!
+const DROPDOWN_TRIGGER = new RegExp(`^(${navDropdown.label.el}|${navDropdown.label.en})$`, "i")
 
 test.describe("Landing Friction Regressions", () => {
     test("cookie banner persists accepted state across public pages", async ({ page, context }) => {
@@ -25,18 +38,14 @@ test.describe("Landing Friction Regressions", () => {
         await expect(contactCta).toHaveAttribute("href", "/contact")
     })
 
-    test("solutions dropdown trigger is present across key public pages", async ({ page }) => {
-        await page.goto("/")
-        await expect(page.getByRole("button", { name: /solutions|λύσεις/i }).first()).toBeVisible()
-
-        await page.goto("/product")
-        await expect(page.getByRole("button", { name: /solutions|λύσεις/i }).first()).toBeVisible()
-
-        await page.goto("/pricing")
-        await expect(page.getByRole("button", { name: /solutions|λύσεις/i }).first()).toBeVisible()
-
-        await page.goto("/company")
-        await expect(page.getByRole("button", { name: /solutions|λύσεις/i }).first()).toBeVisible()
+    test("the nav dropdown trigger is present across key public pages", async ({ page }) => {
+        for (const path of ["/", "/product", "/pricing", "/company"]) {
+            await page.goto(path)
+            await expect(
+                page.getByRole("button", { name: DROPDOWN_TRIGGER }).first(),
+                `nav dropdown trigger missing on ${path}`
+            ).toBeVisible()
+        }
     })
 
     test("pricing footer uses current year", async ({ page }) => {

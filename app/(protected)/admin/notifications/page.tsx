@@ -240,7 +240,11 @@ export default async function NotificationAdminPage({
                 </div>
 
                 {(["automation", "channels", "thresholds", "flags"] as const).map((group) => (
-                    <div key={group}>
+                    // Anchored so the automation hub can link straight to a
+                    // group — "protection score rules" is a thing an operator
+                    // looks for by name, not by remembering it lives under
+                    // notification settings.
+                    <div key={group} id={group} className="scroll-mt-4">
                         <h3 className="text-sm font-semibold text-stone-900 dark:text-white">
                             {GROUP_TITLES[group]}
                         </h3>

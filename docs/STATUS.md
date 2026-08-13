@@ -1,5 +1,171 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-13b (Feature flags: the automation console's one missing pillar)
+
+**Current phase:** built and gated on `feat/marketing-site-overhaul`. **The migration is
+NOT applied to any environment yet** — see "What is left" below.
+
+**The audit first.** Measured against the automation-console brief, this product already has
+almost all of it: business events (`/admin/automation/events`), notification/email/push/in-app
+templates with preview + test + clone + version, automation rules, **retry rules** and
+**escalation rules** (`NotificationRuleOverride.retry*` / `escalation*`), coverage-gap rules
+(`/admin/gaps`), AI rules (`/admin/ai/*`), schedules with pause/resume/run-now, queues,
+localization, analytics, notification history, automation logs and delivery failures. Every
+verb in the brief except one was already wired.
+
+**Feature flags were the gap — and they already existed, as environment variables.**
+`FF_AI_FAILOVER_OPENAI`, `FF_AI_DEGRADED_COMPLETION`, `FF_AI_REMEDIATION_ALERTS`,
+`FF_AI_REMEDIATION_CANARY_MODE`, `AI_ALLOW_FULL_FAILOVER`, `ENFORCE_EMAIL_VERIFICATION`,
+`EXTRACTION_CITATIONS`, each read straight from `process.env` at the call site. They work.
+What they cannot do is change: a flip means editing the Vercel environment and redeploying,
+so the one control you reach for while production is misbehaving costs a build.
+
+**What shipped.** `FeatureFlag` + `FeatureFlagRevision` (migration
+`20260813210000_feature_flags`, additive, new tables only), `lib/flags/registry.ts` (the
+catalog), `lib/flags/config.ts` (the resolver), `lib/admin/flag-admin.ts` (pure form logic),
+and `/admin/automation/flags`. Precedence on read is **override → environment variable →
+the default declared in code**, so no row, or an unreadable database, leaves the product
+behaving exactly as it shipped. `withCache` was extracted from `lib/notifications/config.ts`
+to `lib/cache/tagged-cache.ts` so both loaders hold one contract rather than two.
+
+Three rules keep it honest:
+1. **A flag must be declared in code next to the call site that reads it.** A row for an
+   undeclared key is inert. Operators tune flags; they cannot mint one, because a switch
+   wired to nothing looks like control and isn't.
+2. **NULL is "fall through", not "off".** Clearing an override restores what the deployment
+   says. Collapsing those two is how someone disables a feature believing they undid a change.
+3. **`extraction.citations` is listed read-only.** It is read synchronously while building the
+   extraction prompt and response schema, so moving it into the database would make prompt
+   construction async — a change to the extraction contract on the money path, which does not
+   belong in an admin-console change. It is shown so its production value is *visible*
+   (it IS set in prod), with the reason stated on the card.
+
+**Wired, not decorative:** `remediation-policy.ts`'s five predicates now read the flag layer
+(async; callers in `policy-analysis-orchestrator.service.ts` updated), and
+`emailVerificationRequired` too. Checked prod env before touching the latter:
+`ENFORCE_EMAIL_VERIFICATION` is **not set in production**, so the switch to a slightly wider
+boolean parser cannot flip the gate on and lock unverified customers out.
+
+**Also fixed on the way past:** the automation hub had a card titled "Feature flags &
+settings" pointing at `/admin/notifications`, which has no flags — that is what sent someone
+looking for a flag to the wrong page. It is now "Notification settings", with the real flags
+card beside it.
+
+**Verified.** 4,464 unit tests (426 files) green, +19 new pinning the precedence contract.
+Full guardrail gate green: `audit:api-auth` 101/101, `lint`, `lint:i18n-changed`,
+`lint:utf8` 1806 files, `type-check`. New E2E `tests/admin-feature-flags.spec.ts`, 6/6 under
+`admin-chromium` — and deliberately passing in the **degraded** state, i.e. with the table
+absent, which is the window this has to survive.
+
+**Protection score rules are no longer hardcoded.** `lib/events/decision-engine.ts` judged
+against literals — `current < 40` for the score band, `severity === "critical"` for gap
+routing — so moving where "the lowest band" starts, an editorial judgement about Greek
+customers rather than a constant, took a deploy. `EventContext` now carries a
+`DecisionThresholds` object fed from the EXISTING `NotificationSetting` registry (which
+already had a `thresholds` group and an admin surface), via two new settings:
+`threshold.protectionScoreLowBand` (40) and `threshold.advisorTaskOnHighGaps` (off).
+`DEFAULT_DECISION_THRESHOLDS` reproduces the old literals exactly, and `toContext` defaults to
+them, so an empty, unreadable or unmigrated settings table decides what the engine always
+decided. The hub gained a **Protection score rules** card showing the live band and deep-
+linking to the anchored group.
+
+The engine is still NOT a rules DSL, deliberately. Only numbers and switches moved; the rules
+stay TypeScript, because a rule can say "critical, and only when the customer has an advisor
+who can act on it" and a table cannot. One floor is deliberately not tunable: a **critical**
+gap always reaches a human regardless of the setting — an operator quietly switching that off
+would be a defect, not a preference.
+
+**Dead letters can be revived.** Verifying the brief's action matrix rather than asserting it
+turned up a real hole: `/admin/automation/queues` counted dead deliveries and stated they "do
+not resolve on their own", then offered nothing — a diagnosis with no treatment. A delivery is
+parked after 5 attempts with `nextAttemptAt` null, and the sweep only selects
+`attempts < MAX_ATTEMPTS`, so it stays parked for ever; behind each row is a notification never
+sent or an advisor task never raised for a critical gap. The page now lists them with event,
+subscriber, attempts and the killing error, and a per-row Retry. `lastError` is kept on revive
+(it is the most useful thing on the row until the retry succeeds) and the action refuses
+anything not already dead, so a live delivery cannot be handed a fresh five tries against a
+subscriber that is currently failing.
+
+`lib/admin/flag-admin.ts` shipped untested in the flags commit; now 14 cases. Writing them
+found a wording defect that would have appeared in every audit log entry ("Set Remediation
+audience audience to 50").
+
+**Still open, found in the same pass:** `aiPromptOverrideRevision` and `planRevision` are
+written but read by no page, so "Version" is recorded and invisible for AI Rules and Plans —
+unlike templates, rules and flags, which all render their history.
+
+**What is left — needs a decision, not more work:**
+1. **The migration is unapplied**, on dev and prod both. Applying it was blocked here (both
+   the raw-DDL script and Supabase MCP `apply_migration` were refused by the permission
+   classifier). Until it runs, the flags console renders read-only with a banner saying
+   exactly that, and every flag resolves through the environment as it does today. Both new
+   DB reads degrade rather than throw, so **code and migration can land in either order** —
+   there is no deploy-ordering trap. Note the threshold work above needs NO migration:
+   `NotificationSetting` already exists.
+2. **Not merged to `NEW-UI`**, which is what deploys production on CI-green.
+
+**Next 3 actions:** 1) apply `20260813210000_feature_flags` to dev, then prod (Supabase MCP
+`apply_migration` + a manual `_prisma_migrations` row — the Prisma migrate CLI cannot reach
+this database); 2) merge to `NEW-UI` when ready, checking first which branch/sha the live
+deploy is on, since parallel sessions share this prod alias; 3) next candidates for the same
+treatment: the dunning ladder's attempt counts and the renewal-window day counts, both still
+literals in the decision engine.
+**Last updated:** 2026-08-13
+
+---
+
+## Session wrap — 2026-08-13 (E2E audit re-anchored; all three role sessions verified green)
+
+**Current phase:** `feat/marketing-site-overhaul`, three commits (`11610540`, `f53c2978`,
+`b58b82cc`) — **not pushed**. `ui-quality-audit` now runs per session against measured
+coverage floors instead of one 75%-of-all-routes fraction, which used to fail on branches
+that changed nothing.
+
+**Verified green today, full sweeps on current HEAD:**
+
+| session | routes fully scanned | redirected | overflow / touch / a11y / runtime | verdict |
+|---|---|---|---|---|
+| `chromium` (policyholder) | 71/94 (floor 71) | 23 | 0 / 0 / 0 / 0 | ✅ 15.2m |
+| `agent-chromium` | 79/94 (floor 79) | 15 | 0 / 0 / 0 / 0 | ✅ 17.2m |
+| `admin-chromium` | 95/108 (floor 95) | 13 | 0 / 0 / 0 / 0 | ✅ 18.6m |
+
+**All three sessions green — the first time every role's surface has passed on one HEAD.**
+Route accounting closes in all three (71+23=94, 79+15=94, 95+13=108) — no route left a sweep
+silently. Each landed exactly on its floor, which is what the floors were measured from.
+Baseline before `b58b82cc`: agent 10 touch + 18 a11y + 5 runtime; admin 46 touch (26
+distinct) + 18 a11y + 1 runtime; chromium's own run never finished (see below).
+
+**The admin-console "touch target" findings were never defects.**
+`/admin/billing-reconciliation` (9–13×24), `/admin/insurers` (16×24) and `/admin/partners`
+(11×24) are all `<input type="checkbox">` inside a `<label class="flex items-center gap-2">`
+that wraps the text as well — clicking anywhere in the row toggles them, so the row IS the
+target. The label rule added in `b58b82cc` exempts them correctly.
+
+**The 75-minute budget was the fix it looked like.** The policyholder sweep had never
+finished: its 14:45 run hit the then-45-minute budget at route 80 and named 14 routes as
+never loaded (61/94 scanned), which is what prompted the raise in `b58b82cc`. Re-run tonight
+on the raised budget it completed in **15.2 minutes** and reached all 71 — including the
+alphabetical tail it had been dying in (`/product/pension` … `/wallet/add`, of which
+`/wallet`, `/tasks`, `/renewals`, `/questionnaires`, `/upgrade` are role-dependent and so
+had never been audited as a policyholder sees them). The 45→75 change bought headroom that a
+warm `.next/dev` cache then made unnecessary; keep it anyway, since a genuinely cold sweep is
+the case it exists for.
+
+**`P1017` is the flake to expect here.** The agent sweep's earlier
+`PrismaClientKnownRequestError` on `/dashboard/agent` (`getRecentNotifications` →
+`getAuthenticatedUserOrNull`) is the remote dev DB closing an idle connection during a
+30-minute sweep; it did not recur today. A red agent run on that line alone is the
+environment, not the page.
+
+**Next 3 actions:** 1) run the CI guardrails (`audit:api-auth`, `lint`, `lint:i18n-changed`,
+`lint:utf8`, `type-check`, unit tests, build) and push the three commits; 2) the E2E audit is
+now only meaningful as all four projects together — `--project=chromium --project=agent-chromium
+--project=admin-chromium --project=sentry`, ~50 min warm; treat a single-project green as
+partial; 3) unchanged from below — the seeded prod accounts still need deleting.
+**Last updated:** 2026-08-13
+
+---
+
 ## Session wrap — 2026-08-12 (Settings rebuilt: sub-routes, honest controls, one preference surface)
 
 **Current phase:** built and gated. 4,390 unit tests, full guardrail gate and production

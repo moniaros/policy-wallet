@@ -345,8 +345,11 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
     // 1.1:1, i.e. the user could not see what they were typing, on the flow that
     // feeds the whole gap engine.
     const inputClass = "pw-input pw-input-sm mt-1 block border-black/10 bg-black/[0.03] text-black dark:border-white/15 dark:bg-white/5 dark:text-white"
+    // h-4 w-4 shrink-0: with no size of its own the UA default sat in a flex
+    // row that squeezed it to 13x24 at 320px — a checkbox that is not square
+    // reads as a rendering fault before it reads as a control.
     const checkboxClass =
-        "rounded border-black/20 dark:border-white/25 text-primary focus:ring-primary"
+        "h-4 w-4 shrink-0 rounded border-black/20 dark:border-white/25 text-primary focus:ring-primary"
     const labelClass = "block text-sm font-medium text-black/75 dark:text-white/75"
 
     return (

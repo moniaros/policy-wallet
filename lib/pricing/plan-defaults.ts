@@ -39,6 +39,28 @@ export function isAgentTierKey(value: string | null | undefined): value is Agent
     return !!value && (AGENT_TIER_KEYS as readonly string[]).includes(value)
 }
 
+/**
+ * Agent tier ordering, for "is this plan at least X?" gating.
+ *
+ * Lives here rather than in lib/subscription-entitlements.ts because the
+ * question is asked by CLIENT components (AgentPlanGate blurs a panel a lower
+ * tier cannot see). That module opens with `import { db } from "@/lib/db"`, so
+ * importing one number from it pulled the whole Prisma client into the browser
+ * bundle for /dashboard/agent and /customers — visible only as a stray
+ * `database: no connection string configured` warning in the user's console.
+ * Re-exported from the entitlements module so server callers are unaffected.
+ */
+export const AGENT_TIER_HIERARCHY: Record<AgentTier, number> = {
+    agent_free: 0,
+    agent_starter: 1,
+    agent_pro: 2,
+    agency: 3,
+}
+
+export function isAgentTierSufficient(currentTier: AgentTier, requiredTier: AgentTier): boolean {
+    return AGENT_TIER_HIERARCHY[currentTier] >= AGENT_TIER_HIERARCHY[requiredTier]
+}
+
 /** Canonical (seeded) plan id per tier — the row /admin/plans edits. */
 export const PLAN_ID_BY_TIER_KEY: Record<TierKey, string> = {
     free: "ph-free",

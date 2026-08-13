@@ -1,22 +1,24 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getCookieBannerCopy } from "@/components/compliance/cookie-banner-copy"
 import {
     CONSENT_COOKIE_NAME,
     DEFAULT_CATEGORIES,
+    DEFAULT_COOKIE_MAX_AGE_SECONDS,
     LEGAL_POLICY_VERSIONS,
     emitConsentChanged,
     readConsentFromDocument,
+    serializeConsentCookie,
     type ConsentCategories,
     type ConsentCookiePayload,
 } from "@/lib/compliance/consent"
 
 function writeCookieConsent(payload: ConsentCookiePayload) {
     const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : ""
-    document.cookie = `${CONSENT_COOKIE_NAME}=${encodeURIComponent(JSON.stringify(payload))}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`
+    document.cookie = `${CONSENT_COOKIE_NAME}=${serializeConsentCookie(payload)}; path=/; max-age=${DEFAULT_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${secureFlag}`
 }
 
 export function CookieConsentBanner() {
@@ -115,8 +117,6 @@ function CookieConsentBannerInner() {
         }
     }, [visible, expanded])
 
-    const canSave = useMemo(() => !saving, [saving])
-
     const persistConsent = async (nextCategories: ConsentCategories, source: "banner_accept_all" | "banner_necessary_only" | "banner_preferences") => {
         setSaving(true)
         const payload: ConsentCookiePayload = {
@@ -132,6 +132,18 @@ function CookieConsentBannerInner() {
         // Tell already-mounted listeners (notably GoogleAnalytics) right away, so
         // opting in starts analytics — and opting out stops it — without a reload.
         emitConsentChanged(nextCategories)
+
+        // Close the sheet on the click, not on the round trip.
+        //
+        // The cookie above is what every consent gate actually reads; the POST
+        // only adds the server-side audit row. Awaiting it left this fixed,
+        // full-width strip over the page — buttons disabled — for as long as the
+        // request took, and the request goes through a rate limiter that calls
+        // Redis: with Upstash unreachable a single accept ran past ten seconds,
+        // covering the primary action on every page underneath. Consent UI that
+        // will not go away when you answer it is its own dark pattern.
+        setVisible(false)
+
         try {
             const response = await fetch("/api/v1/consents", {
                 method: "POST",
@@ -148,11 +160,10 @@ function CookieConsentBannerInner() {
                 throw new Error("Failed to persist consent")
             }
         } catch {
-            // Keep local cookie fallback; the API call is best-effort for audit logging.
-            writeCookieConsent(payload)
+            // The choice is already in the cookie; the API call is best-effort
+            // for audit logging.
         } finally {
             setSaving(false)
-            setVisible(false)
         }
     }
 
@@ -243,7 +254,7 @@ function CookieConsentBannerInner() {
                     <div className="flex flex-wrap items-center gap-2">
                         <button
                             type="button"
-                            disabled={!canSave}
+                            disabled={saving}
                             onClick={() =>
                                 persistConsent(
                                     {
@@ -260,7 +271,7 @@ function CookieConsentBannerInner() {
                         </button>
                         <button
                             type="button"
-                            disabled={!canSave}
+                            disabled={saving}
                             onClick={() =>
                                 persistConsent(
                                     {
@@ -278,7 +289,7 @@ function CookieConsentBannerInner() {
                         {expanded ? (
                             <button
                                 type="button"
-                                disabled={!canSave}
+                                disabled={saving}
                                 onClick={() => persistConsent(categories, "banner_preferences")}
                                 className="min-h-11 rounded-xl border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary-tint disabled:cursor-not-allowed disabled:opacity-60 dark:border-mint/40 dark:text-mint dark:hover:bg-primary/15"
                             >

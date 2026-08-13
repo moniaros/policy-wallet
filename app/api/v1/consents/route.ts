@@ -9,7 +9,6 @@ import {
     DEFAULT_COOKIE_MAX_AGE_SECONDS,
     LEGAL_POLICY_VERSIONS,
     type ConsentType,
-    serializeConsentCookie,
 } from "@/lib/compliance/consent"
 
 const consentBodySchema = z.object({
@@ -125,7 +124,13 @@ export const POST = withApiGuard(
         )
 
         if (consentType === "cookie") {
-            response.cookies.set(CONSENT_COOKIE_NAME, serializeConsentCookie({
+            // Plain JSON, NOT serializeConsentCookie(): `response.cookies.set()`
+            // percent-encodes the value on its way into Set-Cookie. Handing it a
+            // pre-encoded string wrote `%257B%2522…` — a value the browser-side
+            // reader could not parse, so this response silently CLOBBERED the good
+            // cookie the banner had just written and every later page load asked
+            // for consent again. See lib/compliance/consent.ts.
+            response.cookies.set(CONSENT_COOKIE_NAME, JSON.stringify({
                 consentType,
                 policyVersion,
                 locale,

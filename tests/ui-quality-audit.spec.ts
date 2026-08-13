@@ -19,6 +19,8 @@ const ROUTES = [
     '/account',
     '/activity',
     '/admin/activity',
+    '/admin/automation',
+    '/admin/automation/flags',
     '/admin/billing-reconciliation',
     '/admin/dashboard',
     '/admin/dsr',
@@ -171,9 +173,18 @@ function scanViewport() {
             if (el.closest('p, li')) continue // prose links
             if ((' ' + String(el.className || '') + ' ').indexOf(' sr-only ') >= 0) continue
             if (cs.clipPath === 'inset(50%)' || cs.clip === 'rect(0px, 0px, 0px, 0px)') continue
+            // Spam honeypots: a real <input> nobody can see or reach, parked
+            // off-screen at opacity 0. Same intent as the sr-only and clip
+            // cases above — it was only missed because it is 1px wide rather
+            // than 0, and so cleared the width>=1 gate at the top of the loop.
+            if (Number(cs.opacity) === 0) continue
+            if (r.right < 0 || r.left > vw) continue
             // An icon inside a properly sized button is not its own target.
             if (el.querySelector('button, a[href], input, select, [role=button]')) continue
-            const outer = el.parentElement?.closest('button, a[href], [role=button]')
+            // `label` joins the list: a checkbox wrapped in one is toggled by
+            // clicking anywhere in that label, so the row IS the target — the
+            // 16px box is just where the tick is drawn.
+            const outer = el.parentElement?.closest('button, a[href], [role=button], label')
             if (outer) {
                 const orect = outer.getBoundingClientRect()
                 if (orect.width >= 24 && orect.height >= 24) continue
@@ -234,21 +245,82 @@ function scanA11y() {
     }
     if (!document.documentElement.getAttribute('lang')) problems.push('<html> has no lang')
     if (!document.querySelector('main, [role=main]')) problems.push('no <main> landmark')
-    if (document.querySelectorAll('h1').length === 0) problems.push('no <h1>')
-    if (document.querySelectorAll('h1').length > 1) problems.push(`${document.querySelectorAll('h1').length} <h1> elements`)
+    // RENDERED h1s, not DOM nodes.
+    //
+    // A responsive shell that ships a mobile header and a desktop header —
+    // each `display:none` at the other's widths — has two <h1> in the markup
+    // and exactly one in the accessibility tree, which is what the rule is
+    // actually about. Counting nodes reported /account and /agent/settings as
+    // defects at every breakpoint for a page that was correct.
+    const renderedH1s = Array.from(document.querySelectorAll('h1')).filter((el) => {
+        const r = el.getBoundingClientRect()
+        return r.width > 0 && r.height > 0
+    })
+    if (renderedH1s.length === 0) problems.push('no rendered <h1>')
+    if (renderedH1s.length > 1) problems.push(`${renderedH1s.length} rendered <h1> elements`)
     return problems
 }
 
+/**
+ * The floor that says "the sweep actually ran", per session.
+ *
+ * It cannot be one fraction of ROUTES, because a route redirecting is not a
+ * defect — it is the auth model. `/admin/*` bounces everyone but an admin, the
+ * agent console bounces a policyholder, and `/auth/*` bounces anyone signed in.
+ * A single 75%-of-all-routes floor therefore failed for the policyholder and
+ * agent sessions on every branch, including ones that changed nothing, while
+ * telling you "too few routes scanned" — a number nobody could act on.
+ *
+ * These are what each session reaches today. A DROP is the signal: a surface
+ * this role is supposed to see started redirecting. Raise them when routes are
+ * added, and read the REDIRECTED list below before lowering one.
+ */
+const MIN_SCANNED: Record<string, number> = {
+    // Measured, not guessed. The spread between them IS the auth model: the
+    // policyholder loses the whole agent console, the agent loses the B2C
+    // wallet and /coverage-insights, the admin reaches both, and all three
+    // lose /auth/* because they are signed in.
+    chromium: 71, //         of  94 non-admin routes (23 redirect)
+    'agent-chromium': 79, //  of  94 non-admin routes (15 redirect)
+    'admin-chromium': 95, //  of 108 routes           (13 redirect)
+}
+
 test.describe('responsive, accessibility and runtime quality', () => {
-    test('every route at every breakpoint', async ({ page }) => {
-        test.setTimeout(45 * 60_000)
+    // No retry. One attempt is a ~30-minute sweep, and the config's local retry
+    // spent a second half-hour on a browser that had already been up an hour —
+    // it died at route 56 and reported 38 routes as never-loaded. The findings
+    // list IS the deliverable here; re-running the sweep does not stabilise it,
+    // it just doubles the wall clock before you get to read it.
+    test.describe.configure({ retries: 0 })
+
+    test('every route at every breakpoint', async ({ page }, testInfo) => {
+        // A warm run is ~30 minutes; a COLD one pays Next's first-hit dev
+        // compilation on every route it touches and ran past the old 45-minute
+        // budget at route 80 of 94 — reported, correctly, as fourteen routes
+        // that never loaded. The sweep gets the headroom rather than the
+        // findings getting truncated, because with retries off this one attempt
+        // has to finish.
+        test.setTimeout(75 * 60_000)
+
+        // Auditing a route this session cannot open measures the redirect stub,
+        // not the page — and then counts the miss against coverage.
+        const routes = testInfo.project.name === 'admin-chromium'
+            ? ROUTES
+            : ROUTES.filter((route) => !route.startsWith('/admin/'))
 
         const overflow: string[] = []
         const targets: string[] = []
         const a11y: string[] = []
         const runtime: string[] = []
         let scanned = 0
-        const skipped: string[] = []
+        /** Reached a different path — role-gated or an intentional redirect stub. */
+        const redirected: string[] = []
+        /** goto threw. Used to `continue` silently, so a route could vanish from
+         *  the audit without appearing in any total. */
+        const failedToLoad: string[] = []
+        /** Scanned at some widths only — the shape a dying sweep takes. */
+        const partial: string[] = []
+        const interrupted: string[] = []
 
         page.on('pageerror', (e) => runtime.push(`PAGE ERROR ${page.url()}: ${String(e).slice(0, 110)}`))
         page.on('console', (m) => {
@@ -262,23 +334,33 @@ test.describe('responsive, accessibility and runtime quality', () => {
             // `next start` does not serve /_vercel/* — those endpoints exist only
             // on Vercel's edge. Verified 200 in production; local-only noise.
             if (/_vercel\/(insights|speed-insights)/i.test(t)) return
+            // Emitted by Next about its OWN inline scripts — the flight payload
+            // and the dev-tools segment explorer it injects into <body>. Traced
+            // to node_modules/next/dist/…:1915 on a page that renders no script
+            // of ours (the /perks 404, zero JSON-LD tags). Ours is server-side
+            // JSON-LD, which lib/seo/jsonld.tsx keeps as a real inline tag on
+            // purpose so crawlers without JS still see it.
+            if (/Encountered a script tag while rendering React component/i.test(t)) return
+            // The Turbopack HMR socket closing during a viewport sweep. Dev only.
+            if (/WebSocket is already in CLOSING or CLOSED state/i.test(t)) return
             runtime.push(`CONSOLE ${page.url()}: ${t.slice(0, 110)}`)
         })
 
-        for (const route of ROUTES) {
+        for (const route of routes) {
             try {
                 await page.setViewportSize({ width: 1280, height: 900 })
                 await page.goto(route, { waitUntil: 'domcontentloaded', timeout: 45_000 })
                 await dismissCookieBanner(page)
                 await page.waitForTimeout(500)
-            } catch {
+            } catch (error) {
+                failedToLoad.push(`${route} (${String(error).split('\n')[0].slice(0, 90)})`)
                 continue
             }
             // A route that only redirects (e.g. /coverage -> /coverage-insights)
             // renders no content of its own; auditing it audits the destination
             // twice and reports the redirect stub as having no <h1>.
             if (!page.url().endsWith(route) && !page.url().includes(route + '?')) {
-                skipped.push(`${route} (redirects to ${new URL(page.url()).pathname})`)
+                redirected.push(`${route} -> ${new URL(page.url()).pathname}`)
                 continue
             }
 
@@ -288,7 +370,7 @@ test.describe('responsive, accessibility and runtime quality', () => {
             try {
                 for (const p of (await page.evaluate(scanA11y)) as string[]) a11y.push(`${route} ${p}`)
             } catch {
-                skipped.push(`${route} (a11y scan interrupted)`)
+                interrupted.push(`${route} (a11y scan interrupted)`)
             }
 
             let widthsDone = 0
@@ -308,11 +390,20 @@ test.describe('responsive, accessibility and runtime quality', () => {
                 }
             }
             if (widthsDone === WIDTHS.length) scanned++
-            else skipped.push(`${route} (${widthsDone}/${WIDTHS.length} widths)`)
+            else partial.push(`${route} (${widthsDone}/${WIDTHS.length} widths)`)
         }
 
-        console.log(`[ui quality] ${scanned}/${ROUTES.length} routes fully scanned x ${WIDTHS.length} widths`)
-        if (skipped.length) console.log(`[ui quality] ${skipped.length} incomplete: ` + skipped.slice(0, 10).join(', '))
+        console.log(`[ui quality] ${testInfo.project.name}: ${scanned}/${routes.length} routes fully scanned x ${WIDTHS.length} widths`)
+        // Printed in full, not truncated: a route quietly leaving the audit is
+        // the failure this sweep exists to make visible.
+        for (const [name, list] of [
+            ['REDIRECTED (not this session\'s surface)', redirected],
+            ['FAILED TO LOAD', failedToLoad],
+            ['PARTIAL', partial],
+            ['INTERRUPTED', interrupted],
+        ] as [string, string[]][]) {
+            if (list.length) console.log(`[ui quality] ${name}: ${list.length}\n    ` + list.join('\n    '))
+        }
         console.log(`[ui quality] overflow=${overflow.length} touch=${targets.length} a11y=${a11y.length} runtime=${runtime.length}`)
         for (const [name, list] of [
             ['OVERFLOW', overflow],
@@ -325,7 +416,26 @@ test.describe('responsive, accessibility and runtime quality', () => {
             for (const l of uniq.slice(0, 14)) console.log('    ' + l)
         }
 
-        expect(scanned, 'too few routes scanned').toBeGreaterThan(ROUTES.length * 0.75)
+        // Every route is accounted for in exactly one bucket; if that stops
+        // adding up, the loop above grew a hole and the totals below lie.
+        expect(
+            scanned + redirected.length + failedToLoad.length + partial.length,
+            'route accounting'
+        ).toBe(routes.length)
+
+        // These two ARE the "the sweep died" tripwire the coverage floor was
+        // standing in for, and they name the route instead of a count.
+        expect(failedToLoad.join('\n'), 'ROUTES THAT NEVER LOADED').toBe('')
+        expect(partial.join('\n'), 'ROUTES SCANNED AT ONLY SOME WIDTHS').toBe('')
+        // A route can survive the width loop while its a11y scan was lost —
+        // counted as scanned, audited for half of what this sweep claims.
+        expect(interrupted.join('\n'), 'ROUTES WHOSE A11Y SCAN WAS INTERRUPTED').toBe('')
+
+        const floor = MIN_SCANNED[testInfo.project.name] ?? 1
+        expect(
+            scanned,
+            `fewer routes reachable than this session should see — read REDIRECTED above (floor ${floor})`
+        ).toBeGreaterThanOrEqual(floor)
         expect(overflow.slice(0, 25).join('\n'), 'RESPONSIVE — highest priority').toBe('')
         expect(a11y.slice(0, 25).join('\n'), 'ACCESSIBILITY').toBe('')
         expect(targets.slice(0, 25).join('\n'), 'TOUCH TARGETS').toBe('')

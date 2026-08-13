@@ -19,6 +19,7 @@ vi.mock('@/lib/db', () => ({
 
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
 import { db } from '@/lib/db'
+import { CONSENT_COOKIE_NAME, hasAnalyticsConsent, parseConsentCookie } from '@/lib/compliance/consent'
 import { POST } from '@/app/api/v1/consents/route'
 
 const mockAuth = vi.mocked(getAuthenticatedUserOrNull)
@@ -99,5 +100,39 @@ describe('POST /api/v1/consents — ai_processing capture', () => {
             })
         )
         expect(mockUserUpdate).not.toHaveBeenCalled()
+    })
+})
+
+/**
+ * The response's Set-Cookie is the LAST writer of the consent cookie: it lands
+ * after the banner's own `document.cookie` write and overwrites it. So its
+ * encoding decides whether every later page load can still read the choice.
+ */
+describe('POST /api/v1/consents — the cookie it writes back', () => {
+    it('is single-encoded, so one decode yields JSON', async () => {
+        mockAuth.mockResolvedValue(null)
+
+        const res = await (POST as any)(makeCtx({
+            consentType: 'cookie',
+            locale: 'el',
+            source: 'banner_accept_all',
+            categories: { necessary: true, analytics: true, marketing: false },
+        }))
+
+        const setCookie = res.headers.get('set-cookie')
+        expect(setCookie).toContain(`${CONSENT_COOKIE_NAME}=`)
+
+        // What the browser stores, and hands back verbatim in document.cookie.
+        const stored = setCookie!.split(';')[0].slice(`${CONSENT_COOKIE_NAME}=`.length)
+
+        // `response.cookies.set()` percent-encodes what it is given. Passing it
+        // an already-encoded string produced `%257B%2522…`, which needed TWO
+        // decodes — one is all `parseConsentCookie` used to do, so the reader
+        // concluded "never consented" and the banner returned on every page.
+        expect(decodeURIComponent(stored).startsWith('{')).toBe(true)
+
+        const parsed = parseConsentCookie(`${CONSENT_COOKIE_NAME}=${stored}`)
+        expect(parsed?.categories).toEqual({ necessary: true, analytics: true, marketing: false })
+        expect(hasAnalyticsConsent(parsed)).toBe(true)
     })
 })

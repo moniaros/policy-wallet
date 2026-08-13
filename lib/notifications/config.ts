@@ -27,6 +27,7 @@
  * product decision about what an event IS, not an operational setting.
  */
 
+import { withCache } from "@/lib/cache/tagged-cache"
 import { logger } from "@/lib/logger"
 import {
     NOTIFICATION_EVENTS,
@@ -224,48 +225,6 @@ export async function loadNotificationConfigUncached(): Promise<NotificationConf
     }
 
     return config
-}
-
-/**
- * Wrap a loader in Next's request cache, when there is one.
- *
- * `emit` is called from crons, one-off scripts and tests as well as from
- * requests, and `unstable_cache` is not available in all of those. Importing it
- * at module scope made the whole delivery path depend on a Next runtime — which
- * is both wrong and, in practice, what broke seven test suites that mock
- * `next/cache` with only the functions they use.
- *
- * Outside a cache scope this reads through uncached. That is the correct
- * degradation: a cron doing one extra query per run costs nothing, and a
- * notification must never fail because caching was unavailable.
- */
-function withCache<T>(
-    loader: () => Promise<T>,
-    tag: string,
-    revalidate: number
-): () => Promise<T> {
-    let wrapped: (() => Promise<T>) | null = null
-    let attempted = false
-
-    return async () => {
-        if (!attempted) {
-            attempted = true
-            try {
-                const { unstable_cache } = await import("next/cache")
-                if (typeof unstable_cache === "function") {
-                    wrapped = unstable_cache(loader, [tag], { tags: [tag], revalidate })
-                }
-            } catch {
-                wrapped = null
-            }
-        }
-        try {
-            return wrapped ? await wrapped() : await loader()
-        } catch {
-            // A cache-layer failure must not become a delivery failure.
-            return await loader()
-        }
-    }
 }
 
 /**

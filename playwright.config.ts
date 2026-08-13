@@ -13,6 +13,10 @@ const policyholderIgnores = [
     '**/agent-journey.spec.ts',
     '**/agent-viewport-overflow.spec.ts',
     '**/admin-auth.setup.ts',
+    // /admin/* bounces a policyholder to /dashboard, so this spec could only
+    // ever fail here — four "failures" that said nothing about the insurer
+    // console. It belongs to `admin-chromium`, which has the admin session.
+    '**/admin-insurers.spec.ts',
     // public-marketing asserts ANONYMOUS behavior (own `public-anon` project);
     // a signed-in header state would audit a page no anonymous visitor sees.
     '**/public-marketing.spec.ts',
@@ -120,7 +124,7 @@ export default defineConfig({
             // The 14 /admin/* routes only ever redirected for the policyholder
             // and agent fixtures, so 29 of 108 routes were covered no further
             // than that bounce. This session reaches them.
-            testMatch: /(ui-quality-audit|admin-insurers|agent-h1-empty-state)\.spec\.ts/,
+            testMatch: /(ui-quality-audit|admin-insurers|agent-h1-empty-state|admin-feature-flags)\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/admin.json',
