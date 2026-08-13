@@ -59,25 +59,40 @@ Full guardrail gate green: `audit:api-auth` 101/101, `lint`, `lint:i18n-changed`
 `admin-chromium` — and deliberately passing in the **degraded** state, i.e. with the table
 absent, which is the window this has to survive.
 
+**Protection score rules are no longer hardcoded.** `lib/events/decision-engine.ts` judged
+against literals — `current < 40` for the score band, `severity === "critical"` for gap
+routing — so moving where "the lowest band" starts, an editorial judgement about Greek
+customers rather than a constant, took a deploy. `EventContext` now carries a
+`DecisionThresholds` object fed from the EXISTING `NotificationSetting` registry (which
+already had a `thresholds` group and an admin surface), via two new settings:
+`threshold.protectionScoreLowBand` (40) and `threshold.advisorTaskOnHighGaps` (off).
+`DEFAULT_DECISION_THRESHOLDS` reproduces the old literals exactly, and `toContext` defaults to
+them, so an empty, unreadable or unmigrated settings table decides what the engine always
+decided. The hub gained a **Protection score rules** card showing the live band and deep-
+linking to the anchored group.
+
+The engine is still NOT a rules DSL, deliberately. Only numbers and switches moved; the rules
+stay TypeScript, because a rule can say "critical, and only when the customer has an advisor
+who can act on it" and a table cannot. One floor is deliberately not tunable: a **critical**
+gap always reaches a human regardless of the setting — an operator quietly switching that off
+would be a defect, not a preference.
+
 **What is left — needs a decision, not more work:**
 1. **The migration is unapplied**, on dev and prod both. Applying it was blocked here (both
    the raw-DDL script and Supabase MCP `apply_migration` were refused by the permission
-   classifier). Until it runs, the console renders read-only with a banner saying exactly
-   that, and every flag resolves through the environment as it does today. Both new DB reads
-   degrade rather than throw, so **code and migration can land in either order** — there is
-   no deploy-ordering trap.
-2. **Decision-engine thresholds are still hardcoded** — `current < 40` for the protection-score
-   band and `severity === "critical"` for gap routing
-   (`lib/events/decision-engine.ts` ~281/~298). The right home is the EXISTING
-   `NotificationSetting` registry, which already has a `thresholds` group; the blocker is that
-   `EventContext` carries no settings, so the dispatcher must thread them into every rule.
-   Deliberately not bundled here: that is a change to the code deciding what customers are
-   told, and it should not ride along with a console.
+   classifier). Until it runs, the flags console renders read-only with a banner saying
+   exactly that, and every flag resolves through the environment as it does today. Both new
+   DB reads degrade rather than throw, so **code and migration can land in either order** —
+   there is no deploy-ordering trap. Note the threshold work above needs NO migration:
+   `NotificationSetting` already exists.
+2. **Not merged to `NEW-UI`**, which is what deploys production on CI-green.
 
 **Next 3 actions:** 1) apply `20260813210000_feature_flags` to dev, then prod (Supabase MCP
 `apply_migration` + a manual `_prisma_migrations` row — the Prisma migrate CLI cannot reach
-this database); 2) merge to `NEW-UI` when ready, remembering that CI-green auto-deploys prod;
-3) thread `threshold.*` settings into `EventContext` for the decision-engine bands.
+this database); 2) merge to `NEW-UI` when ready, checking first which branch/sha the live
+deploy is on, since parallel sessions share this prod alias; 3) next candidates for the same
+treatment: the dunning ladder's attempt counts and the renewal-window day counts, both still
+literals in the decision engine.
 **Last updated:** 2026-08-13
 
 ---

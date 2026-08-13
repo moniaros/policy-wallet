@@ -10,12 +10,24 @@ import {
     permitsAction,
     type ActionType,
 } from "@/lib/events/catalog"
-import { DECISION_RULES, decide, isStateAction, type EventContext } from "@/lib/events/decision-engine"
+import {
+    DECISION_RULES,
+    DEFAULT_DECISION_THRESHOLDS,
+    decide,
+    isStateAction,
+    type DecisionThresholds,
+    type EventContext,
+} from "@/lib/events/decision-engine"
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "")
 const SOURCES = [...globSync("lib/**/*.ts"), ...globSync("app/**/*.ts"), ...globSync("app/**/*.tsx")]
 
-function ctxFor(name: string, payload: Record<string, unknown> = {}, isReplay = false): EventContext {
+function ctxFor(
+    name: string,
+    payload: Record<string, unknown> = {},
+    isReplay = false,
+    thresholds: DecisionThresholds = DEFAULT_DECISION_THRESHOLDS
+): EventContext {
     const definition = getEventDefinition(name)!
     return {
         eventId: "evt-1",
@@ -28,6 +40,7 @@ function ctxFor(name: string, payload: Record<string, unknown> = {}, isReplay = 
         payload,
         correlationId: "corr-1",
         isReplay,
+        thresholds,
     }
 }
 
@@ -275,5 +288,78 @@ describe("the action vocabulary is closed", () => {
         for (const action of ACTIONS) {
             expect(typeof isStateAction(action as ActionType)).toBe("boolean")
         }
+    })
+})
+
+/**
+ * Operator-tunable boundaries.
+ *
+ * These numbers were literals inside the rules, so moving where "the lowest
+ * band" starts — a judgement about customers, not about code — took a deploy.
+ * What matters is that they are genuinely consulted (a setting nothing reads is
+ * worse than no setting) and that the DEFAULTS reproduce the old literals
+ * exactly, so an empty or unreadable settings table decides what it always did.
+ */
+describe("decision thresholds", () => {
+    const scoreDrop = (current: number, thresholds = DEFAULT_DECISION_THRESHOLDS) =>
+        decide(
+            ctxFor("protection_score.changed", { delta: -12, currentScore: current }, false, thresholds)
+        )
+
+    const raisesAdvisorTask = (d: ReturnType<typeof decide>) =>
+        d.actions.some((a) => a.type === "advisor_notification")
+
+    it("defaults reproduce the literals they replaced", () => {
+        expect(DEFAULT_DECISION_THRESHOLDS.protectionScoreLowBand).toBe(40)
+        expect(DEFAULT_DECISION_THRESHOLDS.advisorTaskOnHighGaps).toBe(false)
+    })
+
+    it("a fall into the low band raises an advisor task, above it does not", () => {
+        expect(raisesAdvisorTask(scoreDrop(35))).toBe(true)
+        expect(raisesAdvisorTask(scoreDrop(45))).toBe(false)
+    })
+
+    it("moving the band moves the outcome — the setting is actually read", () => {
+        const higher = { ...DEFAULT_DECISION_THRESHOLDS, protectionScoreLowBand: 60 }
+        // 45 was drift at the shipped band; at 60 it is the lowest band.
+        expect(raisesAdvisorTask(scoreDrop(45))).toBe(false)
+        expect(raisesAdvisorTask(scoreDrop(45, higher))).toBe(true)
+    })
+
+    it("critical gaps always reach a human, whatever the setting says", () => {
+        // The floor is deliberately not tunable: an operator quietly switching
+        // off the response to a critical exposure is a defect, not a setting.
+        for (const advisorTaskOnHighGaps of [true, false]) {
+            const decision = decide(
+                ctxFor("coverage_gap.opened", { severity: "critical" }, false, {
+                    ...DEFAULT_DECISION_THRESHOLDS,
+                    advisorTaskOnHighGaps,
+                })
+            )
+            expect(raisesAdvisorTask(decision)).toBe(true)
+        }
+    })
+
+    it("high-severity gaps reach a human only when the operator asks", () => {
+        const high = (advisorTaskOnHighGaps: boolean) =>
+            decide(
+                ctxFor("coverage_gap.opened", { severity: "high" }, false, {
+                    ...DEFAULT_DECISION_THRESHOLDS,
+                    advisorTaskOnHighGaps,
+                })
+            )
+        expect(raisesAdvisorTask(high(false))).toBe(false)
+        expect(raisesAdvisorTask(high(true))).toBe(true)
+    })
+
+    it("a lower-severity gap is still notified, never escalated", () => {
+        const decision = decide(
+            ctxFor("coverage_gap.opened", { severity: "medium" }, false, {
+                ...DEFAULT_DECISION_THRESHOLDS,
+                advisorTaskOnHighGaps: true,
+            })
+        )
+        expect(raisesAdvisorTask(decision)).toBe(false)
+        expect(decision.actions.some((a) => a.type === "in_app")).toBe(true)
     })
 })

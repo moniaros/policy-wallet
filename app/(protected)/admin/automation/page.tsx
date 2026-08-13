@@ -75,6 +75,7 @@ export default async function AutomationConsolePage() {
     ])
 
     const paused = settingValue<boolean>(config.settings, "automation.paused")
+    const scoreLowBand = settingValue<number>(config.settings, "threshold.protectionScoreLowBand")
     const liveBusinessEvents = Object.values(BUSINESS_EVENTS).filter((e) => e.status === "live").length
     const liveNotifications = Object.values(NOTIFICATION_EVENTS).filter((e) => e.status === "live").length
 
@@ -171,6 +172,17 @@ export default async function AutomationConsolePage() {
             title: "Coverage gap rules",
             blurb: "Gap definitions and their severity.",
             stat: "definitions",
+            warn: null,
+        },
+        {
+            // The bands the decision engine judges against. These were literals
+            // in lib/events/decision-engine.ts until now, so moving where "the
+            // lowest band" starts — an editorial judgement about customers, not
+            // a constant — took a deploy.
+            href: "/admin/notifications#thresholds",
+            title: "Protection score rules",
+            blurb: "The score band that raises advisory work, and what counts as a material move.",
+            stat: `low band ${scoreLowBand}`,
             warn: null,
         },
     ]

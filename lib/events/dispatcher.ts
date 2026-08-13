@@ -21,8 +21,42 @@
 
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
-import { decide, toContext } from "./decision-engine"
+import { getNotificationConfig } from "@/lib/notifications/config"
+import { settingValue } from "@/lib/notifications/settings"
+import {
+    DEFAULT_DECISION_THRESHOLDS,
+    decide,
+    toContext,
+    type DecisionThresholds,
+} from "./decision-engine"
 import { executeAll } from "./executor"
+
+/**
+ * The operator-tunable boundaries a rule may consult, read from the same
+ * settings registry the admin console writes.
+ *
+ * Never throws: `getNotificationConfig` already resolves to registry defaults
+ * when the database is unreadable, and this falls back again on top of that. A
+ * business event must not go undelivered because a threshold could not be read
+ * — it should be decided the way the code shipped.
+ */
+async function decisionThresholds(): Promise<DecisionThresholds> {
+    try {
+        const config = await getNotificationConfig()
+        return {
+            protectionScoreLowBand: settingValue<number>(
+                config.settings,
+                "threshold.protectionScoreLowBand"
+            ),
+            advisorTaskOnHighGaps: settingValue<boolean>(
+                config.settings,
+                "threshold.advisorTaskOnHighGaps"
+            ),
+        }
+    } catch {
+        return DEFAULT_DECISION_THRESHOLDS
+    }
+}
 
 /** The only subscriber today. Adding one is a new key here plus a handler. */
 export const SUBSCRIBERS = ["decision_engine"] as const
@@ -110,7 +144,7 @@ async function runDelivery(deliveryId: string): Promise<"delivered" | "failed" |
         return "skipped"
     }
 
-    const ctx = toContext(delivery.event)
+    const ctx = toContext(delivery.event, await decisionThresholds())
     if (!ctx) {
         // An event whose definition has been retired. Stale, not broken: it is
         // parked rather than retried for ever.

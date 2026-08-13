@@ -42,6 +42,39 @@ import {
     type EventDefinition,
 } from "./catalog"
 
+/**
+ * Operator-tunable numbers a rule is allowed to consult.
+ *
+ * These were literals inside the rules — `current < 40`, `severity ===
+ * "critical"` — which meant that changing where "the lowest band" starts, a
+ * judgement about Greek insurance customers rather than about code, required a
+ * deploy. They now come from the notification settings registry, which already
+ * has an admin surface and a `thresholds` group.
+ *
+ * Only NUMBERS and SWITCHES live here, never the rules themselves. The engine
+ * is deliberately not a rules DSL: a rule can say "critical, and only when the
+ * customer has an advisor who can act on it", which no table can express. What
+ * a table can express is where a boundary sits.
+ */
+export interface DecisionThresholds {
+    /** Below this score, a fall opens an advisor task rather than being drift. */
+    protectionScoreLowBand: number
+    /** Include high-severity gaps in advisor routing, not just critical ones. */
+    advisorTaskOnHighGaps: boolean
+}
+
+/**
+ * What the code ships with — and what every rule falls back to.
+ *
+ * Identical to the literals these replaced, so a settings table that is empty,
+ * unreadable, or not yet migrated leaves the engine deciding exactly what it
+ * decided before.
+ */
+export const DEFAULT_DECISION_THRESHOLDS: DecisionThresholds = {
+    protectionScoreLowBand: 40,
+    advisorTaskOnHighGaps: false,
+}
+
 /** The event as a rule sees it. */
 export interface EventContext {
     eventId: string
@@ -56,6 +89,8 @@ export interface EventContext {
     correlationId: string
     /** True when re-delivered from the log rather than happening for the first time. */
     isReplay: boolean
+    /** Operator-tunable boundaries. Never the rules themselves. */
+    thresholds: DecisionThresholds
 }
 
 /** One thing the engine decided to do. */
@@ -278,7 +313,7 @@ export const DECISION_RULES: Record<string, DecisionRule> = {
             notify("protection_score_changed", "The score moved materially"),
             // A sustained fall into the bottom band is a different thing from
             // drift, and is the honest trigger for human contact.
-            ...(delta < 0 && current !== null && current < 40
+            ...(delta < 0 && current !== null && current < ctx.thresholds.protectionScoreLowBand
                 ? [advisorTask("Protection fell into the lowest band", {
                       title: "Protection score dropped sharply",
                       priority: "medium",
@@ -295,12 +330,27 @@ export const DECISION_RULES: Record<string, DecisionRule> = {
             // Critical gaps get a human. This is the single largest missing
             // automation the audit found: `userTask.create` had two call sites
             // and neither was a coverage gap.
-            ...(severity === "critical"
-                ? [advisorTask("A critical coverage gap opened", {
-                      title: "Critical coverage gap",
-                      riskId: ctx.payload.primaryRiskId,
-                      priority: "high",
-                  })]
+            //
+            // Whether "high" also earns a human is an operator's call — it
+            // trades advisor load against coverage — so it is a setting rather
+            // than a literal. Critical always does; that floor is not tunable,
+            // because an operator quietly turning off the response to a
+            // critical exposure is not a setting, it is a defect.
+            ...(severity === "critical" ||
+            (severity === "high" && ctx.thresholds.advisorTaskOnHighGaps)
+                ? [advisorTask(
+                      severity === "critical"
+                          ? "A critical coverage gap opened"
+                          : "A high-severity coverage gap opened",
+                      {
+                          title:
+                              severity === "critical"
+                                  ? "Critical coverage gap"
+                                  : "High-severity coverage gap",
+                          riskId: ctx.payload.primaryRiskId,
+                          priority: severity === "critical" ? "high" : "medium",
+                      }
+                  )]
                 : []),
             analytics("Gap detection"),
         ]
@@ -489,10 +539,18 @@ export function toContext(row: {
     payload: unknown
     correlationId: string
     isReplay: boolean
-}): EventContext | null {
+},
+    /**
+     * Defaults to what the code ships with, so a caller that has no settings —
+     * a test, a script, or the dispatcher during a database wobble — gets the
+     * engine's original behaviour rather than a crash or a zero.
+     */
+    thresholds: DecisionThresholds = DEFAULT_DECISION_THRESHOLDS
+): EventContext | null {
     const definition = getEventDefinition(row.name)
     if (!definition) return null
     return {
+        thresholds,
         eventId: row.id,
         name: row.name,
         definition,

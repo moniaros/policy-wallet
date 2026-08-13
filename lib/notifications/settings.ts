@@ -156,6 +156,31 @@ export const NOTIFICATION_SETTINGS: SettingDefinition[] = [
         },
     },
     {
+        key: "threshold.protectionScoreLowBand",
+        type: "number",
+        default: 40,
+        min: 0,
+        max: 100,
+        unit: "points",
+        group: "thresholds",
+        label: { el: "Κατώτερη ζώνη σκορ προστασίας", en: "Protection score low band" },
+        description: {
+            el: "Κάτω από αυτό το σκορ, μια πτώση δεν είναι διακύμανση — ανοίγει εργασία για σύμβουλο. Ήταν σταθερά 40 μέσα στον κώδικα και χρειαζόταν deploy για να αλλάξει.",
+            en: "Below this score a fall is not drift — it opens an advisor task. This was hardcoded at 40 and took a deploy to change.",
+        },
+    },
+    {
+        key: "threshold.advisorTaskOnHighGaps",
+        type: "boolean",
+        default: false,
+        group: "thresholds",
+        label: { el: "Εργασία συμβούλου και για υψηλά κενά", en: "Advisor task on high gaps too" },
+        description: {
+            el: "Από προεπιλογή μόνο τα κρίσιμα κενά φτάνουν σε άνθρωπο. Ενεργοποιήστε το για να περιληφθούν και τα υψηλής σοβαρότητας — περισσότερη κάλυψη, περισσότερος φόρτος στους συμβούλους.",
+            en: "By default only critical gaps reach a human. Turn this on to include high-severity ones too — more coverage, more advisor load.",
+        },
+    },
+    {
         key: "threshold.riskChangeNotifyEnabled",
         type: "boolean",
         default: true,
