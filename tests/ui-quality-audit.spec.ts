@@ -239,16 +239,60 @@ function scanA11y() {
     return problems
 }
 
+/**
+ * The floor that says "the sweep actually ran", per session.
+ *
+ * It cannot be one fraction of ROUTES, because a route redirecting is not a
+ * defect — it is the auth model. `/admin/*` bounces everyone but an admin, the
+ * agent console bounces a policyholder, and `/auth/*` bounces anyone signed in.
+ * A single 75%-of-all-routes floor therefore failed for the policyholder and
+ * agent sessions on every branch, including ones that changed nothing, while
+ * telling you "too few routes scanned" — a number nobody could act on.
+ *
+ * These are what each session reaches today. A DROP is the signal: a surface
+ * this role is supposed to see started redirecting. Raise them when routes are
+ * added, and read the REDIRECTED list below before lowering one.
+ */
+const MIN_SCANNED: Record<string, number> = {
+    // Measured, not guessed. The spread between them IS the auth model: the
+    // policyholder loses the whole agent console, the agent loses the B2C
+    // wallet and /coverage-insights, the admin reaches both, and all three
+    // lose /auth/* because they are signed in.
+    chromium: 71, //         of  94 non-admin routes (23 redirect)
+    'agent-chromium': 79, //  of  94 non-admin routes (15 redirect)
+    'admin-chromium': 95, //  of 108 routes           (13 redirect)
+}
+
 test.describe('responsive, accessibility and runtime quality', () => {
-    test('every route at every breakpoint', async ({ page }) => {
+    // No retry. One attempt is a ~30-minute sweep, and the config's local retry
+    // spent a second half-hour on a browser that had already been up an hour —
+    // it died at route 56 and reported 38 routes as never-loaded. The findings
+    // list IS the deliverable here; re-running the sweep does not stabilise it,
+    // it just doubles the wall clock before you get to read it.
+    test.describe.configure({ retries: 0 })
+
+    test('every route at every breakpoint', async ({ page }, testInfo) => {
         test.setTimeout(45 * 60_000)
+
+        // Auditing a route this session cannot open measures the redirect stub,
+        // not the page — and then counts the miss against coverage.
+        const routes = testInfo.project.name === 'admin-chromium'
+            ? ROUTES
+            : ROUTES.filter((route) => !route.startsWith('/admin/'))
 
         const overflow: string[] = []
         const targets: string[] = []
         const a11y: string[] = []
         const runtime: string[] = []
         let scanned = 0
-        const skipped: string[] = []
+        /** Reached a different path — role-gated or an intentional redirect stub. */
+        const redirected: string[] = []
+        /** goto threw. Used to `continue` silently, so a route could vanish from
+         *  the audit without appearing in any total. */
+        const failedToLoad: string[] = []
+        /** Scanned at some widths only — the shape a dying sweep takes. */
+        const partial: string[] = []
+        const interrupted: string[] = []
 
         page.on('pageerror', (e) => runtime.push(`PAGE ERROR ${page.url()}: ${String(e).slice(0, 110)}`))
         page.on('console', (m) => {
@@ -265,20 +309,21 @@ test.describe('responsive, accessibility and runtime quality', () => {
             runtime.push(`CONSOLE ${page.url()}: ${t.slice(0, 110)}`)
         })
 
-        for (const route of ROUTES) {
+        for (const route of routes) {
             try {
                 await page.setViewportSize({ width: 1280, height: 900 })
                 await page.goto(route, { waitUntil: 'domcontentloaded', timeout: 45_000 })
                 await dismissCookieBanner(page)
                 await page.waitForTimeout(500)
-            } catch {
+            } catch (error) {
+                failedToLoad.push(`${route} (${String(error).split('\n')[0].slice(0, 90)})`)
                 continue
             }
             // A route that only redirects (e.g. /coverage -> /coverage-insights)
             // renders no content of its own; auditing it audits the destination
             // twice and reports the redirect stub as having no <h1>.
             if (!page.url().endsWith(route) && !page.url().includes(route + '?')) {
-                skipped.push(`${route} (redirects to ${new URL(page.url()).pathname})`)
+                redirected.push(`${route} -> ${new URL(page.url()).pathname}`)
                 continue
             }
 
@@ -288,7 +333,7 @@ test.describe('responsive, accessibility and runtime quality', () => {
             try {
                 for (const p of (await page.evaluate(scanA11y)) as string[]) a11y.push(`${route} ${p}`)
             } catch {
-                skipped.push(`${route} (a11y scan interrupted)`)
+                interrupted.push(`${route} (a11y scan interrupted)`)
             }
 
             let widthsDone = 0
@@ -308,11 +353,20 @@ test.describe('responsive, accessibility and runtime quality', () => {
                 }
             }
             if (widthsDone === WIDTHS.length) scanned++
-            else skipped.push(`${route} (${widthsDone}/${WIDTHS.length} widths)`)
+            else partial.push(`${route} (${widthsDone}/${WIDTHS.length} widths)`)
         }
 
-        console.log(`[ui quality] ${scanned}/${ROUTES.length} routes fully scanned x ${WIDTHS.length} widths`)
-        if (skipped.length) console.log(`[ui quality] ${skipped.length} incomplete: ` + skipped.slice(0, 10).join(', '))
+        console.log(`[ui quality] ${testInfo.project.name}: ${scanned}/${routes.length} routes fully scanned x ${WIDTHS.length} widths`)
+        // Printed in full, not truncated: a route quietly leaving the audit is
+        // the failure this sweep exists to make visible.
+        for (const [name, list] of [
+            ['REDIRECTED (not this session\'s surface)', redirected],
+            ['FAILED TO LOAD', failedToLoad],
+            ['PARTIAL', partial],
+            ['INTERRUPTED', interrupted],
+        ] as [string, string[]][]) {
+            if (list.length) console.log(`[ui quality] ${name}: ${list.length}\n    ` + list.join('\n    '))
+        }
         console.log(`[ui quality] overflow=${overflow.length} touch=${targets.length} a11y=${a11y.length} runtime=${runtime.length}`)
         for (const [name, list] of [
             ['OVERFLOW', overflow],
@@ -325,7 +379,26 @@ test.describe('responsive, accessibility and runtime quality', () => {
             for (const l of uniq.slice(0, 14)) console.log('    ' + l)
         }
 
-        expect(scanned, 'too few routes scanned').toBeGreaterThan(ROUTES.length * 0.75)
+        // Every route is accounted for in exactly one bucket; if that stops
+        // adding up, the loop above grew a hole and the totals below lie.
+        expect(
+            scanned + redirected.length + failedToLoad.length + partial.length,
+            'route accounting'
+        ).toBe(routes.length)
+
+        // These two ARE the "the sweep died" tripwire the coverage floor was
+        // standing in for, and they name the route instead of a count.
+        expect(failedToLoad.join('\n'), 'ROUTES THAT NEVER LOADED').toBe('')
+        expect(partial.join('\n'), 'ROUTES SCANNED AT ONLY SOME WIDTHS').toBe('')
+        // A route can survive the width loop while its a11y scan was lost —
+        // counted as scanned, audited for half of what this sweep claims.
+        expect(interrupted.join('\n'), 'ROUTES WHOSE A11Y SCAN WAS INTERRUPTED').toBe('')
+
+        const floor = MIN_SCANNED[testInfo.project.name] ?? 1
+        expect(
+            scanned,
+            `fewer routes reachable than this session should see — read REDIRECTED above (floor ${floor})`
+        ).toBeGreaterThanOrEqual(floor)
         expect(overflow.slice(0, 25).join('\n'), 'RESPONSIVE — highest priority').toBe('')
         expect(a11y.slice(0, 25).join('\n'), 'ACCESSIBILITY').toBe('')
         expect(targets.slice(0, 25).join('\n'), 'TOUCH TARGETS').toBe('')

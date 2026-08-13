@@ -13,6 +13,26 @@ import { test, expect, type Page } from '@playwright/test'
 import { dismissCookieBanner } from './helpers/ui'
 import { E2E_POLICYHOLDER } from './e2e-users'
 
+/**
+ * Serial for the whole FILE, not per describe.
+ *
+ * Every block here reads or writes the subscription of the SAME provisioned
+ * policyholder — there is one fixture user, and a plan is global state on it.
+ * With per-describe serial and `fullyParallel`, "Billing management" created an
+ * active ph-plus subscription while "Feature gates … (free tier)" was rendering
+ * the policy page eight tests later, so the locked PDF preview came back
+ * unlocked and the gate test failed for a reason that had nothing to do with
+ * gates. Isolation, not ordering, is the constraint: these tests cannot share a
+ * user and run at the same time.
+ *
+ * `default`, not `serial`: both pin the file to one worker in declaration
+ * order, but serial also SKIPS every later test once one fails — which would
+ * turn a single gate regression into a blank report for the rest of the money
+ * path. The blocks that genuinely depend on each other declare serial
+ * themselves.
+ */
+test.describe.configure({ mode: 'default' })
+
 const FIXTURE_POLICY = 'E2E-MOT-001'
 const EXTRA_POLICY = 'E2E-MOT-002'
 

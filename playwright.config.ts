@@ -13,6 +13,10 @@ const policyholderIgnores = [
     '**/agent-journey.spec.ts',
     '**/agent-viewport-overflow.spec.ts',
     '**/admin-auth.setup.ts',
+    // /admin/* bounces a policyholder to /dashboard, so this spec could only
+    // ever fail here — four "failures" that said nothing about the insurer
+    // console. It belongs to `admin-chromium`, which has the admin session.
+    '**/admin-insurers.spec.ts',
     // public-marketing asserts ANONYMOUS behavior (own `public-anon` project);
     // a signed-in header state would audit a page no anonymous visitor sees.
     '**/public-marketing.spec.ts',
