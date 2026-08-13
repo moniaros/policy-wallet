@@ -158,6 +158,34 @@ export function baseFlagState(): FlagState {
     return { flags, degraded: false }
 }
 
+/**
+ * Causes already reported this process.
+ *
+ * The first sweep after this shipped produced thirteen identical console
+ * errors, one per protected page render, all saying the flags table did not
+ * exist yet — which is the state this design deliberately tolerates. Logging a
+ * DESIGNED degradation at error level on every request is not observability, it
+ * is noise that buries the failures worth reading, and in production it would
+ * have filled Sentry for the length of the migration window.
+ *
+ * Reported once per cause per process instead: still discoverable, no longer a
+ * drumbeat.
+ */
+const reportedCauses = new Set<string>()
+
+/** "Not migrated yet" is a deploy state; anything else is a real fault. */
+export function classifyLoadFailure(message: string): { cause: string; expected: boolean } {
+    if (/does not exist in the current database|P2021/i.test(message)) {
+        return { cause: "table-missing", expected: true }
+    }
+    return { cause: "unreadable", expected: false }
+}
+
+/** Exported for tests — resets the once-per-process log guard. */
+export function resetFlagLogGuard(): void {
+    reportedCauses.clear()
+}
+
 /** Exported for tests — the uncached loader with the never-throw contract. */
 export async function loadFlagsUncached(): Promise<FlagState> {
     const state = baseFlagState()
@@ -177,9 +205,18 @@ export async function loadFlagsUncached(): Promise<FlagState> {
             state.flags[row.key] = resolveFlag(def, process.env[def.envVar], row)
         }
     } catch (error) {
-        logger("error", "Feature flag load failed — serving environment defaults", {
-            error: error instanceof Error ? error.message : String(error),
-        })
+        const message = error instanceof Error ? error.message : String(error)
+        const { cause, expected } = classifyLoadFailure(message)
+        if (!reportedCauses.has(cause)) {
+            reportedCauses.add(cause)
+            logger(
+                expected ? "warn" : "error",
+                expected
+                    ? "Feature flags table not present yet — serving environment defaults. Expected between deploying this code and applying 20260813210000_feature_flags; overrides are inert until then."
+                    : "Feature flag load failed — serving environment defaults",
+                { error: message }
+            )
+        }
         return { ...baseFlagState(), degraded: true }
     }
 

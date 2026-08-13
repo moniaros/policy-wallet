@@ -16,6 +16,7 @@
 import { describe, expect, it } from "vitest"
 import {
     baseFlagState,
+    classifyLoadFailure,
     flagAppliesTo,
     flagEnabled,
     hashUserToPercent,
@@ -175,5 +176,26 @@ describe("registry integrity", () => {
             expect(state.flags[key], `${key} missing from base state`).toBeTruthy()
         }
         expect(state.degraded).toBe(false)
+    })
+})
+
+describe("degradation is quiet", () => {
+    // The first sweep after this shipped produced thirteen identical console
+    // errors — one per protected page render — all reporting the state the
+    // design deliberately tolerates. A designed degradation logged at error
+    // level on every request buries the failures worth reading.
+    it("classifies a missing table as expected, and anything else as a fault", () => {
+        expect(classifyLoadFailure("The table `public.feature_flags` does not exist in the current database.")).toEqual({
+            cause: "table-missing",
+            expected: true,
+        })
+        expect(classifyLoadFailure("P2021: table not found")).toEqual({
+            cause: "table-missing",
+            expected: true,
+        })
+        expect(classifyLoadFailure("Connection terminated unexpectedly")).toEqual({
+            cause: "unreadable",
+            expected: false,
+        })
     })
 })

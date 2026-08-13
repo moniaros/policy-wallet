@@ -45,11 +45,15 @@ export default async function QueuesPage() {
         db.notificationEvent.findFirst({ where: { status: "failed" }, orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
         db.policyAnalysisRun.count({ where: { status: { in: ["queued", "running"] } } }),
         db.policyAnalysisRun.findFirst({ where: { status: { in: ["queued", "running"] } }, orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
-        // Newest first: the most recent failure is the one whose cause is still
-        // live and worth fixing before reviving anything.
+        // Ordered by the LAST ATTEMPT, not completedAt: the dispatcher's catch
+        // branch sets only status, lastError and nextAttemptAt when a delivery
+        // dies, so completedAt stays null on every dead row and sorting by it
+        // would have been arbitrary while claiming to be newest-first.
+        // `startedAt` is stamped on each attempt, so for a dead row it is when
+        // it died — which is the cause still worth fixing.
         db.businessEventDelivery.findMany({
             where: { status: "dead" },
-            orderBy: { completedAt: "desc" },
+            orderBy: { startedAt: "desc" },
             take: 20,
             select: {
                 id: true,
