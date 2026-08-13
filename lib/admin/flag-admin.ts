@@ -136,7 +136,7 @@ export function describeFlagChange(input: FlagInput): string {
     if (definition?.kind === "canary") {
         return input.rollout === null
             ? `Cleared the audience override on ${label}`
-            : `Set ${label} audience to ${input.rollout}`
+            : `Set ${label} to ${input.rollout}`
     }
     if (input.enabled === null) return `Cleared the override on ${label}`
     return `Turned ${label} ${input.enabled ? "on" : "off"}`

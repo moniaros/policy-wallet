@@ -442,3 +442,54 @@ export async function resetFlag(formData: FormData) {
     invalidateFlags()
     redirect("/admin/automation/flags?saved=reset")
 }
+
+// ── Dead letters ─────────────────────────────────────────────────────────────
+
+/**
+ * Revive one dead business-event delivery.
+ *
+ * A delivery is parked as `dead` after MAX_ATTEMPTS, with `nextAttemptAt` set
+ * to null, and the sweep only selects `attempts < MAX_ATTEMPTS`. The dispatcher
+ * comments that "an operator must look" at that point — but until now looking
+ * was all an operator could do. A dead letter you can only count is a dead end,
+ * and what died is a CONSEQUENCE: a notification never sent, an advisor task
+ * never raised, a score never recomputed.
+ *
+ * Reviving resets `attempts` because that counter is what the sweep filters on.
+ * `lastError` is deliberately KEPT: until the retry succeeds, the reason it
+ * died is the most useful thing on the row, and clearing it would hide the
+ * history at exactly the moment someone is trying to understand it.
+ */
+export async function retryDeadDelivery(formData: FormData) {
+    const admin = await verifyAdminRole()
+    const deliveryId = String(formData.get("deliveryId") ?? "")
+    if (!deliveryId) throw new Error("A delivery id is required")
+
+    const delivery = await db.businessEventDelivery.findUnique({
+        where: { id: deliveryId },
+        include: { event: { select: { name: true } } },
+    })
+    if (!delivery) throw new Error("Delivery not found")
+    if (delivery.status !== "dead") {
+        // Not pedantry: resetting a live delivery's attempt counter would give
+        // it a fresh five tries against a subscriber that is already failing.
+        throw new Error(`That delivery is "${delivery.status}", not dead — only a dead letter can be revived`)
+    }
+
+    await db.businessEventDelivery.update({
+        where: { id: deliveryId },
+        data: { status: "pending", attempts: 0, nextAttemptAt: new Date(), completedAt: null },
+    })
+
+    await logAdminAction(
+        admin.id,
+        admin.email ?? "unknown",
+        "RETRY_DEAD_DELIVERY",
+        `Revived dead delivery of ${delivery.event.name} to ${delivery.subscriber} after ${delivery.attempts} failed attempts`,
+        { deliveryId, event: delivery.event.name, subscriber: delivery.subscriber, lastError: delivery.lastError }
+    )
+
+    revalidatePath("/admin/automation/queues")
+    revalidatePath("/admin/automation")
+    redirect("/admin/automation/queues?revived=1")
+}
