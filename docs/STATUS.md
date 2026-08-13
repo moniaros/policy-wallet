@@ -77,6 +77,25 @@ who can act on it" and a table cannot. One floor is deliberately not tunable: a 
 gap always reaches a human regardless of the setting — an operator quietly switching that off
 would be a defect, not a preference.
 
+**Dead letters can be revived.** Verifying the brief's action matrix rather than asserting it
+turned up a real hole: `/admin/automation/queues` counted dead deliveries and stated they "do
+not resolve on their own", then offered nothing — a diagnosis with no treatment. A delivery is
+parked after 5 attempts with `nextAttemptAt` null, and the sweep only selects
+`attempts < MAX_ATTEMPTS`, so it stays parked for ever; behind each row is a notification never
+sent or an advisor task never raised for a critical gap. The page now lists them with event,
+subscriber, attempts and the killing error, and a per-row Retry. `lastError` is kept on revive
+(it is the most useful thing on the row until the retry succeeds) and the action refuses
+anything not already dead, so a live delivery cannot be handed a fresh five tries against a
+subscriber that is currently failing.
+
+`lib/admin/flag-admin.ts` shipped untested in the flags commit; now 14 cases. Writing them
+found a wording defect that would have appeared in every audit log entry ("Set Remediation
+audience audience to 50").
+
+**Still open, found in the same pass:** `aiPromptOverrideRevision` and `planRevision` are
+written but read by no page, so "Version" is recorded and invisible for AI Rules and Plans —
+unlike templates, rules and flags, which all render their history.
+
 **What is left — needs a decision, not more work:**
 1. **The migration is unapplied**, on dev and prod both. Applying it was blocked here (both
    the raw-DDL script and Supabase MCP `apply_migration` were refused by the permission
