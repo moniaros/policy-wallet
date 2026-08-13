@@ -30,18 +30,26 @@ test.describe("Product Browse Friction", () => {
     test("categories browse control no longer gates signup and property typo is fixed", async ({ page }) => {
         await page.goto("/product")
 
-        await expect(page.locator("body")).toContainText(/υπο-ασφάλιση ακινήτου/i)
+        // Same reasoning as the test above: the category grid is asserted by
+        // the destination it links to, not by the sentence on the card. This
+        // used to require the phrase "υπο-ασφάλιση ακινήτου", which the copy
+        // rewrite replaced with plain words for the same idea — and the test
+        // then read a rewrite as a missing category.
+        const categories = page.locator("#product-categories")
+        await expect(categories.locator('a[href="/product/property"]').first()).toBeVisible()
+        // The typo this test is named for. Kept page-wide and cheap: the word
+        // can come back with the copy, and a doubled kappa is invisible in
+        // review to anyone reading quickly in a second language.
         await expect(page.locator("body")).not.toContainText(/ακκινήτου/i)
 
-        const browseControl = page.getByRole("button", { name: /explore all|δείτε όλα/i })
+        const browseControl = page.getByRole("button", { name: /see all|δείτε όλα/i })
         await browseControl.focus()
         await page.keyboard.press("Enter")
 
-        const heading = page.getByRole("heading", {
-            name: /every policy you need, analyzed for you|κάθε ασφάλεια που χρειάζεστε, αναλυμένη για εσάς/i,
-        })
-
-        await expect(heading).toBeFocused()
+        // Structural id, not the heading's text — which now counts the
+        // categories ("16 είδη συμβολαίων. Μία ανάλυση.") and so changes
+        // whenever the catalog does.
+        await expect(page.locator("#product-categories-heading")).toBeFocused()
         await expect(page).toHaveURL(/\/product$/)
     })
 

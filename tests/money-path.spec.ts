@@ -451,22 +451,26 @@ test.describe('Billing management (cancel honesty)', () => {
         }
     })
 
-    test('cancel from the Billing tab stops auto-renewal in the DB', async ({ page }) => {
+    test('cancel from plan settings stops auto-renewal in the DB', async ({ page }) => {
         // This test stacks page navigation + a server action + poll iterations
         // that each open a fresh Prisma client — every hop a round trip to the
         // remote pooler. The default 30s budget expired mid-poll while the
         // flip landed late (verified: the exact DB sequence succeeds in ~5s
         // standalone). Give the trans-continental path a realistic budget.
         test.setTimeout(90_000)
-        await page.goto('/account')
+        // /account's three React-state tabs became five real sub-routes, so
+        // there is no "Billing" tab to click any more — billing lives at
+        // /account/plan. Navigating straight there is also what the redirect
+        // for the legacy ?tab= links resolves to.
+        await page.goto('/account/plan')
         await dismissCookieBanner(page)
 
-        await page.getByRole('tab', { name: /Χρέωση|Billing/i }).first().click()
-        // The trigger now opens a branded confirmation that discloses the
-        // consequences (access until period end, no partial refund) instead of
-        // cancelling instantly — click through it.
+        // Two different strings by design: the row's control states what it
+        // does ("Διακοπή αυτόματης ανανέωσης"), and the dialog that follows
+        // discloses the consequences — access until period end, no partial
+        // refund — before its confirm ("Ακύρωση ανανέωσης") commits it.
         await page
-            .getByRole('button', { name: /Ακύρωση ανανέωσης|Cancel renewal/i })
+            .getByRole('button', { name: /Διακοπή αυτόματης ανανέωσης|Stop auto-renewal/i })
             .first()
             .click()
         await page
