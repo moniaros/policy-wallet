@@ -41,20 +41,11 @@ export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits>
     DEFAULT_AGENT_ENTITLEMENT_LIMITS
 
 // ── Agent Tier Hierarchy (for plan gating) ─────────────────────────
+// Defined in plan-defaults.ts (client-safe) because the gating question is
+// asked from client components, and this module imports the Prisma client.
+// Re-exported so existing server-side imports keep working.
 
-export const AGENT_TIER_HIERARCHY: Record<AgentTier, number> = {
-    agent_free: 0,
-    agent_starter: 1,
-    agent_pro: 2,
-    agency: 3,
-}
-
-export function isAgentTierSufficient(
-    currentTier: AgentTier,
-    requiredTier: AgentTier
-): boolean {
-    return AGENT_TIER_HIERARCHY[currentTier] >= AGENT_TIER_HIERARCHY[requiredTier]
-}
+export { AGENT_TIER_HIERARCHY, isAgentTierSufficient } from "@/lib/pricing/plan-defaults"
 
 // ── B2B Agent Pricing ────────────────────────────────────────────────
 

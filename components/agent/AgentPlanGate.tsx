@@ -4,7 +4,9 @@ import Link from "next/link"
 import { Crown } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { AgentTier } from "@/types/subscription-entitlements"
-import { AGENT_TIER_HIERARCHY } from "@/lib/subscription-entitlements"
+// plan-defaults, NOT subscription-entitlements: the latter imports the Prisma
+// client, which a "use client" module drags into the browser bundle.
+import { isAgentTierSufficient } from "@/lib/pricing/plan-defaults"
 
 const TIER_LABELS: Record<AgentTier, { en: string; el: string }> = {
     agent_free: { en: "Free", el: "Δωρεάν" },
@@ -23,7 +25,7 @@ interface AgentPlanGateProps {
 export function AgentPlanGate({ currentTier, requiredTier, featureLabel, children }: AgentPlanGateProps) {
     const { language, t } = useLanguage()
 
-    if (AGENT_TIER_HIERARCHY[currentTier] >= AGENT_TIER_HIERARCHY[requiredTier]) {
+    if (isAgentTierSufficient(currentTier, requiredTier)) {
         return <>{children}</>
     }
 
