@@ -13,6 +13,14 @@ import {
 } from "@/lib/notifications/config"
 import { TEMPLATE_CHANNELS, TEMPLATE_LOCALES } from "@/lib/notifications/templates"
 import { withJobRun } from "@/lib/jobs/run-record"
+import { FEATURE_FLAGS_CACHE_TAG } from "@/lib/flags/config"
+import { flagDefinition } from "@/lib/flags/registry"
+import {
+    computeFlagDiff,
+    describeFlagChange,
+    parseFlagForm,
+    validateFlagInput,
+} from "@/lib/admin/flag-admin"
 
 /**
  * Automation console actions.
@@ -300,4 +308,137 @@ export async function cloneRuleOverride(formData: FormData) {
 
     invalidate()
     redirect(`/admin/notifications/triggers/${targetEvent}?saved=cloned`)
+}
+
+// ── Feature flags ────────────────────────────────────────────────────────────
+
+function invalidateFlags() {
+    revalidateTag(FEATURE_FLAGS_CACHE_TAG, "max")
+    revalidatePath("/admin/automation/flags")
+    revalidatePath("/admin/automation")
+}
+
+/**
+ * Write one flag's override.
+ *
+ * Upsert + revision + audit log, the same contract every other operator-editable
+ * surface here holds to. The revision is the point: a flag flip changes live
+ * customer traffic, and "who turned this on, when, and why" has to survive the
+ * next edit.
+ */
+export async function saveFlag(formData: FormData) {
+    const admin = await verifyAdminRole()
+    const input = parseFlagForm(formData)
+    const definition = flagDefinition(input.key)
+
+    const errors = validateFlagInput(input, definition)
+    if (errors.length > 0) throw new Error(errors.map((e) => e.message).join(" "))
+
+    const existing = await db.featureFlag.findUnique({ where: { key: input.key } })
+    const changes = computeFlagDiff(existing, input)
+
+    // Nothing moved — do not manufacture a revision.
+    if (existing && Object.keys(changes).length === 0) {
+        redirect("/admin/automation/flags?saved=nochange")
+    }
+
+    const nextVersion = (existing?.version ?? 0) + 1
+
+    await db.$transaction(async (tx) => {
+        const row = await tx.featureFlag.upsert({
+            where: { key: input.key },
+            create: {
+                key: input.key,
+                enabled: input.enabled,
+                rollout: input.rollout,
+                notes: input.notes,
+                version: 1,
+                changedBy: admin.id,
+            },
+            update: {
+                enabled: input.enabled,
+                rollout: input.rollout,
+                notes: input.notes,
+                version: nextVersion,
+                changedBy: admin.id,
+            },
+        })
+        await tx.featureFlagRevision.create({
+            data: {
+                flagId: row.id,
+                version: row.version,
+                snapshot: input as never,
+                changes: changes as never,
+                changedBy: admin.id,
+                changedByEmail: admin.email ?? "unknown",
+            },
+        })
+    })
+
+    await logAdminAction(
+        admin.id,
+        admin.email ?? "unknown",
+        "UPDATE_FEATURE_FLAG",
+        describeFlagChange(input),
+        { key: input.key, changes }
+    )
+
+    invalidateFlags()
+    redirect("/admin/automation/flags?saved=1")
+}
+
+/**
+ * Clear the override so the flag falls back to its environment variable.
+ *
+ * Deliberately a different verb from "off". Deleting the row restores whatever
+ * the deployment says; setting it to off states an opinion. Collapsing the two
+ * is how an operator ends up disabling a feature while believing they undid
+ * their change.
+ */
+export async function resetFlag(formData: FormData) {
+    const admin = await verifyAdminRole()
+    const key = String(formData.get("key") ?? "")
+    if (!flagDefinition(key)) throw new Error(`Unknown flag "${key}"`)
+
+    const existing = await db.featureFlag.findUnique({ where: { key } })
+    if (!existing) redirect("/admin/automation/flags?saved=nochange")
+
+    await db.$transaction(async (tx) => {
+        // The revision is written BEFORE the delete cascades it away, so the
+        // history records that the override was removed and by whom.
+        await tx.featureFlagRevision.create({
+            data: {
+                flagId: existing.id,
+                version: existing.version + 1,
+                snapshot: { key, enabled: null, rollout: null } as never,
+                changes: {
+                    enabled: { from: existing.enabled, to: null },
+                    rollout: { from: existing.rollout, to: null },
+                } as never,
+                changedBy: admin.id,
+                changedByEmail: admin.email ?? "unknown",
+            },
+        })
+        await tx.featureFlag.update({
+            where: { key },
+            data: {
+                enabled: null,
+                rollout: null,
+                notes: null,
+                version: existing.version + 1,
+                changedBy: admin.id,
+            },
+        })
+    })
+
+    await logAdminAction(
+        admin.id,
+        admin.email ?? "unknown",
+        "RESET_FEATURE_FLAG",
+        `Cleared the override on ${key} — it now follows the deployment again`,
+        { key }
+    )
+
+    invalidateFlags()
+    redirect("/admin/automation/flags?saved=reset")
 }

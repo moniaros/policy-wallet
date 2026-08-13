@@ -19,6 +19,8 @@ const ROUTES = [
     '/account',
     '/activity',
     '/admin/activity',
+    '/admin/automation',
+    '/admin/automation/flags',
     '/admin/billing-reconciliation',
     '/admin/dashboard',
     '/admin/dsr',

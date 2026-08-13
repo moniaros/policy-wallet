@@ -124,7 +124,7 @@ export default defineConfig({
             // The 14 /admin/* routes only ever redirected for the policyholder
             // and agent fixtures, so 29 of 108 routes were covered no further
             // than that bounce. This session reaches them.
-            testMatch: /(ui-quality-audit|admin-insurers|agent-h1-empty-state)\.spec\.ts/,
+            testMatch: /(ui-quality-audit|admin-insurers|agent-h1-empty-state|admin-feature-flags)\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/admin.json',

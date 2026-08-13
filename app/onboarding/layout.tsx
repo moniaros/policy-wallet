@@ -9,9 +9,9 @@ export default async function OnboardingLayout({
 }) {
     const { dbUser } = await getAuthenticatedUser()
 
-    // Email-verification hard gate (opt-in via ENFORCE_EMAIL_VERIFICATION):
-    // don't let an unverified user onboard before verifying.
-    if (emailVerificationRequired(dbUser)) {
+    // Email-verification hard gate (opt-in via the auth.enforce_email_verification
+    // feature flag): don't let an unverified user onboard before verifying.
+    if (await emailVerificationRequired(dbUser)) {
         redirect("/auth/signup/confirmation")
     }
 

@@ -2359,3 +2359,61 @@ model RiskReview {
   @@index([status, dueAt])
   @@map("risk_reviews")
 }
+
+/// An operator-controlled feature flag.
+///
+/// Flags are NOT invented here — every row corresponds to a key already
+/// declared in lib/flags/registry.ts, which in turn corresponds to an
+/// environment variable this product has been reading all along
+/// (FF_AI_FAILOVER_OPENAI, ENFORCE_EMAIL_VERIFICATION, EXTRACTION_CITATIONS, …).
+///
+/// The point of the table is the thing the env var cannot do: change without a
+/// redeploy. Precedence is DB row → environment variable → the default declared
+/// in code, so an unreadable database or a missing row leaves the product
+/// behaving exactly as it shipped. A row for an unknown key is inert, never a
+/// crash — the same contract notification rule overrides already follow.
+model FeatureFlag {
+  id  String @id @default(cuid()) @map("flag_id")
+  /// Registry key, e.g. "ai.failover_openai". Unknown keys are ignored on read.
+  key String @unique
+
+  /// The kill switch. Null means "no opinion — fall through to the env var".
+  enabled Boolean?
+
+  /// Audience for a staged rollout, mirroring the canary vocabulary the AI
+  /// remediation path already uses: off | internal | 10 | 50 | 100.
+  /// Null falls through to the env var in the same way.
+  rollout String?
+
+  /// Why this was changed. Operator input, shown in the version history.
+  notes String? @db.Text
+
+  version   Int      @default(1)
+  changedBy String?  @map("changed_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  revisions FeatureFlagRevision[]
+
+  @@map("feature_flags")
+}
+
+/// Append-only history for FeatureFlag, matching NotificationTemplateRevision
+/// and NotificationRuleRevision. A flag flip is an operational act on live
+/// customer traffic; "who turned this on, when, and why" has to survive the
+/// next edit.
+model FeatureFlagRevision {
+  id             String   @id @default(cuid()) @map("revision_id")
+  flagId         String   @map("flag_id")
+  version        Int
+  snapshot       Json
+  changes        Json
+  changedBy      String   @map("changed_by")
+  changedByEmail String   @map("changed_by_email")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  flag FeatureFlag @relation(fields: [flagId], references: [id], onDelete: Cascade)
+
+  @@index([flagId, createdAt])
+  @@map("feature_flag_revisions")
+}

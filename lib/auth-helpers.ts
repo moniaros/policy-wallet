@@ -92,15 +92,22 @@ export async function getIsPayingUser(dbUser: any) {
 /**
  * Whether this user must verify their email before accessing the app.
  *
- * Gate is OFF by default and enabled with ENFORCE_EMAIL_VERIFICATION=1 (kept
- * off for the internal demo so testers aren't blocked; flip on before real
- * traffic — see docs/STATUS.md / issue #39). Phone-only signups get a synthetic
- * email that is auto-verified at registration, so they always pass.
+ * Gate is OFF by default (kept off for the internal demo so testers aren't
+ * blocked; flip on before real traffic — see docs/STATUS.md / issue #39).
+ * Phone-only signups get a synthetic email that is auto-verified at
+ * registration, so they always pass.
+ *
+ * The switch now lives in the feature-flag layer as `auth.enforce_email_
+ * verification`, so it can be turned on from /admin/automation/flags without a
+ * redeploy. With no database row it still resolves through
+ * ENFORCE_EMAIL_VERIFICATION and then to OFF, so the behaviour is unchanged
+ * until somebody deliberately changes it.
  */
-export function emailVerificationRequired(
+export async function emailVerificationRequired(
     user: { emailVerified: Date | null } | null | undefined
-): boolean {
-    if (process.env.ENFORCE_EMAIL_VERIFICATION !== "1") return false
+): Promise<boolean> {
+    const { getFlags, flagEnabled } = await import("@/lib/flags/config")
+    if (!flagEnabled(await getFlags(), "auth.enforce_email_verification")) return false
     if (!user) return false
     return !user.emailVerified
 }

@@ -6,6 +6,7 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
 import { db } from "@/lib/db"
 import { BUSINESS_EVENTS } from "@/lib/events/catalog"
+import { FEATURE_FLAGS } from "@/lib/flags/registry"
 import { NOTIFICATION_EVENTS } from "@/lib/notifications/registry"
 import { getNotificationConfig } from "@/lib/notifications/config"
 import { settingValue } from "@/lib/notifications/settings"
@@ -48,6 +49,7 @@ export default async function AutomationConsolePage() {
         templateCount,
         overrideCount,
         disabledEvents,
+        overriddenFlags,
     ] = await Promise.all([
         getNotificationConfig(),
         db.businessEvent.count({ where: { dispatchState: "pending" } }),
@@ -59,6 +61,17 @@ export default async function AutomationConsolePage() {
         db.notificationTemplate.count({ where: { isActive: true } }),
         db.notificationRuleOverride.count(),
         db.businessEventOverride.count({ where: { enabled: false } }),
+        // "Overridden" means a row is actively taking control, which is not the
+        // same as a row existing — a cleared override leaves both columns NULL.
+        //
+        // Falls back to 0 rather than throwing: this hub must not go down
+        // because the flags table is not there yet. Code and migration deploy
+        // separately here (the Prisma migrate CLI cannot reach this database —
+        // DIRECT_URL is the transaction pooler), so there is a real window in
+        // which one has landed and the other has not, in either order.
+        db.featureFlag
+            .count({ where: { OR: [{ enabled: { not: null } }, { rollout: { not: null } }] } })
+            .catch(() => 0),
     ])
 
     const paused = settingValue<boolean>(config.settings, "automation.paused")
@@ -130,8 +143,18 @@ export default async function AutomationConsolePage() {
             warn: null,
         },
         {
+            href: "/admin/automation/flags",
+            title: "Feature flags",
+            blurb: "Switches that take effect without a deploy. Falls back to the environment.",
+            stat: `${Object.keys(FEATURE_FLAGS).length} declared`,
+            warn: overriddenFlags > 0 ? `${overriddenFlags} overridden` : null,
+        },
+        {
             href: "/admin/notifications",
-            title: "Feature flags & settings",
+            // Was titled "Feature flags & settings", which is what sent someone
+            // looking for a flag to a page that has none. These are the global
+            // notification settings; the flags are the card above.
+            title: "Notification settings",
             blurb: "Global pause, channel toggles, thresholds, quiet hours, caps.",
             stat: "global",
             warn: paused ? "paused" : null,

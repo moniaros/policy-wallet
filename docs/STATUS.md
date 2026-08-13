@@ -2,6 +2,86 @@
 
 _Living dashboard — not a log. Any session that commits or decides ends by updating this file (agent writes the delta; see CLAUDE.md rule). Keep under one screen — move resolved items to `docs/planning/status-archive.md`._
 
+## Session wrap — 2026-08-13b (Feature flags: the automation console's one missing pillar)
+
+**Current phase:** built and gated on `feat/marketing-site-overhaul`. **The migration is
+NOT applied to any environment yet** — see "What is left" below.
+
+**The audit first.** Measured against the automation-console brief, this product already has
+almost all of it: business events (`/admin/automation/events`), notification/email/push/in-app
+templates with preview + test + clone + version, automation rules, **retry rules** and
+**escalation rules** (`NotificationRuleOverride.retry*` / `escalation*`), coverage-gap rules
+(`/admin/gaps`), AI rules (`/admin/ai/*`), schedules with pause/resume/run-now, queues,
+localization, analytics, notification history, automation logs and delivery failures. Every
+verb in the brief except one was already wired.
+
+**Feature flags were the gap — and they already existed, as environment variables.**
+`FF_AI_FAILOVER_OPENAI`, `FF_AI_DEGRADED_COMPLETION`, `FF_AI_REMEDIATION_ALERTS`,
+`FF_AI_REMEDIATION_CANARY_MODE`, `AI_ALLOW_FULL_FAILOVER`, `ENFORCE_EMAIL_VERIFICATION`,
+`EXTRACTION_CITATIONS`, each read straight from `process.env` at the call site. They work.
+What they cannot do is change: a flip means editing the Vercel environment and redeploying,
+so the one control you reach for while production is misbehaving costs a build.
+
+**What shipped.** `FeatureFlag` + `FeatureFlagRevision` (migration
+`20260813210000_feature_flags`, additive, new tables only), `lib/flags/registry.ts` (the
+catalog), `lib/flags/config.ts` (the resolver), `lib/admin/flag-admin.ts` (pure form logic),
+and `/admin/automation/flags`. Precedence on read is **override → environment variable →
+the default declared in code**, so no row, or an unreadable database, leaves the product
+behaving exactly as it shipped. `withCache` was extracted from `lib/notifications/config.ts`
+to `lib/cache/tagged-cache.ts` so both loaders hold one contract rather than two.
+
+Three rules keep it honest:
+1. **A flag must be declared in code next to the call site that reads it.** A row for an
+   undeclared key is inert. Operators tune flags; they cannot mint one, because a switch
+   wired to nothing looks like control and isn't.
+2. **NULL is "fall through", not "off".** Clearing an override restores what the deployment
+   says. Collapsing those two is how someone disables a feature believing they undid a change.
+3. **`extraction.citations` is listed read-only.** It is read synchronously while building the
+   extraction prompt and response schema, so moving it into the database would make prompt
+   construction async — a change to the extraction contract on the money path, which does not
+   belong in an admin-console change. It is shown so its production value is *visible*
+   (it IS set in prod), with the reason stated on the card.
+
+**Wired, not decorative:** `remediation-policy.ts`'s five predicates now read the flag layer
+(async; callers in `policy-analysis-orchestrator.service.ts` updated), and
+`emailVerificationRequired` too. Checked prod env before touching the latter:
+`ENFORCE_EMAIL_VERIFICATION` is **not set in production**, so the switch to a slightly wider
+boolean parser cannot flip the gate on and lock unverified customers out.
+
+**Also fixed on the way past:** the automation hub had a card titled "Feature flags &
+settings" pointing at `/admin/notifications`, which has no flags — that is what sent someone
+looking for a flag to the wrong page. It is now "Notification settings", with the real flags
+card beside it.
+
+**Verified.** 4,464 unit tests (426 files) green, +19 new pinning the precedence contract.
+Full guardrail gate green: `audit:api-auth` 101/101, `lint`, `lint:i18n-changed`,
+`lint:utf8` 1806 files, `type-check`. New E2E `tests/admin-feature-flags.spec.ts`, 6/6 under
+`admin-chromium` — and deliberately passing in the **degraded** state, i.e. with the table
+absent, which is the window this has to survive.
+
+**What is left — needs a decision, not more work:**
+1. **The migration is unapplied**, on dev and prod both. Applying it was blocked here (both
+   the raw-DDL script and Supabase MCP `apply_migration` were refused by the permission
+   classifier). Until it runs, the console renders read-only with a banner saying exactly
+   that, and every flag resolves through the environment as it does today. Both new DB reads
+   degrade rather than throw, so **code and migration can land in either order** — there is
+   no deploy-ordering trap.
+2. **Decision-engine thresholds are still hardcoded** — `current < 40` for the protection-score
+   band and `severity === "critical"` for gap routing
+   (`lib/events/decision-engine.ts` ~281/~298). The right home is the EXISTING
+   `NotificationSetting` registry, which already has a `thresholds` group; the blocker is that
+   `EventContext` carries no settings, so the dispatcher must thread them into every rule.
+   Deliberately not bundled here: that is a change to the code deciding what customers are
+   told, and it should not ride along with a console.
+
+**Next 3 actions:** 1) apply `20260813210000_feature_flags` to dev, then prod (Supabase MCP
+`apply_migration` + a manual `_prisma_migrations` row — the Prisma migrate CLI cannot reach
+this database); 2) merge to `NEW-UI` when ready, remembering that CI-green auto-deploys prod;
+3) thread `threshold.*` settings into `EventContext` for the decision-engine bands.
+**Last updated:** 2026-08-13
+
+---
+
 ## Session wrap — 2026-08-13 (E2E audit re-anchored; all three role sessions verified green)
 
 **Current phase:** `feat/marketing-site-overhaul`, three commits (`11610540`, `f53c2978`,

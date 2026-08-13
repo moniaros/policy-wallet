@@ -995,7 +995,7 @@ export class PolicyAnalysisOrchestratorService {
 
             if (
                 terminalRun &&
-                isRemediationAlertingEnabled(terminalRun.userId, terminalRun.user?.roles) &&
+                (await isRemediationAlertingEnabled(terminalRun.userId, terminalRun.user?.roles)) &&
                 (terminalRun.status === "completed_with_warnings" ||
                     terminalRun.status === "failed" ||
                     terminalRun.status === "blocked")
@@ -1077,9 +1077,13 @@ export class PolicyAnalysisOrchestratorService {
 
         const fallbackOpenAI = getAIService("openai")
         const primaryService = getAIService(primaryProvider)
-        const failoverEnabled = isOpenAIFailoverEnabled(run.userId, userRoles)
-        const degradedEnabled = isDegradedCompletionEnabled(run.userId, userRoles)
-        const fullFailoverAllowed = isFullFailoverAllowed(run.userId, userRoles)
+        // One resolve, three reads: getFlags() is cached, so these do not cost
+        // three round trips.
+        const [failoverEnabled, degradedEnabled, fullFailoverAllowed] = await Promise.all([
+            isOpenAIFailoverEnabled(run.userId, userRoles),
+            isDegradedCompletionEnabled(run.userId, userRoles),
+            isFullFailoverAllowed(run.userId, userRoles),
+        ])
 
         if (!primaryService.isAvailable()) {
             if (!(failoverEnabled && fallbackOpenAI.isAvailable())) {
@@ -2297,7 +2301,7 @@ export class PolicyAnalysisOrchestratorService {
             // Try Anthropic first (if not already the preferred provider)
             if (
                 params.preferredProvider !== "anthropic" &&
-                isAnthropicFailoverEnabled(params.userId, params.userRoles)
+                (await isAnthropicFailoverEnabled(params.userId, params.userRoles))
             ) {
                 const anthropicPayload = await runSingleAttempt({
                     provider: "anthropic",
@@ -2311,7 +2315,7 @@ export class PolicyAnalysisOrchestratorService {
             // Then try OpenAI (if not already the preferred provider)
             if (
                 params.preferredProvider !== "openai" &&
-                isOpenAIFailoverEnabled(params.userId, params.userRoles)
+                (await isOpenAIFailoverEnabled(params.userId, params.userRoles))
             ) {
                 const openaiPayload = await runSingleAttempt({
                     provider: "openai",
