@@ -171,9 +171,18 @@ function scanViewport() {
             if (el.closest('p, li')) continue // prose links
             if ((' ' + String(el.className || '') + ' ').indexOf(' sr-only ') >= 0) continue
             if (cs.clipPath === 'inset(50%)' || cs.clip === 'rect(0px, 0px, 0px, 0px)') continue
+            // Spam honeypots: a real <input> nobody can see or reach, parked
+            // off-screen at opacity 0. Same intent as the sr-only and clip
+            // cases above — it was only missed because it is 1px wide rather
+            // than 0, and so cleared the width>=1 gate at the top of the loop.
+            if (Number(cs.opacity) === 0) continue
+            if (r.right < 0 || r.left > vw) continue
             // An icon inside a properly sized button is not its own target.
             if (el.querySelector('button, a[href], input, select, [role=button]')) continue
-            const outer = el.parentElement?.closest('button, a[href], [role=button]')
+            // `label` joins the list: a checkbox wrapped in one is toggled by
+            // clicking anywhere in that label, so the row IS the target — the
+            // 16px box is just where the tick is drawn.
+            const outer = el.parentElement?.closest('button, a[href], [role=button], label')
             if (outer) {
                 const orect = outer.getBoundingClientRect()
                 if (orect.width >= 24 && orect.height >= 24) continue
@@ -234,8 +243,19 @@ function scanA11y() {
     }
     if (!document.documentElement.getAttribute('lang')) problems.push('<html> has no lang')
     if (!document.querySelector('main, [role=main]')) problems.push('no <main> landmark')
-    if (document.querySelectorAll('h1').length === 0) problems.push('no <h1>')
-    if (document.querySelectorAll('h1').length > 1) problems.push(`${document.querySelectorAll('h1').length} <h1> elements`)
+    // RENDERED h1s, not DOM nodes.
+    //
+    // A responsive shell that ships a mobile header and a desktop header —
+    // each `display:none` at the other's widths — has two <h1> in the markup
+    // and exactly one in the accessibility tree, which is what the rule is
+    // actually about. Counting nodes reported /account and /agent/settings as
+    // defects at every breakpoint for a page that was correct.
+    const renderedH1s = Array.from(document.querySelectorAll('h1')).filter((el) => {
+        const r = el.getBoundingClientRect()
+        return r.width > 0 && r.height > 0
+    })
+    if (renderedH1s.length === 0) problems.push('no rendered <h1>')
+    if (renderedH1s.length > 1) problems.push(`${renderedH1s.length} rendered <h1> elements`)
     return problems
 }
 
@@ -272,7 +292,13 @@ test.describe('responsive, accessibility and runtime quality', () => {
     test.describe.configure({ retries: 0 })
 
     test('every route at every breakpoint', async ({ page }, testInfo) => {
-        test.setTimeout(45 * 60_000)
+        // A warm run is ~30 minutes; a COLD one pays Next's first-hit dev
+        // compilation on every route it touches and ran past the old 45-minute
+        // budget at route 80 of 94 — reported, correctly, as fourteen routes
+        // that never loaded. The sweep gets the headroom rather than the
+        // findings getting truncated, because with retries off this one attempt
+        // has to finish.
+        test.setTimeout(75 * 60_000)
 
         // Auditing a route this session cannot open measures the redirect stub,
         // not the page — and then counts the miss against coverage.
@@ -306,6 +332,15 @@ test.describe('responsive, accessibility and runtime quality', () => {
             // `next start` does not serve /_vercel/* — those endpoints exist only
             // on Vercel's edge. Verified 200 in production; local-only noise.
             if (/_vercel\/(insights|speed-insights)/i.test(t)) return
+            // Emitted by Next about its OWN inline scripts — the flight payload
+            // and the dev-tools segment explorer it injects into <body>. Traced
+            // to node_modules/next/dist/…:1915 on a page that renders no script
+            // of ours (the /perks 404, zero JSON-LD tags). Ours is server-side
+            // JSON-LD, which lib/seo/jsonld.tsx keeps as a real inline tag on
+            // purpose so crawlers without JS still see it.
+            if (/Encountered a script tag while rendering React component/i.test(t)) return
+            // The Turbopack HMR socket closing during a viewport sweep. Dev only.
+            if (/WebSocket is already in CLOSING or CLOSED state/i.test(t)) return
             runtime.push(`CONSOLE ${page.url()}: ${t.slice(0, 110)}`)
         })
 

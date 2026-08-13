@@ -212,8 +212,16 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                             : "border-l-[3px] border-l-primary border-t-black/10 border-r-black/10 border-b-black/10 bg-primary/5 dark:border-b-white/15 dark:bg-primary/10"
                                     }`}
                                 >
+                                    {/* min-w-0 + shrink-0, and in that order of
+                                        blame: the timestamp is `whitespace-nowrap`,
+                                        so when this row ran out of width it was
+                                        compressed to 54px with 103px of unbreakable
+                                        date inside it, and the ink — not any element
+                                        box — spilled to 340px in a 320px viewport.
+                                        The wrappable text column absorbs the squeeze
+                                        instead. */}
                                     <div className="flex items-start justify-between gap-3">
-                                        <div>
+                                        <div className="min-w-0">
                                             <p
                                                 className={`text-sm text-black dark:text-white ${isRead ? "font-medium" : "font-bold"}`}
                                             >
@@ -227,7 +235,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                                 <span>{channelLabel}</span>
                                             </div>
                                         </div>
-                                        <p className="whitespace-nowrap text-xs font-medium text-black/60 dark:text-white/60">
+                                        <p className="shrink-0 whitespace-nowrap text-xs font-medium text-black/60 dark:text-white/60">
                                             {createdAtText}
                                         </p>
                                     </div>

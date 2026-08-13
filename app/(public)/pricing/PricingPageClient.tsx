@@ -377,7 +377,7 @@ export default function PricingPage({
                         <h2 className="mb-12 text-center text-h2 font-semibold tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white">
                             {pricingContent[aud].faqTitle[language]}
                         </h2>
-                        <PricingFAQ language={language} items={pricingContent[aud].faqItems} />
+                        <PricingFAQ language={language} items={pricingContent[aud].faqItems} idPrefix={`pricing-faq-${aud}`} />
                     </div>
                 </section>
             ))}
