@@ -35,6 +35,36 @@ export const DEFAULT_CATEGORIES: ConsentCategories = {
     marketing: false,
 }
 
+/**
+ * Percent-decode a stored consent value, tolerating a DOUBLE-encoded one.
+ *
+ * Between 2026-03-18 and 2026-08-13 the consents API handed an already
+ * `encodeURIComponent`-ed string to `response.cookies.set()`, which encodes
+ * again — so every browser that reached the API ended up holding
+ * `%257B%2522consentType%2522…`. One decode leaves `%7B%22…`, `JSON.parse`
+ * throws, and the reader concludes "no prior consent": the banner came back on
+ * every page load and analytics stayed off for people who had opted IN.
+ *
+ * The writer is fixed, but those cookies live for a year in real browsers, and
+ * we already hold the person's answer — re-prompting them for it is noise, not
+ * caution. So decode a second time when the first pass hands back something
+ * that is still encoded. Bounded at two passes: this recovers the one shape we
+ * actually shipped, and never loops on hostile input.
+ */
+function decodeConsentCookieValue(encoded: string): string | null {
+    let value = encoded
+    for (let pass = 0; pass < 2; pass++) {
+        try {
+            value = decodeURIComponent(value)
+        } catch {
+            // Malformed percent-escape — not a cookie we wrote.
+            return null
+        }
+        if (value.startsWith("{")) return value
+    }
+    return null
+}
+
 export function parseConsentCookie(rawCookieHeader: string | null): ConsentCookiePayload | null {
     if (!rawCookieHeader) return null
 
@@ -47,13 +77,24 @@ export function parseConsentCookie(rawCookieHeader: string | null): ConsentCooki
     const encoded = cookiePart.split("=")[1]
     if (!encoded) return null
 
+    const decoded = decodeConsentCookieValue(encoded)
+    if (!decoded) return null
+
     try {
-        return JSON.parse(decodeURIComponent(encoded)) as ConsentCookiePayload
+        return JSON.parse(decoded) as ConsentCookiePayload
     } catch {
         return null
     }
 }
 
+/**
+ * Encode a payload for a context that writes the cookie VALUE itself —
+ * `document.cookie`, or a raw `Set-Cookie`/`Cookie` header.
+ *
+ * Do NOT pass the result to Next's `response.cookies.set()`: that serializer
+ * percent-encodes what it is given, and pre-encoding is what produced the
+ * double-encoded cookie described above. Hand it the plain JSON string.
+ */
 export function serializeConsentCookie(payload: ConsentCookiePayload): string {
     return encodeURIComponent(JSON.stringify(payload))
 }
