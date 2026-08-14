@@ -92,9 +92,19 @@ describe('the auth tree carries its language on every internal link', () => {
     // An English visitor was sent to Greek /terms and /privacy — the two
     // documents the signup checkbox asks them to ACCEPT — and to a Greek
     // sign-in page. Only the "sign up as an agent" link carried ?lang=en.
-    const authFiles = readdirSync('app/auth', { recursive: true, withFileTypes: true })
-        .filter((e) => e.isFile() && e.name.endsWith('.tsx'))
-        .map((e) => join(String(e.parentPath ?? e.path), e.name))
+    // Walked by hand rather than with `readdirSync(recursive, withFileTypes)`:
+    // Dirent exposes the parent directory as `path` on some Node/@types
+    // versions and `parentPath` on others, which type-checks locally and fails
+    // in CI. This is portable across both.
+    function tsxFilesUnder(dir: string): string[] {
+        return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+            const full = join(dir, entry.name)
+            if (entry.isDirectory()) return tsxFilesUnder(full)
+            return entry.isFile() && entry.name.endsWith('.tsx') ? [full] : []
+        })
+    }
+
+    const authFiles = tsxFilesUnder('app/auth')
 
     it('finds the auth pages to check', () => {
         expect(authFiles.length).toBeGreaterThan(4)
