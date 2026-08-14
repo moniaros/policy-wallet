@@ -90,9 +90,14 @@ subscriber that is currently failing.
 found a wording defect that would have appeared in every audit log entry ("Set Remediation
 audience audience to 50").
 
-**Still open, found in the same pass:** `aiPromptOverrideRevision` and `planRevision` are
-written but read by no page, so "Version" is recorded and invisible for AI Rules and Plans —
-unlike templates, rules and flags, which all render their history.
+**"Version" now holds for AI Rules too.** `aiPromptOverrideRevision` had been written on every
+save since that page shipped and read by nothing, so the history existed in the database and
+was invisible to the operator — for the setting that changes what the model is told about a
+customer's insurance contract, which is the first thing anyone asks about after a bad
+extraction. `/admin/ai/prompts/[overrideId]` now renders it in the same shape as templates and
+rules. (An earlier draft of this note also claimed `planRevision` was unsurfaced; that was
+wrong — `/admin/plans/[planId]` has always rendered it via the `revisions` relation, which is
+why a grep for the model name missed it.)
 
 **What is left — needs a decision, not more work:**
 1. **The migration is unapplied**, on dev and prod both. Applying it was blocked here (both

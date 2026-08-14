@@ -26,7 +26,18 @@ export default function Error({
     }, [error])
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-50 px-6 dark:bg-neutral-900">
+        // A landmark, because this boundary catches a LAYOUT failure and so
+        // renders with no AppShell above it — there is no other <main> on the
+        // page, and nesting is impossible here.
+        //
+        // The route boundaries (components/ui/RouteError) deliberately do NOT
+        // do this: they render inside AppShell's <main id="main-content">, and
+        // adding another there would nest landmarks, which is worse than the
+        // gap it would close.
+        <main
+            role="main"
+            className="flex min-h-screen flex-col items-center justify-center bg-neutral-50 px-6 dark:bg-neutral-900"
+        >
             <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/10">
                 <AlertCircle className="h-10 w-10 text-red-700 dark:text-red-400" aria-hidden="true" />
             </div>
@@ -57,6 +68,6 @@ export default function Error({
                     Κωδικός συμβάντος · Incident ID: {error.digest}
                 </div>
             )}
-        </div>
+        </main>
     )
 }

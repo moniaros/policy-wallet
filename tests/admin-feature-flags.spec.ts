@@ -75,3 +75,97 @@ test.describe('feature flag console', () => {
         expect(overflow.scrollW).toBeLessThanOrEqual(overflow.vw + 2)
     })
 })
+
+/**
+ * The write path, end to end.
+ *
+ * Everything above proves the console RENDERS. None of it proves it SAVES —
+ * and the earlier runs all happened against a database with no flags table, so
+ * the whole persistence path had never once been exercised. These tests close
+ * that gap before anyone applies the migration to production: an override that
+ * takes effect, a revision recorded against it, and a clear that hands control
+ * back to the deployment rather than switching the feature off.
+ *
+ * Uses ai.remediation_alerts: a boolean flag that defaults OFF, is not
+ * safety-critical (so it needs no stated reason), and whose only consumer is
+ * the AI remediation path, which nothing in this suite exercises.
+ */
+test.describe('feature flag write path', () => {
+    // Each of these does three sequential form posts — reset, save, clear —
+    // and every one is a server action followed by a redirect and a re-render
+    // of an admin route that compiles cold. The clear-override case ran out of
+    // the default 30s with the page already in its correct final state
+    // (override gone, source back to "environment"), i.e. the budget expired,
+    // not the behaviour. Accommodation, not a cheat: same reasoning as the
+    // 90s budgets on money-path and shell-responsive.
+    test.describe.configure({ timeout: 90_000 })
+
+    const KEY = 'ai.remediation_alerts'
+
+    // Addressed by test id, not by text: "on", "off" and "override" also appear
+    // as <option> labels and prose inside the same card, so a text locator is
+    // ambiguous — which is exactly how the first run of these tests failed.
+    const state = (page: import('@playwright/test').Page) =>
+        page.getByTestId(`flag-state-${KEY}`)
+    const source = (page: import('@playwright/test').Page) =>
+        page.getByTestId(`flag-source-${KEY}`)
+    const card = (page: import('@playwright/test').Page) =>
+        page.locator('article').filter({ hasText: KEY })
+
+    /** Start every test from the deployment's own answer, whatever ran before. */
+    async function resetToDeployment(page: import('@playwright/test').Page) {
+        await page.goto('/admin/automation/flags')
+        await dismissCookieBanner(page)
+        const clear = card(page).getByRole('button', { name: /Clear override/i })
+        if (await clear.count()) {
+            await clear.click()
+            await page.waitForURL(/saved=/)
+        }
+    }
+
+    async function setEnabled(page: import('@playwright/test').Page, value: string) {
+        await card(page).locator('select[name="enabled"]').selectOption(value)
+        await card(page).getByRole('button', { name: 'Save' }).click()
+    }
+
+    test.beforeEach(async ({ page }) => resetToDeployment(page))
+    test.afterEach(async ({ page }) => resetToDeployment(page))
+
+    test('an override persists, takes effect, and is attributed', async ({ page }) => {
+        await expect(state(page)).toHaveText('off')
+        await expect(source(page)).not.toHaveText('override')
+
+        await setEnabled(page, 'true')
+        await page.waitForURL(/saved=1/)
+
+        await expect(state(page)).toHaveText('on')
+        await expect(source(page)).toHaveText('override')
+
+        // A flag flip changes live traffic, so it has to leave a trace.
+        const history = page.locator('section').filter({ hasText: 'Recent changes' })
+        await expect(history.getByText('e2e-admin@policywallet.test').first()).toBeVisible()
+    })
+
+    test('clearing an override restores the deployment, it does not switch off', async ({ page }) => {
+        // The trap: if "clear" were implemented as "set false", an operator
+        // undoing a change would silently disable the feature instead.
+        await setEnabled(page, 'true')
+        await page.waitForURL(/saved=1/)
+        await expect(source(page)).toHaveText('override')
+
+        await card(page).getByRole('button', { name: /Clear override/i }).click()
+        await page.waitForURL(/saved=reset/)
+
+        await expect(source(page)).not.toHaveText('override')
+        await expect(state(page)).toHaveText('off')
+    })
+
+    test('a no-op save records no new version', async ({ page }) => {
+        // A history full of saves that changed nothing is a history nobody reads.
+        await setEnabled(page, 'true')
+        await page.waitForURL(/saved=1/)
+
+        await setEnabled(page, 'true')
+        await page.waitForURL(/saved=nochange/)
+    })
+})
