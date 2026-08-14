@@ -85,6 +85,11 @@ export default function SignInPage() {
         setLoading(true)
 
         const identifier = tab === "email" ? email.trim() : phone.trim()
+        if (!identifier || !password) {
+            setError(copy.fillAllFields)
+            setLoading(false)
+            return
+        }
         const supabase = createClient()
 
         try {
@@ -242,7 +247,7 @@ export default function SignInPage() {
                     )}
                     {resendMessage && <p role="status" className="mb-4 text-body-sm text-[#475569] dark:text-white/65">{resendMessage}</p>}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form noValidate onSubmit={handleSubmit} className="space-y-4">
                         {/* Email / Phone toggle */}
                         <div className="flex rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-1 dark:border-white/10 dark:bg-white/5">
                             <button type="button" onClick={() => setTab("email")} className={`flex-1 rounded-lg py-2 text-body-sm font-semibold transition-all ${tab === "email" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>

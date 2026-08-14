@@ -353,12 +353,12 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 
                         {/* Terms */}
                         <label htmlFor="signup-terms" className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] dark:bg-slate-950 px-3 py-2.5 text-body-sm text-[#475569] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
-                            <input id="signup-terms" type="checkbox" {...register("termsAccepted")} className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-primary" />
+                            <input id="signup-terms" type="checkbox" aria-invalid={errors.termsAccepted ? true : undefined} aria-describedby={errors.termsAccepted ? "signup-terms-error" : undefined} {...register("termsAccepted")} className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-primary" />
                             <span>
                                 {t("Αποδέχομαι τους ", "I agree to ")}<Link href="/terms" className="font-semibold text-primary hover:underline">{t("Όρους", "Terms")}</Link>{t(" και το ", " and ")}<Link href="/privacy" className="font-semibold text-primary hover:underline">{t("Απόρρητο", "Privacy")}</Link>
                             </span>
                         </label>
-                        {errors.termsAccepted && <p role="alert" className="-mt-2 text-caption text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p>}
+                        {errors.termsAccepted && <p id="signup-terms-error" role="alert" className="-mt-2 text-caption text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p>}
 
                         {/* A "Use FaceID after first signup" hint used to sit here. It
                             promised a capability the product does not have: there is no
