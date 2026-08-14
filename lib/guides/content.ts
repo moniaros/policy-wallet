@@ -788,8 +788,8 @@ export const guides: Guide[] = [
                     en: "Does my insurance apply abroad?",
                 },
                 answer: {
-                    el: "Η αστική ευθύνη ισχύει σε όλο τον Ευρωπαϊκό Οικονομικό Χώρο (ΕΟΧ). Για χώρες εκτός συστήματος χρειάζεστε Πράσινη Κάρτα από την εταιρεία σας — συνήθως εκδίδεται δωρεάν ή με μικρό κόστος.",
-                    en: "Liability cover applies across the European Economic Area. For countries outside the system you need a Green Card from your insurer — usually issued free or at small cost.",
+                    el: "Η αστική ευθύνη ισχύει σε όλο τον Ευρωπαϊκό Οικονομικό Χώρο (ΕΟΧ). Για χώρες του συστήματος πράσινης κάρτας εκτός ΕΟΧ — όπως η Αλβανία, η Βόρεια Μακεδονία ή η Τουρκία — χρειάζεστε Πράσινη Κάρτα από την εταιρεία σας, συνήθως δωρεάν ή με μικρό κόστος. Για χώρες εκτός του συστήματος απαιτείται ασφάλιση συνόρων.",
+                    en: "Liability cover applies across the European Economic Area. For Green Card system countries outside the EEA — such as Albania, North Macedonia or Turkey — you need a Green Card from your insurer, usually free or at small cost. Outside the Green Card system you need frontier insurance.",
                 },
             },
         ],
