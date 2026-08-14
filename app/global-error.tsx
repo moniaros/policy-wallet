@@ -23,7 +23,9 @@ export default function GlobalError({
     return (
         <html lang="el">
             <body style={{ margin: 0, fontFamily: "Inter, system-ui, sans-serif", background: "#f8fafc" }}>
-                <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px", textAlign: "center" }}>
+                {/* This boundary ships its own document, so it is the only
+                    content on the page and the landmark cannot nest. */}
+                <main role="main" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px", textAlign: "center" }}>
                     <h1 style={{ fontSize: "28px", fontWeight: 700, color: "#0f172a", margin: "0 0 12px" }}>
                         Κάτι πήγε στραβά
                     </h1>
@@ -44,7 +46,7 @@ export default function GlobalError({
                             Κωδικός συμβάντος · Incident ID: {error.digest}
                         </div>
                     )}
-                </div>
+                </main>
             </body>
         </html>
     );
