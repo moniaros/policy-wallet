@@ -32,7 +32,19 @@ export default async function AiPromptOverrideEditorPage({
     const { overrideId } = await params
     const { saved } = await searchParams
 
-    const override = await db.aiPromptOverride.findUnique({ where: { id: overrideId } })
+    // Revisions have been recorded on every save since this page shipped, and
+    // read by nothing — so "Version" was true of the database and invisible to
+    // the operator. An AI prompt override changes what the model is told about
+    // a customer's insurance contract; "who changed this, when, and what moved"
+    // is the first question after a bad extraction.
+    const [override, revisions] = await Promise.all([
+        db.aiPromptOverride.findUnique({ where: { id: overrideId } }),
+        db.aiPromptOverrideRevision.findMany({
+            where: { overrideId },
+            orderBy: { createdAt: "desc" },
+            take: 20,
+        }),
+    ])
     if (!override) notFound()
 
     const opLabel = OPERATION_LABELS[override.operation] ?? override.operation
@@ -102,6 +114,40 @@ export default async function AiPromptOverrideEditorPage({
 
                 <button type="submit" className="pw-primary-button px-4 py-2">Save changes</button>
             </form>
+
+            {revisions.length > 0 && (
+                <section className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-5">
+                    <h2 className="font-semibold text-stone-900 dark:text-white">Version history</h2>
+                    <ul className="mt-3 space-y-3">
+                        {revisions.map((rev) => (
+                            <li
+                                key={rev.id}
+                                className="text-sm border-l-2 border-stone-200 dark:border-stone-600 pl-3"
+                            >
+                                <div className="flex justify-between gap-4 flex-wrap">
+                                    <span className="font-medium text-stone-900 dark:text-white">
+                                        v{rev.version}
+                                    </span>
+                                    <span className="text-xs text-stone-500 dark:text-stone-400">
+                                        {rev.changedByEmail} ·{" "}
+                                        {rev.createdAt.toISOString().slice(0, 16).replace("T", " ")}
+                                    </span>
+                                </div>
+                                <ul className="mt-1 space-y-0.5">
+                                    {Object.keys(rev.changes as Record<string, unknown>).map((field) => (
+                                        <li
+                                            key={field}
+                                            className="text-xs text-stone-600 dark:text-stone-400"
+                                        >
+                                            <code>{field}</code> changed
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+            )}
         </div>
     )
 }
