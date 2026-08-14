@@ -135,7 +135,11 @@ export default async function FeatureFlagsPage({
                                                 {key}
                                             </p>
                                         </div>
+                                        {/* Test id because "on"/"off" also appear as
+                                            <option> labels in the form below, so text
+                                            alone cannot address the state pill. */}
                                         <span
+                                            data-testid={`flag-state-${key}`}
                                             className={`${pill} shrink-0 ${
                                                 flag.enabled
                                                     ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
@@ -153,6 +157,7 @@ export default async function FeatureFlagsPage({
                                     <div className="flex flex-wrap gap-1.5 mt-2">
                                         {/* Provenance: which of the three layers is answering. */}
                                         <span
+                                            data-testid={`flag-source-${key}`}
                                             className={`${pill} ${
                                                 flag.source === "override"
                                                     ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
