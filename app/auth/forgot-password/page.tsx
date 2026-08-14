@@ -12,6 +12,7 @@ import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { authHref } from "@/lib/seo/locale-links"
 import { resetPasswordForEmail } from "../actions"
 
 const inter = Inter({
@@ -134,8 +135,15 @@ export default function ForgotPasswordPage() {
                     <LocaleToggle ariaLabel={uiText.userMenu.language} />
                 </div>
                 <motion.div
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    /* NOT `initial={{ opacity: 0 }}`. This card is the whole
+                       above-the-fold page, and the server HTML carried
+                       `style="opacity:0"` on it — so the form existed in the DOM
+                       at 1.5s but stayed invisible until framer-motion hydrated
+                       at 5.1s, which is what set LCP (5.2s on slow 4G). The
+                       entry motion is now transform-only: the card is painted at
+                       first paint and slides the last 18px once JS arrives. */
+                    initial={{ y: 18 }}
+                    animate={{ y: 0 }}
                     transition={{ duration: 0.3 }}
                     className="w-full rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-10"
                 >
@@ -175,7 +183,7 @@ export default function ForgotPasswordPage() {
                                 </div>
                             </div>
                             <Link
-                                href="/auth/signin"
+                                href={authHref("/auth/signin", lang)}
                                 className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
                             >
                                 <ArrowLeft className="h-4 w-4" />
@@ -236,7 +244,7 @@ export default function ForgotPasswordPage() {
                             </button>
 
                             <Link
-                                href="/auth/signin"
+                                href={authHref("/auth/signin", lang)}
                                 className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
                             >
                                 <ArrowLeft className="h-4 w-4" />

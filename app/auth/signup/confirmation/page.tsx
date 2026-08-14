@@ -9,6 +9,7 @@ import { AlertCircle, ArrowRight, CheckCircle2, CreditCard, Loader2, Mail, Refre
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { getTranslations } from "@/lib/i18n"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { authHref } from "@/lib/seo/locale-links"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { completeOnboardingStep } from "@/app/onboarding/actions"
 import { resendVerificationEmail } from "@/app/auth/actions"
@@ -37,6 +38,9 @@ function SignupConfirmationContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { language, setLanguage } = useLanguage()
+    // Internal auth links must carry the pinned language; a bare href
+    // dropped an English visitor onto the Greek sign-in page.
+    const authLocale: "el" | "en" = language === "el" ? "el" : "en"
     const uiText = getTranslations(language)
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
@@ -259,8 +263,12 @@ function SignupConfirmationContent() {
                 it, so without one there is nothing to skip to. */}
             <main className="flex flex-1 items-center justify-center px-4 py-10">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    /* Transform-only entry: see the note on
+                       app/auth/forgot-password/page.tsx. An `opacity: 0`
+                       initial ships in the server HTML, so the whole card stays
+                       invisible until framer-motion hydrates. */
+                    initial={{ y: 20 }}
+                    animate={{ y: 0 }}
                     transition={{ duration: 0.3 }}
                     className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-7"
                 >
@@ -295,7 +303,7 @@ function SignupConfirmationContent() {
                                 {copy.authMissing}
                             </div>
                             <Link
-                                href="/auth/signin"
+                                href={authHref("/auth/signin", authLocale)}
                                 className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover dark:text-[#1A2420]"
                             >
                                 {copy.signin}

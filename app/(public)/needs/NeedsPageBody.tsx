@@ -31,8 +31,8 @@ export function NeedsPageBody({ locale }: { locale: "el" | "en" }) {
                 <div className="mx-auto mb-12 max-w-[760px]">
                     <h1 className="mb-4 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] lg:text-display dark:text-white">
                         {t(
-                            "Έξι ερωτήσεις. Μετά ξέρετε τι να ελέγξετε.",
-                            "Six questions. Then you know what to check.",
+                            "Έξι βήματα. Μετά ξέρετε τι να ελέγξετε.",
+                            "Six steps. Then you know what to check.",
                         )}
                     </h1>
                     <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">

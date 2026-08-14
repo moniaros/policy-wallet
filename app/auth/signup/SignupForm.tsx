@@ -12,6 +12,7 @@ import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2, Sparkles } from "lucid
 import { registerUser } from "../actions"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { trackLandingEvent } from "@/lib/landing/analytics"
+import { authHref, localizeHref } from "@/lib/seo/locale-links"
 import { buildSyntheticEmailFromPhone, normalizeGreekMobile } from "@/lib/auth/phone-auth"
 import { LocaleToggle } from "@/components/ui/LocaleToggle"
 import { getTranslations } from "@/lib/i18n"
@@ -93,6 +94,11 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     const { language, setLanguage } = useLanguage()
     const uiText = getTranslations(language)
     const t = (el: string, en: string) => (language === "el" ? el : en)
+    // Every internal link on this page has to carry the language forward. An
+    // English visitor was being sent to Greek /terms and /privacy — the two
+    // documents the checkbox below asks them to ACCEPT — and to a Greek
+    // sign-in page.
+    const locale: "el" | "en" = language === "el" ? "el" : "en"
 
     const source = searchParams.get("source") || "signup_direct"
     const token = searchParams.get("token") || ""
@@ -213,8 +219,12 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                 </div>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    /* Transform-only entry: see the note on
+                       app/auth/forgot-password/page.tsx. An `opacity: 0`
+                       initial ships in the server HTML, so the whole card stays
+                       invisible until framer-motion hydrates. */
+                    initial={{ y: 20 }}
+                    animate={{ y: 0 }}
                     transition={{ duration: 0.3 }}
                     className="relative overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111]"
                 >
@@ -355,7 +365,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                         <label htmlFor="signup-terms" className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] dark:bg-slate-950 px-3 py-2.5 text-body-sm text-[#475569] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
                             <input id="signup-terms" type="checkbox" aria-invalid={errors.termsAccepted ? true : undefined} aria-describedby={errors.termsAccepted ? "signup-terms-error" : undefined} {...register("termsAccepted")} className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-primary" />
                             <span>
-                                {t("Αποδέχομαι τους ", "I agree to ")}<Link href="/terms" className="font-semibold text-primary hover:underline">{t("Όρους", "Terms")}</Link>{t(" και το ", " and ")}<Link href="/privacy" className="font-semibold text-primary hover:underline">{t("Απόρρητο", "Privacy")}</Link>
+                                {t("Αποδέχομαι τους ", "I agree to ")}<Link href={localizeHref("/terms", locale)} className="font-semibold text-primary hover:underline">{t("Όρους", "Terms")}</Link>{t(" και το ", " and ")}<Link href={localizeHref("/privacy", locale)} className="font-semibold text-primary hover:underline">{t("Απόρρητο", "Privacy")}</Link>
                             </span>
                         </label>
                         {errors.termsAccepted && <p id="signup-terms-error" role="alert" className="-mt-2 text-caption text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p>}
@@ -393,7 +403,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 
                     <p className="mt-5 border-t border-[#E2E8F0] pt-4 text-center text-body-sm text-[#5B6A7A] dark:border-white/10 dark:text-white/65">
                         {t("Έχετε ήδη λογαριασμό;", "Already have an account?")}{" "}
-                        <Link href="/auth/signin" className="font-semibold text-primary hover:underline">
+                        <Link href={authHref("/auth/signin", locale)} className="font-semibold text-primary hover:underline">
                             {t("Σύνδεση", "Log in")}
                         </Link>
                     </p>

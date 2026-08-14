@@ -7,6 +7,7 @@ import { verifyEmailToken } from "./actions"
 import { Loader2 } from "lucide-react"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { authHref } from "@/lib/seo/locale-links"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { IBM_Plex_Sans } from "next/font/google"
 
@@ -19,6 +20,9 @@ function VerifyEmailContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const { language } = useLanguage()
+    // Internal auth links must carry the pinned language; a bare href
+    // dropped an English visitor onto the Greek sign-in page.
+    const authLocale: "el" | "en" = language === "el" ? "el" : "en"
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const token = searchParams.get("token")
     const email = searchParams.get("email")
@@ -89,7 +93,7 @@ function VerifyEmailContent() {
                                 "Your email has been successfully verified. You can now access all features."
                             )}
                         </p>
-                        <Link href="/auth/signin" className="block w-full rounded-full bg-primary px-4 py-3.5 text-sm font-bold text-white dark:text-[#1A2420] transition-all hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg">
+                        <Link href={authHref("/auth/signin", authLocale)} className="block w-full rounded-full bg-primary px-4 py-3.5 text-sm font-bold text-white dark:text-[#1A2420] transition-all hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg">
                             {t("Συνέχεια στην εφαρμογή", "Continue to App")}
                         </Link>
                     </div>
@@ -108,7 +112,7 @@ function VerifyEmailContent() {
                         <p className="text-slate-600 dark:text-slate-400 mb-8">
                             {message}. {t("Ο σύνδεσμος μπορεί να μην είναι έγκυρος ή να έχει λήξει.", "The link may be invalid or expired.")}
                         </p>
-                        <Link href="/auth/signin" className="font-bold text-primary hover:underline transition-colors">
+                        <Link href={authHref("/auth/signin", authLocale)} className="font-bold text-primary hover:underline transition-colors">
                             {t("Επιστροφή στη σύνδεση", "Back to Sign In")}
                         </Link>
                     </div>

@@ -137,7 +137,7 @@ export function WorldClassLanding({
                                 the site, which is the whole reason /needs was
                                 built. */}
                             <Link href={l("/needs")} className="pw-secondary-button pw-btn-lg">
-                                {t("Έλεγχος αναγκών σε 6 ερωτήσεις", "Needs check in 6 questions")}
+                                {t("Έλεγχος αναγκών σε 6 βήματα", "Needs check in 6 steps")}
                             </Link>
                         </div>
 
@@ -180,14 +180,26 @@ export function WorldClassLanding({
                                 id="services-heading"
                                 className="mb-4 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
                             >
+                                {/* The Greek used to say something else entirely —
+                                    "Αναλυτικές αναφορές σε γλώσσα που δεν χρειαζεται
+                                    να εισαι ασφαλιστής για να καταλάβεις" — in the
+                                    informal singular, with «χρειάζεται» and «είστε»
+                                    both missing their accents, and no full stop.
+                                    Counted across all 126 sitemap pages, those were
+                                    the ONLY informal-singular forms on the entire
+                                    Greek surface. Five, because ServicesGrid renders
+                                    exactly five cards. */}
                                 {t(
-                                    "Αναλυτικές αναφορές σε γλώσσα που δεν χρειαζεται να εισαι ασφαλιστής για να καταλάβεις",
+                                    "Πέντε πράγματα για το τι ακριβώς αγοράσατε.",
                                     "Five things about exactly what you bought.",
                                 )}
                             </h2>
                             <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                                {/* The Greek was missing the English lead's first
+                                    sentence, which is the one that says what the
+                                    five cards are actually about. */}
                                 {t(
-                                    "Επιπλέον, ρωτήστε ό,τι θέλετε για το ασφαλιστήριό σας, όποια ώρα της ημέρας, με το PolicyWallet Plus.",
+                                    "Μαζί με τα ψιλά γράμματα — όχι με ό,τι νομίζετε ότι αγοράσατε. Και ρωτήστε ό,τι θέλετε για το ασφαλιστήριό σας, όποια ώρα της ημέρας, με το PolicyWallet Plus.",
                                     "Including the small print — not what you think you bought. And ask anything about your policy, at any hour of the day, with PolicyWallet Plus.",
                                 )}
                             </p>
