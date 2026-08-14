@@ -33,6 +33,7 @@ export default function SignInPage() {
     const { language, setLanguage, t } = useLanguage()
     const copy = t.auth.signInPage
     const pwdRef = useRef<HTMLInputElement | null>(null)
+    const identifierRef = useRef<HTMLInputElement | null>(null)
 
     const [tab, setTab] = useState<Tab>("email")
     const [email, setEmail] = useState("")
@@ -40,6 +41,10 @@ export default function SignInPage() {
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [fieldErrors, setFieldErrors] = useState<{ identifier: boolean; password: boolean }>({
+        identifier: false,
+        password: false,
+    })
     const [showResend, setShowResend] = useState(false)
     const [resending, setResending] = useState(false)
     const [resendMessage, setResendMessage] = useState<string | null>(null)
@@ -86,10 +91,19 @@ export default function SignInPage() {
 
         const identifier = tab === "email" ? email.trim() : phone.trim()
         if (!identifier || !password) {
+            // The banner alone said "fill in all the fields" without saying
+            // WHICH — submitting with only the password missing produced the
+            // same sentence as submitting empty, and no control was marked
+            // invalid. Both sibling forms already name the failing field, so
+            // sign-in was the odd one out (WCAG 3.3.1).
+            const invalid = { identifier: !identifier, password: !password }
+            setFieldErrors(invalid)
             setError(copy.fillAllFields)
             setLoading(false)
+            ;(invalid.identifier ? identifierRef.current : pwdRef.current)?.focus()
             return
         }
+        setFieldErrors({ identifier: false, password: false })
         const supabase = createClient()
 
         try {
@@ -202,13 +216,13 @@ export default function SignInPage() {
     const inputBase = "pw-input"
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black">
+        <div className="pw-clear-consent flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black">
             <div className="w-full max-w-[420px]">
 
                 {/* Back to home */}
                 <div className="mb-6 flex items-center justify-between">
                     <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
-                        ← {copy.backHome}
+                        <span aria-hidden="true">←</span> {copy.backHome}
                     </Link>
                     <LocaleToggle ariaLabel={t.userMenu.language} />
                 </div>
@@ -259,21 +273,29 @@ export default function SignInPage() {
                         </div>
 
                         {/* Identifier field */}
+                        {/* id + htmlFor, like the password field below. Without
+                            them these two inputs had no programmatic label at
+                            all: their accessible name fell back to the
+                            placeholder ("name@example.com"), so a voice-control
+                            user asking for "Email" matched nothing and the
+                            visible label was not clickable (WCAG 1.3.1, 2.5.3). */}
                         {tab === "email" ? (
                             <div>
-                                <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">Email</label>
+                                <label htmlFor="signin-email" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">Email</label>
                                 <div className="relative">
                                     <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
-                                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputBase} pl-9`} placeholder="name@example.com" />
+                                    <input id="signin-email" ref={identifierRef} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-9`} placeholder="name@example.com" />
                                 </div>
+                                {fieldErrors.identifier && <p id="signin-identifier-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
                             </div>
                         ) : (
                             <div>
-                                <label className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.phonePlaceholder}</label>
+                                <label htmlFor="signin-phone" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.phonePlaceholder}</label>
                                 <div className="relative">
                                     <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
-                                    <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className={`${inputBase} pl-9`} placeholder="+30 69X XXX XXXX" />
+                                    <input id="signin-phone" ref={identifierRef} type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} aria-invalid={fieldErrors.identifier || undefined} aria-describedby={fieldErrors.identifier ? "signin-identifier-error" : undefined} className={`${inputBase} pl-9`} placeholder="+30 69X XXX XXXX" />
                                 </div>
+                                {fieldErrors.identifier && <p id="signin-identifier-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
                             </div>
                         )}
 
@@ -282,8 +304,9 @@ export default function SignInPage() {
                             <label htmlFor="signin-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.passwordLabel}</label>
                             <div className="relative">
                                 <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#5B6A7A] dark:text-slate-400" />
-                                <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={`${inputBase} pl-9`} />
+                                <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={fieldErrors.password || undefined} aria-describedby={fieldErrors.password ? "signin-password-error" : undefined} placeholder="••••••••" className={`${inputBase} pl-9`} />
                             </div>
+                            {fieldErrors.password && <p id="signin-password-error" role="alert" className="mt-1.5 text-caption text-rose-600">{copy.fieldRequired}</p>}
                         </div>
 
                         {/* Forgot password */}
@@ -347,9 +370,17 @@ export default function SignInPage() {
                         {resetError && <p role="alert" className="mb-3 rounded-xl border border-rose-200 dark:border-rose-800/40 bg-rose-50 dark:bg-rose-900/20 px-3 py-2 text-body-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{resetError}</p>}
                         {resetNotice && <p role="status" className="mb-3 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2 text-body-sm text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">{resetNotice}</p>}
 
+                        {/* Every field in this dialog was placeholder-only: no
+                            <label>, no aria-label, so each one's accessible
+                            name was its own hint text, which disappears the
+                            moment you type. Visible labels, like the form
+                            behind the dialog. */}
                         {resetStep === "request" && (
                             <div className="space-y-3">
-                                <input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="name@example.com" className={inputBase} />
+                                <div>
+                                    <label htmlFor="reset-email" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.resetEmailLabel}</label>
+                                    <input id="reset-email" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="name@example.com" className={inputBase} />
+                                </div>
                                 <button type="button" onClick={requestOtp} disabled={resetLoading} className="pw-primary-button w-full">
                                     {resetLoading ? (copy.sending) : (copy.sendOtp)}
                                 </button>
@@ -358,9 +389,18 @@ export default function SignInPage() {
 
                         {resetStep === "verify" && (
                             <div className="space-y-3">
-                                <input type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className={inputBase} />
-                                <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={copy.newPassword} className={inputBase} />
-                                <input type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={copy.confirmPassword} className={inputBase} />
+                                <div>
+                                    <label htmlFor="reset-otp" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.otpLabel}</label>
+                                    <input id="reset-otp" type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className={inputBase} />
+                                </div>
+                                <div>
+                                    <label htmlFor="reset-new-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.newPassword}</label>
+                                    <input id="reset-new-password" type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={copy.newPassword} className={inputBase} />
+                                </div>
+                                <div>
+                                    <label htmlFor="reset-confirm-password" className="mb-1.5 block text-caption font-semibold uppercase tracking-wide text-[#5B6A7A] dark:text-white/65">{copy.confirmPassword}</label>
+                                    <input id="reset-confirm-password" type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={copy.confirmPassword} className={inputBase} />
+                                </div>
                                 <button type="button" onClick={submitReset} disabled={resetLoading} className="pw-primary-button w-full">
                                     {resetLoading ? (copy.processing) : (copy.verifyAndReset)}
                                 </button>

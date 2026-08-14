@@ -65,11 +65,79 @@ describe('public auth form validation wiring', () => {
         })
 
         it('replaces it with a localized message from the dictionary', () => {
+            // Two separate assertions rather than one proximity regex. The
+            // original required copy.fillAllFields within 120 characters of the
+            // guard clause, which is a fact about comment length, not about
+            // behaviour — it broke the moment the guard was documented.
             expect(
                 src,
-                'signin must reject an empty identifier/password with copy.fillAllFields'
-            ).toMatch(/if\s*\(!identifier\s*\|\|\s*!password\)[\s\S]{0,120}?copy\.fillAllFields/)
+                'signin must guard against an empty identifier or password'
+            ).toMatch(/if\s*\(!identifier\s*\|\|\s*!password\)/)
+            expect(
+                src,
+                'signin must report that failure with the localized copy.fillAllFields'
+            ).toMatch(/setError\(copy\.fillAllFields\)/)
         })
+
+        it('says WHICH field is empty, not just that something is', () => {
+            // A summary banner alone gave the identical sentence whether both
+            // fields were empty or only the password was, and marked no control
+            // invalid — so a screen-reader user was told to "fill in all the
+            // fields" on a form where one was already filled (WCAG 3.3.1).
+            // Both sibling auth forms already name the failing field.
+            expect(src, 'signin must track which field failed').toMatch(/setFieldErrors\(/)
+            expect(
+                src,
+                'the identifier input must expose aria-invalid when empty'
+            ).toMatch(/aria-invalid=\{fieldErrors\.identifier/)
+            expect(
+                src,
+                'the password input must expose aria-invalid when empty'
+            ).toMatch(/aria-invalid=\{fieldErrors\.password/)
+            for (const id of ['signin-identifier-error', 'signin-password-error']) {
+                expect(
+                    src,
+                    `${id} must be both referenced by aria-describedby and rendered as an element id`
+                ).toMatch(new RegExp(`aria-describedby=\\{[^}]*"${id}"`))
+                expect(src, `${id} must exist as an element id`).toMatch(new RegExp(`id="${id}"`))
+            }
+        })
+
+        it('moves focus to the field it is complaining about', () => {
+            // Without this the error is announced but the caret stays on the
+            // submit button, so the user has to hunt for the control.
+            expect(
+                src,
+                'signin must focus the first invalid control'
+            ).toMatch(/identifierRef\.current\s*:\s*pwdRef\.current\)\?\.focus\(\)/)
+        })
+    })
+
+    describe('signin field labelling', () => {
+        const src = readFileSync('app/auth/signin/page.tsx', 'utf-8')
+
+        // The identifier inputs had no id and their labels no htmlFor, so the
+        // accessible name fell through to the placeholder — "name@example.com"
+        // instead of "Email". Voice control could not address the field by its
+        // visible label and the label was not clickable (WCAG 1.3.1, 2.5.3).
+        const pairs: [string, string][] = [
+            ['signin-email', 'the email identifier input'],
+            ['signin-phone', 'the phone identifier input'],
+            ['signin-password', 'the password input'],
+            ['reset-email', 'the reset dialog email input'],
+            ['reset-otp', 'the reset dialog OTP input'],
+            ['reset-new-password', 'the reset dialog new-password input'],
+            ['reset-confirm-password', 'the reset dialog confirm-password input'],
+        ]
+
+        for (const [id, description] of pairs) {
+            it(`${description} has an id its label points at`, () => {
+                expect(src, `missing id="${id}"`).toMatch(new RegExp(`id="${id}"`))
+                expect(src, `missing <label htmlFor="${id}">`).toMatch(
+                    new RegExp(`htmlFor="${id}"`)
+                )
+            })
+        }
     })
 })
 

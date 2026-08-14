@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import {
     CheckCircle2,
     ArrowRight,
@@ -22,13 +22,46 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
     const [activeTab, setActiveTab] = useState<"policyholders" | "agents">("policyholders")
     const t = (el: string, en: string) => (isGreek ? el : en)
 
+    const policyholdersTabRef = useRef<HTMLButtonElement | null>(null)
+    const agentsTabRef = useRef<HTMLButtonElement | null>(null)
+    const tabRefs = { policyholders: policyholdersTabRef, agents: agentsTabRef }
+
     const phPanelId = "audience-panel-policyholders"
     const agPanelId = "audience-panel-agents"
 
-    const handleKeyDown = (e: React.KeyboardEvent, current: "policyholders" | "agents") => {
+    /**
+     * Arrow keys move the SELECTION and the focus together.
+     *
+     * This used to take the tab the key fired on as `current` — a constant per
+     * button — and flip away from it. Because the tablist has a roving
+     * tabindex, focus stays on the button you pressed, so after one ArrowRight
+     * from "Ιδιώτες" the selection was "Ασφαλιστές" while focus was still on
+     * "Ιδιώτες", now tabIndex=-1. Every further arrow recomputed from
+     * "policyholders" and set the selection to "Ασφαλιστές" again: no-ops.
+     * Measured — ArrowLeft, ArrowLeft, ArrowRight, Home and End each produced a
+     * byte-identical snapshot, and the only way back to the first panel was to
+     * Tab forward out of the tablist.
+     *
+     * Deriving the next tab from `activeTab` and focusing it keeps the two in
+     * step, which is what the APG tabs pattern requires.
+     */
+    const select = (next: "policyholders" | "agents") => {
+        setActiveTab(next)
+        tabRefs[next].current?.focus()
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
             e.preventDefault()
-            setActiveTab(current === "policyholders" ? "agents" : "policyholders")
+            select(activeTab === "policyholders" ? "agents" : "policyholders")
+        }
+        if (e.key === "Home") {
+            e.preventDefault()
+            select("policyholders")
+        }
+        if (e.key === "End") {
+            e.preventDefault()
+            select("agents")
         }
     }
 
@@ -44,12 +77,13 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                     <button
                         type="button"
                         role="tab"
+                        ref={policyholdersTabRef}
                         id="audience-tab-policyholders"
                         aria-selected={activeTab === "policyholders" ? "true" : "false"}
                         aria-controls={phPanelId}
                         tabIndex={activeTab === "policyholders" ? 0 : -1}
                         onClick={() => setActiveTab("policyholders")}
-                        onKeyDown={(e) => handleKeyDown(e, "policyholders")}
+                        onKeyDown={handleKeyDown}
                         className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
                             activeTab === "policyholders"
                                 ? "bg-[#29685B] text-white shadow-sm"
@@ -61,12 +95,13 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                     <button
                         type="button"
                         role="tab"
+                        ref={agentsTabRef}
                         id="audience-tab-agents"
                         aria-selected={activeTab === "agents" ? "true" : "false"}
                         aria-controls={agPanelId}
                         tabIndex={activeTab === "agents" ? 0 : -1}
                         onClick={() => setActiveTab("agents")}
-                        onKeyDown={(e) => handleKeyDown(e, "agents")}
+                        onKeyDown={handleKeyDown}
                         className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
                             activeTab === "agents"
                                 ? "bg-[#29685B] text-white shadow-sm"

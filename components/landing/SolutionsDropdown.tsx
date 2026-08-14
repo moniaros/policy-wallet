@@ -21,7 +21,23 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
     const [isOpen, setIsOpen] = useState(false)
     const menuId = useId()
     const containerRef = useRef<HTMLDivElement | null>(null)
+    const triggerRef = useRef<HTMLButtonElement | null>(null)
     const firstItemRef = useRef<HTMLAnchorElement | null>(null)
+
+    /**
+     * Close and put focus back where it came from.
+     *
+     * Escape used to call `setIsOpen(false)` and nothing else. That unmounts
+     * the panel — including the element that had focus — so the browser
+     * reset focus to <body>: measured `document.activeElement === document.body`
+     * with zero `:focus-visible` matches anywhere on a page with ~75 tab stops.
+     * A keyboard user who opened the menu and changed their mind lost their
+     * place entirely (WCAG 2.4.3).
+     */
+    const close = (returnFocus: boolean) => {
+        setIsOpen(false)
+        if (returnFocus) triggerRef.current?.focus()
+    }
 
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const label = t("Προϊόντα", "Products")
@@ -46,10 +62,23 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
     }, [isOpen])
 
     return (
-        <div ref={containerRef} className={`relative ${className}`}>
+        <div
+            ref={containerRef}
+            className={`relative ${className}`}
+            /* Tabbing past the last link used to leave the panel mounted and
+               painted over the hero — the only auto-close was a mousedown
+               listener, which a keyboard user never fires. `relatedTarget` is
+               null when focus leaves the document entirely (browser chrome);
+               closing on that would be surprising, so only an in-page move
+               outside the container counts. */
+            onBlur={(event) => {
+                const next = event.relatedTarget as Node | null
+                if (next && !containerRef.current?.contains(next)) setIsOpen(false)
+            }}
+        >
             <button
+                ref={triggerRef}
                 type="button"
-                aria-haspopup="menu"
                 aria-expanded={isOpen}
                 aria-controls={menuId}
                 onClick={() => setIsOpen((prev) => !prev)}
@@ -59,7 +88,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         setIsOpen(true)
                     }
                     if (event.key === "Escape") {
-                        setIsOpen(false)
+                        close(true)
                     }
                 }}
                 className="inline-flex min-h-11 items-center gap-1 transition-colors hover:text-[#0F172A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] dark:hover:text-white"
@@ -69,13 +98,19 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
             </button>
 
             {isOpen && (
+                /* Not role="menu". It declared the APG menu pattern and
+                   implemented none of it: all 18 links reported tabIndex 0
+                   (no roving tabindex), and ArrowDown/ArrowRight/Home/End each
+                   left document.activeElement unchanged. Announcing a keyboard
+                   model that does not exist is worse than announcing none, and
+                   these are plain links that already work with Tab — so this
+                   is an ordinary labelled disclosure. */
                 <div
                     id={menuId}
-                    role="menu"
                     aria-label={label}
                     onKeyDown={(event) => {
                         if (event.key === "Escape") {
-                            setIsOpen(false)
+                            close(true)
                         }
                     }}
                     className="absolute left-0 top-full z-50 mt-2 w-[min(92vw,640px)] overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-700 dark:bg-slate-900"
@@ -87,7 +122,6 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         </p>
                     <Link
                         ref={firstItemRef}
-                        role="menuitem"
                         href={localizeHref("/product", language)}
                         onClick={() => setIsOpen(false)}
                         className="flex min-h-11 items-center rounded-lg px-3 text-body font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
@@ -95,7 +129,6 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         {individualsLabel}
                     </Link>
                     <Link
-                        role="menuitem"
                         href={localizeHref("/solutions/agents", language)}
                         onClick={() => setIsOpen(false)}
                         className="flex min-h-11 items-center rounded-lg px-3 text-body font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
@@ -117,7 +150,6 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                             {productCategories.map((category) => (
                                 <Link
                                     key={category.id}
-                                    role="menuitem"
                                     href={localizeHref(category.href, language)}
                                     onClick={() => setIsOpen(false)}
                                     className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-body-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white dark:focus-visible:outline-[#A7F3D0]"
