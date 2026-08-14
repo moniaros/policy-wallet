@@ -91,6 +91,15 @@ test.describe('feature flag console', () => {
  * the AI remediation path, which nothing in this suite exercises.
  */
 test.describe('feature flag write path', () => {
+    // Each of these does three sequential form posts — reset, save, clear —
+    // and every one is a server action followed by a redirect and a re-render
+    // of an admin route that compiles cold. The clear-override case ran out of
+    // the default 30s with the page already in its correct final state
+    // (override gone, source back to "environment"), i.e. the budget expired,
+    // not the behaviour. Accommodation, not a cheat: same reasoning as the
+    // 90s budgets on money-path and shell-responsive.
+    test.describe.configure({ timeout: 90_000 })
+
     const KEY = 'ai.remediation_alerts'
 
     // Addressed by test id, not by text: "on", "off" and "override" also appear
