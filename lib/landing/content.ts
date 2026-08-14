@@ -143,7 +143,9 @@ export const landingContent: LandingContentModel = {
             },
             {
                 id: "faq-ai-accuracy",
-                question: { el: "Πόσο σωστή είναι η ανάλυση της AI;", en: "How accurate is the AI analysis?" },
+                // «του AI», matching /pricing's «από το AI» — the site gave "AI" two
+                // grammatical genders depending on the page.
+                question: { el: "Πόσο σωστή είναι η ανάλυση του AI;", en: "How accurate is the AI analysis?" },
                 answer: {
                     el: "Παίρνετε γρήγορη, πρακτική εικόνα για το τι καλύπτεστε και τι όχι. Δεν αντικαθιστά τους όρους του συμβολαίου ούτε τον ασφαλιστή σας — σας δείχνουμε τι αξίζει να ελέγξετε και αποφασίζετε εσείς.",
                     en: "You get a fast, practical picture of what you are covered for and what you are not. It does not replace the policy terms or your agent — we show you what is worth checking, and you decide.",

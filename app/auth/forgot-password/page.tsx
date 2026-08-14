@@ -23,7 +23,7 @@ const inter = Inter({
 // hardcoded English, so a Greek user with an invalid email saw "Please provide a
 // valid email address" in English. lint:i18n-changed doesn't inspect Zod args.
 const INVALID_EMAIL_MSG = {
-    el: "Δώσε ένα έγκυρο email",
+    el: "Δώστε ένα έγκυρο email",
     en: "Please provide a valid email address",
 } as const
 
