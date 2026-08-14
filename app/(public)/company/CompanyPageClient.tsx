@@ -16,7 +16,12 @@ export default function CompanyPage() {
 
     return (
         <LoBPageShell activeNav="company" locale={language}>
-            <main className="pb-24">
+            {/* A div, not a <main>: LoBPageShell already renders the page's one
+                <main id={SKIP_LINK_TARGET_ID}>. Nesting a second one here made
+                /company the only public page with two main landmarks — the skip
+                link and every "jump to main content" shortcut then had two
+                candidates. */}
+            <div className="pb-24">
                 <section className="mx-auto mb-16 max-w-4xl px-6 text-center lg:px-12">
                     {/* Category kicker — the company page opens by naming the
                         category we created; the H1 is its human decode. */}
@@ -208,7 +213,7 @@ export default function CompanyPage() {
                         </div>
                     </div>
                 </section>
-            </main>
+            </div>
         </LoBPageShell>
     )
 }

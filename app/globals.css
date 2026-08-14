@@ -806,3 +806,28 @@ pre {
 .pw-above-consent {
     margin-bottom: var(--pw-bottom-obstruction, 0px);
 }
+
+/* Full-height pages that must RESERVE space for the consent banner rather than
+ * sit under it.
+ *
+ * `.pw-above-consent` moves one bottom-anchored element up. That is the wrong
+ * shape for the auth pages, whose card is centred in a `min-h-screen` flex
+ * container with barely any scroll room: the submit button lands under the
+ * banner and NO scroll position frees it. Measured on the live site with
+ * `elementFromPoint` at the button's centre, sweeping every offset from 0 to
+ * maxScroll: /auth/signup's "Δημιουργία Πορτοφολιού" was unreachable at all of
+ * 320x568, 375x667, 360x800, 390x844, 412x915, 844x390 and 1280x800 — at
+ * 1280x800 the page has 158px of scroll in total, so there is nowhere to go.
+ *
+ * That is the destination of every primary CTA on the site, and the person
+ * seeing the consent banner is by definition the first-time visitor. They
+ * press the button and nothing happens — the banner is not modal, so nothing
+ * explains why.
+ *
+ * Padding, not margin: it shrinks the centring box, so the card re-centres in
+ * the space that is actually visible instead of being pushed off the top. It
+ * collapses to 0 the moment consent is given.
+ */
+.pw-clear-consent {
+    padding-bottom: var(--pw-bottom-obstruction, 0px);
+}

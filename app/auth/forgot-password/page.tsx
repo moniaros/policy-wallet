@@ -66,7 +66,10 @@ export default function ForgotPasswordPage() {
         backToSignIn: t("Επιστροφή στη σύνδεση", "Back to sign in"),
         trust: t("Τραπεζικού επιπέδου ασφάλεια", "Bank-grade security"),
         genericError: t("Κάτι πήγε στραβά. Δοκιμάστε ξανά.", "Something went wrong. Please try again."),
-        backHome: t("← Αρχική", "← Home"),
+        // No arrow in the string: the JSX below supplies it, exactly as
+        // signin and signup do. With it baked in here too the link rendered
+        // "← ← Αρχική", and that doubled arrow was its accessible name.
+        backHome: t("Αρχική", "Home"),
     }
 
     const lang: "el" | "en" = isGreek ? "el" : "en"
@@ -111,7 +114,7 @@ export default function ForgotPasswordPage() {
     const inputBase = "pw-input"
 
     return (
-        <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
+        <div className={`${inter.className} pw-clear-consent flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
             {/* Header bar */}
             {/* Card. The back-link and language switcher used to sit in a
                 full-width <header> above this, so arriving here from sign-in
@@ -126,7 +129,7 @@ export default function ForgotPasswordPage() {
                         href="/"
                         className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"
                     >
-                        ← {copy.backHome}
+                        <span aria-hidden="true">←</span> {copy.backHome}
                     </Link>
                     <LocaleToggle ariaLabel={uiText.userMenu.language} />
                 </div>

@@ -115,9 +115,14 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
                     {/* A five-column table cannot fit a 320px screen honestly.
                         It scrolls sideways inside a labelled, focusable region
                         so keyboard users can reach the scroll too. */}
+                    {/* Its own name, not the section's. Pointing both the
+                        <section> and this scroller at compare-table-heading
+                        exposed two nested regions called "Τι κάνει το καθένα",
+                        so a screen-reader user landing in the inner one heard
+                        the name they had just left. */}
                     <div
                         role="region"
-                        aria-labelledby="compare-table-heading"
+                        aria-label={t("Πίνακας σύγκρισης", "Comparison table")}
                         tabIndex={0}
                         className="relative -mx-6 overflow-x-auto px-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] lg:mx-0 lg:px-0"
                     >

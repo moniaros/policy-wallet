@@ -199,13 +199,13 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     const strengthLabel = strength === 0 ? "" : strength === 1 ? t("Αδύναμος", "Weak") : strength === 2 ? t("Μέτριος", "Fair") : t("Ισχυρός", "Strong")
 
     return (
-        <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
+        <div className={`${inter.className} pw-clear-consent flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
             <div className="w-full max-w-[420px]">
 
                 {/* Back + language */}
                 <div className="mb-6 flex items-center justify-between">
                     <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
-                        ← {t("Αρχική", "Home")}
+                        <span aria-hidden="true">←</span> {t("Αρχική", "Home")}
                     </Link>
                     <div className="flex items-center gap-2">
                         <LocaleToggle ariaLabel={uiText.userMenu.language} />
@@ -406,7 +406,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
 export function SignUpFormPage({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     return (
         <Suspense fallback={
-            <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
+            <div className={`${inter.className} pw-clear-consent flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
                 <Loader2 className="h-7 w-7 animate-spin text-primary" />
             </div>
         }>
