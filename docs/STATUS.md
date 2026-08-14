@@ -1,5 +1,71 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-14 (Marketing/auth assessment loop, rounds 12–13)
+
+**Current phase:** shipped to prod. `NEW-UI` @ `b8fbc2f2`, deployed and verified live.
+
+**Rounds 12 and 13 shipped — PRs #278, #279, #280.** Round 12: 7 candidates, 7
+confirmed. Round 13: **44 candidates, 36 confirmed, 8 refuted** across six
+dimensions (a11y, responsiveness, content/i18n, SEO/AEO, performance, conversion).
+
+**The three that mattered most, all verified on production:**
+1. **The cookie-consent banner covered the signup button at every viewport.**
+   `fixed bottom-0 z-[120]`, auth card centred in `min-h-screen`, and the pages
+   have 158px of scroll at 1280x800 and **zero** at 1440x900 — so no scroll
+   position freed it. `/auth/signup` is the destination of every primary CTA, and
+   the person seeing the banner is by definition the first-time visitor.
+   `.pw-clear-consent` reserves the height the banner already publishes.
+   21 blocked combinations → 24/24 reachable.
+2. **English visitors were consenting to Greek legal documents.** On the English
+   signup page only "sign up as an agent" carried `lang=en`; "Terms", "Privacy"
+   and "Log in" were bare hrefs, so the consent checkbox sent them to the Greek
+   documents. Fixed across all seven auth pages.
+3. **Sign-in's identifier field had no programmatic label** — accessible name fell
+   through to the placeholder (`nameFrom: ["placeholder"]`), so voice control
+   could not address it and the visible label was not clickable.
+
+Also: the Products mega-menu declared `role="menu"` with no menu keyboard model
+(now a plain disclosure, Escape restores focus, focusout closes); the homepage
+audience tabs went inert after one arrow press; `/needs` promised six questions
+and asked twelve; the homepage Greek H2 was a different claim from the English,
+misspelled and in the only informal-singular register on the whole Greek surface;
+four auth cards shipped `opacity:0` in the server HTML and were blank until
+hydration (LCP 5.2s on slow 4G).
+
+**Guardrail note.** The rounds 6–12 funnel (28 → 12 → 7 → 7) looked like
+convergence. It was not — it measured how narrow the briefs were. Widening them
+in round 13 took the count from 7 to 36 on the same codebase. A falling finding
+count is evidence about the search, not about the site.
+
+**Top risks, ranked.**
+1. **No legal entity is named anywhere** on a site selling €2.99–€99.99/month
+   subscriptions and collecting insurance documents. Needs real company details
+   (name, registration, address) — EU trader-identification duty.
+2. `/auth/signup` server-renders only a spinner: `useSearchParams()` inside a
+   `<Suspense fallback={<Loader2/>}>` means no form field exists for ~5s on slow
+   4G, on the primary conversion endpoint.
+3. All 63 English pages server-render `<html lang="el">`; only JS-executing
+   clients see `lang="en"`.
+4. "AI" carries feminine gender on 53 Greek strings and neuter on 16, across 26
+   files. Both are defensible Greek; needs a decision, and it spans app/email/
+   legal files outside the marketing scope.
+5. `/api/health` is declared `auth: "public"` in the route inventory but is 307'd
+   by `proxy.ts`; an uptime monitor pointed at it gets 307 → 200 **of the sign-in
+   page** and reports healthy. `scripts/load/public-surface.js` measures that 307.
+
+**Next 3 actions.**
+1. Decide the legal-entity details and the "AI" gender convention (both blocked on you).
+2. Thread `searchParams` into `app/auth/signup/{policyholder,agent}/page.tsx` so
+   the signup form server-renders.
+3. Resolve `/api/health`: either allowlist it in `proxy.ts` or correct the
+   inventory and the e2e test that currently asserts the opposite.
+
+**Not fixed, by decision:** "platform" / "risk analysis" appear in the site's own
+voice sitewide. That conflicts with an explicit instruction to avoid those words,
+but it is also a documented, shipped positioning decision (`CATEGORY_NAME`
+docblock, `docs/audits/marketing-website-audit-2026-08.md` §2). Flagged, not
+overturned.
+
 ## Session wrap — 2026-08-13b (Feature flags: the automation console's one missing pillar)
 
 **Current phase:** built and gated on `feat/marketing-site-overhaul`. **The migration is
