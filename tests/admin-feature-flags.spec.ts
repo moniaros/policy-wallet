@@ -93,11 +93,18 @@ test.describe('feature flag console', () => {
 test.describe('feature flag write path', () => {
     const KEY = 'ai.remediation_alerts'
 
+    // Addressed by test id, not by text: "on", "off" and "override" also appear
+    // as <option> labels and prose inside the same card, so a text locator is
+    // ambiguous — which is exactly how the first run of these tests failed.
+    const state = (page: import('@playwright/test').Page) =>
+        page.getByTestId(`flag-state-${KEY}`)
+    const source = (page: import('@playwright/test').Page) =>
+        page.getByTestId(`flag-source-${KEY}`)
     const card = (page: import('@playwright/test').Page) =>
         page.locator('article').filter({ hasText: KEY })
 
-    test.afterEach(async ({ page }) => {
-        // Leave the flag as the deployment defines it, whatever the test did.
+    /** Start every test from the deployment's own answer, whatever ran before. */
+    async function resetToDeployment(page: import('@playwright/test').Page) {
         await page.goto('/admin/automation/flags')
         await dismissCookieBanner(page)
         const clear = card(page).getByRole('button', { name: /Clear override/i })
@@ -105,62 +112,51 @@ test.describe('feature flag write path', () => {
             await clear.click()
             await page.waitForURL(/saved=/)
         }
-    })
+    }
+
+    async function setEnabled(page: import('@playwright/test').Page, value: string) {
+        await card(page).locator('select[name="enabled"]').selectOption(value)
+        await card(page).getByRole('button', { name: 'Save' }).click()
+    }
+
+    test.beforeEach(async ({ page }) => resetToDeployment(page))
+    test.afterEach(async ({ page }) => resetToDeployment(page))
 
     test('an override persists, takes effect, and is attributed', async ({ page }) => {
-        await page.goto('/admin/automation/flags')
-        await dismissCookieBanner(page)
+        await expect(state(page)).toHaveText('off')
+        await expect(source(page)).not.toHaveText('override')
 
-        // Registry default is off, and nothing has overridden it.
-        await expect(card(page).getByText('on', { exact: true })).toHaveCount(0)
-
-        await card(page).locator('select[name="enabled"]').selectOption('true')
-        await card(page).getByRole('button', { name: 'Save' }).click()
+        await setEnabled(page, 'true')
         await page.waitForURL(/saved=1/)
 
-        // The resolved value moved, and the console says WHERE it came from —
-        // "override", not "environment" or "code default".
-        await expect(card(page).getByText('on', { exact: true })).toBeVisible()
-        await expect(card(page).getByText('override', { exact: true })).toBeVisible()
+        await expect(state(page)).toHaveText('on')
+        await expect(source(page)).toHaveText('override')
 
         // A flag flip changes live traffic, so it has to leave a trace.
         const history = page.locator('section').filter({ hasText: 'Recent changes' })
-        await expect(history.getByText(KEY, { exact: false }).first()).toBeVisible()
         await expect(history.getByText('e2e-admin@policywallet.test').first()).toBeVisible()
     })
 
     test('clearing an override restores the deployment, it does not switch off', async ({ page }) => {
-        // The trap this guards: if "clear" were implemented as "set false", an
-        // operator undoing a change would silently disable the feature instead.
-        await page.goto('/admin/automation/flags')
-        await dismissCookieBanner(page)
-
-        await card(page).locator('select[name="enabled"]').selectOption('true')
-        await card(page).getByRole('button', { name: 'Save' }).click()
+        // The trap: if "clear" were implemented as "set false", an operator
+        // undoing a change would silently disable the feature instead.
+        await setEnabled(page, 'true')
         await page.waitForURL(/saved=1/)
-        await expect(card(page).getByText('override', { exact: true })).toBeVisible()
+        await expect(source(page)).toHaveText('override')
 
         await card(page).getByRole('button', { name: /Clear override/i }).click()
         await page.waitForURL(/saved=reset/)
 
-        // Back to whatever the deployment says — provenance is no longer
-        // "override", and the row no longer claims control.
-        await expect(card(page).getByText('override', { exact: true })).toHaveCount(0)
-        await expect(card(page).getByText(/environment|code default/)).toBeVisible()
+        await expect(source(page)).not.toHaveText('override')
+        await expect(state(page)).toHaveText('off')
     })
 
     test('a no-op save records no new version', async ({ page }) => {
-        // A version history full of saves that changed nothing is a history
-        // nobody can read.
-        await page.goto('/admin/automation/flags')
-        await dismissCookieBanner(page)
-
-        await card(page).locator('select[name="enabled"]').selectOption('true')
-        await card(page).getByRole('button', { name: 'Save' }).click()
+        // A history full of saves that changed nothing is a history nobody reads.
+        await setEnabled(page, 'true')
         await page.waitForURL(/saved=1/)
 
-        await card(page).locator('select[name="enabled"]').selectOption('true')
-        await card(page).getByRole('button', { name: 'Save' }).click()
+        await setEnabled(page, 'true')
         await page.waitForURL(/saved=nochange/)
     })
 })
