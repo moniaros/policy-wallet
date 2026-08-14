@@ -11,6 +11,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { resolveAuthEmailIdentifier } from "@/lib/auth/phone-auth"
 import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
 import { useDialog } from "@/hooks/useDialog"
+import { authHref, localizeHref } from "@/lib/seo/locale-links"
 
 type Tab = "email" | "phone"
 type ResetStep = "request" | "verify" | "success"
@@ -34,6 +35,8 @@ export default function SignInPage() {
     const copy = t.auth.signInPage
     const pwdRef = useRef<HTMLInputElement | null>(null)
     const identifierRef = useRef<HTMLInputElement | null>(null)
+    // Same reason as signup: internal links must carry the pinned language.
+    const locale: "el" | "en" = language === "el" ? "el" : "en"
 
     const [tab, setTab] = useState<Tab>("email")
     const [email, setEmail] = useState("")
@@ -347,7 +350,7 @@ export default function SignInPage() {
                     {/* Sign up link */}
                     <p className="mt-5 text-center text-body-sm text-[#5B6A7A] dark:text-white/65">
                         {copy.noAccountYet}{" "}
-                        <Link href="/auth/signup" className="font-semibold text-primary hover:underline">
+                        <Link href={authHref("/auth/signup", locale)} className="font-semibold text-primary hover:underline">
                             {copy.createAccount}
                         </Link>
                     </p>

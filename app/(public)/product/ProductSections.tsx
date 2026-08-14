@@ -125,7 +125,14 @@ export function ProductSections({ language }: { language: Language }) {
                                 t("Διαβάζουμε κάθε συμβόλαιο σε λίγα λεπτά", "We read every policy in minutes"),
                                 t("Βρίσκουμε κενά και διπλές καλύψεις — με το Plus", "We find gaps and doubled-up cover — with Plus"),
                                 t("Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Starter", "We warn you before something runs out — from the Starter plan"),
-                                t("Δείχνετε στον ασφαλιστή σας ό,τι θέλετε", "You show your agent whatever you choose"),
+                                // `agentCollaboration` is false on free AND on
+                                // Starter, true only on pro — the plan displayed
+                                // as PolicyWallet Plus. /pricing's own comparison
+                                // row reads Όχι / Όχι / Ναι, and the homepage card
+                                // making this same promise already names the plan.
+                                // This was the only unqualified bullet in a list
+                                // where the other three all carry their plan.
+                                t("Δείχνετε στον ασφαλιστή σας ό,τι θέλετε — με το PolicyWallet Plus", "You show your agent whatever you choose — with PolicyWallet Plus"),
                             ].map((item) => (
                                 <li key={item} className="flex items-start gap-3 text-body-lg text-[#0F172A] dark:text-white">
                                     <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />

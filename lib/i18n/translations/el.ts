@@ -160,7 +160,7 @@ export const el = {
             encryptionTitle: 'AES-256 κρυπτογράφηση',
             encryptionSubtitle: 'Δεν αποθηκεύουμε κωδικούς σε plaintext.',
             noAccountYet: 'Δεν έχετε λογαριασμό;',
-            createAccount: 'Εγγραφή',
+            createAccount: 'Δημιουργία λογαριασμού',
             resetTitle: 'Επαναφορά κωδικού',
             resetStepRequest: 'Εισάγετε email για να σας στείλουμε OTP.',
             resetStepVerify: 'Εισάγετε τον OTP και τον νέο κωδικό.',

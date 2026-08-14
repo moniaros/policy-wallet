@@ -69,12 +69,12 @@ const SLIDES: Slide[] = [
             ) : (
                 <>
                     Every policy, from every company,{" "}
-                    <span className="text-[#29685B] dark:text-[#A7F3D0]">in one place.</span>
+                    <span className="text-[#29685B] dark:text-[#A7F3D0]">in one secure place.</span>
                 </>
             ),
         lead: (locale) =>
             locale === "el"
-                ? "Αρκεί να στείλετε ένα αρχείο ή μια φωτογραφία. Τα μαζεύουμε, τα διαβάζουμε και ξέρετε πάντα τις καλύψεις και τους όρους που έχει το καθένα."
+                ? "Αρκεί να στείλετε ένα αρχείο ή μια φωτογραφία. Τα μαζεύουμε, τα διαβάζουμε και ξέρετε πάντα πότε λήγει το καθένα."
                 : "Just send a file or a photo. We gather them, read them, and you always know when each one runs out.",
     },
     {
@@ -97,7 +97,7 @@ const SLIDES: Slide[] = [
         // hero and then paywalled is the one thing a first visit cannot afford.
         lead: (locale) =>
             locale === "el"
-                ? "Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και ασφαλιστικά κενά που δεν ξέρατε ότι έχετε ή δεν είχατε όταν κάνατε το συμβόλαιο σας— με το PolicyWallet Plus."
+                ? "Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και κενά που δεν ξέρατε ότι έχετε — με το PolicyWallet Plus."
                 : "Spot cover you are paying for twice, and gaps you did not know you had — with PolicyWallet Plus.",
     },
     {
@@ -117,7 +117,7 @@ const SLIDES: Slide[] = [
             ),
         lead: (locale) =>
             locale === "el"
-                ? "Δωρεάν Νομική υποστήριξη, check-up & αιματολογικές εξετάσεις, εκπτώσεις σε υπηρεσίες υγείας και πολλά άλλα μπορεί να συμπεριλαμβάνονται στο ασφαλιστήριο σας."
+                ? "Νομική υποστήριξη, οδική βοήθεια, ταξιδιωτική κάλυψη: πολλά περιλαμβάνονται ήδη σε αυτά που έχετε. Σας δείχνουμε ποια, με απλά λόγια."
                 : "Legal support, roadside assistance, travel cover: plenty is already included in what you hold. We show you which, in plain words.",
     },
 ]

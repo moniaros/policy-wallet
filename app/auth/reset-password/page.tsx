@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, Lock, ShieldCheck } from "lucide-react"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { authHref } from "@/lib/seo/locale-links"
 import { resetPasswordWithToken } from "../actions"
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -46,6 +47,9 @@ function ResetPasswordContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { language } = useLanguage()
+    // Internal auth links must carry the pinned language; a bare href
+    // dropped an English visitor onto the Greek sign-in page.
+    const authLocale: "el" | "en" = language === "el" ? "el" : "en"
     const isGreek = language === "el"
     const lang = isGreek ? "el" : "en"
 
@@ -131,7 +135,7 @@ function ResetPasswordContent() {
                 <div className="absolute left-[20%] top-[-10%] h-[60%] w-[60%] rounded-full bg-slate-100/50 blur-[120px] dark:bg-slate-800/20" />
             </div>
 
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="relative z-10 w-full max-w-[440px] rounded-2xl border border-[#E2E8F0] bg-white/95 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-3xl dark:border-white/10 dark:bg-[#111111]/95 sm:p-10">
+            <motion.div initial={{ y: 18 }} animate={{ y: 0 }} transition={{ duration: 0.3 }} className="relative z-10 w-full max-w-[440px] rounded-2xl border border-[#E2E8F0] bg-white/95 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-3xl dark:border-white/10 dark:bg-[#111111]/95 sm:p-10">
                 <div className="mb-5 flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-white/60">
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 dark:bg-white/10">{COPY.secureReset[lang]}</span>
                     <span className="inline-flex items-center gap-1 text-slate-700 dark:text-white/65">
@@ -224,7 +228,7 @@ function ResetPasswordContent() {
                             {submitting ? copy.submitting : copy.submit}
                         </button>
 
-                        <Link href="/auth/signin" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
+                        <Link href={authHref("/auth/signin", authLocale)} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
                             <ArrowLeft className="h-4 w-4" />
                             {copy.backToSignIn}
                         </Link>
