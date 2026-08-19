@@ -4,6 +4,7 @@ import path from "path"
 import { randomUUID } from "crypto"
 import { z } from "zod"
 import { db } from "@/lib/db"
+import { decideGapsForPolicy, GAP_ENGINE_VERSION } from "@/lib/gap-detection"
 import { env } from "@/lib/env"
 import { logger } from "@/lib/logger"
 import { canUserUseTokens, reserveTokens, releaseTokenReservation } from "@/lib/token-tracking"
@@ -1572,7 +1573,7 @@ export class PolicyAnalysisOrchestratorService {
                             logJson: {
                                 checked: gapDefinitions.length,
                                 returned: gapAnalysis.gapResults.length,
-                                detected: gapAnalysis.gapResults.filter((item) => item.isDetected).length,
+                                explained: gapAnalysis.gapResults.length,
                                 provider,
                             },
                             usage: gapAnalysis.usage,
@@ -2667,22 +2668,29 @@ export class PolicyAnalysisOrchestratorService {
                 ? clarity.plainLanguageSummary.el
                 : clarity.plainLanguageSummary.en
 
-        // Collect detected gaps from both AI sources before entering the transaction.
-        const detectedGaps = new Map<
-            string,
-            {
-                severity: string
-                explanationEn: string
-                explanationEl: string
-                suggestionEn: string
-                suggestionEl: string
-            }
-        >()
+        // ── The rules decide. The model only describes. ──────────────────────
+        //
+        // This block used to merge two AI sources: gap_detection contributed a
+        // per-slug `isDetected` boolean the model chose (with severity then
+        // hardcoded to "medium"), and the clarity pass contributed whole gaps
+        // whose severity was a model-emitted enum with no rubric behind it in
+        // any prompt. Whichever source spoke first won, so a hardcoded "medium"
+        // routinely overwrote a considered severity for the same slug.
+        //
+        // Now the only question the model answers is "how would you word this
+        // one?" — asked about gaps that the deterministic evaluator has already
+        // found in the extracted AcordData. A slug the rules did not produce
+        // cannot become a GapInstance no matter what the model says about it.
+        const ruleDecided = await decideGapsForPolicy(policy, mergedAcord)
 
+        // AI prose, keyed by slug, for attaching to a decided gap. Both sources
+        // are welcome HERE, because at this point neither can create anything.
+        const prose = new Map<
+            string,
+            { explanationEn: string; explanationEl: string; suggestionEn: string; suggestionEl: string }
+        >()
         for (const gap of gapAnalysis.gapResults) {
-            if (!gap.isDetected) continue
-            detectedGaps.set(gap.slug, {
-                severity: "medium",
+            prose.set(gap.slug, {
                 explanationEn:
                     typeof gap.explanation === "string" ? gap.explanation : gap.explanation.en,
                 explanationEl:
@@ -2693,15 +2701,44 @@ export class PolicyAnalysisOrchestratorService {
                     typeof gap.suggestion === "string" ? gap.suggestion : gap.suggestion.el,
             })
         }
-
         for (const gap of clarity.coverageGaps) {
-            if (detectedGaps.has(gap.slug)) continue
-            detectedGaps.set(gap.slug, {
-                severity: gap.severity,
+            if (prose.has(gap.slug)) continue
+            prose.set(gap.slug, {
                 explanationEn: gap.evidence.en,
                 explanationEl: gap.evidence.el,
                 suggestionEn: gap.recommendation.en,
                 suggestionEl: gap.recommendation.el,
+            })
+        }
+
+        const detectedGaps = new Map<
+            string,
+            {
+                severity: string
+                gapDefinitionId: string
+                ruleId: string
+                ruleInputs: Record<string, unknown>
+                explanationEn: string
+                explanationEl: string
+                suggestionEn: string
+                suggestionEl: string
+            }
+        >()
+        for (const decided of ruleDecided) {
+            const text = prose.get(decided.slug)
+            detectedGaps.set(decided.slug, {
+                // Severity belongs to the definition the rule fired on — never
+                // to the model, and never to a literal at the write site.
+                severity: decided.severity,
+                gapDefinitionId: decided.gapDefinitionId,
+                ruleId: decided.ruleId,
+                ruleInputs: decided.ruleInputs,
+                // No prose is not a reason to hide a gap the rules found; the
+                // definition's own description carries it instead.
+                explanationEn: text?.explanationEn ?? decided.fallbackDescription,
+                explanationEl: text?.explanationEl ?? decided.fallbackDescription,
+                suggestionEn: text?.suggestionEn ?? "",
+                suggestionEl: text?.suggestionEl ?? "",
             })
         }
 
@@ -2729,6 +2766,9 @@ export class PolicyAnalysisOrchestratorService {
             aiSuggestion: string | null
             aiSuggestionEl: string | null
             detectedAt: Date
+            ruleId: string
+            ruleInputs: any
+            engineVersion: string
         }> = []
 
         // The clarity AI emits free vocabulary, and each novel slug used to be
@@ -2748,45 +2788,26 @@ export class PolicyAnalysisOrchestratorService {
             select: { id: true, slug: true, isActive: true, createdAt: true },
         })
 
-        // No DB unique on (policyId, gapDefinitionId): two emitted slugs that
-        // canonicalize to one definition must not create two rows. First wins —
-        // gap_detection populates detectedGaps before clarity, so the curated
-        // result takes precedence over the free-vocabulary one.
+        // Every entry here came from a rule firing on a definition that already
+        // existed, so the definition id is known and there is nothing to mint.
+        //
+        // What used to be here: if a model emitted a slug no definition matched,
+        // this code CREATED a GapDefinition from the model's own output —
+        // taking its severity, stamping `ruleId: "ai_<slug>"` and
+        // `detectionLogic: {source: "ai_clarity_pipeline"}`. That is how all 41
+        // gap definitions in production came to be AI-authored, and how the same
+        // risk ended up carrying different severities under different spellings
+        // (cyber_risk_gap=critical, cyber_liability=medium). A model can no
+        // longer add to the catalogue; a human adds definitions, and rules
+        // decide when they apply.
         const seenDefinitionIds = new Set<string>()
 
-        for (const [slug, details] of detectedGaps.entries()) {
-            const canonical = pickCanonicalGapDefinition(slug, lobDefinitions)
-            let definitionId: string
-            if (canonical) {
-                definitionId = canonical.id
-            } else {
-                const source = gapDefinitions.find((item) => item.slug === slug)
-                const fallbackTitle = slug
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (char) => char.toUpperCase())
-                const definition = await db.gapDefinition.upsert({
-                    where: { slug },
-                    update: {},
-                    create: {
-                        slug,
-                        name: source?.name || fallbackTitle,
-                        title: source?.name || fallbackTitle,
-                        description: source?.description || "Auto-created from AI clarity analysis",
-                        lineOfBusiness: normalizedLob,
-                        severity: details.severity,
-                        defaultSeverity: details.severity,
-                        ruleId: `ai_${slug}`,
-                        detectionLogic: { source: "ai_clarity_pipeline" },
-                        isActive: false,
-                    },
-                })
-                definitionId = definition.id
-            }
-            if (seenDefinitionIds.has(definitionId)) continue
-            seenDefinitionIds.add(definitionId)
+        for (const [, details] of detectedGaps.entries()) {
+            if (seenDefinitionIds.has(details.gapDefinitionId)) continue
+            seenDefinitionIds.add(details.gapDefinitionId)
             gapRows.push({
                 policyId: policy.id,
-                gapDefinitionId: definitionId,
+                gapDefinitionId: details.gapDefinitionId,
                 severity: details.severity,
                 status: "open",
                 aiExplanation: details.explanationEn,
@@ -2794,6 +2815,11 @@ export class PolicyAnalysisOrchestratorService {
                 aiSuggestion: details.suggestionEn,
                 aiSuggestionEl: details.suggestionEl,
                 detectedAt: now,
+                // Provenance: which rule fired, on what it read, under which
+                // engine. A finding nobody can re-derive is an assertion.
+                ruleId: details.ruleId,
+                ruleInputs: details.ruleInputs as any,
+                engineVersion: GAP_ENGINE_VERSION,
             })
         }
 

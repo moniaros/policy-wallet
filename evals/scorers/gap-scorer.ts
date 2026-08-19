@@ -7,9 +7,19 @@
  * gap is a customer under-protected.
  */
 
+/**
+ * RETIRED as an AI metric (Aug 2026).
+ *
+ * This scored whether the MODEL detected the right gaps. Detection is a rule
+ * decision now (lib/gap-detection.ts) and `isDetected` no longer exists on an
+ * AI response, so recall/precision over model output measures nothing the
+ * product does. The equivalent measurement belongs to executable tests of the
+ * rule evaluator; this type is kept only so the harness still compiles while
+ * the gaps suite is disabled.
+ */
 export interface GapResultLike {
     slug: string
-    isDetected: boolean
+    isDetected?: boolean
 }
 
 export interface GapScore {
@@ -24,7 +34,7 @@ export interface GapScore {
 
 export function scoreGaps(expectedDetectedSlugs: string[], actual: GapResultLike[]): GapScore {
     const expected = new Set(expectedDetectedSlugs)
-    const detectedSlugs = actual.filter((r) => r.isDetected).map((r) => r.slug)
+    const detectedSlugs = actual.filter((r) => r.isDetected === true).map((r) => r.slug)
     const detected = new Set(detectedSlugs)
 
     const truePositives = [...expected].filter((s) => detected.has(s))

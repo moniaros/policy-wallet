@@ -317,7 +317,6 @@ ${schemaPromptBlock(ExtractionSchema)}`
         }).optional(),
         gapResults: z.array(z.object({
           slug: z.string(),
-          isDetected: z.boolean(),
           explanation: coercedGreekString.describe("Gap explanation in Greek — a plain string, NOT an object"),
           suggestion: coercedGreekString.describe("Remediation suggestion in Greek — a plain string, NOT an object")
         })),
@@ -386,7 +385,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
       logger('info', 'Gemini Zod gap analysis successful', {
         policyNumber: metadata.policyNumber,
         gapsChecked: gapDefinitions.length,
-        gapsDetected: response.gapResults.filter(g => g.isDetected).length,
+        gapsExplained: response.gapResults.length,
         hasAcordData: !!response.acordData
       })
 
@@ -443,7 +442,6 @@ ${schemaPromptBlock(ExtractionSchema)}`
       })).default([]),
       coverageGaps: z.array(z.object({
         slug: z.string(),
-        severity: z.enum(['low', 'medium', 'high', 'critical']),
         evidence: z.string().describe("Gap evidence in Greek"),
         recommendation: z.string().describe("Recommendation in Greek"),
       })).default([]),
