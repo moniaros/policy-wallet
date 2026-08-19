@@ -2,6 +2,59 @@
 
 _Living dashboard — not a log. Any session that commits or decides ends by updating this file (agent writes the delta; see CLAUDE.md rule). Keep under one screen — move resolved items to `docs/planning/status-archive.md`._
 
+## Session wrap — 2026-08-19 (PHASE 2 — Accountability: make access observable) — **GATE PASSED, committed `d795ec05`**
+
+Report: `docs/audits/phase2-accountability-findings-2026-08.md`.
+
+**Every mutating admin action logged; reads did not.** The sharpest case:
+`getUserDetails` pulled the whole `policyholderProfile` — chronic conditions, family medical
+history, smoking status, income, mortgage — for any customer and wrote **no audit row**. It
+was also **pure over-fetch**: its only caller reads 17 fields, none from that relation. So
+every customer's health record was loaded into an admin page render and discarded. The
+relation is gone; what remains is logged. **Minimise first, then log** — logging access to
+data you never needed is the worse repair.
+
+**A correction to my own Step 0, caught by the compiler.** I claimed the advisor playbook was
+the same over-fetch ("uses only `profile.ownsHome`"). Wrong — `toLifeContext` consumes
+`chronicConditions` and `familyMedicalHistory`. My narrowing would have been a silent
+behaviour change; `tsc` rejected it. It is a **genuine Art. 9 read** and is now audited and
+flagged instead.
+
+**The right-of-access index backed nothing.** 18 `activityLog.create` sites, only 3 set
+`targetUserId` — and **neither shared helper could**, so 15 structurally couldn't name the
+subject. `logAdminAction` takes it now; new `logAdminRead` records subject + field **scope**
+(classes, never values) + `specialCategory`. Nine read paths instrumented.
+
+**Retention had the matching flaw:** the 5-year window keys on `metadata._audit`, which only
+`logAdminAction` stamps — so read-access rows fell into the 12-month bucket and the
+right-of-access trail expired four years before the admin-action trail for the same class of
+event. Rows naming a subject are accountability records now; the short sweep is their strict
+complement.
+
+**`isBreakGlass` dropped** (migration `20260819120000`, applied to **prod and dev** via
+Supabase MCP). One writer — a user filing their own deletion request, the opposite of an
+emergency override — and zero readers. A column promising a control that doesn't exist reads
+as evidence of one.
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth pass · utf8 1816 · i18n pass ·
+**4551/4551 unit tests (432 files)**. New guard `tests/unit/admin-reads-are-audited.test.ts`
+**red-green proven**. Retention **observed to have run in prod** (an export payload purged
+after expiry — and an earlier "unpurged payload" finding of mine was a SQL-NULL vs JSON-`null`
+artifact, discarded).
+
+**Two exclusions stated, not papered over:** (1) ~14 cron jobs still record only "the job ran",
+never which subjects they touched — per-subject rows for a bulk sweep is the wrong design;
+(2) in prod, all 60 `AGENT_VIEWED_CUSTOMER` rows lack `targetUserId` despite the code setting
+it since 2026-07-17 — likely branch divergence; **confirm which build prod runs before
+trusting any right-of-access report.**
+
+**BLOCKED (owner/DPO):** notifying subjects of admin access (`registry.ts:1295` — deliberately
+a policy decision); disclosing `ActivityLog` in the Art. 15 export; ratifying the 5-year window
+for read-access rows.
+
+**Next:** Phase 3 (gap engine — make "rules decide" true). `gap_instances` is 0 rows in prod,
+so truncate-and-regenerate is free.
+
 ## Session wrap — 2026-08-19 (PHASE 1 — Security: authorization consolidation) — **GATE PASSED, committed `0ddb7605`**
 
 Report: `docs/audits/phase1-authorization-findings-2026-08.md`. Every claim carries file:line
