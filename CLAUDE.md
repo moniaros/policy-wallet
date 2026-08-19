@@ -95,6 +95,18 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   the `createdByUserId` upload arm — require a relationship that is not `inactive`/
   `terminated`. Never gate on `status === "active"`: the column defaults to
   `pending_activation`, which is the normal state before a customer accepts.
+- **Rules decide a coverage gap; the model only describes one.** Detection and severity come
+  from `decideGapsForPolicy` ([lib/gap-detection.ts](lib/gap-detection.ts)) evaluating a
+  `GapDefinition.detectionLogic` against the extracted `AcordData`; severity is the
+  definition's, never a literal at the write site. The AI contract has no `isDetected` and no
+  `severity` field — deleted, not ignored — and nothing may create a `GapDefinition` from model
+  output. A definition without an evaluable rule produces nothing rather than failing silently
+  to false. **Unknown is not absence**: only an explicit `false` is evidence a cover is
+  missing, because the extractor is silent about most fields.
+- **Severity is not a verdict until an underwriter says so.** Render it through
+  `describeSeverity()` ([lib/gaps/severity-display.ts](lib/gaps/severity-display.ts)) and show
+  its `caveatKey`. `tests/unit/gap-severity-display-single-source.test.ts` fails on a new
+  hand-rolled severity map and carries the migration debt list.
 - **An admin read of another person's data leaves a trace, and reads what it needs.**
   Minimise first: a bare relation include (`policyholderProfile: true`) pulls every Art. 9
   column, and `getUserDetails` was loading customers' health records into a page that

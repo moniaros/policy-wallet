@@ -66,6 +66,56 @@ but it is also a documented, shipped positioning decision (`CATEGORY_NAME`
 docblock, `docs/audits/marketing-website-audit-2026-08.md` §2). Flagged, not
 overturned.
 
+## Session wrap — 2026-08-19 (PHASE 3 — Gap engine) — **GATE 3a PASSED / 3b BLOCKED**, committed `92fdd155`, `480a082e`
+
+Report: `docs/audits/phase3-gap-engine-findings-2026-08.md`.
+
+**A coverage gap was a model's opinion wearing a severity badge.** Detection came from
+`gapResults[].isDetected`, a boolean the LLM chose. Severity came from a hardcoded `"medium"`
+at the write site, or from a `low|medium|high|critical` enum the clarity pass emitted **with no
+rubric anywhere in the prompt** — and because gap_detection merged first, the literal silently
+overrode the clarity value for any slug both flagged.
+
+**Worse: the model authored the catalogue.** When clarity emitted an unknown slug, the
+orchestrator CREATED a `GapDefinition` from model output. In prod that ran to completion —
+**41 of 41 definitions AI-authored, 35 active**, none with evaluable logic. The drift is
+visible: `cyber_risk_gap` (critical) / `cyber_liability` (medium) / `cyber-risk-gap` (medium)
+are one risk under three spellings and two severities; `mental_health_exclusion` high vs
+`mental-health-exclusion` medium. What a customer was told depended on the model's spelling.
+
+**Now:** `decideGapsForPolicy` evaluates rules against the fresh `AcordData`; severity is the
+definition's; the model is handed an existing gap and asked only to word it. `isDetected` and
+`severity` are **deleted** from the interface, all three providers and the mock — not ignored.
+The mint site is gone. Provenance (`ruleId`/`ruleInputs`/`engineVersion`) is persisted.
+The dead third pipeline (`GapAnalysisService.analyzePolicy` + its unimported action) is removed.
+
+**A defect underneath that would have made rules untrustworthy anyway:** `AcordDataSchema` had
+`.default(false)` on six coverage booleans, and the SDK materialises defaults — so "the
+extractor never mentioned leishmaniasis" was stored as "not covered", and `is_false` read
+`!actual`. Unknown is representable now; only explicit `false` is evidence of absence. The
+evaluator had **no executable test** before (only source-text regex); it has 15.
+
+**Gate 3b:** `lib/gaps/severity-display.ts` is the single primitive — label, neutral tone,
+rank, and the mandatory caveat, with one flag to drop it when an underwriter signs off.
+Eleven surfaces still hand-roll severity (eight with no caveat) and are listed as **debt with a
+ceiling** in a red-green-proven guard.
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth pass · utf8 1818 · i18n pass ·
+**4573/4573 tests (434 files)**. Migrations applied to prod + dev.
+
+**⚠ Consequence, stated not buried:** prod's 41 AI-authored definitions are now **deactivated**
+(they can never fire by construction), so **production produces no coverage gaps at all** until
+a rule-bearing catalogue is seeded. `gap_instances` was already 0, so nothing was taken from a
+user — but the capability is dark. Of ~78 AI-observed gap concepts, rules can decide a handful;
+several branches (liability, income protection, group life, legal expenses, personal accident)
+have **no typed `AcordData` section at all** to write a rule from.
+
+**Not done:** a live three-gap trace — there is nothing to trace against until a catalogue is
+seeded. "One path" is partial: `process-policy` and the manual refresh still call the older
+entry point, though both now share the evaluator.
+
+**Next:** seed a rule-bearing gap catalogue (owner + underwriter input), then Phase 4.
+
 ## Session wrap — 2026-08-19 (PHASE 2 — Accountability: make access observable) — **GATE PASSED, committed `d795ec05`**
 
 Report: `docs/audits/phase2-accountability-findings-2026-08.md`.
