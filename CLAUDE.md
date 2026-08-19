@@ -95,6 +95,13 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   the `createdByUserId` upload arm — require a relationship that is not `inactive`/
   `terminated`. Never gate on `status === "active"`: the column defaults to
   `pending_activation`, which is the normal state before a customer accepts.
+- **An admin read of another person's data leaves a trace, and reads what it needs.**
+  Minimise first: a bare relation include (`policyholderProfile: true`) pulls every Art. 9
+  column, and `getUserDetails` was loading customers' health records into a page that
+  renders none of them. Then log: `logAdminRead` ([lib/admin/admin-guard.ts](lib/admin/admin-guard.ts))
+  records the subject (`targetUserId`), a field **scope** in classes rather than values, and
+  `specialCategory` when Art. 9 data is involved. `tests/unit/admin-reads-are-audited.test.ts`
+  fails if an enumerated read path drops its audit call.
 - **Every export of a `"use server"` file is a public endpoint.** It is reachable with no
   UI, so it needs its own auth check, and it must never take the acting user's id as a
   parameter — derive the subject from the session. `redeemInvite` took `(token, userId)`
