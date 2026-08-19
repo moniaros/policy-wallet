@@ -3,6 +3,7 @@ export const runtime = 'nodejs'
 import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { logAdminRead } from "@/lib/admin/admin-guard"
 
 type SearchParams = Promise<{ type?: string }>
 
@@ -34,6 +35,19 @@ export default async function AdminSubmissionsPage({ searchParams }: { searchPar
         orderBy: { createdAt: "desc" },
         take: 200,
     })
+
+    // These rows are unselected — name, email, phone and the message body of
+    // everyone who ever used the contact form, including people who never
+    // became customers. Reading them left no trace at all.
+    await logAdminRead(
+        { id: dbUser.id, email: dbUser.email },
+        "ADMIN_VIEWED_FORM_SUBMISSIONS",
+        `Viewed ${submissions.length} contact/newsletter submissions`,
+        {
+            scope: ["formSubmission.identity", "formSubmission.contact", "formSubmission.message"],
+            metadata: { count: submissions.length, filter: activeFilter },
+        }
+    )
 
     const unsentCount = submissions.filter((submission) => !submission.emailSent).length
 

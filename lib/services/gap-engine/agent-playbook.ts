@@ -301,6 +301,11 @@ export async function generatePlaybook(
             where: { id: clientUserId },
             select: { name: true, password: true, emailVerified: true },
         }),
+        // The whole profile is genuinely needed: it feeds `toLifeContext`,
+        // which reads across dependents, residence, income, mortgage AND the
+        // Art. 9 fields (chronicConditions, familyMedicalHistory). This is a
+        // real special-category read by an advisor about a client, not an
+        // over-fetch — so it cannot be minimised away, and is audited below.
         db.policyholderProfile.findUnique({
             where: { userId: clientUserId },
         }),
@@ -356,6 +361,33 @@ export async function generatePlaybook(
     // via `residenceType` — the field the wizard and questionnaire now write —
     // still looked like a non-owner to their advisor, so the playbook and the
     // client's own dashboard described different people.
+    // An advisor reading a client's health and financial profile to be told
+    // what to say to them is exactly the access an Art. 30 record exists for.
+    // Flagged as special-category so "who looked at health data" is answerable
+    // without inferring it from the action name. Best-effort: never fail a
+    // playbook over an audit write.
+    if (clientProfile) {
+        try {
+            await db.activityLog.create({
+                data: {
+                    adminUserId: agentUserId,
+                    adminEmail: "agent",
+                    actionType: "AGENT_READ_CLIENT_PROFILE",
+                    description: "Agent playbook read the client's risk profile",
+                    targetUserId: clientUserId,
+                    metadata: {
+                        _read: {
+                            scope: ["profile.lifeContext", "profile.health", "profile.financial"],
+                            specialCategory: true,
+                        },
+                    },
+                },
+            })
+        } catch {
+            // audit is best-effort; never break the advisor's page
+        }
+    }
+
     const ctx = toLifeContext(clientProfile ?? null)
     const keyInsight = generateKeyInsight(lineOfBusiness, severity, {
         dependentsCount: totalDependents(ctx),

@@ -11,7 +11,7 @@
 import { z } from "zod"
 import * as Sentry from "@sentry/nextjs"
 import { db } from "@/lib/db"
-import { logAdminAction, verifyAdminRole } from "@/lib/admin/admin-guard"
+import { logAdminAction, logAdminRead, verifyAdminRole } from "@/lib/admin/admin-guard"
 import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { mergePolicyRecords } from "@/lib/services/policy-merge.service"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
@@ -61,7 +61,7 @@ export async function getPoliciesForAdmin(input: {
     search?: string
     limit?: number
 }): Promise<{ policies: AdminPolicyRow[] }> {
-    await verifyAdminRole()
+    const admin = await verifyAdminRole()
     const parsed = listSchema.safeParse(input)
     const { status, search, limit } = parsed.success ? parsed.data : {}
 
@@ -95,6 +95,18 @@ export async function getPoliciesForAdmin(input: {
             owner: { select: { email: true } },
         },
     })
+
+    await logAdminRead(
+        admin,
+        "ADMIN_LISTED_POLICIES",
+        `Listed ${rows.length} policies across all owners`,
+        {
+            // Searchable by owner email, so this is a read of who holds what —
+            // across the whole customer base, not one account.
+            scope: ["policy.list", "user.contact"],
+            metadata: { count: rows.length, search: search ? "yes" : "no" },
+        }
+    )
 
     return {
         policies: rows.map((p) => ({

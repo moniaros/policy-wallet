@@ -23,7 +23,7 @@ const OPEN_DELETION_STATUSES = ["requested", "in_review", "approved", "processin
 
 // verifyAdminRole + logAdminAction moved to lib/admin/admin-guard.ts (shared
 // with the /admin/plans and /admin/partners action files).
-import { logAdminAction, verifyAdminRole } from "@/lib/admin/admin-guard"
+import { logAdminAction, logAdminRead, verifyAdminRole } from "@/lib/admin/admin-guard"
 import { z } from "zod"
 import { createAdminClient, getSupabaseAuthUserByEmail } from "@/lib/supabase/admin"
 import { Prisma } from "@prisma/client"
@@ -302,6 +302,13 @@ export async function getUsers(
             db.user.count({ where })
         ])
 
+        await logAdminRead(admin, "ADMIN_LISTED_USERS", `Listed ${users.length} user records`, {
+            // A list read has no single data subject, so targetUserId stays
+            // null; the row still answers "who went looking, and at what".
+            scope: ["user.identity", "user.contact"],
+            metadata: { count: users.length, page, search: search ? "yes" : "no" },
+        })
+
         return {
             users,
             pagination: {
@@ -336,9 +343,18 @@ export async function getUserDetails(userId: string) {
                     take: 10,
                     orderBy: { createdAt: "desc" }
                 },
-                agentProfile: true,
-                policyholderProfile: true,
-                adminProfile: true,
+                // policyholderProfile / agentProfile / adminProfile are NOT
+                // fetched. The profile relation carries Art. 9 special-category
+                // data — chronic conditions, family medical history, smoking
+                // status, gender, height, weight — plus income, mortgage and
+                // loan amounts. This function's only caller
+                // (admin/users/[id]/page.tsx) renders none of it: it reads 17
+                // fields, and not one of them comes from these three relations.
+                // So the health record of every customer was being loaded into
+                // an admin page render and thrown away, with no audit row.
+                // The fix for reading data you do not need is not to log the
+                // read. Anything here that is genuinely needed later should be
+                // added back as a named `select`, not a bare relation include.
                 subscriptions: {
                     include: { plan: true },
                     orderBy: { createdAt: "desc" },
@@ -363,6 +379,27 @@ export async function getUserDetails(userId: string) {
         if (!user) {
             throw new Error("User not found")
         }
+
+        await logAdminRead(
+            admin,
+            "ADMIN_VIEWED_USER",
+            `Viewed the account record of ${user.email ?? userId}`,
+            {
+                targetUserId: userId,
+                // What an admin can see on this page, named in classes rather
+                // than values. Sessions and security events carry IP addresses,
+                // so they are called out separately from plain contact details.
+                scope: [
+                    "user.identity",
+                    "user.contact",
+                    "user.taxId",
+                    "user.billing",
+                    "user.sessions",
+                    "user.securityEvents",
+                    "policies.list",
+                ],
+            }
+        )
 
         return user
     } catch (error) {
@@ -633,6 +670,13 @@ export async function getPendingAgents() {
             orderBy: { submittedAt: "asc" }
         })
 
+        await logAdminRead(
+            admin,
+            "ADMIN_LISTED_PENDING_AGENTS",
+            `Listed ${pendingAgents.length} pending agent applications`,
+            { scope: ["user.identity", "user.contact"], metadata: { count: pendingAgents.length } }
+        )
+
         return pendingAgents
     } catch (error) {
         Sentry.captureException(error)
@@ -839,7 +883,7 @@ export async function getDsrQueue(options?: {
     deletionStatus?: DeletionStatusFilter
     limit?: number
 }) {
-    await verifyAdminRole()
+    const admin = await verifyAdminRole()
 
     const safeLimit = Math.min(Math.max(options?.limit ?? 50, 1), 200)
     const dataExportStatus = options?.dataExportStatus || "all"
@@ -910,6 +954,19 @@ export async function getDsrQueue(options?: {
                 },
             }),
         ])
+
+    await logAdminRead(
+        admin,
+        "ADMIN_VIEWED_DSR_QUEUE",
+        `Viewed the DSR queue (${dataExports.length} export, ${deletionRequests.length} deletion requests)`,
+        {
+            // Browsing the queue exposes every requester's name and email. The
+            // ACTIONS on a request were already audited; opening the list was
+            // not, so an operator could read the whole queue invisibly.
+            scope: ["user.identity", "user.contact", "dsr.requests"],
+            metadata: { exportCount: dataExports.length, deletionCount: deletionRequests.length },
+        }
+    )
 
     return {
         dataExports: dataExports.map((request) => ({
@@ -1012,7 +1069,17 @@ export async function executeDataExportRequestAsAdmin(requestId: string) {
             {
                 requestId,
                 userId: request.userId,
-            }
+                // The DSAR payload includes the Art. 9 profile by design — it
+                // is the subject's own data and they asked for it. Recording
+                // that here is what makes "who has handled special-category
+                // data" answerable from the log rather than inferred from the
+                // action name.
+                _read: {
+                    scope: ["dsar.fullPayload", "profile.health", "profile.financial"],
+                    specialCategory: true,
+                },
+            },
+            request.userId
         )
 
         await sendDsrLifecycleEmail(request.user, (language) =>
@@ -1457,7 +1524,7 @@ export interface ExtractionFlagQueueItem {
 }
 
 export async function getExtractionFlagQueue(options?: { limit?: number }) {
-    await verifyAdminRole()
+    const admin = await verifyAdminRole()
 
     const safeLimit = Math.min(Math.max(options?.limit ?? 100, 1), 200)
 
@@ -1482,6 +1549,18 @@ export async function getExtractionFlagQueue(options?: { limit?: number }) {
           })
         : []
     const policyById = new Map(policies.map((p) => [p.id, p]))
+
+    await logAdminRead(
+        admin,
+        "ADMIN_VIEWED_EXTRACTION_FLAGS",
+        `Viewed ${events.length} flagged extractions`,
+        {
+            // acordData is the text pulled out of the customer's own document,
+            // so this is a read of policy content, not just of metadata.
+            scope: ["user.identity", "user.contact", "policy.extractedContent"],
+            metadata: { count: events.length },
+        }
+    )
 
     const items: ExtractionFlagQueueItem[] = events.map((event) => {
         const policy = event.relatedObjectId ? policyById.get(event.relatedObjectId) : undefined
