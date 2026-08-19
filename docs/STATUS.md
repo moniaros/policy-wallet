@@ -66,6 +66,119 @@ but it is also a documented, shipped positioning decision (`CATEGORY_NAME`
 docblock, `docs/audits/marketing-website-audit-2026-08.md` §2). Flagged, not
 overturned.
 
+## Session wrap — 2026-08-19 (PHASE 1 — Security: authorization consolidation) — **GATE PASSED, committed `0ddb7605`**
+
+Report: `docs/audits/phase1-authorization-findings-2026-08.md`. Every claim carries file:line
+or a named prod query.
+
+**⚠ This work was written on 2026-08-14, DESTROYED by a working-tree revert, and re-applied
+on 2026-08-19.** The untracked files (guard test, audit docs) had never been staged, so git
+could not recover them. It is now **committed**. In this shared tree, uncommitted security
+work is not work — commit before handing off.
+
+**A live IDOR, fixed.** `lib/agent-visibility.ts` granted sight of any policy where
+`createdByUserId` matched, with **no relationship-status check**; termination revokes grants
+but cannot revoke immutable history. A dismissed agent kept seeing every policy they had
+uploaded for that customer across 15 files — including `branded-report`, which serves the
+analysis itself — while `relationship-actions.ts:10` promised access had stopped.
+`lib/policy-access.ts:140-141` had it right all along. **Live prod exposure: ZERO** (the one
+terminated relationship's former customer owns 0 policies), so no data remediation.
+
+**More severe:** `redeemInvite` was an **exported** function in a `"use server"` file taking a
+caller-supplied `userId` with **no auth at all** — an unauthenticated path that consumed
+invites and wrote AccessGrant/CustomerRelationship rows. Now session-derived. (A subagent had
+called this flow SAFE by reading only the page caller, never the export.)
+
+**Also:** `createUserTask` status filter and `requestAiConsent` scope filter (both claimed by
+their own comments, neither implemented); orchestrator accepted a bare relationship to read
+document bytes and spend tokens; **7 routes consolidated** onto `getPolicyAccess` (also
+un-breaking grant-holding advisors); **441 lines of dead duplicate authorization deleted**.
+
+**Erasure guard blindspot closed** — detection now derives User FKs from `@relation` shape,
+not 5 hardcoded names, surfacing **8 invisible models**. Two leaked real subject data and are
+now erased + exported; six exempt with verified reasons (`CollaborationParticipant`'s old
+reason was factually false — threads are never deleted).
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth 0/0/0/0 · utf8 1814 · i18n pass ·
+**4538/4538 unit tests (431 files)**. The new guard is **red-green proven** and was hardened
+mid-verification after a probe slipped through on a *comment* mentioning `getPolicyAccess`.
+Cross-tenant checks are proven at the decision layer, **not** as live two-session HTTP calls.
+
+**Premise corrections (do not re-inherit):** "Zero registered users" is **false** — prod has 5
+auth users, 12 DB rows, 2 policies, 11 storage objects, and `pkaragian@outlook.com` is an
+external person owning a policy. `gap_instances` **is** 0, so Phase 3 truncate is free. GO #1's
+trio was **never in prod**; the real find was `e2e-money@policywallet.test`, **purged**
+(survived the revert — it was a DB change). Storage is **healthier than documented**: all
+buckets private with the July limits applied and **no SELECT policy**, so stored URLs are
+inert — the feared unauthenticated PDF IDOR does not exist. **One migration unapplied in prod**
+(`drop_dead_protection_score_history`), leaving a dead table with 3 rows of per-user scores
+outside the DSR export path — Phase 2/4.
+
+**Next:** Phase 2 (accountability) — log admin reads incl. `getUserDetails`; give
+`isBreakGlass` a real semantic or remove it (one call site, on user-initiated deletion).
+
+## Session wrap — 2026-08-14 (A failed upload must not leave a half-created policy behind)
+
+**Current phase:** built on `feat/marketing-site-overhaul`, uncommitted. Full guardrail gate
+green (audit:api-auth, lint, lint:i18n-changed, lint:utf8, type-check, **4,528 unit tests /
+430 files**, production build). No migration, no schema change.
+
+**The bug as reported.** A wallet upload writes the policy row *before* extraction knows
+anything, filling the NOT NULL identity columns with placeholders. When analysis never
+completed, those survived at `action_needed` and the wallet notice strip printed them raw:
+"Αυτοκίνητο · **__PENDING_EXTRACTION__**: λείπουν στοιχεία από το έγγραφο."
+
+**What the investigation actually found — three sentinel sources, not one.** Besides the add
+form (`AddPolicyClient.tsx:100/103`) and `uploadAndParse` (`policy.service.ts:353/365`), **the
+AI providers substitute `Unknown Insurer` / `PENDING-<epoch>` for an empty extraction on a
+SUCCESSFUL run** (`gemini|anthropic|openai-ai.service.ts`), and `buildMetadata` keeps whatever
+is stored when the evidence gate rejects a document. So a placeholder reaches perfectly healthy
+`active` policies, and discarding failed ones does **not** close the hole on its own.
+
+**Two more holes found on the way.** `runBackgroundAnalysis` awaited `extractBasicSummary` and
+**threw the result away** — for every free/Starter user (the majority tier) a failed or
+consent-blocked parse left the policy stuck `analyzing` forever, with nothing said. And process
+death (`LEASE_EXPIRED`) had no discard path at all.
+
+**Three dispositions, deliberately not collapsed into one.**
+- **DISCARD** (technical: provider error, unreadable document, timeout, dead executor) on a
+  policy whose identity is *entirely* placeholder → row, document rows and bucket objects all
+  removed. **Storage first, database second**: an object that outlives its row is personal data
+  no GDPR export can see, so a failed storage delete ABORTS the discard and keeps the row.
+- **KEEP** — the same technical failure on a policy someone typed an insurer into is kept and
+  marked `action_needed`. A provider timeout must not delete an agent's work.
+- **INFORM** — quota / consent / permission never started the run: the upload is kept and the
+  reason is said in Greek, from a stable code (`TOKEN_LIMIT_BLOCKED`, `AI_CONSENT_REQUIRED`,
+  `ANALYSIS_NOT_PERMITTED`) the UI localizes. Silently deleting a quota-blocked file would make
+  the product look broken.
+
+A **96% (`completed_with_warnings`) run is still a success** — verified nothing anywhere
+thresholds `overallSuccessPct`, and nothing was added that does.
+
+**The sentinel is now unrenderable, centrally.** `lib/wallet/policy-identity.ts` is the single
+owner of the literals (~20 unguarded surfaces adopted it; the 5 divergent inline copies were
+replaced), `resolveInsurerDisplay` resolves a placeholder to `""`, and `emit()` scrubs every
+notification title/message/subject as a backstop. A repo-scan test fails CI if any file outside
+the primitive and the three writers learns the strings again.
+
+**Storage rollback on the create path.** `createPolicy` now removes client-uploaded objects on
+every non-persisting path (cap hit, Zod throw, rejected extension, over-cap, transaction
+failure) — previously all of them orphaned.
+
+**Counts measured today.** Sentinel-valued policies: **0 in dev, 0 in prod**. Orphaned storage
+objects: **34 in dev, 9 in prod** — nine real customer PDFs in production reachable by no
+export and no erasure request. `scripts/cleanup-sentinel-policies.ts` (`npm run
+cleanup:sentinels`) reports them; **the prod cleanup has NOT been run — it needs the owner's
+go-ahead.**
+
+**Environment hazard found and guarded.** `.env.local` declares `DIRECT_URL` twice — dev first,
+**prod second** — and dotenv keeps the last, so `npx tsx -r dotenv/config …` reads **production
+Postgres** while the Supabase client talks to the **dev** bucket. The cleanup script hard-refuses
+to run when the two refs disagree. Any new destructive script should copy that guard.
+
+**Next 3 actions:** (1) decide on running the prod orphan cleanup; (2) fix the duplicate
+`DIRECT_URL` in `.env.local`; (3) E2E the upload-failure path locally before merging.
+
 ## Session wrap — 2026-08-13b (Feature flags: the automation console's one missing pillar)
 
 **Current phase:** built and gated on `feat/marketing-site-overhaul`. **The migration is
