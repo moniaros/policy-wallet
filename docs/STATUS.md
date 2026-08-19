@@ -2,6 +2,57 @@
 
 _Living dashboard — not a log. Any session that commits or decides ends by updating this file (agent writes the delta; see CLAUDE.md rule). Keep under one screen — move resolved items to `docs/planning/status-archive.md`._
 
+## Session wrap — 2026-08-20 (PHASE 4 — Regulatory identity & truth defects) — **GATE PASSED**, committed `b3e4a329`
+
+Report: `docs/audits/phase4-regulatory-truth-2026-08.md`.
+
+**The entity is published.** «Insurance Martech Ι.Κ.Ε.» / Insurance Martech IKE, ΓΕΜΗ
+188863359000, ΑΦΜ 302659440 (ΔΟΥ Χίου), seat Εντός Οικισμού Καλαμωτής, 82102, Χίος — on the
+footer, Terms §1 and Privacy §1, both locales, from one source. Values verified against commit
+`ec9d5f81`, which still carries the pre-suppression file headed *"These are the REAL corporate
+registry values"*; **its ΓΕΜΗ matches the number the owner supplied independently.** The
+concealment guards are **inverted** — the clauses must now contain name/ΓΕΜΗ/seat/ΑΦΜ, and no
+"available soon" placeholder may survive.
+
+**Deliberately NOT restored: the court venue.** The old record named the courts of Chios and
+`law_venue` renders that field; restoring it would narrow where a consumer's dispute is heard
+from "the courts of Greece" to the company's own island. That is a contract change, worse for
+the consumer, and nobody asked for it. **Owner/legal decision.**
+
+**Truth defects — all were still live, all fixed:** "Bank-grade security" (no attestation
+behind it) → AES-256; "Takes 90 seconds" removed; bulk import said **50 files, which matches no
+tier** (10/100/500/∞) → 100; Greek hero promised gap-finding without the Plus attribution the
+English carried — and Greek is the binding language; the free-tier promise was hand-typed in
+**17 files** → single-sourced; `/api/health` allowlisted (probes were getting a 307 to signin);
+dead `/workbox-` removed.
+
+**The guard that should have caught two of these scanned `app/(public)` only** — which is how
+false claims lived on the signup and password-reset screens through a marketing audit that
+closed with three consecutive zero-finding rounds. It now scans `app/auth`.
+
+**DSR copy matches the machine:** export is immediate but **not complete** (payment methods,
+session/security telemetry, the access-audit trail, usage ledgers, agent-authored records are
+excluded); deletion is a **request** an admin executes within the statutory month. Chose
+request-and-fulfil over automating an irreversible action. "Entire" appears nowhere. Greek
+Terms/Privacy confirmed available.
+
+**DSR DRILL RUN AND PASSED — 13/13**, 2026-08-20, dev project (the script refuses prod). Real
+`eraseUserData` against a full PII footprint: auth identity deleted, storage PDF removed, Art. 9
+profile scrubbed, consent row kept with IP scrubbed, export payload purged, **idempotent
+re-run**. First post-remediation drill on record — the July doc describes the pre-fix state. It
+also exercised the Phase 1 additions with no FK failure.
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth pass · utf8 1822 · i18n pass ·
+**4574/4574 tests (434 files)**.
+
+**Not claimed:** that a grep of *every* numeric/superlative claim across ~120 public URLs in two
+languages returns only traceable ones. I fixed the enumerated defects and widened the guard;
+a full sweep is a separate audit. **The seat could not be confirmed against ΓΕΜΗ from here** —
+it was live until 2026-07-22 and is internally consistent (ΔΟΥ Χίου matches); owner to confirm
+it is current.
+
+**Next:** Phase 5 (trust & platform surface) — now unblocked, since Phases 1–4 have all passed.
+
 ## Session wrap — 2026-08-19 (PHASE 3 — Gap engine) — **GATE 3a PASSED / 3b BLOCKED**, committed `92fdd155`, `480a082e`
 
 Report: `docs/audits/phase3-gap-engine-findings-2026-08.md`.
