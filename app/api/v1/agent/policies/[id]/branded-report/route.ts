@@ -4,7 +4,7 @@ import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { isAgentRole } from "@/lib/auth/require-agent"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
-import { getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
+import { getGrantedPolicyIds, getLiveCustomerUserIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
 import {
     generateSavingsReportHtml,
     type AgentReportBranding,
@@ -66,8 +66,11 @@ export const GET = withApiGuard(
 
         // 4. VISIBILITY (not ownership): the whole ballgame. Same rule as the
         //    customer-profile policy list — createdByUserId OR an active grant.
-        const granted = new Set(await getGrantedPolicyIds(agentId))
-        if (!isPolicyVisibleToAgent(policy, agentId, granted)) {
+        const [granted, liveCustomers] = await Promise.all([
+            getGrantedPolicyIds(agentId).then((ids) => new Set(ids)),
+            getLiveCustomerUserIds(agentId),
+        ])
+        if (!isPolicyVisibleToAgent(policy, agentId, granted, liveCustomers)) {
             return createApiError("FORBIDDEN", "Not authorized", 403)
         }
 

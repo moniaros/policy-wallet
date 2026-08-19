@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { canUserUseFeature } from "@/lib/subscription-limits"
+import { getPolicyAccess } from "@/lib/policy-access"
 import { generateSavingsReportHtml } from "@/lib/services/reports/savings-report"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
@@ -39,14 +40,15 @@ export const GET = withApiGuard(
             )
         }
 
-        // Verify ownership
-        const policy = await db.policy.findUnique({
-            where: { id: policyId },
-            select: { id: true, ownerUserId: true },
+        // One authorization path (lib/policy-access.ts). This used to be an
+        // inline owner check, which meant the advisor who ran the analysis
+        // could not download its report.
+        const access = await getPolicyAccess(policyId, {
+            id: authResult.dbUser.id,
+            roles: authResult.dbUser.roles,
         })
-        if (!policy) return createApiError("NOT_FOUND", "Policy not found", 404)
-        if (policy.ownerUserId !== authResult.dbUser.id) {
-            return createApiError("FORBIDDEN", "Not authorized", 403)
+        if (!access.exists || !access.canRead) {
+            return createApiError("NOT_FOUND", "Policy not found", 404)
         }
 
         // Get latest completed analysis

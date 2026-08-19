@@ -30,6 +30,8 @@ export async function buildUserDataExportPayload(userId: string) {
         notificationSettings,
         questionnaireResponses,
         collaborationMessages,
+        questionnairesReceived,
+        collaborationThreads,
         referralsMade,
         exportRequests,
     ] = await Promise.all([
@@ -470,6 +472,39 @@ export async function buildUserDataExportPayload(userId: string) {
             orderBy: { createdAt: "desc" },
             take: 1000,
         }),
+        // Questionnaires ADDRESSED to this person: which template, when, and
+        // whether they answered. The answers themselves are disclosed above as
+        // questionnaireResponses; this is the envelope around them, and the
+        // eraser deletes it, so Art. 15 has to show it.
+        db.questionnaireInstance.findMany({
+            where: { sentToUserId: userId },
+            select: {
+                id: true,
+                templateId: true,
+                status: true,
+                sentAt: true,
+                completedAt: true,
+            },
+            orderBy: { sentAt: "desc" },
+            take: 200,
+        }),
+        // Threads this person opened. The subject line is free text they wrote
+        // and the eraser scrubs it, so the same disclosure rule applies as for
+        // message bodies. Participants and other people's messages are not
+        // included — those are someone else's data.
+        db.collaborationThread.findMany({
+            where: { createdByUserId: userId },
+            select: {
+                id: true,
+                subject: true,
+                category: true,
+                status: true,
+                priority: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 500,
+        }),
         // Referrals this person made. The referred address is someone ELSE's
         // personal data, so it is disclosed only as a domain-less status — the
         // subject learns what we hold about their referrals without our handing
@@ -600,6 +635,15 @@ export async function buildUserDataExportPayload(userId: string) {
         collaborationMessages: collaborationMessages.map((m) => ({
             ...m,
             createdAt: toIso(m.createdAt),
+        })),
+        questionnairesReceived: questionnairesReceived.map((q) => ({
+            ...q,
+            sentAt: toIso(q.sentAt),
+            completedAt: toIso(q.completedAt),
+        })),
+        collaborationThreads: collaborationThreads.map((t) => ({
+            ...t,
+            createdAt: toIso(t.createdAt),
         })),
         referralsMade: referralsMade.map((r) => ({
             ...r,

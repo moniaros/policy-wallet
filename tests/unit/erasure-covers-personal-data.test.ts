@@ -26,13 +26,21 @@ const EXPORTER = readFileSync("lib/services/compliance.service.ts", "utf-8")
  * either handled, or explicitly exempted here with a reason.
  */
 
-/** Fields that make a row personal data about a specific human. */
+/**
+ * Fields that make a row personal data about a specific human, by NAME.
+ *
+ * Kept only for user references that are plain strings with no Prisma relation
+ * behind them (ActivityLog.targetUserId, OpportunityStageHistory.changedByUserId
+ * …), which the relation scan below cannot see.
+ */
 const SUBJECT_FIELDS = [
     "userId",
     "ownerUserId",
     "subjectUserId",
     "policyholderUserId",
     "granterUserId",
+    "changedByUserId",
+    "targetUserId",
 ]
 
 interface Model {
@@ -47,7 +55,28 @@ function models(): Model[] {
     }))
 }
 
+/**
+ * Foreign keys to User, whatever they are called.
+ *
+ * The name list above was the whole detector once, and it had a hole the size
+ * of the B2B surface: `Proposal.createdByUserId`, `DocumentRequest.requestedByUserId`,
+ * `QuestionnaireInstance.sentToUserId`, `CollaborationThread.assignedToUserId`
+ * and seven more are real `@relation` foreign keys to User under names it never
+ * looked for. Those models were not exempted — they were INVISIBLE, which reads
+ * identically in a green test run and is the failure mode this file was written
+ * to end. Matching the relation itself means a new table cannot hide by picking
+ * a new name for its user column.
+ */
+function userRelationFields(model: Model): string[] {
+    return [
+        ...model.body.matchAll(
+            /^\s{2}\w+\s+User(?:\?|\[\])?\s+@relation\([^)]*fields:\s*\[([^\]]+)\]/gm
+        ),
+    ].flatMap((m) => m[1].split(",").map((f) => f.trim()))
+}
+
 function holdsSubjectData(model: Model): boolean {
+    if (userRelationFields(model).length > 0) return true
     return SUBJECT_FIELDS.some((f) => new RegExp(`^\\s{2}${f}\\s`, "m").test(model.body))
 }
 
@@ -74,7 +103,15 @@ const ERASURE_EXEMPT: Record<string, string> = {
     ReportUnlockPurchase: "financial ledger",
     EntitlementUsage: "financial metering",
     // Agent-authored B2B artifacts — owner decision 2026-07-21, audit H1.
+    // These four are one decision, not four: the advisor's professional record
+    // of a negotiation survives under their own retention basis, exactly as
+    // Opportunity does. They became visible to this guard on 2026-08-14 when it
+    // started matching User relations by shape instead of by field name; they
+    // were never erased, they were merely unseen.
     Opportunity: "advisor's own record about a prospect",
+    Proposal: "advisor's own record about a prospect (child of Opportunity's decision)",
+    DocumentRequest: "advisor's own record about a prospect (child of Opportunity's decision)",
+    OpportunityStageHistory: "cascades with Opportunity, which is deliberately retained",
     // Not customer data.
     AdminUser: "staff account, not a data subject",
     TenantMembership: "staff/tenant membership, not customer data",
@@ -82,7 +119,20 @@ const ERASURE_EXEMPT: Record<string, string> = {
     NotificationRuleOverride: "admin-authored config; userId is the editing admin",
     BusinessEventOverride: "admin-authored config",
     // Cascades or is covered through another aggregate.
-    CollaborationParticipant: "cascades with the collaboration thread",
+    //
+    // "Cascades with X" is only a reason when X is actually DELETED. Policy is
+    // (tx.policy.deleteMany). CustomerRelationship is NOT — erasure terminates
+    // it in place — so anything hanging off the relationship cascades from
+    // nothing. CollaborationParticipant carried this false reason until
+    // 2026-08-14: its thread FK is ON DELETE CASCADE, but the thread it points
+    // at is never deleted, so the row simply survived. It stays exempt on the
+    // honest ground below instead.
+    CollaborationParticipant:
+        "membership row: the identifying free text lives in the thread subject and message bodies, both scrubbed",
+    CollaborationThread: "subject scrubbed in place; the thread is shared with the other party and is not theirs to delete",
+    CollaborationAction: "cascades with CollaborationThread; title/description are advisor-authored task text, retained with the thread",
+    PolicyDocument: "cascades with the policy, which is deleted; uploadedByUserId resolves to the anonymized row",
+    PolicyMergeRequest: "cascades with either linked policy, which is deleted; both user FKs resolve to the anonymized row",
     PolicyRenewal: "cascades with the policy, which is deleted",
     PolicyAnalysisRun: "cascades with the policy, which is deleted",
     ActivityLog: "GDPR access record; retained as the audit of who saw what",

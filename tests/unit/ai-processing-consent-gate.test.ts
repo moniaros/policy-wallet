@@ -73,9 +73,16 @@ const mockUserUpdateMany = vi.mocked(db.user.updateMany)
 const mockGetAIService = vi.mocked(getAIService)
 
 const OWNER_ID = 'owner-1'
+const AGENT_ID = 'agent-77'
 const POLICY = {
     id: 'pol-1',
     ownerUserId: OWNER_ID,
+    // The agent in these fixtures is the MANAGING agent — the one who uploaded
+    // this policy for the customer. That is what authorizes them to spend
+    // tokens on it. A bare CustomerRelationship used to be enough, which meant
+    // any agent could analyse any policy their customer owned, including ones
+    // the customer had uploaded privately.
+    createdByUserId: AGENT_ID,
     lineOfBusiness: 'motor',
     documents: [],
     acordData: {},
@@ -138,6 +145,25 @@ describe('AI-processing consent gate — orchestrator createRun (GDPR Art. 9)', 
         expect(run.failureCode).toBe('AI_CONSENT_REQUIRED')
         expect(mockUserFind).toHaveBeenCalledWith(
             expect.objectContaining({ where: { id: OWNER_ID } })
+        )
+    })
+
+    // A CustomerRelationship is not consent — an agent creates one unilaterally
+    // by typing an email address. Accepting it as authority to analyse let any
+    // agent read the document bytes of ANY policy their customer owned, including
+    // the ones the customer had uploaded privately, and bill the tokens for it.
+    // Authority is: owner, a write/manage grant, or the agent who uploaded THIS
+    // policy — the same rule computePolicyAccess.canAnalyze applies.
+    it('refuses an agent who has a relationship but did not upload this policy', async () => {
+        mockPolicyFind.mockResolvedValue({ ...POLICY, createdByUserId: 'some-other-agent' })
+        vi.mocked(db.accessGrant.findFirst).mockResolvedValue(null)
+        vi.mocked(db.accessGrant.findMany).mockResolvedValue([] as any)
+        vi.mocked(db.customerRelationship.findFirst).mockResolvedValue({ id: 'rel-1' } as any)
+
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+
+        await expect(orchestrator.createRun('pol-1', AGENT_ID)).rejects.toThrow(
+            /Unauthorized access to policy/
         )
     })
 })
