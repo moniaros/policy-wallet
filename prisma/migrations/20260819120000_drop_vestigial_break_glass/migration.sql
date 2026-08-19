@@ -1,0 +1,27 @@
+-- Drop `activity_logs.is_break_glass`.
+--
+-- The column named a control that did not exist. In the whole codebase it had
+-- exactly ONE writer — app/(protected)/account/actions.ts, setting it true when
+-- a USER filed their own deletion request — and zero readers: no query, no
+-- admin filter, no badge in the activity console, no alert. Break-glass means
+-- elevated access to someone ELSE'S data, taken deliberately, under a review
+-- someone actually performs. A data subject exercising Art. 17 on their own
+-- account is the opposite of that, so every one of the 7 rows carrying the flag
+-- in production was mislabelled by it.
+--
+-- A schema field whose name promises an emergency-access control is worse than
+-- no field: it reads as evidence of a control during diligence, and there is
+-- nothing behind it. If a genuine elevated-access surface is ever built — an
+-- explicit "I need to open this record, and here is why" step — the control and
+-- its column get built together, with a reader and an alert.
+--
+-- Safe to drop: nothing reads it, and the accountability signal it was standing
+-- in for is now carried by `target_user_id` (who the data was about) plus
+-- `metadata._read.specialCategory` (whether Art. 9 data was involved), both of
+-- which have real writers and a real retention rule.
+--
+-- Rollback: re-add as `BOOLEAN NOT NULL DEFAULT false`. No data is recoverable
+-- and none is worth recovering — the 7 flagged rows were self-service deletion
+-- requests, which are identifiable by their action_type alone.
+
+ALTER TABLE "activity_logs" DROP COLUMN "is_break_glass";

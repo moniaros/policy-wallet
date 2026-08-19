@@ -1052,7 +1052,6 @@ model ActivityLog {
   actionType   String   @map("action_type")
   description  String
   metadata     Json?
-  isBreakGlass Boolean  @default(false) @map("is_break_glass")
   // Data subject whose personal data was accessed/affected (GDPR read-access
   // audit) — e.g. the customer an agent viewed. Nullable; set for access events.
   targetUserId String?  @map("target_user_id")

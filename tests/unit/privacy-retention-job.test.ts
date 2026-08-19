@@ -73,12 +73,25 @@ describe('privacy-retention job', () => {
 
         const [adminSweep, userSweep] = activityDeleteMany.mock.calls.map((c) => c![0])
         expect(Math.round((Date.now() - (adminSweep.where.timestamp.lte as Date).getTime()) / DAY)).toBe(5 * 365)
-        expect(adminSweep.where.metadata.path).toEqual(['_audit'])
         expect(Math.round((Date.now() - (userSweep.where.timestamp.lte as Date).getTime()) / DAY)).toBe(365)
-        expect(userSweep.where.metadata.path).toEqual(['_audit'])
-        // The two sweeps must select DISJOINT sets, or the shorter window would
-        // also delete the accountability records.
-        expect(adminSweep.where.metadata).not.toEqual(userSweep.where.metadata)
+
+        // Accountability is TWO things, not one. An administrator action carries
+        // `metadata._audit`; a read-access row carries `targetUserId` — "who
+        // looked at whose data" — and is written by raw activityLog.create, so
+        // it has no `_audit` marker. Keeping only the first for five years let
+        // the right-of-access trail expire four years before the admin-action
+        // trail describing the same class of event.
+        expect(adminSweep.where.OR).toEqual([
+            { metadata: { path: ['_audit'], not: expect.anything() } },
+            { targetUserId: { not: null } },
+        ])
+
+        // The short sweep must be the strict COMPLEMENT of the long one, or it
+        // would delete accountability records a year in.
+        expect(userSweep.where.AND).toEqual([
+            { metadata: { path: ['_audit'], equals: expect.anything() } },
+            { targetUserId: null },
+        ])
 
         const exportArgs = exportUpdateMany.mock.calls[0]![0]
         expect(exportArgs.where.status.in).toEqual(['completed', 'expired'])

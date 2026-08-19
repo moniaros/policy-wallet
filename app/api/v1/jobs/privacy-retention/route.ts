@@ -107,13 +107,30 @@ export async function POST(req: Request) {
                 db.activityLog.deleteMany({
                     where: {
                         timestamp: { lte: adminAuditCutoff },
-                        metadata: { path: ["_audit"], not: Prisma.DbNull },
+                        OR: [
+                            { metadata: { path: ["_audit"], not: Prisma.DbNull } },
+                            // A row that names a data subject is an
+                            // accountability record too — it answers "who
+                            // looked at whose data". Those rows are written by
+                            // raw activityLog.create rather than
+                            // logAdminAction, so they carry no `_audit` marker
+                            // and used to fall into the 12-month bucket. That
+                            // made the right-of-access trail expire four years
+                            // before the admin-action trail describing the same
+                            // class of event, which is not a defensible split.
+                            { targetUserId: { not: null } },
+                        ],
                     } as any,
                 }),
                 db.activityLog.deleteMany({
                     where: {
                         timestamp: { lte: userActivityCutoff },
-                        metadata: { path: ["_audit"], equals: Prisma.DbNull },
+                        // Strictly the complement of the sweep above, so the
+                        // shorter window can never reach an accountability row.
+                        AND: [
+                            { metadata: { path: ["_audit"], equals: Prisma.DbNull } },
+                            { targetUserId: null },
+                        ],
                     } as any,
                 }),
             ])
