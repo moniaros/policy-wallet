@@ -160,7 +160,7 @@ export default function AgentSolutionsPage() {
                                 {t("Στέλνετε το συμβόλαιο", "You send the policy")}
                             </h3>
                             <p className="text-body text-[#475569] dark:text-slate-300">
-                                {t("Ένα αρχείο με μία κίνηση — ή πενήντα μαζί, με τη μαζική εισαγωγή από το Agent Starter.", "One file in a single step — or fifty at once with bulk import, from Agent Starter.")}
+                                {t("Ένα αρχείο με μία κίνηση — ή εκατό μαζί, με τη μαζική εισαγωγή από το Agent Starter.", "One file in a single step — or a hundred at once with bulk import, from Agent Starter.")}
                             </p>
                         </div>
 

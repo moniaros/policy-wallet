@@ -63,9 +63,10 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
         { href: l("/subprocessors"), label: t("Υπο-εκτελούντες επεξεργασίας", "Subprocessors") },
     ]
 
-    // Legal-identity block (Greek corporate sites must display ΓΕΜΗ — ν. 3419/2005).
-    // Shares one source of truth with the terms/privacy documents so the footer
-    // and the legal pages can never drift apart on the corporate details.
+    // Legal-identity block. Greek corporate sites must display ΓΕΜΗ
+    // (ν. 3419/2005), and it is displayed. Shares one source of truth with the
+    // terms/privacy documents so the footer and the legal pages can never drift
+    // apart on the corporate details.
     const entity = LEGAL_ENTITY[locale]
 
     // Real profiles only (from NEXT_PUBLIC_SOCIAL_*) — no placeholder links.
@@ -306,10 +307,9 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     </p>
                     <p>
                         {t(
-                            "Η πλατφόρμα PolicyWallet λειτουργεί από ελληνική εταιρεία.",
-                            "The PolicyWallet platform is operated by a Greek company."
-                        )}{" "}
-                        {entity.detailsComingSoon}
+                            `Η πλατφόρμα PolicyWallet λειτουργεί από την εταιρεία ${entity.company}, αριθμός ΓΕΜΗ ${entity.gemi}, ${entity.vat}, έδρα ${entity.address}.`,
+                            `The PolicyWallet platform is operated by ${entity.company}, GEMI number ${entity.gemi}, ${entity.vat}, registered seat ${entity.address}.`
+                        )}
                     </p>
                 </div>
                 <div className="mx-auto flex max-w-page-wide flex-col gap-3 text-body-sm text-[#5B6A7A] dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">

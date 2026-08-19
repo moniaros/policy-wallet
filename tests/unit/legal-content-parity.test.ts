@@ -91,7 +91,16 @@ describe("legal content parity", () => {
         expect(LEGAL_CONTENT_VERSION).not.toContain("DRAFT")
     })
 
-    it("withholds the corporate identity with a coming-soon notice (no name/ΓΕΜΗ/ΑΦΜ/seat leaked)", () => {
+    it("names the controller and the operator, with ΓΕΜΗ, ΑΦΜ and seat", () => {
+        // The inverse of the test that used to live here.
+        //
+        // Between 2026-07-22 and 2026-08-20 this asserted the OPPOSITE: that the
+        // legal name, ΓΕΜΗ and ΑΦΜ did NOT appear. Automated tests enforcing the
+        // concealment of a data controller's identity are a worse artifact than
+        // the omission itself, and the omission was already indefensible — a
+        // privacy policy has to name its controller (GDPR Art. 13(1)(a)) and a
+        // Greek corporate site has to display ΓΕΜΗ (ν. 3419/2005). It concealed
+        // nothing in any case: the identity is published in ΓΕΜΗ.
         const el = getLegalContent("el")
         const en = getLegalContent("en")
 
@@ -101,19 +110,32 @@ describe("legal content parity", () => {
         const enProvider = en.terms.sections.find((s) => s.id === "provider")?.paragraphs.join(" ") ?? ""
 
         for (const text of [elController, elProvider]) {
-            expect(text).toContain(LEGAL_ENTITY.el.detailsComingSoon)
-            expect(text).not.toContain("Insurance Martech")
-            expect(text).not.toContain("188863359000")
-            expect(text).not.toContain("302659440")
+            expect(text).toContain(LEGAL_ENTITY.el.company)
+            expect(text).toContain(LEGAL_ENTITY.el.gemi)
+            expect(text).toContain(LEGAL_ENTITY.el.address)
         }
         for (const text of [enController, enProvider]) {
-            expect(text).toContain(LEGAL_ENTITY.en.detailsComingSoon)
-            expect(text).not.toContain("Insurance Martech")
+            expect(text).toContain(LEGAL_ENTITY.en.company)
+            expect(text).toContain(LEGAL_ENTITY.en.gemi)
+            expect(text).toContain(LEGAL_ENTITY.en.address)
         }
+
+        // The ΑΦΜ belongs on the operator clause (who you are contracting with),
+        // not on the controller clause, which is about data.
+        expect(elProvider).toContain(LEGAL_ENTITY.el.vat)
+        expect(enProvider).toContain(LEGAL_ENTITY.en.vat)
 
         // The DPO mailbox must still be reachable from the privacy policy in both languages.
         expect(elController).toContain(LEGAL_ENTITY.el.dpoEmail)
         expect(enController).toContain(LEGAL_ENTITY.en.dpoEmail)
+    })
+
+    it("no 'coming soon' placeholder survives anywhere in the legal corpus", () => {
+        // An aging "available soon" notice becomes its own false claim.
+        for (const locale of ["el", "en"] as const) {
+            const serialized = JSON.stringify(getLegalContent(locale))
+            expect(serialized).not.toMatch(/θα είναι διαθέσιμα σύντομα|will be available soon/)
+        }
     })
 
     it("caps liability at 12 months of fees and preserves the mandatory carve-outs", () => {
@@ -134,12 +156,17 @@ describe("legal content parity", () => {
         }
     })
 
-    it("names the Greek courts as the competent venue (no seat location leaked)", () => {
+    it("keeps the competent venue generic even though the seat is now published", () => {
+        // Publishing the seat is a DISCLOSURE fix. Narrowing where a consumer's
+        // dispute is heard, from "the courts of Greece" to the courts of the
+        // company's own island, is a change to the contract — worse for the
+        // consumer, and not something a transparency fix should smuggle in.
         const elVenue = getLegalContent("el").terms.sections.find((s) => s.id === "law_venue")?.paragraphs.join(" ") ?? ""
         const enVenue = getLegalContent("en").terms.sections.find((s) => s.id === "law_venue")?.paragraphs.join(" ") ?? ""
         expect(elVenue).toContain("Δικαστήρια της Ελλάδας")
-        expect(elVenue).not.toContain("Χίου")
         expect(enVenue).toContain("courts of Greece")
-        expect(enVenue).not.toContain("Chios")
+        // Consumer-jurisdiction protection must survive either way.
+        expect(elVenue).toContain("καταναλωτ")
+        expect(enVenue).toContain("consumer-jurisdiction")
     })
 })

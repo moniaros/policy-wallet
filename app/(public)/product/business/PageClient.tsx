@@ -5,7 +5,7 @@ import { Building2, Wrench, Package, TimerOff, Scale, HardHat } from "lucide-rea
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
-import { PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
+import { PRIMARY_ACTION, pick, CTA_REASSURANCE_SHORT } from "@/lib/marketing/positioning"
 
 export default function BusinessProductPage({ locale }: { locale: "el" | "en" }) {
     const isGreek = locale === "el"
@@ -77,7 +77,7 @@ export default function BusinessProductPage({ locale }: { locale: "el" | "en" })
                         </Link>
                     </div>
                     <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
-                        {t("Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.", "Free for 1 policy. No card.")}
+                        {pick(CTA_REASSURANCE_SHORT, locale)}
                     </p>
                 </div>
             </section>

@@ -90,7 +90,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "provider",
                     title: "1. Πάροχος της υπηρεσίας",
                     paragraphs: [
-                        `Την πλατφόρμα PolicyWallet (policywallet.gr) λειτουργεί ελληνική εταιρεία. ${EL.detailsComingSoon}`,
+                        `Την πλατφόρμα PolicyWallet (policywallet.gr) λειτουργεί η εταιρεία ${EL.company}, με αριθμό ΓΕΜΗ ${EL.gemi}, ${EL.vat}, και έδρα ${EL.address}.`,
                         "Για κάθε θέμα σχετικό με τους παρόντες όρους μπορείτε να επικοινωνείτε στο info@policywallet.gr.",
                     ],
                 },
@@ -210,7 +210,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "controller",
                     title: "1. Υπεύθυνος επεξεργασίας",
                     paragraphs: [
-                        `Υπεύθυνος επεξεργασίας των δεδομένων σας είναι η εταιρεία που λειτουργεί την πλατφόρμα PolicyWallet (policywallet.gr). ${EL.detailsComingSoon}`,
+                        `Υπεύθυνος επεξεργασίας των δεδομένων σας είναι η εταιρεία ${EL.company}, με αριθμό ΓΕΜΗ ${EL.gemi} και έδρα ${EL.address}, η οποία λειτουργεί την πλατφόρμα PolicyWallet (policywallet.gr).`,
                         `Για κάθε θέμα προστασίας δεδομένων μπορείτε να επικοινωνείτε με τον υπεύθυνο απορρήτου στο ${EL.dpoEmail} ή στο info@policywallet.gr.`,
                     ],
                 },
@@ -552,7 +552,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "provider",
                     title: "1. Service provider",
                     paragraphs: [
-                        `The PolicyWallet platform (policywallet.gr) is operated by a Greek company. ${EN.detailsComingSoon}`,
+                        `The PolicyWallet platform (policywallet.gr) is operated by ${EN.company}, GEMI registration number ${EN.gemi}, ${EN.vat}, with registered seat at ${EN.address}.`,
                         "For any matter relating to these terms you can contact us at info@policywallet.gr.",
                     ],
                 },
@@ -672,7 +672,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "controller",
                     title: "1. Data controller",
                     paragraphs: [
-                        `The controller of your data is the company that operates the PolicyWallet platform (policywallet.gr). ${EN.detailsComingSoon}`,
+                        `The controller of your data is ${EN.company}, GEMI registration number ${EN.gemi}, with registered seat at ${EN.address}, which operates the PolicyWallet platform (policywallet.gr).`,
                         `For any data-protection matter you can contact our privacy officer at ${EN.dpoEmail} or at info@policywallet.gr.`,
                     ],
                 },

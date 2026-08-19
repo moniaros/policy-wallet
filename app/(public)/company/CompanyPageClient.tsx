@@ -59,8 +59,8 @@ export default function CompanyPage() {
                                     en: "We work for policyholders, insurance agents and agencies — in Greek and English.",
                                 },
                                 {
-                                    el: "Τα δεδομένα σας φυλάσσονται κρυπτογραφημένα σε διακομιστές μέσα στην Ευρώπη — και τα εξάγετε ή τα διαγράφετε όποτε θέλετε.",
-                                    en: "Your data is kept encrypted on servers inside Europe — and you can export or delete it whenever you want.",
+                                    el: "Τα δεδομένα σας φυλάσσονται κρυπτογραφημένα σε διακομιστές μέσα στην Ευρώπη — κατεβάζετε αντίγραφο όποτε θέλετε και ζητάτε διαγραφή, που ολοκληρώνεται εντός ενός μήνα.",
+                                    en: "Your data is kept encrypted on servers inside Europe — download a copy whenever you want, and ask for deletion, which we complete within one month.",
                                 },
                             ].map((item) => (
                                 <li key={item.en} className="flex items-start gap-3 text-body-lg leading-relaxed text-[#0F172A] dark:text-white">

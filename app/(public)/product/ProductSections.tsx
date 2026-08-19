@@ -18,7 +18,7 @@ import {
     PRODUCT_STATS as STATS,
     PRODUCT_STEPS as STEPS,
 } from "./marketing-content"
-import { CATEGORY_NAME, PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
+import { CATEGORY_NAME, PRIMARY_ACTION, pick, CTA_REASSURANCE } from "@/lib/marketing/positioning"
 import { ProductFaqList } from "./ProductFaqList"
 import { ProductPageView } from "./ProductPageView"
 import { ProductScrollButton } from "./ProductScrollButton"
@@ -383,7 +383,7 @@ export function ProductSections({ language }: { language: Language }) {
                     </h2>
                     <p className="mx-auto mb-10 max-w-[540px] text-lead leading-relaxed text-white/75">
                         {t(
-                            "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
+                            CTA_REASSURANCE.el,
                             "Free for 1 policy. No card. Delete everything whenever you want."
                         )}
                     </p>
