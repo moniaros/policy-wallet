@@ -233,7 +233,6 @@ export class AnthropicAIService implements IAIService {
             gapResults: z.array(
                 z.object({
                     slug: z.string(),
-                    isDetected: z.boolean(),
                     explanation: z.string().describe("Gap explanation in Greek"),
                     suggestion: z.string().describe("Remediation suggestion in Greek"),
                 })
@@ -322,7 +321,6 @@ export class AnthropicAIService implements IAIService {
             coverageGaps: z.array(
                 z.object({
                     slug: z.string(),
-                    severity: z.enum(["low", "medium", "high", "critical"]),
                     evidence: z.string().describe("Gap evidence in Greek"),
                     recommendation: z.string().describe("Recommendation in Greek"),
                 })

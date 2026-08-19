@@ -245,10 +245,11 @@ export class MockAIService implements IAIService {
             gapsChecked: gapDefinitions.length
         })
 
-        // Simulate detecting 30% of gaps
-        const gapResults = gapDefinitions.map((def, index) => ({
+        // The model explains; it does not detect. Every requested slug gets
+        // prose back, and whether it becomes a GapInstance is the rule
+        // engine's call — so the mock no longer simulates a detection verdict.
+        const gapResults = gapDefinitions.map((def) => ({
             slug: def.slug,
-            isDetected: index % 3 === 0, // Detect every 3rd gap
             explanation: {
                 en: `Mock explanation for ${def.name}`,
                 el: `Εικονική εξήγηση για ${def.name}`
@@ -358,7 +359,6 @@ export class MockAIService implements IAIService {
             coverageGaps: [
                 {
                     slug: 'natural_disaster_extension_missing',
-                    severity: 'medium',
                     evidence: {
                         en: 'No explicit flood/earthquake extension found.',
                         el: 'Δεν εντοπίστηκε ρητή επέκταση για πλημμύρα/σεισμό.',

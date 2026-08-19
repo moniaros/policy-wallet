@@ -168,45 +168,11 @@ describe('AI-processing consent gate — orchestrator createRun (GDPR Art. 9)', 
     })
 })
 
-describe('AI-processing consent gate — legacy GapAnalysisService.analyzePolicy', () => {
-    const makeDb = (consentVersion: string | null) => ({
-        policy: {
-            findUnique: vi.fn(async () => POLICY),
-        },
-        user: {
-            findUnique: vi.fn(async () => ({ aiProcessingConsentVersion: consentVersion })),
-        },
-        gapDefinition: { findMany: vi.fn(async () => []) },
-        gapInstance: { deleteMany: vi.fn() },
-        accessGrant: { findFirst: vi.fn(async () => null), findMany: vi.fn(async () => []) },
-        customerRelationship: { findFirst: vi.fn(async () => null) },
-    }) as any
-
-    it('rejects with AI_CONSENT_REQUIRED before touching gaps or the AI service when consent is missing', async () => {
-        const fakeDb = makeDb(null)
-        const service = new GapAnalysisService(fakeDb)
-
-        await expect(service.analyzePolicy('pol-1', OWNER_ID, 'en')).rejects.toSatisfy((e: unknown) => {
-            expect(e).toBeInstanceOf(AppError)
-            expect((e as AppError).metadata?.reason).toBe('AI_CONSENT_REQUIRED')
-            return true
-        })
-
-        expect(fakeDb.gapInstance.deleteMany).not.toHaveBeenCalled()
-        expect(mockGetAIService).not.toHaveBeenCalled()
-    })
-
-    it('passes the gate when the owner has consented (proceeds into gap-definition flow)', async () => {
-        const fakeDb = makeDb('2026-07')
-        const service = new GapAnalysisService(fakeDb)
-
-        // With zero gap definitions the service returns early, success — proving the
-        // consent gate passed without needing the AI provider.
-        const result = await service.analyzePolicy('pol-1', OWNER_ID, 'en')
-        expect(result.success).toBe(true)
-        expect(result.count).toBe(0)
-    })
-})
+// The GapAnalysisService consent-gate tests lived here until Aug 2026. That
+// service's analyzePolicy() was a third, unreachable gap pipeline and has been
+// deleted, so the gate it guarded no longer exists to test. The gate that DOES
+// run — orchestrator.createRun / extractBasicSummary — is covered above; those
+// are the only paths that can reach an AI provider with a document.
 
 describe('basic summary (free/Starter path) recomputes the owner’s gaps + score', () => {
     // The deep AI gap analysis is Plus-only, but the deterministic profile gaps

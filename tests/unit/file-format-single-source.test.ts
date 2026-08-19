@@ -113,14 +113,22 @@ describe('the AI is told what the document actually is', () => {
         }
     })
 
-    it('neither AI path hand-rolls the mapping any more', () => {
-        for (const f of [
-            'lib/services/gap-analysis.service.ts',
-            'lib/services/analysis/policy-analysis-orchestrator.service.ts',
-        ]) {
-            const src = strip(readFileSync(f, 'utf-8'))
-            expect(src, f).toMatch(/documentMimeType\(/)
-            expect(src, f).not.toMatch(/mimeType = ["']image\/jpeg["']/)
-        }
+    it('the AI path does not hand-roll the mapping', () => {
+        // There is ONE path that sends a document to a model. Until Aug 2026
+        // there were two, and this test covered both; the second
+        // (GapAnalysisService.analyzePolicy) was an unreachable third gap
+        // pipeline and has been deleted, so it no longer has — or needs — a MIME
+        // mapping of its own.
+        const f = 'lib/services/analysis/policy-analysis-orchestrator.service.ts'
+        const src = strip(readFileSync(f, 'utf-8'))
+        expect(src, f).toMatch(/documentMimeType\(/)
+        expect(src, f).not.toMatch(/mimeType = ["']image\/jpeg["']/)
+    })
+
+    it('the deleted service has not quietly regrown an AI call', () => {
+        // If a document ever reaches a model from here again, it needs the
+        // shared mapping and its own place in the test above.
+        const src = strip(readFileSync('lib/services/gap-analysis.service.ts', 'utf-8'))
+        expect(src).not.toMatch(/aiService\.|getAIService\(/)
     })
 })

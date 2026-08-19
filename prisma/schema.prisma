@@ -505,6 +505,12 @@ model GapInstance {
   /// advisor agrees, validated = documented recommendation. Makes "gap
   /// detection" honest and gates advisor-ready cross-sell.
   validationState      GapValidationState       @default(probable) @map("validation_state")
+  /// PROVENANCE. Which rule decided this gap, what it read, and under which
+  /// engine version. Detection and severity are rule decisions; a finding a
+  /// human cannot re-derive is an assertion, not an analysis.
+  ruleId               String?                  @map("rule_id")
+  ruleInputs           Json?                    @map("rule_inputs")
+  engineVersion        String?                  @map("engine_version")
   definition           GapDefinition            @relation(fields: [gapDefinitionId], references: [id])
   policy               Policy?                  @relation(fields: [policyId], references: [id], onDelete: Cascade)
   user                 User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
