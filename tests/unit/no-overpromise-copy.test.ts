@@ -64,6 +64,13 @@ describe('marketing never promises analysis "in seconds"', () => {
             })
         const files = [
             ...collect('app/(public)'),
+            // The auth pages were outside this guard, which is how "Takes 90
+            // seconds" and "Bank-grade security" lived on the signup and
+            // password-reset screens while the marketing tree was audited to
+            // three consecutive zero-finding rounds. A guard that stops at the
+            // marketing directory does not protect the pages people actually
+            // sign up on.
+            ...collect('app/auth'),
             'lib/seo/marketing-pages.ts',
             'lib/landing/content.ts',
         ]
