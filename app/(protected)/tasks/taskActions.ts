@@ -2,6 +2,7 @@
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { ENDED_RELATIONSHIP_STATUSES } from "@/lib/agent-visibility"
 import { revalidatePath } from "next/cache"
 
 export type CreateTaskData = {
@@ -25,7 +26,15 @@ export async function createUserTask(data: CreateTaskData) {
     const isAdmin = authResult.dbUser.roles?.includes("admin")
     if (!isSelf && !isAdmin) {
         const relationship = await db.customerRelationship.findFirst({
-            where: { agentUserId: authResult.dbUser.id, policyholderUserId: data.userId },
+            where: {
+                agentUserId: authResult.dbUser.id,
+                policyholderUserId: data.userId,
+                // The comment above said "active" long before the code did.
+                // Termination flips the status but never deletes the row, so
+                // without this an agent kept assigning tasks into a former
+                // customer's action list after being dismissed.
+                status: { notIn: [...ENDED_RELATIONSHIP_STATUSES] },
+            },
             select: { id: true },
         })
         if (!relationship) return { success: false, error: "Unauthorized" }

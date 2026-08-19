@@ -55,7 +55,7 @@ export default async function InviteRedeemPage({ params }: { params: Promise<{ t
 
     // 2. If logged in, redeem and redirect to the right home.
     if (authResult) {
-        await redeemInvite(token, authResult.dbUser.id)
+        await redeemInvite(token)
         redirect(isClientAgent ? "/dashboard/agent" : "/wallet")
     }
 

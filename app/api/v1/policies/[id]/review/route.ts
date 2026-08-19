@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { getPolicyAccess } from "@/lib/policy-access"
 import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
 import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { after } from "next/server"
@@ -26,16 +27,23 @@ export const POST = withApiGuard(
         const { id } = params
 
         try {
-            const policy = await db.policy.findFirst({
-                where: {
-                    id,
-                    ownerUserId: authResult.dbUser.id
-                }
+            // Triggering a re-analysis spends tokens against someone's plan and
+            // reads the document, so this is `canAnalyze` — owner, a write or
+            // manage grant, or the managing agent — not the owner alone.
+            const access = await getPolicyAccess(id, {
+                id: authResult.dbUser.id,
+                roles: authResult.dbUser.roles,
             })
-
-            if (!policy) {
+            if (!access.exists || !access.canAnalyze) {
                 return createApiError("NOT_FOUND", "Policy not found", 404)
             }
+            // getPolicyAccess returns only the fields the decision needs; the
+            // activity-log line below names the policy the way an operator
+            // reading it would.
+            const policy = await db.policy.findUniqueOrThrow({
+                where: { id },
+                select: { id: true, policyNumber: true },
+            })
 
             // Manual re-analysis is paying-only for agent-role users. A
             // dual-role owner bypasses the orchestrator's b2c pro gate

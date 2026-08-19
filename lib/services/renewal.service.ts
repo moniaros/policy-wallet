@@ -153,7 +153,17 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                         grantedSet = new Set(await getGrantedPolicyIds(aid))
                         grantedPolicyIdsCache.set(aid, grantedSet)
                     }
-                    if (isPolicyVisibleToAgent(policy, aid, grantedSet)) {
+                    // The relationship lookup above already constrained this
+                    // owner to a live (active / pending_activation) status, so
+                    // the owner IS the live set for this agent at this point.
+                    if (
+                        isPolicyVisibleToAgent(
+                            policy,
+                            aid,
+                            grantedSet,
+                            new Set([policy.ownerUserId])
+                        )
+                    ) {
                         visibleAgentUserId = aid
                     }
                 }

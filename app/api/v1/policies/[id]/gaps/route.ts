@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { requireApiUser } from "@/lib/api-auth"
+import { getPolicyAccess } from "@/lib/policy-access"
 
 export async function GET(
     req: Request,
@@ -13,11 +14,24 @@ export async function GET(
     const { id } = await params
 
     try {
+        // Was an inline `policy: { ownerUserId }` filter, which denied an agent
+        // holding a perfectly good grant on this policy the gaps for it — while
+        // the PATCH on the policy itself let them through. Same rule everywhere
+        // now; "not found" rather than "forbidden" so the existence of a policy
+        // is not a thing an outsider can probe.
+        const access = await getPolicyAccess(id, {
+            id: authResult.dbUser.id,
+            roles: authResult.dbUser.roles,
+        })
+        if (!access.exists || !access.canRead) {
+            return NextResponse.json(
+                { error: { code: "NOT_FOUND", message: "Policy not found", status: 404 } },
+                { status: 404 }
+            )
+        }
+
         const gaps = await db.gapInstance.findMany({
-            where: {
-                policyId: id,
-                policy: { ownerUserId: authResult.dbUser.id }
-            },
+            where: { policyId: id },
             include: { definition: true }
         })
 

@@ -7,6 +7,7 @@ import {
     compareLatestRuns,
 } from "@/lib/services/analysis/analysis-comparison"
 import { canUserUseFeature } from "@/lib/subscription-limits"
+import { getPolicyAccess } from "@/lib/policy-access"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
 
@@ -47,14 +48,13 @@ export const GET = withApiGuard(
             )
         }
 
-        // Verify policy ownership
-        const policy = await db.policy.findUnique({
-            where: { id: policyId },
-            select: { id: true, ownerUserId: true },
+        // Single authorization path (lib/policy-access.ts).
+        const access = await getPolicyAccess(policyId, {
+            id: authResult.dbUser.id,
+            roles: authResult.dbUser.roles,
         })
-        if (!policy) return createApiError("NOT_FOUND", "Policy not found", 404)
-        if (policy.ownerUserId !== authResult.dbUser.id) {
-            return createApiError("FORBIDDEN", "Not authorized", 403)
+        if (!access.exists || !access.canRead) {
+            return createApiError("NOT_FOUND", "Policy not found", 404)
         }
 
         // Parse optional query params

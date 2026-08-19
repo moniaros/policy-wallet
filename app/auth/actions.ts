@@ -22,6 +22,7 @@ import {
     normalizeGreekMobile,
 } from "@/lib/auth/phone-auth"
 import { isAgentRole } from "@/lib/auth/require-agent"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { VALID_PLAN_IDS } from "@/lib/pricing/public-pricing-content"
 
 const RegisterSchema = z.object({
@@ -142,7 +143,20 @@ function getPasswordResetTemplate(language: "el" | "en", resetLink: string) {
     }
 }
 
-export async function redeemInvite(token: string, userId: string) {
+/**
+ * The raw redemption, with the subject supplied by the caller.
+ *
+ * NOT exported, and it must stay that way. Every export of a "use server" file
+ * is a callable endpoint, so an exported `(token, userId)` form is an
+ * UNAUTHENTICATED write path: it consumes the invite and writes
+ * CustomerRelationship activations and AccessGrant rows for whatever `userId`
+ * the caller names. The token was the only thing standing in front of those
+ * writes, and a token is a secret that travels in links and inboxes.
+ *
+ * `registerUser` is why the parameter exists: it redeems for the account it has
+ * just created, before that account has a session to read.
+ */
+async function applyInviteRedemption(token: string, userId: string) {
     const invite = await db.invite.findUnique({ where: { token } })
     if (!invite || invite.consumedAt || invite.expiresAt < new Date()) return
 
@@ -278,6 +292,22 @@ export async function redeemInvite(token: string, userId: string) {
             })
         }
     }
+}
+
+/**
+ * Redeem an invite for the CURRENT session user.
+ *
+ * The subject is taken from the session, never from the caller, so a leaked
+ * token can no longer be spent by a stranger — it can only be spent by someone
+ * signed in as the account the invite is for. Anonymous callers get nothing,
+ * silently, exactly as an expired or already-consumed token does: whether a
+ * token exists is not something an unauthenticated caller should be able to
+ * probe.
+ */
+export async function redeemInvite(token: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return
+    await applyInviteRedemption(token, authResult.dbUser.id)
 }
 
 /**
@@ -417,7 +447,9 @@ export async function registerUser(formData: FormData) {
         }
 
         if (token) {
-            await redeemInvite(token, userId)
+            // The account was created moments ago and has no session yet, so
+            // this is the one caller that legitimately names its own subject.
+            await applyInviteRedemption(token, userId)
         }
 
         if (!isSyntheticEmail && email) {

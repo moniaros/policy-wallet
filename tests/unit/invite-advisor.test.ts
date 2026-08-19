@@ -151,8 +151,9 @@ describe('redeemInvite — client_agent branch', () => {
     it('adds the agent role + syncs JWT and connects when the advisor was not an agent', async () => {
         db.invite.findUnique.mockResolvedValue(invite)
         db.user.findUnique.mockResolvedValue({ email: 'advisor@example.gr', roles: 'policyholder' })
+        mockGetAuthOrNull.mockResolvedValue({ dbUser: { id: 'adv-1' } })
 
-        await redeemInvite('tok123', 'adv-1')
+        await redeemInvite('tok123')
 
         // consumed
         expect(db.invite.update).toHaveBeenCalledWith(
@@ -179,8 +180,9 @@ describe('redeemInvite — client_agent branch', () => {
     it('is idempotent on the role when the advisor is already an agent', async () => {
         db.invite.findUnique.mockResolvedValue(invite)
         db.user.findUnique.mockResolvedValue({ email: 'advisor@example.gr', roles: 'agent' })
+        mockGetAuthOrNull.mockResolvedValue({ dbUser: { id: 'adv-1' } })
 
-        await redeemInvite('tok123', 'adv-1')
+        await redeemInvite('tok123')
 
         expect(db.user.update).not.toHaveBeenCalled()
         expect(mockUpdateUserById).not.toHaveBeenCalled()
@@ -190,8 +192,9 @@ describe('redeemInvite — client_agent branch', () => {
     it('refuses on an email mismatch (wrong-recipient click leaves the invite valid)', async () => {
         db.invite.findUnique.mockResolvedValue(invite)
         db.user.findUnique.mockResolvedValue({ email: 'someone-else@example.gr', roles: 'policyholder' })
+        mockGetAuthOrNull.mockResolvedValue({ dbUser: { id: 'adv-1' } })
 
-        await redeemInvite('tok123', 'adv-1')
+        await redeemInvite('tok123')
 
         expect(db.invite.update).not.toHaveBeenCalled()
         expect(db.customerRelationship.upsert).not.toHaveBeenCalled()
