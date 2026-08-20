@@ -13,6 +13,7 @@ import { calendarDaysUntil } from "@/lib/policy-status"
 import { branchFamilyId, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { motorSection, homeSection, lifeSection } from "@/lib/wallet/coverage-sections"
 import { classifyMotorCoverageTier } from "@/lib/wallet/motor-coverage-tier"
+import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
 
 interface PolicyForComparison {
     id: string
@@ -133,8 +134,8 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
         const lob = selectedPolicies[0]?.lineOfBusiness
 
         const commonRows = [
-            { key: 'insurer', label: c.rowInsurer, getValue: (p: PolicyForComparison) => p.insurerName },
-            { key: 'policyNumber', label: c.rowPolicyNumber, getValue: (p: PolicyForComparison) => p.policyNumber },
+            { key: 'insurer', label: c.rowInsurer, getValue: (p: PolicyForComparison) => displayInsurerName(p.insurerName) },
+            { key: 'policyNumber', label: c.rowPolicyNumber, getValue: (p: PolicyForComparison) => displayPolicyNumber(p.policyNumber) ?? '' },
             { key: 'status', label: c.rowStatus, getValue: (p: PolicyForComparison) => p.status, isStatus: true },
             { key: 'premium', label: c.rowPremium, getValue: (p: PolicyForComparison) => formatCurrency(p.premiumAmount, p.premiumCurrency), highlight: 'lowest', rawValue: (p: PolicyForComparison) => p.premiumAmount ?? null },
             { key: 'startDate', label: c.rowStartDate, getValue: (p: PolicyForComparison) => formatDate(p.startDate) },
@@ -247,7 +248,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                 <p className="text-sm font-medium text-muted-foreground mb-4">
                                     {selectedIds.length === 0
                                         ? c.selectFirst
-                                        : `${c.selectedPrefix}: ${selectedPolicies[0]?.insurerName} (${selectedPolicies[0] ? normalizeBranch(selectedPolicies[0].lineOfBusiness).label[language] : ''}). ${c.selectMore}`
+                                        : `${c.selectedPrefix}: ${displayInsurerName(selectedPolicies[0]?.insurerName)} (${selectedPolicies[0] ? normalizeBranch(selectedPolicies[0].lineOfBusiness).label[language] : ''}). ${c.selectMore}`
                                     }
                                 </p>
                             )}
@@ -277,10 +278,10 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                 <span className="text-2xl">{getPolicyTypeIcon(policy.lineOfBusiness)}</span>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-bold text-foreground truncate">
-                                                        {policy.insurerName}
+                                                        {displayInsurerName(policy.insurerName)}
                                                     </p>
                                                     <p className="text-xs text-muted-foreground font-mono">
-                                                        {policy.policyNumber}
+                                                        {displayPolicyNumber(policy.policyNumber)}
                                                     </p>
                                                     <div className="flex items-center gap-2 mt-2">
                                                         {(() => {
@@ -319,7 +320,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                 <div className="flex flex-col items-center gap-2">
                                                     <span className="text-3xl">{getPolicyTypeIcon(policy.lineOfBusiness)}</span>
                                                     <span className="font-bold text-foreground">
-                                                        {policy.insurerName}
+                                                        {displayInsurerName(policy.insurerName)}
                                                     </span>
                                                     <button
                                                         onClick={() => router.push(`/wallet/${policy.id}`)}
@@ -401,7 +402,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                         return (
                                             <div className="bg-card p-4 rounded-xl">
                                                 <p className="text-xs text-muted-foreground font-bold uppercase mb-1">{c.lowestPremium}</p>
-                                                <p className="text-lg font-bold text-primary dark:text-mint">{lowest.insurerName}</p>
+                                                <p className="text-lg font-bold text-primary dark:text-mint">{displayInsurerName(lowest.insurerName)}</p>
                                                 <p className="text-sm text-muted-foreground">{formatCurrency(lowest.premiumAmount)}{c.perYear}</p>
                                             </div>
                                         )
@@ -429,7 +430,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                         return (
                                             <div className="bg-card p-4 rounded-xl">
                                                 <p className="text-xs text-muted-foreground font-bold uppercase mb-1">{c.expiresSoonest}</p>
-                                                <p className="text-lg font-bold text-amber-700 dark:text-amber-400">{soonest.insurerName}</p>
+                                                <p className="text-lg font-bold text-amber-700 dark:text-amber-400">{displayInsurerName(soonest.insurerName)}</p>
                                                 <p className="text-sm text-muted-foreground">{whenLabel}</p>
                                             </div>
                                         )

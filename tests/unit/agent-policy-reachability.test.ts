@@ -31,7 +31,14 @@ describe('agent can open a client policy', () => {
     })
 
     it('gives the link an accessible name beyond the line of business', () => {
-        expect(policiesTab).toMatch(/aria-label=\{`\$\{lobLabel\} · \$\{policy\.insurerName\}/)
+        // The name is composed from the parts that are real — a policy still
+        // waiting on extraction has no insurer and no number, and announcing
+        // "__PENDING_EXTRACTION__" to a screen reader is its own bug — so the
+        // assertion is on WHAT the label carries, not on the exact expression.
+        const ariaLabel = policiesTab.match(/aria-label=\{[^}]*\}/)?.[0] ?? ''
+        expect(ariaLabel).toContain('lobLabel')
+        expect(ariaLabel).toContain('displayInsurerName(policy.insurerName)')
+        expect(ariaLabel).toContain('displayPolicyNumber(policy.policyNumber)')
     })
 })
 

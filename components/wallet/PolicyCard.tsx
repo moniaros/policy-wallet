@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { resolvePolicyLifecycle, type PolicyLifecycle } from '@/lib/policy-status'
 import { formatDate } from '@/lib/i18n/format'
 import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
+import { displayInsurerName, isPlaceholderInsurerName } from '@/lib/wallet/policy-identity'
 import { StatusPill } from '@/components/ui/StatusPill'
 import { BadgeCheck, Sparkles, Search, FileText, Share2, Trash2 } from 'lucide-react'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
@@ -78,7 +79,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
     const locale = language as 'el' | 'en'
 
     const isAnalyzing = policy.status === 'analyzing'
-    const isPendingInsurer = !policy.insurerName || policy.insurerName === '__PENDING_EXTRACTION__' || policy.insurerName === 'Unknown Insurer' || policy.insurerName === 'Άγνωστος ασφαλιστής'
+    const isPendingInsurer = isPlaceholderInsurerName(policy.insurerName)
     // Branch label + icon from the canonical taxonomy — the old local map knew only
     // five branches, so pet/legal/cyber policies fell back to a generic page icon.
     // Held on an object: `const Icon = getBranchIcon(...)` reads as creating a
@@ -86,7 +87,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
     const branch = normalizeBranch(policy.lineOfBusiness)
     const glyph = { Icon: getBranchIcon(branch.id) }
     const localizedLob = branch.label[locale]
-    const displayInsurer = isPendingInsurer ? localizedLob : policy.insurerName
+    const displayInsurer = displayInsurerName(policy.insurerName, localizedLob)
     // Lifecycle from the real (extracted) end date — the stored status string
     // is never recomputed as time passes, so it cannot be trusted for expiry.
     const lifecycle = resolvePolicyLifecycle(policy)

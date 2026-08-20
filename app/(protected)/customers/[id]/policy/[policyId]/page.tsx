@@ -11,6 +11,7 @@ import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 import { getTranslations } from "@/lib/i18n"
 import { formatDate, formatDateTime } from "@/lib/i18n/format"
 import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
     const { id: customerId, policyId } = await params
@@ -165,7 +166,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                         )}
                                     </div>
                                     <h1 className="text-4xl font-black text-foreground tracking-tight leading-tight">
-                                        {policy.insurerName}
+                                        {displayInsurerName(policy.insurerName)}
                                     </h1>
                                     <p className="text-xl text-neutral-500 dark:text-neutral-400 font-medium mt-1 uppercase tracking-tighter">{lobPhrase}</p>
                                 </div>
@@ -242,7 +243,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.contractInsurer}</p>
-                                            <p className="text-xs font-bold text-foreground">{(policy as any).acordData.policy?.insurer || policy.insurerName}</p>
+                                            <p className="text-xs font-bold text-foreground">{displayInsurerName((policy as any).acordData.policy?.insurer || policy.insurerName)}</p>
                                         </div>
                                         <div>
                                             <p className="text-kicker font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-1">{pd.premiumFound}</p>

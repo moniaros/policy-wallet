@@ -36,7 +36,7 @@ export async function POST(req: Request) {
             const { clearOrphanedReservations } = await import("@/lib/token-tracking")
 
             const orchestrator = new PolicyAnalysisOrchestratorService()
-            const { staleCandidates, reaped } = await orchestrator.reapStaleRuns({
+            const { staleCandidates, reaped, discarded } = await orchestrator.reapStaleRuns({
                 graceMs: LEASE_EXPIRY_GRACE_MS,
                 limit: 50,
             })
@@ -45,6 +45,7 @@ export async function POST(req: Request) {
             logger("info", "Stale analysis reaper completed", {
                 staleCandidates,
                 reaped,
+                discarded,
                 tokenRowsCleared,
             })
 
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
                 summary: {
                     stale_candidates: staleCandidates,
                     reaped,
+                    discarded,
                     token_rows_cleared: tokenRowsCleared,
                 },
             })

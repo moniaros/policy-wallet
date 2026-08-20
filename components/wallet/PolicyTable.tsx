@@ -12,6 +12,7 @@ import { StatusPill } from '@/components/ui/StatusPill'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { getBranchIcon } from '@/lib/insurance/branch-icons'
 import { cn } from '@/lib/utils'
+import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
 
 interface PolicyTableProps {
     policies: Policy[]
@@ -136,9 +137,9 @@ export function PolicyTable({
                                                 {/* assetTitle falls back to the insurer when there is no
                                                     vehicle/property to name — don't print it twice. */}
                                                 <p className="truncate text-micro text-muted-foreground">
-                                                    {summary.assetTitle === policy.insurerName
-                                                        ? policy.policyNumber
-                                                        : policy.insurerName}
+                                                    {summary.assetTitle === displayInsurerName(policy.insurerName)
+                                                        ? displayPolicyNumber(policy.policyNumber)
+                                                        : displayInsurerName(policy.insurerName)}
                                                 </p>
                                             </div>
                                         </div>

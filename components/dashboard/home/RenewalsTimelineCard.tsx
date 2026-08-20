@@ -3,6 +3,7 @@ import { ArrowRight, CalendarClock } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 export interface RenewalItem {
     id: string
@@ -103,7 +104,7 @@ export function RenewalsTimelineCard({
                                             {item.titleLabel}
                                         </p>
                                         <p className="truncate text-micro text-black/60 dark:text-white/55">
-                                            {[item.insurerName, item.endDateLabel, item.premiumLabel]
+                                            {[displayInsurerName(item.insurerName), item.endDateLabel, item.premiumLabel]
                                                 .filter(Boolean)
                                                 .join(" · ")}
                                         </p>

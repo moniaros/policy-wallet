@@ -8,6 +8,7 @@ import { updatePolicy } from "@/app/(protected)/wallet/actions"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
+import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
 
 interface EditPolicyFormProps {
     policy: {
@@ -32,8 +33,10 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
     const [isPending, startTransition] = useTransition()
 
     const [formData, setFormData] = useState({
-        insurerName: policy.insurerName,
-        policyNumber: policy.policyNumber,
+        // Placeholders are not editable text — the field starts empty so the
+        // user types the real value rather than deleting '__PENDING_EXTRACTION__'.
+        insurerName: displayInsurerName(policy.insurerName),
+        policyNumber: displayPolicyNumber(policy.policyNumber) ?? '',
         lineOfBusiness: policy.lineOfBusiness,
         startDate: policy.startDate ? new Date(policy.startDate).toISOString().split("T")[0] : "",
         endDate: policy.endDate ? new Date(policy.endDate).toISOString().split("T")[0] : "",
