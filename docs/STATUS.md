@@ -66,6 +66,50 @@ but it is also a documented, shipped positioning decision (`CATEGORY_NAME`
 docblock, `docs/audits/marketing-website-audit-2026-08.md` §2). Flagged, not
 overturned.
 
+## Session wrap — 2026-08-20 (PHASE 5 — Trust & platform surface) — **GATE PASSED**, committed `8629e04f`
+
+**`/trust` and `/platform` shipped** (+ `/en` mirrors, registry-derived so sitemap and hreflang
+follow). One rule: every sentence describes what the code does today, with the citation in a
+comment beside it. **No DPIA section — none has been carried out**, so per the hard constraint
+it is BLOCKED-ON-FACT and stays unwritten. No certification badge, no "bank-grade" anything.
+
+**The neutrality pledge is now a CONTRACTUAL TERM** — Terms §3, both locales: *we do not sell,
+share, or transfer policyholder or portfolio data to insurers, banks, or third-party agencies*,
+with the one honest carve-out (the advisor you connect yourself). Inserting it renumbered the
+ten following sections in both languages.
+
+**Deliberately narrower than a reader expects, twice:** access control says the check happens
+in the **application** and that a CI test fails if a route bypasses it — it does **not** claim
+database-enforced isolation, because Phase 1 proved there is none. And portability **lists what
+does not come out** (payment methods, session/security records, the who-viewed-your-data
+history, usage metering, advisor notes).
+
+**`/platform` states its own limit:** the rules cover what someone has written a rule for, not
+every gap in every branch. A page that explains a method and hides its boundary is an advert.
+
+**AI incoherence resolved by naming it.** "AI" appeared **26 times in SEO metas and in zero of
+the 16 product pages' visible copy** — so the first place a visitor learned a model reads their
+document was the consent dialog. `/product` now says it in one sentence, with its limit, linking
+to `/platform`.
+
+**Checked and NOT changed:** `/compare` already bridges to the advisor (*"you go to your agent
+knowing what to ask"* + *"that is why we also built tools for agents"*) — the channel-hostility
+concern is already answered. The insurer reference data is claimed **nowhere** publicly, and the
+`/platform` source records why it must stay that way.
+
+**Two repo guards caught me and were right** — descriptions over the 160-char budget, and Title
+Case in Greek. Fixing the latter surfaced two genuine detector gaps: `;` is the Greek question
+mark and restarts a sentence, and `Παρίσι` is a proper noun like the `Αθήνα` already allowed.
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth pass · utf8 1823 · i18n pass ·
+**4584/4584 tests (434 files)**.
+
+**BLOCKED-ON-FACT (unwritten, not claimed):** DPIA; any certification/attestation; database-level
+isolation; "complete" export.
+
+**Next:** Phase 6 — re-score against the red-team rubric, re-verifying in code rather than
+trusting this loop's own claims.
+
 ## Session wrap — 2026-08-20 (PHASE 4 — Regulatory identity & truth defects) — **GATE PASSED**, committed `b3e4a329`
 
 Report: `docs/audits/phase4-regulatory-truth-2026-08.md`.
