@@ -22,8 +22,29 @@ import type {
     ClarityHiddenPerk,
 } from "../ai/ai-service.interface"
 
-function toLocalized(greekText: string): LocalizedText {
-    return { en: greekText, el: greekText }
+/**
+ * Accepts what the schema PROMISES is a string but the model sometimes sends
+ * anyway: Gemini JSON mode occasionally emits `{el, en}` objects for string
+ * fields, and when the strict parse then fails, validateJsonModeObject hands
+ * back the raw object — so wrapping it blindly produced DOUBLE-wrapped fields
+ * (`{en: {el,en}, el: {el,en}}`). Those objects flowed into the translation
+ * collector, were interpolated into the Gemini prompt as "[object Object]"
+ * (to which the model answers "N/A"), and killed the cache write with
+ * "Expected String, provided Object". Coerce once, here, at the boundary.
+ */
+export function asGreekText(value: unknown): string {
+    if (typeof value === "string") return value
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+        const record = value as Record<string, unknown>
+        if (typeof record.el === "string") return record.el
+        if (typeof record.en === "string") return record.en
+    }
+    return ""
+}
+
+function toLocalized(greekText: unknown): LocalizedText {
+    const text = asGreekText(greekText)
+    return { en: text, el: text }
 }
 
 /**
@@ -141,80 +162,84 @@ export function collectClarityTextsForTranslation(
     clarity: AIPolicyClarityResponse
 ): { texts: string[]; rebuild: (englishTexts: string[]) => AIPolicyClarityResponse } {
     const texts: string[] = []
+    // Every collected value passes through asGreekText: a double-wrapped field
+    // (see above) or a stored legacy shape must yield a STRING here, or the
+    // batch prompt carries "[object Object]" and the cache write fails.
+    const push = (value: unknown) => texts.push(asGreekText(value))
 
     // plainLanguageSummary
-    texts.push(clarity.plainLanguageSummary.el)
+    push(clarity.plainLanguageSummary.el)
 
     // savingsOpportunities
     for (const s of clarity.savingsOpportunities) {
-        texts.push(s.action.el)
-        texts.push(s.rationale.el)
+        push(s.action.el)
+        push(s.rationale.el)
     }
 
     // coverageGaps
     for (const g of clarity.coverageGaps) {
-        texts.push(g.evidence.el)
-        texts.push(g.recommendation.el)
+        push(g.evidence.el)
+        push(g.recommendation.el)
     }
 
     // checklistScores
     for (const c of clarity.checklistScores) {
-        texts.push(c.pillarName.el)
-        texts.push(c.notes.el)
+        push(c.pillarName.el)
+        push(c.notes.el)
     }
 
     // priorityActions
     for (const p of clarity.priorityActions) {
-        texts.push(p.action.el)
-        texts.push(p.reason.el)
+        push(p.action.el)
+        push(p.reason.el)
     }
 
     // finePrintWarnings
     for (const f of clarity.finePrintWarnings || []) {
-        texts.push(f.clause.el)
-        texts.push(f.impact.el)
+        push(f.clause.el)
+        push(f.impact.el)
     }
 
     // hiddenPerks
     for (const h of clarity.hiddenPerks || []) {
-        texts.push(h.name.el)
-        texts.push(h.description.el)
+        push(h.name.el)
+        push(h.description.el)
     }
 
     function rebuild(en: string[]): AIPolicyClarityResponse {
         let i = 0
         return {
             ...clarity,
-            plainLanguageSummary: { en: en[i++], el: clarity.plainLanguageSummary.el },
+            plainLanguageSummary: { en: en[i++], el: asGreekText(clarity.plainLanguageSummary.el) },
             savingsOpportunities: clarity.savingsOpportunities.map((s) => ({
                 ...s,
-                action: { en: en[i++], el: s.action.el },
-                rationale: { en: en[i++], el: s.rationale.el },
+                action: { en: en[i++], el: asGreekText(s.action.el) },
+                rationale: { en: en[i++], el: asGreekText(s.rationale.el) },
             })),
             coverageGaps: clarity.coverageGaps.map((g) => ({
                 ...g,
-                evidence: { en: en[i++], el: g.evidence.el },
-                recommendation: { en: en[i++], el: g.recommendation.el },
+                evidence: { en: en[i++], el: asGreekText(g.evidence.el) },
+                recommendation: { en: en[i++], el: asGreekText(g.recommendation.el) },
             })),
             checklistScores: clarity.checklistScores.map((c) => ({
                 ...c,
-                pillarName: { en: en[i++], el: c.pillarName.el },
-                notes: { en: en[i++], el: c.notes.el },
+                pillarName: { en: en[i++], el: asGreekText(c.pillarName.el) },
+                notes: { en: en[i++], el: asGreekText(c.notes.el) },
             })),
             priorityActions: clarity.priorityActions.map((p) => ({
                 ...p,
-                action: { en: en[i++], el: p.action.el },
-                reason: { en: en[i++], el: p.reason.el },
+                action: { en: en[i++], el: asGreekText(p.action.el) },
+                reason: { en: en[i++], el: asGreekText(p.reason.el) },
             })),
             finePrintWarnings: (clarity.finePrintWarnings || []).map((f) => ({
                 ...f,
-                clause: { en: en[i++], el: f.clause.el },
-                impact: { en: en[i++], el: f.impact.el },
+                clause: { en: en[i++], el: asGreekText(f.clause.el) },
+                impact: { en: en[i++], el: asGreekText(f.impact.el) },
             })),
             hiddenPerks: (clarity.hiddenPerks || []).map((h) => ({
                 ...h,
-                name: { en: en[i++], el: h.name.el },
-                description: { en: en[i++], el: h.description.el },
+                name: { en: en[i++], el: asGreekText(h.name.el) },
+                description: { en: en[i++], el: asGreekText(h.description.el) },
             })),
         }
     }
@@ -231,16 +256,16 @@ export function collectGapTextsForTranslation(
     const texts: string[] = []
 
     for (const g of gaps) {
-        texts.push(g.explanation.el)
-        texts.push(g.suggestion.el)
+        texts.push(asGreekText(g.explanation.el))
+        texts.push(asGreekText(g.suggestion.el))
     }
 
     function rebuild(en: string[]): AIGapResult[] {
         let i = 0
         return gaps.map((g) => ({
             ...g,
-            explanation: { en: en[i++], el: g.explanation.el },
-            suggestion: { en: en[i++], el: g.suggestion.el },
+            explanation: { en: en[i++], el: asGreekText(g.explanation.el) },
+            suggestion: { en: en[i++], el: asGreekText(g.suggestion.el) },
         }))
     }
 

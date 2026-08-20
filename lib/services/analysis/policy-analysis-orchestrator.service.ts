@@ -1952,6 +1952,16 @@ export class PolicyAnalysisOrchestratorService {
         const providerAttempts: ProviderAttemptRecord[] = []
         let stepAttemptCounter = 0
 
+        // Local steps (document load, coverage mapping, savings math, checklist
+        // scoring, persistence) make NO provider call: reserving tokens for
+        // them, resolving a model, and probing provider availability were pure
+        // waste — measured at ~9-11 sequential DB roundtrips per step boundary
+        // (the dev run's uniform ~10s "dead time" on 1s-of-work steps), and a
+        // reservation for a step that cannot spend shrank the user's live
+        // budget headroom for nothing. They also must not fail on a provider
+        // outage they don't depend on.
+        const aiBacked = isAIBackedStep(params.stepKey)
+
         const runSingleAttempt = async (input: {
             provider: AIServiceType
             remediationType: RemediationType
@@ -1963,15 +1973,21 @@ export class PolicyAnalysisOrchestratorService {
             // resolved model is the same env string the provider would fall back
             // to, so passing it through is behavior-neutral — and it makes an
             // admin pin actually reach the call instead of being telemetry-only.
-            const runtimeOverrides = await getAiRuntimeOverrides()
+            const runtimeOverrides = aiBacked ? await getAiRuntimeOverrides() : undefined
             const resolvedModel =
                 input.modelOverride ||
-                getDefaultModelForStep(input.provider, params.stepKey, runtimeOverrides)
+                (aiBacked
+                    ? getDefaultModelForStep(input.provider, params.stepKey, runtimeOverrides)
+                    : "none")
 
             await this.heartbeatRunLease(params.runId, params.leaseId)
 
-            // Atomically reserve tokens — collapses the TOCTOU window between check and usage recording.
-            const preflight = await reserveTokens(params.userId, params.estimatedTokens)
+            // Atomically reserve tokens — collapses the TOCTOU window between
+            // check and usage recording. AI-backed steps only: a local step
+            // spends nothing.
+            const preflight = aiBacked
+                ? await reserveTokens(params.userId, params.estimatedTokens)
+                : { allowed: true as const, source: undefined }
             if (!preflight.allowed) {
                 const classified = classifyAnalysisFailure(
                     new Error(`Token budget check failed: ${preflight.reason || "insufficient_tokens"}`)
@@ -2018,7 +2034,7 @@ export class PolicyAnalysisOrchestratorService {
             })
 
             const service = getAIService(input.provider)
-            if (!service.isAvailable() && params.stepKey !== "document_load_and_validation") {
+            if (!service.isAvailable() && aiBacked) {
                 const unavailableError = new Error(`${input.provider} AI provider unavailable`)
                 latestError = unavailableError
                 latestClassified = classifyAnalysisFailure(unavailableError)
@@ -2184,7 +2200,10 @@ export class PolicyAnalysisOrchestratorService {
                     successPct: payload.successPct,
                     tokens: payload.usage,
                 })
-                await this.heartbeatRunLease(params.runId, params.leaseId)
+                // No tail heartbeat: the next attempt's OPENING heartbeat is the
+                // authoritative lease-loss check and the interval timer keeps
+                // the TTL fresh in between — this was one more serialized DB
+                // roundtrip on every step boundary.
 
                 return {
                     ...payload,

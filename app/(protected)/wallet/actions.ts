@@ -254,6 +254,77 @@ export async function createPolicy(formData: FormData) {
     return { success: true, policyId: policy.id }
 }
 
+/**
+ * Lightweight analysis-status poll — status, current step and progress only.
+ *
+ * The post-upload screen used to poll getPolicyReviewData every few seconds:
+ * ~45 calls per analysis, each 2.5-2.9s, each dragging the FULL page payload
+ * (the entire acordData JSON) through two queries just to learn whether
+ * `status` changed. This is ONE skinny owner-scoped roundtrip (~200 bytes);
+ * the client fetches the full review payload exactly once, on the terminal
+ * transition.
+ *
+ * Owner-only by construction (the policy row must belong to the session's
+ * email) — deliberately narrower than getPolicyAccess, same as
+ * getPolicyReviewData above.
+ */
+export async function getPolicyAnalysisStatus(policyId: string): Promise<
+    | { error: string }
+    | {
+          status: string
+          processingErrorCode: string | null
+          runStatus: string | null
+          currentStep: string | null
+          stepsCompleted: number
+          stepsTotal: number
+      }
+> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user?.id || !user.email) return { error: "Unauthorized" }
+
+    const rows = await db.$queryRaw<
+        Array<{
+            status: string
+            error_code: string | null
+            run_status: string | null
+            current_step: string | null
+            steps_completed: bigint | number | null
+        }>
+    >`
+        SELECT p.status,
+               p.acord_data -> 'processingError' ->> 'code' AS error_code,
+               r.status AS run_status,
+               (SELECT s.step_key FROM policy_analysis_steps s
+                 WHERE s.analysis_run_id = r.analysis_run_id AND s.status = 'running'
+                 ORDER BY s.step_order DESC LIMIT 1) AS current_step,
+               (SELECT count(*) FROM policy_analysis_steps s
+                 WHERE s.analysis_run_id = r.analysis_run_id
+                   AND s.status IN ('completed', 'skipped')) AS steps_completed
+        FROM policies p
+        JOIN users u ON u.user_id = p.owner_user_id
+        LEFT JOIN LATERAL (
+            SELECT pr.analysis_run_id, pr.status
+            FROM policy_analysis_runs pr
+            WHERE pr.policy_id = p.policy_id
+            ORDER BY pr.created_at DESC LIMIT 1
+        ) r ON true
+        WHERE p.policy_id = ${policyId} AND u.email = ${user.email}
+    `
+
+    const row = rows[0]
+    if (!row) return { error: "Not found" }
+
+    return {
+        status: row.status,
+        processingErrorCode: row.error_code,
+        runStatus: row.run_status,
+        currentStep: row.current_step,
+        stepsCompleted: Number(row.steps_completed ?? 0),
+        stepsTotal: 8,
+    }
+}
+
 export async function getPolicyReviewData(policyId: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

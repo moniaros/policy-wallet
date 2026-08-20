@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { createPolicy, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(protected)/wallet/actions"
+import { createPolicy, getPolicyAnalysisStatus, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(protected)/wallet/actions"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
@@ -189,20 +189,29 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         })
     }
 
-    // Polling for review data with backoff
+    // Poll the LIGHTWEIGHT status endpoint; fetch the full review payload
+    // exactly once, on the terminal transition. The old loop fetched the
+    // whole review payload (entire acordData) every few seconds just to read
+    // `status` — ~45 heavy calls per analysis.
     const pollReviewData = useCallback(async () => {
         if (!createdPolicyId) return
         try {
-            const data = await getPolicyReviewData(createdPolicyId)
-            if ('error' in data) {
+            const probe = await getPolicyAnalysisStatus(createdPolicyId)
+            if ('error' in probe) {
                 // A technical failure discards the upload outright, so the
                 // policy this screen is polling for stops existing. Without
                 // this branch the spinner ran forever and the customer was
                 // never told anything happened.
+                if (probe.error === 'Not found') setDiscarded(true)
+                return
+            }
+            if (probe.status === 'analyzing') return
+
+            const data = await getPolicyReviewData(createdPolicyId)
+            if ('error' in data) {
                 if (data.error === 'Not found') setDiscarded(true)
                 return
             }
-
             if (data.status !== 'analyzing') {
                 setReviewData(data as PolicyReviewData)
             }

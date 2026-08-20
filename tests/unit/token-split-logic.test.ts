@@ -126,11 +126,20 @@ describe('the SQL still implements the rule', () => {
             'rollup AS (',
             'ON CONFLICT ("user_id", "month") DO UPDATE SET',
             'AS purchased_delta',
-            'WHERE rollup.purchased_delta > 0',
-            'ON CONFLICT ("user_id") DO UPDATE SET',
+            'AND rollup.purchased_delta > 0',
+            // The balance draw is an UPDATE capped at purchased_tokens. The old
+            // INSERT..ON CONFLICT arm created rows at purchased=0/used=N and
+            // debited with no floor — which is how a prod user reached
+            // remaining -7,249 without ever buying a token. The INSERT must
+            // not come back.
+            'LEAST(tb."used_tokens" + rollup.purchased_delta, tb."purchased_tokens")',
         ]) {
             expect(src.includes(fragment), `SQL lost: ${fragment}`).toBe(true)
         }
+        expect(
+            src.includes('INSERT INTO "token_balances"'),
+            'the balance-draw INSERT arm (the negative-balance bug) is back'
+        ).toBe(false)
     })
 
     it('expresses the split with LEAST/GREATEST against the pre-update total', () => {
