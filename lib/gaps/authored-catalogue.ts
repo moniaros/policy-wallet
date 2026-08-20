@@ -380,4 +380,117 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
         },
         isActive: true
     },
+
+    // ── Travel ───────────────────────────────────────────────────────
+    // The section these read was added in the same phase (lib/schemas/acord-data.ts).
+    // Policies analysed before that have no travel data, so these produce nothing
+    // for them — silence, which is the correct output for "we never asked".
+    //
+    // NOT authored, deliberately: a rule on medicalExpensesLimit < 30000. The
+    // €30,000 Schengen minimum is a real regulatory figure, but it is an EXTERNAL
+    // fact this repository cannot verify, and a threshold in detection logic is a
+    // severity verdict wearing a rule's clothes. It needs confirming before it
+    // decides anything for anyone.
+    {
+        slug: 'no_repatriation_cover',
+        name: 'Medical Repatriation',
+        title: 'Medical repatriation not covered',
+        description: 'This policy states that medical repatriation (επαναπατρισμός) is not covered. Bringing someone home by air ambulance is typically the largest single cost a travel policy meets, and it would fall to you.',
+        lineOfBusiness: 'travel',
+        severity: 'high',
+        defaultSeverity: 'high',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'travel.repatriationCovered', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'no_trip_cancellation_cover',
+        name: 'Trip Cancellation',
+        title: 'Trip cancellation not covered',
+        description: 'Ακύρωση ταξιδιού is not included in this policy. Flights and accommodation cancelled for a covered reason would not be reimbursed.',
+        lineOfBusiness: 'travel',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'travel.cancellationCovered', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        // `missing` justified: a travel policy without a 24-hour assistance number
+        // printed on it is unusual — that number is most of what the product is
+        // at three in the morning in a country you do not live in.
+        slug: 'missing_emergency_assistance_phone',
+        name: 'Emergency Assistance Number',
+        title: 'Emergency assistance number not recorded',
+        description: 'No 24-hour emergency assistance number is recorded for this policy. Travel policies normally print one — check your documents and add it, so it is on your phone rather than in a drawer at home.',
+        lineOfBusiness: 'travel',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'travel.emergencyAssistancePhone', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+
+    // ── Group health ─────────────────────────────────────────────────
+    // Group health is the ONE group branch with a typed section: it reuses
+    // `AcordDataSchema.health` (lib/insurance/content/group-health.ts records
+    // this). So the same coverage questions are askable of an employer plan —
+    // but as SEPARATE definitions, because definitions are matched on an exact
+    // lineOfBusiness, and because an underwriter may well rate the same finding
+    // differently on a group contract than on an individual one. Gate 3b reviews
+    // them independently, which is the point.
+    {
+        slug: 'group_missing_coordination_centre',
+        name: 'Coordination Centre (Group)',
+        title: 'No coordination centre recorded',
+        description: 'No coordination centre (κέντρο συντονισμού) phone number is recorded for this group plan. Employer plans normally give one for pre-authorising hospital admissions — check your certificate of insurance and add it.',
+        lineOfBusiness: 'group_health',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'health.coordinationCentre.phone', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'group_missing_hospital_class',
+        name: 'Hospital Room Class (Group)',
+        title: 'Hospital room class not recorded',
+        description: 'No room class (θέση νοσηλείας) is recorded for this group plan. It decides which room you are entitled to on admission, and it is one of the things people most often assume is better than it is — check your certificate and add it.',
+        lineOfBusiness: 'group_health',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'health.hospitalClass', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'group_no_direct_billing',
+        name: 'Direct Settlement (Group)',
+        title: 'Direct settlement with the hospital not available',
+        description: 'This group plan does not offer απευθείας εξόφληση. You would pay the hospital yourself and claim the money back afterwards, which means having the funds available at the time.',
+        lineOfBusiness: 'group_health',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'health.directBillingAvailable', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
 ]

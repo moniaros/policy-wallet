@@ -188,6 +188,33 @@ export const AcordDataSchema = z.object({
         })).optional(),
     }).optional(),
 
+    // ─── Travel ─────────────────────────────────────────────────────────
+    /**
+     * Added in Phase 7. Until then travel had no typed section, so nothing could
+     * be asked of a travel policy that was not a guess: a rule could only check a
+     * generic field that is blank on nearly every policy, or match free text.
+     * A branch gets rules when the extractor has somewhere truthful to put the
+     * answer — not before.
+     *
+     * Booleans here are three-state on purpose (`undefined` = the document did
+     * not say). No `.default(false)`: a default would record "not covered" for
+     * every policy nobody read, which is the error the gap rules exist to avoid.
+     */
+    travel: z.object({
+        /** Headline medical cap. The figure a Schengen visa application asks for. */
+        medicalExpensesLimit: z.number().optional(),
+        repatriationCovered: z.boolean().optional().describe("Medical repatriation / επαναπατρισμός — typically the largest single exposure on a travel policy"),
+        cancellationCovered: z.boolean().optional().describe("Trip cancellation / ακύρωση ταξιδιού"),
+        baggageLimit: z.number().optional(),
+        personalLiabilityLimit: z.number().optional(),
+        winterSportsCovered: z.boolean().optional(),
+        preExistingConditionsCovered: z.boolean().optional(),
+        /** The 24-hour number. Travel policies print one; it is the whole product at 3am. */
+        emergencyAssistancePhone: z.string().optional(),
+        destinationScope: z.string().optional().describe("e.g. schengen, europe, worldwide, worldwide-excl-usa-canada"),
+        tripDurationDays: z.number().optional(),
+    }).optional(),
+
     // ─── Cross-section fields ───────────────────────────────────────────
     // Canonical policy envelope — extraction enrichment normalizes provider
     // output into this shape; the review screen reads/writes it.

@@ -23,13 +23,90 @@ A "no" to (3) is a useful answer and costs nothing — a rule can be deactivated
 
 | | Count |
 |---|---|
-| Active definitions | **17** |
+| Active definitions | **23** |
 | Severity validated | **0** |
-| Awaiting review | **17** |
+| Awaiting review | **23** |
 
 ---
 
 ## Rules awaiting review
+
+### group_health
+
+#### `group_missing_coordination_centre` — proposed severity: **medium**
+
+**What the customer sees**
+
+> **No coordination centre recorded**
+>
+> No coordination centre (κέντρο συντονισμού) phone number is recorded for this group plan. Employer plans normally give one for pre-authorising hospital admissions — check your certificate of insurance and add it.
+
+**What the rule asks**
+
+- Was **health.coordinationCentre.phone** recorded anywhere in the document?  
+  _Fires when it was NOT — i.e. on silence. The finding must say "not recorded", never "not covered"._
+
+**Fields read:** `health.coordinationCentre.phone`
+
+> ⚠️ This rule fires when the value was **not recorded**, which is not the same as the cover being absent. Please check the wording above says so.
+
+**Decision**
+
+- Severity: ☐ agree `medium`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+#### `group_missing_hospital_class` — proposed severity: **low**
+
+**What the customer sees**
+
+> **Hospital room class not recorded**
+>
+> No room class (θέση νοσηλείας) is recorded for this group plan. It decides which room you are entitled to on admission, and it is one of the things people most often assume is better than it is — check your certificate and add it.
+
+**What the rule asks**
+
+- Was **health.hospitalClass** recorded anywhere in the document?  
+  _Fires when it was NOT — i.e. on silence. The finding must say "not recorded", never "not covered"._
+
+**Fields read:** `health.hospitalClass`
+
+> ⚠️ This rule fires when the value was **not recorded**, which is not the same as the cover being absent. Please check the wording above says so.
+
+**Decision**
+
+- Severity: ☐ agree `low`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+#### `group_no_direct_billing` — proposed severity: **medium**
+
+**What the customer sees**
+
+> **Direct settlement with the hospital not available**
+>
+> This group plan does not offer απευθείας εξόφληση. You would pay the hospital yourself and claim the money back afterwards, which means having the funds available at the time.
+
+**What the rule asks**
+
+- Does the document explicitly state that **health.directBillingAvailable** is NOT included?
+
+**Fields read:** `health.directBillingAvailable`
+
+**Decision**
+
+- Severity: ☐ agree `medium`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
 
 ### health
 
@@ -437,6 +514,80 @@ A "no" to (3) is a useful answer and costs nothing — a rule can be deactivated
 - Does the document explicitly state that **pet.directVetPayment** is NOT included?
 
 **Fields read:** `pet.directVetPayment`
+
+**Decision**
+
+- Severity: ☐ agree `medium`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+### travel
+
+#### `missing_emergency_assistance_phone` — proposed severity: **medium**
+
+**What the customer sees**
+
+> **Emergency assistance number not recorded**
+>
+> No 24-hour emergency assistance number is recorded for this policy. Travel policies normally print one — check your documents and add it, so it is on your phone rather than in a drawer at home.
+
+**What the rule asks**
+
+- Was **travel.emergencyAssistancePhone** recorded anywhere in the document?  
+  _Fires when it was NOT — i.e. on silence. The finding must say "not recorded", never "not covered"._
+
+**Fields read:** `travel.emergencyAssistancePhone`
+
+> ⚠️ This rule fires when the value was **not recorded**, which is not the same as the cover being absent. Please check the wording above says so.
+
+**Decision**
+
+- Severity: ☐ agree `medium`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+#### `no_repatriation_cover` — proposed severity: **high**
+
+**What the customer sees**
+
+> **Medical repatriation not covered**
+>
+> This policy states that medical repatriation (επαναπατρισμός) is not covered. Bringing someone home by air ambulance is typically the largest single cost a travel policy meets, and it would fall to you.
+
+**What the rule asks**
+
+- Does the document explicitly state that **travel.repatriationCovered** is NOT included?
+
+**Fields read:** `travel.repatriationCovered`
+
+**Decision**
+
+- Severity: ☐ agree `high`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+#### `no_trip_cancellation_cover` — proposed severity: **medium**
+
+**What the customer sees**
+
+> **Trip cancellation not covered**
+>
+> Ακύρωση ταξιδιού is not included in this policy. Flights and accommodation cancelled for a covered reason would not be reimbursed.
+
+**What the rule asks**
+
+- Does the document explicitly state that **travel.cancellationCovered** is NOT included?
+
+**Fields read:** `travel.cancellationCovered`
 
 **Decision**
 
