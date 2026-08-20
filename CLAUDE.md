@@ -126,6 +126,18 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   `describeSeverity()` ([lib/gaps/severity-display.ts](lib/gaps/severity-display.ts)) and show
   its `caveatKey`. `tests/unit/gap-severity-display-single-source.test.ts` fails on a new
   hand-rolled severity map and carries the migration debt list.
+- **A policy's identity may be a placeholder — never render it raw.** `insurerName` /
+  `policyNumber` can hold sentinels (`__PENDING_EXTRACTION__`, `PENDING-…`, `Unknown
+  Insurer`) even on healthy `active` policies, because the AI providers substitute them for
+  an empty extraction. Display only through [lib/wallet/policy-identity.ts](lib/wallet/policy-identity.ts)
+  (`displayInsurerName` / `policyLabel` / `scrubPolicyIdentity`) — that module is the only
+  file allowed to know the literals, and `tests/unit/policy-sentinels-unrenderable.test.tsx`
+  fails CI if another file learns them. On a technical analysis failure, a policy whose
+  identity is *entirely* placeholder is discarded atomically via
+  [lib/services/policy-discard.ts](lib/services/policy-discard.ts) — storage objects first,
+  DB row second, and a failed storage delete keeps the row (an orphaned object is personal
+  data no GDPR export can reach). Quota/consent/permission blocks are KEEP-AND-INFORM: the
+  upload stays and the wallet says why in Greek — never delete those, never show the code.
 - **An admin read of another person's data leaves a trace, and reads what it needs.**
   Minimise first: a bare relation include (`policyholderProfile: true`) pulls every Art. 9
   column, and `getUserDetails` was loading customers' health records into a page that

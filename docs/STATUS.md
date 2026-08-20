@@ -1,5 +1,49 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-20c (Sentinel discard: verified live in production)
+
+PRs #282 (phases 1–7) and #283 (sentinel discard) merged to `NEW-UI` and deployed at
+**11:07 UTC** as `852a2b4c`. This session verified the discard work end-to-end and adds the
+convention to CLAUDE.md/AGENTS.md. No code change — the code was already here.
+
+**The fix was observed working in production, on a real upload, 8 minutes after deploy.**
+Timeline from prod (`cquude…`, all UTC): `11:15:34` a real admin-account upload creates
+`PENDING-1787224529142 / __PENDING_EXTRACTION__` (activity_logs) → analysis fails technically →
+`11:19:48/49` `notifyUploadDiscarded` fires on both channels, «Το έγγραφο που ανεβάσατε δεν
+μπόρεσε να αναλυθεί, οπότε δεν αποθηκεύτηκε», `related_object_id: null` because the policy is
+already gone. A count query run inside that 4-minute window caught the row (1 sentinel policy);
+minutes later: **0 rows, 0 document rows, 0 storage objects, 0 analysis runs**. That is
+acceptance criterion 2 demonstrated in prod rather than in a test.
+
+⚠️ **Correction to an earlier note in this session:** that mid-window row was NOT "manually
+removed", and the fix was NOT undeployed — both claims were wrong, drawn from a stale branch
+snapshot before checking what `NEW-UI` already contained. The discard did it.
+
+**Guardrails re-run on the merged tree:** `tsc` clean · **4725/4725 unit (437 files)** ·
+lint / i18n-changed / utf8 (1837) / encoding / api-auth green.
+
+**Counts (2026-08-20 ~11:25 UTC).** Sentinel-valued policies: **dev 0, prod 0**. Orphaned
+storage objects: **dev 34, prod 9** — the prod nine all date from 13–21 July (713–923h old),
+i.e. all pre-fix; today's discard left none behind.
+
+⚠️ **Prod orphan cleanup is BLOCKED on a credential, not on a decision.** Removing the bytes
+needs `SUPABASE_SERVICE_ROLE_KEY` for the prod project; `vercel env pull` returns empty for
+sensitive vars and the CLI has no `env get`. Deleting the `storage.objects` rows over SQL is
+**not** an acceptable substitute — it drops the metadata and leaves the file in the backing
+store, which is precisely the invisible-personal-data defect being cleaned up. Owner runs:
+`set -a; source .prod-db-env; set +a; npm run cleanup:sentinels -- --apply --orphans-only`
+(dry-run first; the script refuses to run if DB and bucket resolve to different projects).
+
+⚠️ **Rotate the prod Postgres password.** A working-tree edit had appended the full prod
+connection string *with its plaintext password* to tracked `.env.example`. Reverted, never
+committed — but it sat in a shared checkout. Also still live: `.env.local` line 16 re-defines
+`DIRECT_URL` to prod (dotenv last-wins) while storage/auth stay on dev.
+
+**Next 3 actions:** 1) rotate the prod Postgres password; 2) run the prod orphan cleanup with
+the service-role key; 3) fix `.env.local` line 16.
+
+---
+
 ## Session wrap — 2026-08-14 (Marketing/auth assessment loop, rounds 12–13)
 
 **Current phase:** shipped to prod. `NEW-UI` @ `b8fbc2f2`, deployed and verified live.
