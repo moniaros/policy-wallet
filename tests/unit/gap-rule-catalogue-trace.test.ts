@@ -133,6 +133,31 @@ const TRACE: Record<string, Case[]> = {
     no_direct_vet_payment: booleanCoverCases("pet.directVetPayment", "direct vet payment"),
     missing_microchip_number: recordedFieldCases("pet.microchipNumber", "microchip", "941000012345678"),
 
+    // ── Travel ───────────────────────────────────────────────────────────
+    no_repatriation_cover: booleanCoverCases("travel.repatriationCovered", "repatriation"),
+    no_trip_cancellation_cover: booleanCoverCases("travel.cancellationCovered", "cancellation"),
+    missing_emergency_assistance_phone: recordedFieldCases(
+        "travel.emergencyAssistancePhone",
+        "24h assistance number",
+        "+30 210 9999999"
+    ),
+
+    // ── Group health ─────────────────────────────────────────────────────
+    // Same field paths as the individual-health rules: group health reuses
+    // AcordDataSchema.health. Traced separately because they are separate
+    // definitions with independently reviewable severities.
+    group_missing_coordination_centre: recordedFieldCases(
+        "health.coordinationCentre.phone",
+        "coordination centre (group)",
+        "+30 210 1234567"
+    ),
+    group_missing_hospital_class: recordedFieldCases(
+        "health.hospitalClass",
+        "hospital class (group)",
+        "A"
+    ),
+    group_no_direct_billing: booleanCoverCases("health.directBillingAvailable", "direct settlement (group)"),
+
     // ── Life ─────────────────────────────────────────────────────────────
     no_beneficiaries_recorded: [
         { name: "neither path records a beneficiary", acord: { policy: {} }, fires: true },
