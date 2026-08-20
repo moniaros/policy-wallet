@@ -8,6 +8,8 @@ import {
     toGapSeverity,
     SEVERITY_CAVEAT_KEY,
     SEVERITY_UNDERWRITER_VALIDATED,
+    isSeverityValidated,
+    describeSeverityForDefinition,
 } from "@/lib/gaps/severity-display"
 
 /**
@@ -162,6 +164,31 @@ describe("no new hand-rolled severity presentation", () => {
                 "<SeverityCaveat /> from components/gaps/SeverityCaveat.tsx:\n  " +
                 `${silent.join("\n  ")}`
         ).toEqual([])
+    })
+
+    it("per-definition validation drops the caveat for that rule only", () => {
+        // Gate 3b arrives a branch at a time. A global boolean could only say
+        // "none of it" or "all of it", so the honest setting was "none" forever —
+        // and every screen kept apologising for rules that may have been fine.
+        const unvalidated = describeSeverityForDefinition("high", { severityValidatedAt: null })
+        expect(unvalidated.caveatKey).toBe(SEVERITY_CAVEAT_KEY)
+
+        const validated = describeSeverityForDefinition("high", {
+            severityValidatedAt: new Date("2026-09-01"),
+        })
+        expect(validated.caveatKey).toBeNull()
+        // Everything else about the presentation is unchanged — validation is a
+        // statement about the THRESHOLD, not a licence to restyle the label.
+        expect(validated.severity).toBe(unvalidated.severity)
+        expect(validated.labelKey).toBe(unvalidated.labelKey)
+        expect(validated.rank).toBe(unvalidated.rank)
+    })
+
+    it("fails safe: no definition, or a definition it cannot read, still gets the caveat", () => {
+        expect(isSeverityValidated(null)).toBe(false)
+        expect(isSeverityValidated(undefined)).toBe(false)
+        expect(isSeverityValidated({})).toBe(false)
+        expect(describeSeverityForDefinition("critical", null).caveatKey).toBe(SEVERITY_CAVEAT_KEY)
     })
 
     it("the caveat disappears the day an underwriter signs off, everywhere at once", () => {
