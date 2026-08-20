@@ -67,12 +67,14 @@ describe('Greek UI labels use sentence case', () => {
         const files = globSync('{components,app}/**/*.tsx')
         // A capital is correct at the start and after any of these — '·' and '|'
         // join separate labels into one string; '&' starts a new noun phrase.
-        const restarts = ['.', '!', '?', ':', '·', '|', '—', '–', '&']
+        // ';' is the GREEK question mark — a sentence genuinely restarts after
+        // it, and treating it as mid-sentence flagged correct copy.
+        const restarts = ['.', '!', '?', ';', ':', '·', '|', '—', '–', '&']
         // Place names are proper nouns in Greek and stay capitalised mid-sentence:
         // "σε διακομιστές μέσα στην Ευρώπη" is correct, not Title Case.
         const proper = new Set([
             'Ελλάδα', 'Ελλάδας', 'Ευρώπη', 'Ευρώπης', 'Ευρωπαϊκή', 'Ευρωπαϊκής',
-            'Ένωση', 'Ένωσης', 'Αθήνα', 'Αθήνας',
+            'Ένωση', 'Ένωσης', 'Αθήνα', 'Αθήνας', 'Παρίσι', 'Γαλλία', 'Γαλλίας',
             'PolicyWallet', 'Tokens', 'Token', 'AI', 'PDF', 'Stripe', 'Google',
         ])
         const offenders: string[] = []

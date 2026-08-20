@@ -15,6 +15,8 @@ export type MarketingPageKey =
     | "pricing"
     | "needs"
     | "compare"
+    | "trust"
+    | "platform"
     | "company"
     | "contact"
     | "solutions-agents"
@@ -477,6 +479,32 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             description:
                 "Which cookies PolicyWallet uses, for what purpose and for how long: session cookies, consent preferences and how you can manage them at any time.",
             breadcrumb: "Cookie Policy",
+        },
+    },
+    trust: {
+        path: "/trust",
+        title: "Εμπιστοσύνη και προστασία δεδομένων",
+        description:
+            "Πού δεν πηγαίνουν τα δεδομένα σας, ποιος μπορεί να τα δει, πόσο κρατάμε τα αρχεία πρόσβασης και πώς παίρνετε αντίγραφο ή ζητάτε διαγραφή του λογαριασμού.",
+        breadcrumb: "Εμπιστοσύνη",
+        en: {
+            title: "Trust and data governance",
+            description:
+                "Where your data does not go, who can see it, how long we keep access records, and how you download a copy of your data or ask for its deletion.",
+            breadcrumb: "Trust",
+        },
+    },
+    platform: {
+        path: "/platform",
+        title: "Πώς δουλεύει η ανάλυση",
+        description:
+            "Το ασφαλιστήριο γίνεται δομημένα δεδομένα, κανόνες αποφασίζουν ποια κενά κάλυψης υπάρχουν και η τεχνητή νοημοσύνη τα εξηγεί, με αυτή τη σειρά.",
+        breadcrumb: "Πώς δουλεύει",
+        en: {
+            title: "How the analysis works",
+            description:
+                "Your policy becomes structured data, rules decide which coverage gaps exist, and the AI explains them, in that order, with every rule recorded.",
+            breadcrumb: "How it works",
         },
     },
     subprocessors: {

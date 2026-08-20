@@ -57,6 +57,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
         { href: l("/guides"), label: t("Οδηγοί ασφάλισης", "Insurance guides") },
         { href: l("/lexiko"), label: t("Ασφαλιστικό λεξικό", "Insurance glossary") },
         { href: l("/contact"), label: t("Επικοινωνία", "Contact") },
+        { href: l("/trust"), label: t("Εμπιστοσύνη και δεδομένα", "Trust and data") },
+        { href: l("/platform"), label: t("Πώς δουλεύει η ανάλυση", "How the analysis works") },
         { href: l("/privacy"), label: t("Πολιτική απορρήτου", "Privacy policy") },
         { href: l("/terms"), label: t("Όροι χρήσης", "Terms of service") },
         { href: l("/cookies"), label: t("Πολιτική cookies", "Cookie policy") },
