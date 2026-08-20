@@ -33,8 +33,14 @@ import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
  *                engineVersion
  *  bounded-ai  — lib/services/ai/ai-service.interface.ts (no isDetected, no
  *                severity field exists for a model to fill)
- *  unknown     — lib/gap-detection.ts evaluateAcordFieldCheck: only an explicit
- *                false counts as absence; unknown yields no finding
+ *  unknown     — lib/gap-detection.ts evaluateAcordFieldCheck: for is_false and
+ *                all_false only an explicit `false` counts as absence, so an
+ *                unextracted field yields no finding. The separate `missing`
+ *                operator DOES fire on an unextracted field — it asks whether a
+ *                value was recorded, not whether cover exists — which is why step
+ *                04 distinguishes "not recorded" from "not covered" instead of
+ *                claiming a gap only ever appears when the policy says so.
+ *                Live example: prisma/seed.ts missing_coordination_centre.
  *  portable    — app/api/v1/me/data-export/route.ts (structured, self-service)
  */
 
@@ -82,8 +88,8 @@ const STEPS: { n: string; title: { el: string; en: string }; body: { el: string;
             en: "“Unknown” does not mean “not covered”",
         },
         body: {
-            el: "Αν το έγγραφο δεν λέει τίποτα για μια κάλυψη, δεν συμπεραίνουμε ότι λείπει. Κενό εμφανίζεται μόνο όταν το συμβόλαιο το λέει. Η σιωπή δεν είναι απόδειξη απουσίας — και ένα εύρημα που στηρίζεται σε σιωπή είναι λάθος που κοστίζει.",
-            en: "If the document says nothing about a cover, we do not conclude it is missing. A gap appears only when the policy says so. Silence is not evidence of absence — and a finding built on silence is the expensive kind of wrong.",
+            el: "Αν το έγγραφο δεν λέει τίποτα για μια κάλυψη, δεν συμπεραίνουμε ότι λείπει: η σιωπή δεν είναι απόδειξη απουσίας και ένα εύρημα που στηρίζεται σε σιωπή είναι λάθος που κοστίζει. Όπου ένας κανόνας ελέγχει αν κάτι έχει καταγραφεί, το εύρημα το λέει ακριβώς έτσι — «δεν έχει καταγραφεί», όχι «δεν καλύπτεστε».",
+            en: "If the document says nothing about a cover, we do not conclude it is missing: silence is not evidence of absence, and a finding built on silence is the expensive kind of wrong. Where a rule checks whether something was recorded at all, the finding says exactly that — “not recorded”, never “not covered”.",
         },
     },
 ]

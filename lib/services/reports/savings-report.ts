@@ -31,9 +31,25 @@ interface SavingsOpportunity {
 
 interface GapResult {
     slug: string
-    isDetected: boolean
     explanation?: { en: string; el: string } | string
     suggestion?: { en: string; el: string } | string
+    severity?: string
+}
+
+/**
+ * The gaps the RULES decided, passed in by the caller from GapInstance rows.
+ *
+ * This used to be derived here as `resultJson.gapResults.filter(g => g.isDetected)`.
+ * That field no longer exists — the model does not get to say whether a gap was
+ * detected (lib/services/ai/ai-service.interface.ts) — so the filter silently
+ * matched nothing and this section of every report went out empty.
+ *
+ * Dropping the filter would have been worse than the bug: `gapResults` is a bag
+ * of AI PROSE keyed by slug, not a detection list, so rendering all of it would
+ * print gaps the rules never found. The decided set has to come from the rows.
+ */
+export interface DecidedGapForReport {
+    slug: string
     severity?: string
 }
 
@@ -73,12 +89,24 @@ export function generateSavingsReportHtml(
     resultJson: Record<string, any>,
     generatedAt: string,
     language: "en" | "el" = "en",
-    branding?: AgentReportBranding
+    branding?: AgentReportBranding,
+    decidedGaps: DecidedGapForReport[] = []
 ): string {
     const loc = (val: any) => localized(val, language)
     const metadata = resultJson.metadata ?? {}
     const savings: SavingsOpportunity[] = resultJson.savingsOpportunities ?? []
-    const gaps: GapResult[] = (resultJson.gapResults ?? []).filter((g: any) => g.isDetected)
+    // Rules decide WHICH gaps exist; the stored AI output only supplies the words.
+    // Defaulting to [] keeps a caller that forgets to pass them honest-empty
+    // rather than silently reprinting the prose bag as if it were findings.
+    const prose = new Map<string, any>(
+        ((resultJson.gapResults ?? []) as any[]).map((g) => [g.slug, g])
+    )
+    const gaps: GapResult[] = decidedGaps.map((d) => ({
+        slug: d.slug,
+        severity: d.severity,
+        explanation: prose.get(d.slug)?.explanation,
+        suggestion: prose.get(d.slug)?.suggestion,
+    }))
     const summary = resultJson.plainLanguageSummary
     const snapshot = resultJson.coverageSnapshot
 

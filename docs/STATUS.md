@@ -66,6 +66,55 @@ but it is also a documented, shipped positioning decision (`CATEGORY_NAME`
 docblock, `docs/audits/marketing-website-audit-2026-08.md` §2). Flagged, not
 overturned.
 
+## Session wrap — 2026-08-20 (PHASE 6 — Adversarial re-score) — **GATE NOT PASSED (79/100)**, honest stop
+
+Full write-up: `docs/audits/phase6-rescore-2026-08.md`. Three adversarial agents, every
+finding re-verified by hand before action.
+
+**Category E failed on entry** — six false or unsupported public claims were live, two
+of them created or missed by this loop:
+
+- **`/trust` promised consent-gating that a live path did not do.**
+  `app/api/policies/extract/route.ts` sent whole documents to Gemini with **no consent
+  check** (bulk upload via `BatchUploadModal.tsx`). Not just a false sentence — an Art. 9
+  disclosure without the basis the product claimed to require. **Fixed in code:** same
+  `aiProcessingConsentVersion` gate as the deep pipeline, before the body is read, with a
+  new bilingual `AI_CONSENT_REQUIRED` failure code.
+- **`/platform` denied a behaviour a rule I seeded this phase exhibits.** "A gap appears
+  only when the policy says so" is false for `operator: 'missing'`
+  (`missing_coordination_centre`). Copy now separates "not recorded" from "not covered".
+- **Live authorization hole, Phase-1 class.** `transferCustomer`
+  (`lib/services/team.service.ts`) reassigned a relationship but never revoked
+  `AccessGrant`s, so a reassigned agent kept `manage` (incl. **delete**) on that
+  customer's whole book forever. Phase 1 fixed *termination* and never asked if that was
+  the only way a relationship ends. Now atomic; pinned by
+  `tests/unit/access-ends-with-relationship-change.test.ts`, **verified to fail against
+  the pre-fix source**.
+- **Self-inflicted regression:** removing `isDetected` in Phase 3 silently emptied the
+  gap section of every branded/savings report and every run-to-run diff. Both now read
+  the rule-decided set (`GapInstance` rows / new `decidedGapSlugs`). Dropping the filter
+  would have been worse — `gapResults` is AI prose, not a detection list.
+- Also: export-exclusion list corrected (advisor MEDIC data **is** exported), 1-hour
+  signed URL cut to 5 min, CI-guard claim narrowed to what it scans, **Sentry disclosed
+  as a subprocessor** (it was receiving scrubbed events undisclosed), dead
+  `lib/honest-copy.ts` deleted.
+
+**Score 79/100. Ceiling without new external facts ≈84 — the gate (85) is not reachable
+from inside the repo.** Blocking facts, in order: underwriter validation of severity
+(Gate 3b), a broader authored rule catalogue (**4 rules cover 4 of 16 branches**), ΓΕΜΗ
+seat confirmation, court-venue decision, at-rest encryption attestation.
+
+**Recommendation: stop the scoring loop at iteration 1 of 3.** Iterations 2–3 would move
+A/B/F by a few points and cannot move the blockers at all.
+
+**Known remainder, ranked #1 for the next security pass:** the authorization guard scans
+`app/api` only, per-file not per-handler, and **not server actions** — three already
+hand-roll their own checks (`agent/actions.ts:1629`, `coverage-insights/actions.ts:36`,
+`wallet/actions.ts:1614`). All currently narrower than `getPolicyAccess`, none exploitable
+today. Guardrails: `tsc` clean · **4590/4590 unit tests** · lint/utf8/encoding/i18n/api-auth green.
+
+---
+
 ## Session wrap — 2026-08-20 (PHASE 5 — Trust & platform surface) — **GATE PASSED**, committed `8629e04f`
 
 **`/trust` and `/platform` shipped** (+ `/en` mirrors, registry-derived so sitemap and hreflang
@@ -900,6 +949,13 @@ in order (`notification_bus`, `notification_admin`, `business_events`,
 **before** #266 deployed at 15:09. The only local migration prod still lacks is
 `20260809130000_drop_dead_protection_score_history`, which is the destructive one
 deliberately held for an owner decision.
+
+## Top launch risks (ranked — GA-gating only)
+1. ~~**High — public site false claims**~~ **RESOLVED (verified 2026-08-20).** The fabricated stats and testimonials are gone; `lib/landing/content.ts:16-21` records the deletion and `lib/seo/team.ts` is `[]` by design. An exhaustive numeric/superlative/social-proof sweep this phase found **no** invented figures, testimonials or logo walls left. Remaining copy risk is narrower and tracked in `phase6-rescore-2026-08.md` §6: SEO metadata on several pages still implies broader gap-finding than **4 rules** support.
+2. ~~**High — AI-processing consent gate (Art. 9)**~~ **RESOLVED (verified 2026-08-20).** Migration and `User.aiProcessingConsentVersion` shipped; **both** paths that send bytes to a provider are now gated — the deep pipeline *and* `app/api/policies/extract/route.ts` (the upload/bulk path, which was ungated until this phase). Pinned by `tests/unit/access-ends-with-relationship-change.test.ts`.
+3. **High — seeded accounts in prod** (= GO #1; 5-minute human action).
+4. **High — auth gaps**: no production passkey/biometric verification; 30-day session persistence untested.
+5. **Medium — Privacy page over-claims**: "GDPR export/deletion workflows available" — DSR executors unconfirmed. Ship or soften wording.
 
 **Top risks:** 1) `connection_limit` is still left to the hand-edited pooler URL —
 the same class of omission that caused today's outage, deliberately not forced in

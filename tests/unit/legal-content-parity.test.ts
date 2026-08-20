@@ -54,14 +54,20 @@ describe("legal content parity", () => {
             const list = getLegalContent(language).subprocessors.sections.find(
                 (section) => section.id === "subprocessor_list"
             )
-            expect(list?.table?.rows).toHaveLength(9)
+            expect(list?.table?.rows).toHaveLength(10)
             // Provider names are brand names — identical in both languages.
+            // Sentry was added 2026-08-20: it had been receiving scrubbed error
+            // events from client, server and edge runtimes since long before that
+            // (instrumentation-client.ts, sentry.server.config.ts,
+            // sentry.edge.config.ts) while absent from this table — a real
+            // subprocessor the privacy policy did not disclose.
             expect(list?.table?.rows.map((row) => row[0])).toEqual([
                 "Supabase",
                 "Vercel",
                 "Stripe",
                 "Brevo",
                 "Upstash",
+                "Sentry",
                 "Google (Gemini API)",
                 "Google (Google Analytics)",
                 "Anthropic",
