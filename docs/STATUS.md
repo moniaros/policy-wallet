@@ -20,22 +20,31 @@ the code). A `completed_with_warnings` run at 96% is saved — pinned by
 Convention added to CLAUDE.md/AGENTS.md (identity may be a placeholder; render only through
 the primitive).
 
-**Counts measured today (2026-08-20 ~14:20 EEST).** Sentinel policies: **dev 0, prod 0** —
-but prod was **1** mid-measurement: a real admin-account upload at 14:15:29 local created
-`PENDING-1787224529142 / __PENDING_EXTRACTION__` (activity_logs row exists; **no storage
-object appeared in prod**) and the row was manually removed minutes later. The bug still
-fires in prod because the fix is not deployed. Orphaned storage objects: **dev 34, prod 9**
-(both unchanged since 08-14; cleanup script ready, **prod run still needs owner go-ahead**).
+**⚠ CORRECTION — this branch is superseded, and two claims above/below were wrong.** The same
+work merged to `NEW-UI` hours earlier as **PR #283** (`852a2b4c`, deployed 11:07 UTC): the six
+modules are byte-identical to the ones committed here, so *this branch adds no code to prod*.
+Only the CLAUDE.md/AGENTS.md convention was genuinely new; it went to `NEW-UI` via **PR #284**.
+
+**Counts measured today (2026-08-20 ~11:25 UTC).** Sentinel policies: **dev 0, prod 0** — but
+prod was **1** mid-measurement, and that row is the fix working, not the bug. A real
+admin-account upload at `11:15:34` created `PENDING-1787224529142 / __PENDING_EXTRACTION__`;
+at `11:19:48/49` `notifyUploadDiscarded` fired on both channels («…δεν μπόρεσε να αναλυθεί,
+οπότε δεν αποθηκεύτηκε», `related_object_id: null`) and the row, its documents and its storage
+object were gone. The count query simply landed inside that 4-minute window. It was **not**
+manually removed, and the fix **was** deployed — both earlier claims are withdrawn.
+Orphaned storage objects: **dev 34, prod 9** — the prod nine all date from 13–21 July
+(713–923h), i.e. pre-fix; today's discard left none behind.
 
 **⚠ Two live environment hazards, one defused:** (1) the uncommitted `.env.example` diff
 appended the **production DB URL with its plaintext password** to a tracked file — reverted
 here, never committed, but treat the password as exposed and **rotate it** (it sat in a
 shared working tree). (2) `.env.local` line 16 still re-defines `DIRECT_URL` to **prod**
-(last-wins under dotenv) while storage/auth point at dev — the split-brain that likely
-explains today's prod row having no prod storage object. Still needs the owner's edit.
+(last-wins under dotenv) while storage/auth point at dev. Still needs the owner's edit. (It is
+*not* what explains the prod row having no storage object — the discard removed that object.)
 
 **Next 3 actions:** 1) rotate the prod Postgres password; 2) fix `.env.local` line 16;
-3) decide on merging this branch to `NEW-UI` (deploys prod on CI-green) + running the prod
+3) ~~decide on merging this branch to `NEW-UI`~~ **done via #284 (docs only; code shipped in
+#283)** — remaining: run the prod
 orphan cleanup (`npm run cleanup:sentinels -- --apply` with prod env).
 
 ---
