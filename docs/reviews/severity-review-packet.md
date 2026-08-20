@@ -23,9 +23,9 @@ A "no" to (3) is a useful answer and costs nothing — a rule can be deactivated
 
 | | Count |
 |---|---|
-| Active definitions | **23** |
+| Active definitions | **27** |
 | Severity validated | **0** |
-| Awaiting review | **23** |
+| Awaiting review | **27** |
 
 ---
 
@@ -434,6 +434,103 @@ A "no" to (3) is a useful answer and costs nothing — a rule can be deactivated
 > **Roadside assistance not included**
 >
 > Οδική βοήθεια is not part of this policy. A breakdown or tow would be arranged and paid for by you, unless you hold roadside assistance separately.
+
+**What the rule asks**
+
+- Does the document explicitly state that **vehicle.hasRoadsideAssistance** is NOT included?
+
+**Fields read:** `vehicle.hasRoadsideAssistance`
+
+**Decision**
+
+- Severity: ☐ agree `medium`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+### motorbike
+
+#### `moto_green_card_expiring` — proposed severity: **medium**
+
+**What the customer sees**
+
+> **Green Card Expiring Soon**
+>
+> Your international motor insurance certificate (Green Card / Πράσινη Κάρτα) expires within 30 days. Renew before riding abroad.
+
+**What the rule asks**
+
+- Does **vehicle.greenCardExpiryDate** fall within the next 30 days?
+
+**Fields read:** `vehicle.greenCardExpiryDate`
+
+**Decision**
+
+- Severity: ☐ agree `medium`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+#### `moto_missing_accident_declaration_phone` — proposed severity: **low**
+
+**What the customer sees**
+
+> **Accident declaration number not recorded**
+>
+> No accident-declaration telephone number (φιλικός διακανονισμός) is recorded for this policy. Greek motor policies normally print one — check your documents and add it, so it is to hand at the roadside rather than looked for afterwards.
+
+**What the rule asks**
+
+- Was **vehicle.accidentDeclarationPhone** recorded anywhere in the document?  
+  _Fires when it was NOT — i.e. on silence. The finding must say "not recorded", never "not covered"._
+
+**Fields read:** `vehicle.accidentDeclarationPhone`
+
+> ⚠️ This rule fires when the value was **not recorded**, which is not the same as the cover being absent. Please check the wording above says so.
+
+**Decision**
+
+- Severity: ☐ agree `low`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+#### `moto_no_own_damage_cover` — proposed severity: **high**
+
+**What the customer sees**
+
+> **Own-damage cover not included**
+>
+> This policy states that damage to your own motorbike (ίδιες ζημιές) is not covered. However the other party is dealt with, repairs to your own machine after an at-fault accident would be paid by you.
+
+**What the rule asks**
+
+- Does the document explicitly state that **vehicle.ownVehicleDamage** is NOT included?
+
+**Fields read:** `vehicle.ownVehicleDamage`
+
+**Decision**
+
+- Severity: ☐ agree `high`  ☐ change to `________`  ☐ remove the rule
+- Wording: ☐ acceptable  ☐ change to: ________
+- Reviewer: ________________________  Date: __________
+- Reasoning: ________________________________________
+
+---
+
+#### `moto_no_roadside_assistance` — proposed severity: **medium**
+
+**What the customer sees**
+
+> **Roadside assistance not included**
+>
+> Οδική βοήθεια is not part of this policy. A breakdown or a machine that will not start would be recovered at your own cost, unless you hold assistance separately.
 
 **What the rule asks**
 

@@ -8,12 +8,16 @@ Full write-up: `docs/audits/phase7-rule-catalogue-and-gate3b-2026-08.md`. Taking
 items Phase 6 handed to humans as far as code honestly can, on one distinction:
 **detection is factual, severity is an underwriting judgement.**
 
-**Catalogue 4 → 23 rules, 4 → 7 branches** (motor 5, home 4, health 4, group_health 3,
-travel 3, pet 3, life 1). All live in prod, all rule-bearing, **100 fixture cases** — every
-rule must prove it stays silent on a field nobody extracted. Two new branches by two routes:
-*travel* got the `AcordDataSchema` section it needed (the blocker was the extraction schema,
-not the rule engine); *group_health* needed nothing — it reuses `AcordDataSchema.health` and
-nobody had asked. New `all_missing` operator so the life-beneficiaries rule needs **both**
+**Catalogue 4 → 27 rules, 4 → 8 branches** (motor 5, health 4, home 4, motorbike 4,
+group_health 3, pet 3, travel 3, life 1). All live in prod, all rule-bearing, **116 fixture
+cases** — every rule must prove it stays silent on a field nobody extracted. Three new
+branches by two routes: *travel* got the `AcordDataSchema` section it needed (the blocker was
+the extraction schema, not the rule engine); *group_health* and *motorbike* needed nothing at
+all — they map onto the existing `health` and `vehicle` sections, which the repo's own branch
+content files have recorded for as long as they have existed. Nobody had asked.
+Motorbike takes four of motor's five rules and **not** glass breakage: the content file
+records that telling riders about glass while saying nothing about rider injury was
+"actively misleading". New `all_missing` operator so the life-beneficiaries rule needs **both**
 paths empty; an empty array counts as absent.
 
 **Deliberately NOT authored:** a `medicalExpensesLimit < 30000` rule. The €30,000 Schengen
@@ -32,14 +36,22 @@ missing was everything that makes sign-off possible. Now: per-definition validat
 (`GET /api/v1/policies/[id]/gaps` returns `severity_validated` + `severity_caveat_key`), and
 **`docs/reviews/severity-review-packet.md`** — generated from the LIVE catalogue, stating
 what each rule asks, the fields it reads, the severity proposed, and the words the customer
-sees. **23 pending, 0 validated.** Recording an answer is one UPDATE per definition.
+sees. Recording an answer is one UPDATE per definition.
 
-⚠️ **Owner action:** the packet is the deliverable. Owner: licensed underwriter / ΕΙΑΣ-qualified
-intermediary. Nine branches still have no rules — they need a typed schema section first.
+⚠️ **Owner action, 1 of 2:** the packet is the deliverable. Owner: licensed underwriter /
+ΕΙΑΣ-qualified intermediary. **27 pending, 0 validated.**
 
-Guardrails: `tsc` clean · **4707/4707 unit** · lint/utf8/encoding/i18n/api-auth green.
+⚠️ **Owner action, 2 of 2:** eight branches still have no rules, and it is a domain question,
+not an engineering one. Every one of their content files already records that the meaningful
+detail arrives as free text (legal expenses: *"scope, waiting periods and limits exist only as
+free text"*; boat: *"hull value, navigation area, crew cover… only in the free text"*). The
+answerable question is: **for branch X, which three or four facts does a Greek policy always
+state?** Given that, the schema section and rules are an afternoon — travel is the worked
+example.
+
+Guardrails: `tsc` clean · **4723/4723 unit** · lint/utf8/encoding/i18n/api-auth green.
 (`verify:migrations` fails locally on `DATABASE_URL`, identically without these changes.)
-Commits `8600a873`, `7c670721`.
+Commits `8600a873`, `7c670721`, `a3d7420f`, `+1`.
 
 ---
 

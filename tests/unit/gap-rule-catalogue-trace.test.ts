@@ -158,6 +158,22 @@ const TRACE: Record<string, Case[]> = {
     ),
     group_no_direct_billing: booleanCoverCases("health.directBillingAvailable", "direct settlement (group)"),
 
+    // ── Motorbike ────────────────────────────────────────────────────────
+    // Same vehicle.* paths as motor; separate definitions, separately traced.
+    // No glass-breakage rule exists here on purpose — see the catalogue comment.
+    moto_no_own_damage_cover: booleanCoverCases("vehicle.ownVehicleDamage", "own damage (moto)"),
+    moto_no_roadside_assistance: booleanCoverCases("vehicle.hasRoadsideAssistance", "roadside (moto)"),
+    moto_missing_accident_declaration_phone: recordedFieldCases(
+        "vehicle.accidentDeclarationPhone",
+        "accident declaration number (moto)",
+        "+30 210 7654321"
+    ),
+    moto_green_card_expiring: [
+        { name: "expires in 10 days", acord: { vehicle: { greenCardExpiryDate: inDays(10) } }, fires: true },
+        { name: "expires in 90 days", acord: { vehicle: { greenCardExpiryDate: inDays(90) } }, fires: false },
+        { name: "no green card date recorded", acord: { vehicle: {} }, fires: false },
+    ],
+
     // ── Life ─────────────────────────────────────────────────────────────
     no_beneficiaries_recorded: [
         { name: "neither path records a beneficiary", acord: { policy: {} }, fires: true },
