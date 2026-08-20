@@ -268,14 +268,25 @@ the repository.
    saying so, and precisely what an `is_false` rule ignores silence to avoid. Undefined,
    false and true are now three distinct states. The v3 schema test asserted the default
    rather than the intent, and was corrected with the reason recorded.
-4. **Retention promises without an enforcing job.** The daily job covers `ActivityLog`,
-   `Invite`, `FormSubmission` and `DataExportRequest`. `TokenUsage`,
-   `MonthlyTokenUsage`, `Session`, `ActiveSession` and `ConsentAudit` are never
-   time-swept, though the privacy policy states a 5-year consent-record window.
-5. **Newsletter retention may not match its promise.** The policy says "until you
-   unsubscribe"; the record lives in `FormSubmission`, which is purged at 730 days
-   regardless. Whether that matters depends on Brevo holding the authoritative
-   subscription state — **unverified**.
+4. **Retention: resolved as a disclosure gap, not an enforcement gap (iteration 2).**
+   Traced each table: `TokenUsage`/`MonthlyTokenUsage` are **deliberately** retained as
+   financial ledgers keyed to the anonymised row, and `ConsentAudit` minus ip/user-agent
+   as proof of consent — both listed as documented exceptions in
+   `gdpr-erasure.service.ts:24-32`, so purging them on a 12-month timer would be wrong,
+   not right. `Session`/`ActiveSession` are deleted by erasure but never time-swept.
+   The real defect was that the privacy table was **silent** about session records and
+   about public-form captures entirely. Both are now listed, and
+   `tests/unit/retention-copy-matches-code.test.ts` derives the stated windows from the
+   job's own constants — change `FORM_SUBMISSION_RETENTION_DAYS` and CI fails rather
+   than the policy quietly becoming false.
+5. ~~**Newsletter retention may not match its promise.**~~ **RESOLVED (iteration 2).**
+   Verified: `app/api/v1/newsletter/subscribe/route.ts` writes the `FormSubmission` row
+   **before** calling Brevo, explicitly so "a Brevo outage must never lose the
+   subscriber", and there is no in-app unsubscribe — unsubscription happens on Brevo's
+   list. So Brevo holds the authoritative subscription state ("until you unsubscribe" is
+   true of it), and the local row is a **capture record** of the signup event, deleted at
+   24 months. The claim was not false; the table was incomplete, and the capture record
+   is now disclosed as its own category.
 6. **~80 external Greek market/tax figures** across guides and product pages (ENFIA
    percentages, Schengen minimums, statutory deductibles) cannot be checked against
    this repository. Internally self-consistent; flagged as a class for external
