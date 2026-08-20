@@ -90,11 +90,27 @@ useful result:
   materialised by the AI SDK into stored data, recording "there is a cap" on every limit
   nobody determined — one rule away from load-bearing.
 
-**Score 79 → 81** (F: 7 → 9). Gate is 85 and remains unreachable from inside the repo.
-**Loop ends here**: what is left is factual (external confirmation) or Gate-3b debt.
+- **Retention was a disclosure gap, not an enforcement gap.** `TokenUsage`/`ConsentAudit`
+  are *deliberately* retained (financial ledger / proof of consent, both documented
+  exceptions in the eraser) — purging them on a timer would be the bug. The real defect:
+  the privacy table was **silent** about session records and about public-form captures
+  (24 months in `FormSubmission`). Both now listed, both locales, and
+  `retention-copy-matches-code.test.ts` derives the stated windows from the job's own
+  constants. Newsletter row verified correct — Brevo holds the authoritative list; the
+  local row is a signup capture, now disclosed as one.
+- **Severity caveats closed for every surface that names a severity.** "8 of 11 show no
+  caveat" was wrong both ways: two already carried one, two print no severity word at all
+  (colour only; `PolicyBriefCard`'s dot is `aria-hidden`). The four that name a severity
+  to a person now render a single shared `<SeverityCaveat />` — one component so that
+  **Gate 3b sign-off is a one-line change**. Gate 3b itself stays open and human-owned;
+  the guard now asserts `SEVERITY_UNDERWRITER_VALIDATED === false`.
 
-Guardrails: `tsc` clean · **4598/4598 unit** · lint/utf8/encoding/i18n/api-auth green.
-Commits `60c022bf`, `e8ecbd6b`, `155138ff`.
+**Score 79 → 81** (F: 7 → 9). Gate is 85 and remains unreachable from inside the repo.
+**Loop ends here**: every remaining item in the audit's §6 is either an external fact or
+Gate 3b, both human-owned.
+
+Guardrails: `tsc` clean · **4605/4605 unit** · lint/utf8/encoding/i18n/api-auth green.
+Commits `60c022bf`, `e8ecbd6b`, `155138ff`, `caa15e9e`, `c5279c76`.
 
 ---
 
