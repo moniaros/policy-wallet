@@ -66,6 +66,47 @@ but it is also a documented, shipped positioning decision (`CATEGORY_NAME`
 docblock, `docs/audits/marketing-website-audit-2026-08.md` §2). Flagged, not
 overturned.
 
+## Session wrap — 2026-08-20 (PHASE 7 — rule catalogue + Gate 3b apparatus)
+
+Full write-up: `docs/audits/phase7-rule-catalogue-and-gate3b-2026-08.md`. Taking the two
+items Phase 6 handed to humans as far as code honestly can, on one distinction:
+**detection is factual, severity is an underwriting judgement.**
+
+**Catalogue 4 → 23 rules, 4 → 7 branches** (motor 5, home 4, health 4, group_health 3,
+travel 3, pet 3, life 1). All live in prod, all rule-bearing, **100 fixture cases** — every
+rule must prove it stays silent on a field nobody extracted. Two new branches by two routes:
+*travel* got the `AcordDataSchema` section it needed (the blocker was the extraction schema,
+not the rule engine); *group_health* needed nothing — it reuses `AcordDataSchema.health` and
+nobody had asked. New `all_missing` operator so the life-beneficiaries rule needs **both**
+paths empty; an empty array counts as absent.
+
+**Deliberately NOT authored:** a `medicalExpensesLimit < 30000` rule. The €30,000 Schengen
+minimum is real but externally unverifiable here, and a threshold in detection logic is a
+severity verdict wearing a rule's clothes.
+
+**Latent defect found:** four `ai_check` definitions were still `isActive: true` in
+`prisma/seed.ts` after Phase 3 deactivated them in prod — the next `db seed` would have
+switched them back on, four "active" definitions that can never fire. One was
+`home-earthquake`, which is why an audit reported earthquake had no rule. It has a real one
+now.
+
+**Gate 3b — still open, now openable.** It needs an underwriter and always did; what was
+missing was everything that makes sign-off possible. Now: per-definition validation columns
+(dev + prod), a per-definition caveat that fails safe, a real consumer
+(`GET /api/v1/policies/[id]/gaps` returns `severity_validated` + `severity_caveat_key`), and
+**`docs/reviews/severity-review-packet.md`** — generated from the LIVE catalogue, stating
+what each rule asks, the fields it reads, the severity proposed, and the words the customer
+sees. **23 pending, 0 validated.** Recording an answer is one UPDATE per definition.
+
+⚠️ **Owner action:** the packet is the deliverable. Owner: licensed underwriter / ΕΙΑΣ-qualified
+intermediary. Nine branches still have no rules — they need a typed schema section first.
+
+Guardrails: `tsc` clean · **4707/4707 unit** · lint/utf8/encoding/i18n/api-auth green.
+(`verify:migrations` fails locally on `DATABASE_URL`, identically without these changes.)
+Commits `8600a873`, `7c670721`.
+
+---
+
 ## Session wrap — 2026-08-20 (PHASE 6 iteration 2 — closing the remainders) — **81/100**, loop ends here
 
 Iteration 1 recommended stopping. **Iteration 2 proved that premature**, which is the

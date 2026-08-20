@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { requireApiUser } from "@/lib/api-auth"
 import { getPolicyAccess } from "@/lib/policy-access"
+import { describeSeverityForDefinition } from "@/lib/gaps/severity-display"
 
 export async function GET(
     req: Request,
@@ -57,6 +58,17 @@ export async function GET(
                     title: (gi.definition as any).title,
                     description: (gi.definition as any).description,
                     severity: gi.severity,
+                    // Severity is a rule's output, not an underwriter's verdict.
+                    // Anything consuming this API — including an integration we
+                    // never see — is told so here rather than being left to
+                    // assume a four-point scale means what it looks like.
+                    // Gate 3b is recorded per definition, so this flips for one
+                    // rule at a time as sign-off arrives.
+                    severity_validated: Boolean((gi.definition as any).severityValidatedAt),
+                    severity_caveat_key: describeSeverityForDefinition(
+                        gi.severity,
+                        gi.definition as any
+                    ).caveatKey,
                     status: gi.status,
                     ai_explanation: gi.aiExplanation,
                     ai_suggestion: gi.aiSuggestion,

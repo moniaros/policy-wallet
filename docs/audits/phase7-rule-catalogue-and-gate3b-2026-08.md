@@ -1,5 +1,5 @@
 # Phase 7 — The rule catalogue, and what code can do about Gate 3b
-**2026-08-20 · Step 0 findings, written before any change**
+**2026-08-20 · Step 0 findings, then results**
 
 Closing the two items Phase 6 handed to humans, as far as code honestly can:
 
@@ -52,7 +52,7 @@ the invariant recorded in CLAUDE.md.
 
 ---
 
-## 2. Why the catalogue stops at five branches, and what would move it
+## 2. What limits the catalogue, and what would move it
 
 **The binding constraint is the extraction schema, not the rule engine.**
 
@@ -74,6 +74,13 @@ None of those is a coverage finding. **Extending coverage to a sixth branch requ
 adding a section to `AcordDataSchema` first**, so the extractor has somewhere truthful to
 put the answer. That is real work with a clear shape, and it is the honest next step — not
 something to fake by authoring rules against fields that do not exist.
+
+> **Superseded in part — see §5.** Two of the eleven turned out to be reachable. **Travel**
+> got the schema section this paragraph asks for, so the work was done rather than deferred.
+> **group_health** needed nothing at all: it reuses `AcordDataSchema.health`, which
+> `lib/insurance/content/group-health.ts` had recorded all along — this section's own
+> premise was wrong about it, because I counted schema sections instead of checking which
+> branches map onto one. Nine branches remain, and for them the paragraph still holds.
 
 Production today (verified by query, 2026-08-20):
 
@@ -131,3 +138,76 @@ decision"* — which is the whole of what code can do here, and it is not nothin
 **Acceptance:** every new rule is evaluable, traced, and produces nothing on silence unless
 its `missing` operator is justified above; no severity is presented as validated; the packet
 lists every active definition with no hand-maintained list in between.
+
+
+---
+
+## 5. Results
+
+### Item 2 — the catalogue: 4 → 23 rules, 4 → 7 branches
+
+| Branch | Rules | How it became possible |
+|---|---:|---|
+| motor | 5 | existing `vehicle` section |
+| home | 4 | existing `property` section |
+| health | 4 | existing `health` section |
+| pet | 3 | existing `pet` section |
+| group_health | 3 | **already possible** — reuses `AcordDataSchema.health`; nobody had asked |
+| travel | 3 | **new `travel` section** — the blocker in §2, removed rather than worked around |
+| life | 1 | existing `lifeAndInvestment` + top-level `beneficiaries` |
+
+All 23 are rule-bearing and live in production (verified by query through two
+independent connection paths). **100 fixture cases** trace them, and every rule
+must prove it stays silent on a field nobody extracted.
+
+Four rules use `missing` and fire on silence: accident-declaration number,
+hospital class, microchip number, 24-hour assistance number — each justified in
+§1, each worded *"not recorded"*. A test fails if any silence-firing rule is ever
+worded as absence of cover.
+
+**One operator added:** `all_missing`, so the life rule requires **both**
+beneficiary paths to be empty before it says anything. An empty array counts as
+absent — a list with nobody on it names nobody.
+
+**Deliberately not authored:** a rule on `medicalExpensesLimit < 30000`. The
+€30,000 Schengen minimum is a genuine regulatory figure, but it is an external
+fact this repository cannot verify, and a threshold inside detection logic is a
+severity verdict wearing a rule's clothes.
+
+**Found on the way:** four `ai_check` definitions were still `isActive: true` in
+`prisma/seed.ts` after Phase 3 deactivated them in production. The next
+`db seed` would have switched them back on — four "active" definitions that can
+never fire. One was `home-earthquake`, which is why an audit reported earthquake
+had no authored rule. It has a real one now (`no_earthquake_cover`).
+
+### Item 1 — Gate 3b: still open, and now openable
+
+The gate needs an underwriter and still does. What is delivered is everything
+that makes signing off possible and recordable:
+
+- **Per-definition columns** (`severity_validated_at/_by`, `severity_rationale`),
+  applied to dev and prod. Sign-off arrives a branch at a time; a single global
+  boolean could only ever say "none of it".
+- **Per-definition caveat** — `describeSeverityForDefinition()` and
+  `isSeverityValidated()`, failing safe: no definition, or one it cannot read,
+  still gets the caveat.
+- **A real consumer**, so this is not a reserved API: `GET /api/v1/policies/[id]/gaps`
+  now returns `severity_validated` and `severity_caveat_key` alongside every
+  severity, telling any integration that the number is not a verdict.
+- **The packet** — `scripts/gen-severity-review-packet.ts`, generated from the
+  LIVE catalogue rather than the seed, so it always describes what is running. It
+  states what each rule asks, which fields it reads, the severity proposed and the
+  exact words the customer sees, and flags silence-firing rules for extra scrutiny
+  by itself. Current state: **23 pending, 0 validated.**
+
+### Status
+
+**Item 2: COMPLETE** to the limit of what the extraction schema supports. Nine
+branches still have no rules, and the reason is unchanged and stated in §2 — they
+need a typed section before a rule about them can be anything but a guess. Travel
+shows what that costs: one schema section, three rules, and the branch is real.
+
+**Item 1: BLOCKED ON A HUMAN, by design.** Owner: a licensed underwriter or the
+ΕΙΑΣ-qualified intermediary. The deliverable is
+`docs/reviews/severity-review-packet.md`. Recording an answer is one UPDATE per
+definition; the caveat then disappears for that rule and no other.
