@@ -1,7 +1,8 @@
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { NeedsCheck } from "@/components/needs/NeedsCheck"
-// Derived, not typed: the headline used to say "six questions" while the check
-// asked TWELVE across six steps. A count in copy has to come from the source.
+// Derived, not typed. The headline used to count the wrong thing — it named a
+// number of QUESTIONS when there are twelve of them, spread across the steps
+// below. A count in copy has to come from the source, not from memory.
 import { NEEDS_STEPS } from "@/lib/needs/questions"
 
 /**
