@@ -27,6 +27,7 @@ import {
     overlapPartnerLabel,
     type PortfolioPolicyFacts,
 } from "@/lib/services/gap-engine/portfolio-rules"
+import { policyLabel } from '@/lib/wallet/policy-identity'
 
 export default async function PolicyDetailPage({
     params
@@ -200,7 +201,7 @@ export default async function PolicyDetailPage({
                 id: forThisPolicy.id,
                 requestedByLabel:
                     forThisPolicy.requestedBy.name || forThisPolicy.requestedBy.email || "",
-                policyLabel: `${forThisPolicy.existingPolicy.insurerName} · ${forThisPolicy.existingPolicy.policyNumber}`,
+                policyLabel: policyLabel(forThisPolicy.existingPolicy),
             }
         }
     } catch (error) {

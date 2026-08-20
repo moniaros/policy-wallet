@@ -1,6 +1,7 @@
 import { calendarDaysUntil } from '@/lib/policy-status'
 import type { Policy } from "@/components/wallet/types"
 import { parseDocumentDate } from "@/lib/dates/document-date"
+import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 
 type Lang = "el" | "en"
 
@@ -48,11 +49,14 @@ export function getDocumentPolicySummary(
     const acordPolicy = (policy.acordData as any)?.policy
     const extraction = (policy.acordData as any)?.extraction
 
+    // Last resort is the insurer, which does not exist yet on a policy whose
+    // extraction has not landed — fall through to the branch label rather than
+    // titling the row "__PENDING_EXTRACTION__".
     const insuredTitle =
         policy.insuredItem?.title ||
         `${compactText(vehicle?.make)} ${compactText(vehicle?.model)}`.trim() ||
         compactText(property?.address) ||
-        policy.insurerName
+        displayInsurerName(policy.insurerName, policyTypeLabel)
 
     const insuredSubtitle =
         policy.insuredItem?.subtitle ||
@@ -199,8 +203,13 @@ export function getDocumentPolicySummary(
     return {
         assetTitle: insuredTitle,
         assetSubtitle: insuredSubtitle,
-        insurerLine: `${policyTypeLabel || coverageTypeRaw} • ${policy.insurerName}`,
-        policyNumber: policy.policyNumber,
+        // Composed only from the parts that are real — a policy still waiting
+        // on extraction has no insurer, and printing the placeholder next to a
+        // bullet reads as a company name.
+        insurerLine: [policyTypeLabel || coverageTypeRaw, displayInsurerName(policy.insurerName)]
+            .filter(Boolean)
+            .join(' • '),
+        policyNumber: displayPolicyNumber(policy.policyNumber) ?? '',
         coverageTypeLabel: coverageTypeRaw || policyTypeLabel,
         premiumDisplay,
         expiryDisplay,

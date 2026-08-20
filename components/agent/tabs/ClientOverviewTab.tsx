@@ -10,6 +10,7 @@ import { getRelationshipScoreColor } from "@/lib/agent/health-score"
 import { branchLabel } from "@/lib/insurance/taxonomy"
 import { formatDateShort } from "@/lib/agent/format"
 import type { Customer, Policy, Opportunity } from "../types"
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 interface ClientOverviewTabProps {
     customer: Customer
@@ -115,7 +116,7 @@ export function ClientOverviewTab({
                                             {branchLabel(policy.lineOfBusiness, language === 'el' ? 'el' : 'en')}
                                         </p>
                                         <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                            {policy.insurerName}
+                                            {displayInsurerName(policy.insurerName)}
                                         </p>
                                     </div>
                                     <div className="text-right">

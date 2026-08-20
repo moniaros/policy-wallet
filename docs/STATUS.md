@@ -2,6 +2,44 @@
 
 _Living dashboard — not a log. Any session that commits or decides ends by updating this file (agent writes the delta; see CLAUDE.md rule). Keep under one screen — move resolved items to `docs/planning/status-archive.md`._
 
+## Session wrap — 2026-08-20b (Sentinel policies & atomic discard — verified, committed)
+
+The 2026-08-14 work ("a failed upload must not leave a half-created policy behind") had been
+**half-committed**: the service layer referencing `lib/wallet/policy-identity.ts` and
+`lib/services/policy-discard.ts` was already in this branch's history, but those two modules,
+the cleanup script and all three guard tests were still **untracked** — HEAD did not build
+without the working tree. This session verified the whole thing end-to-end and committed it.
+
+**Verified green on this tree:** `tsc` clean · **4725/4725 unit (437 files)** · lint /
+i18n-changed / utf8 (1837) / encoding / api-auth all pass. The three dispositions hold:
+DISCARD only when identity is *entirely* placeholder (storage first, DB second; a failed
+object delete KEEPS the row); KEEP for user-typed identity; INFORM in Greek for
+quota/consent/permission (`TOKEN_LIMIT_BLOCKED` → «εξαντλήθηκε το διαθέσιμο όριο AI…», never
+the code). A `completed_with_warnings` run at 96% is saved — pinned by
+`analysis-failure-disposition.test.ts:191`. Process death is covered by the reaper's discard.
+Convention added to CLAUDE.md/AGENTS.md (identity may be a placeholder; render only through
+the primitive).
+
+**Counts measured today (2026-08-20 ~14:20 EEST).** Sentinel policies: **dev 0, prod 0** —
+but prod was **1** mid-measurement: a real admin-account upload at 14:15:29 local created
+`PENDING-1787224529142 / __PENDING_EXTRACTION__` (activity_logs row exists; **no storage
+object appeared in prod**) and the row was manually removed minutes later. The bug still
+fires in prod because the fix is not deployed. Orphaned storage objects: **dev 34, prod 9**
+(both unchanged since 08-14; cleanup script ready, **prod run still needs owner go-ahead**).
+
+**⚠ Two live environment hazards, one defused:** (1) the uncommitted `.env.example` diff
+appended the **production DB URL with its plaintext password** to a tracked file — reverted
+here, never committed, but treat the password as exposed and **rotate it** (it sat in a
+shared working tree). (2) `.env.local` line 16 still re-defines `DIRECT_URL` to **prod**
+(last-wins under dotenv) while storage/auth point at dev — the split-brain that likely
+explains today's prod row having no prod storage object. Still needs the owner's edit.
+
+**Next 3 actions:** 1) rotate the prod Postgres password; 2) fix `.env.local` line 16;
+3) decide on merging this branch to `NEW-UI` (deploys prod on CI-green) + running the prod
+orphan cleanup (`npm run cleanup:sentinels -- --apply` with prod env).
+
+---
+
 ## Session wrap — 2026-08-20 (PHASE 7 — rule catalogue + Gate 3b apparatus)
 
 Full write-up: `docs/audits/phase7-rule-catalogue-and-gate3b-2026-08.md`. Taking the two

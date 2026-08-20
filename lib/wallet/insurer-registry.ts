@@ -8,6 +8,8 @@
  * fall back to the cleaned raw string.
  */
 
+import { isPlaceholderInsurerName } from "./policy-identity"
+
 // Legal-form / boilerplate tokens dropped from the comparison key. Dotted
 // acronyms (Α.Ε., Α.Ε.Ε.Γ.Α.) collapse to single-letter tokens, which are
 // dropped wholesale below.
@@ -94,6 +96,11 @@ export const INSURER_REGISTRY: Record<string, InsurerEntry> = Object.fromEntries
 export function resolveInsurerDisplay(
     raw: string | null | undefined
 ): { displayName: string; logoUrl: string | null } {
+    // A placeholder is not a noisy insurer name to be cleaned up — there is no
+    // insurer here yet. Resolving it to "" makes the sentinel unrenderable
+    // through this path; callers supply their own fallback label.
+    if (isPlaceholderInsurerName(raw)) return { displayName: "", logoUrl: null }
+
     const cleaned = String(raw || "").replace(/\s+/g, " ").trim()
     if (!cleaned) return { displayName: "", logoUrl: null }
 

@@ -15,6 +15,7 @@ import { ImportantNotices, type Notice } from './ImportantNotices'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { INSURANCE_BRANCHES, normalizeBranch } from '@/lib/insurance/taxonomy'
 import { formatDate } from '@/lib/i18n/format'
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 export function PolicyWallet({
     policies,
@@ -100,7 +101,13 @@ export function PolicyWallet({
             .filter(({ view }) => isAttentionKey(view.key))
             .sort((a, b) => (a.view.daysUntilExpiry ?? 9999) - (b.view.daysUntilExpiry ?? 9999))
             .map(({ policy, view }) => {
-                const name = `${normalizeBranch(policy.lineOfBusiness).label[language === 'el' ? 'el' : 'en']} · ${policy.insurerName}`
+                // The branch label always resolves; the insurer may not exist
+                // yet (extraction pending or unreadable). Compose only the
+                // parts that are real — this line used to interpolate the raw
+                // column and printed "Αυτοκίνητο · __PENDING_EXTRACTION__".
+                const branchLabel = normalizeBranch(policy.lineOfBusiness).label[language === 'el' ? 'el' : 'en']
+                const insurer = displayInsurerName(policy.insurerName)
+                const name = insurer ? `${branchLabel} · ${insurer}` : branchLabel
                 // Athens-pinned (shared formatter): a raw UTC date could show the
                 // previous day and disagree with the Athens-computed days-left.
                 const date = view.endDate ? formatDate(view.endDate, language === 'el' ? 'el' : 'en') : ''

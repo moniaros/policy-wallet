@@ -20,6 +20,7 @@ import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { usePolling } from "@/hooks/usePolling"
 import { getOrRegisterServiceWorker } from "@/lib/push/register"
+import { policyLabel } from '@/lib/wallet/policy-identity'
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -109,11 +110,13 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
      * worker registered, wrapped — a notification failing to appear must never
      * take out the poll that renders the wallet.
      */
-    const fireBrowserNotification = (title: string, message: string, policyId: string) => {
+    // `policyId` is absent when the policy was discarded — there is no page to
+    // deep-link to, so the notification lands on the wallet itself.
+    const fireBrowserNotification = (title: string, message: string, policyId?: string | null) => {
         if (typeof window === 'undefined' || !('Notification' in window)) return
         if (Notification.permission !== 'granted') return
 
-        const url = `/wallet/${policyId}`
+        const url = policyId ? `/wallet/${policyId}` : '/wallet'
 
         void (async () => {
             try {
@@ -125,7 +128,7 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
                         badge: '/icons/icon-192x192.png',
                         // One notification per policy: a poll that fires twice
                         // should replace, not stack.
-                        tag: `analysis:${policyId}`,
+                        tag: `analysis:${policyId ?? 'discarded'}`,
                         data: { url },
                     })
                     return
@@ -197,7 +200,7 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
                 if (announcedRef.current.has(key)) continue
                 announcedRef.current.add(key)
 
-                const summary = `${policy.insurerName} • ${policy.policyNumber}`
+                const summary = policyLabel(policy)
 
                 if (policy.status === 'action_needed') {
                     toast.error(copy.failed, {
@@ -239,11 +242,16 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
                 .then((res) => (res.ok ? res.json() : null))
                 .then((data) => {
                     const notifications = data?.data?.notifications || []
+                    // A policy can also disappear because its analysis failed
+                    // technically and the upload was discarded. That has to be
+                    // announced too — a file the customer uploaded vanishing
+                    // with no word is indistinguishable from a broken product.
                     const completion = notifications.find(
                         (n: any) =>
-                            (n.event_type === 'policy_analyzed' || n.event_type === 'policy_merged') &&
-                            n.related_object_type === 'policy' &&
-                            n.related_object_id
+                            (n.event_type === 'policy_analyzed' ||
+                                n.event_type === 'policy_merged' ||
+                                n.event_type === 'policy_analysis_failed') &&
+                            n.related_object_type === 'policy'
                     )
                     if (!completion) return
 
@@ -251,15 +259,28 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
                     if (announcedRef.current.has(key)) return
                     announcedRef.current.add(key)
 
-                    toast.success(completion.title || copy.completed, {
+                    const failed = completion.event_type === 'policy_analysis_failed'
+                    const notify = failed ? toast.error : toast.success
+                    // A discarded policy has no page left to open.
+                    const target = completion.related_object_id
+
+                    notify(completion.title || (failed ? copy.failed : copy.completed), {
                         description: completion.message,
-                        action: {
-                            label: copy.view,
-                            onClick: () => router.push(`/wallet/${completion.related_object_id}`),
-                        },
+                        ...(target
+                            ? {
+                                  action: {
+                                      label: copy.view,
+                                      onClick: () => router.push(`/wallet/${target}`),
+                                  },
+                              }
+                            : {}),
                     })
 
-                    fireBrowserNotification(completion.title || copy.completed, completion.message || '', completion.related_object_id)
+                    fireBrowserNotification(
+                        completion.title || (failed ? copy.failed : copy.completed),
+                        completion.message || '',
+                        target
+                    )
                 })
                 .catch(() => {
                     // Silent fallback: status update remains visible in wallet.

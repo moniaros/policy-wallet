@@ -30,6 +30,7 @@ import { TableShell } from "@/components/ui/TableShell"
 import { RowCheckbox } from "@/components/ui/form"
 
 import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 const copy = {
     en: {
         title: "Renewals",
@@ -177,7 +178,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
     const renewals = useMemo(
         () => applySort<RenewalView, RenewalSortKey>(renewalRows, sort, {
             customer: (r) => r.customerName,
-            insurer: (r) => r.insurerName,
+            insurer: (r) => displayInsurerName(r.insurerName),
             lob: (r) => r.lineOfBusiness,
             premium: (r) => r.premiumAmount,
             expires: (r) => (r.policyEndDate ? new Date(r.policyEndDate) : null),
@@ -502,7 +503,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                     <br />
                                                     <span className="text-xs text-neutral-500 dark:text-neutral-400">{r.policyNumber}</span>
                                                 </td>
-                                                <td data-label={t.insurer} className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{r.insurerName}</td>
+                                                <td data-label={t.insurer} className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{displayInsurerName(r.insurerName)}</td>
                                                 <td data-label={t.lob} className="px-4 py-3">
                                                     <span className="text-xs font-bold text-neutral-500 bg-muted dark:text-neutral-400 px-2 py-0.5 rounded">
                                                         {normalizeBranch(r.lineOfBusiness).label[language]}

@@ -19,6 +19,7 @@ import { AgentInbox } from "@/components/collaboration/AgentInbox"
 import type { DocumentRequestData, ProposalData } from "@/components/collaboration/types"
 
 import { useTabs } from "@/hooks/useTabs"
+import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
 interface AgentBranding {
     agencyName?: string | null
     licenseNumber?: string | null
@@ -732,7 +733,7 @@ function OverviewTab({
                             >
                                 <div className="min-w-0">
                                     <p className="truncate text-sm font-semibold text-foreground">
-                                        {sp.insurerName ? `${sp.insurerName} · ${sp.policyNumber}` : sp.policyNumber}
+                                        {[displayInsurerName(sp.insurerName), displayPolicyNumber(sp.policyNumber)].filter(Boolean).join(' · ')}
                                     </p>
                                     <p className="text-micro text-muted-foreground">
                                         {sp.addedByAdvisor

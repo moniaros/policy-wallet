@@ -72,6 +72,8 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     // Re-analysis is a metered AI job — without this the retry button stayed
     // live during the round-trip and a second click billed the user twice.
     const [retryingAnalysis, setRetryingAnalysis] = useState(false)
+    // The upload was thrown away because the analysis failed technically.
+    const [discarded, setDiscarded] = useState(false)
     const pollingStartRef = useRef<number>(0)
 
     const removeFile = (index: number) => {
@@ -192,7 +194,14 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         if (!createdPolicyId) return
         try {
             const data = await getPolicyReviewData(createdPolicyId)
-            if ('error' in data) return
+            if ('error' in data) {
+                // A technical failure discards the upload outright, so the
+                // policy this screen is polling for stops existing. Without
+                // this branch the spinner ran forever and the customer was
+                // never told anything happened.
+                if (data.error === 'Not found') setDiscarded(true)
+                return
+            }
 
             if (data.status !== 'analyzing') {
                 setReviewData(data as PolicyReviewData)
@@ -204,10 +213,30 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
     // Shared backoff + hidden-tab pause (was a hand-rolled copy of the wallet's).
     usePolling(pollReviewData, {
-        enabled: phase === 'reviewing' && Boolean(createdPolicyId) && !reviewData,
+        enabled: phase === 'reviewing' && Boolean(createdPolicyId) && !reviewData && !discarded,
     })
 
     const reviewCopy = t.wallet.review
+
+    // KEEP-AND-INFORM: the run never started for a reason the customer can act
+    // on, so say which one — in their language, never the internal code. Falls
+    // back to the generic "did not complete" for a technical failure that kept
+    // the policy (one with a user-typed insurer or number).
+    const blockedCopy = ((): { title: string; hint: string } => {
+        switch (reviewData?.processingErrorCode) {
+            case 'TOKEN_LIMIT_BLOCKED':
+                return { title: reviewCopy.blockedTokenLimit, hint: reviewCopy.blockedTokenLimitHint }
+            case 'AI_CONSENT_REQUIRED':
+                return { title: reviewCopy.blockedConsent, hint: reviewCopy.blockedConsentHint }
+            case 'ANALYSIS_NOT_PERMITTED':
+                return { title: reviewCopy.blockedNotPermitted, hint: reviewCopy.blockedNotPermittedHint }
+            default:
+                return {
+                    title: reviewCopy.analysisNotCompleted,
+                    hint: reviewCopy.analysisNotCompletedHint,
+                }
+        }
+    })()
 
     // ─────────────────── POST-UPLOAD PROCESSING SCREEN ───────────────────
     if (phase === 'reviewing') {
@@ -234,7 +263,56 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 <div className="max-w-3xl mx-auto px-4 py-8">
                     <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
 
-                        {reviewData?.status === 'action_needed' ? (
+                        {discarded ? (
+                            /* ── Discarded State ──
+                               The analysis failed technically and the upload was
+                               removed, so there is no policy to retry, edit or
+                               skip to. Saying so beats a policy in the wallet
+                               with placeholder values where its insurer should
+                               be. */
+                            <div className="space-y-6">
+                                <div className="flex flex-col items-center gap-4 py-4">
+                                    <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                        <AlertTriangle className="w-7 h-7 text-amber-500" />
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-sm font-semibold text-foreground">
+                                            {reviewCopy.discardedTitle}
+                                        </p>
+                                        <p className="mt-1 text-xs text-muted-foreground">
+                                            {reviewCopy.discardedHint}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-3 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setDiscarded(false)
+                                            setCreatedPolicyId(null)
+                                            setReviewData(null)
+                                            setSelectedFiles([])
+                                            setPhase('form')
+                                        }}
+                                        className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                    >
+                                        <span className="flex items-center justify-center gap-2">
+                                            <UploadCloud className="w-5 h-5" />
+                                            {reviewCopy.uploadAgain}
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => router.push('/wallet')}
+                                        className="text-xs text-muted-foreground hover:text-foreground underline transition-colors mt-2"
+                                    >
+                                        {reviewCopy.skipForNow}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : reviewData?.status === 'action_needed' ? (
                             /* ── Analysis Failed State ── */
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center gap-4 py-4">
@@ -243,10 +321,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     </div>
                                     <div className="text-center">
                                         <p className="text-sm font-semibold text-foreground">
-                                            {reviewCopy.analysisNotCompleted}
+                                            {blockedCopy.title}
                                         </p>
                                         <p className="mt-1 text-xs text-muted-foreground">
-                                            {reviewCopy.analysisNotCompletedHint}
+                                            {blockedCopy.hint}
                                         </p>
                                     </div>
                                 </div>

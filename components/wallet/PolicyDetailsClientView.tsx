@@ -48,6 +48,11 @@ import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard
 import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
+import {
+    displayPolicyNumber as safePolicyNumber,
+    isPlaceholderInsurerName,
+    isPlaceholderPolicyNumber,
+} from "@/lib/wallet/policy-identity"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
 import { deriveRenewalChecklist, upcomingReminderMilestones } from "@/lib/wallet/renewal-outlook"
@@ -540,11 +545,11 @@ export function PolicyDetailsClient({
 
     // Detect placeholder data that should not be shown to the user
     const isAnalyzing = policy.status === 'analyzing'
-    const isPendingInsurer = !getInsurerName() || getInsurerName() === '__PENDING_EXTRACTION__' || getInsurerName() === 'Unknown Insurer' || getInsurerName() === 'Άγνωστος ασφαλιστής'
-    const isPendingPolicyNumber = !policyNumber || policyNumber.startsWith('PENDING-')
+    const isPendingInsurer = isPlaceholderInsurerName(getInsurerName())
+    const isPendingPolicyNumber = isPlaceholderPolicyNumber(policyNumber)
     const insurerDisplay = resolveInsurerDisplay(getInsurerName())
-    const displayInsurer = isPendingInsurer ? localizedType : insurerDisplay.displayName
-    const displayPolicyNumber = isPendingPolicyNumber ? null : policyNumber
+    const displayInsurer = insurerDisplay.displayName || localizedType
+    const displayPolicyNumber = safePolicyNumber(policyNumber)
 
     const showRecommendations = isOwner && relatedRecommendations.length > 0
     const showAgentSection = Boolean(relationshipId)

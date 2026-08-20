@@ -39,6 +39,7 @@ import {
     isAutomationPaused,
     isChannelEnabled,
 } from "./config"
+import { redactPolicyPlaceholders } from "@/lib/wallet/policy-identity"
 import { renderTemplate, type TemplateVars } from "./templates"
 import { settingValue } from "./settings"
 import { deliver, isTransportConfigured, type ChannelContent, type DeliveryOutcome } from "./channels"
@@ -218,8 +219,14 @@ export async function emit(params: EmitParams): Promise<EmitResult> {
         // Localising per channel is how an email and a push notification end up
         // saying different things about the same event.
         const language: "el" | "en" = user.preferredLanguage === "el" ? "el" : "en"
-        const title = resolveLocalized(params.title, language)
-        const message = resolveLocalized(params.message, language)
+        // Backstop, not the primary defence: callers name a policy with
+        // `policyLabel()`. But every notification in the product funnels through
+        // here, so this is the one place that can guarantee a pre-extraction
+        // placeholder ("__PENDING_EXTRACTION__", "PENDING-1786…") never reaches
+        // a customer's bell, inbox or lock screen — whatever a future caller
+        // interpolates.
+        const title = redactPolicyPlaceholders(resolveLocalized(params.title, language))
+        const message = redactPolicyPlaceholders(resolveLocalized(params.message, language))
 
         const off = await suppressedChannels(params.userId, params.event, effective)
 
@@ -262,14 +269,16 @@ export async function emit(params: EmitParams): Promise<EmitResult> {
             // Per-channel copy: template if one exists for (event, channel,
             // language), else exactly what the caller passed.
             const rendered = renderTemplate(templates, params.event, channel, language, params.vars ?? {})
-            const channelTitle = rendered?.title ?? title
-            const channelMessage = rendered?.body ?? message
+            // Same backstop as above — an admin-authored template interpolates
+            // `vars`, which can carry a not-yet-extracted policy identity.
+            const channelTitle = rendered?.title ? redactPolicyPlaceholders(rendered.title) : title
+            const channelMessage = rendered?.body ? redactPolicyPlaceholders(rendered.body) : message
             const channelContent =
                 rendered?.subject && channel === "email"
                     ? {
                           ...params.content,
                           email: params.content?.email ?? {
-                              subject: rendered.subject,
+                              subject: redactPolicyPlaceholders(rendered.subject),
                               html: channelMessage,
                           },
                       }

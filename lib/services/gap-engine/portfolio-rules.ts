@@ -16,6 +16,10 @@ import type { GapSeverity } from "./profile-gap-rules"
 import { normalizeBranch, branchFamilyId } from "@/lib/insurance/taxonomy"
 import { calendarDaysUntil } from "@/lib/policy-status"
 import { formatDate as formatDateShared } from "@/lib/i18n/format"
+import {
+    isPlaceholderInsurerName,
+    isPlaceholderPolicyNumber,
+} from "@/lib/wallet/policy-identity"
 
 export interface SmartCardContent {
     /** What we saw in the user's own data — always cites concrete facts. */
@@ -60,10 +64,14 @@ function lobLabel(lob: string): { en: string; el: string } {
     return { en: branch.label.en.toLowerCase(), el: branch.genitiveEl }
 }
 
+/**
+ * Evidence strings are shown to the user, so a placeholder identity must never
+ * reach them. The literals live in one place (lib/wallet/policy-identity).
+ */
 function clean(value: string | null | undefined): string | null {
     if (!value) return null
-    if (value === "__PENDING_EXTRACTION__") return null
-    if (value.startsWith("PENDING-")) return null
+    if (isPlaceholderInsurerName(value)) return null
+    if (isPlaceholderPolicyNumber(value)) return null
     return value
 }
 
