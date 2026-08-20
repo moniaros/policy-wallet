@@ -290,4 +290,39 @@ describe('the public route stays reachable', () => {
         readFileSync('app/(public)/needs/page.tsx', 'utf-8')
         readFileSync('app/(public)/en/needs/page.tsx', 'utf-8')
     })
+
+    /**
+     * The page counted wrong for as long as it existed: the headline and both SEO
+     * strings said "six questions", while the check asks TWELVE questions across
+     * six steps (2,2,1,3,3,1). An audit called this "fragile but true" — it was
+     * neither. It was a false number on a public page, in two languages.
+     *
+     * The H1 is now derived from NEEDS_STEPS. The SEO strings cannot interpolate,
+     * so they are pinned here instead.
+     */
+    it('does not promise fewer steps than it asks', () => {
+        expect(NEEDS_STEPS.length).toBe(6)
+
+        const raw = readFileSync('app/(public)/needs/NeedsPageBody.tsx', 'utf-8')
+        expect(
+            raw,
+            'the headline must derive its count from NEEDS_STEPS, not hardcode it'
+        ).toMatch(/\$\{NEEDS_STEPS\.length\}/)
+
+        // Strip comments first. The first version of this test failed on the
+        // comment ABOVE the import, which explains the bug by quoting the wrong
+        // phrase — a guard that cannot tell a mention from a use is not a guard.
+        const body = raw.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+        expect(
+            /(Έξι|Six|six)\s+(ερωτήσεις|questions)/.test(body),
+            'the headline counts QUESTIONS again — there are 12, across 6 steps'
+        ).toBe(false)
+
+        const seo = readFileSync('lib/seo/marketing-pages.ts', 'utf-8')
+        const needsBlock = seo.slice(seo.indexOf('needs: {'), seo.indexOf('needs: {') + 1200)
+        expect(
+            /(6|Έξι|six|Six)\s+(ερωτήσεις|questions)/.test(needsBlock),
+            'SEO metadata for /needs counts questions; it should count steps'
+        ).toBe(false)
+    })
 })

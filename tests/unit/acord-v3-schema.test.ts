@@ -90,9 +90,17 @@ describe('AcordData v3 — multi-dimensional limits', () => {
         })
         expect(parsed.coverages![0].limits![0].unlimited).toBe(true)
         expect(parsed.coverages![0].limits![0].amount).toBeUndefined()
-        // No amount and not flagged unlimited means "we did not find one" — the
-        // two must not be conflated, or an unstated limit reads as no limit.
-        expect(parsed.coverages![1].limits![0].unlimited).toBe(false)
+        // No amount and no unlimited flag means "we did not find one" — the two
+        // must not be conflated, or an unstated limit reads as no limit.
+        //
+        // `undefined`, not `false`. This asserted `false` while the schema carried
+        // `.default(false)`, and the AI SDK materialises Zod defaults into the
+        // returned object — so every limit the extractor never determined was
+        // STORED as an explicit "not unlimited". That is indistinguishable from the
+        // model actually saying so, and a future `is_false` rule (which requires an
+        // explicit false, precisely to ignore silence) would have fired on it.
+        // Optional keeps all three states apart: undefined / false / true.
+        expect(parsed.coverages![1].limits![0].unlimited).toBeUndefined()
         expect(parsed.coverages![1].limits![0].amount).toBeUndefined()
     })
 

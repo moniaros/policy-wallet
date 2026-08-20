@@ -164,3 +164,202 @@ describe("policy-owned records have one authorization path", () => {
         ).toEqual([])
     })
 })
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Blind spot 1: the checks above match a FILE. A route file exports several
+// HTTP handlers, and one compliant handler used to vouch for all of them.
+//
+// Found by that gap: the DELETE in policies/[id]/documents/[docId] hand-rolled
+// `policy: { ownerUserId }` while the GET beside it called getPolicyAccess — so
+// the file passed and the fifth copy of the rule sat there unread. It happened
+// to be narrower than getPolicyAccess rather than laxer, which is luck, not
+// design. Now every handler answers for itself.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const HTTP_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const
+
+/** Split a route module into its exported HTTP handlers, in source order. */
+function handlerBodies(source: string): { method: string; body: string }[] {
+    const marks: { method: string; at: number }[] = []
+    for (const method of HTTP_METHODS) {
+        // Both `export async function GET(` and `export const GET = withApiGuard(`.
+        const re = new RegExp(
+            `export\\s+(?:async\\s+)?(?:function\\s+${method}\\b|const\\s+${method}\\s*=)`,
+            "g"
+        )
+        let m: RegExpExecArray | null
+        while ((m = re.exec(source))) marks.push({ method, at: m.index })
+    }
+    marks.sort((a, b) => a.at - b.at)
+    return marks.map((mark, i) => ({
+        method: mark.method,
+        body: source.slice(mark.at, i + 1 < marks.length ? marks[i + 1].at : source.length),
+    }))
+}
+
+describe("every HTTP handler answers for itself, not for its file", () => {
+    const files = routeFiles(API_ROOT)
+        .map((path) => ({ path, source: readFileSync(path, "utf-8") }))
+        .filter(({ path, source }) => takesRecordIdFromCaller(path, source))
+        .filter((f) => !SINGLE_PATH_EXEMPT[f.path])
+
+    it("splits route modules into handlers (the matcher is not vacuous)", () => {
+        const total = files.reduce((n, f) => n + handlerBodies(f.source).length, 0)
+        expect(total).toBeGreaterThan(10)
+    })
+
+    it("no single handler touches an owned model without authorizing", () => {
+        const bypassing: string[] = []
+        for (const { path, source } of files) {
+            for (const { method, body } of handlerBodies(source)) {
+                if (!touchesOwnedModel(body)) continue
+                if (callsPolicyAccess(body)) continue
+                bypassing.push(`${path} [${method}]`)
+            }
+        }
+        bypassing.sort()
+
+        expect(
+            bypassing,
+            "These HTTP handlers read or write a policy-owned record without going " +
+                "through lib/policy-access.ts. A sibling handler in the same file " +
+                "calling getPolicyAccess does not authorize this one:\n  " +
+                `${bypassing.join("\n  ")}`
+        ).toEqual([])
+    })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Blind spot 2: everything above scans `app/api`. Server actions were never
+// looked at — and **every export of a "use server" file is a callable endpoint**,
+// reachable with no UI. That is the same surface `redeemInvite(token, userId)`
+// was found on, taking the acting user's id as a parameter.
+//
+// Auditing them (2026-08-20) found no live hole: all authorize, and several are
+// deliberately NARROWER than getPolicyAccess. But nothing was stopping the next
+// one from being wrong, which is the entire point of a guard.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ACTION_ROOT = "app"
+
+function actionFiles(dir: string): string[] {
+    return readdirSync(dir).flatMap((entry) => {
+        const full = join(dir, entry)
+        if (statSync(full).isDirectory()) {
+            if (entry === "node_modules" || entry === ".next") return []
+            return actionFiles(full)
+        }
+        return entry === "actions.ts" || entry.endsWith("-actions.ts") ? [full] : []
+    })
+}
+
+/** Exported async functions of a module, each with its parameter list and body. */
+function exportedActions(source: string): { name: string; params: string; body: string }[] {
+    const re = /export\s+async\s+function\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)/g
+    const hits: { name: string; params: string; at: number }[] = []
+    let m: RegExpExecArray | null
+    while ((m = re.exec(source))) hits.push({ name: m[1], params: m[2], at: m.index })
+    return hits.map((h, i) => ({
+        name: h.name,
+        params: h.params,
+        body: source.slice(h.at, i + 1 < hits.length ? hits[i + 1].at : source.length),
+    }))
+}
+
+/** A caller-supplied id naming someone's record — not a self-scoped list. */
+function takesRecordIdParam(params: string): boolean {
+    return /\b(policyId|documentId|docId|gapId|runId|analysisRunId|grantId|instanceId)\b/.test(
+        params
+    )
+}
+
+/**
+ * Server actions that legitimately do not call getPolicyAccess.
+ *
+ * Every entry was read and verified on 2026-08-20. Most are deliberately
+ * NARROWER than the single path — which is a decision, not drift, so it is
+ * written down here rather than left to be rediscovered.
+ */
+const ACTION_EXEMPT: Record<string, string> = {
+    // Admin authority, not policy access. These are gated by verifyAdminRole()
+    // and audited via logAdminRead/logAdminAction (see admin-reads-are-audited).
+    "requeuePolicy": "admin authority — verifyAdminRole(), not a policy-access decision",
+    "deletePolicy": "admin authority — verifyAdminRole()",
+    "updatePolicyFields": "admin authority — verifyAdminRole()",
+
+    // Owner-only BY DESIGN. getPolicyAccess would also admit a grant-holder;
+    // for these actions that would be wrong, not merely broader.
+    "updateGapStatus":
+        "owner-only by design — dismissing your own gap is not an advisor's call",
+    "notifyAgentAboutGap":
+        "owner-only by design — the relationship is looked up with the CALLER as " +
+        "policyholder; a grant-holder would mint the Opportunity in the wrong relationship",
+    "sharePolicy": "acts as the policy OWNER to mint a grant; owner-only is the rule",
+    "getPolicyReviewData": "owner-scoped read (ownerUserId = session)",
+    "requestRenewalQuote": "owner-scoped read (ownerUserId = session)",
+    "retryPolicyAnalysis": "owner-scoped read (ownerUserId = session)",
+    "triggerOnboardingAnalysis": "owner-scoped read (ownerUserId = session)",
+
+    // Self-scoped: authority is the caller's own row, not a policy.
+    "getPolicyShares": "lists grants the caller GRANTED (granterUserId = session)",
+    "revokeShare": "revokes a grant the caller GRANTED (granterUserId = session)",
+
+    // Parallel authorities that implement the same rule for a different subject.
+    "requestAiConsent":
+        "agent-side: requires an exact `policy:<id>` grant OR an ACTIVE relationship. " +
+        "Deliberately a different arm set from getPolicyAccess's managing-agent carve-out " +
+        "(which additionally requires createdByUserId) — emailing an owner for consent is " +
+        "not the same permission as reading their policy",
+    "analyzeQuestionnaireResponse":
+        "caller must be the questionnaire SENDER (sentByUserId = session); the policy read " +
+        "is scoped by lib/agent-visibility.ts, the set-equivalent of the single path",
+}
+
+describe("server actions are on the single path, or say why not", () => {
+    const actions = actionFiles(ACTION_ROOT)
+        .map((path) => ({ path, source: readFileSync(path, "utf-8") }))
+        .filter(({ source }) => touchesOwnedModel(source))
+        .flatMap(({ path, source }) =>
+            exportedActions(source).map((fn) => ({ path, ...fn }))
+        )
+        .filter(({ body }) => touchesOwnedModel(body))
+        .filter(({ params }) => takesRecordIdParam(params))
+
+    it("finds the server-action surface (the matcher is not vacuous)", () => {
+        // If this drops to zero, the walker or the matchers broke — not the
+        // codebase suddenly having no policy-touching actions.
+        expect(actions.length).toBeGreaterThan(8)
+    })
+
+    it("authorizes a caller-named record, or is exempt with a reason", () => {
+        const bypassing = actions
+            .filter(({ body }) => !callsPolicyAccess(body))
+            .filter(({ name }) => !ACTION_EXEMPT[name])
+            .map(({ path, name }) => `${path} :: ${name}()`)
+            .sort()
+
+        expect(
+            bypassing,
+            "Every export of a \"use server\" file is a public endpoint, callable with " +
+                "no UI. These take a caller-named record id and touch a policy-owned " +
+                "model without going through lib/policy-access.ts. Route them through " +
+                "getPolicyAccess, or add them to ACTION_EXEMPT with the reason:\n  " +
+                `${bypassing.join("\n  ")}`
+        ).toEqual([])
+    })
+
+    it("keeps the action exemption list honest — every entry still exists", () => {
+        const known = new Set(actions.map((a) => a.name))
+        const stale = Object.keys(ACTION_EXEMPT)
+            .filter((name) => !known.has(name))
+            .sort()
+
+        expect(
+            stale,
+            "Exempted server actions that no longer exist, no longer take a record id, " +
+                "or no longer touch an owned model. Remove them so the list keeps " +
+                "meaning something:\n  " +
+                `${stale.join("\n  ")}`
+        ).toEqual([])
+    })
+})
