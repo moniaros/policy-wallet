@@ -23,7 +23,6 @@ import type { InsightsData } from "./actions"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { daysLeftLabel } from "@/lib/wallet/days-left-label"
-import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
 
 interface InsightsClientProps {
     data: InsightsData
@@ -473,7 +472,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                         {item.customerName}
                                                     </p>
                                                     <p className="text-xs text-muted-foreground mt-0.5">
-                                                        {[displayInsurerName(item.insurerName), getLobLabel(item.lineOfBusiness, lang, t), displayPolicyNumber(item.policyNumber)].filter(Boolean).join(' · ')}
+                                                        {item.insurerName} · {getLobLabel(item.lineOfBusiness, lang, t)} · {item.policyNumber}
                                                     </p>
                                                 </div>
                                                 <div className="text-right flex-shrink-0">

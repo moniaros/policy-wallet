@@ -16,8 +16,6 @@ import { logger } from '@/lib/logger'
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from '@/lib/email/invite-emails'
 import { refreshProtectionScore } from '@/lib/services/gap-engine'
 import { resolveCoverageEndDate } from '@/lib/policy-status'
-import { policyLabel } from '@/lib/wallet/policy-identity'
-import { classifyAnalysisFailure, discardFailedPolicy, discardOrphanedUploads } from '@/lib/services/policy-discard'
 import { recordConversionEvent } from '@/lib/journey/conversion-events'
 import type { Policy, PolicyDocument } from '@prisma/client'
 import type {
@@ -379,7 +377,7 @@ export class PolicyService extends BaseService {
         } catch (createError) {
             // The object landed but no record references it — clean it up
             // rather than leaving an orphan in the bucket.
-            await discardOrphanedUploads([fileUrl], { reason: 'policy_create_failed', userId })
+            await deleteFile(fileUrl).catch(() => {})
             throw createError
         }
 
@@ -424,23 +422,7 @@ export class PolicyService extends BaseService {
                 const { resolveUserEntitlements } = await import('@/lib/subscription-entitlements')
                 const entitlements = await resolveUserEntitlements(userId)
                 if (entitlements.tier !== 'pro') {
-                    // The result was previously awaited and thrown away, so for
-                    // every free/Starter user — the majority — a failed or
-                    // consent-blocked extraction left the policy stuck at
-                    // 'analyzing' forever, with no notification and no way back.
-                    const basic = await orchestrator.extractBasicSummary(policyId, userId)
-                    if (basic.status === 'completed') return
-
-                    if (basic.status === 'blocked') {
-                        await this.handleBlockedAnalysis(policyId, userId, language, basic.reason || 'blocked')
-                        return
-                    }
-                    await this.handleFailedAnalysis(
-                        policyId,
-                        userId,
-                        language,
-                        { message: basic.reason || 'extraction_failed' }
-                    )
+                    await orchestrator.extractBasicSummary(policyId, userId)
                     return
                 }
             }
@@ -472,17 +454,18 @@ export class PolicyService extends BaseService {
                     return
                 }
 
-                // KEEP-AND-INFORM. The run never started for a reason the
-                // customer has to act on — quota, consent, permission. The
-                // upload is NOT discarded: silently deleting a quota-blocked
-                // file makes the product look broken.
-                await this.handleBlockedAnalysis(
+                logger('warn', 'Background policy analysis blocked by token budget', {
                     policyId,
                     userId,
-                    language,
-                    run.blockedReason || 'blocked',
-                    run.failureMessage
-                )
+                    blockedReason: run.blockedReason || null,
+                    failureMessage: run.failureMessage || null
+                })
+
+                await this.db.policyDocument.updateMany({
+                    where: { policyId },
+                    data: { processingStatus: 'failed' }
+                })
+                await this.notifyAnalysisFailed(userId, policyId, language)
                 return
             }
 
@@ -684,13 +667,6 @@ export class PolicyService extends BaseService {
                 }
             })
 
-            // A successful run can still leave a placeholder identity: the
-            // providers substitute 'Unknown Insurer' / 'PENDING-<epoch>' for an
-            // empty extraction, and buildMetadata keeps whatever is stored when
-            // the evidence gate rejects the document. So the success message
-            // goes through the same primitive as the failure one.
-            const analyzedLabel = policyLabel(updatedPolicy ?? {})
-
             // Publish the FACT — the notification and the recomputation are
             // consequences the decision engine decides. Dual-written alongside
             // the direct calls during the migration.
@@ -715,8 +691,8 @@ export class PolicyService extends BaseService {
                     en: 'Policy Analysis Complete',
                 },
                 message: {
-                    el: `Το ασφαλιστήριο συμβόλαιο ${analyzedLabel} αναλύθηκε επιτυχώς.`,
-                    en: `Policy ${analyzedLabel} has been successfully analyzed.`,
+                    el: `Το ασφαλιστήριο συμβόλαιο ${updatedPolicy?.policyNumber} (${updatedPolicy?.insurerName}) αναλύθηκε επιτυχώς.`,
+                    en: `Policy ${updatedPolicy?.policyNumber} (${updatedPolicy?.insurerName}) has been successfully analyzed.`,
                 },
                 relatedObjectType: 'policy',
                 relatedObjectId: policyId,
@@ -736,8 +712,8 @@ export class PolicyService extends BaseService {
                         en: 'Policy Analysis Complete',
                     },
                     message: {
-                        el: `Το ασφαλιστήριο συμβόλαιο ${analyzedLabel} αναλύθηκε από τον σύμβουλό σας.`,
-                        en: `Policy ${analyzedLabel} was analyzed by your advisor.`,
+                        el: `Το ασφαλιστήριο συμβόλαιο ${updatedPolicy.policyNumber} (${updatedPolicy.insurerName}) αναλύθηκε από τον σύμβουλό σας.`,
+                        en: `Policy ${updatedPolicy.policyNumber} (${updatedPolicy.insurerName}) was analyzed by your advisor.`,
                     },
                     relatedObjectType: 'policy',
                     relatedObjectId: policyId,
@@ -755,150 +731,35 @@ export class PolicyService extends BaseService {
                 error: error instanceof Error ? error.message : String(error)
             })
 
-            await this.handleFailedAnalysis(policyId, userId, language, {
-                message: error instanceof Error ? error.message : String(error),
+            const errorMessage = error instanceof Error ? error.message : String(error)
+            const isTimeout = errorMessage.toLowerCase().includes('timeout')
+            const isTokenLimit = /token budget check failed|monthly_limit_reached|insufficient_tokens|token_limit_blocked/i.test(errorMessage)
+            const currentPolicy = await this.db.policy.findUnique({
+                where: { id: policyId },
+                select: { acordData: true }
             })
-        }
-    }
 
-    /**
-     * The run finished unsuccessfully for a technical reason.
-     *
-     * DISCARD-class: a policy that carries nothing but placeholders is removed
-     * outright — row, document rows and bucket objects — because there is
-     * nothing in it a re-upload would not reproduce, and leaving it behind is
-     * what put "__PENDING_EXTRACTION__" in front of a customer. A policy
-     * somebody typed an insurer into is kept and marked `action_needed`.
-     */
-    private async handleFailedAnalysis(
-        policyId: string,
-        userId: string,
-        language: 'en' | 'el',
-        failure: { message: string; failureCode?: string | null }
-    ): Promise<void> {
-        const classification = classifyAnalysisFailure({
-            failureCode: failure.failureCode,
-            message: failure.message,
-        })
-
-        // A quota/consent failure that surfaced as a throw rather than a
-        // blocked run is still KEEP-AND-INFORM.
-        if (classification.kind === 'inform') {
-            await this.markAnalysisIncomplete(policyId, classification.code, failure.message, classification.retryable)
-            await this.notifyAnalysisFailed(userId, policyId, language, classification.code)
-            return
-        }
-
-        const outcome = await discardFailedPolicy(policyId, {
-            reason: classification.code,
-            db: this.db as any,
-        })
-
-        if (outcome.discarded) {
-            // Nothing left to point a notification at, so it names the upload
-            // rather than a policy that no longer exists.
-            await this.notifyUploadDiscarded(userId, language)
-            return
-        }
-
-        await this.markAnalysisIncomplete(
-            policyId,
-            classification.code,
-            failure.message,
-            classification.retryable
-        )
-        await this.notifyAnalysisFailed(userId, policyId, language, classification.code)
-    }
-
-    /**
-     * The run never started for a reason the customer must act on. The policy
-     * and its document stay exactly where they are; the reason is persisted so
-     * the wallet can say, in Greek, what to do about it.
-     */
-    private async handleBlockedAnalysis(
-        policyId: string,
-        userId: string,
-        language: 'en' | 'el',
-        blockedReason: string,
-        failureMessage?: string | null
-    ): Promise<void> {
-        const classification = classifyAnalysisFailure({ blockedReason })
-
-        logger('warn', 'Background policy analysis did not start', {
-            policyId,
-            userId,
-            blockedReason,
-            code: classification.code,
-            failureMessage: failureMessage || null,
-        })
-
-        await this.markAnalysisIncomplete(
-            policyId,
-            classification.code,
-            failureMessage || blockedReason,
-            classification.retryable
-        )
-        await this.notifyAnalysisFailed(userId, policyId, language, classification.code)
-    }
-
-    /** Stamp the policy `action_needed` with a code the UI can localize. */
-    private async markAnalysisIncomplete(
-        policyId: string,
-        code: string,
-        message: string,
-        retryable: boolean
-    ): Promise<void> {
-        const currentPolicy = await this.db.policy.findUnique({
-            where: { id: policyId },
-            select: { acordData: true },
-        })
-
-        await this.db.policy.update({
-            where: { id: policyId },
-            data: {
-                status: 'action_needed',
-                acordData: {
-                    ...((currentPolicy?.acordData as any) || {}),
-                    processingError: {
-                        message,
-                        code,
-                        occurredAt: new Date().toISOString(),
-                        retryable,
+            await this.db.policy.update({
+                where: { id: policyId },
+                data: {
+                    status: 'action_needed',
+                    acordData: {
+                        ...((currentPolicy?.acordData as any) || {}),
+                        processingError: {
+                            message: errorMessage,
+                            code: isTimeout ? 'TIMEOUT' : isTokenLimit ? 'TOKEN_LIMIT_BLOCKED' : 'ANALYSIS_FAILED',
+                            occurredAt: new Date().toISOString(),
+                            retryable: true,
+                        },
                     },
-                },
-            },
-        })
-
-        await this.db.policyDocument.updateMany({
-            where: { policyId },
-            data: { processingStatus: 'failed' },
-        })
-    }
-
-    /**
-     * The upload was thrown away. Told plainly, because the alternative — the
-     * file simply never appearing — is indistinguishable from a broken product.
-     */
-    private async notifyUploadDiscarded(userId: string, language: 'en' | 'el'): Promise<void> {
-        try {
-            await emit({
-                event: 'policy_analysis_failed',
-                userId,
-                title: {
-                    el: 'Η ανάλυση δεν ολοκληρώθηκε',
-                    en: 'Analysis not completed',
-                },
-                message: {
-                    el: 'Το έγγραφο που ανεβάσατε δεν μπόρεσε να αναλυθεί, οπότε δεν αποθηκεύτηκε. Δοκιμάστε ξανά με καθαρότερο αντίγραφο.',
-                    en: 'The document you uploaded could not be analysed, so it was not saved. Please try again with a clearer copy.',
-                },
-                relatedObjectType: 'policy',
+                }
             })
-        } catch (error) {
-            logger('error', 'Failed to emit upload-discarded notification', {
-                userId,
-                error: error instanceof Error ? error.message : String(error),
+
+            await this.db.policyDocument.updateMany({
+                where: { policyId },
+                data: { processingStatus: 'failed' }
             })
+            await this.notifyAnalysisFailed(userId, policyId, language)
         }
     }
 
@@ -914,45 +775,16 @@ export class PolicyService extends BaseService {
     private async notifyAnalysisFailed(
         userId: string,
         policyId: string,
-        language: 'en' | 'el',
-        code?: string
+        language: 'en' | 'el'
     ): Promise<void> {
         try {
             const policy = await this.db.policy.findUnique({
                 where: { id: policyId },
                 select: { policyNumber: true, insurerName: true },
             })
-            // Named through the shared primitive: this notification fires on
-            // the very path where the identity is still a placeholder, so the
-            // naive join printed "PENDING-1786… (__PENDING_EXTRACTION__)".
-            const label = policyLabel(policy ?? {})
-            const subject = {
-                el: label ? `του συμβολαίου ${label}` : 'του εγγράφου που ανεβάσατε',
-                en: label ? `of policy ${label}` : 'of the document you uploaded',
-            }
-
-            // KEEP-AND-INFORM copy: the customer is told WHAT to do, in their
-            // own language, and never sees the internal code.
-            const reasonCopy: Record<string, { el: string; en: string }> = {
-                TOKEN_LIMIT_BLOCKED: {
-                    el: `Η ανάλυση ${subject.el} δεν ξεκίνησε επειδή εξαντλήθηκε το διαθέσιμο όριο AI. Αναβαθμίστε το πρόγραμμά σας ή αγοράστε credits και δοκιμάστε ξανά — το έγγραφό σας είναι αποθηκευμένο.`,
-                    en: `Analysis ${subject.en} did not start because your AI allowance is used up. Upgrade your plan or buy credits and try again — your document is saved.`,
-                },
-                AI_CONSENT_REQUIRED: {
-                    el: `Η ανάλυση ${subject.el} χρειάζεται τη συγκατάθεσή σας για επεξεργασία με τεχνητή νοημοσύνη. Δώστε τη συγκατάθεση από τις ρυθμίσεις και δοκιμάστε ξανά — το έγγραφό σας είναι αποθηκευμένο.`,
-                    en: `Analysis ${subject.en} needs your consent for AI processing. Grant it in your settings and try again — your document is saved.`,
-                },
-                ANALYSIS_NOT_PERMITTED: {
-                    el: `Δεν έχετε δικαίωμα να εκτελέσετε ανάλυση ${subject.el}. Ζητήστε δικαίωμα επεξεργασίας από τον κάτοχο του ασφαλιστηρίου.`,
-                    en: `You do not have permission to run the analysis ${subject.en}. Ask the policy owner for edit access.`,
-                },
-            }
-
-            const message = (code && reasonCopy[code]) || {
-                el: `Η ανάλυση ${subject.el} δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.`,
-                en: `Analysis ${subject.en} could not be completed. You can retry.`,
-            }
-
+            const label = [policy?.policyNumber, policy?.insurerName ? `(${policy.insurerName})` : null]
+                .filter(Boolean)
+                .join(' ')
             await emit({
                 event: 'policy_analysis_failed',
                 userId,
@@ -960,7 +792,10 @@ export class PolicyService extends BaseService {
                     el: 'Η ανάλυση δεν ολοκληρώθηκε',
                     en: 'Analysis not completed',
                 },
-                message,
+                message: {
+                    el: `Η ανάλυση του συμβολαίου ${label} δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.`,
+                    en: `Analysis of policy ${label} could not be completed. You can retry.`,
+                },
                 relatedObjectType: 'policy',
                 relatedObjectId: policyId,
             })
@@ -973,12 +808,452 @@ export class PolicyService extends BaseService {
         }
     }
 
+    /**
+     * Deletes a policy or revokes access
+     * 
+     * - If user is owner: Deletes policy and all associated data
+     * - If user has shared access: Revokes their access grant
+     * 
+     * @param policyId - ID of the policy
+     * @param userId - ID of the user requesting deletion
+     * @param language - User's preferred language
+     * 
+     * @throws {AppError} NOT_FOUND if policy doesn't exist
+     * @throws {AppError} FORBIDDEN if user has no access
+     * 
+     * @example
+     * ```typescript
+     * await policyService.delete(policyId, userId)
+     * ```
+     */
+    async delete(
+        policyId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<void> {
+        const policy = await this.db.policy.findUnique({
+            where: { id: policyId },
+            include: { documents: true }
+        })
 
-    // NOTE: delete / share / getShares / revokeShare lived here until
-    // Aug 2026. They were a fourth copy of the policy-authorization rule —
-    // including a grant lookup with no scope filter — and nothing called them.
-    // Dead code that decides who may read a policy is worse than no code: it
-    // reads as the rule while never being exercised, and it drifts silently.
-    // The live paths are lib/policy-access.ts (per policy) and
-    // lib/agent-visibility.ts (per agent's visible set).
+        if (!policy) {
+            throw AppError.notFound('Policy', policyId)
+        }
+
+        const isOwner = policy.ownerUserId === userId
+
+        if (isOwner) {
+            // Owner deletion. The DB record is the source of truth, so only the
+            // cascade delete runs inside the transaction. Storage cleanup (slow
+            // network I/O) and the activity log (its own this.db queries) run
+            // AFTER commit — doing them inside the interactive tx held it open on
+            // storage I/O and grabbed a second pool connection, which deadlocks
+            // under the serverless connection limit ("Transaction already closed").
+            await this.withTransaction(async (tx) => {
+                // Delete policy (cascades to documents, gaps, etc.)
+                await tx.policy.delete({
+                    where: { id: policyId }
+                })
+            })
+
+            // Best-effort storage cleanup — an orphaned file is harmless and must
+            // never block or fail the deletion (fileUrls captured before delete).
+            for (const doc of policy.documents) {
+                await deleteFile(doc.fileUrl).catch((error) => {
+                    logger('warn', 'Failed to delete file from storage', {
+                        fileUrl: doc.fileUrl,
+                        error: error instanceof Error ? error.message : String(error)
+                    })
+                })
+            }
+
+            await this.logActivity(
+                userId,
+                'POLICY_DELETED',
+                `Deleted policy ${policy.policyNumber}`,
+                { policyId, insurerName: policy.insurerName }
+            )
+
+            logger('info', 'Policy deleted by owner', {
+                userId,
+                policyId,
+                policyNumber: policy.policyNumber
+            })
+        } else {
+            // Check if user has shared access
+            const grant = await this.db.accessGrant.findFirst({
+                where: {
+                    granterUserId: policy.ownerUserId,
+                    granteeUserId: userId,
+                    status: 'active'
+                }
+            })
+
+            if (!grant) {
+                throw AppError.forbidden(
+                    language === 'el'
+                        ? 'Δεν έχετε πρόσβαση σε αυτήν την πολιτική'
+                        : 'You do not have access to this policy'
+                )
+            }
+
+            // Revoke access
+            await this.db.accessGrant.update({
+                where: { id: grant.id },
+                data: { status: 'revoked' }
+            })
+
+            await this.logActivity(
+                userId,
+                'POLICY_ACCESS_REVOKED',
+                `Revoked access to policy ${policy.policyNumber}`,
+                { policyId, grantId: grant.id }
+            )
+
+            logger('info', 'Policy access revoked', {
+                userId,
+                policyId,
+                grantId: grant.id
+            })
+        }
+    }
+
+    /**
+     * Shares a policy with another user
+     * 
+     * - If recipient exists: Creates access grant
+     * - If recipient doesn't exist: Creates invite
+     * 
+     * @param policyId - ID of the policy to share
+     * @param ownerUserId - ID of the policy owner
+     * @param data - Share data (recipient email)
+     * @param language - User's preferred language
+     * @returns Share result with success status
+     * 
+     * @throws {AppError} NOT_FOUND if policy doesn't exist
+     * @throws {AppError} FORBIDDEN if user is not owner
+     * @throws {AppError} CONFLICT if already shared
+     * 
+     * @example
+     * ```typescript
+     * const result = await policyService.share(policyId, userId, {
+     *   recipientEmail: 'agent@example.com'
+     * })
+     * ```
+     */
+    async share(
+        policyId: string,
+        ownerUserId: string,
+        data: SharePolicyInput,
+        language: 'en' | 'el' = 'en'
+    ): Promise<ShareResult> {
+        const policy = await this.db.policy.findUnique({
+            where: { id: policyId }
+        })
+
+        if (!policy) {
+            throw AppError.notFound('Policy', policyId)
+        }
+
+        if (policy.ownerUserId !== ownerUserId) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Μόνο ο κάτοχος μπορεί να μοιραστεί αυτήν την πολιτική'
+                    : 'Only the owner can share this policy'
+            )
+        }
+
+        const recipientEmail = data.agentEmail.toLowerCase().trim()
+        const owner = await this.db.user.findUnique({
+            where: { id: ownerUserId },
+            select: { name: true, email: true }
+        })
+        const inviterName = owner?.name || owner?.email || 'PolicyWallet user'
+
+        // Check if recipient exists
+        const recipient = await this.db.user.findUnique({
+            where: { email: recipientEmail }
+        })
+
+        if (recipient) {
+            // Check if already shared
+            const existingGrant = await this.db.accessGrant.findFirst({
+                where: {
+                    granterUserId: ownerUserId,
+                    granteeUserId: recipient.id,
+                    status: 'active'
+                }
+            })
+
+            if (existingGrant) {
+                throw AppError.conflict(
+                    language === 'el'
+                        ? 'Η πολιτική έχει ήδη κοινοποιηθεί σε αυτόν τον χρήστη'
+                        : 'Policy is already shared with this user'
+                )
+            }
+
+            // Create access grant
+            await this.db.accessGrant.create({
+                data: {
+                    granterUserId: ownerUserId,
+                    granteeUserId: recipient.id,
+                    scope: 'portfolio',
+                    permissions: 'view',
+                    status: 'active'
+                }
+            })
+
+            // The RECIPIENT's language, not the sharer's — this used to render in
+            // whichever language the person doing the sharing happened to use.
+            await emit({
+                event: 'policy_shared',
+                userId: recipient.id,
+                title: {
+                    el: 'Νέο κοινόχρηστο συμβόλαιο',
+                    en: 'New Shared Policy',
+                },
+                message: {
+                    el: `Ένα ασφαλιστήριο κοινοποιήθηκε μαζί σας: ${policy.policyNumber}`,
+                    en: `A policy has been shared with you: ${policy.policyNumber}`,
+                },
+                relatedObjectType: 'policy',
+                relatedObjectId: policyId,
+            })
+
+            await this.logActivity(
+                ownerUserId,
+                'POLICY_SHARED',
+                `Shared policy ${policy.policyNumber} with ${recipientEmail}`,
+                { policyId, recipientEmail, recipientId: recipient.id }
+            )
+
+            try {
+                await sendPolicySharedAccessEmail({
+                    to: recipientEmail,
+                    inviterName,
+                    policyNumber: policy.policyNumber,
+                    language,
+                })
+            } catch (emailError) {
+                logger('warn', 'Policy share email failed', {
+                    ownerUserId,
+                    policyId,
+                    recipientEmail,
+                    error: emailError instanceof Error ? emailError.message : String(emailError),
+                })
+            }
+
+            logger('info', 'Policy shared successfully', {
+                ownerUserId,
+                policyId,
+                recipientEmail
+            })
+
+            return {
+                success: true,
+                message: language === 'el'
+                    ? 'Η πολιτική κοινοποιήθηκε επιτυχώς'
+                    : 'Policy shared successfully'
+            }
+        } else {
+            // Create invite
+            const token = `inv_${crypto.randomUUID().replace(/-/g, '')}`
+            const invite = await this.db.invite.create({
+                data: {
+                    inviterUserId: ownerUserId,
+                    inviteeEmail: recipientEmail,
+                    inviteType: 'share',
+                    relationshipType: 'policy_share',
+                    scope: `policy:${policyId}`,
+                    requestedPermissions: 'view',
+                    token,
+                    expiresAt: daysFromNow(POLICY_SHARE_EXPIRY_DAYS) // 7 days
+                }
+            })
+
+            // sendEmail returns {success:false} instead of throwing — capture
+            // the delivery outcome so the caller can offer the link fallback.
+            let emailDelivered = false
+            try {
+                const emailResult = await sendPolicyInviteEmail({
+                    to: recipientEmail,
+                    token: invite.token,
+                    inviterName,
+                    policyNumber: policy.policyNumber,
+                    language,
+                })
+                emailDelivered = emailResult.success
+                if (!emailDelivered) {
+                    logger('warn', 'Policy invite email not delivered', {
+                        ownerUserId,
+                        policyId,
+                        recipientEmail,
+                        inviteId: invite.id,
+                    })
+                }
+            } catch (emailError) {
+                logger('warn', 'Policy invite email failed', {
+                    ownerUserId,
+                    policyId,
+                    recipientEmail,
+                    inviteId: invite.id,
+                    error: emailError instanceof Error ? emailError.message : String(emailError),
+                })
+            }
+
+            await this.logActivity(
+                ownerUserId,
+                'POLICY_INVITE_SENT',
+                `Sent policy share invite to ${recipientEmail}`,
+                { policyId, inviteId: invite.id }
+            )
+
+            logger('info', 'Policy share invite created', {
+                ownerUserId,
+                policyId,
+                recipientEmail,
+                inviteId: invite.id
+            })
+
+            return {
+                success: true,
+                emailDelivered,
+                message: emailDelivered
+                    ? (language === 'el'
+                        ? 'Η πρόσκληση στάλθηκε επιτυχώς'
+                        : 'Invite sent successfully')
+                    : (language === 'el'
+                        ? 'Το email δεν παραδόθηκε — μοιραστείτε τον σύνδεσμο πρόσκλησης'
+                        : 'Email not delivered — share the invite link instead'),
+                link: `/invite/${invite.token}`
+            }
+        }
+    }
+
+    /**
+     * Gets all users who have access to a policy
+     * 
+     * @param policyId - ID of the policy
+     * @param userId - ID of the user checking (must be owner)
+     * @param language - User's preferred language
+     * @returns List of users with access
+     * 
+     * @throws {AppError} NOT_FOUND if policy doesn't exist
+     * @throws {AppError} FORBIDDEN if user is not owner
+     * 
+     * @example
+     * ```typescript
+     * const shares = await policyService.getShares(policyId, userId)
+     * ```
+     */
+    async getShares(
+        policyId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<PolicyShare[]> {
+        const policy = await this.db.policy.findUnique({
+            where: { id: policyId }
+        })
+
+        if (!policy) {
+            throw AppError.notFound('Policy', policyId)
+        }
+
+        if (policy.ownerUserId !== userId) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Μόνο ο κάτοχος μπορεί να δει τις κοινοποιήσεις'
+                    : 'Only the owner can view shares'
+            )
+        }
+
+        const grants = await this.db.accessGrant.findMany({
+            where: {
+                granterUserId: userId,
+                status: 'active'
+            },
+            include: {
+                grantee: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true
+                    }
+                }
+            }
+        })
+
+        return grants.map(grant => ({
+            id: grant.id,
+            user: {
+                id: grant.grantee.id,
+                name: grant.grantee.name || grant.grantee.email,
+                email: grant.grantee.email,
+                image: grant.grantee.image || undefined
+            },
+            grantedAt: grant.grantedAt
+        }))
+    }
+
+    /**
+     * Revokes access to a policy
+     * 
+     * @param grantId - ID of the access grant
+     * @param userId - ID of the user revoking (must be granter)
+     * @param language - User's preferred language
+     * 
+     * @throws {AppError} NOT_FOUND if grant doesn't exist
+     * @throws {AppError} FORBIDDEN if user is not granter
+     * 
+     * @example
+     * ```typescript
+     * await policyService.revokeShare(grantId, userId)
+     * ```
+     */
+    async revokeShare(
+        grantId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<void> {
+        const grant = await this.db.accessGrant.findUnique({
+            where: { id: grantId },
+            include: {
+                grantee: {
+                    select: { email: true }
+                }
+            }
+        })
+
+        if (!grant) {
+            throw AppError.notFound('Access Grant', grantId)
+        }
+
+        if (grant.granterUserId !== userId) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Μόνο ο κάτοχος μπορεί να ανακαλέσει την πρόσβαση'
+                    : 'Only the owner can revoke access'
+            )
+        }
+
+        await this.db.accessGrant.update({
+            where: { id: grantId },
+            data: { status: 'revoked' }
+        })
+
+        await this.logActivity(
+            userId,
+            'POLICY_SHARE_REVOKED',
+            `Revoked access for ${grant.grantee.email}`,
+            { grantId, recipientEmail: grant.grantee.email }
+        )
+
+        logger('info', 'Policy share revoked', {
+            userId,
+            grantId,
+            recipientEmail: grant.grantee.email
+        })
+    }
 }

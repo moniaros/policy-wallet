@@ -66,7 +66,6 @@ import {
 } from "./step-telemetry"
 import { documentMimeType } from "@/lib/security/file-upload"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
-import { discardFailedPolicy } from "@/lib/services/policy-discard"
 
 const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
     document_load_and_validation: 1,
@@ -703,8 +702,6 @@ export class PolicyAnalysisOrchestratorService {
     }): Promise<{
         staleCandidates: number
         reaped: number
-        /** Reaped runs whose placeholder-only policy was removed outright. */
-        discarded: number
     }> {
         const graceMs = options?.graceMs ?? 5 * 60 * 1000
         const limit = options?.limit ?? 50
@@ -722,7 +719,6 @@ export class PolicyAnalysisOrchestratorService {
         })
 
         let reaped = 0
-        let discarded = 0
         for (const run of staleRuns) {
             const remediationSummary: PipelineRemediationSummary = {
                 providerAttempts: [],
@@ -796,34 +792,16 @@ export class PolicyAnalysisOrchestratorService {
                 })
                 return true
             })
-            if (!didReap) continue
-            reaped += 1
-
-            // Process death is the one failure path no in-process handler can
-            // cover, so the discard rule is applied here too: a policy that is
-            // nothing but placeholders, whose executor died, holds nothing a
-            // re-upload would not reproduce — and left behind it shows the
-            // customer a policy the product knows nothing about.
-            const outcome = await discardFailedPolicy(run.policyId, {
-                reason: "LEASE_EXPIRED",
-            }).catch((error) => {
-                logger("warn", "Discard after reap failed", {
-                    policyId: run.policyId,
-                    error: error instanceof Error ? error.message : String(error),
-                })
-                return null
-            })
-            if (outcome?.discarded) discarded += 1
+            if (didReap) reaped += 1
         }
 
         if (reaped > 0) {
             logger("info", "Reaped stale analysis runs", {
                 staleCandidates: staleRuns.length,
                 reaped,
-                discarded,
             })
         }
-        return { staleCandidates: staleRuns.length, reaped, discarded }
+        return { staleCandidates: staleRuns.length, reaped }
     }
 
     async retryMissing(runId: string, userId: string, language: "en" | "el" = "en") {

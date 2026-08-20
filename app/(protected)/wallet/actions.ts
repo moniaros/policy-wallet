@@ -25,7 +25,6 @@ import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { resolveCoverageEndDate } from "@/lib/policy-status"
 import { PolicyService } from "@/lib/services/policy.service"
-import { discardOrphanedUploads } from "@/lib/services/policy-discard"
 import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
@@ -75,24 +74,12 @@ export async function createPolicy(formData: FormData) {
     if (!dbUser) throw new Error("User record not found")
 
     const userId = dbUser.id
-
-    // Handle files (Files are now uploaded client-side to Supabase). Read
-    // BEFORE the policy-cap check: the bytes are already in the bucket by the
-    // time this action runs, so every path that returns without persisting a
-    // row has to take them back out. An object nothing references is personal
-    // data that no GDPR export can see and no erasure request can reach.
-    const documentUrls = formData.getAll("documentUrls") as string[]
-    const documentNames = formData.getAll("documentNames") as string[]
-    const documentSizes = formData.getAll("documentSizes") as string[]
-    const ownedUrls = documentUrls.filter((url) => url && isOwnedStorageUrl(url))
-
     const canAdd = await canUserAddPolicy(userId)
     if (!canAdd.allowed) {
         // Structured return, NOT a throw — prod builds redact thrown
         // server-action messages to a digest, so the client can only ever
         // see this code as a return value (a throw reads as a generic
         // failure instead of the policy_limit upgrade modal).
-        await discardOrphanedUploads(ownedUrls, { reason: "policy_limit_reached", userId })
         await recordConversionEvent(userId, "limit_hit", { kind: "policy", source: "create_policy" })
         return { error: "POLICY_LIMIT_REACHED" }
     }
@@ -106,13 +93,12 @@ export async function createPolicy(formData: FormData) {
         premiumAmount: formData.get("premiumAmount"),
     }
 
-    let validatedData: z.infer<typeof PolicySchema>
-    try {
-        validatedData = PolicySchema.parse(rawData)
-    } catch (validationError) {
-        await discardOrphanedUploads(ownedUrls, { reason: "policy_validation_failed", userId })
-        throw validationError
-    }
+    const validatedData = PolicySchema.parse(rawData)
+
+    // Handle files (Files are now uploaded client-side to Supabase)
+    const documentUrls = formData.getAll("documentUrls") as string[]
+    const documentNames = formData.getAll("documentNames") as string[]
+    const documentSizes = formData.getAll("documentSizes") as string[]
 
     // Validate documents FIRST — the status must derive from the documents
     // that actually survive validation, or an all-invalid submission commits
@@ -120,7 +106,6 @@ export async function createPolicy(formData: FormData) {
     // Bounded to the same cap the documents API enforces.
     const MAX_DOCUMENTS = 20
     const validDocuments: Array<{ fileUrl: string; fileName: string; fileSize: number }> = []
-    const rejectedUrls: string[] = []
     for (let i = 0; i < Math.min(documentUrls.length, MAX_DOCUMENTS); i++) {
         const fileUrl = documentUrls[i]
         // Display metadata only — sanitized (Greek-safe), never used as a key.
@@ -148,7 +133,6 @@ export async function createPolicy(formData: FormData) {
 
         if (!hasValidExt) {
             logger('warn', 'Skipping policy document with invalid extension')
-            rejectedUrls.push(fileUrl)
             continue
         }
 
@@ -159,14 +143,6 @@ export async function createPolicy(formData: FormData) {
             submitted: documentUrls.length,
             cap: MAX_DOCUMENTS,
         })
-        // The over-cap objects are ours and will never get a row either.
-        rejectedUrls.push(...documentUrls.slice(MAX_DOCUMENTS).filter((url) => url && isOwnedStorageUrl(url)))
-    }
-
-    // Objects we deliberately refused to reference. Untrusted URLs are NOT in
-    // here on purpose — they are not ours to delete.
-    if (rejectedUrls.length > 0) {
-        await discardOrphanedUploads(rejectedUrls, { reason: "document_rejected", userId })
     }
 
     const initialStatus = validDocuments.length > 0 ? 'analyzing' : 'active'
@@ -174,52 +150,41 @@ export async function createPolicy(formData: FormData) {
     // Policy + documents in ONE transaction (a crash between the two writes
     // left a zero-document policy stuck 'analyzing'), with a single batched
     // insert instead of a per-row round-trip loop.
-    let policy: Awaited<ReturnType<typeof db.policy.create>>
-    try {
-        policy = await db.$transaction(async (tx) => {
-            const created = await tx.policy.create({
-                data: {
-                    ownerUserId: userId,
-                    createdByUserId: userId,
-                    insurerName: validatedData.insurerName,
-                    policyNumber: validatedData.policyNumber,
-                    lineOfBusiness: validatedData.lineOfBusiness,
-                    startDate: new Date(validatedData.startDate),
-                    endDate: new Date(validatedData.endDate),
-                    coverageEndDate: new Date(validatedData.endDate),
-                    premiumAmount: validatedData.premiumAmount,
-                    status: initialStatus,
-                }
-            })
-
-            if (validDocuments.length > 0) {
-                await tx.policyDocument.createMany({
-                    data: validDocuments.map((doc) => ({
-                        policyId: created.id,
-                        fileUrl: doc.fileUrl,
-                        fileName: doc.fileName,
-                        fileSize: doc.fileSize,
-                        source: "policyholder",
-                        uploadedByUserId: userId,
-                        processingStatus: 'processing',
-                        // Resolve the locator ONCE, here, rather than re-deriving it
-                        // from the URL on every read for the life of the document.
-                        ...storageColumnsFor(doc.fileUrl),
-                    })),
-                })
+    const policy = await db.$transaction(async (tx) => {
+        const created = await tx.policy.create({
+            data: {
+                ownerUserId: userId,
+                createdByUserId: userId,
+                insurerName: validatedData.insurerName,
+                policyNumber: validatedData.policyNumber,
+                lineOfBusiness: validatedData.lineOfBusiness,
+                startDate: new Date(validatedData.startDate),
+                endDate: new Date(validatedData.endDate),
+                coverageEndDate: new Date(validatedData.endDate),
+                premiumAmount: validatedData.premiumAmount,
+                status: initialStatus,
             }
-
-            return created
         })
-    } catch (createError) {
-        // The transaction is atomic, so nothing was written — but the objects
-        // are still in the bucket with nothing left to reference them.
-        await discardOrphanedUploads(
-            validDocuments.map((doc) => doc.fileUrl),
-            { reason: "policy_create_failed", userId }
-        )
-        throw createError
-    }
+
+        if (validDocuments.length > 0) {
+            await tx.policyDocument.createMany({
+                data: validDocuments.map((doc) => ({
+                    policyId: created.id,
+                    fileUrl: doc.fileUrl,
+                    fileName: doc.fileName,
+                    fileSize: doc.fileSize,
+                    source: "policyholder",
+                    uploadedByUserId: userId,
+                    processingStatus: 'processing',
+                    // Resolve the locator ONCE, here, rather than re-deriving it
+                    // from the URL on every read for the life of the document.
+                    ...storageColumnsFor(doc.fileUrl),
+                })),
+            })
+        }
+
+        return created
+    })
 
     // Trigger analysis if needed
     if (initialStatus === 'analyzing') {
@@ -1073,7 +1038,6 @@ function parseAnalysisDate(d: string | undefined): Date | undefined {
 // third gap pipeline (GapAnalysisService.analyzePolicy) that no component ever
 // imported. Both are gone; the orchestrator is the one path, and detection is
 // decided by lib/gap-detection.ts rather than by a model.
-
 export async function deletePolicy(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
