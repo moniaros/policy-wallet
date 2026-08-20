@@ -36,6 +36,11 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+# Credentials for running a destructive script against production. The header of
+# scripts/cleanup-sentinel-policies.ts tells you to create this file, and it does
+# not match .env* — so without this line, following the documented procedure
+# leaves prod secrets one `git add -A` away from history.
+.prod-db-env
 
 # vercel
 .vercel
