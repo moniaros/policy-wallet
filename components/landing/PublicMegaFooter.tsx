@@ -57,15 +57,18 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
         { href: l("/guides"), label: t("Οδηγοί ασφάλισης", "Insurance guides") },
         { href: l("/lexiko"), label: t("Ασφαλιστικό λεξικό", "Insurance glossary") },
         { href: l("/contact"), label: t("Επικοινωνία", "Contact") },
+        { href: l("/trust"), label: t("Εμπιστοσύνη και δεδομένα", "Trust and data") },
+        { href: l("/platform"), label: t("Πώς δουλεύει η ανάλυση", "How the analysis works") },
         { href: l("/privacy"), label: t("Πολιτική απορρήτου", "Privacy policy") },
         { href: l("/terms"), label: t("Όροι χρήσης", "Terms of service") },
         { href: l("/cookies"), label: t("Πολιτική cookies", "Cookie policy") },
         { href: l("/subprocessors"), label: t("Υπο-εκτελούντες επεξεργασίας", "Subprocessors") },
     ]
 
-    // Legal-identity block (Greek corporate sites must display ΓΕΜΗ — ν. 3419/2005).
-    // Shares one source of truth with the terms/privacy documents so the footer
-    // and the legal pages can never drift apart on the corporate details.
+    // Legal-identity block. Greek corporate sites must display ΓΕΜΗ
+    // (ν. 3419/2005), and it is displayed. Shares one source of truth with the
+    // terms/privacy documents so the footer and the legal pages can never drift
+    // apart on the corporate details.
     const entity = LEGAL_ENTITY[locale]
 
     // Real profiles only (from NEXT_PUBLIC_SOCIAL_*) — no placeholder links.
@@ -306,10 +309,9 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     </p>
                     <p>
                         {t(
-                            "Η πλατφόρμα PolicyWallet λειτουργεί από ελληνική εταιρεία.",
-                            "The PolicyWallet platform is operated by a Greek company."
-                        )}{" "}
-                        {entity.detailsComingSoon}
+                            `Η πλατφόρμα PolicyWallet λειτουργεί από την εταιρεία ${entity.company}, αριθμός ΓΕΜΗ ${entity.gemi}, ${entity.vat}, έδρα ${entity.address}.`,
+                            `The PolicyWallet platform is operated by ${entity.company}, GEMI number ${entity.gemi}, ${entity.vat}, registered seat ${entity.address}.`
+                        )}
                     </p>
                 </div>
                 <div className="mx-auto flex max-w-page-wide flex-col gap-3 text-body-sm text-[#5B6A7A] dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">

@@ -18,7 +18,7 @@ import {
     PRODUCT_STATS as STATS,
     PRODUCT_STEPS as STEPS,
 } from "./marketing-content"
-import { CATEGORY_NAME, PRIMARY_ACTION, pick } from "@/lib/marketing/positioning"
+import { CATEGORY_NAME, PRIMARY_ACTION, pick, CTA_REASSURANCE } from "@/lib/marketing/positioning"
 import { ProductFaqList } from "./ProductFaqList"
 import { ProductPageView } from "./ProductPageView"
 import { ProductScrollButton } from "./ProductScrollButton"
@@ -336,6 +336,21 @@ export function ProductSections({ language }: { language: Language }) {
                             "From PDF to a clear picture, without reading the fine print."
                         )}
                     </h2>
+                    {/* The mechanism, named on the page and not only in the
+                        search snippet. The metas have said "με AI" for months
+                        while no visible sentence anywhere told a visitor that a
+                        model reads their document — so the first place they
+                        learned it was the consent dialog. Naming it here, with
+                        its limit, and linking to the page that explains it. */}
+                    <p className="mx-auto mt-5 max-w-[560px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-200">
+                        {t(
+                            "Το έγγραφό σας το διαβάζει τεχνητή νοημοσύνη και το μεταφράζει σε δεδομένα. Ποια κενά κάλυψης έχετε το κρίνουν κανόνες, όχι το μοντέλο.",
+                            "Artificial intelligence reads your document and turns it into data. Which coverage gaps you have is decided by rules, not by the model."
+                        )}{" "}
+                        <Link href={localizeHref("/platform", language)} className="underline">
+                            {t("Δείτε πώς ακριβώς", "See exactly how")}
+                        </Link>
+                    </p>
                 </div>
 
                 <div className="grid gap-8 md:grid-cols-3 lg:gap-12">
@@ -390,7 +405,7 @@ export function ProductSections({ language }: { language: Language }) {
                     </h2>
                     <p className="mx-auto mb-10 max-w-[540px] text-lead leading-relaxed text-white/75">
                         {t(
-                            "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
+                            CTA_REASSURANCE.el,
                             "Free for 1 policy. No card. Delete everything whenever you want."
                         )}
                     </p>

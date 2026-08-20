@@ -92,7 +92,7 @@ export async function compareAnalysisRuns(
             baseRun.overallSuccessPct != null && compareRun.overallSuccessPct != null
                 ? compareRun.overallSuccessPct - baseRun.overallSuccessPct
                 : null,
-        gapChanges: diffGaps(baseResult.gapResults, compareResult.gapResults),
+        gapChanges: diffGaps(baseResult, compareResult),
         savingsChanges: diffSavings(
             baseResult.savingsOpportunities,
             compareResult.savingsOpportunities
@@ -127,12 +127,37 @@ export async function compareLatestRuns(
 
 // ── Diff helpers ──────────────────────────────────────────────────────
 
+/**
+ * Which gaps changed between two runs.
+ *
+ * Reads `decidedGapSlugs` — the rule-decided set the orchestrator records on the
+ * run. It must NOT read `gapResults`: that is AI prose keyed by slug, written for
+ * candidate slugs whether or not a rule fired, so a slug appearing there is not a
+ * finding. This previously filtered `gapResults` on an `isDetected` field that was
+ * removed when rules took over detection, so every comparison reported no change.
+ *
+ * Runs analysed before `decidedGapSlugs` existed have no truthful detection set.
+ * They yield no gap changes — the same output as before, but now because the data
+ * is genuinely absent rather than because of a filter on a field that never matches.
+ */
 function diffGaps(
-    baseGaps: any[] | undefined,
-    compareGaps: any[] | undefined
+    baseResult: Record<string, any>,
+    compareResult: Record<string, any>
 ): GapChange[] {
-    const base = (baseGaps ?? []).filter((g: any) => g.isDetected)
-    const compare = (compareGaps ?? []).filter((g: any) => g.isDetected)
+    const prose = new Map<string, any>(
+        ([...(baseResult.gapResults ?? []), ...(compareResult.gapResults ?? [])] as any[]).map(
+            (g) => [g.slug, g]
+        )
+    )
+    const toGaps = (slugs: unknown) =>
+        (Array.isArray(slugs) ? (slugs as string[]) : []).map((slug) => ({
+            slug,
+            severity: prose.get(slug)?.severity,
+            explanation: prose.get(slug)?.explanation,
+        }))
+
+    const base = toGaps(baseResult.decidedGapSlugs)
+    const compare = toGaps(compareResult.decidedGapSlugs)
 
     const baseSlugs = new Set(base.map((g: any) => g.slug))
     const compareSlugs = new Set(compare.map((g: any) => g.slug))

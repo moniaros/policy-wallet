@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { canUserUseFeature } from "@/lib/subscription-limits"
+import { getPolicyAccess } from "@/lib/policy-access"
 import { generateSavingsReportHtml } from "@/lib/services/reports/savings-report"
 
 const paramsSchema = z.object({ id: z.string().min(1) })
@@ -39,14 +40,15 @@ export const GET = withApiGuard(
             )
         }
 
-        // Verify ownership
-        const policy = await db.policy.findUnique({
-            where: { id: policyId },
-            select: { id: true, ownerUserId: true },
+        // One authorization path (lib/policy-access.ts). This used to be an
+        // inline owner check, which meant the advisor who ran the analysis
+        // could not download its report.
+        const access = await getPolicyAccess(policyId, {
+            id: authResult.dbUser.id,
+            roles: authResult.dbUser.roles,
         })
-        if (!policy) return createApiError("NOT_FOUND", "Policy not found", 404)
-        if (policy.ownerUserId !== authResult.dbUser.id) {
-            return createApiError("FORBIDDEN", "Not authorized", 403)
+        if (!access.exists || !access.canRead) {
+            return createApiError("NOT_FOUND", "Policy not found", 404)
         }
 
         // Get latest completed analysis
@@ -67,10 +69,20 @@ export const GET = withApiGuard(
             )
         }
 
+        // The gaps the rules decided. A GapInstance row cannot exist unless a rule
+        // produced it, so its presence IS the detection — there is no isDetected flag
+        // to filter on, and the report must not infer findings from the AI prose bag.
+        const decidedGaps = await db.gapInstance.findMany({
+            where: { policyId, status: "open" },
+            select: { severity: true, definition: { select: { slug: true } } },
+        })
+
         const html = generateSavingsReportHtml(
             run.resultJson as Record<string, any>,
             run.finishedAt?.toISOString() ?? new Date().toISOString(),
-            (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+            (authResult.dbUser.preferredLanguage as "en" | "el") || "en",
+            undefined,
+            decidedGaps.map((g) => ({ slug: g.definition.slug, severity: g.severity }))
         )
 
         return new Response(html, {

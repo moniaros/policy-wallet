@@ -1646,6 +1646,12 @@ export async function requestAiConsent(policyId: string) {
             granterUserId: policy.ownerUserId,
             granteeUserId: authResult.dbUser.id,
             status: "active",
+            // Scope the grant to THIS policy. Without it, a portfolio or
+            // upload_only grant — or a grant on an entirely different policy of
+            // the same owner — authorised acting on whichever policyId the
+            // caller named. lib/policy-access.ts has always required the exact
+            // `policy:<id>` scope; this check had not.
+            scope: `policy:${policyId}`,
         },
     })
     const hasRelationship = hasGrant

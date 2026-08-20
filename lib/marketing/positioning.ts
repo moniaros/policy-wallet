@@ -244,8 +244,16 @@ export const TRUST_FACTS: readonly { label: Bilingual; detail: Bilingual }[] = [
         // verdict. GDPR gives the rights; we state what you can actually do.
         label: { el: "Τα δεδομένα σας είναι δικά σας", en: "Your data is yours" },
         detail: {
-            el: "Ζητάτε αντίγραφο ή πλήρη διαγραφή όποτε θέλετε.",
-            en: "Ask for a copy or full deletion whenever you want.",
+            // Two different mechanics, so two different promises.
+            //
+            // The export IS immediate and self-service. Deletion is not: the
+            // request is self-service, a person reviews and executes it, and
+            // the statutory clock is one month (GDPR Art. 12(3)). And it is not
+            // "full" — invoices are kept 5 years for tax law, consent records
+            // as proof of consent. The in-product copy has said all of this
+            // accurately for months; this line had not.
+            el: "Κατεβάζετε αντίγραφο όποτε θέλετε. Ζητάτε διαγραφή και την ολοκληρώνουμε εντός ενός μήνα.",
+            en: "Download a copy whenever you want. Ask for deletion and we complete it within one month.",
         },
     },
     {
@@ -301,6 +309,19 @@ export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
  * promise can never say one thing on the homepage and another on /product.
  * Must match what /pricing actually sells.
  */
+/**
+ * The SHORT risk-reversal line, for pages where the long one does not fit.
+ *
+ * Two sanctioned wordings for one promise, and no third — the long form above
+ * and this. Both live here because this is a claim about what the free tier
+ * gives you, and 17 hand-typed copies of a free-tier promise is 17 chances for
+ * one page to promise something the product does not do.
+ */
+export const CTA_REASSURANCE_SHORT: Bilingual = {
+    el: "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.",
+    en: "Free for 1 policy. No card.",
+}
+
 export const CTA_REASSURANCE: Bilingual = {
     el: "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
     en: "Free for 1 policy. No card. Delete everything whenever you want.",

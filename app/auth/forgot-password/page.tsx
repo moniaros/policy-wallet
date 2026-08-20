@@ -65,7 +65,10 @@ export default function ForgotPasswordPage() {
         ),
         sentHint: t("Ο σύνδεσμος ισχύει για 30 λεπτά.", "The reset link is valid for 30 minutes."),
         backToSignIn: t("Επιστροφή στη σύνδεση", "Back to sign in"),
-        trust: t("Τραπεζικού επιπέδου ασφάλεια", "Bank-grade security"),
+        // "Bank-grade security" is a tier claim with nothing behind it — no
+        // attestation, no audit, no standard named. The rest of the site states
+        // checkable facts (AES-256, TLS, EU servers); this now does too.
+        trust: t("Κρυπτογράφηση AES-256", "AES-256 encryption"),
         genericError: t("Κάτι πήγε στραβά. Δοκιμάστε ξανά.", "Something went wrong. Please try again."),
         // No arrow in the string: the JSX below supplies it, exactly as
         // signin and signup do. With it baked in here too the link rendered

@@ -101,6 +101,9 @@ export const BATCH_FAILURE_SPECS = {
     /** The 30/day billable-call backstop. Will not clear inside this session. */
     DAILY_LIMIT_REACHED: { stage: 'quota', retryable: false, autoRetry: false, severity: 'warning' },
     POLICY_LIMIT_REACHED: { stage: 'quota', retryable: false, autoRetry: false, severity: 'upgrade' },
+    // Not retryable by re-uploading: the user must grant AI-processing consent
+    // first. Retrying the same file without consent would fail identically.
+    AI_CONSENT_REQUIRED: { stage: 'validation', retryable: false, autoRetry: false, severity: 'warning' },
 
     // ---- extraction ----
     AI_UNAVAILABLE: { stage: 'extraction', retryable: true, autoRetry: false, severity: 'error' },

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
 import { db as prisma } from '@/lib/db'
+import { logAdminRead } from '@/lib/admin/admin-guard'
 
 export async function GET(req: Request) {
     const authResult = await getAuthenticatedUserOrNull()
@@ -54,6 +55,22 @@ export async function GET(req: Request) {
             }),
             prisma.tokenUsage.count({ where }),
         ])
+
+        // `?userId=` makes this a targeted read of one person's AI history with
+        // their name and email attached, so the subject is recorded when the
+        // caller named one.
+        await logAdminRead(
+            { id: authResult.dbUser.id, email: authResult.dbUser.email },
+            'ADMIN_VIEWED_TOKEN_USAGE',
+            userId
+                ? `Viewed AI token usage for user ${userId}`
+                : `Viewed AI token usage across ${total} records`,
+            {
+                targetUserId: userId ?? null,
+                scope: ['user.identity', 'user.contact', 'ai.usageHistory'],
+                metadata: { count: usage.length, total, filtered: Boolean(userId) },
+            }
+        )
 
         return NextResponse.json({
             usage: usage.map((u) => ({

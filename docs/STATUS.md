@@ -66,6 +66,468 @@ but it is also a documented, shipped positioning decision (`CATEGORY_NAME`
 docblock, `docs/audits/marketing-website-audit-2026-08.md` §2). Flagged, not
 overturned.
 
+## Session wrap — 2026-08-20 (PHASE 7 — rule catalogue + Gate 3b apparatus)
+
+Full write-up: `docs/audits/phase7-rule-catalogue-and-gate3b-2026-08.md`. Taking the two
+items Phase 6 handed to humans as far as code honestly can, on one distinction:
+**detection is factual, severity is an underwriting judgement.**
+
+**Catalogue 4 → 27 rules, 4 → 8 branches** (motor 5, health 4, home 4, motorbike 4,
+group_health 3, pet 3, travel 3, life 1). All live in prod, all rule-bearing, **116 fixture
+cases** — every rule must prove it stays silent on a field nobody extracted. Three new
+branches by two routes: *travel* got the `AcordDataSchema` section it needed (the blocker was
+the extraction schema, not the rule engine); *group_health* and *motorbike* needed nothing at
+all — they map onto the existing `health` and `vehicle` sections, which the repo's own branch
+content files have recorded for as long as they have existed. Nobody had asked.
+Motorbike takes four of motor's five rules and **not** glass breakage: the content file
+records that telling riders about glass while saying nothing about rider injury was
+"actively misleading". New `all_missing` operator so the life-beneficiaries rule needs **both**
+paths empty; an empty array counts as absent.
+
+**Deliberately NOT authored:** a `medicalExpensesLimit < 30000` rule. The €30,000 Schengen
+minimum is real but externally unverifiable here, and a threshold in detection logic is a
+severity verdict wearing a rule's clothes.
+
+**Latent defect found:** four `ai_check` definitions were still `isActive: true` in
+`prisma/seed.ts` after Phase 3 deactivated them in prod — the next `db seed` would have
+switched them back on, four "active" definitions that can never fire. One was
+`home-earthquake`, which is why an audit reported earthquake had no rule. It has a real one
+now.
+
+**Gate 3b — still open, now openable.** It needs an underwriter and always did; what was
+missing was everything that makes sign-off possible. Now: per-definition validation columns
+(dev + prod), a per-definition caveat that fails safe, a real consumer
+(`GET /api/v1/policies/[id]/gaps` returns `severity_validated` + `severity_caveat_key`), and
+**`docs/reviews/severity-review-packet.md`** — generated from the LIVE catalogue, stating
+what each rule asks, the fields it reads, the severity proposed, and the words the customer
+sees. Recording an answer is one UPDATE per definition.
+
+⚠️ **Owner action, 1 of 2:** the packet is the deliverable. Owner: licensed underwriter /
+ΕΙΑΣ-qualified intermediary. **27 pending, 0 validated.**
+
+⚠️ **Owner action, 2 of 2:** eight branches still have no rules, and it is a domain question,
+not an engineering one. Every one of their content files already records that the meaningful
+detail arrives as free text (legal expenses: *"scope, waiting periods and limits exist only as
+free text"*; boat: *"hull value, navigation area, crew cover… only in the free text"*). The
+answerable question is: **for branch X, which three or four facts does a Greek policy always
+state?** Given that, the schema section and rules are an afternoon — travel is the worked
+example.
+
+Guardrails: `tsc` clean · **4723/4723 unit** · lint/utf8/encoding/i18n/api-auth green.
+(`verify:migrations` fails locally on `DATABASE_URL`, identically without these changes.)
+Commits `8600a873`, `7c670721`, `a3d7420f`, `+1`.
+
+---
+
+## Session wrap — 2026-08-20 (PHASE 6 iteration 2 — closing the remainders) — **81/100**, loop ends here
+
+Iteration 1 recommended stopping. **Iteration 2 proved that premature**, which is the
+useful result:
+
+- **A seventh false public claim, which iteration 1 scored as true.** `/needs` says "six
+  questions" and asks **twelve**, across six steps (2,2,1,3,3,1) — in both languages and
+  in the SEO metadata. The sweep agent called it "fragile but currently TRUE" by
+  conflating steps with questions, and I recorded that **without counting**. Headline now
+  derives from `NEEDS_STEPS.length`; pinned by `needs-check.test.ts`. (That guard's first
+  version failed on **its own comment** quoting the banned phrase — mention-vs-use, third
+  time this programme.)
+- **The guard blind spot is closed, not just disclosed.** `policy-authorization-single-path`
+  now checks API routes **per HTTP handler** — which immediately caught the `DELETE` in
+  `documents/[docId]` hand-rolling its own ownership filter behind a compliant `GET`, now
+  on the single path with its deliberate owner-only narrowing kept — and scans the
+  **server-action surface** for the first time. All 14 policy-touching actions audited:
+  every one authorizes, several deliberately narrower than `getPolicyAccess`, **no live
+  hole**; each listed with a reason. Both checks verified to fail against pre-fix source.
+  `/trust` copy restored to the wider, now-true claim.
+- **`MonetaryLimitSchema.unlimited` → `.optional()`.** `.default(false)` was being
+  materialised by the AI SDK into stored data, recording "there is a cap" on every limit
+  nobody determined — one rule away from load-bearing.
+
+- **Retention was a disclosure gap, not an enforcement gap.** `TokenUsage`/`ConsentAudit`
+  are *deliberately* retained (financial ledger / proof of consent, both documented
+  exceptions in the eraser) — purging them on a timer would be the bug. The real defect:
+  the privacy table was **silent** about session records and about public-form captures
+  (24 months in `FormSubmission`). Both now listed, both locales, and
+  `retention-copy-matches-code.test.ts` derives the stated windows from the job's own
+  constants. Newsletter row verified correct — Brevo holds the authoritative list; the
+  local row is a signup capture, now disclosed as one.
+- **Severity caveats closed for every surface that names a severity.** "8 of 11 show no
+  caveat" was wrong both ways: two already carried one, two print no severity word at all
+  (colour only; `PolicyBriefCard`'s dot is `aria-hidden`). The four that name a severity
+  to a person now render a single shared `<SeverityCaveat />` — one component so that
+  **Gate 3b sign-off is a one-line change**. Gate 3b itself stays open and human-owned;
+  the guard now asserts `SEVERITY_UNDERWRITER_VALIDATED === false`.
+
+**Score 79 → 81** (F: 7 → 9). Gate is 85 and remains unreachable from inside the repo.
+**Loop ends here**: every remaining item in the audit's §6 is either an external fact or
+Gate 3b, both human-owned.
+
+Guardrails: `tsc` clean · **4605/4605 unit** · lint/utf8/encoding/i18n/api-auth green.
+Commits `60c022bf`, `e8ecbd6b`, `155138ff`, `caa15e9e`, `c5279c76`.
+
+---
+
+## Session wrap — 2026-08-20 (PHASE 6 — Adversarial re-score) — **GATE NOT PASSED (79/100)**
+
+Full write-up: `docs/audits/phase6-rescore-2026-08.md`. Three adversarial agents, every
+finding re-verified by hand before action.
+
+**Category E failed on entry** — six false or unsupported public claims were live, two
+of them created or missed by this loop:
+
+- **`/trust` promised consent-gating that a live path did not do.**
+  `app/api/policies/extract/route.ts` sent whole documents to Gemini with **no consent
+  check** (bulk upload via `BatchUploadModal.tsx`). Not just a false sentence — an Art. 9
+  disclosure without the basis the product claimed to require. **Fixed in code:** same
+  `aiProcessingConsentVersion` gate as the deep pipeline, before the body is read, with a
+  new bilingual `AI_CONSENT_REQUIRED` failure code.
+- **`/platform` denied a behaviour a rule I seeded this phase exhibits.** "A gap appears
+  only when the policy says so" is false for `operator: 'missing'`
+  (`missing_coordination_centre`). Copy now separates "not recorded" from "not covered".
+- **Live authorization hole, Phase-1 class.** `transferCustomer`
+  (`lib/services/team.service.ts`) reassigned a relationship but never revoked
+  `AccessGrant`s, so a reassigned agent kept `manage` (incl. **delete**) on that
+  customer's whole book forever. Phase 1 fixed *termination* and never asked if that was
+  the only way a relationship ends. Now atomic; pinned by
+  `tests/unit/access-ends-with-relationship-change.test.ts`, **verified to fail against
+  the pre-fix source**.
+- **Self-inflicted regression:** removing `isDetected` in Phase 3 silently emptied the
+  gap section of every branded/savings report and every run-to-run diff. Both now read
+  the rule-decided set (`GapInstance` rows / new `decidedGapSlugs`). Dropping the filter
+  would have been worse — `gapResults` is AI prose, not a detection list.
+- Also: export-exclusion list corrected (advisor MEDIC data **is** exported), 1-hour
+  signed URL cut to 5 min, CI-guard claim narrowed to what it scans, **Sentry disclosed
+  as a subprocessor** (it was receiving scrubbed events undisclosed), dead
+  `lib/honest-copy.ts` deleted.
+
+**Score 79/100. Ceiling without new external facts ≈84 — the gate (85) is not reachable
+from inside the repo.** Blocking facts, in order: underwriter validation of severity
+(Gate 3b), a broader authored rule catalogue (**4 rules cover 4 of 16 branches**), ΓΕΜΗ
+seat confirmation, court-venue decision, at-rest encryption attestation.
+
+~~**Recommendation: stop the scoring loop at iteration 1 of 3.**~~ **Superseded** — see the
+iteration-2 wrap above. Iteration 2 was not rewording: it found a seventh false claim this
+wrap had scored as true, and closed the guard blind spot below.
+
+**Known remainder, ranked #1 for the next security pass:** the authorization guard scans
+`app/api` only, per-file not per-handler, and **not server actions** — three already
+hand-roll their own checks (`agent/actions.ts:1629`, `coverage-insights/actions.ts:36`,
+`wallet/actions.ts:1614`). All currently narrower than `getPolicyAccess`, none exploitable
+today. Guardrails: `tsc` clean · **4590/4590 unit tests** · lint/utf8/encoding/i18n/api-auth green.
+
+---
+
+## Session wrap — 2026-08-20 (PHASE 5 — Trust & platform surface) — **GATE PASSED**, committed `8629e04f`
+
+**`/trust` and `/platform` shipped** (+ `/en` mirrors, registry-derived so sitemap and hreflang
+follow). One rule: every sentence describes what the code does today, with the citation in a
+comment beside it. **No DPIA section — none has been carried out**, so per the hard constraint
+it is BLOCKED-ON-FACT and stays unwritten. No certification badge, no "bank-grade" anything.
+
+**The neutrality pledge is now a CONTRACTUAL TERM** — Terms §3, both locales: *we do not sell,
+share, or transfer policyholder or portfolio data to insurers, banks, or third-party agencies*,
+with the one honest carve-out (the advisor you connect yourself). Inserting it renumbered the
+ten following sections in both languages.
+
+**Deliberately narrower than a reader expects, twice:** access control says the check happens
+in the **application** and that a CI test fails if a route bypasses it — it does **not** claim
+database-enforced isolation, because Phase 1 proved there is none. And portability **lists what
+does not come out** (payment methods, session/security records, the who-viewed-your-data
+history, usage metering, advisor notes).
+
+**`/platform` states its own limit:** the rules cover what someone has written a rule for, not
+every gap in every branch. A page that explains a method and hides its boundary is an advert.
+
+**AI incoherence resolved by naming it.** "AI" appeared **26 times in SEO metas and in zero of
+the 16 product pages' visible copy** — so the first place a visitor learned a model reads their
+document was the consent dialog. `/product` now says it in one sentence, with its limit, linking
+to `/platform`.
+
+**Checked and NOT changed:** `/compare` already bridges to the advisor (*"you go to your agent
+knowing what to ask"* + *"that is why we also built tools for agents"*) — the channel-hostility
+concern is already answered. The insurer reference data is claimed **nowhere** publicly, and the
+`/platform` source records why it must stay that way.
+
+**Two repo guards caught me and were right** — descriptions over the 160-char budget, and Title
+Case in Greek. Fixing the latter surfaced two genuine detector gaps: `;` is the Greek question
+mark and restarts a sentence, and `Παρίσι` is a proper noun like the `Αθήνα` already allowed.
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth pass · utf8 1823 · i18n pass ·
+**4584/4584 tests (434 files)**.
+
+**BLOCKED-ON-FACT (unwritten, not claimed):** DPIA; any certification/attestation; database-level
+isolation; "complete" export.
+
+**Next:** Phase 6 — re-score against the red-team rubric, re-verifying in code rather than
+trusting this loop's own claims.
+
+## Session wrap — 2026-08-20 (PHASE 4 — Regulatory identity & truth defects) — **GATE PASSED**, committed `b3e4a329`
+
+Report: `docs/audits/phase4-regulatory-truth-2026-08.md`.
+
+**The entity is published.** «Insurance Martech Ι.Κ.Ε.» / Insurance Martech IKE, ΓΕΜΗ
+188863359000, ΑΦΜ 302659440 (ΔΟΥ Χίου), seat Εντός Οικισμού Καλαμωτής, 82102, Χίος — on the
+footer, Terms §1 and Privacy §1, both locales, from one source. Values verified against commit
+`ec9d5f81`, which still carries the pre-suppression file headed *"These are the REAL corporate
+registry values"*; **its ΓΕΜΗ matches the number the owner supplied independently.** The
+concealment guards are **inverted** — the clauses must now contain name/ΓΕΜΗ/seat/ΑΦΜ, and no
+"available soon" placeholder may survive.
+
+**Deliberately NOT restored: the court venue.** The old record named the courts of Chios and
+`law_venue` renders that field; restoring it would narrow where a consumer's dispute is heard
+from "the courts of Greece" to the company's own island. That is a contract change, worse for
+the consumer, and nobody asked for it. **Owner/legal decision.**
+
+**Truth defects — all were still live, all fixed:** "Bank-grade security" (no attestation
+behind it) → AES-256; "Takes 90 seconds" removed; bulk import said **50 files, which matches no
+tier** (10/100/500/∞) → 100; Greek hero promised gap-finding without the Plus attribution the
+English carried — and Greek is the binding language; the free-tier promise was hand-typed in
+**17 files** → single-sourced; `/api/health` allowlisted (probes were getting a 307 to signin);
+dead `/workbox-` removed.
+
+**The guard that should have caught two of these scanned `app/(public)` only** — which is how
+false claims lived on the signup and password-reset screens through a marketing audit that
+closed with three consecutive zero-finding rounds. It now scans `app/auth`.
+
+**DSR copy matches the machine:** export is immediate but **not complete** (payment methods,
+session/security telemetry, the access-audit trail, usage ledgers, agent-authored records are
+excluded); deletion is a **request** an admin executes within the statutory month. Chose
+request-and-fulfil over automating an irreversible action. "Entire" appears nowhere. Greek
+Terms/Privacy confirmed available.
+
+**DSR DRILL RUN AND PASSED — 13/13**, 2026-08-20, dev project (the script refuses prod). Real
+`eraseUserData` against a full PII footprint: auth identity deleted, storage PDF removed, Art. 9
+profile scrubbed, consent row kept with IP scrubbed, export payload purged, **idempotent
+re-run**. First post-remediation drill on record — the July doc describes the pre-fix state. It
+also exercised the Phase 1 additions with no FK failure.
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth pass · utf8 1822 · i18n pass ·
+**4574/4574 tests (434 files)**.
+
+**Not claimed:** that a grep of *every* numeric/superlative claim across ~120 public URLs in two
+languages returns only traceable ones. I fixed the enumerated defects and widened the guard;
+a full sweep is a separate audit. **The seat could not be confirmed against ΓΕΜΗ from here** —
+it was live until 2026-07-22 and is internally consistent (ΔΟΥ Χίου matches); owner to confirm
+it is current.
+
+**Next:** Phase 5 (trust & platform surface) — now unblocked, since Phases 1–4 have all passed.
+
+## Session wrap — 2026-08-19 (PHASE 3 — Gap engine) — **GATE 3a PASSED / 3b BLOCKED**, committed `92fdd155`, `480a082e`
+
+Report: `docs/audits/phase3-gap-engine-findings-2026-08.md`.
+
+**A coverage gap was a model's opinion wearing a severity badge.** Detection came from
+`gapResults[].isDetected`, a boolean the LLM chose. Severity came from a hardcoded `"medium"`
+at the write site, or from a `low|medium|high|critical` enum the clarity pass emitted **with no
+rubric anywhere in the prompt** — and because gap_detection merged first, the literal silently
+overrode the clarity value for any slug both flagged.
+
+**Worse: the model authored the catalogue.** When clarity emitted an unknown slug, the
+orchestrator CREATED a `GapDefinition` from model output. In prod that ran to completion —
+**41 of 41 definitions AI-authored, 35 active**, none with evaluable logic. The drift is
+visible: `cyber_risk_gap` (critical) / `cyber_liability` (medium) / `cyber-risk-gap` (medium)
+are one risk under three spellings and two severities; `mental_health_exclusion` high vs
+`mental-health-exclusion` medium. What a customer was told depended on the model's spelling.
+
+**Now:** `decideGapsForPolicy` evaluates rules against the fresh `AcordData`; severity is the
+definition's; the model is handed an existing gap and asked only to word it. `isDetected` and
+`severity` are **deleted** from the interface, all three providers and the mock — not ignored.
+The mint site is gone. Provenance (`ruleId`/`ruleInputs`/`engineVersion`) is persisted.
+The dead third pipeline (`GapAnalysisService.analyzePolicy` + its unimported action) is removed.
+
+**A defect underneath that would have made rules untrustworthy anyway:** `AcordDataSchema` had
+`.default(false)` on six coverage booleans, and the SDK materialises defaults — so "the
+extractor never mentioned leishmaniasis" was stored as "not covered", and `is_false` read
+`!actual`. Unknown is representable now; only explicit `false` is evidence of absence. The
+evaluator had **no executable test** before (only source-text regex); it has 15.
+
+**Gate 3b:** `lib/gaps/severity-display.ts` is the single primitive — label, neutral tone,
+rank, and the mandatory caveat, with one flag to drop it when an underwriter signs off.
+Eleven surfaces still hand-roll severity (eight with no caveat) and are listed as **debt with a
+ceiling** in a red-green-proven guard.
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth pass · utf8 1818 · i18n pass ·
+**4573/4573 tests (434 files)**. Migrations applied to prod + dev.
+
+**⚠ Consequence, stated not buried:** prod's 41 AI-authored definitions are now **deactivated**
+(they can never fire by construction), so **production produces no coverage gaps at all** until
+a rule-bearing catalogue is seeded. `gap_instances` was already 0, so nothing was taken from a
+user — but the capability is dark. Of ~78 AI-observed gap concepts, rules can decide a handful;
+several branches (liability, income protection, group life, legal expenses, personal accident)
+have **no typed `AcordData` section at all** to write a rule from.
+
+**Not done:** a live three-gap trace — there is nothing to trace against until a catalogue is
+seeded. "One path" is partial: `process-policy` and the manual refresh still call the older
+entry point, though both now share the evaluator.
+
+**Next:** seed a rule-bearing gap catalogue (owner + underwriter input), then Phase 4.
+
+## Session wrap — 2026-08-19 (PHASE 2 — Accountability: make access observable) — **GATE PASSED, committed `d795ec05`**
+
+Report: `docs/audits/phase2-accountability-findings-2026-08.md`.
+
+**Every mutating admin action logged; reads did not.** The sharpest case:
+`getUserDetails` pulled the whole `policyholderProfile` — chronic conditions, family medical
+history, smoking status, income, mortgage — for any customer and wrote **no audit row**. It
+was also **pure over-fetch**: its only caller reads 17 fields, none from that relation. So
+every customer's health record was loaded into an admin page render and discarded. The
+relation is gone; what remains is logged. **Minimise first, then log** — logging access to
+data you never needed is the worse repair.
+
+**A correction to my own Step 0, caught by the compiler.** I claimed the advisor playbook was
+the same over-fetch ("uses only `profile.ownsHome`"). Wrong — `toLifeContext` consumes
+`chronicConditions` and `familyMedicalHistory`. My narrowing would have been a silent
+behaviour change; `tsc` rejected it. It is a **genuine Art. 9 read** and is now audited and
+flagged instead.
+
+**The right-of-access index backed nothing.** 18 `activityLog.create` sites, only 3 set
+`targetUserId` — and **neither shared helper could**, so 15 structurally couldn't name the
+subject. `logAdminAction` takes it now; new `logAdminRead` records subject + field **scope**
+(classes, never values) + `specialCategory`. Nine read paths instrumented.
+
+**Retention had the matching flaw:** the 5-year window keys on `metadata._audit`, which only
+`logAdminAction` stamps — so read-access rows fell into the 12-month bucket and the
+right-of-access trail expired four years before the admin-action trail for the same class of
+event. Rows naming a subject are accountability records now; the short sweep is their strict
+complement.
+
+**`isBreakGlass` dropped** (migration `20260819120000`, applied to **prod and dev** via
+Supabase MCP). One writer — a user filing their own deletion request, the opposite of an
+emergency override — and zero readers. A column promising a control that doesn't exist reads
+as evidence of one.
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth pass · utf8 1816 · i18n pass ·
+**4551/4551 unit tests (432 files)**. New guard `tests/unit/admin-reads-are-audited.test.ts`
+**red-green proven**. Retention **observed to have run in prod** (an export payload purged
+after expiry — and an earlier "unpurged payload" finding of mine was a SQL-NULL vs JSON-`null`
+artifact, discarded).
+
+**Two exclusions stated, not papered over:** (1) ~14 cron jobs still record only "the job ran",
+never which subjects they touched — per-subject rows for a bulk sweep is the wrong design;
+(2) in prod, all 60 `AGENT_VIEWED_CUSTOMER` rows lack `targetUserId` despite the code setting
+it since 2026-07-17 — likely branch divergence; **confirm which build prod runs before
+trusting any right-of-access report.**
+
+**BLOCKED (owner/DPO):** notifying subjects of admin access (`registry.ts:1295` — deliberately
+a policy decision); disclosing `ActivityLog` in the Art. 15 export; ratifying the 5-year window
+for read-access rows.
+
+**Next:** Phase 3 (gap engine — make "rules decide" true). `gap_instances` is 0 rows in prod,
+so truncate-and-regenerate is free.
+
+## Session wrap — 2026-08-19 (PHASE 1 — Security: authorization consolidation) — **GATE PASSED, committed `0ddb7605`**
+
+Report: `docs/audits/phase1-authorization-findings-2026-08.md`. Every claim carries file:line
+or a named prod query.
+
+**⚠ This work was written on 2026-08-14, DESTROYED by a working-tree revert, and re-applied
+on 2026-08-19.** The untracked files (guard test, audit docs) had never been staged, so git
+could not recover them. It is now **committed**. In this shared tree, uncommitted security
+work is not work — commit before handing off.
+
+**A live IDOR, fixed.** `lib/agent-visibility.ts` granted sight of any policy where
+`createdByUserId` matched, with **no relationship-status check**; termination revokes grants
+but cannot revoke immutable history. A dismissed agent kept seeing every policy they had
+uploaded for that customer across 15 files — including `branded-report`, which serves the
+analysis itself — while `relationship-actions.ts:10` promised access had stopped.
+`lib/policy-access.ts:140-141` had it right all along. **Live prod exposure: ZERO** (the one
+terminated relationship's former customer owns 0 policies), so no data remediation.
+
+**More severe:** `redeemInvite` was an **exported** function in a `"use server"` file taking a
+caller-supplied `userId` with **no auth at all** — an unauthenticated path that consumed
+invites and wrote AccessGrant/CustomerRelationship rows. Now session-derived. (A subagent had
+called this flow SAFE by reading only the page caller, never the export.)
+
+**Also:** `createUserTask` status filter and `requestAiConsent` scope filter (both claimed by
+their own comments, neither implemented); orchestrator accepted a bare relationship to read
+document bytes and spend tokens; **7 routes consolidated** onto `getPolicyAccess` (also
+un-breaking grant-holding advisors); **441 lines of dead duplicate authorization deleted**.
+
+**Erasure guard blindspot closed** — detection now derives User FKs from `@relation` shape,
+not 5 hardcoded names, surfacing **8 invisible models**. Two leaked real subject data and are
+now erased + exported; six exempt with verified reasons (`CollaborationParticipant`'s old
+reason was factually false — threads are never deleted).
+
+**Verified:** tsc clean · ESLint 0 · audit:api-auth 0/0/0/0 · utf8 1814 · i18n pass ·
+**4538/4538 unit tests (431 files)**. The new guard is **red-green proven** and was hardened
+mid-verification after a probe slipped through on a *comment* mentioning `getPolicyAccess`.
+Cross-tenant checks are proven at the decision layer, **not** as live two-session HTTP calls.
+
+**Premise corrections (do not re-inherit):** "Zero registered users" is **false** — prod has 5
+auth users, 12 DB rows, 2 policies, 11 storage objects, and `pkaragian@outlook.com` is an
+external person owning a policy. `gap_instances` **is** 0, so Phase 3 truncate is free. GO #1's
+trio was **never in prod**; the real find was `e2e-money@policywallet.test`, **purged**
+(survived the revert — it was a DB change). Storage is **healthier than documented**: all
+buckets private with the July limits applied and **no SELECT policy**, so stored URLs are
+inert — the feared unauthenticated PDF IDOR does not exist. **One migration unapplied in prod**
+(`drop_dead_protection_score_history`), leaving a dead table with 3 rows of per-user scores
+outside the DSR export path — Phase 2/4.
+
+**Next:** Phase 2 (accountability) — log admin reads incl. `getUserDetails`; give
+`isBreakGlass` a real semantic or remove it (one call site, on user-initiated deletion).
+
+## Session wrap — 2026-08-14 (A failed upload must not leave a half-created policy behind)
+
+**Current phase:** built on `feat/marketing-site-overhaul`, uncommitted. Full guardrail gate
+green (audit:api-auth, lint, lint:i18n-changed, lint:utf8, type-check, **4,528 unit tests /
+430 files**, production build). No migration, no schema change.
+
+**The bug as reported.** A wallet upload writes the policy row *before* extraction knows
+anything, filling the NOT NULL identity columns with placeholders. When analysis never
+completed, those survived at `action_needed` and the wallet notice strip printed them raw:
+"Αυτοκίνητο · **__PENDING_EXTRACTION__**: λείπουν στοιχεία από το έγγραφο."
+
+**What the investigation actually found — three sentinel sources, not one.** Besides the add
+form (`AddPolicyClient.tsx:100/103`) and `uploadAndParse` (`policy.service.ts:353/365`), **the
+AI providers substitute `Unknown Insurer` / `PENDING-<epoch>` for an empty extraction on a
+SUCCESSFUL run** (`gemini|anthropic|openai-ai.service.ts`), and `buildMetadata` keeps whatever
+is stored when the evidence gate rejects a document. So a placeholder reaches perfectly healthy
+`active` policies, and discarding failed ones does **not** close the hole on its own.
+
+**Two more holes found on the way.** `runBackgroundAnalysis` awaited `extractBasicSummary` and
+**threw the result away** — for every free/Starter user (the majority tier) a failed or
+consent-blocked parse left the policy stuck `analyzing` forever, with nothing said. And process
+death (`LEASE_EXPIRED`) had no discard path at all.
+
+**Three dispositions, deliberately not collapsed into one.**
+- **DISCARD** (technical: provider error, unreadable document, timeout, dead executor) on a
+  policy whose identity is *entirely* placeholder → row, document rows and bucket objects all
+  removed. **Storage first, database second**: an object that outlives its row is personal data
+  no GDPR export can see, so a failed storage delete ABORTS the discard and keeps the row.
+- **KEEP** — the same technical failure on a policy someone typed an insurer into is kept and
+  marked `action_needed`. A provider timeout must not delete an agent's work.
+- **INFORM** — quota / consent / permission never started the run: the upload is kept and the
+  reason is said in Greek, from a stable code (`TOKEN_LIMIT_BLOCKED`, `AI_CONSENT_REQUIRED`,
+  `ANALYSIS_NOT_PERMITTED`) the UI localizes. Silently deleting a quota-blocked file would make
+  the product look broken.
+
+A **96% (`completed_with_warnings`) run is still a success** — verified nothing anywhere
+thresholds `overallSuccessPct`, and nothing was added that does.
+
+**The sentinel is now unrenderable, centrally.** `lib/wallet/policy-identity.ts` is the single
+owner of the literals (~20 unguarded surfaces adopted it; the 5 divergent inline copies were
+replaced), `resolveInsurerDisplay` resolves a placeholder to `""`, and `emit()` scrubs every
+notification title/message/subject as a backstop. A repo-scan test fails CI if any file outside
+the primitive and the three writers learns the strings again.
+
+**Storage rollback on the create path.** `createPolicy` now removes client-uploaded objects on
+every non-persisting path (cap hit, Zod throw, rejected extension, over-cap, transaction
+failure) — previously all of them orphaned.
+
+**Counts measured today.** Sentinel-valued policies: **0 in dev, 0 in prod**. Orphaned storage
+objects: **34 in dev, 9 in prod** — nine real customer PDFs in production reachable by no
+export and no erasure request. `scripts/cleanup-sentinel-policies.ts` (`npm run
+cleanup:sentinels`) reports them; **the prod cleanup has NOT been run — it needs the owner's
+go-ahead.**
+
+**Environment hazard found and guarded.** `.env.local` declares `DIRECT_URL` twice — dev first,
+**prod second** — and dotenv keeps the last, so `npx tsx -r dotenv/config …` reads **production
+Postgres** while the Supabase client talks to the **dev** bucket. The cleanup script hard-refuses
+to run when the two refs disagree. Any new destructive script should copy that guard.
+
+**Next 3 actions:** (1) decide on running the prod orphan cleanup; (2) fix the duplicate
+`DIRECT_URL` in `.env.local`; (3) E2E the upload-failure path locally before merging.
+
 ## Session wrap — 2026-08-13b (Feature flags: the automation console's one missing pillar)
 
 **Current phase:** built and gated on `feat/marketing-site-overhaul`. **The migration is
@@ -589,6 +1051,13 @@ in order (`notification_bus`, `notification_admin`, `business_events`,
 **before** #266 deployed at 15:09. The only local migration prod still lacks is
 `20260809130000_drop_dead_protection_score_history`, which is the destructive one
 deliberately held for an owner decision.
+
+## Top launch risks (ranked — GA-gating only)
+1. ~~**High — public site false claims**~~ **RESOLVED (verified 2026-08-20).** The fabricated stats and testimonials are gone; `lib/landing/content.ts:16-21` records the deletion and `lib/seo/team.ts` is `[]` by design. An exhaustive numeric/superlative/social-proof sweep this phase found **no** invented figures, testimonials or logo walls left. Remaining copy risk is narrower and tracked in `phase6-rescore-2026-08.md` §6: SEO metadata on several pages still implies broader gap-finding than **4 rules** support.
+2. ~~**High — AI-processing consent gate (Art. 9)**~~ **RESOLVED (verified 2026-08-20).** Migration and `User.aiProcessingConsentVersion` shipped; **both** paths that send bytes to a provider are now gated — the deep pipeline *and* `app/api/policies/extract/route.ts` (the upload/bulk path, which was ungated until this phase). Pinned by `tests/unit/access-ends-with-relationship-change.test.ts`.
+3. **High — seeded accounts in prod** (= GO #1; 5-minute human action).
+4. **High — auth gaps**: no production passkey/biometric verification; 30-day session persistence untested.
+5. **Medium — Privacy page over-claims**: "GDPR export/deletion workflows available" — DSR executors unconfirmed. Ship or soften wording.
 
 **Top risks:** 1) `connection_limit` is still left to the hand-edited pooler URL —
 the same class of omission that caused today's outage, deliberately not forced in

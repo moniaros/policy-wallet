@@ -942,6 +942,11 @@ export const en: TranslationKeys = {
                     detail: 'Your current plan does not allow more policies in the Wallet.',
                     action: 'Upgrade your plan to add more.',
                 },
+                AI_CONSENT_REQUIRED: {
+                    title: 'We need your permission first.',
+                    detail: 'Reading a policy automatically sends the document to an AI provider. We do not do that until you allow it.',
+                    action: 'Give permission in your privacy settings, or add the policy manually.',
+                },
                 AI_UNAVAILABLE: {
                     title: 'Automatic reading is unavailable.',
                     detail: 'The document analysis service is temporarily down.',

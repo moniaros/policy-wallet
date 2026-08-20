@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import { SeverityCaveat } from "@/components/gaps/SeverityCaveat"
 import {
     AlertTriangle,
     Calendar,
@@ -241,6 +242,10 @@ function GapsSummaryBanner({
                     ))}
                 </div>
             )}
+            {/* The loudest severity claim in the product: an ADVISOR reads
+                "N clients with critical gaps" and may repeat it to a customer.
+                Gate 3b is not passed, so it does not go out unqualified. */}
+            <SeverityCaveat lang={language === "el" ? "el" : "en"} className="mt-2 mb-0" />
         </div>
     )
 }

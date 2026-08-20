@@ -47,6 +47,114 @@ export async function detectGapsForPolicy(policy: Policy): Promise<DetectedGap[]
 }
 
 /**
+ * A gap the RULES found, with the evidence for why.
+ *
+ * This is the only shape allowed to become a `GapInstance`. It carries the
+ * definition it came from, the rule that fired, and the inputs that rule read,
+ * so a finding can be re-derived and argued with later — which is what an
+ * insurance finding has to survive.
+ */
+export interface RuleDecidedGap {
+    slug: string
+    gapDefinitionId: string
+    severity: GapSeverity
+    ruleId: string
+    ruleInputs: Record<string, unknown>
+    fallbackDescription: string
+}
+
+/** Bumped when rule semantics change, so old findings are identifiable. */
+export const GAP_ENGINE_VERSION = "rules-1"
+
+/**
+ * Does this definition carry logic a rule engine can actually evaluate?
+ *
+ * Two shapes in the catalogue are NOT rules and must never produce a gap:
+ *   • `{ check: "Does the policy cover earthquake?" }` — a natural-language
+ *     question for a model, which `evaluateSingleRule` falls through to `false`
+ *     on anyway, silently.
+ *   • `{ source: "ai_clarity_pipeline" }` — the marker on definitions the AI
+ *     minted for itself at runtime. Every one of the 41 definitions in
+ *     production had this shape as of 2026-08-19.
+ *
+ * Returning false here is the difference between "we checked and found nothing"
+ * and "nothing checked". Callers must treat it as the latter.
+ */
+export function hasEvaluableRule(gapDef: Pick<GapDefinition, "detectionLogic">): boolean {
+    const logic = gapDef.detectionLogic as any
+    if (!logic || typeof logic !== "object") return false
+    if (Array.isArray(logic.rules)) return logic.rules.some((rule: any) => typeof rule?.type === "string")
+    return typeof logic.type === "string"
+}
+
+/**
+ * THE decision point: which gaps does this policy actually have?
+ *
+ * Detection and severity both come from here. The model is not consulted, and a
+ * definition without an evaluable rule is skipped rather than guessed at, so a
+ * gap type nobody has written a rule for simply does not appear — which is the
+ * honest outcome, and a visible one, rather than an AI opinion wearing a
+ * severity badge.
+ */
+export async function decideGapsForPolicy(
+    policy: Policy,
+    acordData: unknown
+): Promise<RuleDecidedGap[]> {
+    const gapDefinitions = await (db.gapDefinition.findMany as any)({
+        where: { lineOfBusiness: policy.lineOfBusiness, isActive: true },
+    })
+
+    const decided: RuleDecidedGap[] = []
+    // Evaluate against the freshly extracted document, not the row's stored
+    // copy — the extraction that just ran is the whole point of the run.
+    const subject = { ...policy, acordData } as Policy
+
+    for (const gapDef of gapDefinitions) {
+        if (!hasEvaluableRule(gapDef)) continue
+        if (!evaluateGapLogic(subject, gapDef)) continue
+
+        decided.push({
+            slug: gapDef.slug,
+            gapDefinitionId: gapDef.id,
+            severity: (gapDef.severity || "medium") as GapSeverity,
+            ruleId: gapDef.ruleId || gapDef.slug,
+            ruleInputs: ruleInputsFor(gapDef, acordData),
+            fallbackDescription: gapDef.description || gapDef.title || gapDef.name || "",
+        })
+    }
+
+    return decided
+}
+
+/**
+ * The values the rule actually looked at, recorded alongside the finding.
+ *
+ * Without this a gap is an assertion; with it, it is a claim someone can check.
+ */
+function ruleInputsFor(
+    gapDef: Pick<GapDefinition, "detectionLogic">,
+    acordData: unknown
+): Record<string, unknown> {
+    const logic = gapDef.detectionLogic as any
+    const rules: any[] = Array.isArray(logic?.rules) ? logic.rules : [logic]
+    const inputs: Record<string, unknown> = {}
+
+    for (const rule of rules) {
+        if (!rule || typeof rule !== "object") continue
+        const fields: string[] = Array.isArray(rule.fields)
+            ? rule.fields
+            : typeof rule.field === "string"
+              ? [rule.field]
+              : []
+        for (const field of fields) {
+            inputs[field] = getNestedField(acordData, field) ?? null
+        }
+    }
+
+    return inputs
+}
+
+/**
  * Detect gaps for all user policies
  */
 export async function detectGapsForUser(userId: string): Promise<DetectedGap[]> {
@@ -73,7 +181,7 @@ export async function detectGapsForUser(userId: string): Promise<DetectedGap[]> 
 /**
  * Evaluate mature gap detection logic
  */
-function evaluateGapLogic(policy: Policy, gapDef: GapDefinition): boolean {
+export function evaluateGapLogic(policy: Policy, gapDef: GapDefinition): boolean {
     const logic = (gapDef as any).detectionLogic as any
     if (!logic) return false
 
@@ -186,6 +294,18 @@ function getNestedField(obj: any, path: string): any {
     return path.split('.').reduce((o, key) => o?.[key], obj)
 }
 
+/**
+ * "Nothing was recorded here."
+ *
+ * An EMPTY ARRAY counts. `beneficiaries: []` is not a recorded beneficiary, and
+ * treating it as one would let a policy with an empty list pass a check whose
+ * whole purpose is to notice that nobody is named.
+ */
+function isAbsent(actual: unknown): boolean {
+    if (actual === undefined || actual === null || actual === '') return true
+    return Array.isArray(actual) && actual.length === 0
+}
+
 function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
     const { field, operator, value } = rule
     const actual = getNestedField(acordData, field)
@@ -195,20 +315,50 @@ function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
             return actual === value
         case 'not_equals':
             return actual !== value
+        // "Not covered" must mean the document SAID so, not that the extraction
+        // never mentioned it.
+        //
+        // These read `!actual`, so an absent field — the overwhelmingly common
+        // case, since the extractor writes what it finds and is silent about
+        // everything else — counted as a definite "no". That turned "we did not
+        // read anything about leishmaniasis" into "your dog is not covered for
+        // leishmaniasis", which is a different sentence and a worse one to be
+        // wrong about. Only an explicit `false` is evidence of absence; unknown
+        // yields no gap.
         case 'is_false':
+            return actual === false
+        // `falsy` keeps its literal meaning for non-boolean fields (empty
+        // string, zero) but still refuses to treat "not extracted" as evidence.
         case 'falsy':
-            return !actual
+            return actual !== undefined && actual !== null && !actual
         case 'is_true':
         case 'truthy':
-            return !!actual
+            return actual === true
+        // Fires ON SILENCE, deliberately — it asks whether a value was RECORDED,
+        // not whether cover exists. Any finding built on it must be worded "not
+        // recorded", never "not covered", and it is only justified for fields
+        // that policies of that branch routinely state.
         case 'missing':
-            return actual === undefined || actual === null || actual === ''
+            return isAbsent(actual)
+        // The `missing` counterpart to `all_false`: every listed field must be
+        // absent. Needed where one fact can arrive by more than one path — a life
+        // policy's beneficiaries land in either `beneficiaries` or
+        // `lifeAndInvestment.beneficiaries`, and checking only one would report
+        // "no beneficiary recorded" for a policy that plainly records one.
+        case 'all_missing': {
+            const fields = (rule.fields || []) as string[]
+            if (fields.length === 0) return false
+            return fields.every((f: string) => isAbsent(getNestedField(acordData, f)))
+        }
         case 'less_than':
             return typeof actual === 'number' && actual < (value as number)
         case 'all_false': {
-            // Check multiple boolean fields — gap if NOT all true
+            // Used for "you need ALL of these to qualify" (the ENFIA discount
+            // needs fire AND earthquake AND flood). The gap is that at least one
+            // is explicitly absent — an unknown one means we cannot tell yet,
+            // which is not the same as failing to qualify.
             const fields = (rule.fields || []) as string[]
-            return !fields.every((f: string) => !!getNestedField(acordData, f))
+            return fields.some((f: string) => getNestedField(acordData, f) === false)
         }
         default:
             return false

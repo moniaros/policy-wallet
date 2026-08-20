@@ -33,14 +33,12 @@ function toLocalized(greekText: string): LocalizedText {
 export function wrapGapResultsBilingual(
     rawResults: Array<{
         slug: string
-        isDetected: boolean
         explanation: string
         suggestion: string
     }>
 ): AIGapResult[] {
     return rawResults.map((r) => ({
         slug: r.slug,
-        isDetected: r.isDetected,
         explanation: toLocalized(r.explanation),
         suggestion: toLocalized(r.suggestion),
     }))
@@ -61,7 +59,6 @@ export function wrapClarityResultsBilingual(raw: {
     }>
     coverageGaps: Array<{
         slug: string
-        severity: "low" | "medium" | "high" | "critical"
         evidence: string
         recommendation: string
     }>
@@ -103,7 +100,6 @@ export function wrapClarityResultsBilingual(raw: {
         })),
         coverageGaps: raw.coverageGaps.map((g) => ({
             slug: g.slug,
-            severity: g.severity,
             evidence: toLocalized(g.evidence),
             recommendation: toLocalized(g.recommendation),
         })),

@@ -83,6 +83,60 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
 - **Database:** always `import { db } from "@/lib/db"`. Never `new PrismaClient()` — the singleton ([lib/db.ts](lib/db.ts)) prefers `DIRECT_URL` to avoid pooling errors.
 - **Auth (server pages/actions):** call `getAuthenticatedUser()` (redirects if anonymous) from [lib/auth-helpers.ts](lib/auth-helpers.ts). Roles live on `User.roles` as a **comma-separated string** — check with `.includes('admin')` or `parseRoles()`.
 - **Auth (API routes):** guard with `requireApiUser({ roles })` (or `withApiGuard`) from [lib/api-auth.ts](lib/api-auth.ts) / [lib/api-guard.ts](lib/api-guard.ts), and return `createApiResponse` / `createApiError` from [lib/api-utils.ts](lib/api-utils.ts). Keep the route's entry in `scripts/api-route-policy-inventory.json` in sync.
+- **Authorization for policy-owned records — one path, enforced.** Anything that lets a
+  caller name a Policy / PolicyDocument / GapInstance / PolicyAnalysisRun goes through
+  `getPolicyAccess` ([lib/policy-access.ts](lib/policy-access.ts)); the agent-facing *set*
+  equivalent is [lib/agent-visibility.ts](lib/agent-visibility.ts). Do not hand-roll an
+  ownership or grant check — four copies existed by Aug 2026 and had drifted in both
+  directions (a dismissed agent still seeing uploads; grant-holders wrongly denied).
+  `tests/unit/policy-authorization-single-path.test.ts` derives the route list from the
+  filesystem and fails on a new bypass; exemptions go in that file with a reason.
+- **An agent's access dies with the relationship — however the relationship ends.** Both
+  visibility arms — the grant and the `createdByUserId` upload arm — require a relationship
+  that is not `inactive`/`terminated`. Never gate on `status === "active"`: the column
+  defaults to `pending_activation`, which is the normal state before a customer accepts.
+  **Termination is not the only ending.** `computePolicyAccess` derives read/write/delete
+  from an `AccessGrant`'s level *alone* and never re-checks the relationship, so any code
+  that ends or moves a relationship must revoke the grants **in the same transaction** —
+  `terminateRelationship` always did; `transferCustomer` did not until Aug 2026, and left
+  reassigned agents with permanent `manage` over a former customer's whole book. If you add
+  a third way for a relationship to end, revoke there too.
+- **Rules decide a coverage gap; the model only describes one.** Detection and severity come
+  from `decideGapsForPolicy` ([lib/gap-detection.ts](lib/gap-detection.ts)) evaluating a
+  `GapDefinition.detectionLogic` against the extracted `AcordData`; severity is the
+  definition's, never a literal at the write site. The AI contract has no `isDetected` and no
+  `severity` field — deleted, not ignored — and nothing may create a `GapDefinition` from model
+  output. A definition without an evaluable rule produces nothing rather than failing silently
+  to false. **Unknown is not absence**: for `is_false`/`all_false` only an explicit `false`
+  is evidence a cover is missing, because the extractor is silent about most fields. The
+  separate `missing` operator deliberately fires *on* silence — it asks whether a value was
+  recorded, not whether cover exists — so any finding it produces must be worded "not
+  recorded", never "not covered", and public copy must not claim gaps appear only when the
+  policy says so.
+  A run's `resultJson.gapResults` is **AI prose keyed by slug, not a detection list** —
+  entries exist for candidate slugs whether or not a rule fired. Never derive "which gaps
+  does this policy have" from it; read `GapInstance` rows or `resultJson.decidedGapSlugs`.
+- **Nothing reaches a model provider without AI-processing consent — on every path.** There
+  is more than one: the deep pipeline (`policy-analysis-orchestrator.service.ts`) *and*
+  upload-time extraction (`app/api/policies/extract/route.ts`, which the bulk-upload modal
+  also uses). Check `aiProcessingConsentVersion` **before reading the request body**, so a
+  refusal never touches the document. The extract path was ungated until Aug 2026 while
+  `/trust` promised the opposite.
+- **Severity is not a verdict until an underwriter says so.** Render it through
+  `describeSeverity()` ([lib/gaps/severity-display.ts](lib/gaps/severity-display.ts)) and show
+  its `caveatKey`. `tests/unit/gap-severity-display-single-source.test.ts` fails on a new
+  hand-rolled severity map and carries the migration debt list.
+- **An admin read of another person's data leaves a trace, and reads what it needs.**
+  Minimise first: a bare relation include (`policyholderProfile: true`) pulls every Art. 9
+  column, and `getUserDetails` was loading customers' health records into a page that
+  renders none of them. Then log: `logAdminRead` ([lib/admin/admin-guard.ts](lib/admin/admin-guard.ts))
+  records the subject (`targetUserId`), a field **scope** in classes rather than values, and
+  `specialCategory` when Art. 9 data is involved. `tests/unit/admin-reads-are-audited.test.ts`
+  fails if an enumerated read path drops its audit call.
+- **Every export of a `"use server"` file is a public endpoint.** It is reachable with no
+  UI, so it needs its own auth check, and it must never take the acting user's id as a
+  parameter — derive the subject from the session. `redeemInvite` took `(token, userId)`
+  and was an unauthenticated write path for months.
 - **i18n:** no hardcoded UI strings. Client components use `useLanguage()` ([contexts/LanguageContext.tsx](contexts/LanguageContext.tsx)); server code uses `getTranslations(lang)` ([lib/i18n/index.ts](lib/i18n/index.ts)) and passes `t` down as props. Default language is `el`.
 - **Next.js 16:** dynamic-route `params` are **Promises** — `const { id } = await params`. Validate request input with Zod.
 - **Schema changes:** edit `prisma/schema.prisma`, then `npx prisma migrate dev`. Never hand-edit the DB; run `npm run verify:migrations` before committing.

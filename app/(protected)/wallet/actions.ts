@@ -1034,68 +1034,10 @@ function parseAnalysisDate(d: string | undefined): Date | undefined {
     return isNaN(date.getTime()) ? undefined : date;
 }
 
-export async function analyzeGaps(policyId: string) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { error: "Unauthorized" }
-
-    // AI gap analysis is a Plus feature (code key "pro"); free and Starter are
-    // both blocked (agents are metered by their agent-plan budgets, admins
-    // bypass).
-    const { tier } = await getUserSubscription(authResult.dbUser.id)
-    const callerRoles = authResult.dbUser.roles || ""
-    if (tier !== "pro" && !hasAnyRole(callerRoles, ["agent", "admin"])) {
-        await recordConversionEvent(authResult.dbUser.id, "free_ai_call_blocked", {
-            kind: "gap_analysis",
-            source: "analyze_gaps",
-            feature: "advanced_gap_detection",
-        })
-        return { error: "UPGRADE_REQUIRED" }
-    }
-
-    // Check Daily Limit for Gap Analysis
-    const dailyLimit = SUBSCRIPTION_LIMITS[tier].gapAnalysisPerDay
-
-    if (dailyLimit !== null && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
-        // The reader's day, not the server's. setHours(0,0,0,0) is midnight in
-        // the RUNTIME zone — UTC on Vercel — so the daily allowance for a paid
-        // feature reset at 03:00 Athens: someone who used it up in the evening
-        // was still blocked at 1am, and a question asked at 2am counted against
-        // the previous day.
-        const today = startOfAthensDay(new Date())
-
-        const count = await (db as any).activityLog.count({
-            where: {
-                adminUserId: authResult.dbUser.id,
-                actionType: "POLICY_ANALYZED",
-                timestamp: { gte: today }
-            }
-        })
-
-        if (count >= dailyLimit) {
-            return { error: "LIMIT_REACHED" }
-        }
-    }
-
-    const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
-    const gapService = new GapAnalysisService(db)
-    const gapTokenGate = await canUserUseTokens(authResult.dbUser.id, 60000)
-    if (!gapTokenGate.allowed && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
-        return { error: "TOKEN_LIMIT_BLOCKED" }
-    }
-
-    try {
-        const result = await gapService.analyzePolicy(policyId, authResult.dbUser.id, language)
-        revalidatePath(`/wallet/${policyId}`)
-        return result
-    } catch (e) {
-        if (e instanceof AppError && e.metadata?.reason === "AI_CONSENT_REQUIRED") {
-            return { error: "AI_CONSENT_REQUIRED" }
-        }
-        console.error("AI Gap Analysis failed", e)
-        return { error: `Analysis failed: ${e instanceof Error ? e.message : String(e)}` }
-    }
-}
-
+// NOTE: analyzeGaps() lived here until Aug 2026 — a server action wired to a
+// third gap pipeline (GapAnalysisService.analyzePolicy) that no component ever
+// imported. Both are gone; the orchestrator is the one path, and detection is
+// decided by lib/gap-detection.ts rather than by a model.
 export async function deletePolicy(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }

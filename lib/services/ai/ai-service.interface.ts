@@ -57,11 +57,27 @@ export interface VerifiedPolicyMetadata {
 }
 
 /**
- * Gap analysis result from AI
+ * What the model may say about a coverage gap.
+ *
+ * It may EXPLAIN. It may not DECIDE.
+ *
+ * This interface used to carry `isDetected: boolean`, and that boolean was the
+ * product: whether a customer was told they had a coverage gap came down to a
+ * model's per-slug judgement over a natural-language `checkCriteria` string.
+ * Severity came from the same family of guesses — the clarity step emitted a
+ * `low|medium|high|critical` enum with no rubric anywhere in the prompt, so the
+ * same real-world risk landed on "critical" or "medium" depending on which slug
+ * the model happened to spell that run (see the audit: cyber_risk_gap=critical
+ * vs cyber_liability=medium, both minted by the same pipeline).
+ *
+ * Detection and severity are now decided by `lib/gap-detection.ts` against the
+ * extracted AcordData, and the model is handed a gap that already exists and
+ * asked only to put it in words. The fields are gone rather than ignored: an
+ * ignored field is one refactor away from being read again, and the compiler
+ * cannot warn you about a convention.
  */
 export interface AIGapResult {
     slug: string
-    isDetected: boolean
     explanation: {
         en: string
         el: string
@@ -155,9 +171,15 @@ export interface ClaritySavingsOpportunity {
     confidence: number
 }
 
+/**
+ * Prose the clarity pass produced about a gap. NOT a detection, NOT a severity.
+ *
+ * `severity` was removed here for the same reason as `AIGapResult.isDetected`:
+ * membership of this array used to be the detection signal, and the enum on it
+ * used to become `GapInstance.severity` verbatim. Both are rule decisions now.
+ */
 export interface ClarityCoverageGap {
     slug: string
-    severity: "low" | "medium" | "high" | "critical"
     evidence: LocalizedText
     recommendation: LocalizedText
 }

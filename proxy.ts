@@ -115,10 +115,13 @@ export async function proxy(request: NextRequest) {
         // Each route self-authenticates (CRON_SECRET / QStash signature / admin
         // role), same defense-in-depth as the Stripe webhooks below.
         "/api/v1/jobs/",
-        // PWA service-worker chunks (workbox-<hash>.js at the root)
-        "/workbox-",
     ]
     const publicExactRoutes = [
+        // Declared auth:"public" in the route-policy inventory, but it was never
+        // allowlisted here — so an uptime probe got a 307 to /auth/signin, which
+        // a load balancer reads as either "up" (it followed the redirect) or
+        // "down". A health check behind a login wall checks nothing.
+        "/api/health",
         "/",
         "/en",
         "/terms",
@@ -132,6 +135,8 @@ export async function proxy(request: NextRequest) {
         // actually has. Linked from the homepage and the footer, so it must be
         // reachable anonymously or every visitor hits a login wall.
         "/compare",
+        "/trust",
+        "/platform",
         "/company",
         "/contact",
         "/for-agents",

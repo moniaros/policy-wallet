@@ -318,8 +318,8 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
             en: "Suggestions for what each client is missing, taken from their own policies",
         },
         {
-            el: "Στέλνετε 50 αρχεία μαζί και τα διαβάζουμε όλα σε λίγα λεπτά",
-            en: "Send 50 files at once and we read every one of them in minutes",
+            el: "Στέλνετε 100 αρχεία μαζί και τα διαβάζουμε όλα σε λίγα λεπτά",
+            en: "Send 100 files at once and we read every one of them in minutes",
         },
     ]
 

@@ -160,13 +160,26 @@ export const DELETE = withApiGuard(
         const { id, docId } = params
 
         try {
-            // Verify policy ownership and document existence
+            // On the single path, like the GET above. This used to inline
+            // `policy: { ownerUserId: ... }`, which was a fifth copy of the
+            // ownership rule living in the same file as a handler that calls
+            // getPolicyAccess — and the file-level CI guard could not see it,
+            // because its sibling satisfied the check.
+            //
+            // The narrowing to OWNER ONLY is deliberate and kept: `canDelete` would
+            // also admit a grant-holder with `manage`, and destroying a customer's
+            // document is not something an advisor's grant should carry. Read is
+            // shared; destruction is not.
+            const access = await getPolicyAccess(id, {
+                id: authResult.dbUser.id,
+                roles: authResult.dbUser.roles,
+            })
+            if (!access.exists || !access.isOwner) {
+                return createApiError("NOT_FOUND", "Document not found", 404)
+            }
+
             const document = await db.policyDocument.findFirst({
-                where: {
-                    id: docId,
-                    policyId: id,
-                    policy: { ownerUserId: authResult.dbUser.id }
-                },
+                where: { id: docId, policyId: id },
                 include: { policy: true }
             })
 

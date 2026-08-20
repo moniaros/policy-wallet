@@ -1,6 +1,7 @@
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { db } from "@/lib/db"
 import { withApiGuard } from "@/lib/api-guard"
+import { getPolicyAccess } from "@/lib/policy-access"
 import { z } from "zod"
 
 const runStatusParamsSchema = z.object({
@@ -23,29 +24,20 @@ export const GET = withApiGuard(
         const authResult = auth!
         const { id: policyId, runId } = params
 
-        const policy = await db.policy.findUnique({
-            where: { id: policyId },
-            select: { id: true, ownerUserId: true },
+        // The exact-scope rule this route once implemented by hand is now the
+        // shared one: getPolicyAccess only counts an active grant whose scope
+        // is exactly `policy:<id>`, so a grant to another policy of the same
+        // owner still cannot expose this run — and the rule cannot drift away
+        // from the rest of the app the way a private copy would.
+        const access = await getPolicyAccess(policyId, {
+            id: authResult.dbUser.id,
+            roles: authResult.dbUser.roles,
         })
-        if (!policy) {
+        if (!access.exists) {
             return createApiError("NOT_FOUND", "Policy not found", 404)
         }
-
-        const isOwner = policy.ownerUserId === authResult.dbUser.id
-        if (!isOwner) {
-            // The grant must be scoped to THIS policy — an active grant to any
-            // other policy of the same owner must not expose this run's data.
-            const grant = await db.accessGrant.findFirst({
-                where: {
-                    granterUserId: policy.ownerUserId,
-                    granteeUserId: authResult.dbUser.id,
-                    scope: `policy:${policyId}`,
-                    status: "active",
-                },
-            })
-            if (!grant) {
-                return createApiError("FORBIDDEN", "Access denied", 403)
-            }
+        if (!access.canRead) {
+            return createApiError("FORBIDDEN", "Access denied", 403)
         }
 
         const run = await db.policyAnalysisRun.findFirst({

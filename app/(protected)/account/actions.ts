@@ -160,14 +160,20 @@ export async function deleteAccount() {
             },
         })
 
-        // High priority audit log
+        // The subject is both actor and subject here, so targetUserId is the
+        // same id — the row still belongs in the right-of-access trail.
+        //
+        // This used to set `isBreakGlass: true`. It was the only write of that
+        // column anywhere, and it was the wrong event for it: a person
+        // exercising Art. 17 on their own account is the opposite of an
+        // emergency override of someone else's data. The column is gone.
         await (db.activityLog as any).create({
             data: {
                 adminUserId: userId,
                 adminEmail: "security",
                 actionType: "ACCOUNT_DELETION_REQUESTED",
                 description: `User account ${userId} requested GDPR deletion. Request id: ${request.id}`,
-                isBreakGlass: true
+                targetUserId: userId,
             }
         })
 

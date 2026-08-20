@@ -90,7 +90,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "provider",
                     title: "1. Πάροχος της υπηρεσίας",
                     paragraphs: [
-                        `Την πλατφόρμα PolicyWallet (policywallet.gr) λειτουργεί ελληνική εταιρεία. ${EL.detailsComingSoon}`,
+                        `Την πλατφόρμα PolicyWallet (policywallet.gr) λειτουργεί η εταιρεία ${EL.company}, με αριθμό ΓΕΜΗ ${EL.gemi}, ${EL.vat}, και έδρα ${EL.address}.`,
                         "Για κάθε θέμα σχετικό με τους παρόντες όρους μπορείτε να επικοινωνείτε στο info@policywallet.gr.",
                     ],
                 },
@@ -104,8 +104,17 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     ],
                 },
                 {
+                    id: "data_neutrality",
+                    title: "3. Δέσμευση ουδετερότητας: πού ΔΕΝ πηγαίνουν τα δεδομένα σας",
+                    paragraphs: [
+                        "Δεν πουλάμε, δεν μοιραζόμαστε και δεν διαβιβάζουμε δεδομένα ασφαλισμένων ή χαρτοφυλακίου σε ασφαλιστικές εταιρείες, τράπεζες ή τρίτα ασφαλιστικά πρακτορεία. Η δέσμευση αυτή αποτελεί συμβατικό όρο και όχι απλή διαβεβαίωση μάρκετινγκ.",
+                        "Η μόνη εξαίρεση είναι όσα επιλέγετε εσείς: αν συνδέσετε ρητά τον δικό σας διαμεσολαβητή, βλέπει ακριβώς ό,τι του παραχωρήσατε και μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.",
+                        "Δεν λαμβάνουμε προμήθεια από ασφαλιστικές εταιρείες. Το εισόδημά μας προέρχεται αποκλειστικά από τις συνδρομές των χρηστών, ώστε να μην έχουμε οικονομικό όφελος από το περιεχόμενο της ανάλυσης που σας παρουσιάζουμε.",
+                    ],
+                },
+                {
                     id: "accounts",
-                    title: "3. Λογαριασμοί και ρόλοι",
+                    title: "4. Λογαριασμοί και ρόλοι",
                     paragraphs: [
                         "Η υπηρεσία απευθύνεται σε ενήλικες. Κατά την εγγραφή οφείλετε να δίνετε ακριβή στοιχεία και να τα διατηρείτε ενημερωμένα.",
                         "Είστε υπεύθυνοι για την προστασία των διαπιστευτηρίων σας και οφείλετε να μας ενημερώνετε άμεσα για κάθε μη εξουσιοδοτημένη χρήση του λογαριασμού σας.",
@@ -114,7 +123,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "subscriptions",
-                    title: "4. Συνδρομές, χρεώσεις, ανανέωση και ακύρωση",
+                    title: "5. Συνδρομές, χρεώσεις, ανανέωση και ακύρωση",
                     paragraphs: [
                         "Η βασική χρήση είναι δωρεάν για ένα συμβόλαιο. Τα πληρωμένα πλάνα για ιδιώτες και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται στη σελίδα τιμολόγησης και επιβεβαιώνεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
                         "Οι συνδρομές ανανεώνονται αυτόματα στο τέλος κάθε περιόδου χρέωσης (μηνιαίας ή ετήσιας) μέχρι να τις ακυρώσετε.",
@@ -124,7 +133,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "withdrawal",
-                    title: "5. Δικαίωμα υπαναχώρησης (καταναλωτές)",
+                    title: "6. Δικαίωμα υπαναχώρησης (καταναλωτές)",
                     paragraphs: [
                         "Αν είστε καταναλωτής, έχετε δικαίωμα να υπαναχωρήσετε από τη συνδρομή σας εντός 14 ημερολογιακών ημερών από την έναρξή της, χωρίς αιτιολογία, σύμφωνα με τον ν. 2251/1994 και την Οδηγία 2011/83/ΕΕ.",
                         "Ξεκινώντας συνδρομή, ζητάτε την άμεση παροχή της ψηφιακής υπηρεσίας εντός της περιόδου υπαναχώρησης και συναινείτε στην άμεση εκτέλεση της σύμβασης. Αν υπαναχωρήσετε εντός των 14 ημερών, θα σας επιστραφεί το τίμημα μειωμένο αναλογικά κατά το μέρος της υπηρεσίας που είχε ήδη παρασχεθεί μέχρι τη δήλωση υπαναχώρησης.",
@@ -133,7 +142,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "acceptable_use",
-                    title: "6. Αποδεκτή χρήση",
+                    title: "7. Αποδεκτή χρήση",
                     paragraphs: [
                         "Ανεβάζετε μόνο έγγραφα που σας ανήκουν ή που έχετε νόμιμο δικαίωμα να διαχειρίζεστε — για τους διαμεσολαβητές, μόνο έγγραφα πελατών που έχουν συναινέσει μέσω της πλατφόρμας.",
                         "Απαγορεύεται: η χρήση της υπηρεσίας για παράνομο σκοπό· το ανέβασμα κακόβουλων αρχείων· η μαζική εξαγωγή δεδομένων (scraping) και η κακόβουλη αυτοματοποίηση· οι απόπειρες παράκαμψης των μηχανισμών ασφάλειας ή των ορίων χρήσης· και η καταχώριση προσωπικών δεδομένων τρίτων χωρίς νόμιμη βάση.",
@@ -142,7 +151,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "ai_disclaimer",
-                    title: "7. Αναλύσεις τεχνητής νοημοσύνης — αποποίηση",
+                    title: "8. Αναλύσεις τεχνητής νοημοσύνης — αποποίηση",
                     paragraphs: [
                         "Οι αναλύσεις συμβολαίων, ο εντοπισμός κενών κάλυψης, οι βαθμολογίες προστασίας και οι σχετικές επισημάνσεις παράγονται από μοντέλα τεχνητής νοημοσύνης. Είναι αποκλειστικά πληροφοριακές, ενδέχεται να περιέχουν ανακρίβειες ή παραλείψεις και δεν αποτελούν ασφαλιστική, νομική ή χρηματοοικονομική συμβουλή.",
                         "Πριν από κάθε απόφαση με ασφαλιστικές ή οικονομικές συνέπειες — όπως αλλαγή, ακύρωση ή αγορά κάλυψης — επιβεβαιώστε τα στοιχεία με το πρωτότυπο ασφαλιστήριο, την ασφαλιστική σας εταιρεία ή αδειοδοτημένο διαμεσολαβητή. Την ίδια υπενθύμιση εμφανίζουμε και μέσα στην εφαρμογή: η τεχνητή νοημοσύνη μπορεί να κάνει λάθη.",
@@ -150,7 +159,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "content_ip",
-                    title: "8. Περιεχόμενο και πνευματική ιδιοκτησία",
+                    title: "9. Περιεχόμενο και πνευματική ιδιοκτησία",
                     paragraphs: [
                         "Τα έγγραφα που ανεβάζετε παραμένουν δικά σας. Μας παραχωρείτε μόνο την άδεια που είναι απαραίτητη για την αποθήκευση, την επεξεργασία και την ανάλυσή τους με σκοπό την παροχή της υπηρεσίας.",
                         "Η πλατφόρμα, το λογισμικό, τα σήματα και το περιεχόμενο του PolicyWallet προστατεύονται από δικαιώματα πνευματικής και βιομηχανικής ιδιοκτησίας και δεν επιτρέπεται η αναπαραγωγή τους χωρίς άδεια.",
@@ -158,7 +167,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "availability",
-                    title: "9. Διαθεσιμότητα και μεταβολές της υπηρεσίας",
+                    title: "10. Διαθεσιμότητα και μεταβολές της υπηρεσίας",
                     paragraphs: [
                         "Καταβάλλουμε εύλογες προσπάθειες για συνεχή διαθεσιμότητα, χωρίς να εγγυόμαστε αδιάλειπτη λειτουργία — προγραμματισμένες συντηρήσεις ή τεχνικά περιστατικά ενδέχεται να προκαλέσουν προσωρινές διακοπές.",
                         "Η υπηρεσία εξελίσσεται: λειτουργίες μπορεί να προστίθενται, να τροποποιούνται ή να αποσύρονται. Για ουσιώδεις αλλαγές που επηρεάζουν πληρωμένα πλάνα θα ενημερώνεστε εκ των προτέρων.",
@@ -166,7 +175,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "liability",
-                    title: "10. Περιορισμός ευθύνης",
+                    title: "11. Περιορισμός ευθύνης",
                     paragraphs: [
                         "Η υπηρεσία παρέχεται «ως έχει» και «ως διατίθεται», στον βαθμό που το επιτρέπει η ισχύουσα νομοθεσία.",
                         "Δεν ευθυνόμαστε για αποφάσεις που λαμβάνετε με βάση τα πληροφοριακά αποτελέσματα της πλατφόρμας (βλ. ενότητα 7), ούτε για έμμεσες ή παρεπόμενες ζημίες από τη χρήση της, στον βαθμό που ο περιορισμός αυτός επιτρέπεται από τον νόμο.",
@@ -176,7 +185,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "termination",
-                    title: "11. Καταγγελία και διαγραφή λογαριασμού",
+                    title: "12. Καταγγελία και διαγραφή λογαριασμού",
                     paragraphs: [
                         "Μπορείτε να διαγράψετε τον λογαριασμό σας οποτεδήποτε μέσα από την εφαρμογή. Τυχόν ενεργή συνδρομή παραμένει σε ισχύ μέχρι το τέλος της τρέχουσας περιόδου χρέωσης, σύμφωνα με την ενότητα 4.",
                         "Μπορούμε να αναστείλουμε ή να τερματίσουμε την πρόσβαση σε περίπτωση σοβαρής ή επανειλημμένης παραβίασης των όρων. Μετά τον τερματισμό, τα δεδομένα σας αντιμετωπίζονται σύμφωνα με την Πολιτική Απορρήτου.",
@@ -184,7 +193,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "law_venue",
-                    title: "12. Εφαρμοστέο δίκαιο, δωσιδικία και εξωδικαστική επίλυση",
+                    title: "13. Εφαρμοστέο δίκαιο, δωσιδικία και εξωδικαστική επίλυση",
                     paragraphs: [
                         `Οι παρόντες όροι διέπονται από το ελληνικό δίκαιο και το εφαρμοστέο δίκαιο της ΕΕ. Για κάθε διαφορά αρμόδια ορίζονται τα Δικαστήρια ${EL.venue}, με την επιφύλαξη των αναγκαστικού δικαίου διατάξεων περί δωσιδικίας των καταναλωτών.`,
                         "Αν είστε καταναλωτής, μπορείτε επίσης να απευθυνθείτε στον Συνήγορο του Καταναλωτή (www.synigoroskatanaloti.gr) για εξωδικαστική επίλυση διαφορών.",
@@ -192,7 +201,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "contact",
-                    title: "13. Επικοινωνία",
+                    title: "14. Επικοινωνία",
                     paragraphs: [
                         `Για κάθε ερώτημα σχετικά με τους όρους: info@policywallet.gr.`,
                     ],
@@ -210,7 +219,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "controller",
                     title: "1. Υπεύθυνος επεξεργασίας",
                     paragraphs: [
-                        `Υπεύθυνος επεξεργασίας των δεδομένων σας είναι η εταιρεία που λειτουργεί την πλατφόρμα PolicyWallet (policywallet.gr). ${EL.detailsComingSoon}`,
+                        `Υπεύθυνος επεξεργασίας των δεδομένων σας είναι η εταιρεία ${EL.company}, με αριθμό ΓΕΜΗ ${EL.gemi} και έδρα ${EL.address}, η οποία λειτουργεί την πλατφόρμα PolicyWallet (policywallet.gr).`,
                         `Για κάθε θέμα προστασίας δεδομένων μπορείτε να επικοινωνείτε με τον υπεύθυνο απορρήτου στο ${EL.dpoEmail} ή στο info@policywallet.gr.`,
                     ],
                 },
@@ -326,7 +335,15 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "5 έτη από την ανάκληση ή την ολοκλήρωση του αιτήματος, για λόγους λογοδοσίας",
                             ],
                             ["Τεχνικά αρχεία καταγραφής (logs)", "Έως 12 μήνες"],
+                            [
+                                "Αρχεία συνεδριών (sessions)",
+                                "Διαγράφονται με τη διαγραφή του λογαριασμού σας",
+                            ],
                             ["Εγγραφή στο newsletter", "Μέχρι την απεγγραφή σας"],
+                            [
+                                "Καταχωρήσεις δημόσιων φορμών (επικοινωνία, newsletter)",
+                                "24 μήνες",
+                            ],
                         ],
                     },
                 },
@@ -484,6 +501,12 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "ΕΕ/ΗΠΑ",
                             ],
                             [
+                                "Sentry",
+                                "Καταγραφή σφαλμάτων εφαρμογής",
+                                "Τεχνικά συμβάντα σφαλμάτων με αφαιρεμένα προσωπικά δεδομένα — κανένα περιεχόμενο εγγράφων",
+                                "ΕΕ/ΗΠΑ",
+                            ],
+                            [
                                 "Google (Gemini API)",
                                 "Ανάλυση εγγράφων με AI — κύριος πάροχος",
                                 "Περιεχόμενο ασφαλιστηρίων προς ανάλυση, μόνο με τη συγκατάθεσή σας",
@@ -552,7 +575,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "provider",
                     title: "1. Service provider",
                     paragraphs: [
-                        `The PolicyWallet platform (policywallet.gr) is operated by a Greek company. ${EN.detailsComingSoon}`,
+                        `The PolicyWallet platform (policywallet.gr) is operated by ${EN.company}, GEMI registration number ${EN.gemi}, ${EN.vat}, with registered seat at ${EN.address}.`,
                         "For any matter relating to these terms you can contact us at info@policywallet.gr.",
                     ],
                 },
@@ -566,8 +589,17 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     ],
                 },
                 {
+                    id: "data_neutrality",
+                    title: "3. Neutrality commitment: where your data does NOT go",
+                    paragraphs: [
+                        "We do not sell, share, or transfer policyholder or portfolio data to insurers, banks, or third-party agencies. This commitment is a contractual term, not a marketing assurance.",
+                        "The only exception is the one you create yourself: if you explicitly connect your own intermediary, they see exactly what you granted them, and you can revoke that access at any time.",
+                        "We receive no commission from insurance companies. Our revenue comes solely from user subscriptions, so we have no financial interest in what the analysis we show you says.",
+                    ],
+                },
+                {
                     id: "accounts",
-                    title: "3. Accounts and roles",
+                    title: "4. Accounts and roles",
                     paragraphs: [
                         "The service is intended for adults. When registering you must provide accurate information and keep it up to date.",
                         "You are responsible for safeguarding your credentials and must promptly notify us of any unauthorized use of your account.",
@@ -576,7 +608,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "subscriptions",
-                    title: "4. Subscriptions, billing, renewal and cancellation",
+                    title: "5. Subscriptions, billing, renewal and cancellation",
                     paragraphs: [
                         "Basic use is free for one policy. Paid plans for individuals and intermediary plans are billed through the payment provider Stripe, at the price shown on the pricing page and confirmed before you complete the purchase, including VAT where applicable.",
                         "Subscriptions renew automatically at the end of each billing period (monthly or annual) until you cancel.",
@@ -586,7 +618,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "withdrawal",
-                    title: "5. Right of withdrawal (consumers)",
+                    title: "6. Right of withdrawal (consumers)",
                     paragraphs: [
                         "If you are a consumer, you have the right to withdraw from your subscription within 14 calendar days of its start, without giving any reason, under Greek Law 2251/1994 and Directive 2011/83/EU.",
                         "By starting a subscription, you request immediate performance of the digital service within the withdrawal period and consent to the immediate execution of the contract. If you withdraw within the 14 days, you will be refunded the price reduced proportionally by the part of the service already provided up to your withdrawal notice.",
@@ -595,7 +627,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "acceptable_use",
-                    title: "6. Acceptable use",
+                    title: "7. Acceptable use",
                     paragraphs: [
                         "Upload only documents that belong to you or that you are lawfully entitled to manage — for intermediaries, only documents of clients who have consented through the platform.",
                         "The following are prohibited: using the service for any unlawful purpose; uploading malicious files; scraping and abusive automation; attempting to circumvent security mechanisms or usage limits; and entering third parties' personal data without a lawful basis.",
@@ -604,7 +636,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "ai_disclaimer",
-                    title: "7. AI analysis — disclaimer",
+                    title: "8. AI analysis — disclaimer",
                     paragraphs: [
                         "Policy analyses, coverage-gap detection, protection scores and related highlights are produced by artificial-intelligence models. They are informational only, may contain inaccuracies or omissions, and do not constitute insurance, legal or financial advice.",
                         "Before any decision with insurance or financial consequences — such as changing, cancelling or purchasing coverage — verify the details against your original policy document, your insurer, or a licensed intermediary. We show the same reminder inside the app: AI can make mistakes.",
@@ -612,7 +644,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "content_ip",
-                    title: "8. Content and intellectual property",
+                    title: "9. Content and intellectual property",
                     paragraphs: [
                         "The documents you upload remain yours. You grant us only the license necessary to store, process and analyze them for the purpose of providing the service.",
                         "The PolicyWallet platform, software, trademarks and content are protected by intellectual and industrial property rights and may not be reproduced without permission.",
@@ -620,7 +652,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "availability",
-                    title: "9. Availability and changes to the service",
+                    title: "10. Availability and changes to the service",
                     paragraphs: [
                         "We make reasonable efforts to keep the service continuously available, without guaranteeing uninterrupted operation — scheduled maintenance or technical incidents may cause temporary outages.",
                         "The service evolves: features may be added, modified or withdrawn. You will be notified in advance of material changes affecting paid plans.",
@@ -628,7 +660,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "liability",
-                    title: "10. Limitation of liability",
+                    title: "11. Limitation of liability",
                     paragraphs: [
                         "The service is provided “as is” and “as available”, to the maximum extent permitted by applicable law.",
                         "We are not liable for decisions you make based on the platform's informational outputs (see section 7), nor for indirect or consequential damages arising from its use, to the extent such limitation is permitted by law.",
@@ -638,7 +670,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "termination",
-                    title: "11. Termination and account deletion",
+                    title: "12. Termination and account deletion",
                     paragraphs: [
                         "You can delete your account at any time from within the app. Any active subscription remains in force until the end of the current billing period, in accordance with section 4.",
                         "We may suspend or terminate access in case of serious or repeated violation of these terms. After termination, your data is handled in accordance with the Privacy Policy.",
@@ -646,7 +678,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "law_venue",
-                    title: "12. Governing law, jurisdiction and out-of-court resolution",
+                    title: "13. Governing law, jurisdiction and out-of-court resolution",
                     paragraphs: [
                         `These terms are governed by Greek law and applicable EU law. The courts of ${EN.venue} shall have jurisdiction over any dispute, without prejudice to mandatory consumer-jurisdiction provisions.`,
                         "If you are a consumer, you may also contact the Greek Consumer Ombudsman (www.synigoroskatanaloti.gr) for out-of-court dispute resolution.",
@@ -654,7 +686,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
                 {
                     id: "contact",
-                    title: "13. Contact",
+                    title: "14. Contact",
                     paragraphs: [
                         `For any question about these terms: info@policywallet.gr.`,
                     ],
@@ -672,7 +704,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "controller",
                     title: "1. Data controller",
                     paragraphs: [
-                        `The controller of your data is the company that operates the PolicyWallet platform (policywallet.gr). ${EN.detailsComingSoon}`,
+                        `The controller of your data is ${EN.company}, GEMI registration number ${EN.gemi}, with registered seat at ${EN.address}, which operates the PolicyWallet platform (policywallet.gr).`,
                         `For any data-protection matter you can contact our privacy officer at ${EN.dpoEmail} or at info@policywallet.gr.`,
                     ],
                 },
@@ -788,7 +820,9 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "5 years from revocation or request completion, for accountability purposes",
                             ],
                             ["Technical logs", "Up to 12 months"],
+                            ["Session records", "Deleted when your account is deleted"],
                             ["Newsletter subscription", "Until you unsubscribe"],
+                            ["Public-form submissions (contact, newsletter)", "24 months"],
                         ],
                     },
                 },
@@ -943,6 +977,12 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "Upstash",
                                 "Request rate limiting (Redis)",
                                 "Per-IP request counters — no document content",
+                                "EU/US",
+                            ],
+                            [
+                                "Sentry",
+                                "Application error monitoring",
+                                "Technical error events with personal data scrubbed — no document content",
                                 "EU/US",
                             ],
                             [

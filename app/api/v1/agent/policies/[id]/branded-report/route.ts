@@ -4,7 +4,7 @@ import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { isAgentRole } from "@/lib/auth/require-agent"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
-import { getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
+import { getGrantedPolicyIds, getLiveCustomerUserIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
 import {
     generateSavingsReportHtml,
     type AgentReportBranding,
@@ -66,8 +66,11 @@ export const GET = withApiGuard(
 
         // 4. VISIBILITY (not ownership): the whole ballgame. Same rule as the
         //    customer-profile policy list — createdByUserId OR an active grant.
-        const granted = new Set(await getGrantedPolicyIds(agentId))
-        if (!isPolicyVisibleToAgent(policy, agentId, granted)) {
+        const [granted, liveCustomers] = await Promise.all([
+            getGrantedPolicyIds(agentId).then((ids) => new Set(ids)),
+            getLiveCustomerUserIds(agentId),
+        ])
+        if (!isPolicyVisibleToAgent(policy, agentId, granted, liveCustomers)) {
             return createApiError("FORBIDDEN", "Not authorized", 403)
         }
 
@@ -109,11 +112,19 @@ export const GET = withApiGuard(
               }
             : undefined
 
+        // Rule-decided gaps only — see the savings-report route for why the AI
+        // prose in resultJson cannot stand in for a detection list.
+        const decidedGaps = await db.gapInstance.findMany({
+            where: { policyId, status: "open" },
+            select: { severity: true, definition: { select: { slug: true } } },
+        })
+
         const html = generateSavingsReportHtml(
             run.resultJson as Record<string, any>,
             run.finishedAt?.toISOString() ?? new Date().toISOString(),
             (authResult.dbUser.preferredLanguage as "en" | "el") || "en",
-            branding
+            branding,
+            decidedGaps.map((g) => ({ slug: g.definition.slug, severity: g.severity }))
         )
 
         return new Response(html, {

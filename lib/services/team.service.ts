@@ -340,21 +340,46 @@ export async function transferCustomer(
 
     const previousAgent = relationship.agentUserId
 
-    // Update relationship
-    await db.customerRelationship.update({
-        where: { id: relationshipId },
-        data: { agentUserId: newAgentUserId },
-    })
-
-    // Transfer open opportunities
-    await db.opportunity.updateMany({
-        where: {
-            relationshipId,
-            ownerAgentUserId: previousAgent,
-            status: { in: ["open", "contacted", "quoted"] },
-        },
-        data: { ownerAgentUserId: newAgentUserId },
-    })
+    // Reassignment ends the previous agent's relationship to this customer, so it
+    // must end their access too — the same rule terminateRelationship enforces.
+    // Without the revoke below, every policy that agent ever added for the customer
+    // keeps its auto-minted `manage` grant (agent/actions.ts createPolicyForCustomer),
+    // and computePolicyAccess reads grantLevel WITHOUT consulting the relationship.
+    // The old agent would keep read/write/delete on that book of business forever.
+    // Atomic with the reassignment: a partial apply here is an access leak.
+    await db.$transaction([
+        db.customerRelationship.update({
+            where: { id: relationshipId },
+            data: { agentUserId: newAgentUserId },
+        }),
+        db.accessGrant.updateMany({
+            where: {
+                status: "active",
+                OR: [
+                    { granterUserId: relationship.policyholderUserId, granteeUserId: previousAgent },
+                    { granterUserId: previousAgent, granteeUserId: relationship.policyholderUserId },
+                ],
+            },
+            data: { status: "revoked", revokedAt: new Date() },
+        }),
+        db.opportunity.updateMany({
+            where: {
+                relationshipId,
+                ownerAgentUserId: previousAgent,
+                status: { in: ["open", "contacted", "quoted"] },
+            },
+            data: { ownerAgentUserId: newAgentUserId },
+        }),
+        db.activityLog.create({
+            data: {
+                adminUserId: requesterUserId,
+                adminEmail: "security",
+                actionType: "CUSTOMER_TRANSFERRED",
+                description: `Relationship ${relationshipId} transferred; prior agent access revoked`,
+                metadata: { relationshipId, previousAgent, newAgentUserId },
+            },
+        }),
+    ])
 
     // Notify new agent
     await sendNotification({

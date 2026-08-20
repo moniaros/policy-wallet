@@ -54,8 +54,16 @@ const MonetaryLimitSchema = z.object({
     basis: z.enum(LIMIT_BASES),
     amount: z.number().optional().describe("Omit when unlimited is true"),
     currency: CurrencySchema.optional(),
-    /** «Απεριόριστο» — an assistance benefit with no cap is not the same as an unknown one. */
-    unlimited: z.boolean().default(false),
+    /**
+     * «Απεριόριστο» — an assistance benefit with no cap is not the same as an unknown one.
+     *
+     * `.optional()`, NOT `.default(false)`. The AI SDK materialises Zod defaults into
+     * the object it returns, so a default wrote `unlimited: false` — "there IS a cap" —
+     * into every limit the extractor never determined. That is the same
+     * unknown-becomes-absence error the gap rules were fixed to avoid, one rule away
+     * from being load-bearing. Undefined means undetermined; read it as such.
+     */
+    unlimited: z.boolean().optional(),
     /** What the cap is measured against, when the basis alone is ambiguous ("per safe", "per crew member"). */
     appliesTo: z.string().optional(),
 });
@@ -86,7 +94,7 @@ export const AcordDataSchema = z.object({
         usage: z.string().optional().describe("e.g. personal, commercial, rideshare"),
         estimatedMarketValue: z.number().optional(),
         deductible: z.number().optional(),
-        hasRoadsideAssistance: z.boolean().default(false),
+        hasRoadsideAssistance: z.boolean().optional(),
         roadsideAssistancePhone: z.string().optional(),
         namedDrivers: z.array(z.object({
             name: z.string(),
@@ -106,9 +114,9 @@ export const AcordDataSchema = z.object({
         squareMeters: z.number().optional(),
         yearBuilt: z.number().optional(),
         estimatedRebuildCost: z.number().optional(),
-        fireCoverageIncluded: z.boolean().default(false),
-        earthquakeCoverageIncluded: z.boolean().default(false),
-        floodCoverageIncluded: z.boolean().default(false),
+        fireCoverageIncluded: z.boolean().optional(),
+        earthquakeCoverageIncluded: z.boolean().optional(),
+        floodCoverageIncluded: z.boolean().optional(),
         // Greek-market specific
         enfiaEligible: z.boolean().optional().describe("True if fire, earthquake AND flood are all covered — the condition for the ENFIA property-tax discount. ENFIA is a tax, not an insurance requirement; it mandates no cover."),
         mortgageeBank: z.string().optional(),
@@ -131,7 +139,7 @@ export const AcordDataSchema = z.object({
             phone: z.string().optional(),
         }).optional().describe("Greek health insurance coordination centre"),
         coordinationCentreName: z.string().optional().describe("Deprecated — use coordinationCentre.name"),
-        directBillingAvailable: z.boolean().default(false),
+        directBillingAvailable: z.boolean().optional(),
         annualCheckupIncluded: z.boolean().optional(),
         waitingPeriods: z.array(z.object({
             type: z.string().optional(),
@@ -169,7 +177,7 @@ export const AcordDataSchema = z.object({
         annualLimitTotal: z.number().optional().describe("Legacy alias for annualLimit"),
         annualLimitUsed: z.number().optional(),
         microchipNumber: z.string().optional(),
-        leishmaniaCovered: z.boolean().default(false).describe("Critical for Greek pet policies — Leishmania is endemic"),
+        leishmaniaCovered: z.boolean().optional().describe("Critical for Greek pet policies — Leishmania is endemic"),
         directVetPayment: z.boolean().optional(),
         breedSpecificDiseases: z.array(z.string()).optional(),
         preExistingConditionsExcluded: z.array(z.string()).default([]),
@@ -178,6 +186,33 @@ export const AcordDataSchema = z.object({
             durationDays: z.number().optional(),
             endDate: z.string().optional(),
         })).optional(),
+    }).optional(),
+
+    // ─── Travel ─────────────────────────────────────────────────────────
+    /**
+     * Added in Phase 7. Until then travel had no typed section, so nothing could
+     * be asked of a travel policy that was not a guess: a rule could only check a
+     * generic field that is blank on nearly every policy, or match free text.
+     * A branch gets rules when the extractor has somewhere truthful to put the
+     * answer — not before.
+     *
+     * Booleans here are three-state on purpose (`undefined` = the document did
+     * not say). No `.default(false)`: a default would record "not covered" for
+     * every policy nobody read, which is the error the gap rules exist to avoid.
+     */
+    travel: z.object({
+        /** Headline medical cap. The figure a Schengen visa application asks for. */
+        medicalExpensesLimit: z.number().optional(),
+        repatriationCovered: z.boolean().optional().describe("Medical repatriation / επαναπατρισμός — typically the largest single exposure on a travel policy"),
+        cancellationCovered: z.boolean().optional().describe("Trip cancellation / ακύρωση ταξιδιού"),
+        baggageLimit: z.number().optional(),
+        personalLiabilityLimit: z.number().optional(),
+        winterSportsCovered: z.boolean().optional(),
+        preExistingConditionsCovered: z.boolean().optional(),
+        /** The 24-hour number. Travel policies print one; it is the whole product at 3am. */
+        emergencyAssistancePhone: z.string().optional(),
+        destinationScope: z.string().optional().describe("e.g. schengen, europe, worldwide, worldwide-excl-usa-canada"),
+        tripDurationDays: z.number().optional(),
     }).optional(),
 
     // ─── Cross-section fields ───────────────────────────────────────────

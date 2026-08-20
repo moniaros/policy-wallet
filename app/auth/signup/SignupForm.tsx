@@ -397,7 +397,7 @@ function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
                         </motion.button>
 
                         <p className="text-center text-caption text-[#5B6A7A] dark:text-white/60">
-                            {t("Χρειάζονται 90 δευτερόλεπτα. Ακυρώστε οποτεδήποτε.", "Takes 90 seconds. Cancel anytime.")}
+                            {t("Χωρίς κάρτα. Ακυρώνετε όποτε θέλετε.", "No card required. Cancel anytime.")}
                         </p>
                     </form>
 

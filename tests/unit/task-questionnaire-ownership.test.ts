@@ -58,7 +58,36 @@ describe('createUserTask — recipient must be self or a related customer', () =
 
         expect(res).toEqual({ success: true, taskId: 'task-1' })
         expect(mockRelFind).toHaveBeenCalledWith(
-            expect.objectContaining({ where: { agentUserId: 'agent-1', policyholderUserId: 'cust-2' } })
+            expect.objectContaining({
+                where: {
+                    agentUserId: 'agent-1',
+                    policyholderUserId: 'cust-2',
+                    status: { notIn: ['inactive', 'terminated'] },
+                },
+            })
+        )
+    })
+
+    // This test's name said "active" long before the query did. Termination
+    // flips the status but keeps the row, so an agent who had been dismissed
+    // could still push tasks into their former customer's action list — while
+    // the termination action's docstring promised access had stopped.
+    it('refuses once the relationship is terminated', async () => {
+        mockAuth.mockResolvedValue(AGENT)
+        // The query now filters on status, so a terminated row simply does not
+        // come back — the same shape as "no relationship at all".
+        mockRelFind.mockResolvedValue(null)
+
+        const res = await createUserTask({ userId: 'cust-2', title: 'Renew' } as any)
+
+        expect(res).toEqual({ success: false, error: 'Unauthorized' })
+        expect(mockTaskCreate).not.toHaveBeenCalled()
+        expect(mockRelFind).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: expect.objectContaining({
+                    status: { notIn: ['inactive', 'terminated'] },
+                }),
+            })
         )
     })
 

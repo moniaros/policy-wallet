@@ -1,64 +1,90 @@
-/**
- * Gap-definition auto-mint controls (source-text).
- *
- * The clarity pipeline emits free vocabulary, and the orchestrator used to
- * upsert an ACTIVE GapDefinition for every slug it invented — which
- * getGapDefinitionsForPolicy then fed into every future gap-detection prompt
- * for that line of business with the junk "Auto-created…" description as
- * checkCriteria. Unbounded prompt bloat: motor reached 8 checks, 3 redundant.
- *
- * These pins hold the two guards in place so a refactor cannot silently
- * regress to active-minting:
- *  (1) emitted slugs are canonicalized by concept onto existing definitions;
- *  (2) a genuinely novel concept mints its definition INACTIVE (admins
- *      activate deliberately in /admin/gaps, where the "no content entry"
- *      badge flags it at the same time);
- *  (3) gapRows are deduped by definitionId (no DB unique protects this);
- *  (4) the dead ensureGapDefinition path stays deleted — it minted active.
- */
-
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { join } from "node:path"
 
-const src = readFileSync(
-    join(process.cwd(), "lib/services/analysis/policy-analysis-orchestrator.service.ts"),
-    "utf8"
+/**
+ * A model cannot add to the gap catalogue.
+ *
+ * This file used to pin the OPPOSITE: that when the clarity pass emitted a slug
+ * no definition matched, the orchestrator created a `GapDefinition` from the
+ * model's own output — and it checked that the new row was at least minted
+ * `isActive: false`. That safeguard did not hold. By 2026-08-19 production held
+ * **41 of 41** gap definitions authored this way (`rule_id LIKE 'ai_%'`,
+ * `detection_logic = {"source":"ai_clarity_pipeline"}`), **35 of them active**.
+ *
+ * The catalogue drifted exactly as you would expect a vocabulary invented one
+ * request at a time to drift: `cyber_risk_gap` (critical), `cyber_liability`
+ * (medium) and `cyber-risk-gap` (medium) are the same risk under three
+ * spellings and two severities. `mental_health_exclusion` was high;
+ * `mental-health-exclusion` was medium. What a customer was told about the
+ * seriousness of their situation depended on which slug the model spelled that
+ * run.
+ *
+ * So the mint is gone rather than made safer. A human adds definitions; rules
+ * decide when they apply.
+ */
+
+const ORCHESTRATOR = readFileSync(
+    "lib/services/analysis/policy-analysis-orchestrator.service.ts",
+    "utf-8"
 )
+const GAP_DETECTION = readFileSync("lib/gap-detection.ts", "utf-8")
+const INTERFACE = readFileSync("lib/services/ai/ai-service.interface.ts", "utf-8")
 
-describe("clarity auto-mint is canonicalized and inactive-by-default", () => {
-    it("the persist loop resolves emitted slugs through pickCanonicalGapDefinition", () => {
-        expect(src).toMatch(/pickCanonicalGapDefinition\(slug, lobDefinitions\)/)
+describe("the model cannot author the catalogue", () => {
+    it("the orchestrator never creates a GapDefinition", () => {
+        expect(ORCHESTRATOR).not.toMatch(/gapDefinition\.(upsert|create)\(/)
     })
 
-    it("a novel concept mints its definition INACTIVE (mutation check)", () => {
-        // The upsert create block must set isActive: false — and the old
-        // active-minting form must be gone entirely.
-        expect(src).toMatch(/detectionLogic: \{ source: "ai_clarity_pipeline" \},\s*\n\s*isActive: false,/)
-        expect(src).not.toMatch(/detectionLogic: \{ source: "ai_clarity_pipeline" \},\s*\n\s*isActive: true,/)
+    it("no code path stamps the AI-minted marker any more", () => {
+        // Everything carrying this marker is undecidable by construction, so
+        // writing a new one is writing a gap type nothing can ever evaluate.
+        expect(ORCHESTRATOR).not.toContain('detectionLogic: { source: "ai_clarity_pipeline" }')
     })
 
-    it("gapRows are deduped by definitionId before createMany (no DB unique backs this)", () => {
-        expect(src).toMatch(/seenDefinitionIds/)
-        const dedupeAt = src.indexOf("seenDefinitionIds.has(definitionId)")
-        const createManyAt = src.indexOf("tx.gapInstance.createMany")
-        expect(dedupeAt).toBeGreaterThan(-1)
-        expect(createManyAt).toBeGreaterThan(dedupeAt)
+    it("definitions carrying that marker cannot produce a gap", () => {
+        // hasEvaluableRule is the gate; gap-rule-evaluator.test.ts proves it
+        // rejects both the marker and the natural-language `check` shape.
+        expect(GAP_DETECTION).toContain("hasEvaluableRule")
+    })
+})
+
+describe("the model cannot decide detection or severity", () => {
+    it("an AI gap result carries no detection verdict", () => {
+        // `isDetected: boolean` used to be the product: whether a customer was
+        // told they had a gap came down to a model's judgement over a
+        // natural-language criteria string.
+        //
+        // Match a FIELD DECLARATION, not the word. The comments in that file
+        // explain why the field was removed and must keep saying `isDetected`
+        // to be worth reading — the same mention-vs-use trap that let a probe
+        // slip past the authorization guard in Phase 1.
+        expect(INTERFACE).not.toMatch(/^\s*isDetected\s*[?:]/m)
     })
 
-    it("the canonical lookup loads the LoB's definitions INCLUDING inactive ones", () => {
-        // FILTERING on isActive here would re-mint a definition the moment an
-        // admin deactivates its duplicate — the exact loop this fix closes.
-        // (Selecting the column is fine; the where clause must not constrain it.)
-        const start = src.indexOf("const lobDefinitions = await db.gapDefinition.findMany")
-        expect(start).toBeGreaterThan(-1)
-        const query = src.slice(start, start + 300)
-        const whereClause = query.slice(query.indexOf("where:"), query.indexOf("select:"))
-        expect(whereClause).toMatch(/lineOfBusiness/)
-        expect(whereClause).not.toMatch(/isActive/)
+    it("clarity gaps carry no severity", () => {
+        const clarityBlock = INTERFACE.slice(
+            INTERFACE.indexOf("interface ClarityCoverageGap"),
+            INTERFACE.indexOf("interface ClarityChecklistScore")
+        )
+        expect(clarityBlock).not.toMatch(/severity/)
     })
 
-    it("the dead ensureGapDefinition (active-minting) path stays deleted", () => {
-        expect(src).not.toMatch(/ensureGapDefinition/)
+    it("no provider schema offers the model those fields", () => {
+        for (const provider of ["anthropic", "gemini", "openai"]) {
+            const src = readFileSync(`lib/services/ai/${provider}-ai.service.ts`, "utf-8")
+            expect(src, provider).not.toMatch(/isDetected: z\.boolean\(\)/)
+            expect(src, provider).not.toMatch(
+                /severity: z\.enum\(\[\s*['"]low['"],\s*['"]medium['"]/
+            )
+        }
+    })
+
+    it("severity is written from the rule decision, never from a literal", () => {
+        // The old write site hardcoded `severity: "medium"` for every gap the
+        // gap_detection step flagged, and — because that source merged first —
+        // that literal silently overrode the clarity pass's own severity for
+        // the same slug.
+        expect(ORCHESTRATOR).not.toMatch(/severity:\s*"medium"/)
+        expect(ORCHESTRATOR).toContain("decideGapsForPolicy")
     })
 })

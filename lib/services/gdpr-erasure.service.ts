@@ -231,6 +231,12 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 sanitizedPolicyholderProfiles,
                 sanitizedAgentProfiles,
                 scrubbedCollaborationMessages,
+                // Positional destructuring: these must stay in the same order
+                // as the operations above, or every count after them is
+                // silently attributed to the wrong thing in the erasure record.
+                scrubbedCollaborationThreads,
+                deletedQuestionnaireInstanceResponses,
+                deletedQuestionnaireInstances,
                 scrubbedReferrals,
                 scrubbedConsentAudits,
                 purgedDataExports,
@@ -332,6 +338,32 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 tx.collaborationMessage.updateMany({
                     where: { senderUserId: userId },
                     data: { body: "[deleted]" },
+                }),
+                // The thread SUBJECT is free text too, and it survived the
+                // message scrub because the thread itself is never deleted:
+                // it hangs off CustomerRelationship, which erasure terminates
+                // rather than removes, so its `onDelete: Cascade` never fires.
+                // A line like "Your health policy excludes your daughter" is
+                // exactly the sort of thing an erasure is asked to remove.
+                tx.collaborationThread.updateMany({
+                    where: { createdByUserId: userId },
+                    data: { subject: "[deleted]" },
+                }),
+                // questionnaire_responses.instance_id is RESTRICT, so any
+                // surviving response would abort the whole erasure transaction
+                // rather than leave a row behind. Responses authored BY the
+                // subject are already deleted above; this clears any addressed
+                // to them regardless of author, so the delete below cannot
+                // fail on a foreign key.
+                tx.questionnaireResponse.deleteMany({
+                    where: { instance: { sentToUserId: userId } },
+                }),
+                // Questionnaires ADDRESSED to the subject are the subject's own
+                // record — which template, when, and whether they answered.
+                // (Ones they SENT as an advisor are a record about someone else
+                // and stay, like the other agent-authored artifacts.)
+                tx.questionnaireInstance.deleteMany({
+                    where: { sentToUserId: userId },
                 }),
                 // referred_email may identify the subject on someone else's
                 // referral rows (by user link or plain email match).

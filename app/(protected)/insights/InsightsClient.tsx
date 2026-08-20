@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { SeverityCaveat } from "@/components/gaps/SeverityCaveat"
 import { motion } from "framer-motion"
 import {
     TrendingUp,
@@ -580,6 +581,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                 )
                             })}
                         </div>
+                    )}
+                    {/* Each card prints a severity word ("Critical"/«Κρίσιμο») to an
+                        advisor. Gate 3b is open, so the grid carries the caveat once
+                        rather than repeating it on every tile. */}
+                    {data.recentGaps.length > 0 && (
+                        <SeverityCaveat lang={language === "el" ? "el" : "en"} />
                     )}
                 </FadeIn>
             </div>

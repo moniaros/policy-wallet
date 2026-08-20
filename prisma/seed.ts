@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { AUTHORED_GAP_DEFINITIONS } from "../lib/gaps/authored-catalogue"
 import bcrypt from 'bcryptjs'
 import { INSURANCE_BRANCHES } from '../lib/insurance/taxonomy'
 import { PRODUCT_CATALOG } from './product-catalog'
@@ -366,7 +367,7 @@ async function main() {
             detectionLogic: {
                 check: "Does the policy explicitly cover theft, burglary, or stolen vehicle?"
             },
-            isActive: true
+            isActive: false
         },
         {
             slug: 'motor-legal',
@@ -380,7 +381,7 @@ async function main() {
             detectionLogic: {
                 check: "Does the policy include 'Legal Protection' or 'Legal Assistance'?"
             },
-            isActive: true
+            isActive: false
         },
         {
             slug: 'health-outpatient',
@@ -394,7 +395,7 @@ async function main() {
             detectionLogic: {
                 check: "Does this policy cover outpatient visits, diagnostic tests, or doctor consultations outside of a hospital?"
             },
-            isActive: true
+            isActive: false
         },
         {
             slug: 'home-earthquake',
@@ -408,105 +409,22 @@ async function main() {
             detectionLogic: {
                 check: "Does the policy explicitly cover 'Earthquake' damage?"
             },
-            isActive: true
+            isActive: false
         },
-        // ─── Greek-market gap definitions (Phase 3B) ───────────────────
-        {
-            slug: 'missing_enfia_components',
-            name: 'ENFIA Coverage Components',
-            title: 'Not eligible for the ENFIA discount',
-            // ENFIA is Greece's unified property-ownership TAX; there is no such
-            // thing as "ENFIA insurance" and it requires no cover at all. What
-            // exists is a tax DISCOUNT for homes insured against all three perils
-            // — which lib/guides/content.ts has stated correctly all along.
-            description: 'Insuring a home against fire, earthquake AND flood qualifies it for a reduction in ENFIA property tax. One or more of the three is missing from this policy.',
-            lineOfBusiness: 'home',
-            severity: 'high',
-            defaultSeverity: 'high',
-            ruleId: 'acord_deterministic',
-            detectionLogic: {
-                rules: [
-                    {
-                        type: 'acord_field_check',
-                        field: 'property',
-                        operator: 'all_false',
-                        fields: [
-                            'property.fireCoverageIncluded',
-                            'property.earthquakeCoverageIncluded',
-                            'property.floodCoverageIncluded'
-                        ]
-                    }
-                ],
-                operator: 'AND'
-            },
-            isActive: true
-        },
-        {
-            slug: 'missing_coordination_centre',
-            name: 'Coordination Centre',
-            title: 'No coordination centre recorded',
-            // The rule tests whether a phone number was EXTRACTED. That is not the
-            // same as the policy not having one, so the finding says what is
-            // actually known: no coordination centre is recorded.
-            description: 'No coordination centre (κέντρο συντονισμού) phone number is recorded for this policy. Greek health policies normally give one for pre-authorising hospital admissions — check your policy documents and add it, so it is to hand when you need it.',
-            lineOfBusiness: 'health',
-            severity: 'medium',
-            defaultSeverity: 'medium',
-            ruleId: 'acord_deterministic',
-            detectionLogic: {
-                rules: [
-                    {
-                        type: 'acord_field_check',
-                        field: 'health.coordinationCentre.phone',
-                        operator: 'missing'
-                    }
-                ],
-                operator: 'AND'
-            },
-            isActive: true
-        },
-        {
-            slug: 'missing_leishmaniasis',
-            name: 'Leishmaniasis Coverage',
-            title: 'No Leishmaniasis Protection',
-            description: 'Leishmaniasis (Λεϊσμανίαση) is endemic in Greece. Pet insurance without leishmaniasis coverage leaves a critical gap for dogs.',
-            lineOfBusiness: 'pet',
-            severity: 'high',
-            defaultSeverity: 'high',
-            ruleId: 'acord_deterministic',
-            detectionLogic: {
-                rules: [
-                    {
-                        type: 'acord_field_check',
-                        field: 'pet.leishmaniaCovered',
-                        operator: 'is_false'
-                    }
-                ],
-                operator: 'AND'
-            },
-            isActive: true
-        },
-        {
-            slug: 'green_card_expiring',
-            name: 'Green Card Expiry',
-            title: 'Green Card Expiring Soon',
-            description: 'Your international motor insurance certificate (Green Card / Πράσινη Κάρτα) expires within 30 days. Renew before traveling abroad.',
-            lineOfBusiness: 'motor',
-            severity: 'medium',
-            defaultSeverity: 'medium',
-            ruleId: 'acord_deterministic',
-            detectionLogic: {
-                rules: [
-                    {
-                        type: 'date_within_days',
-                        field: 'vehicle.greenCardExpiryDate',
-                        withinDays: 30
-                    }
-                ],
-                operator: 'AND'
-            },
-            isActive: true
-        },
+        // The AI-authored definitions below are shaped { check: "does the
+        // policy...?" } — prompts, not rules. hasEvaluableRule() rejects them, so
+        // they can never fire. FOUR of them were still isActive: true here after
+        // Phase 3 deactivated them in production, which meant the next `db seed`
+        // run would have switched them back on: four "active" definitions
+        // producing nothing, and the gap capability looking broader than it is.
+        // One of them, home-earthquake, is why an audit reported that earthquake
+        // had no authored rule at all. It has one now — no_earthquake_cover, in
+        // the catalogue above. They stay here, inactive, as the record.
+        // ─── Rule-bearing catalogue ────────────────────────────────────
+        // Human-authored, machine-evaluable. Single source in
+        // lib/gaps/authored-catalogue.ts so the seed, the trace test and the
+        // underwriter review packet cannot drift apart.
+        ...AUTHORED_GAP_DEFINITIONS,
         // Deliberately INACTIVE — this was never a coverage gap.
         //
         // It fires when the deductible is LOW, i.e. when the policyholder is
