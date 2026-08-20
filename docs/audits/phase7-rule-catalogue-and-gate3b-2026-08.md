@@ -144,7 +144,7 @@ lists every active definition with no hand-maintained list in between.
 
 ## 5. Results
 
-### Item 2 — the catalogue: 4 → 23 rules, 4 → 7 branches
+### Item 2 — the catalogue: 4 → 27 rules, 4 → 8 branches
 
 | Branch | Rules | How it became possible |
 |---|---:|---|
@@ -154,11 +154,19 @@ lists every active definition with no hand-maintained list in between.
 | pet | 3 | existing `pet` section |
 | group_health | 3 | **already possible** — reuses `AcordDataSchema.health`; nobody had asked |
 | travel | 3 | **new `travel` section** — the blocker in §2, removed rather than worked around |
+| motorbike | 4 | **already possible** — motorbike populates `acordData.vehicle`; nobody had asked |
 | life | 1 | existing `lifeAndInvestment` + top-level `beneficiaries` |
 
-All 23 are rule-bearing and live in production (verified by query through two
-independent connection paths). **100 fixture cases** trace them, and every rule
+All 27 are rule-bearing and live in production (verified by query through two
+independent connection paths). **116 fixture cases** trace them, and every rule
 must prove it stays silent on a field nobody extracted.
+
+Motorbike takes four of motor's five rules and **not** glass breakage.
+`lib/insurance/content/motorbike.ts` records that falling back to the motor
+bundle "told riders about glass breakage and replacement vehicles while saying
+nothing about rider injury — actively misleading". Copying all five across would
+have reproduced precisely that. Rider, pillion and gear cover have no typed
+section, so nothing is authored about them.
 
 Four rules use `missing` and fire on silence: accident-declaration number,
 hospital class, microchip number, 24-hour assistance number — each justified in
@@ -211,3 +219,47 @@ shows what that costs: one schema section, three rules, and the branch is real.
 ΕΙΑΣ-qualified intermediary. The deliverable is
 `docs/reviews/severity-review-packet.md`. Recording an answer is one UPDATE per
 definition; the caveat then disappears for that rule and no other.
+
+
+---
+
+## 6. Where this stops, and why that is not a shrug
+
+Eight branches have rules. Eight do not: cyber, legal expenses, liability,
+business, group life, group pension, pension, boat, fine art, the marine and
+specialty set, personal accident, income protection, standalone roadside.
+
+The reason is the same for every one of them, and it is already written down in
+this repository by someone who read those wordings. Each branch's content file
+carries an HONESTY note:
+
+- **legal expenses** — *"Scope, waiting periods and limits exist only as free text
+  inside `coverages[]` and the conditions"*
+- **liability** — *"the coverage detail lives only in the free-text `coverages[]`"*
+- **boat** — *"Hull value, navigation area, crew cover and salvage terms live only
+  in the free text"*
+- **fine art** — *"the schedule of items and the security conditions… both arrive
+  as free text"*
+- **group life / group pension** — *"the typed `lifeAndInvestment` section models
+  individual contracts, not [these]"*
+- **personal accident** — *"The disability scale, the capital sums and the
+  24h/occupational scope live only in…"*
+
+To author a rule for these I would have to decide which fields a Greek policy of
+that branch reliably states. For travel I could: repatriation, cancellation and a
+medical cap appear on essentially every certificate, so the schema section was
+written and three rules followed. For legal expenses I would be guessing, and a
+guessed field produces a rule that fires on silence for everybody — the exact
+failure this programme has spent seven phases removing.
+
+**So the remaining branches are blocked on domain input, not engineering.** The
+question a human has to answer is narrow and answerable: *for branch X, which
+three or four facts does a Greek policy always state?* Given that, the schema
+section and the rules are an afternoon's work, and travel is the worked example.
+
+Two branches were reachable without any of that, and both were found by checking
+which branches MAP ONTO an existing section rather than counting sections:
+group_health onto `health`, motorbike onto `vehicle`. Both had been documented in
+the repo for as long as those content files have existed. That is worth
+remembering as a search strategy, and as a caution: my own §2 asserted the limit
+was five branches, and it was wrong by two because I counted the wrong thing.

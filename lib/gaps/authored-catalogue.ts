@@ -493,4 +493,77 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
         },
         isActive: true
     },
+
+    // ── Motorbike ────────────────────────────────────────────────────
+    // A distinct canonical branch that DOES populate `acordData.vehicle`
+    // (lib/insurance/content/motorbike.ts records this), so the vehicle rules
+    // genuinely apply — as separate definitions, again, so severity can be rated
+    // for a rider rather than inherited from a car.
+    //
+    // GLASS BREAKAGE IS DELIBERATELY ABSENT. The same content file records that
+    // falling back to the motor bundle "told riders about glass breakage and
+    // replacement vehicles while saying nothing about rider injury — actively
+    // misleading". Copying all five motor rules across would have reproduced
+    // exactly that. Rider, pillion and gear cover have no typed section, so
+    // nothing is authored about them rather than guessed.
+    {
+        slug: 'moto_no_own_damage_cover',
+        name: 'Own Damage Cover (Motorbike)',
+        title: 'Own-damage cover not included',
+        description: 'This policy states that damage to your own motorbike (ίδιες ζημιές) is not covered. However the other party is dealt with, repairs to your own machine after an at-fault accident would be paid by you.',
+        lineOfBusiness: 'motorbike',
+        severity: 'high',
+        defaultSeverity: 'high',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'vehicle.ownVehicleDamage', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'moto_no_roadside_assistance',
+        name: 'Roadside Assistance (Motorbike)',
+        title: 'Roadside assistance not included',
+        description: 'Οδική βοήθεια is not part of this policy. A breakdown or a machine that will not start would be recovered at your own cost, unless you hold assistance separately.',
+        lineOfBusiness: 'motorbike',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'vehicle.hasRoadsideAssistance', operator: 'is_false' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'moto_missing_accident_declaration_phone',
+        name: 'Accident Declaration Number (Motorbike)',
+        title: 'Accident declaration number not recorded',
+        description: 'No accident-declaration telephone number (φιλικός διακανονισμός) is recorded for this policy. Greek motor policies normally print one — check your documents and add it, so it is to hand at the roadside rather than looked for afterwards.',
+        lineOfBusiness: 'motorbike',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'acord_field_check', field: 'vehicle.accidentDeclarationPhone', operator: 'missing' }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'moto_green_card_expiring',
+        name: 'Green Card Expiry (Motorbike)',
+        title: 'Green Card Expiring Soon',
+        description: 'Your international motor insurance certificate (Green Card / Πράσινη Κάρτα) expires within 30 days. Renew before riding abroad.',
+        lineOfBusiness: 'motorbike',
+        severity: 'medium',
+        defaultSeverity: 'medium',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{ type: 'date_within_days', field: 'vehicle.greenCardExpiryDate', withinDays: 30 }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
 ]
