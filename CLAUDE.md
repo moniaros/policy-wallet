@@ -91,18 +91,37 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   directions (a dismissed agent still seeing uploads; grant-holders wrongly denied).
   `tests/unit/policy-authorization-single-path.test.ts` derives the route list from the
   filesystem and fails on a new bypass; exemptions go in that file with a reason.
-- **An agent's access dies with the relationship.** Both visibility arms — the grant and
-  the `createdByUserId` upload arm — require a relationship that is not `inactive`/
-  `terminated`. Never gate on `status === "active"`: the column defaults to
-  `pending_activation`, which is the normal state before a customer accepts.
+- **An agent's access dies with the relationship — however the relationship ends.** Both
+  visibility arms — the grant and the `createdByUserId` upload arm — require a relationship
+  that is not `inactive`/`terminated`. Never gate on `status === "active"`: the column
+  defaults to `pending_activation`, which is the normal state before a customer accepts.
+  **Termination is not the only ending.** `computePolicyAccess` derives read/write/delete
+  from an `AccessGrant`'s level *alone* and never re-checks the relationship, so any code
+  that ends or moves a relationship must revoke the grants **in the same transaction** —
+  `terminateRelationship` always did; `transferCustomer` did not until Aug 2026, and left
+  reassigned agents with permanent `manage` over a former customer's whole book. If you add
+  a third way for a relationship to end, revoke there too.
 - **Rules decide a coverage gap; the model only describes one.** Detection and severity come
   from `decideGapsForPolicy` ([lib/gap-detection.ts](lib/gap-detection.ts)) evaluating a
   `GapDefinition.detectionLogic` against the extracted `AcordData`; severity is the
   definition's, never a literal at the write site. The AI contract has no `isDetected` and no
   `severity` field — deleted, not ignored — and nothing may create a `GapDefinition` from model
   output. A definition without an evaluable rule produces nothing rather than failing silently
-  to false. **Unknown is not absence**: only an explicit `false` is evidence a cover is
-  missing, because the extractor is silent about most fields.
+  to false. **Unknown is not absence**: for `is_false`/`all_false` only an explicit `false`
+  is evidence a cover is missing, because the extractor is silent about most fields. The
+  separate `missing` operator deliberately fires *on* silence — it asks whether a value was
+  recorded, not whether cover exists — so any finding it produces must be worded "not
+  recorded", never "not covered", and public copy must not claim gaps appear only when the
+  policy says so.
+  A run's `resultJson.gapResults` is **AI prose keyed by slug, not a detection list** —
+  entries exist for candidate slugs whether or not a rule fired. Never derive "which gaps
+  does this policy have" from it; read `GapInstance` rows or `resultJson.decidedGapSlugs`.
+- **Nothing reaches a model provider without AI-processing consent — on every path.** There
+  is more than one: the deep pipeline (`policy-analysis-orchestrator.service.ts`) *and*
+  upload-time extraction (`app/api/policies/extract/route.ts`, which the bulk-upload modal
+  also uses). Check `aiProcessingConsentVersion` **before reading the request body**, so a
+  refusal never touches the document. The extract path was ungated until Aug 2026 while
+  `/trust` promised the opposite.
 - **Severity is not a verdict until an underwriter says so.** Render it through
   `describeSeverity()` ([lib/gaps/severity-display.ts](lib/gaps/severity-display.ts)) and show
   its `caveatKey`. `tests/unit/gap-severity-display-single-source.test.ts` fails on a new
