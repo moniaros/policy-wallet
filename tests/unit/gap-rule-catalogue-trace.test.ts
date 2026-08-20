@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest"
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
 import { evaluateGapLogic, hasEvaluableRule } from "@/lib/gap-detection"
 import { AUTHORED_GAP_DEFINITIONS } from "@/lib/gaps/authored-catalogue"
 
@@ -213,6 +215,64 @@ describe("the authored gap catalogue", () => {
 
     it("is entirely active — an inactive entry belongs in seed.ts, not here", () => {
         expect(AUTHORED_GAP_DEFINITIONS.filter((d) => !d.isActive).map((d) => d.slug)).toEqual([])
+    })
+
+    it("is the only source of these slugs — seed.ts does not shadow them", () => {
+        // seed.ts spreads this module and then lists the deactivated AI-authored
+        // definitions. If one of those ever reused a catalogue slug, the seed's
+        // copy would win on upsert and silently replace a traced rule with a
+        // prompt that can never fire — the Phase 3 regression, re-entering by the
+        // back door.
+        const seed = readFileSync(join(process.cwd(), "prisma/seed.ts"), "utf-8")
+        const seedSlugs = [...seed.matchAll(/slug: '([^']+)'/g)].map((m) => m[1])
+        const shadowed = AUTHORED_GAP_DEFINITIONS.map((d) => d.slug)
+            .filter((slug) => seedSlugs.includes(slug))
+            .sort()
+
+        expect(
+            shadowed,
+            "These slugs exist BOTH in the catalogue and inline in seed.ts. The " +
+                "seed's copy would overwrite the traced one:\n  " + shadowed.join("\n  ")
+        ).toEqual([])
+    })
+
+    it("seed.ts activates nothing that cannot fire", () => {
+        // Four ai_check definitions were still isActive: true here after Phase 3
+        // deactivated them in production. The next `db seed` would have switched
+        // them back on: active definitions shaped { check: \"does the policy...?\" },
+        // which hasEvaluableRule() rejects, so they produce nothing while making
+        // the catalogue look broader than it is.
+        // Comments stripped FIRST. The comment in seed.ts that explains this very
+        // bug contains the literal string `isActive: true`, so the guard matched
+        // my own prose and accused a definition that is correctly inactive. This
+        // is the fourth time in this programme a checker has confused a mention
+        // with a use; it is apparently the default failure mode of grepping source.
+        const seedRaw = readFileSync(join(process.cwd(), "prisma/seed.ts"), "utf-8")
+        const seedSource = seedRaw.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")
+        const start = seedSource.indexOf("const gaps = [")
+        const block = seedSource.slice(start, seedSource.indexOf("\n    ]", start))
+        // Scan slug-to-slug rather than splitting on brace lines. The first
+        // version of this guard split on `\n        {\n`, chunks merged where a
+        // definition was preceded by a comment, and it reported a LATER item's
+        // isActive against an EARLIER item's slug — accusing home-earthquake,
+        // which is correctly inactive. A guard that misattributes is worse than
+        // none: it sends you to fix the wrong line.
+        const marks = [...block.matchAll(/slug: '([^']+)'/g)]
+        const offenders = marks
+            .filter((mark, i) => {
+                const start = mark.index!
+                const end = i + 1 < marks.length ? marks[i + 1].index! : block.length
+                const item = block.slice(start, end)
+                return /ruleId: 'ai_check'/.test(item) && /isActive: true/.test(item)
+            })
+            .map((mark) => mark[1])
+            .sort()
+
+        expect(
+            offenders,
+            "These are prompts, not rules, and seed.ts marks them active:\n  " +
+                offenders.join("\n  ")
+        ).toEqual([])
     })
 
     it("has a unique slug per definition", () => {
