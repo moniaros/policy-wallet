@@ -14,11 +14,25 @@
  * Exit 1 on any non-canonical row, listing each with its Zod issues.
  *
  *   npx tsx -r dotenv/config scripts/verify-plan-entitlements.ts
+ *   npx tsx scripts/verify-plan-entitlements.ts --from-json <file>
+ *
+ * The second form validates rows supplied as JSON instead of connecting. It
+ * exists because PRODUCTION plan rows cannot be read from a developer machine —
+ * Vercel returns empty strings for sensitive env vars, so there is no prod
+ * connection string locally. Fetch them with the Supabase MCP:
+ *
+ *   SELECT plan_id AS id, plan_type AS "planType", name, tier_key AS "tierKey",
+ *          entitlements FROM plans ORDER BY plan_type, plan_id;
+ *
+ * save the array to a file, and point --from-json at it. Same schema, same
+ * verdict, same exit code — so "green against BOTH databases" is achievable
+ * without ever holding a prod credential.
  *
  * NOTE the .env.local DIRECT_URL trap (last occurrence wins and may point at
  * production): this script is READ-ONLY, so it is safe either way, but the
  * header line tells you which database was actually checked.
  */
+import fs from "node:fs"
 import { db } from "@/lib/db"
 import {
     AgentEntitlementLimitsSchema,
@@ -35,13 +49,48 @@ function databaseRef(): string {
     )
 }
 
-async function main() {
-    const rows = await db.plan.findMany({
-        select: { id: true, planType: true, name: true, tierKey: true, entitlements: true },
-        orderBy: [{ planType: "asc" }, { id: "asc" }],
-    })
+type PlanRow = {
+    id: string
+    planType: string
+    name: string | null
+    tierKey: string | null
+    entitlements: unknown
+}
 
-    console.log(`Plan entitlement verification — supabase:${databaseRef()} (${rows.length} rows)`)
+function jsonSource(): string | null {
+    const i = process.argv.indexOf("--from-json")
+    if (i === -1) return null
+    const file = process.argv[i + 1]
+    if (!file) throw new Error("--from-json needs a file path")
+    return file
+}
+
+async function main() {
+    const file = jsonSource()
+
+    let rows: PlanRow[]
+    let source: string
+
+    if (file) {
+        const parsed = JSON.parse(fs.readFileSync(file, "utf8"))
+        if (!Array.isArray(parsed)) throw new Error(`${file} must contain a JSON array of plan rows`)
+        rows = parsed as PlanRow[]
+        source = `file:${file}`
+    } else {
+        rows = (await db.plan.findMany({
+            select: { id: true, planType: true, name: true, tierKey: true, entitlements: true },
+            orderBy: [{ planType: "asc" }, { id: "asc" }],
+        })) as PlanRow[]
+        source = `supabase:${databaseRef()}`
+    }
+
+    if (rows.length === 0) {
+        console.error(`No plan rows found in ${source} — refusing to report green on an empty set.`)
+        process.exitCode = 1
+        return
+    }
+
+    console.log(`Plan entitlement verification — ${source} (${rows.length} rows)`)
 
     let failures = 0
     for (const row of rows) {
