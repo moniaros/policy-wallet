@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { SeverityCaveat } from "@/components/gaps/SeverityCaveat"
 import { motion } from "framer-motion"
 import {
     TrendingUp,
@@ -22,6 +23,7 @@ import type { InsightsData } from "./actions"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { daysLeftLabel } from "@/lib/wallet/days-left-label"
+import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
 
 interface InsightsClientProps {
     data: InsightsData
@@ -471,7 +473,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                         {item.customerName}
                                                     </p>
                                                     <p className="text-xs text-muted-foreground mt-0.5">
-                                                        {item.insurerName} · {getLobLabel(item.lineOfBusiness, lang, t)} · {item.policyNumber}
+                                                        {[displayInsurerName(item.insurerName), getLobLabel(item.lineOfBusiness, lang, t), displayPolicyNumber(item.policyNumber)].filter(Boolean).join(' · ')}
                                                     </p>
                                                 </div>
                                                 <div className="text-right flex-shrink-0">
@@ -580,6 +582,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                 )
                             })}
                         </div>
+                    )}
+                    {/* Each card prints a severity word ("Critical"/«Κρίσιμο») to an
+                        advisor. Gate 3b is open, so the grid carries the caveat once
+                        rather than repeating it on every tile. */}
+                    {data.recentGaps.length > 0 && (
+                        <SeverityCaveat lang={language === "el" ? "el" : "en"} />
                     )}
                 </FadeIn>
             </div>

@@ -66,20 +66,41 @@ const KNOWN_BYPASSES = new Set([
     "components/dashboard/home/CoverageGapsWidget.tsx",
     "components/dashboard/home/AttentionList.tsx",
 
-    // These show a severity with NO caveat. Ranked by how loudly.
-    // ActionQueueCard announces "N clients with critical gaps" on the agent
-    // dashboard; TasksClient renders task rows whose titles were written into
-    // the database as the English string "Critical coverage gap"; the rest are
-    // per-gap badges and border colours.
+    // These keep their own colour map AND print a severity WORD to a person, so
+    // each now renders <SeverityCaveat /> — pinned by CAVEAT_REQUIRED below.
+    // Migrating their colour maps to describeSeverity() is still outstanding, but
+    // that is tidying; the truth fix is done.
     "components/agent/ActionQueueCard.tsx",
     "components/tasks/TasksClient.tsx",
     "app/(protected)/insights/InsightsClient.tsx",
     "components/coverage/InsightCard.tsx",
+
+    // Already carried a caveat before this pass — the list used to claim otherwise.
+    // CoverageInsightsClient renders `recPriorityNote`; ClientOverviewTab carries a
+    // stronger, surface-specific one ("not an assessment of insurance adequacy").
     "components/coverage/CoverageInsightsClient.tsx",
     "components/agent/tabs/ClientOverviewTab.tsx",
+
+    // Colour ONLY — no severity word reaches the reader. PolicyBriefCard's dot is
+    // even aria-hidden. A disclaimer bolted to a coloured dot is noise, not honesty.
     "components/wallet/policy-detail/PolicyBriefCard.tsx",
     "components/wallet/PolicyReviewScreen.tsx",
 ])
+
+/**
+ * Surfaces that print a severity WORD ("Critical", «Κρίσιμο», a priority pill) and
+ * must therefore say what that word is worth.
+ *
+ * Gate 3b — underwriter validation of the thresholds and labels — is NOT closable
+ * by code, and is still open. Until it closes, a screen that names a severity
+ * without this line is asserting a risk verdict the product cannot back.
+ */
+const CAVEAT_REQUIRED = [
+    "components/agent/ActionQueueCard.tsx",
+    "components/tasks/TasksClient.tsx",
+    "app/(protected)/insights/InsightsClient.tsx",
+    "components/coverage/InsightCard.tsx",
+]
 
 function sourceFiles(dir: string): string[] {
     return readdirSync(dir).flatMap((entry) => {
@@ -126,5 +147,36 @@ describe("no new hand-rolled severity presentation", () => {
         // A ceiling, so the list can only shrink without someone noticing. Drop
         // it as surfaces migrate; never raise it to make a new screen pass.
         expect(KNOWN_BYPASSES.size).toBeLessThanOrEqual(11)
+    })
+
+    it("every surface that names a severity says what the word is worth", () => {
+        const silent = CAVEAT_REQUIRED.filter((path) => {
+            const source = readFileSync(join(process.cwd(), path), "utf-8")
+            return !/<SeverityCaveat\b/.test(source)
+        }).sort()
+
+        expect(
+            silent,
+            "These print a severity word to a person while Gate 3b (underwriter " +
+                "validation of the thresholds and labels) is still open. Render " +
+                "<SeverityCaveat /> from components/gaps/SeverityCaveat.tsx:\n  " +
+                `${silent.join("\n  ")}`
+        ).toEqual([])
+    })
+
+    it("the caveat disappears the day an underwriter signs off, everywhere at once", () => {
+        // The reason this is one component and not four pasted <p> tags: sign-off
+        // must be a one-line change, or it will be done unevenly and some screen
+        // will keep apologising for a scale that no longer needs it.
+        const caveat = readFileSync(
+            join(process.cwd(), "components/gaps/SeverityCaveat.tsx"),
+            "utf-8"
+        )
+        expect(caveat).toMatch(/if \(SEVERITY_UNDERWRITER_VALIDATED\) return null/)
+        expect(
+            SEVERITY_UNDERWRITER_VALIDATED,
+            "Gate 3b is a HUMAN gate. If this is now true, an underwriter must have " +
+                "signed off on the thresholds AND the labels — not a developer."
+        ).toBe(false)
     })
 })

@@ -1,4 +1,5 @@
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
+import { SeverityCaveat } from "@/components/gaps/SeverityCaveat"
 import { CheckCircle2, ChevronRight, Info, Shield, Car, HeartPulse, Home, Briefcase, Lock } from 'lucide-react'
 
 export type InsightSeverity = 'low' | 'medium' | 'high' | 'critical'
@@ -201,6 +202,13 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                     </span>
                 </div>
             )}
+            {/* The card prints a verdict word — "Critical priority" — so it carries
+                the sentence saying what that word is worth. `lang` is passed
+                explicitly: this component takes `language` as a prop and must not
+                depend on a LanguageProvider being above it. */}
+            <div className="px-5 pb-4">
+                <SeverityCaveat lang={language === "el" ? "el" : "en"} className="mt-0" />
+            </div>
         </div>
     )
 }

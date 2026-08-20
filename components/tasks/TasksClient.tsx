@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
+import { SeverityCaveat } from "@/components/gaps/SeverityCaveat"
 import Link from 'next/link'
 import {
     CheckCircle2,
@@ -254,6 +255,10 @@ export function TasksClient({ actionItems }: TasksClientProps) {
                             </Link>
                         )
                     })}
+                    {/* Task rows carry a priority pill, and some titles were written
+                        into the database as the English string "Critical coverage
+                        gap". Either way a person reads a severity verdict here. */}
+                    <SeverityCaveat />
                 </div>
             )}
         </div>
