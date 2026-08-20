@@ -493,6 +493,12 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "ΕΕ/ΗΠΑ",
                             ],
                             [
+                                "Sentry",
+                                "Καταγραφή σφαλμάτων εφαρμογής",
+                                "Τεχνικά συμβάντα σφαλμάτων με αφαιρεμένα προσωπικά δεδομένα — κανένα περιεχόμενο εγγράφων",
+                                "ΕΕ/ΗΠΑ",
+                            ],
+                            [
                                 "Google (Gemini API)",
                                 "Ανάλυση εγγράφων με AI — κύριος πάροχος",
                                 "Περιεχόμενο ασφαλιστηρίων προς ανάλυση, μόνο με τη συγκατάθεσή σας",
@@ -961,6 +967,12 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "Upstash",
                                 "Request rate limiting (Redis)",
                                 "Per-IP request counters — no document content",
+                                "EU/US",
+                            ],
+                            [
+                                "Sentry",
+                                "Application error monitoring",
+                                "Technical error events with personal data scrubbed — no document content",
                                 "EU/US",
                             ],
                             [

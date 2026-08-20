@@ -112,11 +112,19 @@ export const GET = withApiGuard(
               }
             : undefined
 
+        // Rule-decided gaps only — see the savings-report route for why the AI
+        // prose in resultJson cannot stand in for a detection list.
+        const decidedGaps = await db.gapInstance.findMany({
+            where: { policyId, status: "open" },
+            select: { severity: true, definition: { select: { slug: true } } },
+        })
+
         const html = generateSavingsReportHtml(
             run.resultJson as Record<string, any>,
             run.finishedAt?.toISOString() ?? new Date().toISOString(),
             (authResult.dbUser.preferredLanguage as "en" | "el") || "en",
-            branding
+            branding,
+            decidedGaps.map((g) => ({ slug: g.definition.slug, severity: g.severity }))
         )
 
         return new Response(html, {

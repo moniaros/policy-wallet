@@ -112,6 +112,24 @@ export const POST = withApiGuard(
             })
         }
 
+        // GDPR Art. 9 gate — the same one the deep pipeline enforces
+        // (policy-analysis-orchestrator.service.ts). This route base64-encodes the
+        // WHOLE document and sends it to a model provider, so it is a disclosure to
+        // a processor in its own right, not a lesser "parse". It was previously
+        // gated only by quota and spend, which meant the bulk-upload path
+        // (components/wallet/BatchUploadModal.tsx) shipped documents to Gemini with
+        // no consent at all — while /trust told the reader the opposite.
+        // Here the uploader IS the data subject: no policy row exists yet.
+        // Checked before the body is read so a refusal never touches the bytes.
+        const uploader = await db.user.findUnique({
+            where: { id: authResult.dbUser.id },
+            select: { aiProcessingConsentVersion: true },
+        })
+        if (!uploader?.aiProcessingConsentVersion) {
+            trace("consent", "failed", { code: "AI_CONSENT_REQUIRED" })
+            return failure("AI_CONSENT_REQUIRED", { correlationId })
+        }
+
         // Cap the AI parse to what the user can actually save: once they are at
         // their policy limit, block the (paid) extraction and surface upgrade.
         const canAdd = await canUserAddPolicy(authResult.dbUser.id)

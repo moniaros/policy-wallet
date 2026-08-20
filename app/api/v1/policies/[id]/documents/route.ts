@@ -2,7 +2,7 @@ import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
-import { msFromNow, SIGNED_URL_EXPIRY_MS } from "@/lib/constants/time"
+import { msFromNow, DOWNLOAD_SIGNED_URL_EXPIRY_SECONDS } from "@/lib/constants/time"
 import { getPolicyAccess } from "@/lib/policy-access"
 import { uploadFileDetailed, deleteFile } from "@/lib/storage"
 import { createSignedUrlForStoredObject } from "@/lib/supabase/storage-download"
@@ -142,9 +142,13 @@ export const POST = withApiGuard(
                 }
             })
 
+            // Same short life as the download path (5 min), not the hour this
+            // used to mint. /trust tells the reader a document link "expires
+            // within minutes"; an hour-long link returned here made that false
+            // even though no client reads this field today.
             const signedUrl = await createSignedUrlForStoredObject(
                 document.fileUrl,
-                Math.floor(SIGNED_URL_EXPIRY_MS / 1000)
+                DOWNLOAD_SIGNED_URL_EXPIRY_SECONDS
             )
 
             return createApiResponse({
@@ -154,7 +158,9 @@ export const POST = withApiGuard(
                 file_size: document.fileSize,
                 file_url: document.fileUrl,
                 signed_url: signedUrl,
-                signed_url_expires_at: signedUrl ? msFromNow(SIGNED_URL_EXPIRY_MS) : null,
+                signed_url_expires_at: signedUrl
+                    ? msFromNow(DOWNLOAD_SIGNED_URL_EXPIRY_SECONDS * 1000)
+                    : null,
                 processing_status: document.processingStatus,
                 uploaded_at: document.uploadedAt
             })

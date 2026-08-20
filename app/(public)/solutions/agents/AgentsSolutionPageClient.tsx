@@ -96,7 +96,7 @@ export default function AgentSolutionsPage() {
                             </div>
                             <div className="p-6">
                                 <h3 className="mb-2 text-h3 font-semibold leading-tight text-[#0F172A] dark:text-white">
-                                    {t("Βρίσκουμε τα κενά κάθε πελάτη", "We find every client\u0027s gaps")}
+                                    {t("Ελέγχουμε κάθε συμβόλαιο με κανόνες", "We check every policy against rules")}
                                 </h3>
                                 <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                     {t(
@@ -170,7 +170,7 @@ export default function AgentSolutionsPage() {
                                 {t("Το διαβάζουμε", "We read it")}
                             </h3>
                             <p className="text-body text-[#475569] dark:text-slate-300">
-                                {t("Βρίσκουμε κενά, κινδύνους και ποιος πελάτης χρειάζεται προσοχή πρώτος.", "We find gaps, risks, and which client needs your attention first.")}
+                                {t("Δείχνουμε τι εντόπισαν οι κανόνες και ποιος πελάτης χρειάζεται προσοχή πρώτος.", "We show what the rules found and which client needs your attention first.")}
                             </p>
                         </div>
 

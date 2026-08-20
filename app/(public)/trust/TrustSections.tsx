@@ -35,16 +35,22 @@ interface Section {
  *                  a contractual term, not only marketing copy
  *  no-commission — lib/pricing/plan-defaults.ts (subscription prices only; no
  *                  commission field exists anywhere in the billing model)
- *  encryption    — lib/legal/legal-content.ts:347 / :809 (TLS in transit, at rest)
- *  residency     — lib/legal/legal-content.ts:299 / :761 (Supabase eu-west-3, Paris)
+ *  encryption    — lib/legal/legal-content.ts:356 / :827 (TLS in transit, at rest).
+ *                  This one rests on Supabase's platform guarantee; nothing in
+ *                  this repo can evidence at-rest encryption by itself.
+ *  residency     — lib/legal/legal-content.ts:308 / :779, corroborated by the
+ *                  actual pooler host (aws-*-eu-west-3) in DATABASE_URL
  *  no-training   — lib/legal/legal-content.ts:281 / :743 (provider API terms)
- *  ai-consent    — prisma/schema.prisma ConsentType.ai_processing +
- *                  policy-analysis-orchestrator.service.ts:429-464 (gate before
- *                  any document reaches a model; blocked runs get
- *                  AI_CONSENT_REQUIRED)
+ *  ai-consent    — prisma/schema.prisma ConsentType.ai_processing. BOTH paths
+ *                  that send bytes to a provider are gated:
+ *                  policy-analysis-orchestrator.service.ts (deep run) AND
+ *                  app/api/policies/extract/route.ts (upload-time extraction,
+ *                  incl. bulk upload). The extract route was ungated until
+ *                  2026-08-20 — this sentence was false for the bulk path.
  *  access        — lib/policy-access.ts (single decision function) +
- *                  tests/unit/policy-authorization-single-path.test.ts (a route
- *                  that bypasses it fails CI)
+ *                  tests/unit/policy-authorization-single-path.test.ts. Scope is
+ *                  app/api only, matched per FILE not per handler — hence the
+ *                  copy says "scans the API routes", not "any route anywhere".
  *  agent-access  — lib/agent-visibility.ts (both arms require a living
  *                  relationship; termination ends visibility)
  *  documents     — app/api/v1/policies/[id]/documents/[docId]/route.ts:21-23
@@ -131,8 +137,8 @@ const SECTIONS: Section[] = [
         },
         body: [
             {
-                el: "Κάθε ανάγνωση ενός συμβολαίου περνά από ένα σημείο ελέγχου στην εφαρμογή, που ρωτά το ίδιο πράγμα κάθε φορά: το κατέχετε εσείς, ή σας το έχει μοιραστεί ρητά κάποιος; Δοκιμή στο CI αποτυγχάνει αν προστεθεί διαδρομή που το παρακάμπτει.",
-                en: "Every read of a policy goes through one checkpoint in the application, which asks the same question every time: do you own it, or has someone explicitly shared it with you? A CI test fails if a route is added that bypasses it.",
+                el: "Κάθε ανάγνωση ενός συμβολαίου περνά από ένα σημείο ελέγχου στην εφαρμογή, που ρωτά το ίδιο πράγμα κάθε φορά: το κατέχετε εσείς, ή σας το έχει μοιραστεί ρητά κάποιος; Δοκιμή στο CI σαρώνει τις διαδρομές του API και αποτυγχάνει αν κάποια νέα δεν περνά από εκεί.",
+                en: "Every read of a policy goes through one checkpoint in the application, which asks the same question every time: do you own it, or has someone explicitly shared it with you? A CI test scans the API routes and fails if a new one does not go through it.",
             },
             {
                 el: "Η πρόσβαση ενός ασφαλιστή τελειώνει μαζί με τη σχέση σας. Αν τη διακόψετε, παύει να βλέπει και τα συμβόλαια που ανέβασε ο ίδιος για εσάς.",
@@ -156,8 +162,8 @@ const SECTIONS: Section[] = [
                 en: "You can download a copy of your data whenever you want, yourself, without asking anyone. It is a structured file, not screenshots.",
             },
             {
-                el: "Λίγα στοιχεία δεν περιλαμβάνονται σε αυτό το αντίγραφο και δίνονται κατόπιν αιτήματος: στοιχεία τρόπου πληρωμής, αρχεία συνεδριών και ασφάλειας, το ιστορικό του ποιος είδε τα δεδομένα σας, μετρήσεις χρήσης, και όσα κατέγραψε για εσάς ο ασφαλιστής σας.",
-                en: "A few things are not in that copy and are provided on request: payment-method details, session and security records, the history of who viewed your data, usage metering, and what your advisor recorded about you.",
+                el: "Λίγα στοιχεία δεν περιλαμβάνονται σε αυτό το αντίγραφο και δίνονται κατόπιν αιτήματος: στοιχεία τρόπου πληρωμής, αρχεία συνεδριών και ασφάλειας, το ιστορικό του ποιος είδε τα δεδομένα σας, μετρήσεις χρήσης, και τα ελεύθερα σημειώματα που έγραψε για εσάς ο διαμεσολαβητής σας. Η δομημένη αξιολόγησή του για εσάς περιλαμβάνεται.",
+                en: "A few things are not in that copy and are provided on request: payment-method details, session and security records, the history of who viewed your data, usage metering, and the free-text notes your advisor wrote about you. Their structured assessment of you is included.",
             },
             {
                 el: "Τη διαγραφή τη ζητάτε με ένα κλικ· την εκτελεί άνθρωπος και ολοκληρώνεται το αργότερο εντός ενός μήνα. Ό,τι μας υποχρεώνει ο νόμος να κρατήσουμε — για παράδειγμα τιμολόγια για πέντε χρόνια — παραμένει σε ανωνυμοποιημένη μορφή.",

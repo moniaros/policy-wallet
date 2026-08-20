@@ -1748,6 +1748,10 @@ export class PolicyAnalysisOrchestratorService {
             missingArtifacts.add("translation")
         }
 
+        // Captured out of the persistence closure below so the run's resultJson can
+        // record WHICH gaps the rules decided (see persistAnalysisArtifacts' return).
+        let decidedGapSlugs: string[] = []
+
         const persistenceStep = await this.executeStepWithRetry({
             runId,
             leaseId,
@@ -1761,7 +1765,7 @@ export class PolicyAnalysisOrchestratorService {
             preferredProvider: primaryProvider,
             includesDocumentContext: false,
             execute: async () => {
-                await this.persistAnalysisArtifacts({
+                decidedGapSlugs = await this.persistAnalysisArtifacts({
                     runId,
                     language,
                     policy,
@@ -1830,6 +1834,8 @@ export class PolicyAnalysisOrchestratorService {
             checklistScores: clarityResult.checklistScores,
             priorityActions: clarityResult.priorityActions,
             gapResults: gapResult.gapResults,
+            // AI prose keyed by slug (`gapResults`) is NOT a detection list. This is.
+            decidedGapSlugs,
             run: {
                 runId,
                 generatedAt: new Date().toISOString(),
@@ -2859,6 +2865,12 @@ export class PolicyAnalysisOrchestratorService {
                 await tx.gapInstance.createMany({ data: gapRows })
             }
         })
+
+        // The slugs the RULES decided, returned so the run's stored resultJson can
+        // record them. Without this the run keeps only AI prose keyed by slug, which
+        // is not a detection list — so a run-to-run gap diff had nothing truthful to
+        // read and silently reported no change on every comparison.
+        return ruleDecided.map((d) => d.slug)
     }
 
     private async failRun(
