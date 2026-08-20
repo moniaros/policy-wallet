@@ -1,5 +1,5 @@
 # Phase 6 — Adversarial re-score of the public surface
-**2026-08-20 · iteration 1 of a maximum 3**
+**2026-08-20 · iterations 1–2 of a maximum 3**
 
 > The rubric this scores against lived in `docs/audits/public-surface-strategy-redteam-2026-08.md`,
 > which was **destroyed** by the working-tree revert described in
@@ -29,8 +29,9 @@ a lead, not a result. Every fix below cites the check that confirmed it.
 ## 1. Category E failed. The loop did not pass on the first pass.
 
 The user's gate: *"If category E (diligence survivability) is not 15/15, the loop has
-failed regardless of total."* It was not. **Six** distinct false-or-unsupported public
-claims were live, and the worst two were created or missed by this very loop.
+failed regardless of total."* It was not. **Seven** distinct false-or-unsupported
+public claims were live — six found in iteration 1, and a seventh (E-7) that iteration 1
+itself scored as true. The worst two were created or missed by this very loop.
 
 ### E-1 — `/trust` promised consent-gating that a live upload path did not do (**FALSE**)
 
@@ -100,8 +101,9 @@ not per handler**. A counter-example already exists: the `DELETE` handler in
 live hole — but it disproves the promise.) Server actions are not scanned at all, and
 `agent/actions.ts:1629` already hand-rolls a `policy:${id}` grant lookup.
 
-Copy narrowed to *"scans the API routes"*. **The guard itself was not widened — see
-the remainders.**
+Copy was narrowed to *"scans the API routes"* in iteration 1. **Iteration 2 widened the
+guard instead** — per HTTP handler, plus the whole server-action surface — so the copy
+was restored to the broader claim, which is now true. See §6.1.
 
 ### E-6 — Sentry was an undisclosed subprocessor (**MISSING**)
 
@@ -109,6 +111,24 @@ Sentry receives scrubbed error events from client, server and edge
 (`instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`) and
 was **absent from the privacy policy's subprocessor table**. Added in both locales;
 the parity test's expected list went 9 → 10.
+
+### E-7 — `/needs` promised six questions and asked twelve (**FALSE**) — *found in iteration 2*
+
+`NEEDS_STEPS.length === 6`, but `NEEDS_QUESTIONS.length === 12` (2,2,1,3,3,1 across the
+six steps). The H1 and both SEO strings said *"six questions"*, in both languages.
+
+**This one indicts iteration 1's own method.** The sweep agent classified it
+`[FRAGILE, currently TRUE]` — "accurate today (6 steps in `lib/needs/questions.ts`)" —
+conflating steps with questions. I recorded that verdict in §6.7 below **without
+counting the questions myself**, and then scored category E as 15/15 with this claim
+live. The standing rule for this whole programme is *"do not trust prior session output
+including your own"*, and an agent's arithmetic is exactly the kind of inheritance it
+was written for.
+
+Fixed: the headline now derives from `NEEDS_STEPS.length`, the metadata says *steps*,
+and `needs-check.test.ts` pins both. The first version of that guard failed on **its own
+explanatory comment** containing the banned phrase — the mention-vs-use trap, for the
+third time in this programme — so it strips comments before matching.
 
 ---
 
@@ -196,14 +216,15 @@ Categories and weights restored from the original brief (see the header caveat).
 | B | Asset legibility | 15 | **10** | Provenance, envelope schema and the neutrality clause are legible and cited. The rule catalogue is **4 rules** — a real asset, but a thin one, and the pages now say so. |
 | C | Compliance | 20 | **16** | Entity published on every Art. 13 surface; DSR drill 13/13; Sentry now disclosed. Held back by retention promises with no enforcing job (§6.3). |
 | D | Neutrality | 15 | **15** | No erosion found on any axis, contractually bound, independently re-verified this phase. |
-| E | Diligence survivability | 15 | **15**\* | \*After remediation. **It was not 15 when this phase began** — see §1. |
-| F | Integrability | 10 | **7** | One authorization decision function, one gap engine, versioned provenance. Offset by the server-action surface being outside the guard. |
+| E | Diligence survivability | 15 | **15**\* | \*After **two** rounds of remediation. It was not 15 when this phase began, and it was not 15 when iteration 1 claimed it was — see E-7. |
+| F | Integrability | 10 | **9** | One authorization decision function, one gap engine, versioned provenance — and the guard now covers API routes **per handler** and the **server-action surface**, with 14 exemptions each carrying a reason. |
 | G | Distribution | 10 | **5** | Unchanged this loop; SEO metadata for several pages still asserts gap-finding more broadly than four rules support. |
-| | **Total** | **100** | **79** | |
+| | **Total** | **100** | **81** | |
 
-**GATE: NOT PASSED.** Total 79 < 85. No category below 60 %; E is 15/15 only *after*
-the fixes in §1. The honest reading is that the gate **failed on entry** and the
-score above describes the post-remediation state.
+**GATE: NOT PASSED.** Total 81 < 85. No category below 60 %; E is 15/15 only *after*
+the fixes in §1. The honest reading is that the gate **failed on entry**, failed again
+on iteration 1's own scoring (E-7), and the score above describes the state after both
+rounds of remediation.
 
 **Ceiling without new external facts: ~84.** A/B/G are limited by things no amount of
 code discipline can supply — a validated severity scale, a broader authored rule
@@ -228,20 +249,25 @@ the repository.
 
 ## 6. Honest remainders — NOT fixed
 
-1. **The authorization guard does not scan server actions.** `API_ROOT` is hardcoded
-   to `app/api`. `agent/actions.ts:1629`, `coverage-insights/actions.ts:36` and
-   `wallet/actions.ts:1614` each hand-roll their own check. All are currently
-   *narrower* than `getPolicyAccess`, so none is exploitable today — but the guard's
-   promise does not extend to them, and the copy was narrowed to match rather than the
-   guard widened. **This is the most likely site of the next Phase-1-class bug.**
+1. ~~**The authorization guard does not scan server actions.**~~ **CLOSED (iteration 2).**
+   The guard now checks API routes **per HTTP handler** — which immediately surfaced the
+   `DELETE` in `documents/[docId]` hand-rolling its own ownership filter behind a
+   compliant `GET`, now on the single path — and scans the **server-action surface**.
+   All 14 policy-touching actions were read and verified: every one authorizes, several
+   deliberately narrower than `getPolicyAccess`, **no live hole**. Each is listed in
+   `ACTION_EXEMPT` with its reason. Both new checks were verified to fail against the
+   pre-fix source. The `/trust` copy was restored to the wider, now-true claim.
 2. **8 of 11 severity display sites show no caveat**, including
    `ActionQueueCard.tsx:202` ("N clients with critical gaps") on the agent dashboard.
    The ceiling test freezes the debt from growing; it does not repay it. Gate 3b
    remains open regardless.
-3. **`MonetaryLimitSchema.unlimited` still carries `.default(false)`**
-   (`lib/schemas/acord-data.ts:58`) — the exact unknown-becomes-false coercion Phase 3
-   removed elsewhere. No current rule reads it, so it is not live; it is one rule away
-   from being live.
+3. ~~**`MonetaryLimitSchema.unlimited` still carries `.default(false)`**~~
+   **CLOSED (iteration 2).** Now `.optional()`. The AI SDK materialises Zod defaults
+   into the returned object, so the default had been storing an explicit "not unlimited"
+   on every limit the extractor never determined — indistinguishable from the model
+   saying so, and precisely what an `is_false` rule ignores silence to avoid. Undefined,
+   false and true are now three distinct states. The v3 schema test asserted the default
+   rather than the intent, and was corrected with the reason recorded.
 4. **Retention promises without an enforcing job.** The daily job covers `ActivityLog`,
    `Invite`, `FormSubmission` and `DataExportRequest`. `TokenUsage`,
    `MonthlyTokenUsage`, `Session`, `ActiveSession` and `ConsentAudit` are never
@@ -254,20 +280,28 @@ the repository.
    percentages, Schengen minimums, statutory deductibles) cannot be checked against
    this repository. Internally self-consistent; flagged as a class for external
    fact-checking, not asserted as correct.
-7. **`/needs` "six questions"** is hardcoded rather than derived from
-   `NEEDS_STEPS.length`. True today, unprotected against drift.
+7. ~~**`/needs` "six questions"** is hardcoded … True today, unprotected against drift.~~
+   **WRONG, AND CLOSED (iteration 2).** It was not true: six steps, **twelve questions**.
+   This entry is left visible rather than deleted, because the error it records — taking
+   an agent's "currently TRUE" without counting — is the one worth remembering. See E-7.
 
 ---
 
 ## 7. Iteration status
 
-**Iteration 1 of 3 complete.** Six false or unsupported public claims removed, one
-live authorization hole closed, one self-inflicted regression repaired. E reaches
-15/15 only after remediation; the total does not reach the gate and **cannot** without
-the external facts in §5.
+**Iterations 1 and 2 of 3 complete.**
 
-Continuing to iterations 2 and 3 would refine A/B/F by a few points at most. It would
-not move C, and it cannot move the items in §5 at all. **The honest recommendation is
-to stop the scoring loop here and hand the blockers to their named owners**, rather
-than spend two more iterations rewording a surface whose remaining limits are factual,
-not editorial.
+*Iteration 1* — six false or unsupported public claims removed, one live authorization
+hole closed, one self-inflicted regression repaired. It also recommended stopping, on
+the grounds that further iterations could only reword.
+
+*Iteration 2 proved that recommendation premature*, which is the useful result. Going
+back over the ground turned up a **seventh false public claim** that iteration 1 had
+scored as true on an agent's say-so (E-7), and closed three of the seven remainders —
+including the guard blind spot that let the `DELETE` handler keep its own copy of the
+ownership rule. Neither was rewording. Score 79 → **81**.
+
+**Now the recommendation stands.** What is left in §6 is either factual (items 4–6,
+needing external confirmation) or disclosed debt whose repayment is gated on Gate 3b.
+Iteration 3 would not move the total, and the remaining blockers in §5 belong to their
+named owners, not to another scoring pass.

@@ -66,7 +66,39 @@ but it is also a documented, shipped positioning decision (`CATEGORY_NAME`
 docblock, `docs/audits/marketing-website-audit-2026-08.md` §2). Flagged, not
 overturned.
 
-## Session wrap — 2026-08-20 (PHASE 6 — Adversarial re-score) — **GATE NOT PASSED (79/100)**, honest stop
+## Session wrap — 2026-08-20 (PHASE 6 iteration 2 — closing the remainders) — **81/100**, loop ends here
+
+Iteration 1 recommended stopping. **Iteration 2 proved that premature**, which is the
+useful result:
+
+- **A seventh false public claim, which iteration 1 scored as true.** `/needs` says "six
+  questions" and asks **twelve**, across six steps (2,2,1,3,3,1) — in both languages and
+  in the SEO metadata. The sweep agent called it "fragile but currently TRUE" by
+  conflating steps with questions, and I recorded that **without counting**. Headline now
+  derives from `NEEDS_STEPS.length`; pinned by `needs-check.test.ts`. (That guard's first
+  version failed on **its own comment** quoting the banned phrase — mention-vs-use, third
+  time this programme.)
+- **The guard blind spot is closed, not just disclosed.** `policy-authorization-single-path`
+  now checks API routes **per HTTP handler** — which immediately caught the `DELETE` in
+  `documents/[docId]` hand-rolling its own ownership filter behind a compliant `GET`, now
+  on the single path with its deliberate owner-only narrowing kept — and scans the
+  **server-action surface** for the first time. All 14 policy-touching actions audited:
+  every one authorizes, several deliberately narrower than `getPolicyAccess`, **no live
+  hole**; each listed with a reason. Both checks verified to fail against pre-fix source.
+  `/trust` copy restored to the wider, now-true claim.
+- **`MonetaryLimitSchema.unlimited` → `.optional()`.** `.default(false)` was being
+  materialised by the AI SDK into stored data, recording "there is a cap" on every limit
+  nobody determined — one rule away from load-bearing.
+
+**Score 79 → 81** (F: 7 → 9). Gate is 85 and remains unreachable from inside the repo.
+**Loop ends here**: what is left is factual (external confirmation) or Gate-3b debt.
+
+Guardrails: `tsc` clean · **4598/4598 unit** · lint/utf8/encoding/i18n/api-auth green.
+Commits `60c022bf`, `e8ecbd6b`, `155138ff`.
+
+---
+
+## Session wrap — 2026-08-20 (PHASE 6 — Adversarial re-score) — **GATE NOT PASSED (79/100)**
 
 Full write-up: `docs/audits/phase6-rescore-2026-08.md`. Three adversarial agents, every
 finding re-verified by hand before action.
@@ -104,8 +136,9 @@ from inside the repo.** Blocking facts, in order: underwriter validation of seve
 (Gate 3b), a broader authored rule catalogue (**4 rules cover 4 of 16 branches**), ΓΕΜΗ
 seat confirmation, court-venue decision, at-rest encryption attestation.
 
-**Recommendation: stop the scoring loop at iteration 1 of 3.** Iterations 2–3 would move
-A/B/F by a few points and cannot move the blockers at all.
+~~**Recommendation: stop the scoring loop at iteration 1 of 3.**~~ **Superseded** — see the
+iteration-2 wrap above. Iteration 2 was not rewording: it found a seventh false claim this
+wrap had scored as true, and closed the guard blind spot below.
 
 **Known remainder, ranked #1 for the next security pass:** the authorization guard scans
 `app/api` only, per-file not per-handler, and **not server actions** — three already
