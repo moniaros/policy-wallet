@@ -16,36 +16,36 @@ export const subscriptionCopy = {
             price: { el: '€0', en: '€0' },
             period: { el: '/μήνα', en: '/month' },
         },
-        // NOTE relabel-in-place: code key `plus` = "Starter" (€2.99),
-        // code key `pro` = "Plus" (€7.99, the recommended AI tier).
+        // NOTE relabel-in-place: code key `plus` = "Plus" (€39/yr),
+        // code key `pro` = "Family" (€79/yr, the recommended tier).
         plus: {
-            name: { el: 'Starter', en: 'Starter' },
+            name: { el: 'Plus', en: 'Plus' },
             description: {
-                el: 'Για βασική οργάνωση',
-                en: 'For basic organization'
+                el: 'Για όλα τα δικά σας ασφαλιστήρια',
+                en: 'For everything in your own name'
             },
-            price: { el: '€2.99', en: '€2.99' },
+            price: { el: '€4.99', en: '€4.99' },
             period: { el: '/μήνα', en: '/month' },
             annual: {
-                price: { el: '€29', en: '€29' },
+                price: { el: '€39', en: '€39' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε 2 μήνες', en: 'Save 2 months' },
+                savings: { el: 'Εξοικονομήστε 4 μήνες', en: 'Save 4 months' },
             },
         },
         pro: {
-            name: { el: 'PolicyWallet Plus', en: 'PolicyWallet Plus' },
+            name: { el: 'Family', en: 'Family' },
             description: {
-                el: 'Πλήρης εμπειρία AI',
-                en: 'The full AI experience'
+                el: 'Για τα ασφαλιστήρια όλου του σπιτιού',
+                en: "For the whole household's policies"
             },
-            price: { el: '€7.99', en: '€7.99' },
+            price: { el: '€8.99', en: '€8.99' },
             period: { el: '/μήνα', en: '/month' },
             badge: { el: 'Δημοφιλές', en: 'Popular' },
             savings: { el: 'Καλύτερη αξία', en: 'Best value' },
             annual: {
                 price: { el: '€79', en: '€79' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε 2 μήνες', en: 'Save 2 months' },
+                savings: { el: 'Εξοικονομήστε 3 μήνες', en: 'Save 3 months' },
             },
         },
     },
@@ -293,8 +293,8 @@ export const subscriptionCopy = {
                 en: 'Is payment secure?'
             },
             answer: {
-                el: 'Απόλυτα. Χρησιμοποιούμε το Stripe, που προσφέρει κρυπτογράφηση τραπεζικού επιπέδου. Δεν αποθηκεύουμε τα στοιχεία της κάρτας σας.',
-                en: 'Absolutely. We use Stripe, which provides bank-grade encryption. We never store your card details.'
+                el: 'Οι πληρωμές γίνονται εξ ολοκλήρου μέσα στο Stripe, πιστοποιημένο κατά PCI DSS Level 1. Τα στοιχεία της κάρτας σας δεν περνούν ποτέ από τους δικούς μας διακομιστές και δεν τα αποθηκεύουμε.',
+                en: "Payments run entirely inside Stripe, which is certified PCI DSS Level 1. Your card details never pass through our servers, and we never store them."
             },
         },
         {

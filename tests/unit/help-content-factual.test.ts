@@ -15,11 +15,21 @@ const HELP = readFileSync('lib/help-content.ts', 'utf-8')
 
 describe('help center states only facts the product actually implements', () => {
     it('the free-plan policy limit in help matches the plan catalog', () => {
+        // Derived, not pinned. This used to assert `limit === 1` alongside the
+        // sentence check, so a catalog change failed the guard rather than the
+        // copy — and the fix was to edit the test, which is the one edit that
+        // makes a guard stop guarding.
         const limit = DEFAULT_ENTITLEMENT_LIMITS.free.policies
-        expect(limit).toBe(1) // if the catalog changes, update the help sentences AND this line
-        expect(HELP).toContain(`The free plan includes ${limit} policy`)
-        expect(HELP).toContain(`Το δωρεάν πλάνο περιλαμβάνει ${limit} ασφαλιστήριο`)
-        expect(HELP).not.toMatch(/limited to 3 active policies|περιορίζονται σε 3 ενεργά/)
+        expect(limit, 'the free tier must enforce a finite policy count').toBeTypeOf('number')
+
+        expect(HELP).toContain(`The free plan includes ${limit} policies`)
+        expect(HELP).toContain(`Το δωρεάν πλάνο περιλαμβάνει ${limit} ασφαλιστήρια`)
+
+        // No other count may appear in the same sentence.
+        for (const wrong of [1, 2, 3, 5, 10, 25].filter((n) => n !== limit)) {
+            expect(HELP, `help states a free limit of ${wrong}, code enforces ${limit}`)
+                .not.toContain(`The free plan includes ${wrong} polic`)
+        }
     })
 
     it('never names the nonexistent "Premium" plan', () => {

@@ -39,7 +39,7 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
             q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλεια αυτοκινήτου;", en: "How does PolicyWallet help with car insurance?" },
             a: {
                 el: "Στέλνετε το ασφαλιστήριο και το διαβάζουμε για εσάς: τι καλύπτει, τι όχι, πότε λήγει. Δωρεάν για 1 ασφαλιστήριο, χωρίς κάρτα. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "You send us the policy and we read it for you: what it covers, what it does not, and when it runs out. Free for 1 policy, no card. We do not sell insurance and take no commission.",
+                en: "You send us the policy and we read it for you: what it covers, what it does not, and when it runs out. Free for 3 policies, no card. We do not sell insurance and take no commission.",
             },
         },
     ],
@@ -345,7 +345,7 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
             q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλιση έργων τέχνης;", en: "How does PolicyWallet help with fine art insurance?" },
             a: {
                 el: "Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απαλλαγή και τους όρους ασφαλείας — όπως τον συναγερμό που το συμβόλαιο απαιτεί — καθώς και αν προαιρετικές καλύψεις όπως ο σεισμός έχουν επιλεγεί. Δωρεάν για 1 ασφαλιστήριο, χωρίς κάρτα.",
-                en: "You send us the policy and we read the schedule of items, the values, the deductible and the security conditions — like the alarm the policy requires — plus whether optional covers such as earthquake were taken. Free for 1 policy, no card.",
+                en: "You send us the policy and we read the schedule of items, the values, the deductible and the security conditions — like the alarm the policy requires — plus whether optional covers such as earthquake were taken. Free for 3 policies, no card.",
             },
         },
     ],

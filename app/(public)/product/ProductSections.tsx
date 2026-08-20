@@ -98,8 +98,8 @@ export function ProductSections({ language }: { language: Language }) {
                         The reassurance the visitor actually needs is the price. */}
                     <p className="mt-4 text-body-sm text-[#5B6A7A] dark:text-slate-400">
                         {t(
-                            "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.",
-                            "Free for 1 policy. No card."
+                            "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα.",
+                            "Free for 3 policies. No card."
                         )}
                     </p>
                 </div>
@@ -400,13 +400,13 @@ export function ProductSections({ language }: { language: Language }) {
                     <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white [overflow-wrap:anywhere] md:text-h1 lg:text-display">
                         {t(
                             "Στείλτε ένα συμβόλαιο και δείτε τι βρίσκουμε.",
-                            "Send us one policy and see what we find."
+                            "Send us a policy and see what we find."
                         )}
                     </h2>
                     <p className="mx-auto mb-10 max-w-[540px] text-lead leading-relaxed text-white/75">
                         {t(
                             CTA_REASSURANCE.el,
-                            "Free for 1 policy. No card. Delete everything whenever you want."
+                            "Free for 3 policies. No card. Delete everything whenever you want."
                         )}
                     </p>
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">

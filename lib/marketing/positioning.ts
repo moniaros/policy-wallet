@@ -317,14 +317,17 @@ export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
  * gives you, and 17 hand-typed copies of a free-tier promise is 17 chances for
  * one page to promise something the product does not do.
  */
-export const CTA_REASSURANCE_SHORT: Bilingual = {
-    el: "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.",
-    en: "Free for 1 policy. No card.",
-}
-
+/**
+ * ONE reassurance line. There is deliberately no `_SHORT` variant.
+ *
+ * Two exports meant two free-tier promises, and they drifted the moment the
+ * tier changed: sixteen product pages rendered one string while the landing
+ * page rendered another, and a pricing change had to find both. The free tier
+ * is three policies with full analysis — stated once, here.
+ */
 export const CTA_REASSURANCE: Bilingual = {
-    el: "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
-    en: "Free for 1 policy. No card. Delete everything whenever you want.",
+    el: "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
+    en: "Free for 3 policies. No card. Delete everything whenever you want.",
 }
 
 /**

@@ -227,7 +227,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
 
             {/* Finding the gap is a PolicyWallet Plus job — Free and Starter
                 both sit at zero gap analyses. This mock renders in the hero,
-                inches from "Free for 1 policy", so it has to say whose result
+                inches from the free-tier reassurance line, so it has to say whose result
                 it is or it reads as a free-tier promise. It sits OUTSIDE the
                 role="img" wrapper so assistive tech hears it as a caption
                 rather than having it swallowed by the image label. */}

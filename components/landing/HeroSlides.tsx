@@ -69,13 +69,13 @@ const SLIDES: Slide[] = [
             ) : (
                 <>
                     Every policy, from every company,{" "}
-                    <span className="text-[#29685B] dark:text-[#A7F3D0]">in one secure place.</span>
+                    <span className="text-[#29685B] dark:text-[#A7F3D0]">in one place.</span>
                 </>
             ),
         lead: (locale) =>
             locale === "el"
-                ? "Αρκεί να στείλετε ένα αρχείο ή μια φωτογραφία. Τα μαζεύουμε, τα διαβάζουμε και ξέρετε πάντα πότε λήγει το καθένα."
-                : "Just send a file or a photo. We gather them, read them, and you always know when each one runs out.",
+                ? "Αρκεί να στείλετε ένα αρχείο ή μια φωτογραφία. Τα μαζεύουμε, τα διαβάζουμε και ξέρετε πάντα τι καλύπτει το καθένα και πότε λήγει."
+                : "Just send a file or a photo. We gather them, read them, and you always know what each one covers and when it runs out.",
     },
     {
         id: "duplicates",
@@ -97,7 +97,7 @@ const SLIDES: Slide[] = [
         // hero and then paywalled is the one thing a first visit cannot afford.
         lead: (locale) =>
             locale === "el"
-                ? "Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και κενά που δεν ξέρατε ότι έχετε — με το PolicyWallet Plus."
+                ? "Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και ασφαλιστικά κενά που δεν ξέρατε ότι έχετε ή δεν είχατε όταν κάνατε το συμβόλαιο σας— με το PolicyWallet Plus."
                 : "Spot cover you are paying for twice, and gaps you did not know you had — with PolicyWallet Plus.",
     },
     {
@@ -117,8 +117,8 @@ const SLIDES: Slide[] = [
             ),
         lead: (locale) =>
             locale === "el"
-                ? "Νομική υποστήριξη, οδική βοήθεια, ταξιδιωτική κάλυψη: πολλά περιλαμβάνονται ήδη σε αυτά που έχετε. Σας δείχνουμε ποια, με απλά λόγια."
-                : "Legal support, roadside assistance, travel cover: plenty is already included in what you hold. We show you which, in plain words.",
+                ? "Οδική βοήθεια, ετήσιο check-up, απευθείας πληρωμή νοσοκομείου, επαναπατρισμός: πολλά μπορεί να τα έχετε ήδη. Σας δείχνουμε ποια, με απλά λόγια."
+                : "Roadside assistance, an annual check-up, direct hospital billing, repatriation: plenty may already be yours. We show you which, in plain words.",
     },
 ]
 

@@ -1930,8 +1930,8 @@ export const guides: Guide[] = [
                     en: "How much does a policy-management platform cost?",
                 },
                 answer: {
-                    el: "Από μηδέν έως λίγα ευρώ τον μήνα. Τα portal των εταιρειών και οι εφαρμογές πρακτορείων είναι δωρεάν για τους πελάτες τους. Το PolicyWallet έχει δωρεάν πακέτο για ένα συμβόλαιο και συνδρομές που ξεκινούν από €2.99 τον μήνα.",
-                    en: "From nothing to a few euros a month. Insurer portals and agency apps are free to their own customers. PolicyWallet has a free plan for one policy and subscriptions starting at €2.99 a month.",
+                    el: "Από μηδέν έως λίγα ευρώ τον μήνα. Τα portal των εταιρειών και οι εφαρμογές πρακτορείων είναι δωρεάν για τους πελάτες τους. Το PolicyWallet έχει δωρεάν πακέτο για τρία ασφαλιστήρια και συνδρομές που ξεκινούν από €39 τον χρόνο.",
+                    en: "From nothing to a few euros a month. Insurer portals and agency apps are free to their own customers. PolicyWallet has a free plan for three policies and subscriptions starting at €39 a year.",
                 },
             },
             {

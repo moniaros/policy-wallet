@@ -1,3 +1,4 @@
+import { DEFAULT_AGENT_ENTITLEMENT_LIMITS, DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('@/lib/db', () => ({
@@ -109,7 +110,7 @@ describe('canUserUseTokens — agent budget branch', () => {
 
         const result = await canUserUseTokens(AGENT, 100_000)
         expect(result.allowed).toBe(true)
-        expect(result.remainingTokens).toBe(2_000_000)
+        expect(result.remainingTokens).toBe(DEFAULT_AGENT_ENTITLEMENT_LIMITS.agent_starter.monthlyTokenBudget)
     })
 
     it('agent without a paid plan gets the agent_free budget (500k), NOT the B2C zero budget', async () => {
@@ -136,12 +137,22 @@ describe('canUserUseTokens — agent budget branch', () => {
         expect(result.reason).toBe('insufficient_tokens')
     })
 
-    it('non-agent policyholders keep the B2C free zero budget', async () => {
+    it('non-agent policyholders draw on the B2C free budget, not the agent one', async () => {
         vi.mocked(db.user.findUnique).mockResolvedValue({ roles: 'policyholder' } as any)
         vi.mocked(db.subscription.findFirst).mockResolvedValue(null)
         vi.mocked(db.monthlyTokenUsage.findUnique).mockResolvedValue(null)
 
-        const result = await canUserUseTokens(CUSTOMER, 100_000)
+        // Pricing v2 gave the free tier a real (small) budget, so the
+        // assertion is no longer "zero" — it is "the B2C number, never the
+        // agent number". A policyholder resolving onto an agent budget is the
+        // bug this test exists to catch.
+        const freeBudget = DEFAULT_ENTITLEMENT_LIMITS.free.monthlyTokenBudget!
+        expect(freeBudget).toBeLessThan(DEFAULT_AGENT_ENTITLEMENT_LIMITS.agent_starter.monthlyTokenBudget!)
+
+        const withinFree = await canUserUseTokens(CUSTOMER, Math.floor(freeBudget / 2))
+        expect(withinFree.allowed).toBe(true)
+
+        const result = await canUserUseTokens(CUSTOMER, freeBudget + 1)
         expect(result.allowed).toBe(false)
         expect(result.reason).toBe('monthly_limit_reached')
     })

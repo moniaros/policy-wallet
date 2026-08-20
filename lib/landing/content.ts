@@ -122,8 +122,8 @@ export const landingContent: LandingContentModel = {
                 id: "faq-cost",
                 question: { el: "Πόσο κοστίζει;", en: "How much does it cost?" },
                 answer: {
-                    el: "Ξεκινάτε δωρεάν με 1 συμβόλαιο και βασική σύνοψη AI, χωρίς πιστωτική κάρτα. Τα πληρωμένα πλάνα ξεκινούν από €2.99 τον μήνα και τα ακυρώνετε όποτε θέλετε.",
-                    en: "You start free with 1 policy and a basic AI summary, with no credit card. Paid plans start at €2.99 a month and you can cancel whenever you want.",
+                    el: "Ξεκινάτε δωρεάν με 3 ασφαλιστήρια και πλήρη ανάλυση AI, χωρίς πιστωτική κάρτα. Τα πληρωμένα πλάνα ξεκινούν από €39 τον χρόνο και τα ακυρώνετε όποτε θέλετε.",
+                    en: "You start free with 3 policies and full AI analysis, with no credit card. Paid plans start at €39 a year and you can cancel whenever you want.",
                 },
             },
             {

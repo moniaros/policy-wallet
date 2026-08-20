@@ -12,6 +12,7 @@ import {
     PLAN_PRICING,
     FREE_POLICY_LIMIT,
     PLUS_POLICY_LIMIT,
+    PRO_POLICY_LIMIT,
     tierUnlocks,
     recommendedPlan,
 } from '@/lib/monetization'
@@ -27,7 +28,7 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
     it('policy limits match ENTITLEMENT_LIMITS', () => {
         expect(FREE_POLICY_LIMIT).toBe(ENTITLEMENT_LIMITS.free.policies)
         expect(PLUS_POLICY_LIMIT).toBe(ENTITLEMENT_LIMITS.plus.policies)
-        expect(ENTITLEMENT_LIMITS.pro.policies).toBeNull()
+        expect(PRO_POLICY_LIMIT).toBe(ENTITLEMENT_LIMITS.pro.policies)
     })
 
     it('plan pricing matches the public pricing page amounts', () => {
@@ -120,20 +121,39 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
         expect(tierUnlocks('pro', proGate)).toBe(true)
     })
 
-    it('the paid-aha-loop tier model holds (Free 1 / Starter 5, no AI / Plus all AI)', () => {
-        // Policy caps
-        expect(ENTITLEMENT_LIMITS.free.policies).toBe(1)
-        expect(ENTITLEMENT_LIMITS.plus.policies).toBe(5)
-        expect(ENTITLEMENT_LIMITS.pro.policies).toBeNull()
-        // Starter (code `plus`) has ZERO deep AI — it must not cannibalize Plus
-        expect(ENTITLEMENT_LIMITS.plus.interactiveQA).toBe(false)
-        expect(ENTITLEMENT_LIMITS.plus.aiAnalysisPerMonth).toBe(0)
-        expect(ENTITLEMENT_LIMITS.plus.questionsPerDay).toBe(0)
-        expect(ENTITLEMENT_LIMITS.plus.gapAnalysisPerDay).toBe(0)
-        expect(ENTITLEMENT_LIMITS.plus.portfolioGapView).toBe(false)
-        // Starter keeps basic renewal reminders
+    it('the capacity model holds (Free 3 / Plus 10 / Family 25, analyses unlimited)', () => {
+        // Pricing v2: B2C sells CAPACITY. The policy count is the only
+        // enforced consumer limit, and it is finite on every tier — an
+        // "unlimited" tier would make the capacity ladder meaningless.
+        expect(ENTITLEMENT_LIMITS.free.policies).toBe(3)
+        expect(ENTITLEMENT_LIMITS.plus.policies).toBe(10)
+        expect(ENTITLEMENT_LIMITS.pro.policies).toBe(25)
+
+        // Analyses are unlimited on EVERY B2C tier, free included. Metering
+        // them is what made the old model unexplainable, and a free tier that
+        // will not read your policy demonstrates the product's weakest form.
+        for (const tier of ['free', 'plus', 'pro'] as const) {
+            expect(
+                ENTITLEMENT_LIMITS[tier].aiAnalysisPerMonth,
+                `${tier} must not meter analyses`
+            ).toBeNull()
+        }
+
+        // The token budget is an internal abuse guard, so it must be a real
+        // positive number on every tier — a zero budget is a hard block
+        // wearing the word "unlimited".
+        for (const tier of ['free', 'plus', 'pro'] as const) {
+            expect(ENTITLEMENT_LIMITS[tier].monthlyTokenBudget, `${tier} budget`).toBeGreaterThan(0)
+        }
+
+        // ...and it must rise with the tier, or a paying customer funds less
+        // work than a free one.
+        expect(ENTITLEMENT_LIMITS.free.monthlyTokenBudget)
+            .toBeLessThan(ENTITLEMENT_LIMITS.plus.monthlyTokenBudget!)
+        expect(ENTITLEMENT_LIMITS.plus.monthlyTokenBudget!)
+            .toBeLessThan(ENTITLEMENT_LIMITS.pro.monthlyTokenBudget!)
+
         expect(ENTITLEMENT_LIMITS.plus.notifications).toBe(true)
-        // Plus (code `pro`) is the AI tier
         expect(ENTITLEMENT_LIMITS.pro.interactiveQA).toBe(true)
         // Every deep-AI gate unlocks only at Plus (code `pro`)
         const aiGates = [
@@ -149,9 +169,15 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
         for (const key of aiGates) {
             expect(FEATURE_GATES[key].requiredPlan, `${key} should require pro`).toBe('pro')
         }
-        // Plus (€7.99) is priced above Starter (€2.99)
-        expect(PLAN_PRICING.pro.monthlyEur).toBe(7.99)
-        expect(PLAN_PRICING.plus.monthlyEur).toBe(2.99)
+        // Family is priced above Plus, and the annual price beats 12× monthly
+        // on both — the model is annual-first, so an annual plan that costs
+        // more than paying monthly would contradict the page selling it.
+        expect(PLAN_PRICING.pro.monthlyEur).toBeGreaterThan(PLAN_PRICING.plus.monthlyEur)
+        for (const tier of ['plus', 'pro'] as const) {
+            const { monthlyEur, annualEur } = PLAN_PRICING[tier]
+            expect(annualEur, `${tier} annual must undercut 12× monthly`)
+                .toBeLessThan(monthlyEur * 12)
+        }
     })
 
     // Source-grep guard (same technique as the retired setup-billing-catalog
@@ -171,27 +197,28 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
             .map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
             .join('\n')
 
-        // The retired false claims, in either language and either word order.
-        const falseClaims = [
-            '3 συμβόλαια',
-            '3 δωρεάν',
-            'δωρεάν έως 3',
-            '3 policies',
-            '3 free',
-            '3+1',
-        ]
-        for (const claim of falseClaims) {
-            expect(source, `landing must not claim "${claim}"`).not.toContain(claim)
+        // This used to enumerate "3 policies" as a FALSE claim, because the
+        // free tier was one. Pricing v2 made three the truth, and a guard that
+        // hardcodes last quarter's number fails on the day the product is
+        // right. So the check is derived: whatever the code enforces is the
+        // only count the landing may advertise, and every OTHER small number
+        // is forbidden — which catches drift in both directions.
+        const freeLimit = DEFAULT_ENTITLEMENT_LIMITS.free.policies
+        expect(freeLimit, 'the free tier must enforce a finite policy count').toBeTypeOf('number')
+
+        expect(source, 'the landing must state the enforced free limit in Greek')
+            .toMatch(new RegExp(`${freeLimit}\\s*ασφαλιστήρι`))
+        expect(source, 'the landing must state the enforced free limit in English')
+            .toMatch(new RegExp(`${freeLimit}\\s*polic`))
+
+        for (const wrong of [1, 2, 3, 5, 10, 25].filter((n) => n !== freeLimit)) {
+            expect(source, `landing advertises ${wrong} policies but the code enforces ${freeLimit}`)
+                .not.toMatch(new RegExp(`\\b${wrong}\\s*(ασφαλιστήρι|polic)`))
         }
 
-        // The advertised limit is the one the product actually enforces.
-        const freeLimit = DEFAULT_ENTITLEMENT_LIMITS.free.policies
-        expect(freeLimit, 'free tier stores exactly 1 policy').toBe(1)
-        expect(source).toContain(`${freeLimit} συμβόλαιο`)
-        expect(source).toContain(`${freeLimit} policy`)
-        // Free has zero deep-AI analyses, so the landing may not sell one.
-        expect(DEFAULT_ENTITLEMENT_LIMITS.free.aiAnalysisPerMonth).toBe(0)
-        expect(source).not.toMatch(/1 AI ανάλυση|1 AI analysis/i)
+        // Analyses are unlimited on free now, so the landing must not meter them.
+        expect(DEFAULT_ENTITLEMENT_LIMITS.free.aiAnalysisPerMonth).toBeNull()
+        expect(source).not.toMatch(/\d+ AI ανάλυσ|\d+ AI analys/i)
     })
 
     it('recommendedPlan escalates sensibly', () => {

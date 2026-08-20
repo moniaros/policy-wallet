@@ -53,7 +53,7 @@ export const PRODUCT_STATS = [
         valueEl: "Λίγα λεπτά",
         valueEn: "A few minutes",
         labelEl: "για να διαβαστεί ένα συμβόλαιο",
-        labelEn: "to read one policy",
+        labelEn: "to read three policies",
     },
     {
         valueEl: "0",
@@ -86,6 +86,6 @@ export const PRODUCT_FAQS = [
         qEl: "Μπορώ να το δοκιμάσω δωρεάν;",
         qEn: "Can I try it for free?",
         aEl: "Ναι. Στείλτε 1 συμβόλαιο και πάρτε βασική σύνοψη, χωρίς πιστωτική κάρτα και χωρίς δέσμευση.",
-        aEn: "Yes. Send us 1 policy and get a basic summary, with no credit card and no commitment.",
+        aEn: "Yes. Send us up to 3 policies and get the full analysis, with no credit card and no commitment.",
     },
 ] as const

@@ -3,6 +3,7 @@ export {
     PLAN_PRICING,
     FREE_POLICY_LIMIT,
     PLUS_POLICY_LIMIT,
+    PRO_POLICY_LIMIT,
     tierUnlocks,
     recommendedPlan,
     type FeatureKey,

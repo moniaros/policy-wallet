@@ -130,7 +130,12 @@ describe('computePlanDiff', () => {
         )
         const diff = computePlanDiff(storedPro, parsed)
         expect(diff.price).toEqual({ from: 7.99, to: 8.99 })
-        expect(diff['entitlements.policies']).toEqual({ from: null, to: 10 })
+        // `from` is whatever the catalog holds — derived, so a catalog change
+        // shows up as a copy/config decision rather than a failing fixture.
+        expect(diff['entitlements.policies']).toEqual({
+            from: DEFAULT_ENTITLEMENT_LIMITS.pro.policies,
+            to: 10,
+        })
         expect(Object.keys(diff)).toHaveLength(2)
     })
 

@@ -294,7 +294,7 @@ export function CompareSections({ locale }: { locale: MarketingLocale }) {
 
             {/* Deliberately short, and deliberately NOT repeating the free-tier
                 line: LoBPageShell appends its own pricing band immediately
-                below this, and the two together were saying "free for 1 policy"
+                below this, and the two together were saying "free for one policy"
                 twice in a row, one on top of the other. */}
             <section className="px-6 py-20 text-center lg:px-12 lg:py-24">
                 <div className="mx-auto max-w-[640px]">
