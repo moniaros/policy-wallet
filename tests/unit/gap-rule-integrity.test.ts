@@ -96,6 +96,9 @@ describe('ENFIA is described as the tax discount it is', () => {
     it('no source calls it a requirement or a compliance obligation', () => {
         const files = [
             'prisma/seed.ts',
+            // The rule-bearing definitions moved out of seed.ts in Phase 7 so the
+            // seed, the trace test and the underwriter packet share one source.
+            'lib/gaps/authored-catalogue.ts',
             'lib/schemas/acord-data.ts',
             'lib/services/gap-engine/agent-playbook.ts',
             'lib/product/catalog.tsx',
@@ -108,7 +111,13 @@ describe('ENFIA is described as the tax discount it is', () => {
     })
 
     it('the gap definition names the discount', () => {
-        const block = SEED.slice(SEED.indexOf("slug: 'missing_enfia_components'")).slice(0, 900)
+        // Reads the catalogue module, not seed.ts — the definitions moved there in
+        // Phase 7. This assertion is the reason the move had to keep the wording
+        // byte-identical rather than being retyped.
+        const catalogue = read('lib/gaps/authored-catalogue.ts')
+        const block = catalogue
+            .slice(catalogue.indexOf("slug: 'missing_enfia_components'"))
+            .slice(0, 900)
         expect(block).toMatch(/qualifies it for a reduction in ENFIA property tax/)
         expect(block).not.toMatch(/ENFIA\) insurance requires/)
     })
@@ -125,7 +134,10 @@ describe('ENFIA is described as the tax discount it is', () => {
  */
 describe('a missing extraction is reported as a missing extraction', () => {
     it('says what is known, not what is assumed', () => {
-        const block = SEED.slice(SEED.indexOf("slug: 'missing_coordination_centre'")).slice(0, 900)
+        const catalogue = read('lib/gaps/authored-catalogue.ts')
+        const block = catalogue
+            .slice(catalogue.indexOf("slug: 'missing_coordination_centre'"))
+            .slice(0, 900)
         expect(block).toMatch(/No coordination centre[^']*is recorded/)
         expect(block).not.toMatch(/Greek health policies should specify/)
     })

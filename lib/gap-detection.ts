@@ -294,6 +294,18 @@ function getNestedField(obj: any, path: string): any {
     return path.split('.').reduce((o, key) => o?.[key], obj)
 }
 
+/**
+ * "Nothing was recorded here."
+ *
+ * An EMPTY ARRAY counts. `beneficiaries: []` is not a recorded beneficiary, and
+ * treating it as one would let a policy with an empty list pass a check whose
+ * whole purpose is to notice that nobody is named.
+ */
+function isAbsent(actual: unknown): boolean {
+    if (actual === undefined || actual === null || actual === '') return true
+    return Array.isArray(actual) && actual.length === 0
+}
+
 function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
     const { field, operator, value } = rule
     const actual = getNestedField(acordData, field)
@@ -322,8 +334,22 @@ function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
         case 'is_true':
         case 'truthy':
             return actual === true
+        // Fires ON SILENCE, deliberately — it asks whether a value was RECORDED,
+        // not whether cover exists. Any finding built on it must be worded "not
+        // recorded", never "not covered", and it is only justified for fields
+        // that policies of that branch routinely state.
         case 'missing':
-            return actual === undefined || actual === null || actual === ''
+            return isAbsent(actual)
+        // The `missing` counterpart to `all_false`: every listed field must be
+        // absent. Needed where one fact can arrive by more than one path — a life
+        // policy's beneficiaries land in either `beneficiaries` or
+        // `lifeAndInvestment.beneficiaries`, and checking only one would report
+        // "no beneficiary recorded" for a policy that plainly records one.
+        case 'all_missing': {
+            const fields = (rule.fields || []) as string[]
+            if (fields.length === 0) return false
+            return fields.every((f: string) => isAbsent(getNestedField(acordData, f)))
+        }
         case 'less_than':
             return typeof actual === 'number' && actual < (value as number)
         case 'all_false': {

@@ -475,6 +475,23 @@ model GapDefinition {
   ruleId          String        @map("rule_id")
   detectionLogic  Json          @map("detection_logic")
   isActive        Boolean       @default(true) @map("is_active")
+
+  /// Gate 3b. Detection is a question of fact and is authored in code; SEVERITY is
+  /// an underwriting judgement and is not. `severity` above is a PROPOSAL until an
+  /// underwriter agrees with it, and these three columns are where that agreement
+  /// is recorded — per definition, because sign-off arrives a branch at a time and
+  /// a single global boolean could only ever say "none of it" or "all of it",
+  /// which in practice meant none of it, indefinitely.
+  /// Null `severityValidatedAt` = not validated. The UI shows the caveat on
+  /// exactly those, so a validated rule stops apologising and an unvalidated one
+  /// cannot quietly stop.
+  severityValidatedAt DateTime? @map("severity_validated_at")
+  /// Who agreed — a named person with the standing to. Not a deploying developer.
+  severityValidatedBy String?   @map("severity_validated_by")
+  /// Why this severity and not the one next to it. The part that is worth having
+  /// in a year, when someone asks whether "high" was ever thought about.
+  severityRationale   String?   @map("severity_rationale")
+
   // L4: Versioning — increment on every admin update for audit / rollback
   version         Int           @default(1)
   changedAt       DateTime?     @map("changed_at")

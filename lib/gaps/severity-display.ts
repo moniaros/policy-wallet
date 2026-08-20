@@ -97,6 +97,41 @@ export function describeSeverity(value: string | null | undefined): SeverityDesc
 }
 
 /**
+ * Whether an underwriter has signed off THIS definition's severity.
+ *
+ * Gate 3b arrives a branch at a time, not all at once — someone reviews the four
+ * motor rules on a Tuesday and the health ones a fortnight later. The global
+ * `SEVERITY_UNDERWRITER_VALIDATED` could only ever say "none of it" or "all of
+ * it", so the honest setting was "none", indefinitely, and every screen kept
+ * apologising for rules that may well have been fine.
+ *
+ * `gap_definitions.severity_validated_at` records the decision per definition.
+ * Null means nobody qualified has agreed — which is the default, and the truthful
+ * state for every row today.
+ *
+ * Deliberately takes the row rather than a slug: a caller holding the definition
+ * cannot forget to look it up, and one holding nothing gets the caveat, which is
+ * the safe direction to fail.
+ */
+export function isSeverityValidated(
+    definition: { severityValidatedAt?: Date | string | null } | null | undefined
+): boolean {
+    return Boolean(definition?.severityValidatedAt)
+}
+
+/**
+ * Describe a severity in the context of the definition that produced it, so a
+ * validated rule stops carrying the caveat and an unvalidated one cannot stop.
+ */
+export function describeSeverityForDefinition(
+    value: string | null | undefined,
+    definition: { severityValidatedAt?: Date | string | null } | null | undefined
+): SeverityDescription {
+    const base = describeSeverity(value)
+    return isSeverityValidated(definition) ? { ...base, caveatKey: null } : base
+}
+
+/**
  * Ranking only — for ordering a list so the most serious thing is first.
  *
  * Safe without a caveat because it shows the reader nothing: it changes what is
