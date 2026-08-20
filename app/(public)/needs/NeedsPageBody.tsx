@@ -1,5 +1,8 @@
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { NeedsCheck } from "@/components/needs/NeedsCheck"
+// Derived, not typed: the headline used to say "six questions" while the check
+// asked TWELVE across six steps. A count in copy has to come from the source.
+import { NEEDS_STEPS } from "@/lib/needs/questions"
 
 /**
  * The one thing on this site a stranger can use before deciding anything.
@@ -31,8 +34,8 @@ export function NeedsPageBody({ locale }: { locale: "el" | "en" }) {
                 <div className="mx-auto mb-12 max-w-[760px]">
                     <h1 className="mb-4 text-h1 font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] lg:text-display dark:text-white">
                         {t(
-                            "Έξι ερωτήσεις. Μετά ξέρετε τι να ελέγξετε.",
-                            "Six questions. Then you know what to check.",
+                            `${NEEDS_STEPS.length} σύντομα βήματα. Μετά ξέρετε τι να ελέγξετε.`,
+                            `${NEEDS_STEPS.length} short steps. Then you know what to check.`,
                         )}
                     </h1>
                     <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">

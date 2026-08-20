@@ -196,20 +196,52 @@ describe('DELETE /api/v1/policies/[id]/documents/[docId] (authorization + cleanu
         expect(deleteFile).toHaveBeenCalledWith(STORED_URL)
     })
 
-    it('404s a cross-tenant delete attempt (owner-scoped lookup finds nothing)', async () => {
-        findFirstDocument.mockResolvedValue(null)
+    /**
+     * This used to assert the handler's own inline `policy: { ownerUserId }`
+     * filter. That filter was a fifth copy of the ownership rule, invisible to
+     * the file-level CI guard because the GET beside it called getPolicyAccess.
+     * The handler is now on the single path, so the assertion moves with it —
+     * and gets stronger: it pins the DELIBERATE narrowing rather than a where-clause.
+     */
+    it('refuses a non-owner even when the grant says canDelete', async () => {
+        // A grant-holder may read this document. Destroying it is not something
+        // an advisor's grant carries — read is shared, destruction is not.
+        grantAccess({ isOwner: false, canDelete: true })
+
+        const response = await DELETE(makeRequest('DELETE'), ctx as any)
+
+        expect(response.status).toBe(404)
+        // Refused before the document is even looked up.
+        expect(findFirstDocument).not.toHaveBeenCalled()
+        expect(deleteDocument).not.toHaveBeenCalled()
+        expect(deleteFile).not.toHaveBeenCalled()
+    })
+
+    it('404s when the policy does not exist for this caller', async () => {
+        grantAccess({ exists: false, isOwner: false })
 
         const response = await DELETE(makeRequest('DELETE'), ctx as any)
 
         expect(response.status).toBe(404)
         expect(deleteDocument).not.toHaveBeenCalled()
         expect(deleteFile).not.toHaveBeenCalled()
-        // The lookup is scoped to the caller as owner — tenancy isolation.
+    })
+
+    it('404s when the document belongs to a different policy', async () => {
+        // The caller owns the policy, but names a docId from another one. The
+        // lookup is still scoped by BOTH ids.
+        // grantAccess() explicitly: vi.clearAllMocks() clears call history but
+        // KEEPS implementations, so the isOwner:false above would leak in here.
+        grantAccess()
+        findFirstDocument.mockResolvedValue(null)
+
+        const response = await DELETE(makeRequest('DELETE'), ctx as any)
+
+        expect(response.status).toBe(404)
+        expect(deleteDocument).not.toHaveBeenCalled()
         expect(findFirstDocument).toHaveBeenCalledWith(
             expect.objectContaining({
-                where: expect.objectContaining({
-                    policy: { ownerUserId: 'u1' },
-                }),
+                where: expect.objectContaining({ id: 'd1', policyId: 'p1' }),
             })
         )
     })

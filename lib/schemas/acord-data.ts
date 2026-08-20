@@ -54,8 +54,16 @@ const MonetaryLimitSchema = z.object({
     basis: z.enum(LIMIT_BASES),
     amount: z.number().optional().describe("Omit when unlimited is true"),
     currency: CurrencySchema.optional(),
-    /** «Απεριόριστο» — an assistance benefit with no cap is not the same as an unknown one. */
-    unlimited: z.boolean().default(false),
+    /**
+     * «Απεριόριστο» — an assistance benefit with no cap is not the same as an unknown one.
+     *
+     * `.optional()`, NOT `.default(false)`. The AI SDK materialises Zod defaults into
+     * the object it returns, so a default wrote `unlimited: false` — "there IS a cap" —
+     * into every limit the extractor never determined. That is the same
+     * unknown-becomes-absence error the gap rules were fixed to avoid, one rule away
+     * from being load-bearing. Undefined means undetermined; read it as such.
+     */
+    unlimited: z.boolean().optional(),
     /** What the cap is measured against, when the basis alone is ambiguous ("per safe", "per crew member"). */
     appliesTo: z.string().optional(),
 });

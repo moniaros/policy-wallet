@@ -48,9 +48,11 @@ interface Section {
  *                  incl. bulk upload). The extract route was ungated until
  *                  2026-08-20 — this sentence was false for the bulk path.
  *  access        — lib/policy-access.ts (single decision function) +
- *                  tests/unit/policy-authorization-single-path.test.ts. Scope is
- *                  app/api only, matched per FILE not per handler — hence the
- *                  copy says "scans the API routes", not "any route anywhere".
+ *                  tests/unit/policy-authorization-single-path.test.ts. Covers
+ *                  API routes per HTTP HANDLER (a compliant GET no longer vouches
+ *                  for the DELETE beside it) AND the server-action surface, since
+ *                  every export of a "use server" file is a callable endpoint.
+ *                  Exemptions are named with a reason in that file.
  *  agent-access  — lib/agent-visibility.ts (both arms require a living
  *                  relationship; termination ends visibility)
  *  documents     — app/api/v1/policies/[id]/documents/[docId]/route.ts:21-23
@@ -137,8 +139,8 @@ const SECTIONS: Section[] = [
         },
         body: [
             {
-                el: "Κάθε ανάγνωση ενός συμβολαίου περνά από ένα σημείο ελέγχου στην εφαρμογή, που ρωτά το ίδιο πράγμα κάθε φορά: το κατέχετε εσείς, ή σας το έχει μοιραστεί ρητά κάποιος; Δοκιμή στο CI σαρώνει τις διαδρομές του API και αποτυγχάνει αν κάποια νέα δεν περνά από εκεί.",
-                en: "Every read of a policy goes through one checkpoint in the application, which asks the same question every time: do you own it, or has someone explicitly shared it with you? A CI test scans the API routes and fails if a new one does not go through it.",
+                el: "Κάθε ανάγνωση ενός συμβολαίου περνά από ένα σημείο ελέγχου στην εφαρμογή, που ρωτά το ίδιο πράγμα κάθε φορά: το κατέχετε εσείς, ή σας το έχει μοιραστεί ρητά κάποιος; Δοκιμή στο CI ελέγχει κάθε διαδρομή και ενέργεια που μπορεί να ζητήσει ένα συμβόλαιο, και αποτυγχάνει αν κάποια νέα δεν περνά από εκεί.",
+                en: "Every read of a policy goes through one checkpoint in the application, which asks the same question every time: do you own it, or has someone explicitly shared it with you? A CI test checks every route and action that can name a policy, and fails if a new one does not go through it.",
             },
             {
                 el: "Η πρόσβαση ενός ασφαλιστή τελειώνει μαζί με τη σχέση σας. Αν τη διακόψετε, παύει να βλέπει και τα συμβόλαια που ανέβασε ο ίδιος για εσάς.",
