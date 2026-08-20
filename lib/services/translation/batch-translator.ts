@@ -51,6 +51,14 @@ export async function batchTranslateToEnglish(
     const uncachedIndices: number[] = []
 
     for (let i = 0; i < greekTexts.length; i++) {
+        // Nothing to translate: empty entries (a coerced non-string field, a
+        // blank note) pass through as-is. Sending them wastes prompt slots and
+        // used to send literal "[object Object]" lines the model answered
+        // with "N/A".
+        if (typeof greekTexts[i] !== "string" || greekTexts[i].trim() === "") {
+            results[i] = typeof greekTexts[i] === "string" ? greekTexts[i] : ""
+            continue
+        }
         const hit = cached.get(i)
         if (hit !== undefined) {
             results[i] = hit
@@ -76,9 +84,20 @@ export async function batchTranslateToEnglish(
 
             const cachePairs: Array<{ source: string; translated: string }> = []
             for (let j = 0; j < batchIndices.length; j++) {
-                const translated = translations[j] || batchTexts[j]
+                const candidate = translations[j]
+                // A junk answer ("N/A", empty, whitespace) means the model had
+                // nothing real to say — fall back to the Greek source and,
+                // critically, DO NOT cache it: a cached "N/A" would poison
+                // every future run containing that phrase.
+                const junk =
+                    typeof candidate !== "string" ||
+                    candidate.trim() === "" ||
+                    /^n\/?a$/i.test(candidate.trim())
+                const translated = junk ? batchTexts[j] : candidate
                 results[batchIndices[j]] = translated
-                cachePairs.push({ source: batchTexts[j], translated })
+                if (!junk) {
+                    cachePairs.push({ source: batchTexts[j], translated })
+                }
             }
 
             // Cache in background — don't block the pipeline

@@ -37,6 +37,18 @@ const OWNED_MODELS = [
     "accessGrant",
 ]
 
+/** The same records reached through raw SQL — `db.$queryRaw` over these tables
+ *  never mentions `db.policy.` and was INVISIBLE to this guard until
+ *  2026-08-20, when the first raw-SQL server action taking a policyId shipped
+ *  and passed the scan without being read. */
+const OWNED_TABLES = [
+    "policies",
+    "policy_documents",
+    "gap_instances",
+    "policy_analysis_runs",
+    "access_grants",
+]
+
 function routeFiles(dir: string): string[] {
     return readdirSync(dir).flatMap((entry) => {
         const full = join(dir, entry)
@@ -54,8 +66,13 @@ function takesRecordIdFromCaller(path: string, source: string): boolean {
 }
 
 function touchesOwnedModel(source: string): boolean {
-    return OWNED_MODELS.some((model) =>
-        new RegExp(`\\bdb\\.${model}\\.`).test(source)
+    if (OWNED_MODELS.some((model) => new RegExp(`\\bdb\\.${model}\\.`).test(source))) {
+        return true
+    }
+    // Raw SQL over the same tables is the same access.
+    return (
+        /\$(query|execute)Raw/.test(source) &&
+        OWNED_TABLES.some((table) => new RegExp(`\\b${table}\\b`).test(source))
     )
 }
 
@@ -296,6 +313,9 @@ const ACTION_EXEMPT: Record<string, string> = {
         "policyholder; a grant-holder would mint the Opportunity in the wrong relationship",
     "sharePolicy": "acts as the policy OWNER to mint a grant; owner-only is the rule",
     "getPolicyReviewData": "owner-scoped read (ownerUserId = session)",
+    "getPolicyAnalysisStatus":
+        "owner-scoped read (JOIN users ON owner_user_id, email = session) — the " +
+        "lightweight status poll; raw SQL so it returns ~200 bytes instead of acordData",
     "requestRenewalQuote": "owner-scoped read (ownerUserId = session)",
     "retryPolicyAnalysis": "owner-scoped read (ownerUserId = session)",
     "triggerOnboardingAnalysis": "owner-scoped read (ownerUserId = session)",

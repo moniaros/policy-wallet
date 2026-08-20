@@ -1,5 +1,72 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-20d (Paying subscribers unblocked; the pipeline stops wasting half its runtime)
+
+Two defects from the verified 2026-08-14 dev run, both root-caused to mechanism before any code moved.
+
+**A — an ACTIVE ph-pro subscriber was blocked (TOKEN_LIMIT_BLOCKED, 0 tokens spent).** Root
+cause: `reserveTokens` bound the billing month as a JS `Date` into raw SQL. `date_column =
+timestamp` only holds at exactly midnight server-TZ, so on any non-UTC host the guarded
+UPDATE matched **zero rows** — the subscription budget was invisible to the step gate, which
+fell through to a purchased balance the user didn't have. Accounting meanwhile addressed the
+month as a string — hence the dev DB's twin rows (`2026-07-31` from the reservation path,
+`2026-08-01` from accounting) and the asymmetry (gate says no; rollup credits
+subscription_tokens). **Prod is NOT bitten by this arm** (Vercel TZ=UTC makes the equality
+hold) but was one TZ away. All readers/writers now share `billingMonth()`; pinned by
+`token-gate-subscription-funding.test.ts` (a Date bound into raw SQL fails the test).
+**Second, prod-live defect:** ALL plan rows in BOTH DBs fail the `.strict()` entitlement
+schema (ph-\* legacy snake_case, agent-\* a 3-key subset) — every budget ran on code
+defaults and /admin/plans edits to limits were silently INERT. Rows canonicalized in dev
+(11/11 verified, incl. the stale `ag-*` trio whose `normalizeAgentTier('Pro')→agent_free`
+downgrade trap is now defused via explicit tier_keys); fallback log elevated to **error**;
+new `npm run verify:plans` fails on any non-canonical row. **The prod negative balance
+(-7,249, 0 purchased)** came from `recordUsageAtomically`'s INSERT arm creating
+purchased=0/used=N rows with no floor; the draw is now a capped UPDATE
+(`LEAST(used+delta, purchased)`) that never creates rows — pinned in
+`token-split-logic.test.ts`.
+
+**B — 336s analysis, ~half waste. The "11s dead time" was never a sleep or lease tick:**
+each step boundary made ~9–11 *sequential* DB roundtrips (runtime-overrides, heartbeat,
+3–4-query failing reservation, step insert/update, tail heartbeat) at this dev setup's
+~1.3s/roundtrip — uniform ~10.2s on steps with ~1s of real work (verified from
+policy_analysis_steps). Fixes: non-AI steps (5 of 8) skip reservation/model
+resolution/provider probing entirely and no longer fail on provider outages they don't use;
+the success-path tail heartbeat is gone; the A-fix makes reservation 1 query instead of 4.
+Steps stay separate rows deliberately — the cost was the wrapper, not the rows.
+**B.2:** new `getPolicyAnalysisStatus` (ONE owner-scoped raw query, ~200 B) replaces ~45
+full-payload polls (~5.6 KB acordData + 2 queries + auth each); the heavy payload is fetched
+exactly once on the terminal transition. Adding it exposed a guard blind spot — raw SQL over
+owned TABLES was invisible to `policy-authorization-single-path` — now closed red-green.
+**B.3:** the translation cache "never worked" because Gemini JSON-mode sometimes emits
+`{el,en}` objects, the lenient fallback passes them through, `toLocalized` double-wrapped
+them, the prompt got `[object Object]`, the model answered "N/A", and the write died on
+Prisma's string type (13/17 writes DID land in the 08-14 run — the 4 objects failed).
+"N/A" is NOT a sentinel; it's the model's answer to garbage, now never cached. Coercion at
+the wrap/collect boundary, junk-output filtering, reads batched 17 findUniques→1 findMany,
+writes 17 upserts→1 createMany. `translation-cache-repeat-run.test.ts` proves a repeat run
+translates with ZERO AI calls. **B.4 (assessed, untouched by design):** metadata extraction
+96.5s sends the full PDF (the one step allowed to), 120s timeout × 1 retry — the observed
+"other side closed" retry behaved correctly.
+
+**Wall-clock: measured-before, PROJECTED-after.** Before: 267.6s run-span (336s incl.
+upload+polling). Projected after, same dev environment: ~205–215s run-span — boundary diet
+~−30s, cache-loop batching ~−20s, reservation ~−12s; AI bodies (~120s) untouched. The <180s
+target likely needs B.4 or prod-grade DB latency; a real re-upload of the same motor PDF is
+the honest measurement and hasn't run yet (permission walls stopped scripted analysis runs).
+
+**Guardrails:** `tsc` clean · **4737/4737 unit (439 files)** · lint / i18n-changed / utf8 /
+encoding / api-auth green.
+
+**⚠ Prod data repairs — OWNER is running these by hand** (agent-side execution was
+permission-blocked): (1) plan canonicalization — the 7 UPDATE statements for
+ph-free/plus/pro + agent-free/starter/pro/agency (behavior-neutral by construction: values
+identical to the code fallback); (2) balance repair: `UPDATE token_balances SET
+used_tokens=0 WHERE user_id=(SELECT user_id FROM users WHERE
+email='moniaros@gmail.com')`. After both, `npm run verify:plans` against prod should print
+7/7 OK.
+
+---
+
 ## Session wrap — 2026-08-20c (Sentinel discard: verified live in production)
 
 PRs #282 (phases 1–7) and #283 (sentinel discard) merged to `NEW-UI` and deployed at

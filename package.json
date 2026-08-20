@@ -20,6 +20,7 @@
     "lint:encoding": "node scripts/check-mojibake.js",
     "audit:api-auth": "node scripts/audit-api-auth.js",
     "verify:migrations": "node scripts/verify-migration-sync.js",
+    "verify:plans": "tsx -r dotenv/config scripts/verify-plan-entitlements.ts",
     "cleanup:sentinels": "tsx -r dotenv/config scripts/cleanup-sentinel-policies.ts",
     "eval": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts",
     "eval:ci": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts --provider=mock --suite=all",

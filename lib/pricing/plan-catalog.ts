@@ -105,10 +105,16 @@ function parseEntitlements(
     const parsed = schema.safeParse(raw)
     if (parsed.success) return parsed.data
     // Legacy informational shape (pre-2026-07 rows) or a malformed edit —
-    // fail closed to the shipped defaults for this tier.
-    logger("info", "Plan entitlements not in canonical shape — using code defaults", {
+    // fail closed to the shipped defaults for this tier. ERROR, not info:
+    // while this fires, /admin/plans edits to the row's limits are silently
+    // inert, so it must be acted on (npm run verify:plans finds the rows).
+    // A warning logged once per plan that nobody acts on is not a safeguard.
+    logger("error", "Plan entitlements not in canonical shape — using code defaults", {
         planId,
         tierKey,
+        firstIssues: parsed.error.issues
+            .slice(0, 3)
+            .map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`),
     })
     return defaultEntitlementsForTier(tierKey)
 }

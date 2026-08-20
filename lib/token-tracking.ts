@@ -44,6 +44,31 @@ function normalizeTokenTier(rawTier: string): 'free' | 'plus' | 'pro' {
 }
 
 /**
+ * The billing month, addressed identically by EVERY reader and writer of
+ * monthly_token_usage.
+ *
+ * `month` is a Postgres DATE column, and the module used to address it three
+ * different ways: Prisma got a local-midnight `Date` (serialized via UTC, so
+ * on any TZ ahead of UTC it lands on the LAST DAY OF THE PREVIOUS MONTH),
+ * `recordUsageAtomically` got a hand-built string (correct), and the raw SQL
+ * in `reserveTokens` bound the local-midnight `Date` as a timestamptz — which
+ * a DATE column **never equals** unless that instant is exactly midnight UTC.
+ * On any non-UTC server the guarded UPDATE therefore matched zero rows, the
+ * whole subscription budget was invisible to the step gate, and an active
+ * paying subscriber was blocked with `insufficient_tokens` having consumed
+ * nothing (verified against the dev DB, 2026-08-14: the reservation path
+ * created a `2026-07-31` row while accounting wrote `2026-08-01`).
+ *
+ * `key` is what raw SQL binds (`${key}::date`); `date` is the same day pinned
+ * to UTC midnight so Prisma's date serialization yields `key` in every TZ.
+ * The month itself is the server's local calendar month, unchanged.
+ */
+export function billingMonth(now = new Date()): { key: string; date: Date } {
+    const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
+    return { key, date: new Date(`${key}T00:00:00.000Z`) }
+}
+
+/**
  * Resolve the token budget for a user: agents draw on their AGENT-plan
  * monthlyTokenBudget (agent_free..agency); everyone else on the B2C tiers.
  * Agent-initiated analyses on customer policies are therefore metered against
@@ -153,17 +178,15 @@ export async function recordUsageAtomically(input: {
     // Format is not constrained anywhere — only uniqueness matters.
     const usageId = randomUUID()
     const summaryId = randomUUID()
-    const balanceId = randomUUID()
     // token_usage.cost_eur is Decimal(10,6) but monthly_token_usage.total_cost_eur
     // is Decimal(10,2). Send full precision to both and let each column round,
     // which is exactly what Prisma did before — rounding to 2 here first would
     // silently flatten every per-call cost to cents.
     const cost = new Decimal(input.totalCost).toFixed(6)
-    // Sent as a plain YYYY-MM-DD string rather than a Date. `month` is built as
-    // LOCAL midnight of the 1st; handing Postgres a timestamptz and casting to
-    // ::date would resolve it in the server's timezone and could land on the
-    // previous month for any zone ahead of UTC.
-    const monthKey = `${input.month.getFullYear()}-${String(input.month.getMonth() + 1).padStart(2, '0')}-01`
+    // Sent as a plain YYYY-MM-DD string rather than a Date — see billingMonth.
+    // `input.month` is billingMonth().date (UTC midnight of the 1st), so the
+    // UTC getters recover the intended month in every server timezone.
+    const monthKey = `${input.month.getUTCFullYear()}-${String(input.month.getUTCMonth() + 1).padStart(2, '0')}-01`
 
     await prisma.$executeRaw`
         WITH usage AS (
@@ -210,14 +233,20 @@ export async function recordUsageAtomically(input: {
                                            - ("monthly_token_usage"."total_tokens" - ${amount}::bigint), 0)) END
             ) AS purchased_delta
         )
-        INSERT INTO "token_balances"
-            ("balance_id", "user_id", "purchased_tokens", "used_tokens", "created_at", "updated_at")
-        SELECT ${balanceId}, ${input.userId}, 0, rollup.purchased_delta, now(), now()
-        FROM rollup
-        WHERE rollup.purchased_delta > 0
-        ON CONFLICT ("user_id") DO UPDATE SET
-            "used_tokens" = "token_balances"."used_tokens" + EXCLUDED."used_tokens",
+        -- The purchased-pool draw is CAPPED at what was actually purchased, and
+        -- a user with no balance row gets none created. The old INSERT..ON
+        -- CONFLICT arm created rows at purchased=0/used=N and debited without a
+        -- floor, so any spend the resolver attributed beyond the subscription
+        -- while the user held no purchased tokens (a lapsed-subscription window,
+        -- a gate-exempt free-tier extraction) drove remaining NEGATIVE —
+        -- observed in prod at -7,249. Beyond-budget spend stays visible in
+        -- monthly_token_usage.purchased_tokens_used; the balance table records
+        -- only draws from tokens that exist.
+        UPDATE "token_balances" tb SET
+            "used_tokens" = LEAST(tb."used_tokens" + rollup.purchased_delta, tb."purchased_tokens"),
             "updated_at" = now()
+        FROM rollup
+        WHERE tb."user_id" = ${input.userId} AND rollup.purchased_delta > 0
     `
 }
 
@@ -245,8 +274,7 @@ export async function trackTokenUsage(params: {
         const totalCost = inputCost + outputCost
 
         const { tier, limit: budgetLimit } = await resolveTokenBudget(params.userId)
-        const now = new Date()
-        const month = new Date(now.getFullYear(), now.getMonth(), 1)
+        const { date: month } = billingMonth()
 
         // The subscription-vs-purchased split is computed IN THE DATABASE, in
         // the same statement that applies it (POLICYWALLET-W follow-up).
@@ -309,8 +337,7 @@ export async function trackTokenUsage(params: {
  * Get monthly usage for a user
  */
 export async function getMonthlyUsage(userId: string) {
-    const now = new Date()
-    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+    const { date: month } = billingMonth()
 
     const usage = await prisma.monthlyTokenUsage.findUnique({
         where: {
@@ -360,8 +387,7 @@ export async function canUserUseTokens(
     source?: 'subscription' | 'purchased'
 }> {
     const { tier, limit } = await resolveTokenBudget(userId)
-    const now = new Date()
-    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+    const { date: month } = billingMonth()
 
     const usage = await prisma.monthlyTokenUsage.findUnique({
         where: { userId_month: { userId, month } },
@@ -414,8 +440,7 @@ export async function reserveTokens(
     estimatedTokens: number
 ): Promise<{ allowed: boolean; reason?: string; source?: 'subscription' | 'purchased' }> {
     const { tier, limit } = await resolveTokenBudget(userId)
-    const now = new Date()
-    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+    const { key: monthKey, date: month } = billingMonth()
 
     if (limit === null) {
         // Unlimited tier — ensure row exists, no check needed
@@ -435,11 +460,17 @@ export async function reserveTokens(
 
     // Atomic check-and-reserve: increment reservedTokens only if budget allows.
     // $executeRaw returns affected row count: 1 = success, 0 = WHERE failed (budget full or no row).
+    //
+    // `month` is bound as a STRING cast to ::date — never as a JS Date. A Date
+    // binds as a timestamp, and `date_column = timestamp` only holds when the
+    // instant is exactly midnight in the server's timezone, so on any non-UTC
+    // host this WHERE matched nothing, the subscription budget was invisible,
+    // and active paying subscribers were blocked before spending a token.
     const result = await prisma.$executeRaw`
         UPDATE monthly_token_usage
         SET reserved_tokens = reserved_tokens + ${BigInt(estimatedTokens)}
         WHERE user_id = ${userId}
-          AND month = ${month}
+          AND month = ${monthKey}::date
           AND (total_tokens + reserved_tokens + ${BigInt(estimatedTokens)}) <= ${BigInt(limit)}`
 
     if (result === 1) {
@@ -454,7 +485,7 @@ export async function reserveTokens(
               (summary_id, user_id, month, tier, total_tokens, reserved_tokens,
                total_cost_eur, subscription_tokens, purchased_tokens_used)
             VALUES
-              (gen_random_uuid()::text, ${userId}, ${month}, ${tier}, 0, 0, 0, 0, 0)
+              (gen_random_uuid()::text, ${userId}, ${monthKey}::date, ${tier}, 0, 0, 0, 0, 0)
             ON CONFLICT (user_id, month) DO NOTHING`
     } catch {
         // Ignore — the row may have been created concurrently; proceed to retry UPDATE
@@ -468,7 +499,7 @@ export async function reserveTokens(
         UPDATE monthly_token_usage
         SET reserved_tokens = reserved_tokens + ${BigInt(estimatedTokens)}
         WHERE user_id = ${userId}
-          AND month = ${month}
+          AND month = ${monthKey}::date
           AND (total_tokens + reserved_tokens + ${BigInt(estimatedTokens)}) <= ${BigInt(limit)}`
 
     if (retryResult === 1) {
@@ -496,12 +527,11 @@ export async function releaseTokenReservation(
     userId: string,
     estimatedTokens: number
 ): Promise<void> {
-    const now = new Date()
-    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+    const { key: monthKey } = billingMonth()
     await prisma.$executeRaw`
         UPDATE monthly_token_usage
         SET reserved_tokens = GREATEST(0, reserved_tokens - ${BigInt(estimatedTokens)})
-        WHERE user_id = ${userId} AND month = ${month}`
+        WHERE user_id = ${userId} AND month = ${monthKey}::date`
 }
 
 /**
@@ -512,12 +542,11 @@ export async function releaseTokenReservation(
  * monthly_token_usage stays in this module.
  */
 export async function clearOrphanedReservations(): Promise<number> {
-    const now = new Date()
-    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+    const { key: monthKey } = billingMonth()
     return prisma.$executeRaw`
         UPDATE monthly_token_usage m
         SET reserved_tokens = 0
-        WHERE m.month = ${month}
+        WHERE m.month = ${monthKey}::date
           AND m.reserved_tokens > 0
           AND NOT EXISTS (
               SELECT 1 FROM policy_analysis_runs r
