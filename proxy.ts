@@ -135,6 +135,8 @@ export async function proxy(request: NextRequest) {
         // actually has. Linked from the homepage and the footer, so it must be
         // reachable anonymously or every visitor hits a login wall.
         "/compare",
+        "/trust",
+        "/platform",
         "/company",
         "/contact",
         "/for-agents",
