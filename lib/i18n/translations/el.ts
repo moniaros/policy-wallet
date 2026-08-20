@@ -1050,6 +1050,18 @@ export const el = {
             title: 'Επισκόπηση ασφαλιστηρίου',
             analysisNotCompleted: 'Η ανάλυση δεν ολοκληρώθηκε',
             analysisNotCompletedHint: 'Μπορείτε να δοκιμάσετε ξανά ή να συμπληρώσετε τα στοιχεία χειροκίνητα.',
+            // Why the analysis stopped, in the customer's own words. The
+            // upload is kept in every one of these cases — the reason is
+            // something they can act on, not a technical failure.
+            blockedTokenLimit: 'Δεν ξεκίνησε: εξαντλήθηκε το διαθέσιμο όριο AI',
+            blockedTokenLimitHint: 'Το έγγραφό σας αποθηκεύτηκε. Αναβαθμίστε το πρόγραμμά σας ή αγοράστε credits και δοκιμάστε ξανά την ανάλυση.',
+            blockedConsent: 'Δεν ξεκίνησε: λείπει η συγκατάθεση για AI',
+            blockedConsentHint: 'Το έγγραφό σας αποθηκεύτηκε. Δώστε τη συγκατάθεση επεξεργασίας με τεχνητή νοημοσύνη και δοκιμάστε ξανά.',
+            blockedNotPermitted: 'Δεν έχετε δικαίωμα ανάλυσης σε αυτό το ασφαλιστήριο',
+            blockedNotPermittedHint: 'Ζητήστε δικαίωμα επεξεργασίας από τον κάτοχο του ασφαλιστηρίου.',
+            discardedTitle: 'Το έγγραφο δεν μπόρεσε να αναλυθεί',
+            discardedHint: 'Δεν αποθηκεύτηκε τίποτα, ώστε να μην μείνει στο wallet σας ένα ασφαλιστήριο χωρίς στοιχεία. Δοκιμάστε ξανά με καθαρότερο αντίγραφο του εγγράφου.',
+            uploadAgain: 'Νέα μεταφόρτωση',
             analyzing: 'Διαβάζουμε το έγγραφό σας...',
             stepUploading: 'Μεταφόρτωση εγγράφου...',
             stepExtracting: 'Εξαγωγή δεδομένων...',

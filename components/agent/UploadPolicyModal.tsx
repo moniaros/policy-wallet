@@ -11,6 +11,7 @@ import type { CustomerCandidate, CustomerResolution } from '@/lib/services/custo
 import { acceptAttribute, preflightUploadSize } from "@/lib/security/file-upload"
 import { uploadRejectionMessage } from "@/lib/i18n/upload-errors"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
+import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
 
 interface Props {
     isOpen: boolean
@@ -483,7 +484,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
                             <div className="p-6 rounded-[28px] bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
                                 <p className="text-kicker font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-3">{up.duplicateExistingLabel}</p>
-                                <p className="text-base font-black text-foreground">{duplicate.policyNumber} <span className="text-neutral-500 dark:text-neutral-400 font-medium">· {duplicate.insurerName}</span></p>
+                                <p className="text-base font-black text-foreground">{displayPolicyNumber(duplicate.policyNumber)} <span className="text-neutral-500 dark:text-neutral-400 font-medium">· {displayInsurerName(duplicate.insurerName)}</span></p>
                             </div>
 
                             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}

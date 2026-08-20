@@ -11,6 +11,10 @@ import * as Sentry from '@sentry/nextjs'
 
 import { isSameDocumentDate, parseDocumentDate } from '@/lib/dates/document-date'
 import { resolveInsurerDisplay } from '@/lib/wallet/insurer-registry'
+import {
+    isPlaceholderInsurerName,
+    isPlaceholderPolicyNumber,
+} from '@/lib/wallet/policy-identity'
 import { branchFamilyId } from "@/lib/insurance/taxonomy"
 
 export type ReviewState = 'unconfirmed' | 'confirmed' | 'flagged'
@@ -85,6 +89,12 @@ export interface PolicyReviewData {
     requiresReview: boolean
     reviewState: ReviewState | null
     verified: boolean
+    /**
+     * Why the analysis did not finish, as a stable code the client maps to
+     * Greek copy (TOKEN_LIMIT_BLOCKED, AI_CONSENT_REQUIRED, TIMEOUT, …).
+     * Never rendered raw — see lib/i18n/analysis-failure.
+     */
+    processingErrorCode: string | null
 }
 
 interface PolicyRowForReview {
@@ -101,10 +111,10 @@ interface PolicyRowForReview {
     acordData: unknown
 }
 
-function sanitize(val: string | null | undefined, marker?: string): string | null {
+/** Blank-or-placeholder → null. Placeholder literals live in policy-identity. */
+function sanitize(val: string | null | undefined): string | null {
     if (!val) return null
-    if (val === '__PENDING_EXTRACTION__') return null
-    if (marker && val.startsWith(marker)) return null
+    if (isPlaceholderInsurerName(val)) return null
     return val
 }
 
@@ -256,7 +266,9 @@ export function buildPolicyReviewData(policy: PolicyRowForReview): PolicyReviewD
         status: policy.status,
         insurerName: rawInsurer ? resolveInsurerDisplay(rawInsurer).displayName : null,
         lineOfBusiness: policy.lineOfBusiness,
-        policyNumber: sanitize(policy.policyNumber, 'PENDING-'),
+        policyNumber: isPlaceholderPolicyNumber(policy.policyNumber)
+            ? null
+            : policy.policyNumber,
         issueDate,
         startDate,
         endDate,
@@ -295,5 +307,7 @@ export function buildPolicyReviewData(policy: PolicyRowForReview): PolicyReviewD
         requiresReview: Boolean(extraction?.requiresReview),
         reviewState,
         verified: Boolean(extraction && !extraction.requiresReview),
+        processingErrorCode:
+            typeof acord?.processingError?.code === 'string' ? acord.processingError.code : null,
     }
 }

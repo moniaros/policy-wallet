@@ -26,6 +26,7 @@ import {
     isBatchFailureCode,
     type BatchFailure,
 } from "@/lib/wallet/batch-upload-errors"
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 /** Fields a row must carry before it can be saved. Mirrors the extract route. */
 const REQUIRED_FIELDS = ["insurerName", "policyNumber", "startDate", "endDate"] as const
@@ -739,7 +740,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                                 {row.status === "ready" && row.data && (
                                                     <div className="space-y-2">
                                                         <div className="flex flex-wrap items-center gap-2">
-                                                            <span className="text-sm font-bold text-foreground">{row.data.insurerName}</span>
+                                                            <span className="text-sm font-bold text-foreground">{displayInsurerName(row.data.insurerName, branch!.label[language])}</span>
                                                             <span className="px-2 py-0.5 bg-muted rounded text-xs font-medium text-muted-foreground capitalize">
                                                                 {t.policyTypes?.[row.data.lineOfBusiness as keyof typeof t.policyTypes] || branch!.label[language]}
                                                             </span>

@@ -17,6 +17,7 @@ import { getGapEngineSnapshot, type GapEngineSnapshot } from "@/lib/services/gap
 import { getTranslations } from "@/lib/i18n"
 import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
+import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 
 export default async function CoverageInsightsPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -202,7 +203,10 @@ export default async function CoverageInsightsPage() {
                     }}
                     excludedExpired={expiredPolicies.map((policy) => ({
                         id: policy.id,
-                        label: resolveInsurerDisplay(policy.insurerName).displayName || policy.policyNumber || '',
+                        label:
+                            resolveInsurerDisplay(policy.insurerName).displayName ||
+                            displayPolicyNumber(policy.policyNumber) ||
+                            '',
                     }))}
                     userLanguage={userLanguage}
                     tier={entitlements.tier}
@@ -213,7 +217,7 @@ export default async function CoverageInsightsPage() {
                     canUseAgentCollaboration={entitlements.limits.agentCollaboration}
                     policies={policies.map(p => ({
                         id: p.id,
-                        insurerName: ((p as any).insurerName && (p as any).insurerName !== '__PENDING_EXTRACTION__') ? (p as any).insurerName : (p.lineOfBusiness || 'Policy'),
+                        insurerName: displayInsurerName((p as any).insurerName, p.lineOfBusiness || 'Policy'),
                         lineOfBusiness: {
                             code: (p.acordData as any)?.policy?.lineOfBusiness?.code || p.lineOfBusiness || 'other',
                             name: (p.acordData as any)?.policy?.lineOfBusiness?.Description || p.lineOfBusiness || (userLanguage === 'el' ? 'Άλλο Συμβόλαιο' : 'Other Policy')

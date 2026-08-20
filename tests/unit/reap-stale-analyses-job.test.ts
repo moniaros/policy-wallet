@@ -10,6 +10,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const runFindMany = vi.fn()
+const policyFindUnique = vi.fn()
+const policyDelete = vi.fn()
+const deleteFile = vi.fn(async (_fileUrl: string) => true)
 const txRunUpdateMany = vi.fn()
 const txPolicyFindUnique = vi.fn()
 const txPolicyUpdate = vi.fn()
@@ -18,6 +21,13 @@ const txDocumentUpdateMany = vi.fn()
 vi.mock('@/lib/db', () => ({
     db: {
         policyAnalysisRun: { findMany: (...a: unknown[]) => runFindMany(...a) },
+        // The reaper now also applies the discard rule: a placeholder-only
+        // policy whose executor died is removed rather than left showing the
+        // customer a policy the product knows nothing about.
+        policy: {
+            findUnique: (...a: unknown[]) => policyFindUnique(...a),
+            delete: (...a: unknown[]) => policyDelete(...a),
+        },
         $transaction: async (arg: unknown) => {
             if (typeof arg === 'function') {
                 return (arg as (tx: unknown) => Promise<unknown>)({
@@ -48,6 +58,7 @@ vi.mock('@/lib/env', () => ({
     },
 }))
 vi.mock('@/lib/logger', () => ({ logger: vi.fn() }))
+vi.mock('@/lib/storage', () => ({ deleteFile: (fileUrl: string) => deleteFile(fileUrl) }))
 vi.mock('@/lib/token-tracking', () => ({
     canUserUseTokens: vi.fn(),
     reserveTokens: vi.fn(),
@@ -76,6 +87,20 @@ beforeEach(() => {
 describe('PolicyAnalysisOrchestratorService.reapStaleRuns', () => {
     const service = new PolicyAnalysisOrchestratorService()
 
+    beforeEach(() => {
+        // Default: the reaped policy still carries a user-typed identity, so
+        // the discard rule leaves it alone and only the mark-up runs.
+        policyFindUnique.mockResolvedValue({
+            id: 'policy-1',
+            insurerName: 'Interamerican',
+            policyNumber: 'POL-42',
+            ownerUserId: 'user-1',
+            documents: [],
+        })
+        policyDelete.mockResolvedValue({ id: 'policy-1' })
+        deleteFile.mockResolvedValue(true)
+    })
+
     it('fails the orphaned run and resets policy + documents in one transaction, mirroring failRun', async () => {
         runFindMany.mockResolvedValue([
             { id: 'run-1', policyId: 'policy-1', provider: 'gemini' },
@@ -83,7 +108,7 @@ describe('PolicyAnalysisOrchestratorService.reapStaleRuns', () => {
 
         const summary = await service.reapStaleRuns({ graceMs: 5 * 60 * 1000, limit: 50 })
 
-        expect(summary).toEqual({ staleCandidates: 1, reaped: 1 })
+        expect(summary).toEqual({ staleCandidates: 1, reaped: 1, discarded: 0 })
 
         // Scan is bounded and only looks at running runs past the grace cutoff.
         const findArgs = runFindMany.mock.calls[0]![0]
@@ -126,9 +151,31 @@ describe('PolicyAnalysisOrchestratorService.reapStaleRuns', () => {
 
         const summary = await service.reapStaleRuns()
 
-        expect(summary).toEqual({ staleCandidates: 1, reaped: 0 })
+        expect(summary).toEqual({ staleCandidates: 1, reaped: 0, discarded: 0 })
         expect(txPolicyUpdate).not.toHaveBeenCalled()
         expect(txDocumentUpdateMany).not.toHaveBeenCalled()
+    })
+
+    it('discards a reaped policy that is nothing but placeholders', async () => {
+        // Process death is the one failure path no in-process handler covers,
+        // so the discard rule has to be applied here too — otherwise a killed
+        // executor is exactly how "__PENDING_EXTRACTION__" reaches a customer.
+        runFindMany.mockResolvedValue([{ id: 'run-1', policyId: 'policy-1', provider: 'gemini' }])
+        policyFindUnique.mockResolvedValue({
+            id: 'policy-1',
+            insurerName: '__PENDING_EXTRACTION__',
+            policyNumber: 'PENDING-1786732800000',
+            ownerUserId: 'user-1',
+            documents: [{ id: 'doc-1', fileUrl: 'https://x.supabase.co/storage/v1/object/public/policies/a.pdf' }],
+        })
+
+        const summary = await service.reapStaleRuns()
+
+        expect(summary).toEqual({ staleCandidates: 1, reaped: 1, discarded: 1 })
+        // Storage first, then the row — an object that outlives its row is
+        // personal data no GDPR export can see.
+        expect(deleteFile).toHaveBeenCalledWith('https://x.supabase.co/storage/v1/object/public/policies/a.pdf')
+        expect(policyDelete).toHaveBeenCalledWith({ where: { id: 'policy-1' } })
     })
 })
 

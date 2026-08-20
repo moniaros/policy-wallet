@@ -7,6 +7,11 @@ import type { Policy } from "@/components/wallet/types"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
+import {
+    displayInsurerName,
+    displayPolicyNumber,
+    fileNameLabel,
+} from "@/lib/wallet/policy-identity"
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 
 export default async function WalletPage() {
@@ -141,10 +146,19 @@ export default async function WalletPage() {
 
         return {
             id: p.id,
-            policyNumber: p.policyNumber,
+            // Scrubbed at the read boundary, not in the components downstream:
+            // this list feeds the wallet cards, the table AND the notice strip,
+            // and the strip used to interpolate the raw column — which is how
+            // "Αυτοκίνητο · __PENDING_EXTRACTION__" reached a customer.
+            policyNumber: displayPolicyNumber(p.policyNumber) ?? '',
             // Canonical Greek-market display name (raw extracted strings like
-        // "ΕΘΝΙΚΗ Η ΠΡΩΤΗ ΑΣΦΑΛΙΣΤΙΚΗ" normalize to "Εθνική Ασφαλιστική").
-        insurerName: resolveInsurerDisplay(p.insurerName).displayName || p.insurerName,
+            // "ΕΘΝΙΚΗ Η ΠΡΩΤΗ ΑΣΦΑΛΙΣΤΙΚΗ" normalize to "Εθνική Ασφαλιστική"),
+            // falling back to the uploaded file name while extraction has not
+            // produced an insurer.
+            insurerName: displayInsurerName(
+                resolveInsurerDisplay(p.insurerName).displayName,
+                fileNameLabel(p.documents[0]?.fileName)
+            ),
             insurerLogo: null, // Placeholder
             lineOfBusiness: p.lineOfBusiness as any,
             // Pass the RAW stored status and the extracted envelope; the card

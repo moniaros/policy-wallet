@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { FileText, Upload } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 export interface LobChip {
     id: string
@@ -92,7 +93,7 @@ export function PortfolioSummaryCard({
                                         <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                                     </div>
                                     <p className="mt-2 truncate text-micro text-muted-foreground">
-                                        {document.insurerName}
+                                        {displayInsurerName(document.insurerName)}
                                     </p>
                                 </Link>
                             ))}

@@ -8,6 +8,7 @@ import { Search, RefreshCw, Pencil, Trash2, GitMerge } from "lucide-react"
 import { requeuePolicy, deletePolicy, updatePolicyFields, mergePolicies, type AdminPolicyRow } from "../policy-actions"
 import { formatDate } from "@/lib/i18n/format"
 import { AdminDialog } from "@/components/admin/AdminDialog"
+import { displayInsurerName, policyLabel } from '@/lib/wallet/policy-identity'
 
 const STATUS_OPTIONS = ["all", "analyzing", "active", "action_needed", "incomplete", "expiring_soon", "cancelled", "deleted"]
 const inputClass = "pw-input pw-input-sm"
@@ -206,7 +207,7 @@ export default function PoliciesClient({
                             initialPolicies.map(row => (
                                 <tr key={row.id} className="border-b border-stone-100 dark:border-stone-700">
                                     <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{row.policyNumber}</td>
-                                    <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{row.insurerName}</td>
+                                    <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{displayInsurerName(row.insurerName)}</td>
                                     <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{normalizeBranch(row.lineOfBusiness).label.en}</td>
                                     <td className="py-2 px-4 font-mono text-xs text-stone-600 dark:text-stone-400">{row.ownerEmail || row.ownerUserId}</td>
                                     <td className="py-2 px-4">
@@ -274,7 +275,7 @@ export default function PoliciesClient({
             {deleteRow && (
                 <AdminDialog open onClose={() => setDeleteRow(null)} title="Delete policy">
                         <p className="text-stone-600 dark:text-stone-400 mb-6">
-                            Permanently delete <span className="font-medium">{deleteRow.policyNumber}</span> ({deleteRow.insurerName}) and all its analysis, gaps, documents and renewals? This cannot be undone.
+                            Permanently delete <span className="font-medium">{policyLabel(deleteRow, deleteRow.id)}</span> and all its analysis, gaps, documents and renewals? This cannot be undone.
                         </p>
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setDeleteRow(null)} disabled={modalBusy} className="px-4 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>

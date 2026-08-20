@@ -11,6 +11,7 @@ import { formatCurrencyCompact, formatCurrencyFull, formatDateShort } from "@/li
 import type { Policy } from "../types"
 import type { ViewerRole } from "@/components/collaboration/types"
 import { branchLabel } from '@/lib/insurance/taxonomy'
+import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
 
 interface ClientPoliciesTabProps {
     policies: Policy[]
@@ -204,7 +205,7 @@ export function ClientPoliciesTab({
                                                 // work) and is not nested inside the branded-report anchor.
                                                 <Link
                                                     href={`/customers/${customerId}/policy/${policy.policyId}`}
-                                                    aria-label={`${lobLabel} · ${policy.insurerName} · ${policy.policyNumber}`}
+                                                    aria-label={[lobLabel, displayInsurerName(policy.insurerName), displayPolicyNumber(policy.policyNumber)].filter(Boolean).join(' · ')}
                                                     className="after:absolute after:inset-0 after:rounded-2xl focus:outline-none"
                                                 >
                                                     {lobLabel}
@@ -223,7 +224,7 @@ export function ClientPoliciesTab({
                                         )}
                                     </div>
                                     <p className="text-xs text-muted-foreground">
-                                        {policy.insurerName}
+                                        {displayInsurerName(policy.insurerName)}
                                         {policy.carPlate && ` · ${policy.carPlate}`}
                                     </p>
                                 </div>

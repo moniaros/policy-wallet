@@ -12,6 +12,7 @@ import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { getBranchContent, type BranchAction } from "@/lib/insurance/content"
 import { policiesInBranch, upcomingRenewals } from "@/lib/insurance/branch-page"
 import { extractPolicySections, pickLang } from "@/lib/wallet/policy-detail"
+import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { BranchEmptyState } from "@/components/branches/BranchEmptyState"
@@ -126,7 +127,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
         extractPolicySections(policy.acordData).perks.map((perk) => ({
             perk,
             policyId: policy.id,
-            insurerName: policy.insurerName,
+            insurerName: displayInsurerName(policy.insurerName),
         }))
     )
 
@@ -190,10 +191,10 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                     >
                                         <div className="min-w-0">
                                             <p className="truncate text-sm font-bold text-black dark:text-white">
-                                                {policy.insurerName || "—"}
+                                                {displayInsurerName(policy.insurerName) || "—"}
                                             </p>
                                             <p className="truncate text-xs text-muted-foreground">
-                                                {policy.policyNumber || "—"}
+                                                {displayPolicyNumber(policy.policyNumber) || "—"}
                                             </p>
                                         </div>
                                         <div className="flex flex-shrink-0 items-center gap-3">
@@ -298,7 +299,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                         className="flex items-center justify-between gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40"
                                     >
                                         <p className="truncate text-sm font-bold text-black dark:text-white">
-                                            {policy.insurerName || "—"}
+                                            {displayInsurerName(policy.insurerName) || "—"}
                                         </p>
                                         <span className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-kicker font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
                                             {t.branches.expiresInDays.replace('{days}', String(days))}

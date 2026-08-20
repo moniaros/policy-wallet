@@ -1055,6 +1055,18 @@ export const en: TranslationKeys = {
             title: 'Policy Review',
             analysisNotCompleted: 'Analysis could not be completed',
             analysisNotCompletedHint: 'You can retry or fill in the details manually.',
+            // Why the analysis stopped, in the customer's own words. The
+            // upload is kept in every one of these cases — the reason is
+            // something they can act on, not a technical failure.
+            blockedTokenLimit: 'Not started: your AI allowance is used up',
+            blockedTokenLimitHint: 'Your document is saved. Upgrade your plan or buy credits, then run the analysis again.',
+            blockedConsent: 'Not started: AI consent is missing',
+            blockedConsentHint: 'Your document is saved. Grant consent for AI processing and try again.',
+            blockedNotPermitted: 'You do not have permission to analyse this policy',
+            blockedNotPermittedHint: 'Ask the policy owner for edit access.',
+            discardedTitle: 'The document could not be analysed',
+            discardedHint: 'Nothing was saved, so your wallet is not left holding a policy with no details. Try again with a clearer copy of the document.',
+            uploadAgain: 'Upload again',
             analyzing: "We're reading your document...",
             stepUploading: 'Uploading document...',
             stepExtracting: 'Extracting policy data...',
