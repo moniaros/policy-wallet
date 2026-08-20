@@ -257,10 +257,18 @@ the repository.
    deliberately narrower than `getPolicyAccess`, **no live hole**. Each is listed in
    `ACTION_EXEMPT` with its reason. Both new checks were verified to fail against the
    pre-fix source. The `/trust` copy was restored to the wider, now-true claim.
-2. **8 of 11 severity display sites show no caveat**, including
-   `ActionQueueCard.tsx:202` ("N clients with critical gaps") on the agent dashboard.
-   The ceiling test freezes the debt from growing; it does not repay it. Gate 3b
-   remains open regardless.
+2. **Severity caveats — CLOSED for every surface that names a severity (iteration 2).**
+   The "8 of 11 show no caveat" figure was wrong in both directions. Audited all eleven:
+   two already carried one (`CoverageInsightsClient` renders `recPriorityNote`;
+   `ClientOverviewTab` carries a better, surface-specific line — *"not an assessment of
+   insurance adequacy"*), and two print **no severity word at all** — colour only, with
+   `PolicyBriefCard`'s dot `aria-hidden`, so a disclaimer there would be noise rather
+   than honesty. The four that genuinely name a severity to a person now render
+   `<SeverityCaveat />`, pinned by `CAVEAT_REQUIRED`. One component, so sign-off is a
+   one-line change. **Gate 3b itself remains open and is not closable by code** — the
+   guard now also asserts that `SEVERITY_UNDERWRITER_VALIDATED` is still false.
+   Migrating those four colour maps onto `describeSeverity()` is still outstanding, but
+   that is tidying, not a truth defect.
 3. ~~**`MonetaryLimitSchema.unlimited` still carries `.default(false)`**~~
    **CLOSED (iteration 2).** Now `.optional()`. The AI SDK materialises Zod defaults
    into the returned object, so the default had been storing an explicit "not unlimited"
