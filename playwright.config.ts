@@ -133,6 +133,19 @@ export default defineConfig({
             dependencies: ['admin-setup'],
         },
         {
+            // Cross-tenant enforcement. Builds BOTH request contexts itself
+            // (owner to discover the id, agent to attack it), so the project
+            // carries no storageState of its own — it just needs both auth
+            // setups to have produced their files first.
+            name: 'cross-tenant',
+            testMatch: /cross-tenant-authorization\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+            dependencies: ['setup', 'agent-setup'],
+        },
+        {
             name: 'sentry',
             testMatch: /sentry-.*\.spec\.ts/,
             use: {

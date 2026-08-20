@@ -66,14 +66,115 @@ function takesRecordIdFromCaller(path: string, source: string): boolean {
 }
 
 function touchesOwnedModel(source: string): boolean {
-    if (OWNED_MODELS.some((model) => new RegExp(`\\bdb\\.${model}\\.`).test(source))) {
+    const code = stripCommentsAndStrings(source)
+    const withSql = stripComments(source)
+    if (OWNED_MODELS.some((model) => new RegExp(`\\bdb\\.${model}\\.`).test(code))) {
         return true
     }
     // Raw SQL over the same tables is the same access.
     return (
-        /\$(query|execute)Raw/.test(source) &&
-        OWNED_TABLES.some((table) => new RegExp(`\\b${table}\\b`).test(source))
+        /\$(query|execute)Raw/.test(withSql) &&
+        OWNED_TABLES.some((table) => new RegExp(`\\b${table}\\b`).test(withSql))
     )
+}
+
+/**
+ * Strip comments and string/template literals before matching.
+ *
+ * Without this, every matcher in this file can be satisfied by *talking about*
+ * the thing instead of doing it. A route containing only
+ *
+ *     // remember to call getPolicyAccess(policyId) here
+ *
+ * passed `callsPolicyAccess` until 2026-08-21 — the guard was reading prose as
+ * proof. The same hole applied to the raw-SQL table matcher, where the word
+ * "policies" inside any comment or message string counted as touching the
+ * table. tests/fixtures/guard-probes/ holds the red probes; they are files in
+ * the repo rather than a claim in a commit message, so the red-green is
+ * re-runnable by anyone.
+ *
+ * This is deliberately a lexer, not a parser: it walks the source once and
+ * tracks which construct it is inside. Regex-replacing comments would corrupt
+ * a URL like "https://…" (the `//` starts a "comment" that eats the line).
+ *
+ * TWO strippers, because the two questions are opposites:
+ *
+ *   • "does this CALL getPolicyAccess?" — literal content is prose. Strip it.
+ *   • "does this raw SQL touch an owned TABLE?" — literal content IS the SQL.
+ *     Keep it, strip only comments. Getting this backwards silently un-guards
+ *     every `db.$queryRaw` in the codebase, because the table name lives in the
+ *     template body and nowhere else.
+ */
+export function stripComments(source: string): string {
+    return lex(source, { keepLiteralText: true })
+}
+
+export function stripCommentsAndStrings(source: string): string {
+    return lex(source, { keepLiteralText: false })
+}
+
+function lex(source: string, { keepLiteralText }: { keepLiteralText: boolean }): string {
+    let out = ""
+    let i = 0
+    const n = source.length
+
+    while (i < n) {
+        const c = source[i]
+        const next = source[i + 1]
+
+        // Line comment — keep the newline so line-based reporting stays sane.
+        if (c === "/" && next === "/") {
+            while (i < n && source[i] !== "\n") i++
+            continue
+        }
+
+        // Block comment.
+        if (c === "/" && next === "*") {
+            i += 2
+            while (i < n && !(source[i] === "*" && source[i + 1] === "/")) i++
+            i += 2
+            continue
+        }
+
+        // String or template literal. Template literals keep their ${...}
+        // interpolations, because `db.$queryRaw` builds real SQL in there.
+        if (c === '"' || c === "'" || c === "`") {
+            const quote = c
+            i++
+            while (i < n) {
+                if (source[i] === "\\") {
+                    i += 2
+                    continue
+                }
+                if (quote === "`" && source[i] === "$" && source[i + 1] === "{") {
+                    let depth = 1
+                    i += 2
+                    const start = i
+                    while (i < n && depth > 0) {
+                        if (source[i] === "{") depth++
+                        else if (source[i] === "}") depth--
+                        if (depth > 0) i++
+                    }
+                    out += source.slice(start, i)
+                    i++
+                    continue
+                }
+                if (source[i] === quote) {
+                    i++
+                    break
+                }
+                if (keepLiteralText) out += source[i]
+                i++
+            }
+            out += " "
+            continue
+        }
+
+        out += c
+        i++
+    }
+
+    return out
 }
 
 /**
@@ -82,10 +183,11 @@ function touchesOwnedModel(source: string): boolean {
  * This started as `source.includes("getPolicyAccess")` and a probe route slipped
  * through on the strength of a comment that named the function while doing the
  * opposite — which is precisely the kind of thing a guard is supposed to be
- * immune to.
+ * immune to. Narrowing it to `getPolicyAccess(` did not fix that: a comment
+ * containing the call syntax still passed. Only stripping the prose does.
  */
 function callsPolicyAccess(source: string): boolean {
-    return /\bgetPolicyAccess\s*\(/.test(source)
+    return /\bgetPolicyAccess\s*\(/.test(stripCommentsAndStrings(source))
 }
 
 /**
@@ -381,5 +483,64 @@ describe("server actions are on the single path, or say why not", () => {
                 "meaning something:\n  " +
                 `${stale.join("\n  ")}`
         ).toEqual([])
+    })
+})
+
+/**
+ * The guard's own red-green, as files rather than prose.
+ *
+ * A guard that nobody has watched fail is a guard nobody knows works. These two
+ * fixtures are byte-identical in shape and differ only in whether the
+ * authorization call is code or commentary — so if `stripCommentsAndStrings`
+ * ever regresses, the negative probe goes green and this test goes red.
+ */
+describe("the guard reads code, not prose", () => {
+    const probe = (name: string) =>
+        readFileSync(join("tests/fixtures/guard-probes", name), "utf8")
+
+    it("does not accept a comment or string that merely names getPolicyAccess", () => {
+        const source = probe("mentions-only-route.ts.txt")
+
+        // The raw text does contain the call syntax — three times over.
+        expect(/\bgetPolicyAccess\s*\(/.test(source)).toBe(true)
+
+        // But not once as code.
+        expect(callsPolicyAccess(source)).toBe(false)
+    })
+
+    it("still accepts a real call", () => {
+        expect(callsPolicyAccess(probe("real-call-route.ts.txt"))).toBe(true)
+    })
+
+    it("sees the raw-SQL read in both probes, so the bypass is genuinely detected", () => {
+        for (const name of ["mentions-only-route.ts.txt", "real-call-route.ts.txt"]) {
+            expect(takesRecordIdFromCaller("app/api/x/[id]/route.ts", probe(name))).toBe(true)
+        }
+    })
+
+    it("strips line comments without eating a URL", () => {
+        const stripped = stripCommentsAndStrings('const u = "https://x.dev/a"; // gone\nconst k = 1')
+        expect(stripped).not.toContain("gone")
+        expect(stripped).toContain("const k = 1")
+    })
+
+    it("keeps SQL text for the table matcher and drops it for the call matcher", () => {
+        const raw = "db.$queryRaw`SELECT * FROM policies WHERE id = ${policyId}`"
+
+        // The table name lives in the template BODY. Strip it and every raw-SQL
+        // read in the codebase becomes invisible to this guard — which is the
+        // regression this test exists to prevent.
+        expect(stripComments(raw)).toContain("policies")
+        expect(stripComments(raw)).toContain("policyId")
+
+        // The call matcher wants the opposite: prose must not count as a call.
+        expect(stripCommentsAndStrings(raw)).not.toContain("SELECT")
+        expect(stripCommentsAndStrings(raw)).toContain("policyId")
+    })
+
+    it("still detects a raw-SQL read of an owned table (the regression probe)", () => {
+        const source = probe("mentions-only-route.ts.txt")
+        expect(stripComments(source)).toContain("policy_documents")
+        expect(takesRecordIdFromCaller("app/api/x/[id]/route.ts", source)).toBe(true)
     })
 })

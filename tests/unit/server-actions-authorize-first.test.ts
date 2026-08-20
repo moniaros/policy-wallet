@@ -49,9 +49,22 @@ interface ActionBody {
     body: string
 }
 
+/**
+ * The scan is driven by the DIRECTIVE, not the filename.
+ *
+ * It used to glob only the literal filename `actions.ts` under app/, which
+ * silently excluded nine files and
+ * twenty-three exports — the kebab-case `-actions.ts` family (billing, policy,
+ * security, role,
+ * relationship, quiet-hours, risk-review) plus the camelCase pair
+ * collaborationActions.ts and taskActions.ts. Every one of them is a public
+ * endpoint by the same argument in this file's header, and none of them was
+ * ever checked. A guard whose coverage depends on a naming convention protects
+ * only the developers who happened to follow it.
+ */
 function serverActions(): ActionBody[] {
     const out: ActionBody[] = []
-    for (const file of globSync("app/**/actions.ts", { ignore: "**/node_modules/**" })) {
+    for (const file of globSync("app/**/*.ts", { ignore: "**/node_modules/**" })) {
         const src = readFileSync(file, "utf-8")
         if (!/^\s*["']use server["']/m.test(src)) continue
         if (PRE_AUTH_BY_DESIGN[file]) continue
@@ -72,7 +85,7 @@ describe("every server action establishes who is calling", () => {
     it("scans a realistic number of actions", () => {
         // A broken matcher finding nothing would make the checks below pass
         // vacuously — the usual way a guard like this stops guarding.
-        expect(ACTIONS.length).toBeGreaterThan(80)
+        expect(ACTIONS.length).toBeGreaterThan(100)
     })
 
     it("no action touches data without an identity check", () => {
@@ -130,5 +143,88 @@ describe("admin actions authorize before they read", () => {
         expect(guardAt, "the admin role check has been removed").toBeGreaterThan(-1)
         expect(readAt, "the gapDefinition read has moved or been renamed").toBeGreaterThan(-1)
         expect(guardAt).toBeLessThan(readAt)
+    })
+})
+
+
+/**
+ * The `redeemInvite` axis: never take the caller's identity as an argument.
+ *
+ * `redeemInvite(token, userId)` was an unauthenticated write path for months.
+ * It "checked" nothing because there was nothing to check — the caller simply
+ * declared which user they were, and the action believed them. An action that
+ * accepts a subject-naming parameter is not fixed by adding an auth call; it is
+ * fixed by deleting the parameter and reading the subject from the session,
+ * because otherwise an authenticated attacker just passes someone else's id.
+ *
+ * This is a distinct failure from "no identity check": an action can call
+ * getAuthenticatedUser() and still act on a userId handed in by the caller.
+ */
+const SUBJECT_PARAM = /\b(userId|user_id|actorId|callerId|currentUserId|actingUserId|onBehalfOf|asUser|subjectId|ownerUserId)\s*[:?,)]/
+
+/**
+ * Actions that take a subject id that is NOT the caller, with the reason.
+ * Naming a target is legitimate; naming YOURSELF is the vulnerability.
+ */
+const NAMES_A_TARGET_NOT_THE_CALLER: Record<string, string> = {
+    // All five are admin actions whose first statement is `await verifyAdminRole()`,
+    // and whose userId is the SUBJECT BEING ADMINISTERED, not the caller. That is
+    // the legitimate shape: authority comes from the session (the admin role), the
+    // parameter only says who is being acted upon. Verified 2026-08-21 — each
+    // resolves the admin from the session before the id is used, and the read-order
+    // test above independently proves the guard precedes the first query.
+    "app/(protected)/admin/actions.ts::getUserDetails":
+        "admin reads another user; authority is the session's admin role, and the read is logged via logAdminRead",
+    "app/(protected)/admin/actions.ts::changeUserRole":
+        "admin changes another user's roles; the target is the point of the action",
+    "app/(protected)/admin/actions.ts::grantTokens":
+        "admin grants tokens TO a user; input.userId is the recipient",
+    "app/(protected)/admin/actions.ts::deleteUser":
+        "admin erases another user (DSR); the subject is necessarily named",
+    "app/(protected)/admin/billing-actions.ts::applyCredit":
+        "admin credits a user's balance; input.userId is the recipient",
+}
+
+describe("no server action lets the caller name themselves", () => {
+    function parameterList(body: string): string {
+        const open = body.indexOf("(")
+        if (open === -1) return ""
+        let depth = 0
+        for (let i = open; i < body.length; i += 1) {
+            if (body[i] === "(") depth += 1
+            else if (body[i] === ")") {
+                depth -= 1
+                if (depth === 0) return body.slice(open, i + 1)
+            }
+        }
+        return ""
+    }
+
+    it("finds actions to check", () => {
+        expect(ACTIONS.length).toBeGreaterThan(100)
+    })
+
+    it("no action accepts the acting user's id as a parameter", () => {
+        const selfNaming = ACTIONS.filter((a) => {
+            if (NAMES_A_TARGET_NOT_THE_CALLER[`${a.file}::${a.name}`]) return false
+            return SUBJECT_PARAM.test(parameterList(a.body))
+        }).map((a) => `${a.file}::${a.name}${parameterList(a.body)}`)
+
+        expect(
+            selfNaming,
+            "These take an identity as an argument. A \"use server\" export is reachable\n" +
+                "with no UI, so the caller supplies that value — which makes the action a\n" +
+                "write path for any user id the attacker cares to type. Derive the subject\n" +
+                "from the session instead (this is exactly how redeemInvite(token, userId)\n" +
+                "was an unauthenticated write path), or record it as a legitimate target:\n" +
+                `  ${selfNaming.join("\n  ")}`
+        ).toEqual([])
+    })
+
+    it("detects the redeemInvite shape itself", () => {
+        // Red-green for the matcher: the historical signature must be caught.
+        expect(SUBJECT_PARAM.test("(token: string, userId: string)")).toBe(true)
+        expect(SUBJECT_PARAM.test("(token: string)")).toBe(false)
+        expect(SUBJECT_PARAM.test("(formData: FormData)")).toBe(false)
     })
 })

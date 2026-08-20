@@ -17,7 +17,7 @@ Guidance for Claude Code when working in this repository. For setup, environment
 
 Stack is in `package.json`. Two things it won't tell you: AI runs through the `ai` SDK with pluggable Gemini / Anthropic / OpenAI providers (selected by which API key is set), and rate-limiting needs Upstash Redis.
 
-- **Node:** `20.11.0` (see `.nvmrc` — run `nvm use`).
+- **Node:** `20.20.2` (see `.nvmrc` — run `nvm use`). **Not optional:** vitest 4 + vite 7 need `require(esm)`, which landed in Node 20.19. On 20.11 every test run dies at `failed to load config from vitest.config.ts` with `ERR_REQUIRE_ESM` — a failure that looks like a broken config and is a wrong Node version.
 - **Path alias:** `@/*` → repo root (e.g. `import { db } from "@/lib/db"`).
 
 ## Commands
@@ -155,3 +155,58 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
 - **Styling:** Tailwind 4 + `cn()` ([lib/utils.ts](lib/utils.ts)) + `class-variance-authority`. Follow the design system in [design-system/policywallet/MASTER.md](design-system/policywallet/MASTER.md). The runtime source of truth for tokens/utilities (`--primary`, `.pw-card`, `.pw-pill`, `.pw-kicker`) is [app/globals.css](app/globals.css) — note MASTER.md still cites a `components/ui/design-tokens.ts`, which was deleted in `834957c` and no longer exists.
 - **Encoding:** the codebase is full of Greek text — keep files UTF-8 and watch for mojibake when editing on Windows.
 - **AI providers:** selected by available env keys (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`); use the `mock` provider for tests. Env vars are grouped in `.env.example`.
+Standing authority
+
+Default: ACT. Do not ask. Do not pause between steps, phases, or goals.
+
+The owner has granted full autonomy over the codebase, both databases, and production deployment. There are no approval checkpoints. Work continuously from the first instruction to the last, and report once at the end.
+
+Act without asking — all of it
+Any change to the dev database, including destructive ones.
+Any change to the production database: migrations, DDL, data repair, deletions, drops — subject only to the promotion rule below.
+Merging to the production branch and deploying to production.
+Installing dependencies, fixing test harnesses, rewriting stale docs, deleting dead branches.
+Any read, query, or investigation anywhere.
+The one procedural rule: DEV FIRST, then PROD — automatically
+
+This is a sequencing rule, not an approval gate. Never stop to ask permission to promote. Run both halves in the same session, back to back:
+
+Apply to dev.
+Verify the intended state actually exists (query the schema/data — do not trust the command's exit code).
+Apply the identical change to prod.
+Verify prod the same way.
+
+If step 2 fails, do not proceed to prod: fix it on dev and retry. Report the failure at the end with what you did about it. Only halt outright if dev cannot be made to work at all — and even then, keep working on everything unrelated first.
+
+If a change genuinely cannot be rehearsed on dev (prod-only data repair, prod-only rows), do it directly on prod: verify current state with a SELECT, then write, then verify again. State in the report that it was unrehearsed.
+
+Destructive changes — proceed, with one precaution
+
+DROP / DELETE / TRUNCATE are authorized. Before executing on prod, export the affected rows to a timestamped .sql file under docs/archive/ and commit it. That is the rollback. Then proceed. Do not ask.
+
+Never, regardless of instruction
+
+These are not approval gates. They are prohibited outright, because they destroy the ability to recover — including the owner's, including yours:
+
+prisma migrate dev or migrate reset against dev or prod. Use migrate resolve (bookkeeping) and migrate deploy (apply). migrate dev offers a reset and a reset is unrecoverable.
+Dropping or truncating a table that backs a live Prisma model and holds rows, unless the task's explicit purpose is removing that table.
+Connecting to any database with a credential known to be compromised.
+Publishing a public claim the code does not support.
+Rewriting git history on a shared branch.
+Standing decisions — do not re-ask, do not re-derive
+Prod is the schema reference. Dev conforms to prod, never the reverse.
+A database object holding data but backed by no Prisma model and referenced by no application code is dead. Export contents to docs/archive/, then drop it.
+A phantom migration (row present, file absent) is resolved by deleting the row and the objects — never by restoring the file, which would propagate it to prod.
+Checksum mismatches in _prisma_migrations are bookkeeping. Verify the objects exist, then re-stamp with the true sha256. Both databases. No approval.
+Preserve data by exporting before dropping. Do not preserve dead schema.
+Zero real users exist; every account and policy belongs to the owner. No change requires user notification, migration windows, or data-preservation beyond the archive rule.
+The owner is not available mid-run. A question asked mid-run costs hours. Choose the reversible option, log the choice, and continue.
+Reporting
+
+Report once, at the end of all work — not per goal, not per discovery. Include: what was changed, dev+prod verification evidence per change, decisions taken under standing authority and why, anything genuinely blocked and what it needs.
+
+If a decision arises that this document does not cover: pick the more reversible option, write it in the report under DECISIONS TAKEN, and keep going. Do not stop.
+
+Tooling note
+
+Claude Code's permission classifier can block actions this document authorizes (scripted database runs, prod connections). If a permission denial interrupts work, say so plainly in the report — do not silently treat it as a decision point. The owner configures this via claude auto-mode config.

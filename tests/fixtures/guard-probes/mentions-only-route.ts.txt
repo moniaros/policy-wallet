@@ -1,0 +1,24 @@
+// PROBE FIXTURE — not a real route, and deliberately not named `route.ts` so the
+// filesystem scan never picks it up. It exists so the claim "the guard reads code,
+// not prose" is testable rather than asserted.
+//
+// Every authorization reference below is a MENTION. Nothing here calls anything.
+import { db } from "@/lib/db"
+
+/**
+ * TODO: call getPolicyAccess(policyId) before returning the document.
+ * See lib/policy-access.ts — getPolicyAccess(policyId, userId) is the single path.
+ */
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
+
+    // This is the bypass the guard must catch: a raw read of an owned table with
+    // no authorization at all, wearing a comment that names the right function.
+    const rows = await db.$queryRawUnsafe(
+        "SELECT * FROM policy_documents WHERE policy_id = $1",
+        id
+    )
+
+    const note = "authorized via getPolicyAccess(policyId)" // a string, not a call
+    return Response.json({ rows, note })
+}
