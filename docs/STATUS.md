@@ -37,7 +37,11 @@ redeployed. Names and expected prefixes only:
 |---|---|---|
 | `STRIPE_SECRET_KEY` | `sk_live_` | Stripe → Developers → API keys (live) |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_` | Stripe → Developers → Webhooks → endpoint `we_1U6jHX1JRuUbwXlymoKwosK1` → *Signing secret* |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `pk_live_` | same API-keys page (only if the app uses it client-side) |
+
+Only those two. `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` is declared optional in `lib/env.ts`
+and used nowhere — checkout is redirect-based (the server returns `session.url`), so there
+is no client-side Stripe.js and no publishable key to rotate. Both variables already EXIST
+in Vercel Production and Preview; their VALUES are what change.
 
 Until then the deployed build reports mode `test`, so **the promo banner correctly hides
 itself** — the claim is no longer false either way.
