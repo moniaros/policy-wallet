@@ -7,6 +7,7 @@
  */
 
 import { BaseService } from './base.service'
+import { mergeAcordData } from './acord-merge'
 import { emit } from '@/lib/notifications/dispatch'
 import { AppError } from '@/lib/errors'
 import { uploadFile, deleteFile } from '@/lib/storage'
@@ -579,9 +580,17 @@ export class PolicyService extends BaseService {
                         }
                     ].slice(-20)
 
+                    // Silence inherits. A renewal notice states the premium and
+                    // the period and is quiet about the rest; a shallow spread
+                    // read that quiet as deletion and replaced whole sections,
+                    // so a renewal mentioning only the vehicle's value erased
+                    // make, model, green-card expiry and the cover flags the
+                    // gap engine reads. See lib/services/acord-merge.ts.
                     const mergedAcordData = {
-                        ...((existingPolicyFull as any)?.acordData || {}),
-                        ...((currentPolicy as any).acordData || {}),
+                        ...mergeAcordData(
+                            (existingPolicyFull as any)?.acordData,
+                            (currentPolicy as any).acordData
+                        ),
                         renewalHistory: mergedHistory
                     }
 
