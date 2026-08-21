@@ -1,5 +1,97 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-21 (Preflight R1–R6, pricing v2 SHIPPED, insured-value adequacy SHIPPED)
+
+**Both databases are provably identical.** Schema `b31387d7e6bb6a28f3d56582d8c1d78e`
+(1008 cols), migrations `ba87dcbf5907bcb102703bdea99d0fb2` (69 rows, zero malformed
+checksums), plans `8060e0fe9a3e27de52f12163c054dad6` — each hash computed on both sides.
+
+### Preflight
+
+**R1** — the ENTIRE dev↔prod schema delta had one cause:
+`20260605120000_extraction_pipeline_schema`, from a `feat/pipeline-*` branch never merged,
+applied to dev in June and never to prod. Archived (39 rows) and dropped. Three dev
+migrations were recorded pending but their objects already existed — resolved, not re-run.
+Eleven dev / six prod checksums held placeholder strings (one literally empty) from the
+manual Supabase-MCP path; those **blocked `migrate deploy` on both databases** and are
+re-stamped. `protection_score_history` dropped from both (archived): a user-keyed table
+with no Prisma model, therefore outside the DSR export, so the drop IS the erasure.
+**DPO sign-off unblocked.**
+
+**P1** — the split-brain's real cause was not the duplicate `DIRECT_URL` (that one was
+dev). It was `.env` holding `DIRECT_URL="DIRECT_URL="postgresql://…""`, which dotenv
+parses into an invalid string — and **Prisma CLI reads `.env`, never `.env.local`**. That,
+not the pooler port, is why `prisma migrate` "could never work here".
+
+**R2** plans byte-equal (ag-starter had 6 dev subscriptions, repointed to agent-starter
+before deletion). **R3** dev: 34 orphans removed, objects == rows. **R4** three guard holes
+closed — the single-path matcher accepted a *comment* naming `getPolicyAccess`; the
+server-action scan globbed only `actions.ts`, missing 9 files / 23 exports; a new axis
+catches the `redeemInvite(token, userId)` shape — plus the first HTTP-level cross-tenant
+spec. **R6** dev grants already closed, identical to prod.
+
+### GOAL 1 — pricing v2, LIVE on policywallet.gr
+
+B2C sells capacity: Free 3 / Plus €39yr 10 / Family €79yr 25, `aiAnalysisPerMonth: null`
+everywhere. B2B monthly €29/€79/€199 with 50/150/400 analyses. All four truth defects
+fixed. 84 tier-name occurrences renamed across 22 files — and the half that mattered:
+sentences gating gaps behind a paid tier became false when v2 made analysis free, so each
+was split along the real line (gaps → every tier; duplicates/portfolio/Q&A → Family).
+
+Verified live: €0 / €39 / €4.99 / €79 / €8.99 / €29 / €199, zero v1 leftovers.
+
+**Two Stripe findings that changed this goal.** Checkout never uses a Stripe Price object —
+`createCheckoutSession` builds inline `price_data` from the plan row, so displayed and
+charged price cannot disagree and v2 needed no Stripe Price to ship. And **production
+Stripe runs in SANDBOX mode**: every prod subscription id carries the sandbox account
+suffix, live mode has zero customers and zero products. No real money has ever moved.
+
+ENDOFSUMMER26 exists (25% off, 12 months, first-time-only, expires 2026-08-31 20:59Z =
+23:59 Athens). B2B-only by construction: `allow_promotion_codes` is set only for agent
+plans, so consumer checkout has no field to type it into. **Remove the banner after
+2026-08-31** — it removes itself, but the Stripe objects want cleaning up.
+
+### GOAL 2 — insured-value adequacy, SHIPPED
+
+New `value_drift` operator; two definitions live in both DBs. Motor over-insurance vs the
+declared market value; home under-insurance vs the stated rebuild cost (όρος αναλογίας).
+Threshold `DEFAULT_DRIFT_THRESHOLD_PCT = 20`. Provenance stores both operands **and the
+computed driftPct**. **The depreciation-curve arm deliberately did not ship** — the only
+data I could source is US-market, and a euro valuation shown to a Greek consumer must be
+defensible. See `docs/planning/INSURED_VALUE_ADEQUACY.md`.
+
+### GOAL 3 — STEP 0 only; one live defect found and fixed
+
+The brief's premise was wrong: renewals do NOT sever the chain — `PolicyService` merges a
+same-uploader duplicate silently. The defect was that it merged with a **shallow spread**,
+so a renewal notice's silence deleted whole sections. A renewal mentioning only the
+vehicle's value erased make, model, green-card expiry, `ownVehicleDamage` and
+`glassBreakage` — the last two being exactly what two gap rules read, so the product could
+report lost cover the customer still had. Fixed (`lib/services/acord-merge.ts`).
+**The feature itself is NOT built**: no effective-period column, no «Προσθήκη
+ανανεωτηρίου» action, no «Τι άλλαξε στην ανανέωση» differential.
+See `docs/planning/RENEWAL_DOCUMENTS.md`.
+
+### Blocked (facts, not permissions)
+1. **Gemini project is at its monthly spend cap** — every analysis fails, which blocked R5.
+   It also exposed a real defect, now fixed: that error arrives as HTTP 429, so every retry
+   layer treated a billing wall as "slow down" — 20 attempts, 483s, past the 300s
+   `maxDuration`, so production would kill the function and strand the policy `analyzing`.
+2. **R3 prod** (9 of 11 orphans) needs `SUPABASE_SERVICE_ROLE_KEY`; Vercel returns empty
+   for sensitive vars.
+3. **R6 last item** — removing `public` from dev's exposed schemas is a dashboard setting.
+   Dev returns 401/42501 where prod returns PGRST106; the security-relevant half (zero
+   grants) already matches.
+
+### Next 3 actions
+1. Clear the Gemini spend cap, re-measure one analysis cleanly, size `maxDuration` from it.
+2. Build GOAL 3 in the recorded order: effective-period migration → renewal upload action →
+   differential.
+3. Decide whether production should move to live-mode Stripe at all, given it has always
+   been sandbox.
+
+---
+
 ## Session wrap — 2026-08-20d (Paying subscribers unblocked; the pipeline stops wasting half its runtime)
 
 Two defects from the verified 2026-08-14 dev run, both root-caused to mechanism before any code moved.
