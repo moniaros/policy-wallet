@@ -158,6 +158,19 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   able to say where the number came from; both rules compare two figures the policy
   document itself states, which is why neither needs reference data. See
   [docs/planning/INSURED_VALUE_ADEQUACY.md](docs/planning/INSURED_VALUE_ADEQUACY.md).
+- **Gap definitions are reference data — the repo decides, not a row.**
+  `lib/gaps/authored-catalogue.ts` is the source for which rules are live.
+  `npm run verify:gap-catalogue` fingerprints a database's ACTIVE set and fails
+  on drift; `npm run align:gap-catalogue -- --apply` repairs it by upserting on
+  slug (ids survive, so `gap_instances` survive) and DEACTIVATING anything active
+  that nobody authored, rather than deleting it. Compare two environments by
+  running the verifier against each and comparing the printed fingerprint — no
+  rows have to leave either one. Inactive rows legitimately differ: production
+  carries 41 definitions the AI minted for itself at runtime (`rule_id` `ai_*`,
+  `detectionLogic` `{ source: "ai_clarity_pipeline" }`, one per analysis run
+  between 2026-07-13 and 2026-08-09) which dev has never had, so the check
+  compares CONTENT of the active set, never row counts. This is the third table
+  to drift after migrations and plan rows.
 - **Env precedence: exactly one `DATABASE_URL` and one `DIRECT_URL`, both dev.** dotenv
   keeps the LAST occurrence within a file, so a duplicate further down silently wins —
   that is how local tooling was pointed at production twice. `lib/db.ts` resolves

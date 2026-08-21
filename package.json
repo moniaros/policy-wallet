@@ -25,7 +25,10 @@
     "eval": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts",
     "eval:ci": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts --provider=mock --suite=all",
     "docs:notifications": "node scripts/generate-notification-matrix.mjs",
-    "docs:reviews": "node scripts/generate-review-matrix.mjs"
+    "docs:reviews": "node scripts/generate-review-matrix.mjs",
+    "verify:gap-catalogue": "tsx -r dotenv/config scripts/verify-gap-catalogue.ts",
+    "align:gap-catalogue": "tsx -r dotenv/config scripts/align-gap-catalogue.ts",
+    "verify:reference-data": "tsx -r dotenv/config scripts/verify-reference-data.ts"
   },
   "prisma": {
     "seed": "ts-node -P prisma/tsconfig.seed.json prisma/seed.ts"

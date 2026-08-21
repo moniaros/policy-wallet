@@ -44,6 +44,25 @@ jobs:
         run: npm run type-check
         continue-on-error: false
 
+      # Reference data must not drift from the repo. The repo-side half of this
+      # (the authored catalogue is all rule-bearing, all active, no AI-minted
+      # entries) is a unit test and always runs. THIS step is the other half:
+      # it asks a real database whether its ACTIVE gap rules are the ones the
+      # repo authored. It needs a database, and CI holds no database secret
+      # today, so it is skipped until DEV_DATABASE_URL exists — at which point
+      # it starts failing on drift with no further change here.
+      #
+      # Drift in this table changes what the product detects, with no diff and
+      # no review. It has now happened three times: migrations, plan rows, and
+      # gap definitions.
+      - name: Verify gap catalogue matches the database
+        if: ${{ secrets.DEV_DATABASE_URL != '' }}
+        run: npm run verify:gap-catalogue
+        env:
+          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DEV_DIRECT_URL || secrets.DEV_DATABASE_URL }}
+        continue-on-error: false
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
