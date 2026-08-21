@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { NEEDS_STEPS, NEEDS_QUESTIONS } from '@/lib/needs/questions'
+import { DEFAULT_PLAN_FACTS } from '@/lib/pricing/plan-defaults'
 
 /**
  * Content contracts for the public marketing surface and the auth tree.
@@ -39,8 +40,10 @@ describe('the needs wizard is described by a true number', () => {
 })
 
 describe('plan-gated capabilities name their plan', () => {
-    // agentCollaboration is false on free AND Starter, true only on pro —
-    // displayed as PolicyWallet Plus. /pricing's comparison row reads
+    // agentCollaboration is false on free AND plus, true only on pro —
+    // displayed as "Family" since pricing v2 (it was "PolicyWallet Plus").
+    // The plan NAME is read from the catalog rather than typed here, so the
+    // next rename fails the copy, not the test. /pricing's comparison row reads
     // Όχι / Όχι / Ναι. /product's bullet list was the one place the claim
     // appeared unqualified, in a list where the other three bullets all
     // carried their plan.
@@ -48,7 +51,9 @@ describe('plan-gated capabilities name their plan', () => {
         const src = readFileSync('app/(public)/product/ProductSections.tsx', 'utf-8')
         const bullet = src.match(/t\("Δείχνετε στον ασφαλιστή σας[^)]*\)/)?.[0] ?? ''
         expect(bullet, 'the agent-sharing bullet should exist').not.toBe('')
-        expect(bullet, 'it must name PolicyWallet Plus').toMatch(/PolicyWallet Plus/)
+        const familyName = DEFAULT_PLAN_FACTS.find((p) => p.tierKey === 'pro')!.displayName
+        expect(bullet, `it must name the plan that actually unlocks it (${familyName})`)
+            .toContain(familyName)
     })
 })
 

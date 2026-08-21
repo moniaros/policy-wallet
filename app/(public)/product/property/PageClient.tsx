@@ -80,7 +80,7 @@ export default function PropertyProductPage({ locale }: { locale: "el" | "en" })
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Έλεγχος κόστους ανακατασκευής", "Rebuild cost check")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Με το PolicyWallet Plus, δείτε αν το ποσό ασφάλισης φτάνει ακόμη για να ξαναχτιστεί το σπίτι σας — πριν πληρώσει λιγότερα η ασφαλιστική.", "With PolicyWallet Plus, see whether the sum insured is still enough to rebuild your home — before the insurer pays out less.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Με το Family, δείτε αν το ποσό ασφάλισης φτάνει ακόμη για να ξαναχτιστεί το σπίτι σας — πριν πληρώσει λιγότερα η ασφαλιστική.", "With Family, see whether the sum insured is still enough to rebuild your home — before the insurer pays out less.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">

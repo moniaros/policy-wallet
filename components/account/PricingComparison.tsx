@@ -104,7 +104,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 : undefined,
             icon: Star,
             // The highlighted tier must be the one that actually carries the
-            // "Popular"/"Best value" badge — PolicyWallet Plus (code `pro`), the
+            // "Popular"/"Best value" badge — Family (code `pro`), the
             // flagship AI tier every other surface recommends. This flag used to
             // sit on Starter, which has no badge, so the emphasis ribbon rendered
             // the generic word "Upgrade" and the cheaper organizer tier was pushed

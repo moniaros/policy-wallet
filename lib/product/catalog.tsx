@@ -49,8 +49,8 @@ export const productCategories = [
         // compares it with what the car is worth.
         headlineEl: "Τι θα πλήρωνε το συμβόλαιο — και κενά οδικής βοήθειας.",
         headlineEn: "What the policy would pay — and roadside assistance gaps.",
-        descEl: "Δείτε την αποζημίωση που προβλέπει το συμβόλαιό σας και — με το PolicyWallet Plus — τι λείπει από την οδική βοήθεια.",
-        descEn: "See the payout your policy provides and — with PolicyWallet Plus — what is missing from your roadside assistance.",
+        descEl: "Δείτε την αποζημίωση που προβλέπει το συμβόλαιό σας και — με το Family — τι λείπει από την οδική βοήθεια.",
+        descEn: "See the payout your policy provides and — with Family — what is missing from your roadside assistance.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
@@ -67,8 +67,8 @@ export const productCategories = [
         headlineEn: "Rebuild cost and the ENFIA tax discount, at a glance.",
         // Underinsurance detection is a Plus output — the glossary hooks for
         // «υπασφάλιση» and «ασφαλισμένο κεφάλαιο» name the plan, so this does too.
-        descEl: "Με το PolicyWallet Plus, δείτε αν το σπίτι σας είναι ασφαλισμένο για λιγότερα απ' όσο κοστίζει να ξαναχτιστεί.",
-        descEn: "With PolicyWallet Plus, see whether your home is insured for less than it would cost to rebuild.",
+        descEl: "Με το Family, δείτε αν το σπίτι σας είναι ασφαλισμένο για λιγότερα απ' όσο κοστίζει να ξαναχτιστεί.",
+        descEn: "With Family, see whether your home is insured for less than it would cost to rebuild.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
@@ -118,8 +118,8 @@ export const productCategories = [
         headlineEl: "Ζημιές σε τρίτους — και έλεγχος για διπλή κάλυψη.",
         headlineEn: "Third-party damage — with a double-coverage check.",
         // The double-coverage check is Plus-only — the teaser names the plan.
-        descEl: "Η αστική ευθύνη συχνά υπάρχει ήδη μέσα στο συμβόλαιο κατοικίας σας. Με το PolicyWallet Plus, δείτε αν την πληρώνετε δύο φορές.",
-        descEn: "Liability cover often already sits inside your home policy. With PolicyWallet Plus, see if you are paying for it twice.",
+        descEl: "Η αστική ευθύνη συχνά υπάρχει ήδη μέσα στο συμβόλαιο κατοικίας σας. Με το Family, δείτε αν την πληρώνετε δύο φορές.",
+        descEn: "Liability cover often already sits inside your home policy. With Family, see if you are paying for it twice.",
         surface: "bg-[#DCEBDA]",
         border: "border-[#A7F3D0]",
         tagBg: "bg-[#F0FDF4] text-[#166534]",
@@ -150,8 +150,8 @@ export const productCategories = [
         tagEn: "Corporate",
         headlineEl: "Συντονισμός εταιρικών παροχών με ατομική κάλυψη.",
         headlineEn: "Coordinate corporate benefits with personal coverage.",
-        descEl: "Με το PolicyWallet Plus, σταματάτε να πληρώνετε δύο φορές για το ίδιο πράγμα. Χαρτογραφήστε τα κενά ανάμεσα σε εταιρικό και ατομικό.",
-        descEn: "With PolicyWallet Plus, you stop double-paying for overlapping benefits. Map the blind spots between your employer plan and personal policy.",
+        descEl: "Με το Family, σταματάτε να πληρώνετε δύο φορές για το ίδιο πράγμα. Χαρτογραφήστε τα κενά ανάμεσα σε εταιρικό και ατομικό.",
+        descEn: "With Family, you stop double-paying for overlapping benefits. Map the blind spots between your employer plan and personal policy.",
         surface: "bg-white",
         border: "border-[#E2E8F0]",
         tagBg: "bg-[#F1F5F9] text-[#475569]",

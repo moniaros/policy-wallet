@@ -59,7 +59,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B] dark:text-[#A7F3D0]" /></div>
                                 <div>
                                     <h3 className="text-lead font-semibold text-[#0F172A] dark:text-white">{t("Κενά οδικής βοήθειας", "Roadside assistance gaps")}</h3>
-                                    <p className="text-[#475569] dark:text-slate-300">{t("Στο πλάνο PolicyWallet Plus, βρίσκουμε παροχές που λείπουν ή πληρώνονται δύο φορές — πριν μείνετε στον δρόμο.", "On the PolicyWallet Plus plan, we find benefits that are missing or paid for twice — before you are left stranded.")}</p>
+                                    <p className="text-[#475569] dark:text-slate-300">{t("Στο πλάνο Family, βρίσκουμε παροχές που λείπουν ή πληρώνονται δύο φορές — πριν μείνετε στον δρόμο.", "On the Family plan, we find benefits that are missing or paid for twice — before you are left stranded.")}</p>
                                 </div>
                             </li>
                         </ul>
@@ -122,7 +122,7 @@ export default function MotorProductPage({ locale }: { locale: "el" | "en" }) {
                             </div>
                             <h3 className="text-title font-semibold text-[#0F172A] dark:text-white mb-3">{t("Οδική βοήθεια", "Roadside assistance")}</h3>
                             <p className="text-body leading-relaxed text-[#475569] dark:text-slate-300">
-                                {t("Αυτόνομο συμβόλαιο ή παροχή μέσα στο ασφαλιστήριο; Με το PolicyWallet Plus, δείτε αν πληρώνετε δύο φορές για επιτόπου επισκευή και μεταφορά σε συνεργείο — ή αν δεν την έχετε καθόλου.", "Standalone contract or a benefit inside your motor policy? With PolicyWallet Plus, see if you're paying twice for on-the-spot repair and towing — or don't have it at all.")}
+                                {t("Αυτόνομο συμβόλαιο ή παροχή μέσα στο ασφαλιστήριο; Με το Family, δείτε αν πληρώνετε δύο φορές για επιτόπου επισκευή και μεταφορά σε συνεργείο — ή αν δεν την έχετε καθόλου.", "Standalone contract or a benefit inside your motor policy? With Family, see if you're paying twice for on-the-spot repair and towing — or don't have it at all.")}
                             </p>
                         </div>
                     </div>

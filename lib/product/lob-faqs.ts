@@ -130,8 +130,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με την αστική ευθύνη;", en: "How does PolicyWallet help with liability cover?" },
             a: {
-                el: "Διαβάζουμε κάθε κάλυψη ξεχωριστά και σας δείχνουμε πού εμφανίζεται η αστική ευθύνη — και, στο πλάνο PolicyWallet Plus, αν την πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "We read every cover separately and show you where liability appears — and, on the PolicyWallet Plus plan, whether you are paying for it twice. We do not sell insurance and take no commission.",
+                el: "Διαβάζουμε κάθε κάλυψη ξεχωριστά και σας δείχνουμε πού εμφανίζεται η αστική ευθύνη — και, στο πλάνο Family, αν την πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
+                en: "We read every cover separately and show you where liability appears — and, on the Family plan, whether you are paying for it twice. We do not sell insurance and take no commission.",
             },
         },
     ],
@@ -176,8 +176,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με το ομαδικό υγείας;", en: "How does PolicyWallet help with group health?" },
             a: {
-                el: "Βάζουμε το ομαδικό και το ατομικό σας δίπλα-δίπλα, ώστε να δείτε τι σας δίνει το καθένα — και, στο πλάνο PolicyWallet Plus, τι πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "We put your group and personal policies side by side, so you can see what each one gives you — and, on the PolicyWallet Plus plan, what you are paying for twice. We do not sell insurance and take no commission.",
+                el: "Βάζουμε το ομαδικό και το ατομικό σας δίπλα-δίπλα, ώστε να δείτε τι σας δίνει το καθένα — και, στο πλάνο Family, τι πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
+                en: "We put your group and personal policies side by side, so you can see what each one gives you — and, on the Family plan, what you are paying for twice. We do not sell insurance and take no commission.",
             },
         },
     ],

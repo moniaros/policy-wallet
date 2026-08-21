@@ -334,7 +334,7 @@ export const CTA_REASSURANCE: Bilingual = {
  * Primary call to action, worded as the outcome the visitor gets.
  *
  * It has to survive the free tier. "See what is NOT covered" reads stronger,
- * but COMPARISON_ROWS already rules that job a PolicyWallet Plus one, so a CTA
+ * but COMPARISON_ROWS already rules that job a Family one, so a CTA
  * that opens a free signup must not promise it. Reading back what a policy
  * actually says is baseline behaviour — Free stores one policy and gets its
  * basic parsed summary — and it is the question every policyholder has.
@@ -388,7 +388,7 @@ export const SPEED_CLAIM: Bilingual = {
  * it. No competitor is named — the honest comparison is against the three
  * things Greek households actually do today.
  */
-// "plus" = yes, on the PolicyWallet Plus plan. Plus-only capabilities (gap &
+// "plus" = yes, on the Family plan. Plus-only capabilities (gap &
 // duplicate detection per the pricing matrix) must not read as an unqualified
 // "yes" to a Free reader — the cell itself carries the plan attribution.
 export type ComparisonVerdict = "yes" | "plus" | "partial" | "no"
@@ -442,7 +442,7 @@ export const COMPARISON_ROWS: readonly {
         policywallet: "yes",
     },
     {
-        // Gap & duplicate detection is a PolicyWallet Plus feature — these two
+        // Gap & duplicate detection is a Family feature — these two
         // rows use the "plus" verdict so the cell never over-promises to a
         // Free reader (same honesty rule as the renewal row below).
         job: { el: "Σας δείχνει τι ΔΕΝ καλύπτεται", en: "Shows you what is NOT covered" },

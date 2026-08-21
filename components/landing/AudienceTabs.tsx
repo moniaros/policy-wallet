@@ -151,10 +151,10 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
             en: "A reminder before something runs out, so you are never left uncovered — from the Starter plan",
         },
         {
-            // Gap detection is a PolicyWallet Plus feature — the benefit names
+            // Gap detection is a Family feature — the benefit names
             // the plan, same honesty rule as the Starter bullet above.
-            el: "Βρίσκουμε κενά που ίσως δεν είδε ούτε ο σύμβουλός σας — με το PolicyWallet Plus",
-            en: "We find gaps even your own advisor may have missed — with PolicyWallet Plus",
+            el: "Βρίσκουμε κενά που ίσως δεν είδε ούτε ο σύμβουλός σας — με το Family",
+            en: "We find gaps even your own advisor may have missed — with Family",
         },
     ]
 
@@ -202,7 +202,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     button sits on the SAME page as the hero and the closing
                     CTA, and it used to hard-code the label those two have since
                     moved off — so the homepage showed two different primary
-                    promises, the older of which claimed a PolicyWallet Plus
+                    promises, the older of which claimed a Family
                     outcome on a free signup. */}
                 <Link
                     href={authHref("/auth/signup?role=policyholder&source=landing_audience", isGreek ? "el" : "en")}
@@ -288,14 +288,14 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                 told this was an example and everyone else was not — on the one
                 product illustration a phone visitor ever sees. It names the
                 plan for the same reason PolicyWalletWidget's does: finding the
-                gap is a PolicyWallet Plus job, and this renders near "free",
+                gap is a Family job, and this renders near "free",
                 so an unattributed mock reads as a free-tier promise. It sits
                 OUTSIDE the role="img" wrapper so assistive tech hears it as a
                 caption instead of having it swallowed by the image label. */}
             <p className="mt-3 text-center text-micro text-[#5B6A7A] dark:text-slate-400">
                 {t(
-                    "Παράδειγμα αποτελέσματος με το PolicyWallet Plus.",
-                    "Example result with PolicyWallet Plus.",
+                    "Παράδειγμα αποτελέσματος με το Family.",
+                    "Example result with Family.",
                 )}
             </p>
             </div>

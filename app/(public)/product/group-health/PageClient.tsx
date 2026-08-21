@@ -24,7 +24,7 @@ export default function GroupHealthProductPage({ locale }: { locale: "el" | "en"
                         {t("Ομαδικό και ατομικό: μία εικόνα, χωρίς διπλοπληρωμές.", "Group and personal cover: one picture, no double-paying.")}
                     </h1>
                     <p className="mx-auto max-w-reading text-title leading-[1.5] text-[#475569] dark:text-slate-300 mb-10">
-                        {t("Δείτε τι σας δίνει το ομαδικό της δουλειάς σας, τι προσθέτει το ατομικό σας, και — με το PolicyWallet Plus — τι πληρώνετε δύο φορές χωρίς να το ξέρετε.", "See what your workplace group plan gives you, what your personal policy adds, and — with PolicyWallet Plus — what you are paying for twice without knowing.")}
+                        {t("Δείτε τι σας δίνει το ομαδικό της δουλειάς σας, τι προσθέτει το ατομικό σας, και — με το Family — τι πληρώνετε δύο φορές χωρίς να το ξέρετε.", "See what your workplace group plan gives you, what your personal policy adds, and — with Family — what you are paying for twice without knowing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href={authHref("/auth/signup", locale)} className="pw-primary-button pw-btn-lg w-full sm:w-auto">

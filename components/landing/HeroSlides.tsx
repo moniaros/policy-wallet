@@ -97,8 +97,8 @@ const SLIDES: Slide[] = [
         // hero and then paywalled is the one thing a first visit cannot afford.
         lead: (locale) =>
             locale === "el"
-                ? "Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και ασφαλιστικά κενά που δεν ξέρατε ότι έχετε ή δεν είχατε όταν κάνατε το συμβόλαιο σας— με το PolicyWallet Plus."
-                : "Spot cover you are paying for twice, and gaps you did not know you had — with PolicyWallet Plus.",
+                ? "Εντοπίστε διπλές καλύψεις που πληρώνετε δύο φορές και ασφαλιστικά κενά που δεν ξέρατε ότι έχετε ή δεν είχατε όταν κάνατε το ασφαλιστήριό σας — με το Family."
+                : "Spot cover you are paying for twice, and gaps you did not know you had — with Family.",
     },
     {
         id: "hidden-benefits",
