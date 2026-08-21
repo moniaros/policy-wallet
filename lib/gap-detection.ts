@@ -67,6 +67,16 @@ export interface RuleDecidedGap {
 export const GAP_ENGINE_VERSION = "rules-1"
 
 /**
+ * Below this, a sum insured and its stated reference are treated as agreeing.
+ *
+ * 20% is wide on purpose. A sum insured is a negotiated, rounded figure and a
+ * declared market value is an estimate; flagging a 5% difference would produce
+ * a finding on almost every motor policy in the book and teach people to
+ * ignore the whole class. A definition may override it per rule.
+ */
+export const DEFAULT_DRIFT_THRESHOLD_PCT = 20
+
+/**
  * Does this definition carry logic a rule engine can actually evaluate?
  *
  * Two shapes in the catalogue are NOT rules and must never produce a gap:
@@ -148,6 +158,30 @@ function ruleInputsFor(
               : []
         for (const field of fields) {
             inputs[field] = getNestedField(acordData, field) ?? null
+        }
+
+        // A drift rule's finding QUOTES a percentage. Recording only the two
+        // inputs would leave the reader of a gap_instances row unable to check
+        // the number the customer was shown, so the computed value is stored
+        // beside the operands that produced it.
+        if (rule.operator === 'value_drift' && typeof rule.referenceField === 'string') {
+            const actual = getNestedField(acordData, rule.field)
+            const reference = getNestedField(acordData, rule.referenceField)
+            inputs[rule.referenceField] = reference ?? null
+            if (
+                typeof actual === 'number' &&
+                typeof reference === 'number' &&
+                Number.isFinite(actual) &&
+                Number.isFinite(reference) &&
+                reference > 0
+            ) {
+                const drift = (actual - reference) / reference
+                inputs.driftPct = Math.round(drift * 1000) / 10
+                inputs.thresholdPct = Math.abs(
+                    Number(rule.thresholdPct ?? DEFAULT_DRIFT_THRESHOLD_PCT)
+                )
+                inputs.direction = rule.direction ?? 'either'
+            }
         }
     }
 
@@ -306,7 +340,12 @@ function isAbsent(actual: unknown): boolean {
     return Array.isArray(actual) && actual.length === 0
 }
 
-function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
+/**
+ * Exported so an operator can be tested as the pure function it is — the rest
+ * of the engine needs a Policy row and a GapDefinition, which turns a check on
+ * arithmetic into a database fixture.
+ */
+export function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
     const { field, operator, value } = rule
     const actual = getNestedField(acordData, field)
 
@@ -352,6 +391,43 @@ function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
         }
         case 'less_than':
             return typeof actual === 'number' && actual < (value as number)
+        // ── Insured-value adequacy ──────────────────────────────────────
+        //
+        // Fires when a sum insured has drifted from a reference value the
+        // DOCUMENT ITSELF states, by more than `thresholdPct`, in `direction`.
+        //
+        // Both numbers come off the policy schedule. That is the whole design:
+        // no market table, no depreciation curve, no model estimate. A check
+        // that tells someone their car is worth €Y had better be able to say
+        // where €Y came from, and "the value your own policy declares" is the
+        // only answer available that cannot be argued with. An age-based
+        // depreciation arm needs Greek market reference data this codebase
+        // does not have — see docs/planning/INSURED_VALUE_ADEQUACY.md.
+        //
+        // Unknown is not drift: if either figure is missing or non-positive
+        // there is no finding, consistent with `is_false` above.
+        case 'value_drift': {
+            const reference = getNestedField(acordData, rule.referenceField)
+            if (typeof actual !== 'number' || typeof reference !== 'number') return false
+            if (!Number.isFinite(actual) || !Number.isFinite(reference)) return false
+            if (actual <= 0 || reference <= 0) return false
+
+            const drift = (actual - reference) / reference
+            const threshold = Math.abs(Number(rule.thresholdPct ?? DEFAULT_DRIFT_THRESHOLD_PCT)) / 100
+            if (!Number.isFinite(threshold) || threshold <= 0) return false
+
+            switch (rule.direction) {
+                // Over-insurance: paying for cover above the stated value.
+                case 'above':
+                    return drift > threshold
+                // Under-insurance: the proportional-payout term (όρος αναλογίας)
+                // bites here, so this is the direction with teeth.
+                case 'below':
+                    return drift < -threshold
+                default:
+                    return Math.abs(drift) > threshold
+            }
+        }
         case 'all_false': {
             // Used for "you need ALL of these to qualify" (the ENFIA discount
             // needs fire AND earthquake AND flood). The gap is that at least one

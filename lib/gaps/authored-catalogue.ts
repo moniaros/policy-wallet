@@ -154,6 +154,72 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
     // one by one, and each is worded "not recorded", never "not covered".
     // ─────────────────────────────────────────────────────────────────
 
+    // ── Insured-value adequacy ───────────────────────────────────────
+    //
+    // A sum insured drifts from the asset it covers, and the two directions
+    // hurt differently. Over-insurance quietly wastes premium — you cannot be
+    // paid more than the loss. Under-insurance triggers the proportional
+    // payout term (όρος αναλογίας): the insurer settles in the same ratio the
+    // sum insured bears to the true value, so a home covered for half its
+    // rebuild cost is paid half of a partial loss too.
+    //
+    // The reference value comes off the DOCUMENT — a declared market value, a
+    // stated rebuild cost. There is deliberately no depreciation curve and no
+    // market lookup here: a finding that quotes a euro figure has to be able
+    // to say where the figure came from, and "your own policy says so" is the
+    // only source that cannot be argued with. An age-based arm would need
+    // Greek reference data this repository does not have; the operator
+    // supports it the moment that data exists and is validated.
+    //
+    // WORDING: both are a prompt to review, never advice to act. PolicyWallet
+    // is not an intermediary and does not recommend reducing cover, changing
+    // insurer, or promise a saving. `tests/unit/insured-value-drift.test.ts`
+    // scans the repo for the phrasings that would cross that line.
+    {
+        slug: 'insured_value_above_declared',
+        name: 'Insured Value vs Declared Value',
+        title: 'Το ασφαλισμένο ποσό είναι πολύ πάνω από τη δηλωμένη αξία',
+        description: 'Η ασφαλισμένη αξία απέχει σημαντικά από την αξία που δηλώνει το ίδιο το ασφαλιστήριο για το όχημα. Δεν αποζημιώνεστε ποτέ πάνω από την πραγματική αξία, οπότε αξίζει να το συζητήσετε στην επόμενη ανανέωση.',
+        lineOfBusiness: 'motor',
+        severity: 'low',
+        defaultSeverity: 'low',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{
+                type: 'acord_field_check',
+                field: 'policy.sumInsured',
+                referenceField: 'vehicle.estimatedMarketValue',
+                operator: 'value_drift',
+                direction: 'above',
+                thresholdPct: 20,
+            }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+    {
+        slug: 'insured_value_below_rebuild_cost',
+        name: 'Insured Value vs Rebuild Cost',
+        title: 'Το ασφαλισμένο ποσό είναι κάτω από το κόστος ανακατασκευής',
+        description: 'Η ασφαλισμένη αξία απέχει σημαντικά από το κόστος ανακατασκευής που αναφέρει το ίδιο το ασφαλιστήριο. Σε τέτοια περίπτωση μπορεί να ενεργοποιηθεί ο όρος αναλογίας, που μειώνει την αποζημίωση ακόμη και σε μερική ζημιά. Αξίζει να το συζητήσετε στην επόμενη ανανέωση.',
+        lineOfBusiness: 'home',
+        severity: 'high',
+        defaultSeverity: 'high',
+        ruleId: 'acord_deterministic',
+        detectionLogic: {
+            rules: [{
+                type: 'acord_field_check',
+                field: 'property.insuredValue',
+                referenceField: 'property.estimatedRebuildCost',
+                operator: 'value_drift',
+                direction: 'below',
+                thresholdPct: 20,
+            }],
+            operator: 'AND'
+        },
+        isActive: true
+    },
+
     // ── Motor ────────────────────────────────────────────────────────
     {
         slug: 'no_own_damage_cover',

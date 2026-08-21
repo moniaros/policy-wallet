@@ -112,6 +112,58 @@ const TRACE: Record<string, Case[]> = {
     ],
 
     // ── Motor ────────────────────────────────────────────────────────────
+    // ── Insured-value adequacy ───────────────────────────────────────────
+    //
+    // A drift rule needs a third silent case the boolean helpers do not cover:
+    // one figure present and the other absent. That is the ordinary state of an
+    // extraction, and it must produce nothing — a sum insured with no reference
+    // to compare against is not evidence of anything.
+    insured_value_above_declared: [
+        {
+            name: "a car declared at €6,000 but still insured for €15,000",
+            acord: { policy: { sumInsured: 15000 }, vehicle: { estimatedMarketValue: 6000 } },
+            fires: true,
+        },
+        {
+            name: "a rounded sum insured 10% over the declared value",
+            acord: { policy: { sumInsured: 11000 }, vehicle: { estimatedMarketValue: 10000 } },
+            fires: false,
+        },
+        {
+            name: "under-insured — the other direction, which this rule ignores",
+            acord: { policy: { sumInsured: 5000 }, vehicle: { estimatedMarketValue: 10000 } },
+            fires: false,
+        },
+        {
+            name: "no declared market value was extracted",
+            acord: { policy: { sumInsured: 15000 }, vehicle: {} },
+            fires: false,
+        },
+        { name: "neither figure was extracted", acord: {}, fires: false },
+    ],
+    insured_value_below_rebuild_cost: [
+        {
+            name: "a home insured for €90,000 against a stated €200,000 rebuild cost",
+            acord: { property: { insuredValue: 90000, estimatedRebuildCost: 200000 } },
+            fires: true,
+        },
+        {
+            name: "insured 10% under the stated rebuild cost",
+            acord: { property: { insuredValue: 180000, estimatedRebuildCost: 200000 } },
+            fires: false,
+        },
+        {
+            name: "over-insured — not this rule's direction",
+            acord: { property: { insuredValue: 300000, estimatedRebuildCost: 200000 } },
+            fires: false,
+        },
+        {
+            name: "no rebuild cost was extracted",
+            acord: { property: { insuredValue: 90000 } },
+            fires: false,
+        },
+    ],
+
     no_own_damage_cover: booleanCoverCases("vehicle.ownVehicleDamage", "own damage"),
     no_glass_breakage_cover: booleanCoverCases("vehicle.glassBreakage", "glass breakage"),
     no_roadside_assistance: booleanCoverCases("vehicle.hasRoadsideAssistance", "roadside assistance"),

@@ -151,8 +151,15 @@ function formatGapDefinitions(gapDefinitions: GapDefinitionForAI[]): string {
     return gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")
 }
 
+// No `isDetected` instruction here, deliberately. Detection is decided by
+// `decideGapsForPolicy` from the definition's rule, and the response schema has
+// no such field — so the line that used to ask the model to "base isDetected on
+// the information provided" was instructing it to fill in something that is
+// discarded. Prompt text that survives the contract it described is how a
+// deleted capability comes back: the next reader assumes the model still
+// decides, because the prompt still says so.
 const GAP_RESULT_RULES = `For EVERY gap listed above, return exactly one gapResults entry with the same slug.
-Base isDetected only on the information provided. If the information is insufficient to decide, set isDetected to false and state what is missing in the explanation.
+Describe the cover in the customer's own document. Do not decide whether the gap exists — that decision is made from the policy data, not from your reading, and is supplied to you.
 Respond in Greek (Ελληνικά) only. explanation and suggestion must be plain Greek strings.`
 
 /**
