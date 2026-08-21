@@ -912,6 +912,11 @@ export const en: TranslationKeys = {
                     detail: 'It exceeds the maximum upload size.',
                     action: 'Compress the PDF, or upload only the schedule pages.',
                 },
+                FILE_PASSWORD_PROTECTED: {
+                    title: 'This PDF is password-protected.',
+                    detail: 'We cannot open it while it is locked, so it was not uploaded.',
+                    action: 'Open it with your password, save an unlocked copy, and upload that one.',
+                },
                 UNSUPPORTED_FORMAT: {
                     title: 'Unsupported file type.',
                     detail: 'We accept PDF files and images (JPG, PNG, WEBP, HEIC).',

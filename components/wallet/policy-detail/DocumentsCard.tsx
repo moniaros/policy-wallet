@@ -10,8 +10,18 @@ import { isAcceptedImageFile, isBrowserRenderableImage, isPdfFile } from "@/lib/
 
 interface PolicyDocumentItem {
     id: string
-    /** The ORIGINAL filename. Never a storage key — those never reach the client. */
+    /**
+     * A GENERATED label — «Ασφαλιστήριο Αυτοκίνητο · 64504715» — never the name
+     * the customer's file had, and never a storage key. See
+     * lib/wallet/document-label.ts for why none of the original is kept.
+     */
     fileName: string
+    /**
+     * Verified at upload time from the file's CONTENT. This, not the label, is
+     * what decides whether a document can be previewed: the label has no
+     * extension to sniff, and content beats a claimed name anyway.
+     */
+    mimeType?: string | null
     /** ISO string. Already loaded and ordered desc by the page — see below. */
     uploadedAt?: string
     /** From the AI classifier, when it ran. Null on documents that predate it. */
@@ -52,7 +62,11 @@ interface DocumentsCardProps {
  */
 export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = "el" }: DocumentsCardProps) {
     const pathname = usePathname()
-    const [previewDoc, setPreviewDoc] = useState<{ fileName: string; fileUrl: string } | null>(null)
+    const [previewDoc, setPreviewDoc] = useState<{
+        fileName: string
+        fileUrl: string
+        mimeType?: string | null
+    } | null>(null)
     const [upgradeOpen, setUpgradeOpen] = useState(false)
 
     // Authorized retrieval: the raw storage URL is never rendered. This
@@ -76,13 +90,17 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                         // omitted heic (which it accepts, and which iPhones produce
                         // by default), so a phone photo of a policy showed as "other
                         // file" and lost its inline preview.
-                        const isPdf = isPdfFile(doc.fileName)
-                        const isImage = isAcceptedImageFile(doc.fileName)
+                        const isPdf = doc.mimeType === "application/pdf"
+                        const isImage = !!doc.mimeType?.startsWith("image/")
                         // The LABEL calls HEIC an image (it is one); previewability
                         // is narrower — HEIC cannot render in a browser <img>, so it
                         // gets no inline preview button (the modal would show a
                         // broken image). It stays downloadable via the row link.
-                        const canPreview = isPdf || isBrowserRenderableImage(doc.fileName)
+                        const canPreview =
+                            isPdf ||
+                            doc.mimeType === "image/jpeg" ||
+                            doc.mimeType === "image/png" ||
+                            doc.mimeType === "image/webp"
                         const isPreviewLocked = isPdf && isFreeTier
 
                         return (
@@ -134,7 +152,13 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy, locale = 
                                     sits at the row's trailing edge, beside the link. */}
                                 {canPreview && (
                                     <DocumentPreviewButton
-                                        onClick={() => setPreviewDoc({ fileName: doc.fileName, fileUrl: docHref(doc.id) })}
+                                        onClick={() =>
+                                            setPreviewDoc({
+                                                fileName: doc.fileName,
+                                                fileUrl: docHref(doc.id),
+                                                mimeType: doc.mimeType,
+                                            })
+                                        }
                                         isLocked={isPreviewLocked}
                                         label={copy.preview}
                                         lockedLabel={copy.upgradeToPlusPreview}

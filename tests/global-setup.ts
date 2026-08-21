@@ -172,6 +172,9 @@ async function provisionFixturePolicy(db: any, ownerUserId: string) {
                 policyId: policy.id,
                 fileUrl: '/e2e-fixtures/e2e-document.pdf',
                 fileName: E2E_DOCUMENT_LABEL,
+                // Previewability is decided by verified content type, not by a
+                // name — the stored label has no extension to sniff.
+                mimeType: 'application/pdf',
                 fileSize: 24576,
                 source: 'policyholder',
                 processingStatus: 'completed',

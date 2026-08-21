@@ -25,12 +25,19 @@
  * ## What is deliberately NOT here
  *
  * Codes for failures this pipeline cannot actually produce. A generic taxonomy
- * would list PDF_PASSWORD_PROTECTED and OCR_FAILED; nothing in this stack opens
- * a PDF itself or runs an OCR pass — the document goes to a multimodal model
- * whole, so an encrypted or unreadable file comes back as an extraction failure
- * with no evidence, which is `DOCUMENT_NOT_RECOGNIZED`. Inventing finer codes
- * than the pipeline can distinguish would put words in the product's mouth,
- * which is the exact failure being fixed.
+ * would list OCR_FAILED; nothing in this stack runs an OCR pass, so an
+ * unreadable file comes back as an extraction failure with no evidence, which
+ * is `DOCUMENT_NOT_RECOGNIZED`. Inventing finer codes than the pipeline can
+ * distinguish would put words in the product's mouth, which is the exact
+ * failure being fixed.
+ *
+ * `FILE_PASSWORD_PROTECTED` was on that list until 2026-08-21, for the same
+ * reason: nothing opened the PDF, so an encrypted one was indistinguishable
+ * from any other failed extraction. That premise changed. `validateUploadFile`
+ * now reads the PDF trailer and rejects an `/Encrypt` declaration BEFORE the
+ * upload, so the distinction is evidence rather than a guess — and the
+ * customer gets a fixable instruction in seconds instead of a mysterious
+ * failure twenty minutes later.
  */
 
 /** The stage that rejected the document. Ordered as the pipeline runs. */
@@ -85,6 +92,9 @@ export const BATCH_FAILURE_SPECS = {
     FILE_EMPTY: { stage: 'validation', retryable: false, autoRetry: false, severity: 'warning' },
     FILE_TOO_LARGE: { stage: 'validation', retryable: false, autoRetry: false, severity: 'warning' },
     UNSUPPORTED_FORMAT: { stage: 'validation', retryable: false, autoRetry: false, severity: 'warning' },
+    // Not retryable and not a defect: the customer must supply a different
+    // file. `warning` rather than `error` because nothing went wrong.
+    FILE_PASSWORD_PROTECTED: { stage: 'validation', retryable: false, autoRetry: false, severity: 'warning' },
     /** Magic bytes disagree with the extension: renamed, truncated or corrupt. */
     FILE_UNREADABLE: { stage: 'validation', retryable: false, autoRetry: false, severity: 'warning' },
     FILE_REJECTED_SECURITY: { stage: 'validation', retryable: false, autoRetry: false, severity: 'error' },
@@ -213,6 +223,7 @@ export const UPLOAD_REJECTION_TO_CODE: Record<string, BatchFailureCode> = {
     mime_mismatch: 'UNSUPPORTED_FORMAT',
     content_mismatch: 'FILE_UNREADABLE',
     infected: 'FILE_REJECTED_SECURITY',
+    encrypted: 'FILE_PASSWORD_PROTECTED',
 }
 
 function readCode(payload: unknown): string | null {

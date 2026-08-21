@@ -325,6 +325,13 @@ export class PolicyService extends BaseService {
         // localized-error front door; uploadFile re-validates centrally.
         const validation = await validateUploadFile(file, { category: 'policy' })
         if (!validation.ok) {
+            if (validation.reason === 'encrypted') {
+                throw AppError.validation({
+                    file: [language === 'el'
+                        ? 'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
+                        : 'This PDF is password-protected. Save an unlocked copy and upload that.']
+                })
+            }
             if (validation.reason === 'too_large') {
                 throw AppError.validation({
                     file: [language === 'el'
@@ -436,6 +443,13 @@ export class PolicyService extends BaseService {
     ): Promise<{ documentId: string; policyId: string }> {
         const validation = await validateUploadFile(file, { category: 'policy' })
         if (!validation.ok) {
+            if (validation.reason === 'encrypted') {
+                throw AppError.validation({
+                    file: [language === 'el'
+                        ? 'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
+                        : 'This PDF is password-protected. Save an unlocked copy and upload that.']
+                })
+            }
             if (validation.reason === 'too_large') {
                 throw AppError.validation({
                     file: [language === 'el'

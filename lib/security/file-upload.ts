@@ -205,6 +205,13 @@ export type UploadRejectionReason =
     | "mime_mismatch"
     | "content_mismatch"
     | "infected"
+    /**
+     * A password-protected / encrypted PDF. We cannot read it and neither can
+     * the model, so accepting it buys the customer a long wait and then a
+     * failure with no explanation. Rejected at the door with a message that
+     * says what to do instead.
+     */
+    | "encrypted"
 
 export interface ValidatedUpload {
     /** Canonical, allowlisted extension (with dot) to use for the storage key. */
@@ -245,6 +252,10 @@ export const REJECTION_MESSAGES: Record<UploadRejectionReason, string> = {
     mime_mismatch: "Unsupported file type",
     content_mismatch: "File content does not match a supported format",
     infected: "File failed security screening",
+    // Actionable, not just a refusal: the customer can fix this in a few
+    // seconds if they are told how, and a failed analysis twenty minutes later
+    // teaches them nothing.
+    encrypted: "This PDF is password-protected. Save an unlocked copy and upload that.",
 }
 
 /** Per-policy attachment cap — bounds storage abuse a per-minute rate limit can't. */
@@ -364,15 +375,47 @@ interface UploadFileLike {
  * Validate a Web `File` (or File-like) by reading only its header — the full
  * bytes are never buffered here.
  */
+/**
+ * Bytes of the TAIL we read to spot an encrypted PDF.
+ *
+ * PDF encryption is declared by an `/Encrypt` entry in the trailer dictionary,
+ * which lives at the end of the file. Reading the last 8 KiB catches the
+ * ordinary case at a fixed, tiny cost — the whole file is never buffered, which
+ * is the property this module is built around.
+ */
+export const PDF_TRAILER_SCAN_BYTES = 8192
+
+/** True when a PDF declares encryption in its trailer. */
+export function declaresPdfEncryption(tail: Uint8Array): boolean {
+    // Latin-1 is right here: PDF syntax is ASCII, and decoding as UTF-8 could
+    // mangle bytes into a false negative.
+    const text = new TextDecoder("latin1").decode(tail)
+    return /\/Encrypt\b/.test(text)
+}
+
 export async function validateUploadFile(
     file: UploadFileLike,
     opts: { category: UploadCategory; maxBytes?: number }
 ): Promise<{ ok: true; value: ValidatedUpload } | { ok: false; reason: UploadRejectionReason }> {
     const headerBuf = await file.slice(0, MAGIC_HEADER_BYTES).arrayBuffer()
-    return sniffAndValidate(
+    const verdict = sniffAndValidate(
         { name: file.name, type: file.type, size: file.size, header: new Uint8Array(headerBuf) },
         opts
     )
+    if (!verdict.ok) return verdict
+
+    // Only PDFs can be encrypted in a way that defeats extraction, and only
+    // after the file has already passed signature validation — so this costs
+    // one bounded read on the happy path and nothing on the reject path.
+    if (verdict.value.canonicalMime === "application/pdf") {
+        const start = Math.max(0, file.size - PDF_TRAILER_SCAN_BYTES)
+        const tailBuf = await file.slice(start, file.size).arrayBuffer()
+        if (declaresPdfEncryption(new Uint8Array(tailBuf))) {
+            return { ok: false, reason: "encrypted" }
+        }
+    }
+
+    return verdict
 }
 
 /** Thrown by `uploadFile` when a file fails the shared validation gate. */

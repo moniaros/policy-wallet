@@ -22,8 +22,8 @@ const copy = {
 
 // No fileUrl: the storage locator is no longer sent to the browser at all.
 const docs = [
-    { id: 'b', fileName: 'ΑΣΦΑΛΙΣΤΗΡΙΟ (1).pdf', uploadedAt: '2026-07-04T00:00:00.000Z' },
-    { id: 'a', fileName: 'ΑΣΦΑΛΙΣΤΗΡΙΟ.pdf', uploadedAt: '2025-06-19T00:00:00.000Z' },
+    { id: 'b', fileName: 'ΑΣΦΑΛΙΣΤΗΡΙΟ (1).pdf', mimeType: 'application/pdf', uploadedAt: '2026-07-04T00:00:00.000Z' },
+    { id: 'a', fileName: 'ΑΣΦΑΛΙΣΤΗΡΙΟ.pdf', mimeType: 'application/pdf', uploadedAt: '2025-06-19T00:00:00.000Z' },
 ]
 
 /**
@@ -33,7 +33,7 @@ const docs = [
  * provider even though the card does not.
  */
 function renderCard(
-    documents: Array<{ id: string; fileName: string; uploadedAt?: string; documentKind?: string | null }>
+    documents: Array<{ id: string; fileName: string; mimeType?: string | null; uploadedAt?: string; documentKind?: string | null }>
 ) {
     return render(
         <LanguageProvider>
@@ -67,7 +67,7 @@ describe('document presentation', () => {
     })
 
     it('still renders when a document has no date (rows predating the field)', () => {
-        renderCard([{ id: 'x', fileName: 'scan.pdf' }])
+        renderCard([{ id: 'x', fileName: 'scan.pdf', mimeType: 'application/pdf' }])
         expect(screen.getByText('scan.pdf')).toBeTruthy()
     })
 
@@ -83,8 +83,8 @@ describe('document presentation', () => {
         // upload is a policy at all, so this is evidence, not a guess — which is
         // why the card may now say it.
         renderCard([
-            { id: 's', fileName: 'schedule.pdf', documentKind: 'policy_schedule' },
-            { id: 'r', fileName: 'renewal.pdf', documentKind: 'renewal_notice' },
+            { id: 's', fileName: 'schedule.pdf', mimeType: 'application/pdf', documentKind: 'policy_schedule' },
+            { id: 'r', fileName: 'renewal.pdf', mimeType: 'application/pdf', documentKind: 'renewal_notice' },
         ])
         expect(screen.getByText('Πίνακας ασφαλιστηρίου')).toBeTruthy()
         expect(screen.getByText('Ειδοποίηση ανανέωσης')).toBeTruthy()
@@ -92,7 +92,7 @@ describe('document presentation', () => {
     })
 
     it('falls back rather than printing a raw enum for an unknown kind', () => {
-        renderCard([{ id: 'u', fileName: 'odd.pdf', documentKind: 'something_new' }])
+        renderCard([{ id: 'u', fileName: 'odd.pdf', mimeType: 'application/pdf', documentKind: 'something_new' }])
         expect(screen.getByText(/Έγγραφο PDF/)).toBeTruthy()
         expect(screen.queryByText('something_new')).toBeNull()
     })
