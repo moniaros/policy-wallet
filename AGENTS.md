@@ -165,6 +165,14 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   actually queries through; never set `POOLED_DATABASE_URL` locally. **Prisma CLI and every
   `tsx -r dotenv/config` script read `.env`, never `.env.local`** — keep them in sync, and
   keep `DIRECT_URL` on the 5432 SESSION pooler or migrations cannot run.
+  **Cap the local pool or the session pooler locks you out.** `DIRECT_URL` is
+  the 5432 SESSION pooler, where each client holds a backend for its whole life
+  and `pool_size` is **15**. Prisma's default pool is `cores * 2 + 1` — 29 on a
+  14-core Mac — so one `next dev` exceeds the ceiling on its own and the
+  dashboard (13 parallel queries) fails with `(EMAXCONNSESSION) max clients
+  reached in session mode`. It reads as a dead database and is a config
+  arithmetic problem. Keep `?connection_limit=5&pool_timeout=20` on the local
+  `DIRECT_URL`.
 - **i18n:** no hardcoded UI strings. Client components use `useLanguage()` ([contexts/LanguageContext.tsx](contexts/LanguageContext.tsx)); server code uses `getTranslations(lang)` ([lib/i18n/index.ts](lib/i18n/index.ts)) and passes `t` down as props. Default language is `el`.
 - **Next.js 16:** dynamic-route `params` are **Promises** — `const { id } = await params`. Validate request input with Zod.
 - **Schema changes:** edit `prisma/schema.prisma`, then `npx prisma migrate dev`. Never hand-edit the DB; run `npm run verify:migrations` before committing.

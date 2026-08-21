@@ -165,6 +165,14 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   actually queries through; never set `POOLED_DATABASE_URL` locally. **Prisma CLI and every
   `tsx -r dotenv/config` script read `.env`, never `.env.local`** — keep them in sync, and
   keep `DIRECT_URL` on the 5432 SESSION pooler or migrations cannot run.
+  **Cap the local pool or the session pooler locks you out.** `DIRECT_URL` is
+  the 5432 SESSION pooler, where each client holds a backend for its whole life
+  and `pool_size` is **15**. Prisma's default pool is `cores * 2 + 1` — 29 on a
+  14-core Mac — so one `next dev` exceeds the ceiling on its own and the
+  dashboard (13 parallel queries) fails with `(EMAXCONNSESSION) max clients
+  reached in session mode`. It reads as a dead database and is a config
+  arithmetic problem. Keep `?connection_limit=5&pool_timeout=20` on the local
+  `DIRECT_URL`.
 - **i18n:** no hardcoded UI strings. Client components use `useLanguage()` ([contexts/LanguageContext.tsx](contexts/LanguageContext.tsx)); server code uses `getTranslations(lang)` ([lib/i18n/index.ts](lib/i18n/index.ts)) and passes `t` down as props. Default language is `el`.
 - **Next.js 16:** dynamic-route `params` are **Promises** — `const { id } = await params`. Validate request input with Zod.
 - **Schema changes:** edit `prisma/schema.prisma`, then `npx prisma migrate dev`. Never hand-edit the DB; run `npm run verify:migrations` before committing.
@@ -246,3 +254,26 @@ Therefore:
 Standing task (not yet done): make the public pricing surface refuse to render any plan
 whose stripe_price_id does not resolve in LIVE mode. Until that exists, this coupling is
 guarded only by discipline.
+
+## Guards must enumerate, not assume
+
+A guard test that scopes itself to known locations guards those locations, not the
+invariant. Three guards in this repo have passed while what they protect was broken:
+the authorization guard matched a mention inside a comment; the erasure guard used
+five hardcoded field names; the file-name guard globbed only {app,lib}, matched only
+`fileName: <expr>` and not the ES6 shorthand, and scanned only files that already
+contained `file.name`.
+
+Every guard enumerates its universe from the filesystem or the database schema, and
+ships with a committed probe fixture proven to turn it red. A guard without a probe
+in the repo is not a guard.
+
+## The gate checks code; journeys check the product
+
+Two changes have passed a fully green gate and silently broken production: a plan-row
+write that published unfulfillable prices, and an extension check that made every
+upload commit a policy with zero documents and no analysis. Neither threw. Unit tests
+passed because each piece worked — the seam between two changes broke.
+
+Assert OUTCOMES on the preview deployment, not HTTP status codes, before any
+production merge. See the journey smoke in the deploy gate.
