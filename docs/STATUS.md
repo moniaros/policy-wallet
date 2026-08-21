@@ -1,5 +1,56 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-21d (Reference data: both databases now match the repo)
+
+Dev held 11 gap definitions, prod held 70, and only 6 were shared — so no local
+run had ever exercised production's rule set. **Both are now 29/29/0, identical
+on every measure, proven by query:**
+
+| measure | prod | dev |
+|---|---|---|
+| gap_definitions total / active | 29 / 29 | 29 / 29 |
+| gap content fingerprint | `e7ffd876…bad3` | `e7ffd876…bad3` |
+| plans | 7 · `830e4081…c681` | 7 · `830e4081…c681` |
+| insurers | 27 · `7221aaaa…8b00` | 27 · `7221aaaa…8b00` |
+| insurance_types | 20 · `e93b1594…9e03` | 20 · `e93b1594…9e03` |
+
+**Neither side was right.** Dev's 5 extra were superseded fixtures — detection
+logic shaped `{ check: "<question for a model>" }`, which `hasEvaluableRule()`
+rejects, so they could never fire despite `is_active = true`; `seed.ts` already
+had all five as `isActive: false`, and git blames them on `08667867` "AI Gap
+Aanalysis" (2026-01-13). Prod's 41 extra were **not reference data at all**:
+minted by the pipeline at runtime, one per analysis run, with byte-identical
+`detection_logic` (`{"source": "ai_clarity_pipeline"}`) and description
+("Auto-created from AI clarity analysis") across all 41. The naming convention
+was a red herring — prod had 15 hyphenated slugs of its own.
+
+**The authoritative source already existed and already agreed with prod**
+(`lib/gaps/authored-catalogue.ts`, 29 for 29, zero difference). Nothing had ever
+compared it to a live database. That was the entire bug.
+
+Now repeatable: `verify:gap-catalogue` (fails on drift, proven red twice —
+including a severity edit that keeps the row count identical, which is why it
+compares content not counts), `align:gap-catalogue` (upsert on slug so
+`gap_instances` survive; deactivates unauthored rules rather than deleting),
+`verify:reference-data` (one fingerprint per table, comparable across
+environments without moving rows). CI runs the repo-side guard today; the
+database-side step is wired and skips until `DEV_DATABASE_URL` exists.
+
+Also fixed: a dev-only AXA insurer row with `slug NULL` (unaddressable by the
+27-record catalogue; AXA left the Greek market in 2021), and a CI workflow that
+failed to *compile* because `secrets` is not a permitted context in a
+step-level `if` — the run showed up named `.github/workflows/ci.yml` because
+GitHub had no compiled workflow to read a name from.
+
+### Still open
+- **`Workers Builds: policy-wallet` fails on every commit**, including ones
+  predating this session. A Cloudflare Workers Builds integration on a project
+  that deploys via Vercel. Not investigated; likely stale and worth removing.
+- Live Stripe keys in Vercel (two variables) — unchanged.
+- Supabase's dev pooler ELB times out ~40% of TCP connects; every control
+  endpoint including AWS eu-west-3 is clean, so it is theirs, not ours.
+
+
 ## Session wrap — 2026-08-21c (File names erased, document pipeline swept, mobile measured)
 
 ### GOAL 1 — the user's file name is kept nowhere (SHIPPED)
