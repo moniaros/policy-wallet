@@ -398,6 +398,86 @@ export class PolicyService extends BaseService {
     }
 
     /**
+     * Attach an ανανεωτήριο to an EXISTING policy.
+     *
+     * Deliberately the same front door as uploadAndParse — identical content
+     * validation, the same bucket, the same orphan cleanup when the row fails
+     * to write. A renewal that took a different upload path would drift from
+     * the rules the main path enforces, and those rules are the ones that stop
+     * a failed upload leaving bytes nobody can reach.
+     *
+     * The differences are only these: the policy already exists, so no
+     * placeholder identity is minted and no quota is consumed (the customer is
+     * not adding a policy, they are completing one); and the document is
+     * marked `renewal_notice` with the effective period the extraction finds,
+     * so the chain can be ordered by what the documents COVER rather than by
+     * when somebody uploaded them.
+     *
+     * AUTHORIZATION IS THE CALLER'S JOB and is not repeated here — callers go
+     * through getPolicyAccess (see addRenewalDocument). This method is not
+     * reachable without one.
+     */
+    async attachRenewalDocument(
+        policyId: string,
+        userId: string,
+        file: File,
+        language: 'en' | 'el' = 'en'
+    ): Promise<{ documentId: string; policyId: string }> {
+        const validation = await validateUploadFile(file, { category: 'policy' })
+        if (!validation.ok) {
+            if (validation.reason === 'too_large') {
+                throw AppError.validation({
+                    file: [language === 'el'
+                        ? `Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
+                        : `File too large. Maximum size is ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`]
+                })
+            }
+            throw AppError.validation({
+                file: [language === 'el'
+                    ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
+                    : 'Invalid file type. Allowed: PDF, JPG, PNG, WEBP, and HEIC']
+            })
+        }
+
+        let fileUrl: string
+        try {
+            fileUrl = await uploadFile(file, 'policies')
+        } catch (error) {
+            logger('error', 'Renewal upload failed', { userId, policyId, error })
+            throw AppError.externalService('Storage', error instanceof Error ? error : new Error('Upload failed'))
+        }
+
+        const sanitizedFileName = sanitizeDisplayName(file.name)
+
+        try {
+            const document = await this.db.policyDocument.create({
+                data: {
+                    policyId,
+                    fileUrl,
+                    fileName: sanitizedFileName,
+                    fileSize: file.size,
+                    source: 'policyholder',
+                    processingStatus: 'pending',
+                    uploadedByUserId: userId,
+                    // Stated up front rather than inferred later: the user told
+                    // us this is a renewal by choosing this action, and that is
+                    // better evidence than a classifier guess.
+                    documentKind: 'renewal_notice',
+                },
+                select: { id: true },
+            })
+
+            logger('info', 'Renewal document attached', { userId, policyId, documentId: document.id })
+            return { documentId: document.id, policyId }
+        } catch (createError) {
+            // Same rule as the main path: the object landed but nothing
+            // references it, so it is personal data no export can reach.
+            await discardOrphanedUploads([fileUrl], { reason: 'renewal_document_create_failed', userId })
+            throw createError
+        }
+    }
+
+    /**
      * Executes the background AI analysis (Extraction + Gaps)
      * This should be called asynchronously by the server action
      */

@@ -442,6 +442,18 @@ model PolicyDocument {
   /// lib/services/ai/document-kind.ts): policy_schedule, terms_and_conditions,
   /// renewal_notice, forms, certificate, invoice, other.
   documentKind     String?   @map("document_kind")
+  /// The period this DOCUMENT covers, as distinct from the policy's period.
+  ///
+  /// A Greek policy is a chain: the πρωτασφαλιστήριο carries the full terms and
+  /// every later year issues an ανανεωτήριο that changes a few things and is
+  /// silent about the rest. Ordering that chain by `uploadedAt` orders it by
+  /// when someone got round to uploading, which is not the same thing and is
+  /// wrong exactly when a customer back-fills an old renewal.
+  ///
+  /// Null on every row predating this column, and on documents that state no
+  /// period of their own (a terms booklet, an invoice).
+  effectiveFrom    DateTime? @map("effective_from")
+  effectiveTo      DateTime? @map("effective_to")
   /// Monotonic per policy+document lineage. Everything is version 1 today; the
   /// column exists so replacing a document can supersede rather than destroy,
   /// without restructuring storage.

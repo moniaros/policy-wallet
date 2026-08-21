@@ -801,6 +801,73 @@ export async function uploadPolicyDocument(formData: FormData) {
     }
 }
 
+/**
+ * «Προσθήκη ανανεωτηρίου» — attach a renewal to an EXISTING policy.
+ *
+ * A Greek policy is a chain, not a document. The πρωτασφαλιστήριο carries the
+ * full terms; each later year issues an ανανεωτήριο that changes a few things
+ * and is silent about the rest. Uploading that renewal as a NEW policy is what
+ * users did before this action existed, and it split one contract into two
+ * records neither of which was complete.
+ *
+ * This is deliberately not a new pipeline. It is the ordinary upload path with
+ * the policy named up front, so storage, extraction, the atomic-discard rules
+ * and the quota gate all behave identically — the only difference is where the
+ * document lands and that it is marked `renewal_notice`.
+ *
+ * Authorization goes through getPolicyAccess like every other caller-named
+ * policy operation: attaching a renewal writes to someone's policy, so it
+ * needs `canAnalyze`, not mere readability.
+ */
+export async function addRenewalDocument(policyId: string, formData: FormData) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
+        return { error: "Unauthorized" }
+    }
+
+    const userId = authResult.dbUser.id
+
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(policyId, {
+        id: userId,
+        roles: authResult.dbUser.roles,
+    })
+    // 404 rather than 403: a policy you may not touch should not be
+    // distinguishable from one that does not exist.
+    if (!access.exists || !access.canAnalyze) {
+        return { error: "NOT_FOUND" }
+    }
+
+    const file = formData.get("file") as File
+    if (!file) {
+        return { error: "No file uploaded" }
+    }
+
+    try {
+        const policyService = new PolicyService()
+        const language = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+
+        const result = await policyService.attachRenewalDocument(policyId, userId, file, language)
+
+        after(async () => {
+            try {
+                // Re-analysis runs over the MERGED view: base terms from the
+                // original, overridden only where the renewal speaks.
+                await policyService.runBackgroundAnalysis(policyId, userId, language)
+            } catch (e) {
+                logger("error", "Deferred renewal analysis failed", { policyId, error: e })
+            }
+        })
+
+        revalidatePath("/wallet")
+        revalidatePath(`/wallet/${policyId}`)
+        return { success: true, policyId, documentId: result.documentId }
+    } catch (e: any) {
+        logger("error", "Renewal upload action failed", { userId, policyId, error: e.message })
+        return { error: e.message || "Upload failed" }
+    }
+}
+
 export async function getInsurers() {
     // Explicit select: the enriched reference row (contacts, address, notes)
     // must not ship to the client for a dropdown that only needs the name.
