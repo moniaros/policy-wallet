@@ -96,6 +96,15 @@ export default function RootLayout({
          * read lang="el" on /en/*. The complete fix is per-locale root layouts
          * (Next.js multiple root layouts), which is a structural change to the
          * whole app/ tree — tracked separately, deliberately not done here.
+         *
+         * EXPECTED WARNING, do not "fix": React logs "Encountered a script tag
+         * while rendering React component. Scripts inside React components are
+         * never executed when rendering on the client." That is accurate and
+         * harmless here — this script exists to run during the INITIAL document
+         * parse, which is exactly the case React is not warning about, and
+         * client-side navigation is already handled by the HtmlLang leaf above.
+         * Moving it to next/script beforeInteractive to silence the warning
+         * would give up the first-parse guarantee this is here for.
          */}
         <script
           dangerouslySetInnerHTML={{

@@ -94,3 +94,22 @@ export function scrubEvent<T extends Record<string, any>>(event: T): T {
     }
     return event
 }
+
+/**
+ * A DSN we should actually initialise with, or undefined.
+ *
+ * `.env.example` ships `https://your-sentry-dsn@sentry.io/project-id`, so every
+ * developer who copies it gets a DSN that Sentry parses, rejects, and complains
+ * about — twice per page load, on every page (292 occurrences across 146 routes
+ * in the 2026-08-21 sweep). That volume is not harmless: it is what a real
+ * console error hides behind.
+ *
+ * Treated as unset rather than fixed up, because a placeholder DSN means "no
+ * Sentry configured here" and Sentry disables itself cleanly on `undefined`.
+ */
+export function resolveSentryDsn(raw: string | undefined): string | undefined {
+    const dsn = raw?.trim()
+    if (!dsn) return undefined
+    if (/your-sentry-dsn|project-id|<[^>]+>|example\.com/i.test(dsn)) return undefined
+    return dsn
+}

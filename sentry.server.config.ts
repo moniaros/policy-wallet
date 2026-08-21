@@ -1,10 +1,10 @@
 // Sentry initialization for the server runtime (see instrumentation.ts).
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 import * as Sentry from "@sentry/nextjs";
-import { scrubEvent } from "./lib/observability/sentry-scrub";
+import { scrubEvent, resolveSentryDsn } from "./lib/observability/sentry-scrub";
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
+  dsn: resolveSentryDsn(process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN)
     || "https://7f85e67c475b91e81dc9de9214b36cd4@o4510750648303616.ingest.de.sentry.io/4510750671634512",
 
   // 10% of transactions traced in production — 100% would be cost-prohibitive

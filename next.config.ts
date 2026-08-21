@@ -13,6 +13,17 @@ const supabaseOrigin = (() => {
 })();
 const supabaseCspSource = supabaseOrigin ? ` ${supabaseOrigin}` : "";
 
+// @vercel/analytics and @vercel/speed-insights load their DEBUG bundles from
+// va.vercel-scripts.com, but ONLY under `isDevelopment()`. In production both
+// resolve to same-origin `/_vercel/insights/script.js` and
+// `/_vercel/speed-insights/script.js`, which `'self'` already covers — so
+// production analytics was never broken and this must NOT loosen the
+// production policy. Locally it logged two CSP violations on every single page
+// (146 of 146 routes in the 2026-08-21 sweep), which is enough noise to hide a
+// real error.
+const devScriptSrc =
+  process.env.NODE_ENV === "development" ? " https://va.vercel-scripts.com" : "";
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["*.picard.replit.dev", "*.replit.dev"],
   experimental: {
@@ -44,7 +55,7 @@ const nextConfig: NextConfig = {
             // blob-URL compression worker was refused on EVERY page — a console
             // error for every visitor and a degraded replay feed. Scoped to
             // same-origin and same-origin blobs; `script-src` is NOT loosened.
-            value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.stripe.com https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://www.googletagmanager.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://storage.googleapis.com https://www.googletagmanager.com${supabaseCspSource}; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://checkout.stripe.com; connect-src 'self' https://api.stripe.com https://api.brevo.com https://static.cloudflareinsights.com https://*.policywallet.gr${supabaseCspSource} https://*.sentry.io https://*.google-analytics.com https://www.googletagmanager.com;`,
+            value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'${devScriptSrc} https://checkout.stripe.com https://static.cloudflareinsights.com https://browser.sentry-cdn.com https://www.googletagmanager.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://storage.googleapis.com https://www.googletagmanager.com${supabaseCspSource}; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://checkout.stripe.com; connect-src 'self' https://api.stripe.com https://api.brevo.com https://static.cloudflareinsights.com https://*.policywallet.gr${supabaseCspSource} https://*.sentry.io https://*.google-analytics.com https://www.googletagmanager.com;`,
           },
           {
             key: "X-Frame-Options",
