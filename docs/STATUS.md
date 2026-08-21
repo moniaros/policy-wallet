@@ -60,7 +60,31 @@ Playwright project. **Measured, not guessed:**
 - At 320px every Greek ALL-CAPS stat label broke MID-WORD («ΧΡΕΙΑΖ/ΕΤΑΙ ΠΡΟΣΟΧ/Η»): a
   global `overflow-wrap: anywhere` met a ~60px label column. `.pw-kicker` now uses
   narrower tracking below `sm`, and `StatGrid` goes single-column below 360px.
-- Tap targets below 44px: the policy section-nav pills (34×34) and the claims CTA (34px).
+- Tap targets below 44px — the matrix is now **13/13 green at all three viewports**:
+  section-nav pills (34×34), the claims CTA (34px), the chat toggle (32×32), full-width
+  primary CTAs (40px), three auth back-links (40px), and **`tel:` links in six
+  coverage/action cards** (32–40px). A phone number you tap in an emergency, on a phone,
+  was the last control that should have been hard to hit.
+- Two components rendered the repo's inline-action idiom **without** its
+  `pw-inline-action` marker class — a design-system inconsistency in its own right, and
+  the reason the guard could not apply WCAG 2.5.8's inline exception to them.
+
+**Two defects were in the guard itself, and mattered more than any of the above:**
+1. `gotoPolicy` never checked where it landed. When the fixture session was not live in the
+   browser context, `proxy.ts` redirected to `/auth/signin` and the guard measured the
+   **login page** while reporting a policy-page verdict — which is how a signin back-link
+   surfaced as a policy-page failure and sent the first fix to the wrong file. It now
+   retries once, then refuses to measure.
+2. Offenders now report their **ancestor chain**. Two different links on this page read
+   «Αρχική»; without it there was no way to tell which one failed.
+
+Not `waitForLoadState("networkidle")`: with the dummy Upstash host the dev server retries a
+DNS lookup per request and never idles, so that wait ate the test timeout and teardown
+closed the page mid-wait — which reads as a browser crash and is really the wrong wait.
+
+**Environment note:** the dev Supabase project was ~50% unavailable during verification
+(both poolers flapping independently), so the green run took four attempts at global-setup.
+Nothing in the app; worth knowing before reading a future E2E failure as a regression.
 
 ### NOT DONE in GOAL 3 — stated plainly
 3.1's specific policy-page work (header action buttons → primary + overflow, EXPIRED
