@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { activePromotions, formatPromotionEnd } from "@/lib/pricing/promotions"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
@@ -46,6 +47,22 @@ export default function PricingPage({
     const l = (href: string) => localizeHref(href, language)
 
     const labels = {
+        promoOffer: {
+            el: "για {months} μήνες με τον κωδικό",
+            en: "for {months} months with code",
+        },
+        promoNewOnly: {
+            el: "Για νέες συνδρομές, έως τις",
+            en: "New subscriptions only, until",
+        },
+        promoAnyone: {
+            el: "Έως τις",
+            en: "Until",
+        },
+        promoEnterAtCheckout: {
+            el: "Τον καταχωρείτε στο ταμείο.",
+            en: "Enter it at checkout.",
+        },
         checkoutFailed: {
             el: "Δεν ήταν δυνατή η έναρξη της πληρωμής. Δοκιμάστε ξανά.",
             en: "We couldn't start the checkout. Please try again.",
@@ -266,9 +283,45 @@ export default function PricingPage({
                     {AUDIENCES.map((aud) => (
                         <div key={aud} hidden={audience !== aud}>
                             <h2 className="mb-3 text-h3 font-semibold tracking-tight text-[#0F172A] dark:text-white">{pricingContent[aud].heading[language]}</h2>
-                            <p className="mx-auto mb-12 max-w-3xl text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                            <p className="mx-auto mb-6 max-w-3xl text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
                                 {pricingContent[aud].subtitle[language]}
                             </p>
+
+                            {/* Promotions are audience-scoped because the
+                                checkout is: lib/billing.ts sets
+                                allow_promotion_codes only for agent plans, so
+                                showing a code on the consumer tab would be a
+                                promise the checkout page cannot keep — there
+                                is no field to type it into. The end date is
+                                derived from the same object Stripe was
+                                configured from, so the banner disappears on
+                                its own rather than outliving the code. */}
+                            {aud === "agent" &&
+                                activePromotions("agent").map((promo) => (
+                                    <div
+                                        key={promo.code}
+                                        className="mx-auto mb-12 max-w-2xl rounded-2xl border border-[#29685B]/30 bg-[#29685B]/5 px-5 py-4 dark:border-[#A7F3D0]/25 dark:bg-[#A7F3D0]/5"
+                                    >
+                                        <p className="text-body text-[#0F172A] dark:text-white">
+                                            <span className="font-semibold">−{promo.percentOff}%</span>{" "}
+                                            {labels.promoOffer[language].replace(
+                                                "{months}",
+                                                String(promo.durationMonths)
+                                            )}{" "}
+                                            <code className="rounded bg-white px-2 py-0.5 font-mono text-caption font-semibold tracking-wide text-[#29685B] dark:bg-slate-900 dark:text-[#A7F3D0]">
+                                                {promo.code}
+                                            </code>
+                                        </p>
+                                        <p className="mt-1 text-caption text-[#475569] dark:text-slate-400">
+                                            {promo.newSubscribersOnly
+                                                ? labels.promoNewOnly[language]
+                                                : labels.promoAnyone[language]}{" "}
+                                            {formatPromotionEnd(promo, language === "el" ? "el" : "en")}
+                                            {". "}
+                                            {labels.promoEnterAtCheckout[language]}
+                                        </p>
+                                    </div>
+                                ))}
                         </div>
                     ))}
 
