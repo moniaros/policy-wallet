@@ -158,7 +158,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.accidentDeclarationPhone && (
         <a
           href={`tel:${motor.accidentDeclarationPhone}`}
-          className="flex items-center justify-between p-3 rounded-xl bg-red-50/80 dark:bg-red-900/20 border border-red-200/60 dark:border-red-800/60 hover:shadow-md transition-shadow"
+          className="min-h-[44px] flex items-center justify-between p-3 rounded-xl bg-red-50/80 dark:bg-red-900/20 border border-red-200/60 dark:border-red-800/60 hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
@@ -179,7 +179,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
       {motor.roadsideAssistancePhone && (
         <a
           href={`tel:${motor.roadsideAssistancePhone}`}
-          className="flex items-center justify-between p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/30 border border-amber-200/60 dark:border-amber-800/60 hover:shadow-md transition-shadow"
+          className="min-h-[44px] flex items-center justify-between p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/30 border border-amber-200/60 dark:border-amber-800/60 hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">

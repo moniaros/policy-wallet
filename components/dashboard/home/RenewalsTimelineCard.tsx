@@ -70,7 +70,7 @@ export function RenewalsTimelineCard({
                                     <p className="mt-0.5 text-xs text-muted-foreground">{labels.trackExpirationsBody}</p>
                                     <Link
                                         href="/wallet/add"
-                                        className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                                        className="pw-inline-action mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                                     >
                                         {labels.addPolicy}
                                         <ArrowRight className="h-3 w-3" />

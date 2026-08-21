@@ -134,7 +134,7 @@ export function HomeCoverageDetails({ acordData, language, hints }: HomeCoverage
       {home.technicalAssistancePhone && (
         <a
           href={`tel:${home.technicalAssistancePhone}`}
-          className="flex items-center justify-between p-3 rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 hover:shadow-md transition-shadow"
+          className="min-h-[44px] flex items-center justify-between p-3 rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">

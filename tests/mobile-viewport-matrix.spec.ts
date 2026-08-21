@@ -74,12 +74,31 @@ async function smallTapTargets(page: Page): Promise<string[]> {
             // Off-screen until focused (skip links, sr-only helpers).
             if (r.right <= 0 || r.bottom <= 0 || r.width <= 2) return
 
-            // Inline text link inside prose — exempt by the guideline.
+            // Inline text actions — exempt by the guideline, identified by the
+            // design system's OWN marker rather than a rule invented here.
+            // `.pw-inline-action` is the repo's idiom for a text link with an
+            // icon: no border, no background, underline on hover. Padding one
+            // to 44px would open a hole in the paragraph around it.
+            if (el.classList.contains("pw-inline-action")) return
             if (el.tagName === "A" && style.display === "inline") return
 
             if (r.height < 44 || r.width < 24) {
                 const label = (el.textContent || el.getAttribute("aria-label") || "").trim().slice(0, 30)
-                out.push(`${el.tagName.toLowerCase()} "${label}" ${Math.round(r.width)}×${Math.round(r.height)}`)
+                // A failure you cannot locate is a failure you cannot fix: two
+                // different links on this page read "Αρχική", and without the
+                // ancestor chain the first fix landed on the wrong one.
+                const chain: string[] = []
+                for (let n: HTMLElement | null = el; n && chain.length < 4; n = n.parentElement) {
+                    const id = n.id ? `#${n.id}` : ""
+                    const cls = n.className && typeof n.className === "string"
+                        ? "." + n.className.trim().split(/\s+/).slice(0, 2).join(".")
+                        : ""
+                    chain.push(`${n.tagName.toLowerCase()}${id}${cls}`)
+                }
+                out.push(
+                    `${el.tagName.toLowerCase()} "${label}" ${Math.round(r.width)}×${Math.round(r.height)}` +
+                    ` @ ${chain.reverse().join(" > ")}`
+                )
             }
         })
         return [...new Set(out)].slice(0, 10)
@@ -119,15 +138,43 @@ async function gotoPolicy(page: Page): Promise<string> {
     expect(Array.isArray(policies) && policies.length > 0, "no policy to open").toBe(true)
     const id = policies[0].id ?? policies[0].policyId
 
-    await page.goto(`/wallet/${id}`, { waitUntil: "domcontentloaded" })
+    const target = `/wallet/${id}`
+
+    // A guard that silently audits the wrong page is worse than no guard: the
+    // session cookie occasionally isn't live in the browser context on the
+    // first navigation, proxy.ts redirects to /auth/signin, and the assertions
+    // below then measure the LOGIN page while reporting a policy-page verdict.
+    // That is exactly how `a "Αρχική" 87×40` — a signin back-link — surfaced as
+    // a policy-page tap-target failure. Retry once, then refuse to measure.
+    await page.goto(target, { waitUntil: "domcontentloaded" })
+    if (new URL(page.url()).pathname.startsWith("/auth")) {
+        await page.goto(target, { waitUntil: "domcontentloaded" })
+    }
+    expect(
+        new URL(page.url()).pathname,
+        `redirected to ${page.url()} — the fixture session is not live, so nothing here is a verdict about the policy page`
+    ).toBe(target)
+
     await dismissCookieBanner(page)
+    // NOT `waitForLoadState("networkidle")`: with the dummy Upstash host this
+    // dev server retries a DNS lookup on every request, so the page never goes
+    // idle, the wait eats the whole test timeout, and teardown then closes the
+    // page mid-wait — reported as "Target page has been closed", which looks
+    // like a browser crash and is really just the wrong wait.
+    await page.locator("main").first().waitFor({ state: "visible", timeout: 15_000 })
     await page.waitForTimeout(1200) // let below-the-fold sections settle
-    return `/wallet/${id}`
+    return target
 }
 
 for (const vp of VIEWPORTS) {
     test.describe(`${vp.name} (${vp.width}×${vp.height})`, () => {
         test.use({ viewport: { width: vp.width, height: vp.height } })
+
+        // The default 30s covers the assertions but not a cold Next dev compile
+        // of the policy route on top of them, which is not what this file
+        // measures. Budget for the compile so a slow build reads as slow, not
+        // as a layout defect.
+        test.setTimeout(90_000)
 
         test("wallet fits its viewport", async ({ page }) => {
             await page.goto("/wallet", { waitUntil: "domcontentloaded" })

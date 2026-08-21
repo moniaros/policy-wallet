@@ -123,7 +123,7 @@ export function HealthCoverageDetails({ acordData, language, hints }: HealthCove
             {health.coordinationCentre.phone && (
               <a
                 href={`tel:${health.coordinationCentre.phone}`}
-                className="inline-flex items-center gap-1.5 text-sm text-primary dark:text-mint font-semibold hover:underline"
+                className="min-h-[44px] inline-flex items-center gap-1.5 text-sm text-primary dark:text-mint font-semibold hover:underline"
               >
                 <Phone className="w-3.5 h-3.5" />
                 {health.coordinationCentre.phone}

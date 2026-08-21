@@ -130,7 +130,7 @@ export function PolicyQA({
                     </div>
                     <button
                         onClick={() => setShowChat(!showChat)}
-                        className="w-8 h-8 rounded-lg bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center cursor-pointer"
+                        className="min-h-[44px] min-w-[44px] rounded-lg bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center cursor-pointer"
                         aria-label={toggleLabel}
                     >
                         {showChat ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}

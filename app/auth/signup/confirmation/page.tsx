@@ -252,7 +252,7 @@ function SignupConfirmationContent() {
             <header className="flex items-center justify-between px-6 py-4">
                 <Link
                     href="/"
-                    className="inline-flex min-h-[24px] items-center text-body-sm font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
+                    className="inline-flex min-h-[44px] items-center text-body-sm font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
                 >
                     {copy.backHome}
                 </Link>

@@ -83,7 +83,7 @@ function AnsweredChip({ item, callLabel }: { item: BranchActionItem; callLabel: 
                     {item.resolved.phone && (
                         <a
                             href={`tel:${item.resolved.phone.replace(/\s+/g, "")}`}
-                            className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-white/70 px-2.5 py-1 text-micro font-bold text-primary hover:bg-white dark:border-mint/25 dark:bg-mint/10 dark:text-mint"
+                            className="min-h-[44px] mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-white/70 px-2.5 py-1 text-micro font-bold text-primary hover:bg-white dark:border-mint/25 dark:bg-mint/10 dark:text-mint"
                         >
                             <Phone className="h-3 w-3" aria-hidden />
                             <span>{callLabel}</span>

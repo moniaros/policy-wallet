@@ -89,7 +89,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         {agent.phone && (
                             <a
                                 href={`tel:${agent.phone}`}
-                                className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition"
+                                className="min-h-[44px] flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition"
                             >
                                 <Phone className="h-3.5 w-3.5" />
                                 {agent.phone}

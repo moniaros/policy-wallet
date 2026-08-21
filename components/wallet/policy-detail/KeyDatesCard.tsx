@@ -245,7 +245,7 @@ export function KeyDatesCard({
                         disabled={isRequestingQuote}
                         className={
                             isExpired
-                                ? "inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420] cursor-pointer disabled:cursor-default sm:w-auto"
+                                ? "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420] cursor-pointer disabled:cursor-default sm:w-auto"
                                 : "inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-60 dark:border-mint/35 dark:bg-mint/10 dark:text-mint dark:hover:bg-mint/15 cursor-pointer disabled:cursor-default"
                         }
                     >

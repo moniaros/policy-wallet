@@ -626,7 +626,7 @@ export function RecommendationCards({
                                         {!isAgentCard && (
                                             <Link
                                                 href="/agent"
-                                                className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                                                className="pw-inline-action inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                                             >
                                                 <MessageCircle className="inline-flex min-h-[24px] items-center h-3 w-3" />
                                                 {t("Ρωτήστε τον σύμβουλό μου", "Ask my agent")}

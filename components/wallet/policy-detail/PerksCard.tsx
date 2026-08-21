@@ -103,7 +103,7 @@ export function PerksCard({ perks, lang, copy }: PerksCardProps) {
                                         {perk.contactPhone && (
                                             <a
                                                 href={`tel:${perk.contactPhone}`}
-                                                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                                className="min-h-[44px] inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
                                             >
                                                 <Phone className="h-3 w-3" />
                                                 {copy.callServiceCta}

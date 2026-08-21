@@ -131,7 +131,7 @@ export default function ForgotPasswordPage() {
                 <div className="mb-6 flex items-center justify-between">
                     <Link
                         href="/"
-                        className="inline-flex items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"
+                        className="inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-medium text-[#5B6A7A] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"
                     >
                         <span aria-hidden="true">←</span> {copy.backHome}
                     </Link>

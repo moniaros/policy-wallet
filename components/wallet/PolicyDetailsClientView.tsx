@@ -720,7 +720,11 @@ export function PolicyDetailsClient({
                 <nav className="mb-5 flex items-center gap-2 text-sm">
                     <Link
                         href="/wallet"
-                        className="font-semibold text-primary transition-colors hover:text-primary-hover dark:text-mint dark:hover:text-mint/80"
+                        // `pw-inline-action`: the design system's marker for a text
+                        // link with no chrome. It is also what the mobile tap-target
+                        // guard reads to apply the WCAG inline exception — a
+                        // breadcrumb padded to 44px would push the crumbs apart.
+                        className="pw-inline-action font-semibold text-primary transition-colors hover:text-primary-hover dark:text-mint dark:hover:text-mint/80"
                     >
                         {t.wallet.title}
                     </Link>
@@ -1230,7 +1234,7 @@ export function PolicyDetailsClient({
                                     </p>
                                     <a
                                         href="/upgrade"
-                                        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
+                                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
                                     >
                                         <Crown className="h-4 w-4" />
                                         {t.wallet.upgradePlan}
@@ -1254,7 +1258,7 @@ export function PolicyDetailsClient({
                                         href={`/api/v1/policies/${policy.id}/savings-report`}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
                                     >
                                         <FileDown className="h-4 w-4" />
                                         {pickCopy(EXPORT_COPY.exportCta, lang)}
@@ -1269,7 +1273,7 @@ export function PolicyDetailsClient({
                                             })
                                             setExportUpgradeOpen(true)
                                         }}
-                                        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary-soft px-4 text-sm font-bold text-primary transition-colors hover:bg-primary/15 dark:bg-primary/10 dark:text-mint"
+                                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary-soft px-4 text-sm font-bold text-primary transition-colors hover:bg-primary/15 dark:bg-primary/10 dark:text-mint"
                                     >
                                         <Crown className="h-4 w-4" />
                                         {pickCopy(EXPORT_COPY.unlockCta, lang)}
