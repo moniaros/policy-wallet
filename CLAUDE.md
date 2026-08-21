@@ -210,3 +210,23 @@ If a decision arises that this document does not cover: pick the more reversible
 Tooling note
 
 Claude Code's permission classifier can block actions this document authorizes (scripted database runs, prod connections). If a permission denial interrupts work, say so plainly in the report — do not silently treat it as a decision point. The owner configures this via claude auto-mode config.
+
+CATALOG COUPLING (learned 2026-08-20, the hard way)
+
+The plans table is a PUBLICATION CHANNEL, not configuration. pricing-view-model.ts
+renders the public pricing cards directly from plan rows, so any UPDATE — including
+one from /admin/plans — changes what the public site advertises IMMEDIATELY, with no
+deploy, no review, and no gate.
+
+Therefore:
+  - Never write pricing values to prod plan rows ahead of the code that describes them
+    and the Stripe objects that can charge them. Catalog moves WITH or AFTER those,
+    never before.
+  - The correct order is always: Stripe live objects exist → code deployed → plan rows
+    updated. Reverse order publishes prices nothing can charge.
+  - After any prod plan-row write, verify the live page renders coherently. ISR caches
+    for 30 minutes, so a bad state persists after the data is fixed.
+
+Standing task (not yet done): make the public pricing surface refuse to render any plan
+whose stripe_price_id does not resolve in LIVE mode. Until that exists, this coupling is
+guarded only by discipline.
