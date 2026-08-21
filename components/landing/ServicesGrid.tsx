@@ -22,8 +22,8 @@ const services = [
         titleEn: "What are you not covered for?",
         // Gap detection is Plus-only — the tier is named, same rule as the
         // advisor-sharing card below.
-        descEl: "Βρίσκουμε τι λείπει από την κάλυψή σας πριν το χρειαστείτε — με το πλάνο PolicyWallet Plus. Διαβάζουμε κάθε σελίδα για εσάς.",
-        descEn: "We find what your cover is missing before you need it — on the PolicyWallet Plus plan. We read every page for you.",
+        descEl: "Βρίσκουμε τι λείπει από την κάλυψή σας πριν το χρειαστείτε — με το πλάνο Family. Διαβάζουμε κάθε σελίδα για εσάς.",
+        descEn: "We find what your cover is missing before you need it — on the Family plan. We read every page for you.",
         benefitEl: "Το μαθαίνετε σήμερα, όχι μετά",
         benefitEn: "You find out today, not later",
         wide: true,
@@ -44,8 +44,8 @@ const services = [
         titleEn: "When does it run out?",
         // Only promises what the product can do from documents: expiry
         // reminders and re-analysis findings — not price-change feeds.
-        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Starter — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το PolicyWallet Plus.",
-        descEn: "We warn you before something runs out — from the Starter plan — and when we find something new in your documents, with PolicyWallet Plus.",
+        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Starter — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
+        descEn: "We warn you before something runs out — from the Starter plan — and when we find something new in your documents, with Family.",
         benefitEl: "Δεν σας πιάνει ποτέ απροετοίμαστους",
         benefitEn: "It never catches you out",
         wide: false,
@@ -55,8 +55,8 @@ const services = [
         titleEl: "Τι σημαίνει αυτό;",
         titleEn: "What does this mean?",
         // Policy Q&A is Plus-only — same naming rule.
-        descEl: "Ρωτήστε με απλά λόγια. Απαντάμε από το ίδιο σας το συμβόλαιο, όχι από γενικές πληροφορίες — με το πλάνο PolicyWallet Plus.",
-        descEn: "Ask in plain words. We answer from your own policy, not from general information — on the PolicyWallet Plus plan.",
+        descEl: "Ρωτήστε με απλά λόγια. Απαντάμε από το ίδιο σας το συμβόλαιο, όχι από γενικές πληροφορίες — με το πλάνο Family.",
+        descEn: "Ask in plain words. We answer from your own policy, not from general information — on the Family plan.",
         benefitEl: "Καταλαβαίνετε τι υπογράψατε",
         benefitEn: "You understand what you signed",
         wide: false,
@@ -66,9 +66,9 @@ const services = [
         titleEl: "Ποιος μπορεί να βοηθήσει;",
         titleEn: "Who can help you?",
         // Advisor sharing is a paid feature — the tier is named so the card
-        // never promises on Free what only PolicyWallet Plus delivers.
-        descEl: "Δείξτε ό,τι θέλετε στον ασφαλιστή σας, με ένα κλικ — διαθέσιμο με το πλάνο PolicyWallet Plus.",
-        descEn: "Show your agent whatever you choose, with one click — available on the PolicyWallet Plus plan.",
+        // never promises on Free what only Family delivers.
+        descEl: "Δείξτε ό,τι θέλετε στον ασφαλιστή σας, με ένα κλικ — διαθέσιμο με το πλάνο Family.",
+        descEn: "Show your agent whatever you choose, with one click — available on the Family plan.",
         benefitEl: "Εσείς αποφασίζετε τι βλέπει",
         benefitEn: "You decide what they see",
         wide: false,

@@ -60,17 +60,17 @@ export const AGENT_PRICING: Record<AgentTier, {
         tokenTopUpEur: null,
     },
     agent_starter: {
-        monthlyEur: 19.99,
+        monthlyEur: 29,
         label: { en: "Agent Starter", el: "Πράκτορας Starter" },
         tokenTopUpEur: 1.99, // per 100K tokens
     },
     agent_pro: {
-        monthlyEur: 49.99,
+        monthlyEur: 79,
         label: { en: "Agent Pro", el: "Πράκτορας Pro" },
         tokenTopUpEur: 0.99, // per 100K tokens
     },
     agency: {
-        monthlyEur: 99.99,
+        monthlyEur: 199,
         label: { en: "Agency", el: "Πρακτορείο" },
         tokenTopUpEur: 0.49, // per 100K tokens
     },

@@ -52,8 +52,46 @@ export function matchesAnyPattern(value: string, patterns: string[]): boolean {
  * matched those substrings anywhere (ids, validation text) and retried
  * permanent failures.
  */
+/**
+ * Provider conditions that arrive wearing a retryable status code but cannot
+ * succeed on retry, because the account — not the request — is the problem.
+ *
+ * Observed 2026-08-21: Gemini returns "Your project has exceeded its monthly
+ * spending cap" as **HTTP 429**. 429 means "slow down", so every layer above
+ * dutifully retried it: the wrapper twice, the orchestrator ten times over,
+ * twenty attempts and 483 seconds before the run failed. Nothing about waiting
+ * fixes a monthly cap.
+ *
+ * That is not merely wasteful. `maxDuration` on the queue consumer is 300s, so
+ * in production the function is KILLED mid-storm — and a killed executor
+ * leaves its policy stuck `analyzing` until the lease expires and the reaper
+ * finds it. A fast, honest failure produces a policy the wallet can explain.
+ */
+const PERMANENT_ACCOUNT_FAILURES = [
+    "spending cap",
+    "spend cap",
+    "exceeded your current quota",
+    "insufficient_quota",
+    "insufficient quota",
+    "billing",
+    "credit balance is too low",
+    "payment required",
+    "account is not active",
+]
+
+/** True when the provider is refusing for a reason that outlives the request. */
+export function isPermanentAccountError(error: unknown): boolean {
+    if (!(error instanceof Error)) return false
+    const msg = error.message.toLowerCase()
+    return PERMANENT_ACCOUNT_FAILURES.some((needle) => msg.includes(needle))
+}
+
 export function isTransientError(error: unknown): boolean {
     if (!(error instanceof Error)) return false
+
+    // Checked BEFORE the status rules, because these arrive as 429 and would
+    // otherwise be retried until the function is killed.
+    if (isPermanentAccountError(error)) return false
 
     const status = (error as Error & { statusCode?: unknown }).statusCode
     if (typeof status === 'number') {

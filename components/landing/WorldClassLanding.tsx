@@ -149,8 +149,8 @@ export function WorldClassLanding({
                             renders the live figures a few sections down. */}
                         <p className="mx-auto mt-5 max-w-[540px] text-body-lg font-medium leading-relaxed text-[#334155] dark:text-slate-200">
                             {t(
-                                "Με το PolicyWallet Plus διαβάζουμε κάθε ασφαλιστήριό σας, βρίσκουμε τι δεν καλύπτεται και σας ειδοποιούμε πριν λήξει κάτι.",
-                                "With PolicyWallet Plus we read every one of your policies, find what is not covered, and warn you before something runs out.",
+                                "Με το Family διαβάζουμε κάθε ασφαλιστήριό σας, βρίσκουμε τι δεν καλύπτεται και σας ειδοποιούμε πριν λήξει κάτι.",
+                                "With Family we read every one of your policies, find what is not covered, and warn you before something runs out.",
                             )}
                         </p>
 
@@ -199,8 +199,8 @@ export function WorldClassLanding({
                                     sentence, which is the one that says what the
                                     five cards are actually about. */}
                                 {t(
-                                    "Μαζί με τα ψιλά γράμματα — όχι με ό,τι νομίζετε ότι αγοράσατε. Και ρωτήστε ό,τι θέλετε για το ασφαλιστήριό σας, όποια ώρα της ημέρας, με το PolicyWallet Plus.",
-                                    "Including the small print — not what you think you bought. And ask anything about your policy, at any hour of the day, with PolicyWallet Plus.",
+                                    "Μαζί με τα ψιλά γράμματα — όχι με ό,τι νομίζετε ότι αγοράσατε. Και ρωτήστε ό,τι θέλετε για το ασφαλιστήριό σας, όποια ώρα της ημέρας, με το Family.",
+                                    "Including the small print — not what you think you bought. And ask anything about your policy, at any hour of the day, with Family.",
                                 )}
                             </p>
                         </div>

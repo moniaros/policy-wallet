@@ -104,57 +104,57 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     },
                 },
                 features: [
-                    { label: { el: "1 ασφαλιστήριο", en: "1 policy" }, included: true },
-                    { label: { el: "Βασική σύνοψη ασφαλιστηρίου από το AI", en: "Basic AI policy summary" }, included: true },
+                    { label: { el: "3 ασφαλιστήρια", en: "3 policies" }, included: true, highlight: true },
+                    { label: { el: "Πλήρης ανάλυση AI σε κάθε ασφαλιστήριο", en: "Full AI analysis on every policy" }, included: true, highlight: true },
+                    { label: { el: "Εντοπισμός κενών κάλυψης", en: "Coverage-gap detection" }, included: true },
                     { label: { el: "Ημερομηνία ανανέωσης", en: "Renewal date" }, included: true },
                     { label: { el: "Υπενθυμίσεις ανανέωσης", en: "Renewal reminders" }, included: false },
-                    { label: { el: "Πλήρης ανάλυση AI, ερωτήσεις & κενά κάλυψης", en: "Full AI analysis, Q&A & coverage gaps" }, included: false },
                 ],
             },
             {
                 key: "plus",
                 checkoutPlanId: "ph-plus",
-                name: { el: "Starter", en: "Starter" },
-                description: { el: "Για να μη σας ξεφύγει καμία λήξη", en: "So no expiry slips past you" },
+                name: { el: "Plus", en: "Plus" },
+                description: { el: "Για όλα τα δικά σας ασφαλιστήρια", en: "For everything in your own name" },
                 pricing: {
                     monthly: {
-                        amount: "€2.99",
+                        amount: "€4.99",
                         period: { el: "/μήνα", en: "/month" },
                     },
                     annual: {
-                        amount: "€29",
+                        amount: "€39",
                         period: { el: "/έτος", en: "/year" },
-                        savings: { el: "Εξοικονομείτε 2 μήνες", en: "Save 2 months" },
+                        savings: { el: "Εξοικονομείτε 4 μήνες", en: "Save 4 months" },
                     },
                 },
                 features: [
-                    { label: { el: "Έως 5 ασφαλιστήρια", en: "Up to 5 policies" }, included: true, highlight: true },
-                    { label: { el: "Βασική σύνοψη & οργάνωση", en: "Basic summaries & organization" }, included: true },
+                    { label: { el: "Έως 10 ασφαλιστήρια", en: "Up to 10 policies" }, included: true, highlight: true },
+                    { label: { el: "Πλήρης ανάλυση AI σε κάθε ασφαλιστήριο", en: "Full AI analysis on every policy" }, included: true },
+                    { label: { el: "Εντοπισμός κενών & διπλών καλύψεων", en: "Gap & duplicate-coverage detection" }, included: true },
                     { label: { el: "Υπενθυμίσεις ανανέωσης (email)", en: "Renewal reminders (email)" }, included: true },
-                    { label: { el: "Πλήρης ανάλυση AI & ερωτήσεις", en: "Full AI analysis & Q&A" }, included: false },
-                    { label: { el: "Εντοπισμός κενών & πολλαπλές ασφαλιστικές", en: "Gap detection & multi-insurer" }, included: false },
+                    { label: { el: "Ανάλυση από πολλές ασφαλιστικές", en: "Multi-insurer insights" }, included: true },
                 ],
             },
             {
                 key: "pro",
                 checkoutPlanId: "ph-pro",
-                name: { el: "PolicyWallet Plus", en: "PolicyWallet Plus" },
-                description: { el: "Όλες οι απαντήσεις, για όλα σας τα ασφαλιστήρια", en: "Every answer, for all your policies" },
+                name: { el: "Family", en: "Family" },
+                description: { el: "Για τα ασφαλιστήρια όλου του σπιτιού", en: "For the whole household's policies" },
                 badge: { el: "Προτείνεται", en: "Recommended" },
                 isHighlighted: true,
                 pricing: {
                     monthly: {
-                        amount: "€7.99",
+                        amount: "€8.99",
                         period: { el: "/μήνα", en: "/month" },
                     },
                     annual: {
                         amount: "€79",
                         period: { el: "/έτος", en: "/year" },
-                        savings: { el: "Εξοικονομείτε 2 μήνες", en: "Save 2 months" },
+                        savings: { el: "Εξοικονομείτε 3 μήνες", en: "Save 3 months" },
                     },
                 },
                 features: [
-                    { label: { el: "Απεριόριστα ασφαλιστήρια", en: "Unlimited policies" }, included: true, highlight: true },
+                    { label: { el: "Έως 25 ασφαλιστήρια", en: "Up to 25 policies" }, included: true, highlight: true },
                     { label: { el: "Πλήρης ανάλυση AI & απεριόριστες ερωτήσεις", en: "Full AI analysis & unlimited Q&A" }, included: true, highlight: true },
                     { label: { el: "Εντοπισμός κενών & διπλών καλύψεων", en: "Gap & duplicate-coverage detection" }, included: true },
                     { label: { el: "Ανάλυση από πολλές ασφαλιστικές", en: "Multi-insurer insights" }, included: true },
@@ -217,8 +217,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     en: "How much does PolicyWallet cost?",
                 },
                 answer: {
-                    el: "Το δωρεάν πλάνο καλύπτει ένα ασφαλιστήριο και δεν ζητά κάρτα. Το Starter κοστίζει €2.99 τον μήνα ή €29 τον χρόνο, και το PolicyWallet Plus €7.99 τον μήνα ή €79 τον χρόνο. Όλες οι τιμές περιλαμβάνουν ΦΠΑ.",
-                    en: "The free plan covers one policy and needs no card. Starter is €2.99 a month or €29 a year, and PolicyWallet Plus is €7.99 a month or €79 a year. All prices include VAT.",
+                    el: "Το δωρεάν πλάνο καλύπτει τρία ασφαλιστήρια, με πλήρη ανάλυση, και δεν ζητά κάρτα. Το Plus κοστίζει €39 τον χρόνο (ή €4.99 τον μήνα) για 10 ασφαλιστήρια, και το Family €79 τον χρόνο (ή €8.99 τον μήνα) για 25. Οι αναλύσεις είναι απεριόριστες σε κάθε πλάνο. Όλες οι τιμές περιλαμβάνουν ΦΠΑ.",
+                    en: "The free plan covers three policies, with full analysis, and needs no card. Plus is €39 a year (or €4.99 a month) for 10 policies, and Family €79 a year (or €8.99 a month) for 25. Analyses are unlimited on every plan. All prices include VAT.",
                 },
             },
             {
@@ -291,23 +291,19 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 isHighlighted: true,
                 pricing: {
                     monthly: {
-                        amount: "€19.99",
+                        amount: "€29",
                         period: { el: "/μήνα", en: "/month" },
-                    },
-                    annual: {
-                        amount: "€199",
-                        period: { el: "/έτος", en: "/year" },
-                        savings: { el: "Εξοικονομείτε ~2 μήνες", en: "Save ~2 months" },
                     },
                 },
                 features: [
                     { label: { el: "100 πελάτες", en: "100 clients" }, included: true, highlight: true },
+                    { label: { el: "50 αναλύσεις τον μήνα", en: "50 analyses a month" }, included: true, highlight: true },
                     // Same plain register as the comparison rows below — the
                     // cards used to say "Portfolio dashboard" / "Renewal
                     // pipeline" in English inside the Greek column.
                     { label: { el: "Όλοι οι πελάτες σε μία οθόνη", en: "Every client on one screen" }, included: true, highlight: true },
                     { label: { el: "Λίστα με ό,τι λήγει", en: "A list of what is running out" }, included: true },
-                    { label: { el: "Μαζική εισαγωγή έως 100 γραμμές", en: "Bulk import up to 100 rows" }, included: true },
+                    { label: { el: "Μαζική εισαγωγή έως 100 πελάτες", en: "Bulk import up to 100 clients" }, included: true },
                     { label: { el: "Ερωτηματολόγια πελατών (5 πρότυπα)", en: "Client questionnaires (5 templates)" }, included: true },
                 ],
             },
@@ -318,17 +314,13 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 description: { el: "Για ομάδες παραγωγής", en: "For sales teams" },
                 pricing: {
                     monthly: {
-                        amount: "€49.99",
+                        amount: "€79",
                         period: { el: "/μήνα", en: "/month" },
-                    },
-                    annual: {
-                        amount: "€499",
-                        period: { el: "/έτος", en: "/year" },
-                        savings: { el: "Εξοικονομείτε ~€100", en: "Save ~€100" },
                     },
                 },
                 features: [
                     { label: { el: "500 πελάτες", en: "500 clients" }, included: true, highlight: true },
+                    { label: { el: "150 αναλύσεις τον μήνα", en: "150 analyses a month" }, included: true, highlight: true },
                     { label: { el: "Ομάδα έως 3 ασφαλιστές", en: "A team of up to 3 agents" }, included: true },
                     { label: { el: "Προτάσεις επιπλέον κάλυψης ανά πελάτη", en: "Extra-cover suggestions per client" }, included: true },
                     { label: { el: "Οι αναλύσεις σας τρέχουν πρώτες", en: "Your analyses run first" }, included: true },
@@ -343,23 +335,15 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 isContactPlan: true,
                 pricing: {
                     monthly: {
-                        amount: "€99.99",
+                        amount: "€199",
                         period: { el: "/μήνα", en: "/month" },
-                    },
-                    annual: {
-                        amount: "€999",
-                        period: { el: "/έτος", en: "/year" },
-                        savings: { el: "Εξοικονομείτε ~€200", en: "Save ~€200" },
                     },
                 },
                 features: [
                     { label: { el: "Απεριόριστοι πελάτες", en: "Unlimited clients" }, included: true, highlight: true },
+                    { label: { el: "400 αναλύσεις τον μήνα", en: "400 analyses a month" }, included: true, highlight: true },
                     { label: { el: "Απεριόριστη ομάδα", en: "Unlimited team members" }, included: true },
-                    { label: { el: "Απεριόριστη μαζική εισαγωγή", en: "Unlimited bulk import" }, included: true },
-                    // "25M tokens" is a billing internal — meaningless to a
-                    // brokerage owner. The card states the promise; the exact
-                    // allowance lives in the entitlement config.
-                    { label: { el: "Το μεγαλύτερο όριο χρήσης AI", en: "The largest AI allowance" }, included: true },
+                    { label: { el: "Απεριόριστη μαζική εισαγωγή πελατών", en: "Unlimited client import" }, included: true },
                     { label: { el: "Αποκλειστική υποστήριξη", en: "Dedicated support" }, included: true },
                 ],
             },

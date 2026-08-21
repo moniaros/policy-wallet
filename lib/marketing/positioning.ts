@@ -317,21 +317,24 @@ export const WHY_NOW: readonly { title: Bilingual; body: Bilingual }[] = [
  * gives you, and 17 hand-typed copies of a free-tier promise is 17 chances for
  * one page to promise something the product does not do.
  */
-export const CTA_REASSURANCE_SHORT: Bilingual = {
-    el: "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.",
-    en: "Free for 1 policy. No card.",
-}
-
+/**
+ * ONE reassurance line. There is deliberately no `_SHORT` variant.
+ *
+ * Two exports meant two free-tier promises, and they drifted the moment the
+ * tier changed: sixteen product pages rendered one string while the landing
+ * page rendered another, and a pricing change had to find both. The free tier
+ * is three policies with full analysis — stated once, here.
+ */
 export const CTA_REASSURANCE: Bilingual = {
-    el: "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
-    en: "Free for 1 policy. No card. Delete everything whenever you want.",
+    el: "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα. Διαγράφετε τα πάντα όποτε θέλετε.",
+    en: "Free for 3 policies. No card. Delete everything whenever you want.",
 }
 
 /**
  * Primary call to action, worded as the outcome the visitor gets.
  *
  * It has to survive the free tier. "See what is NOT covered" reads stronger,
- * but COMPARISON_ROWS already rules that job a PolicyWallet Plus one, so a CTA
+ * but COMPARISON_ROWS already rules that job a Family one, so a CTA
  * that opens a free signup must not promise it. Reading back what a policy
  * actually says is baseline behaviour — Free stores one policy and gets its
  * basic parsed summary — and it is the question every policyholder has.
@@ -385,7 +388,7 @@ export const SPEED_CLAIM: Bilingual = {
  * it. No competitor is named — the honest comparison is against the three
  * things Greek households actually do today.
  */
-// "plus" = yes, on the PolicyWallet Plus plan. Plus-only capabilities (gap &
+// "plus" = yes, on the Family plan. Plus-only capabilities (gap &
 // duplicate detection per the pricing matrix) must not read as an unqualified
 // "yes" to a Free reader — the cell itself carries the plan attribution.
 export type ComparisonVerdict = "yes" | "plus" | "partial" | "no"
@@ -439,7 +442,7 @@ export const COMPARISON_ROWS: readonly {
         policywallet: "yes",
     },
     {
-        // Gap & duplicate detection is a PolicyWallet Plus feature — these two
+        // Gap & duplicate detection is a Family feature — these two
         // rows use the "plus" verdict so the cell never over-promises to a
         // Free reader (same honesty rule as the renewal row below).
         job: { el: "Σας δείχνει τι ΔΕΝ καλύπτεται", en: "Shows you what is NOT covered" },

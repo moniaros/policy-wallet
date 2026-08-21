@@ -103,6 +103,12 @@ export async function createCheckoutSession(
         ],
         mode: "subscription",
         subscription_data: trialDays ? { trial_period_days: trialDays } : undefined,
+        // Promotion codes are a B2B-only lever (ENDOFSUMMER26 and its
+        // successors). Enabling the field on B2C too would put a "have a
+        // promo code?" box on consumer checkout with nothing valid to type
+        // into it — an invitation to go looking for a discount that does not
+        // exist, and a support question for every person who does.
+        allow_promotion_codes: plan.planType === "agent" ? true : undefined,
         success_url: successUrl,
         cancel_url: cancelUrl,
         customer_email: user.email!,

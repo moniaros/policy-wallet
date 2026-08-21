@@ -161,9 +161,12 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
 
 // ── Client-safe plan facts (parity-tested against server tables) ────
 
-export const FREE_POLICY_LIMIT = 1
-/** "Starter" (code key `plus`) policy cap. */
-export const PLUS_POLICY_LIMIT = 5
+export const FREE_POLICY_LIMIT = 3
+/** "Plus" (code key `plus`) policy cap. */
+export const PLUS_POLICY_LIMIT = 10
+/** "Family" (code key `pro`) policy cap. Finite in pricing v2 — the tier
+ *  ladder is capacity, so no B2C tier is unlimited. */
+export const PRO_POLICY_LIMIT = 25
 /**
  * Complimentary lifetime AI questions for free-tier users.
  * Zero under the paid-aha-loop tier restructure — deep-AI Q&A is a paid
@@ -185,8 +188,11 @@ export interface PlanPricing {
 // "Plus" (€7.99, the recommended AI tier). See PlanBadge / public pricing for
 // the display labels.
 export const PLAN_PRICING: Record<Exclude<PlanTier, "free">, PlanPricing> = {
-    plus: { planId: "ph-plus", monthlyEur: 2.99, annualEur: 29, annualSavingsMonths: 2 },
-    pro: { planId: "ph-pro", monthlyEur: 7.99, annualEur: 79, annualSavingsMonths: 2, trialDays: 14 },
+    // Pricing v2: annual-first. €39/yr vs €4.99/mo is ~4 months free, and
+    // €79/yr vs €8.99/mo is ~3 — so annualSavingsMonths is computed, not
+    // asserted, by round(12 - annual / monthly).
+    plus: { planId: "ph-plus", monthlyEur: 4.99, annualEur: 39, annualSavingsMonths: 4 },
+    pro: { planId: "ph-pro", monthlyEur: 8.99, annualEur: 79, annualSavingsMonths: 3, trialDays: 14 },
 }
 
 const TIER_RANK: Record<PlanTier, number> = { free: 0, plus: 1, pro: 2 }

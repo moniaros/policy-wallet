@@ -20,8 +20,8 @@
     "lint:encoding": "node scripts/check-mojibake.js",
     "audit:api-auth": "node scripts/audit-api-auth.js",
     "verify:migrations": "node scripts/verify-migration-sync.js",
-    "verify:plans": "tsx -r dotenv/config scripts/verify-plan-entitlements.ts",
-    "cleanup:sentinels": "tsx -r dotenv/config scripts/cleanup-sentinel-policies.ts",
+    "verify:plans": "DOTENV_CONFIG_PATH=.env.local tsx -r dotenv/config scripts/verify-plan-entitlements.ts",
+    "cleanup:sentinels": "DOTENV_CONFIG_PATH=.env.local tsx -r dotenv/config scripts/cleanup-sentinel-policies.ts",
     "eval": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts",
     "eval:ci": "ts-node -r tsconfig-paths/register -P evals/tsconfig.evals.json evals/run.ts --provider=mock --suite=all",
     "docs:notifications": "node scripts/generate-notification-matrix.mjs",
@@ -99,6 +99,7 @@
     "tailwindcss": "^4",
     "tinyglobby": "0.2.15",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.12",
     "typescript": "^5",
     "vitest": "^4.0.18"
   }

@@ -39,7 +39,7 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
             q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλεια αυτοκινήτου;", en: "How does PolicyWallet help with car insurance?" },
             a: {
                 el: "Στέλνετε το ασφαλιστήριο και το διαβάζουμε για εσάς: τι καλύπτει, τι όχι, πότε λήγει. Δωρεάν για 1 ασφαλιστήριο, χωρίς κάρτα. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "You send us the policy and we read it for you: what it covers, what it does not, and when it runs out. Free for 1 policy, no card. We do not sell insurance and take no commission.",
+                en: "You send us the policy and we read it for you: what it covers, what it does not, and when it runs out. Free for 3 policies, no card. We do not sell insurance and take no commission.",
             },
         },
     ],
@@ -130,8 +130,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με την αστική ευθύνη;", en: "How does PolicyWallet help with liability cover?" },
             a: {
-                el: "Διαβάζουμε κάθε κάλυψη ξεχωριστά και σας δείχνουμε πού εμφανίζεται η αστική ευθύνη — και, στο πλάνο PolicyWallet Plus, αν την πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "We read every cover separately and show you where liability appears — and, on the PolicyWallet Plus plan, whether you are paying for it twice. We do not sell insurance and take no commission.",
+                el: "Διαβάζουμε κάθε κάλυψη ξεχωριστά και σας δείχνουμε πού εμφανίζεται η αστική ευθύνη — και, στο πλάνο Family, αν την πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
+                en: "We read every cover separately and show you where liability appears — and, on the Family plan, whether you are paying for it twice. We do not sell insurance and take no commission.",
             },
         },
     ],
@@ -176,8 +176,8 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
         {
             q: { el: "Πώς με βοηθά το PolicyWallet με το ομαδικό υγείας;", en: "How does PolicyWallet help with group health?" },
             a: {
-                el: "Βάζουμε το ομαδικό και το ατομικό σας δίπλα-δίπλα, ώστε να δείτε τι σας δίνει το καθένα — και, στο πλάνο PolicyWallet Plus, τι πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
-                en: "We put your group and personal policies side by side, so you can see what each one gives you — and, on the PolicyWallet Plus plan, what you are paying for twice. We do not sell insurance and take no commission.",
+                el: "Βάζουμε το ομαδικό και το ατομικό σας δίπλα-δίπλα, ώστε να δείτε τι σας δίνει το καθένα — και, στο πλάνο Family, τι πληρώνετε δύο φορές. Δεν πουλάμε ασφάλειες και δεν παίρνουμε προμήθεια.",
+                en: "We put your group and personal policies side by side, so you can see what each one gives you — and, on the Family plan, what you are paying for twice. We do not sell insurance and take no commission.",
             },
         },
     ],
@@ -345,7 +345,7 @@ export const LOB_FAQS: Record<ProductCategoryId, LobFaqItem[]> = {
             q: { el: "Πώς με βοηθά το PolicyWallet με την ασφάλιση έργων τέχνης;", en: "How does PolicyWallet help with fine art insurance?" },
             a: {
                 el: "Στέλνετε το ασφαλιστήριο και διαβάζουμε την κατάσταση αντικειμένων, τις αξίες, την απαλλαγή και τους όρους ασφαλείας — όπως τον συναγερμό που το συμβόλαιο απαιτεί — καθώς και αν προαιρετικές καλύψεις όπως ο σεισμός έχουν επιλεγεί. Δωρεάν για 1 ασφαλιστήριο, χωρίς κάρτα.",
-                en: "You send us the policy and we read the schedule of items, the values, the deductible and the security conditions — like the alarm the policy requires — plus whether optional covers such as earthquake were taken. Free for 1 policy, no card.",
+                en: "You send us the policy and we read the schedule of items, the values, the deductible and the security conditions — like the alarm the policy requires — plus whether optional covers such as earthquake were taken. Free for 3 policies, no card.",
             },
         },
     ],

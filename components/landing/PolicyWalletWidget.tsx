@@ -68,11 +68,11 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
 
     // One sentence that carries the same information as the whole illustration.
     // It names the plan for the same reason the caption below does: finding the
-    // gap is a PolicyWallet Plus job, and this mock sits beside a free-tier
+    // gap is a Family job, and this mock sits beside a free-tier
     // promise.
     const alternative = t(
-        "Παράδειγμα αποτελέσματος με το PolicyWallet Plus: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το συμβόλαιο λήγει σε 14 μέρες.",
-        "Example result with PolicyWallet Plus: car and health are covered, while the home is missing flood cover and that policy runs out in 14 days.",
+        "Παράδειγμα αποτελέσματος με το Family: το αυτοκίνητο και η υγεία είναι καλυμμένα, ενώ στο σπίτι λείπει η κάλυψη πλημμύρας και το συμβόλαιο λήγει σε 14 μέρες.",
+        "Example result with Family: car and health are covered, while the home is missing flood cover and that policy runs out in 14 days.",
     )
 
     // Entrance transitions are cosmetic. Everything is readable at rest, so
@@ -225,16 +225,16 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                 </div>
             </div>
 
-            {/* Finding the gap is a PolicyWallet Plus job — Free and Starter
+            {/* Finding the gap is a Family job — Free and Starter
                 both sit at zero gap analyses. This mock renders in the hero,
-                inches from "Free for 1 policy", so it has to say whose result
+                inches from the free-tier reassurance line, so it has to say whose result
                 it is or it reads as a free-tier promise. It sits OUTSIDE the
                 role="img" wrapper so assistive tech hears it as a caption
                 rather than having it swallowed by the image label. */}
             <p className="text-center text-micro text-[#5B6A7A] dark:text-slate-400">
                 {t(
-                    "Παράδειγμα αποτελέσματος με το PolicyWallet Plus.",
-                    "Example result with PolicyWallet Plus.",
+                    "Παράδειγμα αποτελέσματος με το Family.",
+                    "Example result with Family.",
                 )}
             </p>
         </div>

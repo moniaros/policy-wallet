@@ -1,0 +1,16 @@
+// PROBE FIXTURE — the positive control. Identical shape to the negative probe,
+// except the authorization call is real code rather than a comment.
+import { db } from "@/lib/db"
+import { getPolicyAccess } from "@/lib/policy-access"
+
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
+    const access = await getPolicyAccess(id, "user-from-session")
+    if (!access.canRead) return new Response("Not found", { status: 404 })
+
+    const rows = await db.$queryRawUnsafe(
+        "SELECT * FROM policy_documents WHERE policy_id = $1",
+        id
+    )
+    return Response.json({ rows })
+}

@@ -261,8 +261,8 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                         of promising free AI gap analysis. */}
                     <p className="mb-6 text-body leading-relaxed text-white/70">
                         {t(
-                            "Ξεκινήστε δωρεάν με ένα συμβόλαιο, χωρίς κάρτα — το διαβάζουμε και σας δείχνουμε τι καλύπτει. Στο πλάνο PolicyWallet Plus, η AI εντοπίζει κενά και επικαλύψεις.",
-                            "Start free with one policy, no card — we read it and show you what it covers. On the PolicyWallet Plus plan, the AI finds gaps and overlaps."
+                            "Ξεκινήστε δωρεάν με τρία ασφαλιστήρια, χωρίς κάρτα — τα διαβάζουμε και σας δείχνουμε τι καλύπτουν και τι κενά έχουν. Στο πλάνο Family, η AI εντοπίζει και τις επικαλύψεις μεταξύ τους.",
+                            "Start free with three policies, no card — we read them and show you what they cover, gaps included."
                         )}
                     </p>
                     <Link

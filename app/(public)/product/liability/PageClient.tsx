@@ -5,7 +5,7 @@ import { Copy, Dog, Droplets, Bike, ShieldCheck } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
-import { PRIMARY_ACTION, pick, CTA_REASSURANCE_SHORT } from "@/lib/marketing/positioning"
+import { PRIMARY_ACTION, pick, CTA_REASSURANCE } from "@/lib/marketing/positioning"
 
 export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }) {
     const isGreek = locale === "el"
@@ -56,7 +56,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                         </Link>
                     </div>
                     <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
-                        {pick(CTA_REASSURANCE_SHORT, locale)}
+                        {pick(CTA_REASSURANCE, locale)}
                     </p>
                 </div>
             </section>
@@ -98,7 +98,7 @@ export default function LiabilityProductPage({ locale }: { locale: "el" | "en" }
                             {t("Πριν την αγοράσετε, δείτε αν την έχετε ήδη.", "Before you buy it, see if you already own it.")}
                         </h2>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed mb-6">
-                            {t("Πολλά συμβόλαια κατοικίας περιλαμβάνουν αστική ευθύνη ως ενσωματωμένη κάλυψη — αγορασμένη μαζί με την πυρκαγιά και ξεχασμένη από την πρώτη μέρα. Όταν ανεβάζετε τα συμβόλαιά σας, η ανάλυση διαβάζει κάθε κάλυψη ξεχωριστά και, στο πλάνο PolicyWallet Plus, δείχνει πού η ίδια προστασία εμφανίζεται δύο φορές.", "Many home policies include liability as a bundled cover — bought together with the fire section and forgotten since day one. When you upload your policies, the analysis reads every cover separately and, on the PolicyWallet Plus plan, shows where the same protection appears twice.")}
+                            {t("Πολλά συμβόλαια κατοικίας περιλαμβάνουν αστική ευθύνη ως ενσωματωμένη κάλυψη — αγορασμένη μαζί με την πυρκαγιά και ξεχασμένη από την πρώτη μέρα. Όταν ανεβάζετε τα συμβόλαιά σας, η ανάλυση διαβάζει κάθε κάλυψη ξεχωριστά και, στο πλάνο Family, δείχνει πού η ίδια προστασία εμφανίζεται δύο φορές.", "Many home policies include liability as a bundled cover — bought together with the fire section and forgotten since day one. When you upload your policies, the analysis reads every cover separately and, on the Family plan, shows where the same protection appears twice.")}
                         </p>
                         <p className="text-[#475569] dark:text-slate-300 text-lead leading-relaxed">
                             {t("Αν λείπει, το βλέπετε κι αυτό: το κενό εμφανίζεται δίπλα στα υπόλοιπα, με τα όρια που ισχύουν σήμερα.", "And if it's missing, you see that too: the gap appears next to everything else, with the limits that apply today.")}

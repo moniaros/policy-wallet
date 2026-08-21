@@ -89,15 +89,15 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     },
     pricing: {
         path: "/pricing",
-        title: "Τιμές: Δωρεάν, Starter €2.99, Plus €7.99/μήνα",
+        title: "Τιμές: Δωρεάν, Plus €39, Family €79/χρόνο",
         description:
-            "Καθαρές τιμές PolicyWallet: δωρεάν για 1 συμβόλαιο, Starter €2.99/μήνα, PolicyWallet Plus €7.99/μήνα με πλήρη ανάλυση AI. Ακύρωση όποτε θέλετε.",
+            "Καθαρές τιμές: δωρεάν για 3 ασφαλιστήρια με πλήρη ανάλυση AI, Plus €39/χρόνο για 10, Family €79/χρόνο για 25. Απεριόριστες αναλύσεις, ακύρωση όποτε θέλετε.",
         keywords: ["τιμές PolicyWallet", "συνδρομή PolicyWallet"],
         breadcrumb: "Τιμές",
         en: {
-            title: "Pricing: Free, Starter €2.99, Plus €7.99/mo",
+            title: "Pricing: Free, Plus €39/year, Family €79/year",
             description:
-                "Clear PolicyWallet pricing: a free plan for 1 policy, Starter at €2.99/month and PolicyWallet Plus at €7.99/month with full AI analysis. Cancel anytime.",
+                "Clear pricing: a free plan for 3 policies with full AI analysis, Plus at €39/year for 10 and Family at €79/year for 25. Unlimited analyses, cancel anytime.",
             breadcrumb: "Pricing",
         },
     },

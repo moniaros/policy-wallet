@@ -23,16 +23,16 @@ export const PRODUCT_STEPS = [
         titleEn: "We read them for you",
         // Gap & duplicate detection is Plus-only — the step names the plan.
         // This text also ships verbatim inside the HowTo JSON-LD.
-        descEl: "Σας εξηγούμε τι καλύπτει και τι όχι, σε γλώσσα που καταλαβαίνετε — και, με το PolicyWallet Plus, βρίσκουμε κενά και διπλές καλύψεις.",
-        descEn: "We explain what is covered and what is not, in words you actually understand — and, with PolicyWallet Plus, we find gaps and doubled-up cover.",
+        descEl: "Σας εξηγούμε τι καλύπτει και τι όχι, σε γλώσσα που καταλαβαίνετε, και εντοπίζουμε τα κενά του — και, με το Family, τις διπλές καλύψεις ανάμεσα στα ασφαλιστήριά σας.",
+        descEn: "We explain what is covered and what is not, in words you actually understand, and we find its gaps — and, with Family, the cover you are paying for twice across policies.",
     },
     {
         n: "03",
         icon: Bell,
         titleEl: "Σας κρατάμε ενήμερους",
         titleEn: "We keep you in the loop",
-        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Starter — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το PolicyWallet Plus.",
-        descEn: "We warn you before something runs out — from the Starter plan — and when we find something new in your documents, with PolicyWallet Plus.",
+        descEl: "Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus — και όταν βρούμε κάτι νέο στα έγγραφά σας, με το Family.",
+        descEn: "We warn you before something runs out — from the Plus plan — and when we find something new in your documents, with Family."
     },
 ] as const
 
@@ -53,7 +53,7 @@ export const PRODUCT_STATS = [
         valueEl: "Λίγα λεπτά",
         valueEn: "A few minutes",
         labelEl: "για να διαβαστεί ένα συμβόλαιο",
-        labelEn: "to read one policy",
+        labelEn: "to read three policies",
     },
     {
         valueEl: "0",
@@ -86,6 +86,6 @@ export const PRODUCT_FAQS = [
         qEl: "Μπορώ να το δοκιμάσω δωρεάν;",
         qEn: "Can I try it for free?",
         aEl: "Ναι. Στείλτε 1 συμβόλαιο και πάρτε βασική σύνοψη, χωρίς πιστωτική κάρτα και χωρίς δέσμευση.",
-        aEn: "Yes. Send us 1 policy and get a basic summary, with no credit card and no commitment.",
+        aEn: "Yes. Send us up to 3 policies and get the full analysis, with no credit card and no commitment.",
     },
 ] as const

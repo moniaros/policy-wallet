@@ -98,8 +98,8 @@ export function ProductSections({ language }: { language: Language }) {
                         The reassurance the visitor actually needs is the price. */}
                     <p className="mt-4 text-body-sm text-[#5B6A7A] dark:text-slate-400">
                         {t(
-                            "Δωρεάν για 1 συμβόλαιο. Χωρίς κάρτα.",
-                            "Free for 1 policy. No card."
+                            "Δωρεάν για 3 ασφαλιστήρια. Χωρίς κάρτα.",
+                            "Free for 3 policies. No card."
                         )}
                     </p>
                 </div>
@@ -116,23 +116,23 @@ export function ProductSections({ language }: { language: Language }) {
                         </h2>
                         <p className="mb-8 text-lead leading-relaxed text-[#475569] dark:text-slate-300">
                             {t(
-                                "Με το PolicyWallet Plus, σας λέμε τι λείπει από την κάλυψή σας, τι πληρώνετε δύο φορές και τι αξίζει να διορθώσετε πρώτα.",
-                                "With PolicyWallet Plus, we tell you what your cover is missing, what you are paying for twice, and what is worth fixing first."
+                                "Με το Family, σας λέμε τι λείπει από την κάλυψή σας, τι πληρώνετε δύο φορές και τι αξίζει να διορθώσετε πρώτα.",
+                                "With Family, we tell you what your cover is missing, what you are paying for twice, and what is worth fixing first."
                             )}
                         </p>
                         <ul className="space-y-3">
                             {[
                                 t("Διαβάζουμε κάθε συμβόλαιο σε λίγα λεπτά", "We read every policy in minutes"),
                                 t("Βρίσκουμε κενά και διπλές καλύψεις — με το Plus", "We find gaps and doubled-up cover — with Plus"),
-                                t("Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Starter", "We warn you before something runs out — from the Starter plan"),
+                                t("Σας ειδοποιούμε πριν λήξει κάτι — από το πλάνο Plus", "We warn you before something runs out — from the Plus plan"),
                                 // `agentCollaboration` is false on free AND on
                                 // Starter, true only on pro — the plan displayed
-                                // as PolicyWallet Plus. /pricing's own comparison
+                                // as Family. /pricing's own comparison
                                 // row reads Όχι / Όχι / Ναι, and the homepage card
                                 // making this same promise already names the plan.
                                 // This was the only unqualified bullet in a list
                                 // where the other three all carry their plan.
-                                t("Δείχνετε στον ασφαλιστή σας ό,τι θέλετε — με το PolicyWallet Plus", "You show your agent whatever you choose — with PolicyWallet Plus"),
+                                t("Δείχνετε στον ασφαλιστή σας ό,τι θέλετε — με το Family", "You show your agent whatever you choose — with Family"),
                             ].map((item) => (
                                 <li key={item} className="flex items-start gap-3 text-body-lg text-[#0F172A] dark:text-white">
                                     <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
@@ -400,13 +400,13 @@ export function ProductSections({ language }: { language: Language }) {
                     <h2 className="mb-6 text-h2 font-semibold leading-[1.05] tracking-[-0.04em] text-white [overflow-wrap:anywhere] md:text-h1 lg:text-display">
                         {t(
                             "Στείλτε ένα συμβόλαιο και δείτε τι βρίσκουμε.",
-                            "Send us one policy and see what we find."
+                            "Send us a policy and see what we find."
                         )}
                     </h2>
                     <p className="mx-auto mb-10 max-w-[540px] text-lead leading-relaxed text-white/75">
                         {t(
                             CTA_REASSURANCE.el,
-                            "Free for 1 policy. No card. Delete everything whenever you want."
+                            "Free for 3 policies. No card. Delete everything whenever you want."
                         )}
                     </p>
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">

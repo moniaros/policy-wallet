@@ -75,16 +75,27 @@ export const PLAN_ID_BY_TIER_KEY: Record<TierKey, string> = {
 // ── B2C entitlement fallbacks ────────────────────────────────────────
 
 export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
-    // Free = organizer only. One policy, its basic parsed summary, and basic
-    // renewal reminders — NO paid AI at all (parse/extraction is the entry,
-    // deep analysis/Q&A/gaps require Plus). There is no complimentary deep
-    // "trial analysis"; the paid-aha-loop model gates all deep AI to Plus.
+    // ── Pricing v2 (2026-08-21): B2C is CAPACITY-based, not usage-based. ──
+    //
+    // The enforced limit is the POLICY COUNT. `aiAnalysisPerMonth` is null on
+    // every B2C tier — analyses are unlimited, because metering them was what
+    // made the old model incomprehensible ("what is an analysis?" is not a
+    // question a consumer should have to answer to buy).
+    //
+    // `monthlyTokenBudget` is an internal abuse guard, NOT a product limit. It
+    // must never be shown, named, or implied in any UI: when it trips the user
+    // sees the Greek keep-and-inform message, never a token number.
+    //
+    // Free now includes full analysis. That is the point — a wallet that will
+    // not read your policy is a filing cabinet, and the old free tier
+    // (1 policy, zero AI) demonstrated the product's weakest form to everyone
+    // who tried it.
     free: {
-        policies: 1,
-        aiAnalysisPerMonth: 0,
+        policies: 3,
+        aiAnalysisPerMonth: null,
         questionsPerDay: 0,
         gapAnalysisPerDay: 0,
-        monthlyTokenBudget: 0,
+        monthlyTokenBudget: 150_000,
         notifications: false,
         advancedAnalytics: false,
         agentCollaboration: false,
@@ -94,15 +105,14 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         priorityQueue: false,
         savingsReportExport: false,
     },
-    // "Starter" (displayed) = €2.99 organizer + basic renewal reminders, still
-    // NO deep AI. More policies than Free, but every AI-cost feature stays off
-    // so it can't cannibalise Plus. (Code key stays `plus`.)
+    // "Plus" (displayed) = €39/yr (€4.99/mo). Ten policies, full analysis.
+    // (Code key stays `plus`; the display name moved from "Starter" to "Plus".)
     plus: {
-        policies: 5,
-        aiAnalysisPerMonth: 0,
+        policies: 10,
+        aiAnalysisPerMonth: null,
         questionsPerDay: 0,
         gapAnalysisPerDay: 0,
-        monthlyTokenBudget: 0,
+        monthlyTokenBudget: 600_000,
         notifications: true,
         advancedAnalytics: false,
         agentCollaboration: false,
@@ -112,14 +122,15 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         priorityQueue: false,
         savingsReportExport: false,
     },
-    // "Plus" (displayed) = €7.99, the AI tier: unlimited everything, with the
-    // token budget as the real backstop meter.
+    // "Family" (displayed) = €79/yr (€8.99/mo). Twenty-five policies — a
+    // household's worth, which is the whole reason the tier exists.
+    // (Code key stays `pro`; the display name moved from "Plus" to "Family".)
     pro: {
-        policies: null,
+        policies: 25,
         aiAnalysisPerMonth: null,
         questionsPerDay: null,
         gapAnalysisPerDay: null,
-        monthlyTokenBudget: 3_000_000,
+        monthlyTokenBudget: 1_500_000,
         notifications: true,
         advancedAnalytics: true,
         agentCollaboration: true,
@@ -164,7 +175,7 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
         maxCustomers: 100,
         maxPoliciesPerCustomer: 20,
         aiAnalysesPerMonth: 50,
-        monthlyTokenBudget: 2_000_000,
+        monthlyTokenBudget: 1_600_000,
         collaborationThreads: true,
         questionnaireTemplates: 5,
         brandedPortal: true,
@@ -189,8 +200,8 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
     agent_pro: {
         maxCustomers: 500,
         maxPoliciesPerCustomer: null,
-        aiAnalysesPerMonth: 200,
-        monthlyTokenBudget: 10_000_000,
+        aiAnalysesPerMonth: 150,
+        monthlyTokenBudget: 4_500_000,
         collaborationThreads: true,
         questionnaireTemplates: null,
         brandedPortal: true,
@@ -215,8 +226,8 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
     agency: {
         maxCustomers: null,
         maxPoliciesPerCustomer: null,
-        aiAnalysesPerMonth: null,
-        monthlyTokenBudget: 25_000_000,
+        aiAnalysesPerMonth: 400,
+        monthlyTokenBudget: 12_000_000,
         collaborationThreads: true,
         questionnaireTemplates: null,
         brandedPortal: true,
@@ -247,11 +258,13 @@ export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlemen
  * Fallback for Plan.annualPrice; a plan absent here falls back to 12× monthly.
  */
 export const DEFAULT_ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
-    "ph-plus": 29, // Starter — UI: €29/yr  (monthly €2.99 × 12 = €35.88)
-    "ph-pro": 79, // Plus    — UI: €79/yr  (monthly €7.99 × 12 = €95.88)
-    "agent-starter": 199, // UI: €199/yr (monthly €19.99 × 12 = €239.88)
-    "agent-pro": 499, // UI: €499/yr (monthly €49.99 × 12 = €599.88)
-    "agent-agency": 999, // UI: €999/yr (monthly €99.99 × 12 = €1199.88)
+    "ph-plus": 39, // Plus   — UI: €39/yr (monthly €4.99 × 12 = €59.88)
+    "ph-pro": 79, // Family  — UI: €79/yr (monthly €8.99 × 12 = €107.88)
+    // B2B is sold monthly. Annual is 10× monthly (two months free) and is not
+    // advertised on the pricing page; it exists so an annual checkout has a price.
+    "agent-starter": 290,
+    "agent-pro": 790,
+    "agent-agency": 1990,
 }
 
 /** Fallback for Plan.trialDays. A plan absent here has NO trial. */
@@ -262,9 +275,9 @@ export const DEFAULT_TRIAL_DAYS_BY_PLAN: Record<string, number> = {
 /** B2C monthly token budgets — kept in lockstep with
  *  DEFAULT_ENTITLEMENT_LIMITS[tier].monthlyTokenBudget (parity-tested). */
 export const DEFAULT_TOKEN_LIMITS: Record<PlanTier, number | null> = {
-    free: 0,
-    plus: 0,
-    pro: 3_000_000,
+    free: 150_000,
+    plus: 600_000,
+    pro: 1_500_000,
 }
 
 // ── Canonical plan rows (synthetic catalog + seed source) ────────────
@@ -288,12 +301,12 @@ export interface DefaultPlanFacts {
  */
 export const DEFAULT_PLAN_FACTS: readonly DefaultPlanFacts[] = [
     { id: "ph-free", planType: "policyholder", name: "Free", displayName: "Free", tierKey: "free", monthlyEur: 0, annualEur: null, trialDays: 0, sortOrder: 0 },
-    { id: "ph-plus", planType: "policyholder", name: "Plus", displayName: "Starter", tierKey: "plus", monthlyEur: 2.99, annualEur: 29, trialDays: 0, sortOrder: 1 },
-    { id: "ph-pro", planType: "policyholder", name: "Pro", displayName: "PolicyWallet Plus", tierKey: "pro", monthlyEur: 7.99, annualEur: 79, trialDays: 14, sortOrder: 2 },
+    { id: "ph-plus", planType: "policyholder", name: "Plus", displayName: "Plus", tierKey: "plus", monthlyEur: 4.99, annualEur: 39, trialDays: 0, sortOrder: 1 },
+    { id: "ph-pro", planType: "policyholder", name: "Pro", displayName: "Family", tierKey: "pro", monthlyEur: 8.99, annualEur: 79, trialDays: 14, sortOrder: 2 },
     { id: "agent-free", planType: "agent", name: "agent_free", displayName: "Agent Free", tierKey: "agent_free", monthlyEur: 0, annualEur: null, trialDays: 0, sortOrder: 0 },
-    { id: "agent-starter", planType: "agent", name: "agent_starter", displayName: "Agent Starter", tierKey: "agent_starter", monthlyEur: 19.99, annualEur: 199, trialDays: 0, sortOrder: 1 },
-    { id: "agent-pro", planType: "agent", name: "agent_pro", displayName: "Agent Pro", tierKey: "agent_pro", monthlyEur: 49.99, annualEur: 499, trialDays: 0, sortOrder: 2 },
-    { id: "agent-agency", planType: "agent", name: "agency", displayName: "Agency", tierKey: "agency", monthlyEur: 99.99, annualEur: 999, trialDays: 0, sortOrder: 3 },
+    { id: "agent-starter", planType: "agent", name: "agent_starter", displayName: "Agent Starter", tierKey: "agent_starter", monthlyEur: 29, annualEur: 290, trialDays: 0, sortOrder: 1 },
+    { id: "agent-pro", planType: "agent", name: "agent_pro", displayName: "Agent Pro", tierKey: "agent_pro", monthlyEur: 79, annualEur: 790, trialDays: 0, sortOrder: 2 },
+    { id: "agent-agency", planType: "agent", name: "agency", displayName: "Agency", tierKey: "agency", monthlyEur: 199, annualEur: 1990, trialDays: 0, sortOrder: 3 },
 ]
 
 /** Canonical entitlements for a tier key (either audience). */

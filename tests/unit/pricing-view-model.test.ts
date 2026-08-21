@@ -71,6 +71,6 @@ describe('buildPublicPricingContent', () => {
         const catalog = synthetic().filter((p) => p.id !== 'agent-agency')
         const built = buildPublicPricingContent(catalog)
         const agency = built.agent.plans.find((p) => p.key === 'agent-agency')!
-        expect(agency.pricing.monthly.amount).toBe('€99.99')
+        expect(agency.pricing.monthly.amount).toBe('€199')
     })
 })

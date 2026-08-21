@@ -5,7 +5,7 @@ import { Gem, BellRing, ShieldCheck, CheckCircle2 } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { LobFaq } from "@/components/landing/LobFaq"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
-import { PRIMARY_ACTION, pick, CTA_REASSURANCE_SHORT } from "@/lib/marketing/positioning"
+import { PRIMARY_ACTION, pick, CTA_REASSURANCE } from "@/lib/marketing/positioning"
 
 /**
  * Fine art & valuables — the one genuinely new consumer line the insurance
@@ -43,7 +43,7 @@ export default function FineArtProductPage({ locale }: { locale: "el" | "en" }) 
                         </Link>
                     </div>
                     <p className="mt-3 text-body-sm text-[#5B6A7A] dark:text-slate-400">
-                        {pick(CTA_REASSURANCE_SHORT, locale)}
+                        {pick(CTA_REASSURANCE, locale)}
                     </p>
                 </div>
             </section>

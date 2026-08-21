@@ -318,8 +318,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των συμβολαίων και η AI διαβάζει καλύψεις και εξαιρέσεις — και, στο πλάνο PolicyWallet Plus, τα διασταυρώνει μεταξύ τους, υπολογίζει το Σκορ Προστασίας σας και επισημαίνει κενά και επικαλύψεις σε απλά ελληνικά.",
-                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions — and, on the PolicyWallet Plus plan, cross-checks them, calculates your Protection Score, and flags gaps and overlaps in plain language.",
+                        el: "Ο χειροκίνητος έλεγχος θέλει τρία βήματα: πρώτον, διαβάστε τον πίνακα καλύψεων και σημειώστε τι πραγματικά περιλαμβάνεται — όχι τι υποθέτετε. Δεύτερον, διαβάστε τις εξαιρέσεις: εκεί κρύβονται τα περισσότερα κενά. Τρίτον, συγκρίνετε τα ασφαλιζόμενα κεφάλαια με τις σημερινές αξίες (ανακατασκευή, εξοπλισμός, εισόδημα). Το PolicyWallet αυτοματοποιεί και τα τρία: ανεβάζετε τα PDF των συμβολαίων και η AI διαβάζει καλύψεις και εξαιρέσεις και επισημαίνει τα κενά σε απλά ελληνικά — και, στο πλάνο Family, τα διασταυρώνει μεταξύ τους, υπολογίζει το Σκορ Προστασίας σας και εντοπίζει τις επικαλύψεις.",
+                        en: "A manual check takes three steps: first, read the coverage table and note what is actually included — not what you assume. Second, read the exclusions: that is where most gaps hide. Third, compare insured sums against today's values (reconstruction, contents, income). PolicyWallet automates all three: you upload the policy PDFs and the AI reads coverages and exclusions — and, on the Family plan, cross-checks them, calculates your Protection Score, and flags gaps and overlaps in plain language.",
                     },
                 ],
             },
@@ -1849,12 +1849,12 @@ export const guides: Guide[] = [
                         en: "PolicyWallet sits in that last category — and takes it one step further: it is a personal risk intelligence platform, which does not just store your policies but tells you whether you are covered. You upload the PDF or a photo of each policy — motor, home, health, group, travel, pet — and the AI reads it and sets out in plain language what is covered, what is excluded, and what the limits, deductibles and key dates are.",
                     },
                     {
-                        el: "Επειδή τα βλέπει όλα μαζί, κάνει και κάτι που κανένα portal μεμονωμένης εταιρείας δεν μπορεί: τα διασταυρώνει μεταξύ τους — στο πλάνο PolicyWallet Plus. Εντοπίζει κενά — για παράδειγμα κατοικία χωρίς κάλυψη σεισμού — υπασφάλιση σε σχέση με το κόστος ανακατασκευής, και επικαλύψεις όπου πληρώνετε δύο φορές για τον ίδιο κίνδυνο. Από αυτά προκύπτει το Σκορ Προστασίας 0–100, με τη μεθοδολογία του γραμμένη μέσα στην εφαρμογή — μαζί με το τι δεν σημαίνει.",
-                        en: "Because it sees them together, it does something no single insurer's portal can: it cross-checks them against each other, on the PolicyWallet Plus plan. It flags gaps — a home with no earthquake cover, for instance — underinsurance against rebuild cost, and overlaps where you pay twice for the same risk. Out of that comes the 0–100 Protection Score, with its methodology written out inside the app — along with what it does not mean.",
+                        el: "Επειδή τα βλέπει όλα μαζί, κάνει και κάτι που κανένα portal μεμονωμένης εταιρείας δεν μπορεί: τα διασταυρώνει μεταξύ τους — στο πλάνο Family. Εντοπίζει κενά — για παράδειγμα κατοικία χωρίς κάλυψη σεισμού — υπασφάλιση σε σχέση με το κόστος ανακατασκευής, και επικαλύψεις όπου πληρώνετε δύο φορές για τον ίδιο κίνδυνο. Από αυτά προκύπτει το Σκορ Προστασίας 0–100, με τη μεθοδολογία του γραμμένη μέσα στην εφαρμογή — μαζί με το τι δεν σημαίνει.",
+                        en: "Because it sees them together, it does something no single insurer's portal can: it cross-checks them against each other, on the Family plan. It flags gaps — a home with no earthquake cover, for instance — underinsurance against rebuild cost, and overlaps where you pay twice for the same risk. Out of that comes the 0–100 Protection Score, with its methodology written out inside the app — along with what it does not mean.",
                     },
                     {
-                        el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, και — με το πλάνο PolicyWallet Plus — ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",
-                        en: "Beyond that: renewal reminders from 90 days before expiry on paid plans, and — on the PolicyWallet Plus plan — AI questions about a specific policy, secure sharing with an advisor that you can revoke at any time, and report export. PolicyWallet does not sell insurance and takes no commission: it is neither an insurance undertaking nor an intermediary.",
+                        el: "Από εκεί και πέρα: υπενθυμίσεις ανανέωσης από τις 90 ημέρες πριν από τη λήξη στα πληρωμένα πλάνα, και — με το πλάνο Family — ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο, ασφαλής κοινοποίηση σε σύμβουλο που ανακαλείται όποτε θέλετε, και εξαγωγή αναφοράς. Το PolicyWallet δεν πουλά ασφάλειες και δεν παίρνει προμήθειες: δεν είναι ασφαλιστική επιχείρηση ούτε διαμεσολαβητής.",
+                        en: "Beyond that: renewal reminders from 90 days before expiry on paid plans, and — on the Family plan — AI questions about a specific policy, secure sharing with an advisor that you can revoke at any time, and report export. PolicyWallet does not sell insurance and takes no commission: it is neither an insurance undertaking nor an intermediary.",
                     },
                 ],
             },
@@ -1930,8 +1930,8 @@ export const guides: Guide[] = [
                     en: "How much does a policy-management platform cost?",
                 },
                 answer: {
-                    el: "Από μηδέν έως λίγα ευρώ τον μήνα. Τα portal των εταιρειών και οι εφαρμογές πρακτορείων είναι δωρεάν για τους πελάτες τους. Το PolicyWallet έχει δωρεάν πακέτο για ένα συμβόλαιο και συνδρομές που ξεκινούν από €2.99 τον μήνα.",
-                    en: "From nothing to a few euros a month. Insurer portals and agency apps are free to their own customers. PolicyWallet has a free plan for one policy and subscriptions starting at €2.99 a month.",
+                    el: "Από μηδέν έως λίγα ευρώ τον μήνα. Τα portal των εταιρειών και οι εφαρμογές πρακτορείων είναι δωρεάν για τους πελάτες τους. Το PolicyWallet έχει δωρεάν πακέτο για τρία ασφαλιστήρια και συνδρομές που ξεκινούν από €39 τον χρόνο.",
+                    en: "From nothing to a few euros a month. Insurer portals and agency apps are free to their own customers. PolicyWallet has a free plan for three policies and subscriptions starting at €39 a year.",
                 },
             },
             {
@@ -2354,8 +2354,8 @@ export const guides: Guide[] = [
                         en: "You upload the PDF or a photo of each policy, from any insurer, and the AI reads it. Instead of one more file in a folder, you get plain-language answers on what is covered, what is excluded, what the limits and deductibles are, and which dates matter.",
                     },
                     {
-                        el: "Επειδή τα συμβόλαια βρίσκονται μαζί, με το πλάνο PolicyWallet Plus εντοπίζονται και τα κενά ανάμεσά τους: κατοικία χωρίς κάλυψη σεισμού, ασφαλιζόμενο κεφάλαιο κάτω από το κόστος ανακατασκευής, ή δύο συμβόλαια που πληρώνουν τον ίδιο κίνδυνο. Στο ίδιο πλάνο ανήκουν και οι ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο και η ασφαλής κοινοποίηση σε σύμβουλο· υπενθυμίσεις ανανέωσης υπάρχουν από το πλάνο Starter.",
-                        en: "Because the policies sit together, the PolicyWallet Plus plan surfaces the gaps between them too: a home with no earthquake cover, a sum insured below rebuild cost, or two policies paying for the same risk. AI questions about a specific policy and secure sharing with an advisor belong to the same plan; renewal reminders start from the Starter plan.",
+                        el: "Επειδή τα συμβόλαια βρίσκονται μαζί, με το πλάνο Family εντοπίζονται και τα κενά ανάμεσά τους: κατοικία χωρίς κάλυψη σεισμού, ασφαλιζόμενο κεφάλαιο κάτω από το κόστος ανακατασκευής, ή δύο συμβόλαια που πληρώνουν τον ίδιο κίνδυνο. Στο ίδιο πλάνο ανήκουν και οι ερωτήσεις στην AI για ένα συγκεκριμένο συμβόλαιο και η ασφαλής κοινοποίηση σε σύμβουλο· υπενθυμίσεις ανανέωσης υπάρχουν από το πλάνο Starter.",
+                        en: "Because the policies sit together, the Family plan surfaces the gaps between them too: a home with no earthquake cover, a sum insured below rebuild cost, or two policies paying for the same risk. AI questions about a specific policy and secure sharing with an advisor belong to the same plan; renewal reminders start from the Starter plan.",
                     },
                 ],
             },

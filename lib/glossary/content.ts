@@ -1131,8 +1131,8 @@ export const glossaryTerms: GlossaryTerm[] = [
                 en: "Each category is weighted by how much it matters: Health 25 points, Life and income 25, Property and motor 20, Income protection 15, Liability 10, and other cover 5. The first three count as essential: if they are missing entirely, the score falls much further than it would for an optional cover.",
             },
             {
-                el: "Το σκορ υπολογίζεται από τα δικά σας έγγραφα — όχι από ερωτηματολόγιο. Ο εντοπισμός κενών μέσα στα ασφαλιστήρια, που τροφοδοτεί τις αφαιρέσεις, γίνεται στο πλάνο PolicyWallet Plus.",
-                en: "The score is computed from your own documents, not from a questionnaire. The detection of gaps inside your policies, which drives the deductions, runs on the PolicyWallet Plus plan.",
+                el: "Το σκορ υπολογίζεται από τα δικά σας έγγραφα — όχι από ερωτηματολόγιο. Ο εντοπισμός κενών μέσα στα ασφαλιστήρια, που τροφοδοτεί τις αφαιρέσεις, γίνεται στο πλάνο Family.",
+                en: "The score is computed from your own documents, not from a questionnaire. The detection of gaps inside your policies, which drives the deductions, runs on the Family plan.",
             },
             {
                 el: "Τι δεν σημαίνει: το σκορ δείχνει το εύρος των καλύψεων που έχετε — όχι αν τα όριά τους επαρκούν για τις ανάγκες σας. Υψηλή βαθμολογία δεν σημαίνει επαρκή ασφάλιση ούτε ότι μια ζημιά θα αποζημιωθεί· χαμηλή βαθμολογία δεν σημαίνει ότι μια απαίτηση θα απορριφθεί. Δεν αξιολογεί ασφάλιστρα, ασφαλιστικές εταιρείες ή την ποιότητα των όρων.",

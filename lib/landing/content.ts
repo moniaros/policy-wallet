@@ -122,23 +122,23 @@ export const landingContent: LandingContentModel = {
                 id: "faq-cost",
                 question: { el: "Πόσο κοστίζει;", en: "How much does it cost?" },
                 answer: {
-                    el: "Ξεκινάτε δωρεάν με 1 συμβόλαιο και βασική σύνοψη AI, χωρίς πιστωτική κάρτα. Τα πληρωμένα πλάνα ξεκινούν από €2.99 τον μήνα και τα ακυρώνετε όποτε θέλετε.",
-                    en: "You start free with 1 policy and a basic AI summary, with no credit card. Paid plans start at €2.99 a month and you can cancel whenever you want.",
+                    el: "Ξεκινάτε δωρεάν με 3 ασφαλιστήρια και πλήρη ανάλυση AI, χωρίς πιστωτική κάρτα. Τα πληρωμένα πλάνα ξεκινούν από €39 τον χρόνο και τα ακυρώνετε όποτε θέλετε.",
+                    en: "You start free with 3 policies and full AI analysis, with no credit card. Paid plans start at €39 a year and you can cancel whenever you want.",
                 },
             },
             {
                 id: "faq-no-agent",
                 question: { el: "Τι γίνεται αν δεν έχω ασφαλιστή;", en: "What if I do not have an agent?" },
                 // Working with an agent is `agentCollaboration`, which is true
-                // only on the `pro` plan — displayed as PolicyWallet Plus. This
+                // only on the `pro` plan — displayed as Family. This
                 // is the answer the anxious free-signup reader lands on, and it
                 // was the one agent claim on the site with no plan named, while
                 // the "Who can help you?" card and the pricing table both fence
                 // the same capability to Plus. It also ships inside FAQPage
                 // JSON-LD, so an unqualified version travels further than the page.
                 answer: {
-                    el: "Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε με ένα κλικ — με το πλάνο PolicyWallet Plus.",
-                    en: "You do not need one. PolicyWallet works completely on its own. If you later want to work with an agent, you can connect one with a single click — on the PolicyWallet Plus plan.",
+                    el: "Δεν χρειάζεστε. Το PolicyWallet δουλεύει πλήρως μόνο του. Αν αργότερα θέλετε να συνεργαστείτε με ασφαλιστή, τον συνδέετε με ένα κλικ — με το πλάνο Family.",
+                    en: "You do not need one. PolicyWallet works completely on its own. If you later want to work with an agent, you can connect one with a single click — on the Family plan.",
                 },
             },
             {
@@ -169,7 +169,7 @@ export const landingContent: LandingContentModel = {
             ],
             ogTitle: "PolicyWallet | Δείτε τι δεν καλύπτει η ασφάλειά σας",
             ogDescription:
-                "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι, πού όχι και — με το PolicyWallet Plus — τι να διορθώσετε πρώτα.",
+                "Διαβάζουμε τις ασφάλειές σας και σας λέμε πού είστε καλυμμένοι και πού όχι — και, με το Family, τι να διορθώσετε πρώτα.",
             twitterTitle: "PolicyWallet | Ανεξάρτητος έλεγχος ρίσκου",
             twitterDescription: "Δεν πουλάμε ασφάλειες. Σας λέμε τι δεν καλύπτεστε.",
         },
@@ -188,7 +188,7 @@ export const landingContent: LandingContentModel = {
             ],
             ogTitle: "PolicyWallet | See what your insurance does not cover",
             ogDescription:
-                "We read your insurance and tell you where you are covered, where you are not, and — with PolicyWallet Plus — what to fix first.",
+                "We read your insurance and tell you where you are covered and where you are not — and, with Family, what to fix first.",
             twitterTitle: "PolicyWallet | An independent risk check",
             twitterDescription: "We do not sell insurance. We tell you what you are not covered for.",
         },

@@ -33,7 +33,7 @@ export function PricingPreview({
     //
     // Selected by PRICE, not by key: the internal keys are `free` / `plus` /
     // `pro`, where `plus` is the plan displayed as "Starter" and `pro` is the
-    // one displayed as "PolicyWallet Plus". Sorting on those names would be a
+    // one displayed as "Family". Sorting on those names would be a
     // trap for whoever edits this next.
     const amountOf = (plan: PublicPricingPlan) => {
         const digits = plan.pricing.monthly.amount.replace(/[^\d.,]/g, "").replace(",", ".")
