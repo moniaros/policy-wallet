@@ -1,5 +1,89 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-21b (Live Stripe, the promo guard, and renewals)
+
+### The live false claim is resolved — PATH 1, made true
+
+policywallet.gr advertised ENDOFSUMMER26 (25% off, expiring 2026-08-31) while production
+was configured against a sandbox account. The live account turned out to be **fully
+activated** — `charges_enabled`, `payouts_enabled`, `details_submitted`, card payments
+active, EUR, Greek bank account, zero outstanding requirements — so only the catalog was
+missing.
+
+Created in **live** mode: coupon `KoRxXvUh` (25%, repeating 12 months), promotion code
+`promo_1U6jES1JRuUbwXlyN3KQK5Ys` = ENDOFSUMMER26 (`first_time_transaction`, expires
+1788209940 = 2026-08-31 20:59Z = **23:59 Europe/Athens**), 5 products, 10 prices on the
+`<plan_id>_<interval>` convention. Every live price amount verified equal to the displayed
+catalog. `plans.stripe_price_id` in BOTH databases now points at live prices — zero
+sandbox ids remain.
+
+**Webhook is on `www`, not the apex.** policywallet.gr 308-redirects to www and Stripe does
+not follow redirects on delivery, so an apex endpoint would have failed every event
+silently. It subscribes to all three events the route handles; the test-mode endpoint
+carried only one, so `checkout.session.expired` and `async_payment_succeeded` were handled
+in code and never delivered.
+
+**The guard** (the durable part): a promotion declares which Stripe modes it exists in, and
+`activePromotions` requires the mode the deployed build actually charges in — resolved
+server-side from the key PREFIX, never the key. It **fails closed**: an unconfigured build
+advertises nothing.
+
+### ⚠ BLOCKING HANDOFF — the one human step
+
+Live mode does nothing until these are set in Vercel (Production **and** Preview), then
+redeployed. Names and expected prefixes only:
+
+| Variable | Expected prefix | Where to get it |
+|---|---|---|
+| `STRIPE_SECRET_KEY` | `sk_live_` | Stripe → Developers → API keys (live) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_` | Stripe → Developers → Webhooks → endpoint `we_1U6jHX1JRuUbwXlymoKwosK1` → *Signing secret* |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `pk_live_` | same API-keys page (only if the app uses it client-side) |
+
+Until then the deployed build reports mode `test`, so **the promo banner correctly hides
+itself** — the claim is no longer false either way.
+
+Also worth a decision: the live account's statement descriptor is **`AGENTRISE PLATFORM`**.
+A customer paying for PolicyWallet will not recognise that line on their statement, which
+is a chargeback risk.
+
+### Mandatory fixes
+- **maxDuration 300 → 336** in vercel.json, on the route, and in
+  `ANALYSIS_FUNCTION_BUDGET_MS`, from the only successful measured run (258s, 2026-08-14,
+  run `cmsted5fb001uf566yax22h1b`) × 1.3. **That run predates the optimisation**, so 336
+  errs high — the safe direction for a kill timer. The projection of ~205s is superseded;
+  a true post-optimisation measurement is still blocked by the Gemini spend cap.
+- **regions: cdg1** added (Supabase is eu-west-3).
+- **agent-free re-based**: was 500,000 tokens — 3.3× the free consumer tier and 83% of a
+  PAYING €39/yr consumer. Now 150,000 / 5 analyses, ph-free's basis, in code and both DBs.
+- **The motor drift rule was reading a field the extractor is told to skip.**
+  `policy.sumInsured` is documented as "for a line of business with no dedicated section",
+  i.e. not motor. Added `vehicle.insuredValue` («ασφαλιζόμενη αξία»), gave
+  `estimatedMarketValue` the description it never had, repointed the rule, and rendered the
+  new field — a completeness guard caught that an extracted amount reached no screen.
+- `canonicalize-plans.sql` deleted (held superseded v1 entitlements; running it would have
+  reverted production pricing). No policies stuck `analyzing` in either database.
+
+### GOAL 3 — renewals, now built
+Effective period on the document (migration `20260821020000`, both DBs, 70 migrations /
+1010 columns / zero bad checksums each). `addRenewalDocument` reuses the ordinary upload
+path — same validation, same bucket, same orphan cleanup — authorised through
+`getPolicyAccess` with `canAnalyze`. The differential reports premium/sum/term changes with
+both source documents cited, treats silence as unchanged, calls an explicit `false` a
+REMOVAL, and carries no severity and no advice. A renewal without its original reports
+`incomplete_terms` rather than being refused.
+
+**Not exercised against a real original+renewal pair** — that needs the analysis pipeline,
+which the Gemini spend cap blocks. The logic is covered by crafted-pair tests.
+
+### Still blocked
+1. **Gemini monthly spend cap** — blocks the R5 re-measurement, proving a `value_drift`
+   firing, and exercising renewals end-to-end.
+2. **R3 prod** (9 of 11 orphans) needs `SUPABASE_SERVICE_ROLE_KEY`; Supabase exposes only
+   anon/publishable keys via API, so it cannot be self-served.
+3. Live Stripe env vars — the handoff above.
+
+---
+
 ## Session wrap — 2026-08-21 (Preflight R1–R6, pricing v2 SHIPPED, insured-value adequacy SHIPPED)
 
 **Both databases are provably identical.** Schema `b31387d7e6bb6a28f3d56582d8c1d78e`
