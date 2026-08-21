@@ -92,7 +92,12 @@ export const AcordDataSchema = z.object({
         plateNumber: z.string().optional(),
         vin: z.string().optional(),
         usage: z.string().optional().describe("e.g. personal, commercial, rideshare"),
-        estimatedMarketValue: z.number().optional(),
+        /** The vehicle value the SCHEDULE states, never a model estimate. */
+        estimatedMarketValue: z.number().optional()
+            .describe("The vehicle value stated on the schedule — «τρέχουσα εμπορική αξία» or «αγοραία αξία». Extract the number as printed; never estimate or infer a value."),
+        /** What the vehicle is INSURED for (own-damage sum insured). */
+        insuredValue: z.number().optional()
+            .describe("The sum insured for own damage — «ασφαλιζόμενη αξία». On many schedules this and the market value are the same figure; extract BOTH when the document prints both, and neither when it prints neither."),
         deductible: z.number().optional(),
         hasRoadsideAssistance: z.boolean().optional(),
         roadsideAssistancePhone: z.string().optional(),
@@ -227,7 +232,7 @@ export const AcordDataSchema = z.object({
         issueDate: z.string().nullable().optional().describe("Policy issue/signature date, ISO"),
         renewalDate: z.string().nullable().optional().describe("Renewal date, ISO"),
         premiumFrequency: z.enum(["annual", "semiannual", "quarterly", "monthly", "one_off"]).nullable().optional(),
-        sumInsured: z.number().nullable().optional().describe("Generic sum insured for LOBs without a dedicated section"),
+        sumInsured: z.number().nullable().optional().describe("Generic sum insured, for a line of business with no dedicated section of its own. Motor uses vehicle.insuredValue and property uses property.insuredValue — do not duplicate those here."),
         premium: z.object({
             amount: z.number().nullable().optional(),
         }).optional(),

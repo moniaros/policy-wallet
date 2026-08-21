@@ -2757,6 +2757,7 @@ export const en: TranslationKeys = {
             deductible: 'Excess',
             deductibleHint: 'The amount you pay towards each claim before the insurer pays.',
             marketValue: 'Estimated Vehicle Value',
+            insuredValue: 'Insured Value',
             license: 'License'
         },
 

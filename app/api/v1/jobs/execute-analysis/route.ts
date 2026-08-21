@@ -5,8 +5,22 @@ import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { logger } from "@/lib/logger"
 
 export const runtime = "nodejs"
-// AI analysis is long-running; give the consumer the platform max.
-export const maxDuration = 300
+// Sized from MEASUREMENT, not from a projection.
+//
+// The only successful analysis on record ran 258s wall-clock
+// (policy_analysis_runs cmsted5fb001uf566yax22h1b, 2026-08-14, 29,242 tokens,
+// 96% success). 258 × 1.3 = 336s.
+//
+// Two caveats worth keeping honest: that run PREDATES the step-boundary and
+// caching optimisation, so 336 errs high — which is the safe direction for a
+// kill timer. And the re-measurement that would confirm the post-optimisation
+// figure has not been possible: the Gemini project is at its monthly spend cap,
+// so every analysis fails before doing any work.
+//
+// Undersizing this is not a slow response, it is a KILLED function: the
+// executor dies mid-pipeline holding a lease and the policy stays `analyzing`
+// until the reaper finds it.
+export const maxDuration = 336
 
 const bodySchema = z.object({
     runId: z.string().min(1),

@@ -2768,6 +2768,7 @@ export const el = {
             deductible: 'Απαλλαγή',
             deductibleHint: 'Το ποσό που επιβαρύνεστε εσείς σε κάθε ζημιά πριν πληρώσει ο ασφαλιστής.',
             marketValue: 'Εκτιμώμενη αξία οχήματος',
+            insuredValue: 'Ασφαλισμένη αξία',
             license: 'Δίπλωμα'
         },
 

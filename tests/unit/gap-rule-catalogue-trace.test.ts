@@ -121,22 +121,22 @@ const TRACE: Record<string, Case[]> = {
     insured_value_above_declared: [
         {
             name: "a car declared at €6,000 but still insured for €15,000",
-            acord: { policy: { sumInsured: 15000 }, vehicle: { estimatedMarketValue: 6000 } },
+            acord: { vehicle: { insuredValue: 15000, estimatedMarketValue: 6000 } },
             fires: true,
         },
         {
             name: "a rounded sum insured 10% over the declared value",
-            acord: { policy: { sumInsured: 11000 }, vehicle: { estimatedMarketValue: 10000 } },
+            acord: { vehicle: { insuredValue: 11000, estimatedMarketValue: 10000 } },
             fires: false,
         },
         {
             name: "under-insured — the other direction, which this rule ignores",
-            acord: { policy: { sumInsured: 5000 }, vehicle: { estimatedMarketValue: 10000 } },
+            acord: { vehicle: { insuredValue: 5000, estimatedMarketValue: 10000 } },
             fires: false,
         },
         {
             name: "no declared market value was extracted",
-            acord: { policy: { sumInsured: 15000 }, vehicle: {} },
+            acord: { vehicle: { insuredValue: 15000 } },
             fires: false,
         },
         { name: "neither figure was extracted", acord: {}, fires: false },

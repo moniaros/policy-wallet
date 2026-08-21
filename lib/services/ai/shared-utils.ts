@@ -12,7 +12,11 @@ import { logger } from '@/lib/logger'
  * app/api/v1/jobs/execute-analysis/route.ts and vercel.json. Named here because
  * the timeout below has to FIT INSIDE it, and nothing enforced that.
  */
-export const ANALYSIS_FUNCTION_BUDGET_MS = 300_000
+// Sized from the only successful measured run: 258s wall-clock
+// (policy_analysis_runs cmsted5fb001uf566yax22h1b, 2026-08-14) × 1.3 = 336s.
+// Kept in lockstep with vercel.json and the route's own `maxDuration` export;
+// tests/unit/ai-timeout-budget.test.ts fails if any of the three drift apart.
+export const ANALYSIS_FUNCTION_BUDGET_MS = 336_000
 
 /**
  * Per-call timeout.

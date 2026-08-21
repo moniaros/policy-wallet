@@ -44,6 +44,7 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
     motor.ownVehicleDamage !== undefined ||
     motor.glassBreakage !== undefined ||
     motor.deductible !== undefined ||
+    motor.insuredValue !== undefined ||
     motor.estimatedMarketValue !== undefined
   )
 
@@ -121,6 +122,24 @@ export function MotorCoverageDetails({ acordData, language, hints }: MotorCovera
             <span className="text-sm font-bold text-black dark:text-white">{fmtMoney(motor.deductible)}</span>
           </div>
           <p className="mt-1.5 ml-10.5 text-xs leading-relaxed text-muted-foreground">{motorCopy.deductibleHint}</p>
+        </div>
+      )}
+
+      {/* What the vehicle is INSURED for, beside what the schedule says it is
+          WORTH. Shown together deliberately: the pair is the whole point — a
+          sum insured well above the stated value is premium buying nothing,
+          and the `insured_value_above_declared` rule reads exactly these two
+          fields. Extracting a number and never showing it is how a finding
+          becomes unverifiable to the person it is about. */}
+      {motor.insuredValue !== undefined && (
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Car className="w-4 h-4 text-primary dark:text-mint" />
+            </div>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.insuredValue}</span>
+          </div>
+          <span className="text-sm font-bold text-black dark:text-white">{fmtMoney(motor.insuredValue)}</span>
         </div>
       )}
 

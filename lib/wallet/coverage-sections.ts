@@ -40,6 +40,10 @@ import { branchFamilyId } from "@/lib/insurance/taxonomy"
 export type MotorSection = NonNullable<AcordData["motor"]> & {
     deductible?: number
     estimatedMarketValue?: number
+    /** Own-damage sum insured («ασφαλιζόμενη αξία»). Canonical `vehicle`-only,
+     *  like the two above — and read by the insured-value drift rule, so it has
+     *  to reach the panel or the finding is unverifiable to its subject. */
+    insuredValue?: number
 }
 
 export function motorSection(acord: AcordData | null | undefined): MotorSection | null {
@@ -58,6 +62,7 @@ export function motorSection(acord: AcordData | null | undefined): MotorSection 
         // Canonical-only: the excess the holder pays per claim, and the market
         // value that caps a total-loss payout.
         deductible: canonical?.deductible,
+        insuredValue: canonical?.insuredValue,
         estimatedMarketValue: canonical?.estimatedMarketValue,
     }
 }

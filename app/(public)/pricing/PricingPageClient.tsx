@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { activePromotions, formatPromotionEnd } from "@/lib/pricing/promotions"
+import type { StripeMode } from "@/lib/pricing/stripe-mode"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref, authHref } from "@/lib/seo/locale-links"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
@@ -28,9 +29,16 @@ export default function PricingPage({
     // Server pages pass the catalog-built content (live admin-managed prices);
     // the static template is only the fallback for stray direct renders.
     pricingContent = publicPricingContent,
+    stripeMode = "unconfigured",
     partnerOffers = [],
 }: {
     pricingContent?: Record<PricingAudience, PublicPricingAudienceContent>
+    /**
+     * Which Stripe mode the deployment charges in, resolved on the server.
+     * Defaults to "unconfigured" so a caller that forgets it advertises
+     * nothing — the safe direction.
+     */
+    stripeMode?: StripeMode
     partnerOffers?: PartnerOfferView[]
 }) {
     const router = useRouter()
@@ -297,7 +305,7 @@ export default function PricingPage({
                                 configured from, so the banner disappears on
                                 its own rather than outliving the code. */}
                             {aud === "agent" &&
-                                activePromotions("agent").map((promo) => (
+                                activePromotions("agent", stripeMode).map((promo) => (
                                     <div
                                         key={promo.code}
                                         className="mx-auto mb-12 max-w-2xl rounded-2xl border border-[#29685B]/30 bg-[#29685B]/5 px-5 py-4 dark:border-[#A7F3D0]/25 dark:bg-[#A7F3D0]/5"

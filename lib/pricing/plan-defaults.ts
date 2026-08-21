@@ -145,11 +145,16 @@ export const DEFAULT_ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
 // ── Agent entitlement fallbacks ──────────────────────────────────────
 
 export const DEFAULT_AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits> = {
+    // A free agent tier funded at 500,000 tokens was drawing 3.3× what the
+    // free consumer gets and 83% of what a PAYING €39/yr consumer gets. The
+    // free tier's job is to demonstrate the product, not to underwrite a book
+    // of business for nothing — so it now sits on ph-free's basis (150,000)
+    // with its five analyses.
     agent_free: {
         maxCustomers: 10,
         maxPoliciesPerCustomer: 5,
         aiAnalysesPerMonth: 5,
-        monthlyTokenBudget: 500_000,
+        monthlyTokenBudget: 150_000,
         collaborationThreads: true,
         questionnaireTemplates: 0,
         brandedPortal: false,

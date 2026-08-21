@@ -19,7 +19,7 @@ import { evaluateAcordFieldCheck, DEFAULT_DRIFT_THRESHOLD_PCT } from "@/lib/gap-
  */
 const motorOverInsuredRule = {
     type: "acord_field_check",
-    field: "policy.sumInsured",
+    field: "vehicle.insuredValue",
     referenceField: "vehicle.estimatedMarketValue",
     operator: "value_drift",
     direction: "above",
@@ -39,8 +39,7 @@ describe("value_drift fires on real drift and stays quiet otherwise", () => {
     it("flags a ten-year-old car still insured near list price", () => {
         // Declared market value 6,000; still insured for 15,000 → +150%.
         const acord = {
-            policy: { sumInsured: 15000 },
-            vehicle: { year: 2016, make: "Toyota", estimatedMarketValue: 6000 },
+            vehicle: { year: 2016, make: "Toyota", insuredValue: 15000, estimatedMarketValue: 6000 },
         }
         expect(evaluateAcordFieldCheck(acord, motorOverInsuredRule)).toBe(true)
     })
@@ -75,10 +74,10 @@ describe("value_drift fires on real drift and stays quiet otherwise", () => {
         // not become "your sum insured is wrong" — the same rule the rest of
         // this engine follows for is_false.
         for (const acord of [
-            { policy: { sumInsured: 15000 }, vehicle: {} },
-            { policy: {}, vehicle: { estimatedMarketValue: 6000 } },
-            { policy: { sumInsured: 15000 }, vehicle: { estimatedMarketValue: 0 } },
-            { policy: { sumInsured: 15000 }, vehicle: { estimatedMarketValue: null } },
+            { vehicle: { insuredValue: 15000 } },
+            { vehicle: { estimatedMarketValue: 6000 } },
+            { vehicle: { insuredValue: 15000, estimatedMarketValue: 0 } },
+            { vehicle: { insuredValue: 15000, estimatedMarketValue: null } },
             {},
         ]) {
             expect(evaluateAcordFieldCheck(acord, motorOverInsuredRule)).toBe(false)
@@ -90,13 +89,13 @@ describe("value_drift fires on real drift and stays quiet otherwise", () => {
         const noThreshold = { ...motorOverInsuredRule, thresholdPct: undefined }
         expect(
             evaluateAcordFieldCheck(
-                { policy: { sumInsured: 13000 }, vehicle: { estimatedMarketValue: 10000 } },
+                { vehicle: { insuredValue: 13000, estimatedMarketValue: 10000 } },
                 noThreshold
             )
         ).toBe(true)
         expect(
             evaluateAcordFieldCheck(
-                { policy: { sumInsured: 11000 }, vehicle: { estimatedMarketValue: 10000 } },
+                { vehicle: { insuredValue: 11000, estimatedMarketValue: 10000 } },
                 noThreshold
             )
         ).toBe(false)

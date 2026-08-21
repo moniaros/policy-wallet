@@ -7,6 +7,8 @@
  * derives its own visibility from it, and a test fails once the promotion is
  * past its end so the removal is a build failure rather than a discovery.
  */
+import type { StripeMode } from "@/lib/pricing/stripe-mode"
+
 export interface PublicPromotion {
     /** The customer-facing code, exactly as it must be typed at checkout. */
     code: string
@@ -24,6 +26,15 @@ export interface PublicPromotion {
     endsAt: Date
     /** New subscribers only (Stripe `restrictions.first_time_transaction`). */
     newSubscribersOnly: boolean
+    /**
+     * The Stripe modes this code actually EXISTS in.
+     *
+     * A promotion advertised in a mode where it does not resolve sends the
+     * customer to a checkout that rejects the code they just read. Listing the
+     * modes here, and filtering on the mode the deployed build is configured
+     * for, is what stops the banner outliving the object.
+     */
+    availableIn: readonly StripeMode[]
 }
 
 export const END_OF_SUMMER_2026: PublicPromotion = {
@@ -33,17 +44,32 @@ export const END_OF_SUMMER_2026: PublicPromotion = {
     durationMonths: 12,
     endsAt: new Date("2026-08-31T20:59:00Z"),
     newSubscribersOnly: true,
+    // Created in BOTH modes 2026-08-21:
+    //   test  promo_1U6g1q1AXSEXxkcgVPqaLs6y  (coupon uD1zw9EX)
+    //   live  promo_1U6jES1JRuUbwXlyN3KQK5Ys  (coupon KoRxXvUh)
+    availableIn: ["test", "live"],
 }
 
 /** Every promotion the site may advertise. */
 export const PUBLIC_PROMOTIONS: readonly PublicPromotion[] = [END_OF_SUMMER_2026]
 
-/** Promotions still live at `now`, for the audience given. */
+/**
+ * Promotions that may be ADVERTISED: right audience, not expired, and present
+ * in the Stripe mode this build charges in.
+ *
+ * `stripeMode` is required rather than defaulted. A default would silently
+ * advertise in an unconfigured build — which is exactly the failure this
+ * function exists to prevent, and it would fail open.
+ */
 export function activePromotions(
     audience: PublicPromotion["audience"],
+    stripeMode: StripeMode,
     now: Date = new Date()
 ): PublicPromotion[] {
-    return PUBLIC_PROMOTIONS.filter((p) => p.audience === audience && p.endsAt > now)
+    if (stripeMode === "unconfigured") return []
+    return PUBLIC_PROMOTIONS.filter(
+        (p) => p.audience === audience && p.endsAt > now && p.availableIn.includes(stripeMode)
+    )
 }
 
 /** "31 Αυγούστου 2026" / "31 August 2026" — the date a reader can act on. */

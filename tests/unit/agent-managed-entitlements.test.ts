@@ -113,14 +113,14 @@ describe('canUserUseTokens — agent budget branch', () => {
         expect(result.remainingTokens).toBe(DEFAULT_AGENT_ENTITLEMENT_LIMITS.agent_starter.monthlyTokenBudget)
     })
 
-    it('agent without a paid plan gets the agent_free budget (500k), NOT the B2C zero budget', async () => {
+    it('agent without a paid plan gets the agent_free budget, NOT the B2C one', async () => {
         vi.mocked(db.user.findUnique).mockResolvedValue({ roles: 'agent' } as any)
         mockAgentPlan(null)
         vi.mocked(db.monthlyTokenUsage.findUnique).mockResolvedValue(null)
 
         const result = await canUserUseTokens(AGENT, 100_000)
         expect(result.allowed).toBe(true)
-        expect(result.remainingTokens).toBe(500_000)
+        expect(result.remainingTokens).toBe(DEFAULT_AGENT_ENTITLEMENT_LIMITS.agent_free.monthlyTokenBudget)
     })
 
     it('agent over budget falls through to purchased tokens', async () => {

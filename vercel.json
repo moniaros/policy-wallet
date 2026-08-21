@@ -1,13 +1,13 @@
 {
   "functions": {
     "app/api/v1/jobs/execute-analysis/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 336
     },
     "app/api/v1/policies/[id]/review/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 336
     },
     "app/api/v1/jobs/process-policy/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 336
     },
     "app/api/policies/extract/route.ts": {
       "maxDuration": 120
@@ -17,6 +17,9 @@
       "memory": 1024
     }
   },
+  "regions": [
+    "cdg1"
+  ],
   "crons": [
     {
       "path": "/api/v1/jobs/renewal-check",

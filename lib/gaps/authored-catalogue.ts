@@ -187,7 +187,7 @@ export const AUTHORED_GAP_DEFINITIONS: AuthoredGapDefinition[] = [
         detectionLogic: {
             rules: [{
                 type: 'acord_field_check',
-                field: 'policy.sumInsured',
+                field: 'vehicle.insuredValue',
                 referenceField: 'vehicle.estimatedMarketValue',
                 operator: 'value_drift',
                 direction: 'above',
