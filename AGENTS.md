@@ -149,6 +149,22 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   UI, so it needs its own auth check, and it must never take the acting user's id as a
   parameter — derive the subject from the session. `redeemInvite` took `(token, userId)`
   and was an unauthenticated write path for months.
+- **A new deterministic check is a rule plus an operator, never a new pipeline.**
+  `insured_value_above_declared` / `insured_value_below_rebuild_cost` are the reference
+  implementation: one operator in `lib/gap-detection.ts` (`value_drift`), two rows in the
+  authored catalogue, trace cases in `gap-rule-catalogue-trace.test.ts`, provenance on
+  `GapInstance` (`rule_id`, `engine_version`, `rule_inputs` — and the COMPUTED figure, not
+  just the operands, because the finding quotes it). A check that reports a number must be
+  able to say where the number came from; both rules compare two figures the policy
+  document itself states, which is why neither needs reference data. See
+  [docs/planning/INSURED_VALUE_ADEQUACY.md](docs/planning/INSURED_VALUE_ADEQUACY.md).
+- **Env precedence: exactly one `DATABASE_URL` and one `DIRECT_URL`, both dev.** dotenv
+  keeps the LAST occurrence within a file, so a duplicate further down silently wins —
+  that is how local tooling was pointed at production twice. `lib/db.ts` resolves
+  `POOLED_DATABASE_URL → DIRECT_URL → DATABASE_URL`, so `DIRECT_URL` is what the local app
+  actually queries through; never set `POOLED_DATABASE_URL` locally. **Prisma CLI and every
+  `tsx -r dotenv/config` script read `.env`, never `.env.local`** — keep them in sync, and
+  keep `DIRECT_URL` on the 5432 SESSION pooler or migrations cannot run.
 - **i18n:** no hardcoded UI strings. Client components use `useLanguage()` ([contexts/LanguageContext.tsx](contexts/LanguageContext.tsx)); server code uses `getTranslations(lang)` ([lib/i18n/index.ts](lib/i18n/index.ts)) and passes `t` down as props. Default language is `el`.
 - **Next.js 16:** dynamic-route `params` are **Promises** — `const { id } = await params`. Validate request input with Zod.
 - **Schema changes:** edit `prisma/schema.prisma`, then `npx prisma migrate dev`. Never hand-edit the DB; run `npm run verify:migrations` before committing.
