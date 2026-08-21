@@ -124,19 +124,31 @@ export async function createPolicy(formData: FormData) {
             continue
         }
 
-        // Security: validate extension on the (original) display name, against the
-        // SAME allowlist the upload validator enforces.
+        // Security: validate the extension against the SAME allowlist the
+        // upload validator enforces — read off the STORAGE KEY, which the
+        // server minted (`<uuid>.<ext>`), not off any client-supplied name.
         //
-        // This list omitted .heic, which storage accepts and which iPhones
-        // produce by default — so a phone photo of a policy was uploaded
-        // successfully and then silently dropped here, with only a server-side
-        // warning. Per the comment above, status derives from the documents that
-        // survive: if the HEIC was the only one, the policy committed with zero
-        // documents.
-        const hasValidExt = isPdfFile(fileName) || isAcceptedImageFile(fileName)
+        // This read `fileName`, which stopped being a file name when documents
+        // started getting generated labels: `isPdfFile("Έγγραφο σε
+        // επεξεργασία")` is false, so hasValidExt was false for EVERY document,
+        // every one was skipped, and the policy committed with zero documents
+        // and status 'active' instead of 'analyzing' — an add-policy flow that
+        // silently analysed nothing. The key is also a better source than the
+        // old one: it is ours, so it cannot be spoofed.
+        //
+        // The allowlist once omitted .heic, which storage accepts and iPhones
+        // produce by default — so a phone photo of a policy uploaded fine and
+        // was then silently dropped here. Status derives from the documents
+        // that survive, so if the HEIC was the only one, the policy committed
+        // with none.
+        const storageKey = storageColumnsFor(fileUrl).storageKey || ""
+        const hasValidExt = isPdfFile(storageKey) || isAcceptedImageFile(storageKey)
 
         if (!hasValidExt) {
-            logger('warn', 'Skipping policy document with invalid extension')
+            // The EXTENSION is the diagnostic; the key is not.
+            logger('warn', 'Skipping policy document with invalid extension', {
+                extension: storageKey.slice(storageKey.lastIndexOf(".")) || 'none',
+            })
             continue
         }
 

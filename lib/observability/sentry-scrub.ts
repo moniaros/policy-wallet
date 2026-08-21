@@ -27,11 +27,27 @@ const GREEK_TAX_ID_PATTERN = /\b(?:EL)?\d{9}\b/gi
 /** IBAN, Greek and otherwise. */
 const IBAN_PATTERN = /\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/g
 
+/**
+ * A document file name.
+ *
+ * The user's own file name is meant to be kept nowhere, and no code path puts
+ * one in an event today — but this is the sink where the *next* one would
+ * land, and unlike a database row a Sentry event cannot be migrated after the
+ * fact. A file name is disclosive on its own: `LIFE_POLICY.pdf` names a life
+ * component and `NIKOS_ETHNIKI_2026.pdf` names a person and an insurer.
+ *
+ * The storage UUID keys (`<uuid>.pdf`) match too. Redacting those costs
+ * nothing — the key is in the message for correlation, and the event still
+ * carries policyId/documentId, which are what anyone debugging actually uses.
+ */
+const FILE_NAME_PATTERN = /\b[\p{L}\p{N}_ .()[\]-]{1,120}\.(?:pdf|jpe?g|png|webp|heic|docx?)\b/giu
+
 export function scrubText(value: string): string {
     return value
         .replace(EMAIL_PATTERN, "<redacted:email>")
         .replace(IBAN_PATTERN, "<redacted:iban>")
         .replace(GREEK_TAX_ID_PATTERN, "<redacted:taxid>")
+        .replace(FILE_NAME_PATTERN, "<redacted:filename>")
 }
 
 /**

@@ -71,7 +71,14 @@ describe('one source decides what a file is', () => {
 
     it('the create-policy action gates on the shared helpers', () => {
         const src = strip(readFileSync('app/(protected)/wallet/actions.ts', 'utf-8'))
-        expect(src).toMatch(/const hasValidExt = isPdfFile\(fileName\) \|\| isAcceptedImageFile\(fileName\)/)
+        // The helpers, yes — but fed the SERVER-MINTED STORAGE KEY. This used to
+        // pin `isPdfFile(fileName)`, and `fileName` stopped being a file name
+        // when documents started getting generated labels: the check then failed
+        // for every document and the add-policy flow committed policies with
+        // none. Pinning the literal is what let that ship, so assert the
+        // property and forbid the variable that cannot carry an extension.
+        expect(src).toMatch(/const hasValidExt = isPdfFile\(storageKey\) \|\| isAcceptedImageFile\(storageKey\)/)
+        expect(src).not.toMatch(/const hasValidExt = [^\n]*\bfileName\b/)
     })
 })
 

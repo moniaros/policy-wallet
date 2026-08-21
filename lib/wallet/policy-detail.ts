@@ -181,6 +181,19 @@ export function derivePolicyMeta(acord: unknown): {
 }
 
 /** Past policy periods recorded by re-uploads, newest first. */
+/**
+ * A document title we are willing to render, or null.
+ *
+ * Filters file names out of extractor output. See the note at the call site.
+ */
+function renderableDocumentTitle(value: unknown): string | null {
+    if (typeof value !== "string") return null
+    const text = value.trim()
+    if (!text) return null
+    if (/\.(?:pdf|jpe?g|png|webp|heic|docx?)$/i.test(text)) return null
+    return text
+}
+
 export function normalizeRenewalHistory(acord: unknown): RenewalHistoryEntry[] {
     const history = asArray<Record<string, unknown>>((acord as Record<string, unknown>)?.renewalHistory)
     return history
@@ -188,7 +201,14 @@ export function normalizeRenewalHistory(acord: unknown): RenewalHistoryEntry[] {
             id: typeof entry?.id === "string" && entry.id ? entry.id : `renewal-${index}`,
             startDate: typeof entry?.startDate === "string" ? entry.startDate : null,
             endDate: typeof entry?.endDate === "string" ? entry.endDate : null,
-            sourceDocumentName: typeof entry?.sourceDocumentName === "string" ? entry.sourceDocumentName : null,
+            // `sourceDocumentName` is model output and KeyDatesCard renders it
+            // verbatim, so it is a display sink for a document name. A title
+            // the extractor read off the document itself («Ανανεωτήριο 2025»)
+            // is fine; a FILE name is not — it is the customer's own metadata
+            // and disclosive on its own. Anything ending in a document
+            // extension is dropped rather than shown. (Dev acord_data held
+            // "ananeosi_2025.pdf" here, which is exactly the case this is for.)
+            sourceDocumentName: renderableDocumentTitle(entry?.sourceDocumentName),
         }))
         .sort((a, b) => (parsePolicyDate(b.endDate)?.getTime() || 0) - (parsePolicyDate(a.endDate)?.getTime() || 0))
 }

@@ -98,15 +98,34 @@ describe('normalizeRenewalHistory', () => {
         expect(normalizeRenewalHistory({ renewalHistory: 'x' })).toEqual([])
     })
 
+    it('drops a FILE name, keeps a document TITLE', () => {
+        // KeyDatesCard renders this verbatim, so it is a display sink for a
+        // document name. A title the extractor read off the document itself is
+        // fine; the customer's own file name is not — it is disclosive on its
+        // own («LIFE_POLICY.pdf» on a health policy). Dev acord_data really did
+        // hold "ananeosi_2025.pdf" here.
+        const history = normalizeRenewalHistory({
+            renewalHistory: [
+                { id: 'a', endDate: '2026-01-01', sourceDocumentName: 'ananeosi_2025.pdf' },
+                { id: 'b', endDate: '2025-01-01', sourceDocumentName: 'ΣΥΜΒΟΛΑΙΟ 91410928.PDF' },
+                { id: 'c', endDate: '2024-01-01', sourceDocumentName: 'Ανανεωτήριο 2024–2025' },
+            ],
+        })
+        const byId = Object.fromEntries(history.map((h) => [h.id, h.sourceDocumentName]))
+        expect(byId.a).toBeNull()
+        expect(byId.b).toBeNull()
+        expect(byId.c).toBe('Ανανεωτήριο 2024–2025')
+    })
+
     it('sorts newest end date first and fills fallback ids', () => {
         const history = normalizeRenewalHistory({
             renewalHistory: [
                 { startDate: '2024-01-01', endDate: '2025-01-01' },
-                { id: 'r2', startDate: '2025-01-01', endDate: '2026-01-01', sourceDocumentName: 'renewal.pdf' },
+                { id: 'r2', startDate: '2025-01-01', endDate: '2026-01-01', sourceDocumentName: 'Ανανεωτήριο 2025' },
             ],
         })
         expect(history[0].id).toBe('r2')
-        expect(history[0].sourceDocumentName).toBe('renewal.pdf')
+        expect(history[0].sourceDocumentName).toBe('Ανανεωτήριο 2025')
         expect(history[1].id).toBe('renewal-0')
         expect(history[1].sourceDocumentName).toBeNull()
     })

@@ -51,7 +51,6 @@ export const POST = withApiGuard(
             if (!validation.ok) {
                 return createApiError("BAD_REQUEST", REJECTION_MESSAGES[validation.reason], 400)
             }
-            const displayName = validation.value.displayName
 
             // Optional, and validated against the closed vocabulary rather than
             // trusted: the bulk-upload flow already knows what the classifier
@@ -111,7 +110,7 @@ export const POST = withApiGuard(
                     data: {
                         policyId: id,
                         fileUrl,
-                        // GENERATED, never the client's `displayName`. The
+                        // GENERATED, never the client's file name. The
                         // object key was already anonymous; this closes the
                         // half a person actually reads.
                         fileName: storedDocumentLabel({}),
@@ -138,7 +137,12 @@ export const POST = withApiGuard(
                     adminUserId: authResult.dbUser.id,
                     adminEmail: authResult.dbUser.email || "unknown",
                     actionType: "DOCUMENT_UPLOADED",
-                    description: `Uploaded document ${displayName} for policy ${policy.policyNumber}`,
+                    // GENERATED, like the document row 30 lines above. An
+                    // activity log is a persistent sink in the same database:
+                    // fixing the PolicyDocument row and leaving this line wrote
+                    // "Uploaded document CASH IN SAFE.pdf" into prod, which
+                    // names the covered contents to anyone reading the log.
+                    description: `Uploaded document ${storedDocumentLabel({})} for policy ${policy.policyNumber}`,
                     timestamp: new Date()
                 }
             })

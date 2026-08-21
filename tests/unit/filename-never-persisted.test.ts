@@ -25,9 +25,26 @@ import { documentDisplayLabel, downloadFileName, providerDocumentFileName } from
  * new one is covered the day it is written.
  */
 
+/**
+ * Every source file. NOT just "upload entry points".
+ *
+ * This guard originally scanned only files containing `file.name` or a
+ * `documentNames` form field, on the theory that a name can only enter there.
+ * It cannot: `PolicyService.create()` takes `doc.name` off a JSON payload and
+ * had `fileName,` written straight into Prisma, and the guard never looked at
+ * the file. It also globbed `{app,lib}` only, so all of `components/` — where
+ * the browser actually reads `file.name` — was invisible.
+ *
+ * A sink is a sink wherever it lives, so the scan is now repo-wide and the
+ * exemptions are explicit.
+ */
+function sourceFiles(): string[] {
+    return globSync("{app,lib,components,hooks}/**/*.{ts,tsx}", { ignore: ["**/node_modules/**"] })
+}
+
 /** Files that touch a client-supplied name at all. */
 function uploadEntryPoints(): string[] {
-    return globSync("{app,lib}/**/*.{ts,tsx}", { ignore: ["**/node_modules/**"] }).filter((file) => {
+    return sourceFiles().filter((file) => {
         const src = readFileSync(file, "utf-8")
         return /\bfile\.name\b/.test(src) || /getAll\(["']documentNames["']\)/.test(src)
     })
@@ -41,18 +58,38 @@ describe("no client-supplied file name reaches a persistent sink", () => {
     })
 
     it("never writes a client-supplied name into the database", () => {
-        // `fileName:` on a Prisma create/update must be a generated label.
+        // Repo-wide, and BOTH forms: `fileName: <expr>` and the ES6 shorthand
+        // `fileName,`. The shorthand is what PolicyService.create() used, and
+        // a matcher that only understands `fileName:` reads it as absent.
         const offenders: string[] = []
-        for (const file of entryPoints) {
+        for (const file of sourceFiles()) {
             const src = readFileSync(file, "utf-8")
+
             for (const m of src.matchAll(/fileName:\s*([^\n,]+)/g)) {
                 const value = m[1].trim()
                 if (/storedDocumentLabel|documentDisplayLabel/.test(value)) continue
-                // A generated constant is fine; anything derived from the
-                // client's file or form field is not.
-                if (/file\.name|documentNames|displayName|sanitizeDisplayName/.test(value)) {
+                // EXEMPT: transient client render state, never transmitted and
+                // never stored. BatchUploadModal keeps `file.name` on its row
+                // objects solely to label the queue while the user watches it
+                // process — `row.fileName` appears at exactly three render
+                // sites and in no request body. Stripping it would leave a
+                // list of 20 identical rows with no way to tell which failed.
+                // The name still reaches our server regardless, in the
+                // multipart part header of the file itself; what matters is
+                // that nothing PERSISTS it, and nothing here does.
+                if (file === "components/wallet/BatchUploadModal.tsx") continue
+                if (/file\.name|documentNames|displayName|sanitizeDisplayName|doc\.name|\bname\b/.test(value)) {
                     offenders.push(`${file} :: fileName: ${value}`)
                 }
+            }
+
+            // Shorthand: `fileName,` inside a Prisma `data: { … }`. The binding
+            // it refers to is resolved by name in the same file.
+            for (const m of src.matchAll(/^\s*fileName,\s*$/gm)) {
+                const decl = new RegExp(`(?:const|let|var)\\s+fileName\\s*=\\s*([^\\n]+)`).exec(src)
+                const from = decl ? decl[1].trim() : "(unresolved)"
+                if (/storedDocumentLabel|documentDisplayLabel/.test(from)) continue
+                offenders.push(`${file} :: fileName,  // = ${from}`)
             }
         }
         expect(
@@ -62,10 +99,29 @@ describe("no client-supplied file name reaches a persistent sink", () => {
         ).toEqual([])
     })
 
+    it("never interpolates a file name into an activity-log description", () => {
+        // A log row in the SAME database is the sink the first pass missed:
+        // the PolicyDocument row was generated while the ActivityLog two
+        // statements below it wrote "Uploaded document CASH IN SAFE.pdf".
+        const offenders: string[] = []
+        for (const file of sourceFiles()) {
+            const src = readFileSync(file, "utf-8")
+            for (const m of src.matchAll(/description:\s*`([^`]*)`/g)) {
+                if (/\$\{\s*(displayName|fileName|file\.name|doc\.name)\s*\}/.test(m[1])) {
+                    offenders.push(`${file} :: description: \`${m[1].slice(0, 70)}\``)
+                }
+            }
+        }
+        expect(
+            offenders,
+            "An activity log is a persistent sink:\n  " + offenders.join("\n  ")
+        ).toEqual([])
+    })
+
     it("never logs a file name", () => {
         // Any `fileName` key inside a logger(...) object literal, anywhere.
         const offenders: string[] = []
-        for (const file of globSync("{app,lib}/**/*.{ts,tsx}", { ignore: ["**/node_modules/**"] })) {
+        for (const file of sourceFiles()) {
             const src = readFileSync(file, "utf-8")
             for (const m of src.matchAll(/logger\(\s*['"][^'"]+['"]\s*,\s*['"][^'"]*['"]\s*,\s*\{([^}]*)\}/g)) {
                 if (/\bfileName\b/.test(m[1])) offenders.push(`${file} :: logger({ …fileName… })`)
@@ -80,7 +136,7 @@ describe("no client-supplied file name reaches a persistent sink", () => {
 
     it("never puts a file name in a Sentry scope", () => {
         const offenders: string[] = []
-        for (const file of globSync("{app,lib}/**/*.{ts,tsx}", { ignore: ["**/node_modules/**"] })) {
+        for (const file of sourceFiles()) {
             const src = readFileSync(file, "utf-8")
             if (/(setContext|setTag|setExtra|addBreadcrumb)\([^)]*fileName/.test(src)) {
                 offenders.push(file)

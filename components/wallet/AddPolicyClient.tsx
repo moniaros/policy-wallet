@@ -150,7 +150,13 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         .from('policies')
                         .getPublicUrl(fileName)
 
-                    return { url: publicUrl, name: file.name, size: file.size }
+                    // No `name`. The server discards `documentNames` and
+                    // labels the document from the policy instead, so sending
+                    // the customer's file name only puts it in a request body
+                    // that nothing reads. The name still reaches us in the
+                    // multipart part header of the file itself; that is
+                    // unavoidable, this was not.
+                    return { url: publicUrl, size: file.size }
                 })
 
                 const uploadedDocs = await Promise.all(uploadPromises)
@@ -158,7 +164,6 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 formData.delete("files")
                 uploadedDocs.forEach(doc => {
                     formData.append("documentUrls", doc.url)
-                    formData.append("documentNames", doc.name)
                     formData.append("documentSizes", doc.size.toString())
                 })
 

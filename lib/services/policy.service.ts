@@ -115,11 +115,15 @@ export class PolicyService extends BaseService {
             // Handle document metadata (if provided)
             if (data.documents && data.documents.length > 0) {
                 for (const doc of data.documents) {
+                    // The caller's name is used to CHECK the extension and for
+                    // nothing else — it is never what gets stored. Sanitizing
+                    // it and persisting it (which this did) keeps the leak and
+                    // only tidies the spelling: `LIFE_POLICY.pdf` on a health
+                    // policy still names a life component.
                     const rawFileName = doc.name || 'Unknown Document'
-                    const fileName = rawFileName.replace(/[^a-zA-Z0-9._-]/g, '_')
 
                     // Validate file extension
-                    const lowerName = fileName.toLowerCase()
+                    const lowerName = rawFileName.replace(/[^a-zA-Z0-9._-]/g, '_').toLowerCase()
                     const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.webp', '.heic']
                     const hasValidExt = validExtensions.some(ext => lowerName.endsWith(ext))
 
@@ -140,7 +144,8 @@ export class PolicyService extends BaseService {
                         data: {
                             policyId: created.id,
                             fileUrl: doc.url,
-                            fileName,
+                            // GENERATED. See lib/wallet/document-label.ts.
+                            fileName: storedDocumentLabel({}),
                             fileSize: doc.size,
                             source: 'policyholder',
                             uploadedByUserId: userId,
