@@ -170,14 +170,14 @@ export function ClaimsGuidanceCard({
                 <div className="flex flex-wrap gap-2">
                     <a
                         href="#policy-qa"
-                        className="inline-flex items-center gap-1.5 rounded-full border border-black/15 bg-white px-3.5 py-2 text-xs font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10"
+                        className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-black/15 bg-white px-3.5 py-2 text-xs font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10"
                     >
                         <MessageCircle className="h-3.5 w-3.5 text-primary dark:text-mint" />
                         {copy.claimAskAiCta}
                     </a>
                     <Link
                         href={hasAgent ? "#agent" : "/agent"}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-black/15 bg-white px-3.5 py-2 text-xs font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10"
+                        className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-black/15 bg-white px-3.5 py-2 text-xs font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10"
                     >
                         <MessageCircle className="h-3.5 w-3.5 text-primary dark:text-mint" />
                         {/* "Ask my agent" only if they actually have one; otherwise

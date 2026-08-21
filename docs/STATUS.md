@@ -1,5 +1,85 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-21c (File names erased, document pipeline swept, mobile measured)
+
+### GOAL 1 — the user's file name is kept nowhere (SHIPPED)
+
+Production held the exact leak: **`LIFE_POLICY.pdf` attached to a HEALTH policy**, naming a
+life component before anyone opened anything; beside it `CASH IN SAFE.pdf` (the covered
+contents) and `Auto_Contract_59290155.pdf` (the policy number). The storage key was already
+an opaque UUID; this closed the half a person reads.
+
+**Two sinks the map found that were not on the list:**
+1. **The name was being sent to the model providers** — 12 sites across Anthropic, OpenAI
+   and Gemini as the document part's `filename`, two under a comment claiming the raw name
+   "should not reach the third-party AI provider". `sanitizeDisplayName` only TIDIED it.
+   Providers log request metadata, so it left our boundary. `AIDocument` no longer has the
+   field, so reintroducing it is a type error.
+2. **The wallet used the file name as a fallback policy identity** — an unextracted card
+   was labelled with whatever the customer called the file.
+
+Migrated 6 rows (2 dev / 4 prod), zero filename-shaped values and zero leak words left.
+Archives were clean, but three names were embedded in TRACKED files (an archived STATUS
+wrap quoted four; a test comment named the life booklet) — scrubbed. Guard derives its
+entry points from `file.name` / `documentNames` rather than a list.
+
+### GOAL 2 — document-pipeline security sweep (SHIPPED)
+
+**2.3 inverted the expected finding: there is no server-side PDF parser at all.** No
+pdf-parse/pdfjs/unpdf/poppler/mupdf — the file is base64'd and handed to the provider, so
+the malicious-PDF-attacks-the-parser vector does not exist here.
+
+Already sound and now pinned: magic-byte sniffing with extension cross-check; server-side
+size limits (and again at the bucket, 15 MiB + mime allowlist); all three buckets PRIVATE;
+signed URLs 300s, resolved from the stored KEY, never logged, OWNED_BUCKETS only; per-user
+rate limits (extract 15/min, batch-create 6/min, analysis 10/min per policy, upload 20/min);
+CSP `default-src 'self'`, X-Frame-Options DENY, HSTS preload, nosniff.
+
+**The real gap:** encrypted PDFs were accepted and failed minutes later with no
+explanation. Now rejected at the door via a BOUNDED 8 KiB trailer scan with a Greek
+instruction. `FILE_PASSWORD_PROTECTED` was previously excluded on purpose because nothing
+could distinguish that case — that premise changed, and the comment says so.
+
+**Also fixed:** all 4 prod documents persisted `/object/public/` URLs from the old
+client-side flow (harmless on private buckets, but a claim storage does not honour) —
+normalised in both DBs. And `mime_type` backfilled in both from the server-generated
+storage key, because previewability now depends on it.
+
+### GOAL 3 — mobile, measured (PARTIAL — see below)
+
+Built the viewport matrix (390 / 430 / 320, Greek, authenticated) and wired it as a
+Playwright project. **Measured, not guessed:**
+- wallet and policy page have **no horizontal overflow** at any of the three viewports
+- **no input triggers iOS zoom-on-focus** (all ≥16px)
+- Lighthouse mobile, /pricing: **perf 94, LCP 1.8s, CLS 0.1**, FCP 1.3s, TBT 120ms
+
+**Fixed, each from evidence:**
+- `viewportFit: "cover"` was missing, so the app's existing
+  `env(safe-area-inset-bottom)` padding resolved to **0 on every notched iPhone** — the
+  CSS was correct and inert since the NEW-UI refactor.
+- At 320px every Greek ALL-CAPS stat label broke MID-WORD («ΧΡΕΙΑΖ/ΕΤΑΙ ΠΡΟΣΟΧ/Η»): a
+  global `overflow-wrap: anywhere` met a ~60px label column. `.pw-kicker` now uses
+  narrower tracking below `sm`, and `StatGrid` goes single-column below 360px.
+- Tap targets below 44px: the policy section-nav pills (34×34) and the claims CTA (34px).
+
+### NOT DONE in GOAL 3 — stated plainly
+3.1's specific policy-page work (header action buttons → primary + overflow, EXPIRED
+banner, limits table → stacked rows, accordion defaults), 3.2's add-policy flow walkthrough,
+most of 3.5's visual polish, and per-viewport before/after Lighthouse. The matrix and
+baseline screenshots exist to make that work measurable when it happens.
+
+**3.6 is half-done by necessity:** the guard exists and runs locally, but E2E is not in CI
+at all in this repo, and wiring it there needs dev-Supabase credentials as GitHub secrets
+(only GEMINI_API_KEY and VERCEL_* exist today). That is an owner step.
+
+### Still blocked
+1. Gemini monthly spend cap — blocks the R5 re-measurement, proving a `value_drift` firing,
+   and exercising renewals against a real document pair.
+2. R3 prod (9 of 11 orphans) needs `SUPABASE_SERVICE_ROLE_KEY`.
+3. Live Stripe keys in Vercel (two variables; see the previous wrap).
+
+---
+
 ## Session wrap — 2026-08-21b (Live Stripe, the promo guard, and renewals)
 
 ### The live false claim is resolved — PATH 1, made true

@@ -80,8 +80,11 @@ export function StatTile({
  * four columns truncate their hints.
  */
 export function StatGrid({ children, className }: { children: ReactNode; className?: string }) {
+    // Single column below 360px. Two columns at 320 leave each tile ~138px, of
+    // which the icon and gaps take half — not enough for a Greek uppercase
+    // label, which is why every one of them broke mid-word.
     return (
-        <div className={cn("grid grid-cols-2 gap-3 xl:grid-cols-4", className)}>
+        <div className={cn("grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 xl:grid-cols-4", className)}>
             {children}
         </div>
     )

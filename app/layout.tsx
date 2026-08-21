@@ -52,6 +52,22 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#29685B",
+  /**
+   * REQUIRED for env(safe-area-inset-*) to return anything but 0.
+   *
+   * The mobile bottom nav has carried `safe-area-inset-bottom` padding since
+   * the NEW-UI refactor (app/globals.css:332, AppShell.tsx:376) — but without
+   * `viewport-fit=cover` iOS never reports an inset, so that padding resolved
+   * to 0px and the nav sat under the home indicator on every notched iPhone.
+   * The CSS was right and inert.
+   */
+  viewportFit: "cover",
+  /**
+   * Not `maximumScale: 1`. Locking zoom is the usual companion to this change
+   * and it breaks pinch-zoom for low-vision users (WCAG 1.4.4). The
+   * zoom-on-focus problem is solved properly instead — every input is ≥16px,
+   * asserted by the mobile matrix.
+   */
 };
 
 export default function RootLayout({

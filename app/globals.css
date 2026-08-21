@@ -661,8 +661,18 @@ pre {
   }
 
   .pw-kicker {
-    @apply text-[10px] font-bold uppercase tracking-[0.24em];
+    /* Tracking is narrower on small screens ON PURPOSE.
+       0.24em on an eleven-letter Greek word is ~90px of label; inside a
+       two-column stat tile at 320px the text column is barely 60px, so the
+       global `overflow-wrap: anywhere` (above) had no choice but to break
+       INSIDE the word — «ΑΣΦΑΛΙΣΤΙΚ / Ο ΑΠΟΤΥΠΩΜΑ», «ΧΡΕΙΑΖ / ΕΤΑΙ». Greek
+       runs 20–30% longer than English, so this only ever showed in the
+       language the product is actually written in. */
+    @apply text-[10px] font-bold uppercase tracking-[0.08em] sm:tracking-[0.24em];
     color: var(--pw-text-muted);
+    /* Prefer a word boundary; break inside a word only as a last resort. */
+    overflow-wrap: break-word;
+    hyphens: none;
   }
 
   /* Dashboard-shell alias of .pw-card — same flat, border-first public recipe. */

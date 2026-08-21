@@ -133,6 +133,18 @@ export default defineConfig({
             dependencies: ['admin-setup'],
         },
         {
+            // Mobile regression matrix. Carries the policyholder session because
+            // the wallet and the policy page are behind auth.
+            name: 'mobile',
+            testMatch: /mobile-viewport-matrix\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: 'playwright/.auth/user.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+            dependencies: ['setup'],
+        },
+        {
             // Cross-tenant enforcement. Builds BOTH request contexts itself
             // (owner to discover the id, agent to attack it), so the project
             // carries no storageState of its own — it just needs both auth

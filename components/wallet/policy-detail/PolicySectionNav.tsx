@@ -19,7 +19,7 @@ export function PolicySectionNav({ items, ariaLabel }: { items: PolicySectionNav
                     <a
                         key={item.id}
                         href={`#${item.id}`}
-                        className="whitespace-nowrap rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-bold text-black/70 transition-colors hover:border-primary/40 hover:text-primary dark:border-white/15 dark:bg-black dark:text-white/75 dark:hover:border-mint/40 dark:hover:text-mint"
+                        className="inline-flex min-h-[44px] items-center whitespace-nowrap rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-bold text-black/70 transition-colors hover:border-primary/40 hover:text-primary dark:border-white/15 dark:bg-black dark:text-white/75 dark:hover:border-mint/40 dark:hover:text-mint"
                     >
                         {item.label}
                     </a>
