@@ -16,8 +16,11 @@ export interface AIDocument {
     data: string
     /** MIME type (e.g., 'application/pdf', 'image/jpeg') */
     mimeType: string
-    /** Original filename */
-    fileName: string
+    // NO fileName. The user's own file name is never sent to a model provider:
+    // providers log request metadata, so a name in the payload leaves our
+    // boundary. Every provider needs *a* name for the document part and gets a
+    // constant from providerDocumentFileName(). Removing the field from the
+    // contract means reintroducing it is a type error, not a review catch.
 }
 
 /**

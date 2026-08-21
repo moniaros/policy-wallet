@@ -45,8 +45,9 @@ describe('document kind — what counts as a policy', () => {
 
 describe('evidence assessment — the corpus cases', () => {
     it('refuses a terms-and-conditions booklet even when it names an insurer', () => {
-        // LIFE_POLICY.pdf: 113 pages of Όροι Ασφάλισης, «Η ΕΘΝΙΚΗ» on every page,
-        // no schedule, no parties, no policy number.
+        // From the real corpus: 113 pages of Όροι Ασφάλισης, «Η ΕΘΝΙΚΗ» on
+        // every page, no schedule, no parties, no policy number. (The source
+        // file's name is deliberately not quoted — it named the branch.)
         const verdict = assessExtractionEvidence({
             documentKind: 'terms_and_conditions',
             insurerName: 'Η ΕΘΝΙΚΗ',

@@ -42,7 +42,13 @@ describe("policies/extract route metering + migration", () => {
         expect(source.indexOf("POLICY_EXTRACT_REQUESTED")).toBeLessThan(call)
     })
 
-    it("sanitizes the filename before it reaches the provider", () => {
-        expect(source).toMatch(/sanitizeDisplayName\(file\.name\)/)
+    it("sends NO filename to the provider — sanitizing it was never enough", () => {
+        // This used to assert `sanitizeDisplayName(file.name)`, i.e. that a
+        // TIDIED version of the customer's file name reached a third-party
+        // model provider. Tidying does not remove "LIFE_POLICY" or a person's
+        // name; it only reformats them. The field is gone from AIDocument, so
+        // the route must not mention it at all.
+        expect(source).not.toMatch(/fileName/)
+        expect(source).not.toMatch(/sanitizeDisplayName\(file\.name\)/)
     })
 })

@@ -4,6 +4,7 @@
  * Secondary provider used for remediation failover and canary rollout.
  */
 
+import { providerDocumentFileName } from "@/lib/wallet/document-label"
 import { createOpenAI } from "@ai-sdk/openai"
 import { generateObject, generateText } from "ai"
 import { z } from "zod"
@@ -140,7 +141,7 @@ export class OpenAIAIService implements IAIService {
                                     type: "file",
                                     data: document.data,
                                     mediaType: document.mimeType,
-                                    filename: document.fileName,
+                                    filename: providerDocumentFileName(document.mimeType),
                                 } as any,
                             ],
                         },
@@ -229,7 +230,7 @@ export class OpenAIAIService implements IAIService {
                 type: "file",
                 data: document.data,
                 mediaType: document.mimeType,
-                filename: document.fileName,
+                filename: providerDocumentFileName(document.mimeType),
             })
         }
 
@@ -347,7 +348,7 @@ export class OpenAIAIService implements IAIService {
                 type: "file",
                 data: document.data,
                 mediaType: document.mimeType,
-                filename: document.fileName,
+                filename: providerDocumentFileName(document.mimeType),
             })
         }
 
@@ -406,7 +407,7 @@ export class OpenAIAIService implements IAIService {
                 type: "file",
                 data: document.data,
                 mediaType: document.mimeType,
-                filename: document.fileName,
+                filename: providerDocumentFileName(document.mimeType),
             })
         }
 

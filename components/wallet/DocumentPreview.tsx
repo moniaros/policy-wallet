@@ -9,6 +9,7 @@ interface DocumentPreviewProps {
     onClose: () => void
     document: {
         fileName: string
+        mimeType?: string | null
         fileUrl: string
     } | null
     labels: {
@@ -24,19 +25,27 @@ interface DocumentPreviewProps {
  * A phone photo of a policy therefore reached the preview as "other" and was met
  * with "preview unavailable", even where the card offered a preview button.
  */
-function getFileType(fileName: string): "pdf" | "image" | "other" {
-    if (isPdfFile(fileName)) return "pdf"
+/**
+ * Decided from the VERIFIED mime type, not from a file extension.
+ *
+ * The stored `fileName` is now a generated label with no extension, so
+ * sniffing it would classify every document as "other". `mimeType` is better
+ * evidence anyway — it is derived from the file's CONTENT at upload time, not
+ * from what the client claimed or what the name ended in.
+ */
+function getFileType(mimeType: string | null | undefined): "pdf" | "image" | "other" {
+    if (mimeType === "application/pdf") return "pdf"
     // Only formats the browser can paint reach the <img> branch. HEIC is an
     // accepted image but not browser-renderable — it falls to "other" so the
     // reader gets the download link instead of a broken image.
-    if (isBrowserRenderableImage(fileName)) return "image"
+    if (mimeType === "image/jpeg" || mimeType === "image/png" || mimeType === "image/webp") return "image"
     return "other"
 }
 
 export function DocumentPreview({ isOpen, onClose, document, labels }: DocumentPreviewProps) {
     if (!document) return null
 
-    const fileType = getFileType(document.fileName)
+    const fileType = getFileType(document.mimeType)
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="!max-w-4xl !max-h-[92vh]">

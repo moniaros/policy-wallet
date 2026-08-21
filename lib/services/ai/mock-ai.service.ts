@@ -85,7 +85,6 @@ export class MockAIService implements IAIService {
         }
 
         logger('info', 'Mock AI extraction completed', {
-            fileName: document.fileName
         })
 
         const base = {

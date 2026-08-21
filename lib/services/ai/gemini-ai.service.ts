@@ -5,6 +5,7 @@
  * Handles policy extraction and gap analysis using the Gemini API.
  */
 
+import { providerDocumentFileName } from "@/lib/wallet/document-label"
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { generateObject, generateText } from 'ai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
@@ -158,7 +159,6 @@ export class GeminiAIService implements IAIService {
       const prompt = buildExtractionPrompt(options?.operatorGuidance, options?.lineOfBusinessHint)
 
       logger('info', 'Starting Gemini extraction', {
-        fileName: document.fileName,
         mimeType: document.mimeType,
         model: modelName
       })
@@ -191,7 +191,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
                   type: 'file',
                   data: document.data,
                   mediaType: document.mimeType,
-                  filename: document.fileName
+                  filename: providerDocumentFileName(document.mimeType)
                 } as any
               ]
             }
@@ -220,7 +220,6 @@ ${schemaPromptBlock(ExtractionSchema)}`
       }
 
       logger('info', 'Gemini extraction successful', {
-        fileName: document.fileName,
         insurerName: extracted.insurerName,
         policyNumber: extracted.policyNumber,
         hasAcordData: !!extracted.acordData
@@ -252,7 +251,6 @@ ${schemaPromptBlock(ExtractionSchema)}`
       }
     } catch (error) {
       logger('error', 'Gemini Zod extraction failed', {
-        fileName: document.fileName,
         error: error instanceof Error ? error.message : String(error)
       })
       throw error
@@ -287,7 +285,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
           type: 'file',
           data: document.data,
           mediaType: document.mimeType,
-          filename: document.fileName
+          filename: providerDocumentFileName(document.mimeType)
         })
       }
 
@@ -478,7 +476,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
         type: 'file',
         data: document.data,
         mediaType: document.mimeType,
-        filename: document.fileName,
+        filename: providerDocumentFileName(document.mimeType),
       })
     }
 
@@ -564,7 +562,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
           type: 'file',
           data: document.data,
           mediaType: document.mimeType,
-          filename: document.fileName
+          filename: providerDocumentFileName(document.mimeType)
         })
       }
 

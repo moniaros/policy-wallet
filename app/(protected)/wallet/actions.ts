@@ -1,5 +1,6 @@
 "use server"
 
+import { storedDocumentLabel } from "@/lib/wallet/document-label"
 import { db } from "@/lib/db"
 import { emit } from "@/lib/notifications/dispatch"
 import { revalidatePath } from "next/cache"
@@ -109,7 +110,10 @@ export async function createPolicy(formData: FormData) {
     for (let i = 0; i < Math.min(documentUrls.length, MAX_DOCUMENTS); i++) {
         const fileUrl = documentUrls[i]
         // Display metadata only — sanitized (Greek-safe), never used as a key.
-        const fileName = sanitizeDisplayName(documentNames[i] || "Unknown Document")
+        // GENERATED. `documentNames` still arrives in the form because the
+        // browser sends it, but it is discarded here rather than stored —
+        // the label the customer sees is built from the policy, not the file.
+        const fileName = storedDocumentLabel({})
         const fileSize = parseInt(documentSizes[i] || "0")
 
         // The bytes were uploaded to storage client-side; only persist a

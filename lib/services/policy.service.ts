@@ -8,6 +8,7 @@
 
 import { BaseService } from './base.service'
 import { mergeAcordData } from './acord-merge'
+import { storedDocumentLabel } from '@/lib/wallet/document-label'
 import { emit } from '@/lib/notifications/dispatch'
 import { AppError } from '@/lib/errors'
 import { uploadFile, deleteFile } from '@/lib/storage'
@@ -123,9 +124,13 @@ export class PolicyService extends BaseService {
                     const hasValidExt = validExtensions.some(ext => lowerName.endsWith(ext))
 
                     if (!hasValidExt) {
+                        // The rejected EXTENSION is the diagnostic; the name is
+                        // not. Logging the whole name to explain "wrong file
+                        // type" is how a customer's file name ends up in an
+                        // operational log.
                         logger('warn', 'Skipping document with invalid extension', {
                             userId,
-                            fileName,
+                            extension: lowerName.slice(lowerName.lastIndexOf('.')) || 'none',
                             policyId: created.id
                         })
                         continue
@@ -345,8 +350,8 @@ export class PolicyService extends BaseService {
             throw AppError.externalService('Storage', error instanceof Error ? error : new Error('Upload failed'))
         }
 
-        // Display metadata only (Greek-safe) — never used as a storage key.
-        const sanitizedFileName = sanitizeDisplayName(file.name)
+        // The user's file name is deliberately NOT read here. It is not
+        // sanitized-and-stored, it is discarded: see lib/wallet/document-label.ts.
 
         // 3. Create 'Analyzing' record immediately
         // We use placeholders that the AI will soon replace
@@ -373,7 +378,11 @@ export class PolicyService extends BaseService {
                 status: 'analyzing', // Marks it for background processing
                 documents: [{
                     url: fileUrl,
-                    name: sanitizedFileName,
+                    // GENERATED, never the user's file name. At this point
+                    // extraction has not run, so there is no branch and no
+                    // policy number — the label says so rather than inventing
+                    // one. See lib/wallet/document-label.ts.
+                    name: storedDocumentLabel({}),
                     size: file.size
                 }]
             }, language)
@@ -384,10 +393,12 @@ export class PolicyService extends BaseService {
             throw createError
         }
 
+        // No fileName here. Logs are a sink like any other: the 2026-08-14 run
+        // recorded fileName:"motor.pdf", which is the line of business in
+        // plain text, in a log nobody classified as personal data.
         logger('info', 'Policy upload initiated - analysis deferred to background', {
             userId,
             policyId: policy.id,
-            fileName: sanitizedFileName
         })
 
         return {
@@ -447,14 +458,15 @@ export class PolicyService extends BaseService {
             throw AppError.externalService('Storage', error instanceof Error ? error : new Error('Upload failed'))
         }
 
-        const sanitizedFileName = sanitizeDisplayName(file.name)
-
         try {
             const document = await this.db.policyDocument.create({
                 data: {
                     policyId,
                     fileUrl,
-                    fileName: sanitizedFileName,
+                    // Generated. The renewal's own period is not known until
+                    // extraction, so the label starts as the renewal base and
+                    // the render path fills the period in.
+                    fileName: storedDocumentLabel({ documentKind: 'renewal_notice' }),
                     fileSize: file.size,
                     source: 'policyholder',
                     processingStatus: 'pending',

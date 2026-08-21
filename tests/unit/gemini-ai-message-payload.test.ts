@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { providerDocumentFileName } from '@/lib/wallet/document-label'
 import type { AIDocument, GapDefinitionForAI, PolicyMetadata } from '@/lib/services/ai/ai-service.interface'
 import { GeminiAIService } from '@/lib/services/ai/gemini-ai.service'
 import { generateObject, generateText } from 'ai'
@@ -45,7 +46,6 @@ describe('GeminiAIService message payload shape', () => {
   const doc: AIDocument = {
     data: 'QUJDRA==',
     mimeType: 'application/pdf',
-    fileName: 'policy.pdf',
   }
 
   const metadata: PolicyMetadata = {
@@ -144,7 +144,10 @@ describe('GeminiAIService message payload shape', () => {
       expect(filePart).toBeDefined()
       expect(filePart.data).toBe(doc.data)
       expect(filePart.mediaType).toBe(doc.mimeType)
-      expect(filePart.filename).toBe(doc.fileName)
+      // A constant, not the user's file name — providers log request
+      // metadata, so a real name here leaves our boundary.
+      expect(filePart.filename).toBe(providerDocumentFileName(doc.mimeType))
+      expect(filePart.filename).not.toMatch(/policy|life|health|\d{4}/i)
       expect(filePart.mimeType).toBeUndefined()
       expect(String(filePart.data)).not.toContain('data:application/pdf')
 
@@ -185,7 +188,10 @@ describe('GeminiAIService message payload shape', () => {
     expect(filePart).toBeDefined()
     expect(filePart.data).toBe(doc.data)
     expect(filePart.mediaType).toBe(doc.mimeType)
-    expect(filePart.filename).toBe(doc.fileName)
+    // A constant, not the user's file name — providers log request
+      // metadata, so a real name here leaves our boundary.
+      expect(filePart.filename).toBe(providerDocumentFileName(doc.mimeType))
+      expect(filePart.filename).not.toMatch(/policy|life|health|\d{4}/i)
     expect(filePart.mimeType).toBeUndefined()
     expect(userMessage.content.some((part: any) => 'inlineData' in part)).toBe(false)
   })

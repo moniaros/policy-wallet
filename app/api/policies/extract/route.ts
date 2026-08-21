@@ -1,3 +1,4 @@
+import { storedDocumentLabel } from "@/lib/wallet/document-label"
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getAIService } from "@/lib/services/ai"
@@ -226,9 +227,7 @@ export const POST = withApiGuard(
                 {
                     data: base64Data,
                     mimeType: file.type,
-                    // Sanitized — the raw client filename (often the customer's
-                    // name) must not reach the third-party AI provider.
-                    fileName: sanitizeDisplayName(file.name),
+                    // No file name at all — see AIDocument.
                 },
                 { userId: authResult.dbUser.id, modelOverride: extractionOverride?.model, operatorGuidance },
             )

@@ -108,7 +108,7 @@ describe("harness smoke — the deterministic mock provider runs through a score
         const { MockAIService } = await import("@/lib/services/ai/mock-ai.service")
         const service = new MockAIService()
         const actual = await service.extractPolicyData(
-            { data: "AA==", mimeType: "image/png", fileName: "x.png" },
+            { data: "AA==", mimeType: "image/png" },
             {}
         )
         const s = scoreExtraction({ lineOfBusiness: "motor", hasCoverageSummary: true }, actual)

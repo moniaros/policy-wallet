@@ -1112,8 +1112,10 @@ minute per user**. Four of every ten were rejected with a 429 *before any PDF wa
 opened*. The extract route writes an activity row only after that gate, and
 production shows exactly six per attempt across four separate batches
 (2026-08-10 08:46, 08:48, 14:49; 2026-08-11 09:12 — the screenshotted run).
-So `cyber policy.pdf`, `YACHT TPL.pdf`, `CASH IN TRANSIT.pdf` and
-`CASH IN SAFE.pdf` failed for no reason of their own. They lost a race.
+So four uploads in that batch failed for no reason of their own. They lost a
+race. (Their file names were quoted here in the original wrap and have been
+removed: a file name is user-authored metadata that names a branch or a person,
+and a status document is a sink like any other.)
 
 **Why it read as a save failure.** Three independent defects, all fixed:
 1. the client threw `new Error(response.statusText)` — always `""` on HTTP/2 —

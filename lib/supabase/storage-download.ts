@@ -95,14 +95,25 @@ export type SignedUrlOutcome =
 
 export async function signStoredObject(
     doc: StoredObjectSource,
-    expirySeconds: number
+    expirySeconds: number,
+    /**
+     * Name the browser saves as, via Content-Disposition.
+     *
+     * Without it the download lands as the storage key — a bare UUID, which is
+     * useless in a downloads folder. With it the customer gets a generated,
+     * descriptive name. It is never the file name they uploaded: that is not
+     * stored anywhere (see lib/wallet/document-label.ts).
+     */
+    downloadName?: string
 ): Promise<SignedUrlOutcome> {
     const ref = resolveStoredObject(doc)
     if (!ref) return { ok: false, reason: "unresolvable" }
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return { ok: false, reason: "not_configured" }
 
     const admin = createAdminClient()
-    const { data, error } = await admin.storage.from(ref.bucket).createSignedUrl(ref.objectPath, expirySeconds)
+    const { data, error } = await admin.storage
+        .from(ref.bucket)
+        .createSignedUrl(ref.objectPath, expirySeconds, downloadName ? { download: downloadName } : undefined)
 
     if (error) {
         // Supabase reports a deleted/never-written object as a 404 "not found".
@@ -140,12 +151,16 @@ export function isOwnedStorageUrl(url: string): boolean {
  */
 export async function createSignedUrlForStoredObject(
     fileUrl: string,
-    expirySeconds: number
+    expirySeconds: number,
+    /** Generated save-as name; see signStoredObject. */
+    downloadName?: string
 ): Promise<string | null> {
     const ref = resolveSupabaseStorageObject(fileUrl)
     if (!ref || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null
     const admin = createAdminClient()
-    const { data, error } = await admin.storage.from(ref.bucket).createSignedUrl(ref.objectPath, expirySeconds)
+    const { data, error } = await admin.storage
+        .from(ref.bucket)
+        .createSignedUrl(ref.objectPath, expirySeconds, downloadName ? { download: downloadName } : undefined)
     if (error) return null
     return data?.signedUrl ?? null
 }

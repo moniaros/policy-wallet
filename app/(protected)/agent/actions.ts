@@ -1,5 +1,6 @@
 "use server"
 
+import { storedDocumentLabel } from "@/lib/wallet/document-label"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { emit } from "@/lib/notifications/dispatch"
@@ -1009,7 +1010,7 @@ export async function addPolicyForCustomer(data: {
                     data: {
                         policyId: policy.id,
                         fileUrl,
-                        fileName: sanitizeDisplayName(file.name),
+                        fileName: storedDocumentLabel({}),
                         fileSize: file.size,
                         source: 'agent',
                         uploadedByUserId: agentId,
@@ -1142,9 +1143,10 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
             {
                 data: base64Data,
                 mimeType: file.type,
-                // Sanitized — the raw client filename (often the customer's
-                // name) should not reach the third-party AI provider.
-                fileName: sanitizeDisplayName(file.name)
+                // No file name at all. The old comment here said the raw name
+                // "should not reach the third-party AI provider" — but
+                // sanitizeDisplayName only TIDIED it, so it reached them
+                // anyway. AIDocument no longer has the field.
             },
             // Attribute the token cost to the agent — the scan used to run
             // entirely off the books.

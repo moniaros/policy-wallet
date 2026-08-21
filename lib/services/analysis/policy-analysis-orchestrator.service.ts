@@ -1264,7 +1264,6 @@ export class PolicyAnalysisOrchestratorService {
                     successPct: Math.round((checksPassed / 3) * 100),
                     logMessage: "Document loaded and validated",
                     logJson: {
-                        fileName: prepared.fileName,
                         mimeType: prepared.document?.mimeType || null,
                     },
                 }
@@ -2398,7 +2397,6 @@ export class PolicyAnalysisOrchestratorService {
     }
     private async prepareDocument(policyId: string): Promise<{
         document: AIDocument
-        fileName: string
         documentId: string
         documentHash: string
     }> {
@@ -2468,13 +2466,11 @@ export class PolicyAnalysisOrchestratorService {
         await setDocumentHash(document.id, docHash)
 
         return {
-            fileName: document.fileName,
             documentId: document.id,
             documentHash: docHash,
             document: {
                 data: buffer.toString("base64"),
                 mimeType,
-                fileName: document.fileName,
             },
         }
     }

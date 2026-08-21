@@ -6,6 +6,7 @@
  * Failover chain: Gemini -> Claude -> OpenAI.
  */
 
+import { providerDocumentFileName } from "@/lib/wallet/document-label"
 import { createAnthropic } from "@ai-sdk/anthropic"
 import { generateObject, generateText } from "ai"
 import { z } from "zod"
@@ -155,7 +156,7 @@ export class AnthropicAIService implements IAIService {
                                     type: "file",
                                     data: document.data,
                                     mediaType: document.mimeType,
-                                    filename: document.fileName,
+                                    filename: providerDocumentFileName(document.mimeType),
                                 } as any,
                             ],
                         },
@@ -180,7 +181,6 @@ export class AnthropicAIService implements IAIService {
         }
 
         logger("info", "Anthropic extraction successful", {
-            fileName: document.fileName,
             insurerName: extracted.insurerName,
             policyNumber: extracted.policyNumber,
         })
@@ -248,7 +248,7 @@ export class AnthropicAIService implements IAIService {
                 type: "file",
                 data: document.data,
                 mediaType: document.mimeType,
-                filename: document.fileName,
+                filename: providerDocumentFileName(document.mimeType),
             })
         }
 
@@ -364,7 +364,7 @@ export class AnthropicAIService implements IAIService {
                 type: "file",
                 data: document.data,
                 mediaType: document.mimeType,
-                filename: document.fileName,
+                filename: providerDocumentFileName(document.mimeType),
             })
         }
 
@@ -422,7 +422,7 @@ export class AnthropicAIService implements IAIService {
                 type: "file",
                 data: document.data,
                 mediaType: document.mimeType,
-                filename: document.fileName,
+                filename: providerDocumentFileName(document.mimeType),
             })
         }
 

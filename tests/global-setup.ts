@@ -129,6 +129,10 @@ async function provisionUser(
  * renders when the account holds at least one policy — keep a stable
  * fixture policy on the E2E policyholder.
  */
+/** The stored label is GENERATED, never a file name — same rule as production.
+ *  See lib/wallet/document-label.ts. */
+const E2E_DOCUMENT_LABEL = 'Ασφαλιστήριο Αυτοκίνητο · E2E-MOT-001'
+
 async function provisionFixturePolicy(db: any, ownerUserId: string) {
     let policy = await db.policy.findFirst({
         where: { ownerUserId, policyNumber: 'E2E-MOT-001' },
@@ -159,22 +163,22 @@ async function provisionFixturePolicy(db: any, ownerUserId: string) {
     // click-through) is exercisable. The file itself never has to exist —
     // the locked state renders before any fetch.
     const doc = await db.policyDocument.findFirst({
-        where: { policyId: policy.id, fileName: 'e2e-contract.pdf' },
+        where: { policyId: policy.id, fileName: E2E_DOCUMENT_LABEL },
         select: { id: true },
     })
     if (!doc) {
         await db.policyDocument.create({
             data: {
                 policyId: policy.id,
-                fileUrl: '/e2e-fixtures/e2e-contract.pdf',
-                fileName: 'e2e-contract.pdf',
+                fileUrl: '/e2e-fixtures/e2e-document.pdf',
+                fileName: E2E_DOCUMENT_LABEL,
                 fileSize: 24576,
                 source: 'policyholder',
                 processingStatus: 'completed',
                 uploadedByUserId: ownerUserId,
             },
         })
-        console.log('✅ E2E fixture document provisioned (e2e-contract.pdf)')
+        console.log('✅ E2E fixture document provisioned')
     }
 }
 

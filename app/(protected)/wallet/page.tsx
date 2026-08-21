@@ -152,12 +152,15 @@ export default async function WalletPage() {
             // "Αυτοκίνητο · __PENDING_EXTRACTION__" reached a customer.
             policyNumber: displayPolicyNumber(p.policyNumber) ?? '',
             // Canonical Greek-market display name (raw extracted strings like
-            // "ΕΘΝΙΚΗ Η ΠΡΩΤΗ ΑΣΦΑΛΙΣΤΙΚΗ" normalize to "Εθνική Ασφαλιστική"),
-            // falling back to the uploaded file name while extraction has not
-            // produced an insurer.
+            // "ΕΘΝΙΚΗ Η ΠΡΩΤΗ ΑΣΦΑΛΙΣΤΙΚΗ" normalize to "Εθνική Ασφαλιστική").
+            //
+            // The uploaded file name USED to be the fallback here, which is
+            // precisely the leak: a card for a policy whose extraction had not
+            // finished was labelled "LIFE POLICY" because that is what the
+            // customer called the file. displayInsurerName's own default is
+            // used instead.
             insurerName: displayInsurerName(
-                resolveInsurerDisplay(p.insurerName).displayName,
-                fileNameLabel(p.documents[0]?.fileName)
+                resolveInsurerDisplay(p.insurerName).displayName
             ),
             insurerLogo: null, // Placeholder
             lineOfBusiness: p.lineOfBusiness as any,

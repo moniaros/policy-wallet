@@ -1,3 +1,4 @@
+import { storedDocumentLabel, downloadFileName } from "@/lib/wallet/document-label"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
@@ -110,10 +111,10 @@ export const POST = withApiGuard(
                     data: {
                         policyId: id,
                         fileUrl,
-                        // The ORIGINAL name, for display. The stored object is
-                        // named by the server (an opaque UUID) and the two are
-                        // deliberately unrelated — see uploadFileDetailed.
-                        fileName: displayName,
+                        // GENERATED, never the client's `displayName`. The
+                        // object key was already anonymous; this closes the
+                        // half a person actually reads.
+                        fileName: storedDocumentLabel({}),
                         fileSize: file.size,
                         source: source as string,
                         uploadedByUserId: authResult.dbUser.id,
@@ -148,7 +149,14 @@ export const POST = withApiGuard(
             // even though no client reads this field today.
             const signedUrl = await createSignedUrlForStoredObject(
                 document.fileUrl,
-                DOWNLOAD_SIGNED_URL_EXPIRY_SECONDS
+                DOWNLOAD_SIGNED_URL_EXPIRY_SECONDS,
+                // Saves as policywallet-<lob>-<number>.pdf rather than the
+                // storage UUID — and never as the name the user uploaded.
+                downloadFileName({
+                    lineOfBusiness: policy?.lineOfBusiness,
+                    policyNumber: policy?.policyNumber,
+                    mimeType: document.mimeType,
+                })
             )
 
             return createApiResponse({

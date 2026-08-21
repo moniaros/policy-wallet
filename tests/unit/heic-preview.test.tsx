@@ -27,9 +27,12 @@ describe('HEIC is an image but not a browser-renderable one', () => {
 })
 
 describe('the preview modal does not render a broken HEIC image', () => {
+    // Fixtures carry a GENERATED label and a real mimeType, because that is
+    // what the database holds now: the user's file name is never stored, so
+    // the preview cannot and must not decide anything from an extension.
     it('falls back to download-only for a HEIC file', () => {
         render(
-            <DocumentPreview isOpen document={{ fileName: 'policy.heic', fileUrl: '/d/1' }} labels={labels} onClose={() => {}} />
+            <DocumentPreview isOpen document={{ fileName: 'Έγγραφο σε επεξεργασία', mimeType: 'image/heic', fileUrl: '/d/1' }} labels={labels} onClose={() => {}} />
         )
         // No <img> (which the browser could not paint) …
         expect(document.body.querySelector('img')).toBeNull()
@@ -40,7 +43,7 @@ describe('the preview modal does not render a broken HEIC image', () => {
 
     it('still renders a real <img> for a JPG', () => {
         render(
-            <DocumentPreview isOpen document={{ fileName: 'photo.jpg', fileUrl: '/d/2' }} labels={labels} onClose={() => {}} />
+            <DocumentPreview isOpen document={{ fileName: 'Έγγραφο σε επεξεργασία', mimeType: 'image/jpeg', fileUrl: '/d/2' }} labels={labels} onClose={() => {}} />
         )
         const img = document.body.querySelector('img')
         expect(img).toBeTruthy()
@@ -49,7 +52,7 @@ describe('the preview modal does not render a broken HEIC image', () => {
 
     it('renders a PDF in an iframe', () => {
         render(
-            <DocumentPreview isOpen document={{ fileName: 'policy.pdf', fileUrl: '/d/3' }} labels={labels} onClose={() => {}} />
+            <DocumentPreview isOpen document={{ fileName: 'Ασφαλιστήριο Αυτοκίνητο · 64504715', mimeType: 'application/pdf', fileUrl: '/d/3' }} labels={labels} onClose={() => {}} />
         )
         expect(document.body.querySelector('iframe')).toBeTruthy()
     })
