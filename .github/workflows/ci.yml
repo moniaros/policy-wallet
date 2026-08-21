@@ -10,7 +10,14 @@ jobs:
   lint-and-typecheck:
     name: Lint & Type Check
     runs-on: ubuntu-latest
-    
+
+    # Hoisted so the gap-catalogue step can test for their presence. `secrets`
+    # is not a permitted context in a step-level `if` — using it there does not
+    # skip the step, it fails the whole workflow to compile.
+    env:
+      DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+      DEV_DIRECT_URL: ${{ secrets.DEV_DIRECT_URL }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -56,11 +63,11 @@ jobs:
       # no review. It has now happened three times: migrations, plan rows, and
       # gap definitions.
       - name: Verify gap catalogue matches the database
-        if: ${{ secrets.DEV_DATABASE_URL != '' }}
+        if: env.DEV_DATABASE_URL != ''
         run: npm run verify:gap-catalogue
         env:
-          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
-          DIRECT_URL: ${{ secrets.DEV_DIRECT_URL || secrets.DEV_DATABASE_URL }}
+          DATABASE_URL: ${{ env.DEV_DATABASE_URL }}
+          DIRECT_URL: ${{ env.DEV_DIRECT_URL || env.DEV_DATABASE_URL }}
         continue-on-error: false
 
   unit-tests:
