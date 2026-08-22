@@ -52,6 +52,17 @@ interface KeyDatesCardProps {
      * renewal block — editorial context, not extracted data.
      */
     renewalNote?: string | null
+    /** Annual/period premium — relocated here from the hero: what you pay is a
+     *  term of the policy period, and the head answers identity, not price. */
+    premiumAmount?: number
+    premiumCurrency?: string
+    premiumFrequency?: string | null
+    /**
+     * The page head now states the status and the countdown, once. This card
+     * used to state both again — a second status chip and a «ΛΗΓΕΙ ΣΕ N ημέρες»
+     * tile — which is how the page came to carry the same fact three times.
+     */
+    suppressStatusAndCountdown?: boolean
     copy: {
         keyDatesTitle: string
         startedOn: string
@@ -67,6 +78,9 @@ interface KeyDatesCardProps {
         days: string
         requestQuote: string
         requestingQuote: string
+        premiumLabel?: string
+        annualPremium?: string
+        premiumFrequencies?: Record<string, string>
         reminders: {
             title: string
             periodEnding: string
@@ -98,6 +112,10 @@ export function KeyDatesCard({
     dateSources,
     sourceLabels,
     renewalNote,
+    premiumAmount,
+    premiumCurrency,
+    premiumFrequency,
+    suppressStatusAndCountdown = false,
     copy,
 }: KeyDatesCardProps) {
     const citedSource = dateSources?.renewalDate ?? dateSources?.endDate
@@ -120,9 +138,11 @@ export function KeyDatesCard({
                     <Calendar className="h-4 w-4 text-primary dark:text-mint" />
                     {copy.keyDatesTitle}
                 </h2>
-                <span className={`inline-flex items-center rounded-full border px-3 py-1 text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
-                    {copy.renewalStatusLabel}: {statusLabel}
-                </span>
+                {!suppressStatusAndCountdown && (
+                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-kicker font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
+                        {copy.renewalStatusLabel}: {statusLabel}
+                    </span>
+                )}
             </div>
 
             {/* When the policy has expired, explain what that means for cover at
@@ -135,19 +155,23 @@ export function KeyDatesCard({
             )}
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
+                <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5" data-fact="policy.startDate">
                     <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">{copy.startedOn}</p>
                     <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(startDate, locale)}</p>
                 </div>
+                {/* The EXPIRY DATE is the head's, stated once. This tile
+                    remains for the standalone (non-restructured) callers. */}
+                {!suppressStatusAndCountdown && (
                 <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
                     <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
                         {isExpired ? copy.expiredOn : copy.expiresOn}
                     </p>
                     <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(endDate, locale)}</p>
                 </div>
+                )}
                 {/* Countdown only with a REAL future end date — no end date,
                     no fabricated "365 days" next to a "-" expiry tile. */}
-                {hasCountdown && !isExpired && (
+                {!suppressStatusAndCountdown && hasCountdown && !isExpired && (
                     <div
                         className={`rounded-2xl border px-4 py-3 ${
                             isExpiringSoon
@@ -162,6 +186,20 @@ export function KeyDatesCard({
                             }`}
                         >
                             {daysLeft} {copy.days}
+                        </p>
+                    </div>
+                )}
+                {/* What you pay — a term of this period, relocated out of the
+                    hero, where it was a large number competing with identity. */}
+                {typeof premiumAmount === "number" && premiumAmount > 0 && (
+                    <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5" data-fact="policy.premiumAmount">
+                        <p className="mb-1 text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/55">
+                            {premiumFrequency && premiumFrequency !== "annual" && copy.premiumFrequencies?.[premiumFrequency]
+                                ? `${copy.premiumLabel} · ${copy.premiumFrequencies[premiumFrequency]}`
+                                : copy.annualPremium || copy.premiumLabel}
+                        </p>
+                        <p className="text-sm font-bold text-black dark:text-white">
+                            {premiumAmount.toLocaleString(locale, { style: "currency", currency: premiumCurrency || "EUR" })}
                         </p>
                     </div>
                 )}

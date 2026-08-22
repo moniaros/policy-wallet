@@ -19,6 +19,29 @@ export const E2E_AGENT = {
 }
 
 /**
+ * FREE-TIER policyholder fixture.
+ *
+ * `E2E_POLICYHOLDER` holds an active `ph-pro` (Family) subscription, which was
+ * discovered the hard way: the Goal 0 policy-detail baseline was captured
+ * believing that account was free, so the free-only surfaces — the locked gap
+ * report and its €3 unlock CTA, the PDF-preview lock, the premium-insight
+ * upsell cards, the sidebar upgrade banner, the free-questions trigger — were
+ * never rendered in 18 captures. A restructure cannot relocate a capability it
+ * has never seen.
+ *
+ * This account is defined by what it does NOT have: `resolveUserEntitlements`
+ * returns `free` for any user with no live non-agent subscription, so
+ * global-setup provisions the user and deletes any policyholder subscription
+ * row rather than creating one.
+ */
+export const E2E_POLICYHOLDER_FREE = {
+    email: 'e2e-ph-free@policywallet.test',
+    password: 'E2ePolicyholderFree!2026',
+    name: 'E2E Free Policyholder',
+    role: 'policyholder' as const,
+}
+
+/**
  * Admin fixture. Without it, the 14 /admin/* routes were audited no further
  * than their redirect — 29 of 108 routes covered only as a bounce. Admin is
  * gated by BOTH the JWT metadata role and the DB roles column, and

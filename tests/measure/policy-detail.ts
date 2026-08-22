@@ -452,6 +452,135 @@ export async function contrastFailures(page: Page): Promise<string[]> {
     return findings
 }
 
+/**
+ * WCAG 1.4.11 — NON-TEXT CONTRAST, measured on rendered pixels.
+ *
+ * The Goal 0 baseline reported ZERO contrast failures across 18 captures of a
+ * page whose premium card was `#111111` on a `#111111` hero, separated only by
+ * a 15%-alpha border. That is not evidence of a clean page; it is evidence that
+ * only 1.4.3 (text) was being measured. B1 was a 1.4.11 failure the whole time.
+ *
+ * The method mirrors the text one — real pixels, immune to Chrome's oklab()
+ * serialisation — but samples ACROSS a boundary instead of within a glyph run:
+ * for each candidate element, compare the mean colour of a thin band just
+ * INSIDE its edge against a band just OUTSIDE it. A boundary that a sighted
+ * user cannot locate scores below 3:1.
+ *
+ * TWO CLASSES, reported separately, because only one of them is a conformance
+ * failure:
+ *
+ *   `control` — a user interface component (button, link, input, tab). SC
+ *               1.4.11 requires ≥3:1 for the visual information needed to
+ *               identify it. These GATE.
+ *   `surface` — a card or tile whose boundary is what makes it a distinct
+ *               object. B1 lived here: a premium card painted its parent's
+ *               colour. The standard does not clearly cover a decorative
+ *               container, and a deliberately subtle tile-inside-a-card is a
+ *               legitimate design choice, so these are REPORTED, not gated —
+ *               with the caveat that a surface at ~1:1 against its parent, as
+ *               B1 was, is a defect by any reading.
+ *
+ * Decorative dividers are excluded by requiring a minimum size.
+ */
+export interface BoundaryFinding {
+    tag: string
+    label: string
+    ratio: number
+    inside: string
+    outside: string
+}
+
+export async function nonTextContrastFailures(page: Page): Promise<string[]> {
+    const boxes = (await page.evaluate(`(() => {
+        const alphaOf = (color) => {
+            if (!color || color === 'transparent') return 0
+            const slash = color.match(/\\/\\s*([0-9.]+%?)\\s*\\)$/)
+            if (slash) return slash[1].endsWith('%') ? parseFloat(slash[1]) / 100 : parseFloat(slash[1])
+            const rgba = color.match(/^rgba\\([^,]+,[^,]+,[^,]+,\\s*([0-9.]+)\\s*\\)$/)
+            if (rgba) return parseFloat(rgba[1])
+            return 1
+        }
+        const out = []
+        const sel = 'button, a, input:not([type=hidden]), select, [role=button], [role=tab], summary'
+        const seen = new Set()
+        const push = (el, kind) => {
+            if (seen.has(el)) return
+            const r = el.getBoundingClientRect()
+            if (r.width < 12 || r.height < 12) return
+            if (r.right <= 0 || r.bottom <= 0 || r.left >= document.documentElement.clientWidth) return
+            const cs = getComputedStyle(el)
+            if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.5) return
+            // Only elements that actually draw a boundary or a surface.
+            const hasBorder = ['Top','Right','Bottom','Left'].some(side =>
+                parseFloat(cs['border' + side + 'Width']) > 0 &&
+                cs['border' + side + 'Style'] !== 'none' &&
+                alphaOf(cs['border' + side + 'Color']) > 0.02)
+            const hasFill = alphaOf(cs.backgroundColor) > 0.02
+            if (!hasBorder && !hasFill) return
+            seen.add(el)
+            out.push({
+                x: Math.round(r.left + window.scrollX), y: Math.round(r.top + window.scrollY),
+                w: Math.round(r.width), h: Math.round(r.height),
+                tag: el.tagName.toLowerCase(), kind,
+                label: (el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 34),
+            })
+        }
+        document.querySelectorAll(sel).forEach(el => push(el, 'control'))
+        // Distinct surfaces: cards and tiles the reader is meant to perceive as separate.
+        document.querySelectorAll('.pw-card, [data-fact], section > div, header').forEach(el => push(el, 'surface'))
+        return out
+    })()`)) as { x: number; y: number; w: number; h: number; tag: string; kind: string; label: string }[]
+
+    if (!boxes.length) return []
+
+    const shot = await page.screenshot({ fullPage: true })
+    const img = await sharp(shot).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    const W = img.info.width
+    const H = img.info.height
+    const dpr = await page.evaluate(() => window.devicePixelRatio || 1)
+
+    const meanAt = (x0: number, y0: number, x1: number, y1: number): number[] | null => {
+        let r = 0, g = 0, b = 0, n = 0
+        for (let y = Math.max(0, y0); y < Math.min(H, y1); y++) {
+            for (let x = Math.max(0, x0); x < Math.min(W, x1); x++) {
+                const i = (y * W + x) * 4
+                r += img.data[i]; g += img.data[i + 1]; b += img.data[i + 2]; n++
+            }
+        }
+        return n === 0 ? null : [r / n, g / n, b / n]
+    }
+
+    const findings: string[] = []
+    const BAND = Math.max(1, Math.round(2 * dpr))
+    const GAP = Math.max(1, Math.round(3 * dpr))
+
+    for (const box of boxes) {
+        const x0 = Math.round(box.x * dpr)
+        const y0 = Math.round(box.y * dpr)
+        const x1 = Math.round((box.x + box.w) * dpr)
+        const y1 = Math.round((box.y + box.h) * dpr)
+        if (x1 - x0 < 8 || y1 - y0 < 8) continue
+
+        // Sample the TOP edge: a band inside vs a band outside, away from corners.
+        const cx0 = x0 + Math.round((x1 - x0) * 0.25)
+        const cx1 = x0 + Math.round((x1 - x0) * 0.75)
+        const inside = meanAt(cx0, y0 + GAP, cx1, y0 + GAP + BAND)
+        const outside = meanAt(cx0, y0 - GAP - BAND, cx1, y0 - GAP)
+        if (!inside || !outside) continue
+
+        const cr = ratio(lum(inside[0], inside[1], inside[2]), lum(outside[0], outside[1], outside[2]))
+        if (cr < 3 - 0.05) {
+            const hexOf = (c: number[]) =>
+                "#" + c.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("")
+            findings.push(
+                `[1.4.11:${box.kind}] <${box.tag}> "${box.label}" boundary ${cr.toFixed(2)}:1 (needs 3) ` +
+                `inside=${hexOf(inside)} outside=${hexOf(outside)}`
+            )
+        }
+    }
+    return findings
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Diagnostic probes (candidate defects; not pass/fail metrics)
 // ─────────────────────────────────────────────────────────────────────────────

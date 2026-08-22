@@ -54,7 +54,7 @@ describe("renewals timeline — checkpoints", () => {
         renderCard([item()])
         expect(screen.getByText("Motor: renewal in 24 days")).toBeTruthy()
         const link = screen.getByText("Motor: renewal in 24 days").closest("a")
-        expect(link?.getAttribute("href")).toBe("/wallet/pol-1#renewal")
+        expect(link?.getAttribute("href")).toBe("/wallet/pol-1#dates")
     })
 
     it("renders the checkpoint chip only when a real count exists", () => {

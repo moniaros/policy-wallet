@@ -18,9 +18,22 @@ const page = readFileSync('app/(protected)/wallet/[id]/page.tsx', 'utf-8')
  * than leaving it unconfirmed — it would launder a guess into a verification.
  */
 describe('an unverified extraction says so to the person relying on it', () => {
+    /**
+     * The MECHANISM moved in Goal 2 and the promise nearly moved with it. The
+     * page-top banner is gone; the note now sits at the point of use, beside
+     * the AI chip on the summary. That is a better home — but for one commit it
+     * lived ONLY in the head's attention line, which reports the single most
+     * important thing, so on any policy with items to review the unverified
+     * fact vanished. This guard caught it, which is why it asserts the note
+     * reaches the SummaryCard rather than asserting any particular layout.
+     */
     it('shows the owner a note when the extraction is unconfirmed', () => {
         expect(view).toMatch(/!canReviewExtraction && \(policy\.reviewState === 'unconfirmed' \|\| policy\.reviewState === 'flagged'\)/)
         expect(view).toMatch(/t\.wallet\.review\.ownerUnverifiedNote/)
+        // …and it is actually handed to the component that renders it.
+        expect(view).toMatch(/unverifiedNote=\{t\.wallet\.review\.ownerUnverifiedNote\}/)
+        const summary = readFileSync('components/wallet/policy-detail/SummaryCard.tsx', 'utf-8')
+        expect(summary).toMatch(/\{unverifiedNote\}/)
     })
 
     it('does not offer them the agent’s confirm action', () => {

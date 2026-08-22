@@ -20,7 +20,7 @@ describe('CoverageTabView has real, accessible tab semantics', () => {
     it('the tab buttons get tabProps and the body gets panelProps', () => {
         expect(SRC).toContain('{...tabProps("covered")}')
         expect(SRC).toContain('{...tabProps("not_covered")}')
-        expect(SRC).toContain('{...panelProps}')
+        expect(SRC).toContain('{...(stacked ? {} : panelProps)}')
     })
 
     it('no longer wires the tabs as bare onClick buttons', () => {

@@ -12,7 +12,7 @@
 
 import { readFileSync } from 'fs'
 import path from 'path'
-import { E2E_POLICYHOLDER, E2E_AGENT, E2E_ADMIN } from './e2e-users'
+import { E2E_POLICYHOLDER, E2E_POLICYHOLDER_FREE, E2E_AGENT, E2E_ADMIN } from './e2e-users'
 
 function loadEnvFromDotenvFiles() {
     for (const file of ['.env.local', '.env']) {
@@ -203,6 +203,20 @@ export default async function globalSetup() {
         await provisionUser(db, E2E_AGENT)
         await provisionUser(db, E2E_ADMIN)
         await provisionFixturePolicy(db, policyholder.id)
+
+        // The FREE-tier policyholder. `resolveUserEntitlements` reads the tier
+        // from a live non-agent subscription, so "free" is the ABSENCE of one —
+        // provisioned by deleting any policyholder subscription this account has
+        // acquired, not by writing a row. Idempotent, and it keeps the account
+        // free even if a checkout test ever completes against it.
+        const freeHolder = await provisionUser(db, E2E_POLICYHOLDER_FREE)
+        const removed = await db.subscription.deleteMany({
+            where: { userId: freeHolder.id, plan: { planType: { not: 'agent' } } },
+        })
+        if (removed.count > 0) {
+            console.log(`✅ E2E free policyholder: removed ${removed.count} policyholder subscription row(s)`)
+        }
+        console.log('✅ E2E free policyholder provisioned (no live subscription → tier "free")')
 
         // Deterministic usage-state reset: the free-tier gates are LIFETIME
         // counters (free questions from activityLog POLICY_QUESTION_ASKED, the

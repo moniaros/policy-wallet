@@ -37,7 +37,7 @@ export function ReportUnlockCta({ policyId, lockedCount, copy }: ReportUnlockCta
             const response = await fetch(`/api/v1/policies/${policyId}/report-unlock`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ returnTo: `/wallet/${policyId}#analysis` }),
+                body: JSON.stringify({ returnTo: `/wallet/${policyId}#review` }),
             })
             const payload = await response.json().catch(() => null)
             const checkoutUrl = payload?.data?.checkout_url || payload?.checkout_url

@@ -342,10 +342,50 @@ const SUMMARY: Record<string, string> = {
 }
 
 /**
+ * The FREE-tier fixture set.
+ *
+ * Deliberately small and deliberately GAPPY: the free surfaces are all
+ * boundaries — the gap report locks after FREE_GAP_PREVIEW_COUNT (3), so a
+ * policy needs MORE than three findings for the lock and its €3 unlock CTA to
+ * render at all. Two gaps would show a complete report and prove nothing.
+ */
+export const FREE_SPECS: FixtureSpec[] = [
+    {
+        key: "free-motor-active",
+        policyNumber: "E2E-PDF-MOT-ACT",
+        lineOfBusiness: "motor",
+        state: "active",
+        insurerName: "Interamerican",
+        premiumAmount: 312.4,
+        // Five > FREE_GAP_PREVIEW_COUNT, so the paywall boundary is visible.
+        gapSlugs: [
+            "no_own_damage_cover",
+            "no_glass_breakage_cover",
+            "no_roadside_assistance",
+            "missing_accident_declaration_phone",
+            "green_card_expiring",
+        ],
+    },
+    {
+        key: "free-health-expiring",
+        policyNumber: "E2E-PDF-HL-EXP",
+        lineOfBusiness: "health",
+        state: "expiring",
+        insurerName: "Εθνική Ασφαλιστική",
+        premiumAmount: 1102.9,
+        gapSlugs: ["no_direct_billing", "no_annual_checkup", "missing_hospital_class", "missing_coordination_centre"],
+    },
+]
+
+/**
  * Idempotent provisioning. Prisma client is injected (the spec loads it the
  * same way global-setup does). Refuses the production project outright.
  */
-export async function provisionMatrixFixtures(db: any, ownerEmail: string): Promise<Record<string, string>> {
+export async function provisionMatrixFixtures(
+    db: any,
+    ownerEmail: string,
+    specs: FixtureSpec[] = [...FIXTURE_SPECS, ...DEFECT_SPECS]
+): Promise<Record<string, string>> {
     if (/cquudefwfwrmvpftuhyl/.test(process.env.DATABASE_URL || "") || /cquudefwfwrmvpftuhyl/.test(process.env.DIRECT_URL || "")) {
         throw new Error("provisionMatrixFixtures: refusing to run against the PRODUCTION database")
     }
@@ -355,7 +395,7 @@ export async function provisionMatrixFixtures(db: any, ownerEmail: string): Prom
     const now = new Date()
     const ids: Record<string, string> = {}
 
-    for (const spec of [...FIXTURE_SPECS, ...DEFECT_SPECS]) {
+    for (const spec of specs) {
         const { start, end } = fixtureDates(spec.state, now)
         const acord: any = spec.lineOfBusiness === "motor" ? motorAcord(spec, start, end) : healthAcord(spec, start, end)
         const analyzedAt = new Date(start.getTime() + 2 * 86_400_000)

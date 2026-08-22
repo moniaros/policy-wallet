@@ -22,9 +22,21 @@ interface CoverageTabViewProps {
   acordData: AcordData
   lineOfBusiness: LineOfBusiness
   language: "el" | "en"
+  /**
+   * `stacked` renders BOTH groups one after the other under their own
+   * headings, with no tab strip.
+   *
+   * Tabs assert that their contents are alternatives. «Τι καλύπτεται» and «Τι
+   * ΔΕΝ καλύπτεται» are not alternatives — they are two halves of one answer,
+   * and hiding half behind a tab let a reader leave believing they had seen
+   * the coverage when they had seen part of it. Inside a disclosure section
+   * the strip is also a second navigation system on a page that is allowed
+   * exactly one.
+   */
+  layout?: "tabs" | "stacked"
 }
 
-export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: CoverageTabViewProps) {
+export function CoverageTabView({ acordData, lineOfBusiness, language, hints, layout = "tabs" }: CoverageTabViewProps) {
   const [activeTab, setActiveTab] = useState<"covered" | "not_covered">("covered")
   const i18n = getTranslations(language)
   const copy = i18n.coverageDetails
@@ -59,8 +71,14 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
   const typeSpecific = renderTypeSpecificDetails()
   const hasCoveredContent = typeSpecific !== null || hasCoverages
 
+  const stacked = layout === "stacked"
+
   return (
     <div className="space-y-4">
+      {/* The tab strip is the page's SECOND navigation system when this card
+          sits inside a disclosure section, and the two panels are halves of one
+          answer rather than alternatives — so `stacked` drops it. */}
+      {!stacked && (
       <div role="tablist" aria-label={copy.coverageTabsLabel} className="flex rounded-xl bg-black/5 dark:bg-white/5 p-1 border border-black/10 dark:border-white/15">
         <button
           {...tabProps("covered")}
@@ -90,9 +108,15 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
           )}
         </button>
       </div>
+      )}
 
-      <div {...panelProps} className="focus-visible:outline-none">
-      {activeTab === "covered" && (
+      <div {...(stacked ? {} : panelProps)} className="focus-visible:outline-none">
+      {stacked && (
+        <h3 className="text-kicker font-black uppercase tracking-widest text-black/55 dark:text-white/55">
+          {copy.whatsCovered}
+        </h3>
+      )}
+      {(layout === "stacked" || activeTab === "covered") && (
         <div className="space-y-4">
           {typeSpecific}
 
@@ -161,7 +185,12 @@ export function CoverageTabView({ acordData, lineOfBusiness, language, hints }: 
         </div>
       )}
 
-      {activeTab === "not_covered" && (
+      {stacked && (
+        <h3 className="mt-6 text-kicker font-black uppercase tracking-widest text-black/55 dark:text-white/55">
+          {copy.whatsNotCovered}
+        </h3>
+      )}
+      {(layout === "stacked" || activeTab === "not_covered") && (
         <div className="space-y-3">
           {hasExclusions ? (
             <>

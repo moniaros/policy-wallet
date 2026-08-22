@@ -444,3 +444,141 @@ ask-AI CTAs (#24) — six today, four of them observed in the original capture.
   `lib/gap-detection.ts` untouched; no AI provider schema touched (verified by `git status`).
 
 **STOP per the brief: Goal 1 does not start in this run. Awaiting review of this baseline.**
+
+---
+
+# §0.5 — Harness and fixtures hardened (2026-08-23)
+
+Written in response to the Goal 0 review. **Sequencing note, stated plainly:** the review's verdict
+("Goal 1 is NOT yet authorized") was overtaken by events — Goal 1 was authorized in-session,
+implemented, committed (`638ee037`) and **deployed to production**, and the Goal 2 restructure
+followed. Several amendments below therefore apply to already-shipped code rather than to work not
+yet begun. Where that changes what was done, it is said so here rather than glossed.
+
+## 0.5a — Degraded fixtures
+
+Partially in place before the review landed, because Goal 1's acceptance needed them: three
+`defect-*` fixtures (`tests/measure/fixtures.ts`) reproduce **B2** (English summary, no language
+tag), **B10** (extractor placeholders in a field and in the composed summary) and **B5** (a
+completed run followed by a failed one). **B8** is reproduced by the matrix itself, because the E2E
+account resolves to `ph-pro`, where the collaboration panel renders.
+
+Still reproduced by code reading only, and outstanding: `motor-degraded-gapslug` (B6 heading, an
+`ai_*` slug the authored map does not know) and `motor-degraded-basis` (A3, a `limitBasis` outside
+the 9-entry map). Both are cheap and belong with the Goal 5 re-measurement.
+
+**The lesson the review names was independently proven here.** The B6 unit probe was written,
+passed, and was then found to pass *against the pre-fix code* — its fixture (maxLen 80) happened to
+land on a word boundary under the old character slice. It now runs at 60/90/100, budgets verified
+to land inside a word, and fails 3/34 when the fix is reverted. A probe that cannot go red is not a
+probe, and this one was caught being exactly that.
+
+## 0.5b — Fact instrumentation
+
+`data-fact` is now on the policy page's identity, status, date, premium and attention facts, and the
+Goal 2 acceptance asserts **zero duplicates with every section open** — the hard case, since a
+collapsed page trivially has none.
+
+**Not done: the separate duplicate-ACTION metric.** The review is right that duplicate facts and
+duplicate actions are different problems with different fixes. The Goal 2 restructure removed the
+duplication by construction (one quote CTA, one countdown, two AI entry points down from six), but
+that is an argument, not a measurement. `data-action` instrumentation and a published baseline
+remain outstanding and are the first item of the Goal 5 pass.
+
+## 0.5c — WCAG 1.4.11 automated
+
+Built and run. `nonTextContrastFailures` in `tests/measure/policy-detail.ts` samples a band inside
+each element's edge against a band outside it, on rendered pixels — the same method as the text
+check, applied across a boundary instead of within a glyph run.
+
+**The review's diagnosis was correct: the zero was a blind spot, not a clean page.** The probe
+(`tests/measure/nontext-contrast.spec.ts`) injects a card painted its parent's colour and the
+measurement turns red; against the real page it finds **10 control-boundary failures at 320px on
+`motor-active`**, at ratios of 1.04–1.07:1 — controls whose boundary a sighted user cannot locate:
+
+| control | ratio |
+|---|---|
+| the AI dock button (`bg-white` on `#fafbfd`) | 1.04:1 |
+| branch-action CTAs ×5 (`bg-black/[0.03]` on white) | 1.07:1 |
+| the claims `tel:` chip | 1.06:1 |
+| the analysis card header button | 2.17:1 |
+
+Findings are reported in two classes: `control` **gates** (SC 1.4.11 is about identifying UI
+components), `surface` is **reported** (the standard does not clearly cover a decorative container,
+and a deliberately subtle tile inside a card is a legitimate choice) — except a surface below
+1.15:1, which is B1's shape and a defect by any reading.
+
+**Clearing them is a design-system decision, not a patch.** Every one is the shared
+"secondary control with a near-transparent fill and a `border-black/10` edge" pattern; raising it to
+3:1 changes the appearance of every secondary control in the app. The one control this series
+introduced (the AI dock) is fixed; the rest is decision **#3** below.
+
+## 0.5d — Blast radius of the two global rules, measured
+
+**Rule 1 — `:where(.grid, .flex) > * { min-width: 0 }` @ ≤430px.** 312 of 542 `.tsx` files contain a
+flex/grid container. Static analysis finds **ten** other horizontal scroll strips with the exact B3
+shape (a strip on a flex container with no explicit no-shrink):
+
+`/opportunities`, `/agent`, `LoadingSkeleton`, `ClientDetailView`, `PortfolioSummaryCard`,
+`PolicyWallet`, `BranchCoverageMap`, `LifeTimeline`, `LifeEventsPanel`, `RiskGraphPanel`.
+
+**Measured at 320px, none of them currently compresses** (`tests/measure/global-rule-blast-radius.spec.ts`):
+every strip scrolls, narrowest child 51–220px, zero clipped children. The rule creates the
+*conditions* for the defect; whether it fires depends on child count against content width. So the
+honest finding is **a latent hazard across ten surfaces, not ten live breakages** — which argues for
+fixing the rule's scope (exempt scroll strips) rather than patching ten files.
+
+**Correction to the review's premise about the B3 fix:** it was not `shrink-0` on the pills. It was
+`.pw-scroll-strip`, a shared primitive in `app/globals.css` declaring that a strip's children never
+shrink and never wrap. Goal 2 then removed the strip entirely, so the primitive now has no caller on
+this page — it stands for the next one. The underlying global rule is **still unexempted**, and that
+remains open.
+
+**Rule 2 — `overflow-wrap: anywhere` on headings @ ≤430px.** Measured across `/dashboard`,
+`/wallet`, `/coverage`, `/branches/motor`: **no heading word exceeds its line** at 320px. A5's only
+observed instance was the old policy hero `h1` (`text-3xl`/`text-5xl`); Goal 2 replaced it with a
+`text-2xl` head, so re-measure on the policy page in the Goal 5 pass rather than assuming.
+
+## 0.5e — The bottom inset: a real defect, not a capture artifact
+
+**The review's suspicion was right, and it is worse than the screenshot suggested.** Measured
+(`tests/measure/bottom-inset-probe.spec.ts`):
+
+| | |
+|---|---|
+| bottom bar rendered height | **77px** (`min-h-[76px]` + border) |
+| bar padding | + `env(safe-area-inset-bottom)` |
+| `<main>` reservation | **96px**, static (`pb-24`) |
+| no-notch device | 19px spare — fine |
+| **any iPhone since the X (34px inset)** | bar 111px vs 96px reserved → **15px of every page occluded** |
+
+Not this page — **every authenticated page**, permanently, on the product's primary device. It was
+inert until `viewportFit: "cover"` landed (2026-08-21c) and live since.
+
+Fixed at the source: `--pw-bottom-nav-h` plus `.pw-bottom-nav-reserve` in `app/globals.css`, so the
+bar's footprint is one number with two consumers and they cannot drift apart again. The probe
+asserts the reservation is *defined in terms of* the inset — reading the CSS rule, because `env()`
+resolves to 0 in headless Chrome and a resolved-value check would pass on the broken code.
+
+## Reclassifications — applied
+
+| Item | Status |
+|---|---|
+| **A1** → Goal 1 BROKEN | **DONE.** `calculatePolicyHealthScore` takes `analysisComplete` and returns `available: false` when the backing run failed or never happened; `SummaryCard` renders **no score at all** in that state. The verdict label («Σε καλή κατάσταση») is **removed in every state** and replaced with a neutral scale note; the ring keeps a desaturated tint and never colours a word. Live in production as of this commit's predecessor? **No — A1 shipped after `638ee037`, so production still carries it until the next deploy.** |
+| **B5 widened** | **DONE.** «Δεν εντοπίστηκαν ασφαλιστικά κενά» no longer renders when the latest run did not complete; it is replaced by an explicit "we cannot say" state. The stale-findings note (shipped in `638ee037`) already states that the body predates the failed run. |
+| **B4 → CONFIRMED** | Accepted, and already fixed that way in `638ee037` — single source for status, expiry and countdown. **Not yet verified across an Athens-midnight boundary**; the harness injects no clock. Outstanding. |
+| **B3 / A5 → shared-primitive** | Accepted; see 0.5d. The primitive exists, the global rule is still unexempted. |
+| **A3 → internal-token class** | Accepted, not yet done — extend `tests/unit/no-raw-lob-in-notifications.test.ts` rather than writing a second guard. |
+
+## Amended Goal 1 acceptance — honest status
+
+| Requirement | Status |
+|---|---|
+| Confirmed items across matrix + degraded fixtures, 3 widths | **Met** for the matrix and the three defect fixtures; two degraded fixtures outstanding (0.5a) |
+| A1: no score without a completed analysis; no verdict in any state | **Met** |
+| B5: no negative finding when the run did not complete | **Met** |
+| B4: one source | **Met**; midnight-boundary verification **outstanding** |
+| B2: pinned, tagged, mismatched cache not rendered | Pinned and tagged. **Existing English summaries are suppressed at render, not backfilled** — a customer sees an explanation and a re-run offer instead of English. Regeneration spends their metered allowance, so it is offered, not forced. Backfill remains a decision, not an omission. |
+| B3/A5: global rules corrected, blast radius documented | Blast radius **documented and measured**; the rules themselves **not yet corrected** |
+| 1.4.11 clean at every capture | **Not met** — measured, 10 control failures, clearing them is decision #3 |
+| Duplicate-fact and duplicate-action re-measured | Facts **yes**; actions **outstanding** |

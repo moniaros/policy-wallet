@@ -71,13 +71,13 @@ describe('AppShell — admin', () => {
 
     it('does not reserve bottom padding when there is no bottom nav', () => {
         const { container } = renderShell('admin')
-        expect(container.querySelector('main')?.className).not.toContain('pb-24')
+        expect(container.querySelector('main')?.className).not.toContain('pw-bottom-nav-reserve')
     })
 
-    it('still renders the bottom nav — and its gutter — for a policyholder', () => {
+    it('still renders the bottom nav — and a gutter that TRACKS the safe-area inset — for a policyholder', () => {
         const { container } = renderShell('policyholder')
         expect(screen.getByLabelText('Γρήγορη πλοήγηση')).toBeTruthy()
-        expect(container.querySelector('main')?.className).toContain('pb-24')
+        expect(container.querySelector('main')?.className).toContain('pw-bottom-nav-reserve')
     })
 
     it('renders admin nav rows as real links, not buttons', () => {

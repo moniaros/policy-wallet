@@ -107,7 +107,12 @@ async function gotoPolicy(page: import("@playwright/test").Page, policyId: strin
         // RSC body is still streaming reports a shorter, emptier page than the
         // product has — the metric equivalent of the redirect defect above.
         try {
-            await page.waitForSelector("#summary", { timeout: 45_000, state: "attached" })
+            // Readiness is the page's H1 — the policy's identity — not a
+            // section id. Waiting on `#summary` tied the harness to one
+            // structure, so the Goal 2 restructure (which legitimately renames
+            // and removes section ids) read as "the page never rendered". The
+            // probe must survive the change it exists to measure.
+            await page.waitForSelector(".pw-page-shell h1", { timeout: 45_000, state: "attached" })
             return
         } catch {
             continue

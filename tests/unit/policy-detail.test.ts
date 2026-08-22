@@ -209,7 +209,26 @@ describe('calculatePolicyHealthScore', () => {
         expect(calculatePolicyHealthScore({ gapCount: 0, verified: false })).toEqual({
             score: 100,
             level: 'good',
+            available: true,
         })
+    })
+
+    /**
+     * A1. The score is a SUBTRACTION from 100, so "no findings because the run
+     * failed" and "no findings because the policy is sound" produce the same
+     * number — and production rendered «100 · Σε καλή κατάσταση» for a
+     * third-party-only motor policy whose analysis died on a provider spend cap.
+     * Zero findings from a failed run is not evidence of a healthy policy.
+     */
+    it('reports NO score when the backing analysis did not complete', () => {
+        const out = calculatePolicyHealthScore({ gapCount: 0, verified: false, analysisComplete: false })
+        expect(out.available).toBe(false)
+    })
+
+    it('still scores when the analysis completed', () => {
+        const out = calculatePolicyHealthScore({ gapCount: 2, verified: true, analysisComplete: true })
+        expect(out.available).toBe(true)
+        expect(out.score).toBeLessThan(100)
     })
 
     it('does not punish a policy for stating its exclusions', () => {

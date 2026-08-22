@@ -13,6 +13,7 @@ const policyholderIgnores = [
     '**/agent-journey.spec.ts',
     '**/agent-viewport-overflow.spec.ts',
     '**/admin-auth.setup.ts',
+    '**/free-auth.setup.ts',
     // /admin/* bounces a policyholder to /dashboard, so this spec could only
     // ever fail here — four "failures" that said nothing about the insurer
     // console. It belongs to `admin-chromium`, which has the admin session.
@@ -59,6 +60,11 @@ export default defineConfig({
         {
             name: 'admin-setup',
             testMatch: /admin-auth\.setup\.ts/,
+            use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
+        },
+        {
+            name: 'free-setup',
+            testMatch: /free-auth\.setup\.ts/,
             use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
         },
         {
@@ -152,13 +158,31 @@ export default defineConfig({
             // policy-detail-mobile). Policyholder session; the spec itself sets
             // per-capture viewports, so no device preset here.
             name: 'measure',
-            testMatch: /tests\/measure\/.*\.spec\.ts/,
+            // Excludes *free* specs — those need the free-tier session and run
+            // in `measure-free`.
+            testMatch: /tests\/measure\/(?!.*free).*\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/user.json',
                 launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
             dependencies: ['setup'],
+        },
+        {
+            // The FREE-tier half of the policy-detail matrix. Tier is a property
+            // of the session's user, so the free-only surfaces (locked gap
+            // report + €3 unlock, PDF-preview lock, premium-insight cards,
+            // sidebar upgrade banner) can only be reached with this session —
+            // the `measure` project's account holds an active ph-pro plan, which
+            // is how they went unmeasured in the Goal 0 baseline.
+            name: 'measure-free',
+            testMatch: /tests\/measure\/.*free.*\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: 'playwright/.auth/free.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+            dependencies: ['free-setup'],
         },
         {
             // Cross-tenant enforcement. Builds BOTH request contexts itself

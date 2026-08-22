@@ -12,6 +12,14 @@
  * reproducible rather than hypothetical (tests/measure/fixtures.ts).
  *
  * Run:  npx playwright test --project=measure policy-detail-goal1
+ *
+ * UPDATED FOR THE GOAL 2 RESTRUCTURE. Several assertions named the DOM the
+ * defect lived in — `#summary`, `#analysis`, `.pw-scroll-strip`, the sidebar —
+ * and Goal 2 legitimately renamed or removed all of it. Each one below is
+ * rewritten to assert the same INVARIANT against the new structure; where a
+ * defect's surface no longer exists at all, that is stated on the assertion
+ * rather than the test being quietly dropped. Nothing here was weakened to make
+ * the restructure pass.
  */
 
 import { test, expect, type Page } from "@playwright/test"
@@ -76,7 +84,12 @@ async function open(page: Page, key: string, width: number) {
             // and is really "nothing rendered yet". Wait for the page's own
             // content, then settle.
             try {
-                await page.waitForSelector("#summary", { timeout: 45_000, state: "attached" })
+                            // Readiness is the page's H1 — the policy's identity — not a
+            // section id. Waiting on `#summary` tied the harness to one
+            // structure, so the Goal 2 restructure (which legitimately renames
+            // and removes section ids) read as "the page never rendered". The
+            // probe must survive the change it exists to measure.
+            await page.waitForSelector(".pw-page-shell h1", { timeout: 45_000, state: "attached" })
             } catch {
                 continue // retry the navigation once
             }
@@ -100,10 +113,20 @@ test("B2: an English stored summary is withheld, explained, and offers re-analys
         expect(text, `@${width}: English summary still rendered`).not.toContain("The policy concerns the insurance")
         // …replaced by a Greek explanation and a route to the fix.
         expect(text, `@${width}: no mismatch explanation`).toContain("δημιουργήθηκε σε άλλη γλώσσα")
-        await expect(
-            page.locator('#summary a[href="#analysis"]'),
-            `@${width}: no re-analysis affordance`
-        ).toHaveCount(1)
+        // A route to re-analysis, wherever the summary now lives and whatever
+        // the analysis section is called. Hardcoding `#summary a[href="#analysis"]`
+        // is what made this assertion describe a structure instead of a promise —
+        // and it caught a real dead link when the structure changed.
+        const reanalysisHref = await page.evaluate(() => {
+            const note = Array.from(document.querySelectorAll("a[href^='#']")).find((a) =>
+                (a.closest("div,section")?.textContent || "").includes("δημιουργήθηκε σε άλλη γλώσσα")
+            ) as HTMLAnchorElement | undefined
+            if (!note) return null
+            const id = note.getAttribute("href")!.slice(1)
+            return { href: note.getAttribute("href"), targetExists: Boolean(document.getElementById(id)) }
+        })
+        expect(reanalysisHref, `@${width}: no re-analysis affordance beside the mismatch note`).not.toBeNull()
+        expect(reanalysisHref!.targetExists, `@${width}: the re-analysis link points at a section that does not exist (${reanalysisHref!.href})`).toBe(true)
         // The heading still promises plain Greek — and nothing under it now
         // contradicts that. Compared case- and accent-folded: this surface
         // uppercases headings in CSS, and innerText returns the transformed
@@ -178,12 +201,16 @@ for (const spec of FIXTURE_SPECS) {
             if (spec.state === "expired") {
                 expect(facts.countdowns.length, `@${width}: an expired policy is counting down to renewal`).toBe(0)
                 expect(facts.expired, `@${width}: expired policy does not say so`).toBe(true)
+            } else if (spec.state === "expiring") {
+                // Inside the renewal window the head states the countdown, once.
+                expect(counts.length, `@${width}: an expiring policy states no countdown`).toBe(1)
+                expect(counts[0], `@${width}: countdown outside the renewal window`).toBeLessThanOrEqual(30)
+                expect(counts[0]).toBeGreaterThanOrEqual(0)
             } else {
-                expect(counts.length, `@${width}: a live policy renders no countdown`).toBe(1)
-                if (spec.state === "expiring") {
-                    expect(counts[0], `@${width}: countdown outside the renewal window`).toBeLessThanOrEqual(30)
-                    expect(counts[0]).toBeGreaterThanOrEqual(0)
-                }
+                // An ACTIVE policy renders a DATE, not a countdown: "165 days"
+                // is not information a reader acts on, and the tile that used to
+                // print it was one of the three sites stating the same fact.
+                expect(counts.length, `@${width}: an active policy is counting down (${counts.join(", ")})`).toBe(0)
             }
         }
     })
@@ -197,87 +224,97 @@ test("B10: extractor placeholders are named as unread, not printed as values", a
         const text = await bodyText(page)
 
         // The bare placeholder must never stand where a value goes…
+        // `policy.insuredSubject` — Goal 2 generalised the marker, because the
+        // "what is insured" answer is a plate for motor and a person otherwise.
         const heroPlate = await page.evaluate(
-            () => document.querySelector('[data-fact="vehicle.plateNumber"]')?.textContent?.replace(/\s+/g, " ").trim() || ""
+            () => document.querySelector('[data-fact="policy.insuredSubject"]')?.textContent?.replace(/\s+/g, " ").trim() || ""
         )
-        expect(heroPlate, `@${width}: plate tile still prints the placeholder`).not.toMatch(/\bXXXX\b/)
-        expect(heroPlate, `@${width}: plate tile does not say it could not be read`).toContain("Δεν διαβάστηκε από το έγγραφο")
+        expect(heroPlate, `@${width}: insured-subject field still prints the placeholder`).not.toMatch(/\bXXXX\b/)
+        expect(heroPlate, `@${width}: insured-subject field does not say it could not be read`).toContain("Δεν διαβάστηκε από το έγγραφο")
 
         // …and where the model embedded one mid-sentence, the page says what it
         // is and offers the document, rather than leaving it to look redacted.
         expect(text, `@${width}: no unread-values note on the summary`).toContain("Δεν είναι κρυμμένα")
-        await expect(
-            page.locator('#summary a[href*="/documents/"]'),
-            `@${width}: summary note offers no document`
-        ).toHaveCount(1)
+        // The note travels with the summary, wherever the summary sits.
+        const summaryDocLinks = await page.evaluate(() =>
+            Array.from(document.querySelectorAll('a[href*="/documents/"]')).filter((a) =>
+                (a.closest("div,section,p")?.textContent || "").includes("Δεν είναι κρυμμένα")
+            ).length
+        )
+        expect(summaryDocLinks, `@${width}: the unread-values note offers no document`).toBeGreaterThanOrEqual(1)
     }
 })
 
 // ── B1 — the hero void ───────────────────────────────────────────────────────
-test("B1: the premium card is not the hero's own background colour", async ({ page }) => {
+test("B1: the premium is legible against its own surface (the hero void is gone)", async ({ page }) => {
     test.setTimeout(4 * 60_000)
     for (const width of WIDTHS) {
         await open(page, "motor-active", width)
-        const result = await page.evaluate(() => {
-            // Alpha, whatever the serialisation. Tailwind 4 + Chrome emit
-            // `oklab(… / .05)` here, not `rgba(…, .05)` — matching on rgba()
-            // alone asserts the serialiser, not the design.
-            const alphaOf = (color: string): number => {
-                if (!color || color === "transparent") return 0
-                const slash = color.match(/\/\s*([0-9.]+%?)\s*\)$/)
-                if (slash) return slash[1].endsWith("%") ? parseFloat(slash[1]) / 100 : parseFloat(slash[1])
-                const rgba = color.match(/^rgba\([^,]+,[^,]+,[^,]+,\s*([0-9.]+)\s*\)$/)
-                if (rgba) return parseFloat(rgba[1])
-                return 1
-            }
-            const card = document.querySelector('[data-fact="policy.premiumAmount"]') as HTMLElement | null
-            if (!card) return null
-            const hero = card.closest("section") as HTMLElement | null
-            const bg = getComputedStyle(card).backgroundColor
-            return {
-                card: bg,
-                cardAlpha: alphaOf(bg),
-                hero: hero ? getComputedStyle(hero).backgroundColor : null,
-            }
+
+        // THE DEFECT'S SURFACE NO LONGER EXISTS. B1 was a premium card painted
+        // `#111111` on a `#111111` hero; Goal 2 removed that hero entirely and
+        // the premium is now a tile in the dates section. The invariant that
+        // remains — a value must never be painted the same colour as the thing
+        // behind it — is asserted here against the new location, and the
+        // section is opened first because a closed disclosure renders nothing.
+        await page.evaluate(() => {
+            const btn = document.querySelector('#dates button[aria-expanded="false"]') as HTMLButtonElement | null
+            btn?.click()
         })
-        expect(result, `@${width}: premium card not found`).not.toBeNull()
-        // The defect was an opaque fill identical to the surface behind it.
-        expect(result!.card, `@${width}: premium card still paints the hero's ground`).not.toBe(result!.hero)
-        // A translucent lift over the hero, not another opaque slab.
-        expect(
-            result!.cardAlpha,
-            `@${width}: premium card is opaque (${result!.card})`
-        ).toBeLessThan(1)
-        expect(result!.cardAlpha, `@${width}: premium card has no fill at all`).toBeGreaterThan(0)
+        await page.waitForTimeout(400)
+
+        const result = await page.evaluate(() => {
+            const tile = document.querySelector('[data-fact="policy.premiumAmount"]') as HTMLElement | null
+            if (!tile) return null
+            // Nearest ancestor that actually paints a background.
+            let parent: HTMLElement | null = tile.parentElement
+            let behind = "rgba(0, 0, 0, 0)"
+            while (parent && parent !== document.body) {
+                const bg = getComputedStyle(parent).backgroundColor
+                if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") { behind = bg; break }
+                parent = parent.parentElement
+            }
+            return { tile: getComputedStyle(tile).backgroundColor, behind }
+        })
+        expect(result, `@${width}: premium tile not found in the dates section`).not.toBeNull()
+        expect(result!.tile, `@${width}: the premium tile is painted the same colour as its surround`)
+            .not.toBe(result!.behind)
     }
 })
 
 // ── B3 — the section nav is readable and scrolls ─────────────────────────────
-test("B3: no nav label is clipped, and the strip overflows instead of compressing", async ({ page }) => {
+test("B3: no navigation label is clipped at any width (now the section headers)", async ({ page }) => {
     test.setTimeout(6 * 60_000)
     for (const width of WIDTHS) {
         await open(page, "motor-active", width)
 
-        const clipped = (await clippedLabels(page)).filter((c) => c.startsWith("<a>"))
-        expect(clipped, `@${width}: nav labels still clipped:\n${clipped.join("\n")}`).toEqual([])
+        // THE DEFECT'S SURFACE NO LONGER EXISTS: Goal 2 removed the 14-pill
+        // anchor strip along with the other two navigation systems. The
+        // invariant it protected — a Greek navigation label must render in full
+        // at 320px — now belongs to the section headers, which ARE the
+        // navigation. This is a stricter test than the original: the headers
+        // carry longer strings than the pills did
+        // («Όροι που μπορούν να επηρεάσουν μια αποζημίωση»).
+        const clipped = await clippedLabels(page)
+        expect(clipped, `@${width}: labels still clipped:\n${clipped.join("\n")}`).toEqual([])
 
-        const strip = await page.evaluate(() => {
-            const el = document.querySelector(".pw-scroll-strip") as HTMLElement | null
-            if (!el) return null
-            const pills = Array.from(el.querySelectorAll("a")) as HTMLElement[]
-            return {
-                scrolls: el.scrollWidth > el.clientWidth,
-                widths: pills.map((p) => Math.round(p.getBoundingClientRect().width)),
-                labels: pills.map((p) => (p.textContent || "").trim()),
-            }
-        })
-        expect(strip, `@${width}: no scroll strip`).not.toBeNull()
-        // Each pill is at least as wide as its own label needs — the baseline
-        // defect compressed all of them to ~34px.
-        const narrowest = Math.min(...strip!.widths)
-        expect(narrowest, `@${width}: pills still compressed (min ${narrowest}px)`).toBeGreaterThanOrEqual(60)
-        // With this many Greek labels the strip MUST overflow at mobile widths.
-        expect(strip!.scrolls, `@${width}: strip does not scroll — labels were made to fit instead`).toBe(true)
+        const headers = await page.evaluate(() =>
+            Array.from(document.querySelectorAll("section[id] > h2 > button")).map((b) => {
+                const el = b as HTMLElement
+                const r = el.getBoundingClientRect()
+                return {
+                    label: (el.textContent || "").trim().slice(0, 60),
+                    clipped: el.scrollWidth > el.clientWidth + 1,
+                    height: Math.round(r.height),
+                }
+            })
+        )
+        expect(headers.length, `@${width}: no section headers found — the navigation is missing`).toBeGreaterThan(0)
+        const bad = headers.filter((h) => h.clipped)
+        expect(bad, `@${width}: clipped section header(s): ${bad.map((b) => b.label).join(" | ")}`).toEqual([])
+        // Each header is the section's tap target.
+        const small = headers.filter((h) => h.height < 44)
+        expect(small, `@${width}: section header under 44px: ${small.map((s2) => s2.label).join(" | ")}`).toEqual([])
     }
 })
 
@@ -297,8 +334,14 @@ test("B5: analysis failure sits outside the findings register and marks them sta
     for (const width of WIDTHS) {
         await open(page, "defect-failed-run", width)
 
+        await page.evaluate(() => {
+            const btn = document.querySelector('#review button[aria-expanded="false"]') as HTMLButtonElement | null
+            btn?.click()
+        })
+        await page.waitForTimeout(400)
+
         const placement = await page.evaluate(() => {
-            const section = document.querySelector("#analysis")
+            const section = document.querySelector("#review")
             if (!section) return null
             const failure = Array.from(section.querySelectorAll("div")).find((d) =>
                 (d.textContent || "").includes("Η ανάλυση απέτυχε")
@@ -313,7 +356,7 @@ test("B5: analysis failure sits outside the findings register and marks them sta
             }
         })
 
-        expect(placement, `@${width}: #analysis missing`).not.toBeNull()
+        expect(placement, `@${width}: #review section missing`).not.toBeNull()
         expect(placement!.found, `@${width}: failure state not rendered`).toBe(true)
         // THE fix: the failure is no longer inside the card that holds findings.
         expect(placement!.insideFindings, `@${width}: failure still inside the findings card`).toBe(false)
@@ -339,12 +382,13 @@ test("B7: the usage meter and its limit-reasoned upsell are gone on unlimited pl
         expect(text, `@${width}: still counting analyses`).not.toContain("αναλύσεις απομένουν αυτόν τον μήνα")
         const upsell = await page.locator('a[href*="reason=ai_analysis_limit"]').count()
         expect(upsell, `@${width}: upsell still argues from a removed limit`).toBe(0)
-        // Only the widget was removed — the sidebar it lived in still renders.
-        // (Not "an /upgrade link still exists": the E2E account resolves to
-        // ph-pro, where having NO upgrade CTA on this page is correct.)
+        // Only the widget was removed — everything that shared its column still
+        // renders. Goal 2 dissolved the sidebar into the documents section, so
+        // that is what this checks now. (Not "an /upgrade link still exists":
+        // the E2E account is ph-pro, where NO upgrade CTA is the correct state.)
         await expect(
-            page.locator(".pw-page-shell aside #documents"),
-            `@${width}: the sidebar lost more than the widget`
+            page.locator("#documents"),
+            `@${width}: the documents section went missing with the widget`
         ).toHaveCount(1)
     }
 })
@@ -388,8 +432,15 @@ test("B6: gap headings never break mid-word, and the surface is formal Greek", a
     for (const width of WIDTHS) {
         await open(page, "motor-active", width)
 
+        // Gap headings live inside a disclosure; open it or there is nothing to check.
+        await page.evaluate(() => {
+            const btn = document.querySelector('#review button[aria-expanded="false"]') as HTMLButtonElement | null
+            btn?.click()
+        })
+        await page.waitForTimeout(400)
+
         const badHeadings = await page.evaluate(() =>
-            Array.from(document.querySelectorAll("#analysis h4"))
+            Array.from(document.querySelectorAll("#review h4"))
                 .map((h) => (h.textContent || "").trim())
                 // The character-slice signature: an ellipsis glued to a letter
                 // with no space anywhere near it. A word-boundary truncation

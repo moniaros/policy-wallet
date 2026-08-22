@@ -821,6 +821,23 @@ export function AnalysisCard({
                                 {t.analysis.gapCheckIncompleteHint}
                             </p>
                         </div>
+                    ) : analysisError && !analysisInProgress ? (
+                        /* NO NEGATIVE FINDING WHEN THE RUN DID NOT COMPLETE.
+                        
+                           «Δεν εντοπίστηκαν ασφαλιστικά κενά» is an affirmative
+                           claim about the policy — and the run that would have
+                           produced findings failed, so nothing was checked. The
+                           page said "no gaps found" directly beneath its own
+                           failure banner: the most reassuring sentence on the
+                           page, asserted from the absence of a look. */
+                        <div className="text-center py-8">
+                            <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/10 flex items-center justify-center mx-auto mb-4">
+                                <HelpCircle className="w-8 h-8 text-black/45 dark:text-white/45" />
+                            </div>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 font-semibold mb-2">
+                                {t.wallet.policyDetailsPage.analysisNoFindingUnavailable}
+                            </p>
+                        </div>
                     ) : (
                     <div className="text-center py-8">
                         <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-4">

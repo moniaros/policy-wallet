@@ -361,7 +361,10 @@ export function AppShell({
                 )}
 
                 {/* Main content — pb-24 only clears a bottom bar that actually renders. */}
-                <main id="main-content" className={`lg:pl-64 xl:pl-72 lg:pb-0 ${hasBottomNav ? 'pb-24' : ''}`}>
+                {/* `pw-bottom-nav-reserve`, not `pb-24`: the reservation has to include
+                    env(safe-area-inset-bottom) or the bar covers the last 15px of
+                    every page on a notched iPhone. See app/globals.css. */}
+                <main id="main-content" className={`lg:pl-64 xl:pl-72 lg:pb-0 ${hasBottomNav ? 'pw-bottom-nav-reserve lg:!pb-0' : ''}`}>
                     <div className="min-h-screen">
                         {children}
                     </div>

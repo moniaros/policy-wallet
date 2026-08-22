@@ -324,6 +324,12 @@ export type PolicyHealthLevel = "good" | "moderate" | "attention"
 export interface PolicyHealthScore {
     score: number
     level: PolicyHealthLevel
+    /**
+     * False when no completed analysis backs the number. Callers MUST NOT
+     * render a score, a level, or a verdict label in that case — see
+     * calculatePolicyHealthScore.
+     */
+    available: boolean
 }
 
 /**
@@ -355,7 +361,29 @@ export function calculatePolicyHealthScore(input: {
     /** Fine-print clauses rated `warning`. */
     warningClauseCount?: number
     verified: boolean
+    /**
+     * Did the analysis that would have produced findings actually complete?
+     *
+     * THE SCORE IS A SUBTRACTION FROM 100. Zero findings therefore reads as a
+     * perfect policy — and zero findings is exactly what a FAILED run leaves
+     * behind. Production rendered «100 · Σε καλή κατάσταση» for a third-party-only
+     * motor policy whose latest run died on a provider spend cap, and «71 · Σε
+     * καλή κατάσταση» for a policy 110 days expired. Both are false statements
+     * of fact, not prominence problems: the number is not "high", it is
+     * unfounded, because nothing looked.
+     *
+     * `false` (or a never-deep-analysed policy) returns `available: false`, and
+     * the UI must render NO score rather than a low-confidence one — a hedge
+     * next to a big number is still a big number.
+     */
+    analysisComplete?: boolean
 }): PolicyHealthScore {
+    // No completed analysis ⇒ no score. Absence of findings is not evidence of
+    // a healthy policy; it is absence of a look.
+    if (input.analysisComplete === false) {
+        return { score: 0, level: "good", available: false }
+    }
+
     let score = 100
     score -= Math.max(0, input.gapCount) * 15
     score -= Math.max(0, input.criticalClauseCount ?? 0) * 10
@@ -364,5 +392,5 @@ export function calculatePolicyHealthScore(input: {
     score = Math.max(0, Math.min(100, score))
 
     const level: PolicyHealthLevel = score <= 40 ? "attention" : score <= 70 ? "moderate" : "good"
-    return { score, level }
+    return { score, level, available: true }
 }

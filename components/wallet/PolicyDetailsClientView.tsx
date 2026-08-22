@@ -1,23 +1,21 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
 import { DeletePolicyDialog } from "@/components/wallet/DeletePolicy"
 import { MergeRequestBanner } from "@/components/wallet/MergeRequestBanner"
 import { PolicyHeaderMenu } from "@/components/wallet/policy-detail/PolicyHeaderMenu"
-import { PolicyAnalysisTabs } from "@/app/(protected)/wallet/[id]/PolicyAnalysisTabs"
+import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
 import { PolicyQA } from "@/components/wallet/PolicyQA"
-import { AIUsageWidget } from "@/app/(protected)/wallet/[id]/AIUsageWidget"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { CoverageTabView } from "@/components/wallet/coverage-details/CoverageTabView"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
-import { PolicySectionNav, type PolicySectionNavItem } from "@/components/wallet/policy-detail/PolicySectionNav"
-import { PolicyHero } from "@/components/wallet/policy-detail/PolicyHero"
+import { PolicySection } from "@/components/wallet/policy-detail/PolicySection"
+import { PolicyHead, AskAiDock } from "@/components/wallet/policy-detail/PolicyHead"
 import { SummaryCard } from "@/components/wallet/policy-detail/SummaryCard"
-import { PolicyBriefCard, type PolicyBriefRowView } from "@/components/wallet/policy-detail/PolicyBriefCard"
 import { RenewalOutlookCard } from "@/components/wallet/policy-detail/RenewalOutlookCard"
 import { KeyDatesCard } from "@/components/wallet/policy-detail/KeyDatesCard"
 import { ExclusionsCard } from "@/components/wallet/policy-detail/ExclusionsCard"
@@ -42,7 +40,7 @@ import {
     resolveCoverageAbsenceCopy,
     type PolicyRenewalEntry,
 } from "@/lib/wallet/policy-detail"
-import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react"
+import { AlertTriangle, CalendarDays, ClipboardList, Crown, FileDown, FileWarning, FolderOpen, LifeBuoy, Lock, RefreshCw, Share2, ShieldCheck, Trash2, Users } from "lucide-react"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
@@ -56,6 +54,8 @@ import {
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
 import { resolveStoredSummary } from "@/lib/wallet/summary-language"
+import { branchFamilyId } from "@/lib/insurance/taxonomy"
+import { resolveAttention, resolvePrimaryAction } from "@/lib/wallet/policy-attention"
 import { deriveRenewalChecklist, upcomingReminderMilestones } from "@/lib/wallet/renewal-outlook"
 import { complianceObligations } from "@/lib/insurance/policy-conditions"
 
@@ -172,9 +172,25 @@ export function PolicyDetailsClient({
     const detailsCopy = t.wallet.policyDetailsPage
 
     const pathname = usePathname()
+    const searchParams = useSearchParams()
     const [exportUpgradeOpen, setExportUpgradeOpen] = useState(false)
     const [isRequestingQuote, setIsRequestingQuote] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    /**
+     * The persistent AI affordance is a disclosure, not a permanent panel.
+     *
+     * It starts OPEN when the reader arrived from a branch page's suggested
+     * question (`/wallet/<id>?q=…#policy-qa`) — PolicyQA prefills from that
+     * param, and prefilling a panel nobody can see would strand the deep link
+     * on a closed row.
+     */
+    const [askAiOpen, setAskAiOpen] = useState(false)
+    /** Section forced open by the head's one action (see handlePrimaryAction). */
+    const [forcedOpen, setForcedOpen] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (searchParams?.get("q")) setAskAiOpen(true)
+    }, [searchParams])
 
     const handleRequestQuote = async () => {
         if (isRequestingQuote) return
@@ -299,7 +315,18 @@ export function PolicyDetailsClient({
     const conditionsCount = notableConditions.length + finePrint.length
 
     // Deduped count — must agree with the summary band and the tab badge.
+    /** The newest run — its status decides whether any score may be shown. */
+    const lastRun = policy.analysisRuns?.[0]
+
     const health = calculatePolicyHealthScore({
+        // A score is a subtraction from 100, so "no findings because the run
+        // failed" and "no findings because the policy is sound" produce the
+        // same number. Only one of them is a fact. See A1 in
+        // docs/evidence/policy-detail-mobile/.
+        analysisComplete:
+            Boolean(policy.lastAnalyzedAt) &&
+            !policy.acordData?.processingError &&
+            lastRun?.status !== "failed",
         gapCount: gapReportItems.length,
         // Not the raw exclusion count — see calculatePolicyHealthScore. Only the
         // clauses the analysis itself flagged as able to cost the holder.
@@ -341,7 +368,6 @@ export function PolicyDetailsClient({
     // clearer copy: all three wrong (it did not fail, retrying reproduces the
     // block, the document is fine). It gets its own state, pointing at the real
     // resolution — upgrade or consent — read from the run's blockedReason.
-    const lastRun = policy.analysisRuns?.[0]
     const absenceCopy = resolveCoverageAbsenceCopy(lastRun?.status, lastRun?.blockedReason, detailsCopy)
 
     // ── AI Policy Brief: seven one-liners, every count with its evidence
@@ -428,101 +454,10 @@ export function PolicyDetailsClient({
     // section that will actually render.
     const showRecommendationsForBrief = isOwner && relatedRecommendations.length > 0
 
-    const briefRows: PolicyBriefRowView[] = [
-        {
-            anchor: hasCoverageDetails || shouldShowReanalyzeHint ? "coverage" : null,
-            label: detailsCopy.briefCoveredLabel,
-            value: !briefCoverage.hasCoverages
-                ? absenceCopy.title
-                : !briefCoverage.hasStatuses
-                    // v2 extraction: no per-cover status exists — covered-as-stated hedge.
-                    ? detailsCopy.briefCoveredAsStated.replace("{count}", String(briefCoverage.coveredCount))
-                    : briefCoverage.coveredNames.length > 0
-                        ? detailsCopy.briefCoveredLine
-                              .replace("{count}", String(briefCoverage.coveredCount))
-                              .replace("{names}", briefCoverage.coveredNames.join(", "))
-                        : detailsCopy.briefCoveredLineNoNames.replace("{count}", String(briefCoverage.coveredCount)),
-            tone: briefCoverage.hasCoverages ? "positive" : "neutral",
-        },
-        {
-            anchor: hasCoverageDetails ? "coverage" : null,
-            label: detailsCopy.briefNotCoveredLabel,
-            value: !briefCoverage.hasCoverages
-                ? absenceCopy.title
-                : !briefCoverage.hasStatuses
-                    ? detailsCopy.briefNotCoveredNoStatuses
-                    : briefCoverage.excludedCount > 0 && briefCoverage.notTakenCount > 0
-                        ? detailsCopy.briefNotCoveredLine
-                              .replace("{excluded}", String(briefCoverage.excludedCount))
-                              .replace("{notTaken}", String(briefCoverage.notTakenCount))
-                        : briefCoverage.excludedCount > 0
-                            ? detailsCopy.briefNotCoveredExcludedOnly.replace("{excluded}", String(briefCoverage.excludedCount))
-                            : briefCoverage.notTakenCount > 0
-                                ? detailsCopy.briefNotCoveredNotTakenOnly.replace("{notTaken}", String(briefCoverage.notTakenCount))
-                                : detailsCopy.briefNotCoveredNoneMarked,
-            tone: briefCoverage.excludedCount > 0 ? "critical" : briefCoverage.notTakenCount > 0 ? "warning" : "neutral",
-        },
-        {
-            anchor: "exclusions",
-            label: detailsCopy.briefExclusionsLabel,
-            value:
-                exclusions.length === 0 && flaggedClauseCount === 0
-                    ? detailsCopy.noExclusionsDetected
-                    : flaggedClauseCount > 0
-                        ? detailsCopy.briefExclusionsLine
-                              .replace("{count}", String(exclusions.length))
-                              .replace("{flagged}", String(flaggedClauseCount))
-                        : detailsCopy.briefExclusionsOnly.replace("{count}", String(exclusions.length)),
-            tone: flaggedClauseCount > 0 ? "warning" : "neutral",
-        },
-        {
-            anchor: hasCoverageDetails ? "coverage" : null,
-            label: detailsCopy.briefLimitsLabel,
-            value:
-                briefCoverage.structuredAmountCount > 0
-                    ? detailsCopy.briefLimitsLine.replace("{count}", String(briefCoverage.structuredAmountCount))
-                    : briefCoverage.freeTextAmountCount > 0
-                        ? detailsCopy.briefLimitsFreeText
-                        : detailsCopy.briefLimitsNone,
-            tone: "neutral",
-        },
-        {
-            // "None found" carries its scope note in the value; there is nothing
-            // to open unless the engine's finding is on this page.
-            anchor: overlapFinding && showRecommendationsForBrief ? "recommendations" : null,
-            label: detailsCopy.briefOverlapsLabel,
-            value: overlapFinding
-                ? detailsCopy.briefOverlapFound.replace("{partner}", overlapFinding.partnerLabel)
-                : overlapChecked
-                    ? detailsCopy.briefOverlapNone
-                    : detailsCopy.briefOverlapUnchecked,
-            tone: overlapFinding ? "warning" : overlapChecked ? "positive" : "neutral",
-        },
-        {
-            anchor: "analysis",
-            label: detailsCopy.briefGapsLabel,
-            // Never "no gaps" for an unanalyzed policy — absence of a look is
-            // not absence of a finding.
-            value: !analyzed
-                ? detailsCopy.briefGapsNotAnalyzed
-                : gapReportItems.length === 0
-                    ? detailsCopy.briefGapsNone
-                    : detailsCopy.briefGapsLine.replace("{count}", String(gapReportItems.length)),
-            tone: !analyzed
-                ? "neutral"
-                : gapReportItems.length === 0
-                    ? "positive"
-                    : gapReportItems.some((g) => g.severity === "critical" || g.severity === "high")
-                        ? "critical"
-                        : "warning",
-        },
-        {
-            anchor: "renewal",
-            label: detailsCopy.briefRenewalLabel,
-            value: renewalHeadline,
-            tone: renewalHeadlineTone === "critical" ? "critical" : renewalHeadlineTone === "warning" ? "warning" : "neutral",
-        },
-    ]
+    // The seven-row brief is gone. Its rows restated facts the sections own
+    // (coverage counts, the countdown, the gap count) and were the single
+    // largest source of duplicate facts on the page. The one thing only it
+    // said — what matters most right now — is the head's attention line.
 
     const gapsForAnalysis = (policy.gapInstances || []).map((gap: any) => ({
         id: gap.id,
@@ -735,33 +670,50 @@ export function PolicyDetailsClient({
     }
 
     // ── Section navigation (only sections that actually render) ──
-    const navItems: PolicySectionNavItem[] = [
-        { id: "summary", label: detailsCopy.navSummary },
-        // Order must mirror the DOM below: #brief renders directly after
-        // #summary, before #key-dates.
-        { id: "brief", label: detailsCopy.navBrief },
-        { id: "key-dates", label: detailsCopy.navDates },
-        // Order must mirror the DOM below: #branch-actions renders directly
-        // after #key-dates, before #coverage.
-        ...(branchActionItems.length > 0 ? [{ id: "branch-actions", label: detailsCopy.navActions }] : []),
-        ...(hasCoverageDetails || shouldShowReanalyzeHint ? [{ id: "coverage", label: detailsCopy.navCoverage }] : []),
-        { id: "exclusions", label: detailsCopy.navExclusions },
-        { id: "perks", label: detailsCopy.navPerks },
-        { id: "analysis", label: detailsCopy.navAnalysis },
-        // Order must mirror the DOM below: #branch-guide renders directly after
-        // #analysis, before #premium-insights and #recommendations.
-        { id: "branch-guide", label: detailsCopy.navGuide },
-        ...(showRecommendations ? [{ id: "recommendations", label: detailsCopy.navRecommendations }] : []),
-        { id: "policy-qa", label: detailsCopy.navAskAi },
-        { id: "claims", label: detailsCopy.navClaims },
-        ...(showAgentSection ? [{ id: "agent", label: detailsCopy.navAgent }] : []),
-        { id: "documents", label: detailsCopy.navDocuments },
-    ]
+    // ── GOAL 2: the head's two decisions, and the sections' open state ──
+    //
+    // Both are PURE (lib/wallet/policy-attention.ts) and both are decided ONCE.
+    // The page used to render every state simultaneously — expired banner,
+    // renewal outlook, failed-run banner, gap count, unverified note, three
+    // quote CTAs — and leave the reader to rank them.
+    const attention = resolveAttention({
+        daysLeft: computedDaysLeft,
+        analysisFailed: Boolean(policy.acordData?.processingError) || lastRun?.status === "failed",
+        reviewItemCount: gapReportItems.length,
+        unverified: policy.reviewState === "unconfirmed" || policy.reviewState === "flagged",
+        unknownDuration: computedDaysLeft === null,
+    })
+    const primaryAction = resolvePrimaryAction({ attention, hasDocument: Boolean(firstDocumentHref) })
+
+    // The section the head points at opens itself, so the one action in the
+    // head lands on content rather than on another closed row.
+    // The head's action opens its target; before any action, the section the
+    // attention line names is the one already open, so the page arrives showing
+    // what it just said matters.
+    const openSection = forcedOpen ?? attention.target
+
+    // "What is insured?" — the object for motor, the person otherwise.
+    const insuredSubject = branchFamilyId(coverageType) === "motor"
+        ? { label: detailsCopy.headInsuredVehicle, value: policy.acordData?.vehicle?.plateNumber ?? null }
+        : { label: detailsCopy.headInsuredPerson, value: insuredNames[0] ?? null }
+
+    const handlePrimaryAction = (action: typeof primaryAction) => {
+        if (action.kind === "download") return handleDownloadPrimaryDoc()
+        if (action.kind === "share") return handleShare()
+        if (action.kind === "renew" && isOwner) return handleRequestQuote()
+        // review / retry_analysis are navigational: open the section they name.
+        const target = action.target
+        if (target) {
+            setForcedOpen(target)
+            document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+    }
+
 
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
-                <nav className="mb-5 flex items-center gap-2 text-sm">
+            <div className="mx-auto max-w-3xl px-4 pb-24 pt-5 sm:px-6 lg:max-w-5xl lg:px-8">
+                <nav className="mb-4 flex items-center gap-2 text-sm">
                     <Link
                         href="/wallet"
                         // `pw-inline-action`: the design system's marker for a text
@@ -776,23 +728,12 @@ export function PolicyDetailsClient({
                     <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
                 </nav>
 
-                {/* Every analysed policy is written reviewState:"unconfirmed", and only
-                    an agent can clear it (canReviewExtraction gates on isAgentRole). A
-                    self-serve policyholder therefore has every policy permanently
-                    unconfirmed and was never told — while an agent got a banner. They
-                    are given the fact, not the agent's confirm action: someone
-                    "confirming" AI output they have not checked against the document
-                    would be worse than leaving it unconfirmed. */}
-                {!canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
-                    <p className="mb-5 rounded-2xl border border-black/10 bg-black/[0.02] px-4 py-3 text-caption leading-snug text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/70">
-                        {t.wallet.review.ownerUnverifiedNote}
-                    </p>
-                )}
-
-                {/* Extraction review banner — agent-only verification step,
-                    shown until a reviewing agent confirms the AI-extracted data */}
+                {/* Extraction review banner — agent-only verification step. The
+                    policyholder's equivalent is no longer a banner: "these details
+                    were read automatically" is one of the states the head's
+                    attention line reports, so it competes with nothing. */}
                 {canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
-                    <div className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
+                    <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
                         <AlertTriangle className="h-5 w-5 flex-shrink-0 text-[#92400E] dark:text-amber-400" />
                         <p className="min-w-0 flex-1 text-sm font-medium text-[#92400E] dark:text-amber-400">
                             {t.wallet.review.agentBannerCta}
@@ -823,127 +764,291 @@ export function PolicyDetailsClient({
                     />
                 )}
 
-                {/* ── Policy overview (hero) ─────────────────────────────── */}
-                <PolicyHero
+                <PolicyQaPrefillProvider>
+                {/* ── HEAD — the four questions, each answered once ───────── */}
+                <PolicyHead
                     displayInsurer={displayInsurer}
                     localizedType={localizedType}
                     displayPolicyNumber={displayPolicyNumber}
-                    plateNumber={policy.acordData?.vehicle?.plateNumber || null}
-                    startDate={getStartDate()}
+                    insuredSubject={insuredSubject}
                     endDate={getEndDate()}
-                    premiumAmount={getPremiumAmount()}
-                    premiumCurrency={getPremiumCurrency()}
-                    premiumFrequency={premiumFrequency}
                     statusLabel={statusLabel}
-                    statusColor={statusColorOnDark}
+                    statusColor={statusColor}
                     daysLeft={computedDaysLeft}
-                    expiredNotice={isExpiredPolicy && !isAnalyzing ? detailsCopy.expiredBanner : null}
                     isAnalyzing={isAnalyzing}
-                    isPendingInsurer={isPendingInsurer}
-                    locale={locale}
-                    // Where an unreadable value actually exists: the document.
+                    attention={attention}
+                    primaryAction={primaryAction}
                     documentHref={firstDocumentHref}
+                    locale={locale}
+                    onPrimaryAction={handlePrimaryAction}
                     copy={{
-                        expiresIn: t.wallet.expiresIn,
-                        days: t.wallet.days,
                         policyId: t.wallet.policyId,
                         plateNumber: t.wallet.plateNumber,
                         valueUnreadable: detailsCopy.valueUnreadable,
                         valueUnreadableCta: detailsCopy.valueUnreadableCta,
-                        starts: t.wallet.starts,
-                        ends: t.wallet.ends,
-                        annualPremium: t.wallet.annualPremium,
-                        premiumLabel: detailsCopy.premiumLabel,
-                        premiumFrequencies: detailsCopy.premiumFrequency,
+                        inForceUntil: detailsCopy.headInForceUntil,
+                        expiredOn: detailsCopy.headExpiredOn,
+                        unknownDuration: detailsCopy.headUnknownDuration,
+                        attentionTitle: detailsCopy.headAttentionTitle,
+                        attention: detailsCopy.headAttention,
+                        action: detailsCopy.headAction,
                         analyzing: t.policyStatus.analyzing,
-                        analyzingDocument: detailsCopy.analyzingDocument,
-                        analyzingHint: detailsCopy.analyzingHint,
-                        askAi: detailsCopy.navAskAi,
-                        sharePolicy: detailsCopy.sharePolicy,
-                        downloadContract: t.wallet.downloadContract,
-                        contactInsurer: detailsCopy.contactInsurer,
                     }}
-                    onShare={handleShare}
-                    onDownload={handleDownloadPrimaryDoc}
-                    onCallInsurer={handleCallInsurer}
-                    headerMenu={
-                        isOwner ? (
-                            <PolicyHeaderMenu
-                                ariaLabel={detailsCopy.moreActions}
-                                items={[
-                                    {
-                                        id: "delete-policy",
-                                        label: t.wallet.deletePolicyModal.deletePolicy,
-                                        icon: Trash2,
-                                        destructive: true,
-                                        onSelect: () => setDeleteDialogOpen(true),
-                                    },
-                                ]}
-                            />
-                        ) : undefined
-                    }
                 />
 
-                {/* ── Section navigation ─────────────────────────────────── */}
-                {!isAnalyzing && <PolicySectionNav items={navItems} ariaLabel={detailsCopy.onThisPage} />}
+                {/* The PERSISTENT AI affordance — one of the two entry points
+                    this page keeps (the other is the point-of-use label inside
+                    the sections). It replaces the hero CTA, the standalone Q&A
+                    card, the suggested-question pills and the claims ask-AI
+                    button, which were four doors to one room. */}
+                <AskAiDock label={detailsCopy.headAskAi} onOpen={() => setAskAiOpen((v) => !v)} />
+                {askAiOpen && (
+                    <div id="policy-qa" className="mt-3 scroll-mt-20">
+                        <PolicyQA
+                            policyId={policy.id}
+                            tier={tier}
+                            lineOfBusiness={coverageType}
+                            freeQuestionsRemaining={freeQuestionsRemaining}
+                        />
+                    </div>
+                )}
 
-                <PolicyQaPrefillProvider>
-                <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
-                    <div className="space-y-6">
-                        {/* 1 ── Plain-language AI summary ─────────────────── */}
-                        <section id="summary" className="scroll-mt-24">
-                            <SummaryCard
-                                // Never `policy.coverageSummary` directly — a
-                                // stored summary in the wrong language must not
-                                // reach the screen under «σε απλά ελληνικά».
-                                summary={
-                                    storedSummary.state === "ok"
-                                        ? storedSummary.text
-                                        : storedSummary.state === "absent"
-                                            ? t.wallet.summaryFallback
-                                            : null
-                                }
-                                summaryState={storedSummary.state}
-                                health={health}
-                                isAnalyzing={isAnalyzing}
-                                copy={{
-                                    summaryTitle: detailsCopy.summaryTitle,
-                                    summaryAiChip: detailsCopy.summaryAiChip,
-                                    healthTitle: t.wallet.healthScore.title,
-                                    healthLevels: detailsCopy.healthLevels,
-                                    summaryLanguageMismatch: detailsCopy.summaryLanguageMismatch,
-                                    summaryLanguageMismatchCta: detailsCopy.summaryLanguageMismatchCta,
-                                    summaryHasUnreadable: detailsCopy.summaryHasUnreadable,
-                                    valueUnreadableCta: detailsCopy.valueUnreadableCta,
-                                }}
-                                documentHref={firstDocumentHref}
-                                methodology={{
-                                    title: t.wallet.healthScore.methodologyTitle,
-                                    body: t.wallet.healthScore.methodologyBody,
-                                    limits: t.wallet.healthScore.methodologyLimits,
-                                    // Single-source the regulated not-advice line with the
-                                    // portfolio score, so legal edits it in one place.
-                                    notAdvice: t.dashboard.home.scoreMethodologyNotAdvice,
-                                }}
-                            />
-                        </section>
+                {/* ── The plain-language summary sits with the head: it is the
+                       prose answer to "what is this policy", not a section of
+                       its own. Health score handling is Goal 3's. ─────────── */}
+                <div className="mt-4">
+                    <SummaryCard
+                        summary={
+                            storedSummary.state === "ok"
+                                ? storedSummary.text
+                                : storedSummary.state === "absent"
+                                    ? t.wallet.summaryFallback
+                                    : null
+                        }
+                        summaryState={storedSummary.state}
+                        health={health}
+                        isAnalyzing={isAnalyzing}
+                        copy={{
+                            summaryTitle: detailsCopy.summaryTitle,
+                            summaryAiChip: detailsCopy.summaryAiChip,
+                            healthTitle: t.wallet.healthScore.title,
+                            healthLevels: detailsCopy.healthLevels,
+                            healthScale: detailsCopy.healthScale,
+                            summaryLanguageMismatch: detailsCopy.summaryLanguageMismatch,
+                            summaryLanguageMismatchCta: detailsCopy.summaryLanguageMismatchCta,
+                            summaryHasUnreadable: detailsCopy.summaryHasUnreadable,
+                            valueUnreadableCta: detailsCopy.valueUnreadableCta,
+                        }}
+                        documentHref={firstDocumentHref}
+                        // The owner is told the data is unchecked — never offered
+                        // the agent's confirm action (that stays behind
+                        // canReviewExtraction). Someone "confirming" an
+                        // extraction they have not read against the document
+                        // would launder a guess into a verification.
+                        unverified={!canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged')}
+                        unverifiedNote={t.wallet.review.ownerUnverifiedNote}
+                        methodology={{
+                            title: t.wallet.healthScore.methodologyTitle,
+                            body: t.wallet.healthScore.methodologyBody,
+                            limits: t.wallet.healthScore.methodologyLimits,
+                            notAdvice: t.dashboard.home.scoreMethodologyNotAdvice,
+                        }}
+                    />
+                </div>
 
-                        {/* 1b ── The policy as a brief: seven honest one-liners ── */}
-                        {!isAnalyzing && (
-                            <section id="brief" className="scroll-mt-24">
-                                <PolicyBriefCard
-                                    rows={briefRows}
+                {/* ── SIX SECTIONS — the page's ONE navigation system ─────── */}
+                <div className="mt-6 border-t border-black/10 dark:border-white/12">
+
+                    {/* 1 ── Cover: what is and is not covered ─────────────── */}
+                    <PolicySection
+                        id="coverage"
+                        title={detailsCopy.sectionCoverage}
+                        summary={detailsCopy.sectionCoverageSummary}
+                        icon={<ShieldCheck className="h-5 w-5" />}
+                        forceOpen={openSection === "coverage"}
+                    >
+                        <div className="space-y-6">
+                            {hasCoverageDetails ? (
+                                <CoverageTabView
+                                    hints={glossaryHints}
+                                    acordData={policy.acordData}
+                                    lineOfBusiness={coverageType}
+                                    language={lang}
+                                    layout="stacked"
+                                />
+                            ) : shouldShowReanalyzeHint ? (
+                                <div className="flex items-start gap-3 rounded-2xl border border-amber-300/45 bg-amber-50 px-4 py-4 dark:bg-amber-950/20">
+                                    <RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-300" />
+                                    <div>
+                                        <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">{absenceCopy.title}</p>
+                                        <p className="mt-1 text-xs text-amber-700 dark:text-amber-300/90">{absenceCopy.hint}</p>
+                                    </div>
+                                </div>
+                            ) : null}
+
+                            {/* Perks are things this policy already gives you —
+                                part of the cover answer, not a section of their own. */}
+                            {!isAnalyzing && (
+                                <PerksCard
+                                    perks={perks}
+                                    lang={lang}
                                     copy={{
-                                        title: detailsCopy.briefTitle,
-                                        subtitle: detailsCopy.briefSubtitle,
+                                        perksTitle: detailsCopy.perksTitle,
+                                        perksSubtitle: detailsCopy.perksSubtitle,
+                                        usageLimitLabel: detailsCopy.usageLimitLabel,
+                                        callServiceCta: detailsCopy.callServiceCta,
+                                        visitSiteCta: detailsCopy.visitSiteCta,
+                                        dontForgetChip: detailsCopy.dontForgetChip,
+                                        noPerksDetected: detailsCopy.noPerksDetected,
+                                        exclusionsReanalyzeHint: detailsCopy.exclusionsReanalyzeHint,
+                                        perkTypes: detailsCopy.perkTypes,
                                     }}
                                 />
-                            </section>
-                        )}
+                            )}
 
-                        {/* 2 ── Key dates & renewal status ────────────────── */}
-                        {!isAnalyzing && (
-                            <section id="key-dates" className="scroll-mt-24">
+                            {/* Branch editorial — generic to the line, not to this
+                                policy, so it stays collapsed inside the section it
+                                explains rather than occupying one of the six. */}
+                            {!isAnalyzing && (
+                                <BranchGuideCard
+                                    tagline={branchContent.tagline[lang]}
+                                    shortDescription={branchContent.shortDescription[lang]}
+                                    whyItMatters={branchContent.whyItMatters.map((item) => item[lang])}
+                                    whatWeAnalyze={branchContent.whatWeAnalyze.map((item) => item[lang])}
+                                    howToUseBetter={branchContent.howToUseBetter.map((item) => item[lang])}
+                                    commonGaps={branchGuideGaps}
+                                    copy={{
+                                        guideTitle: detailsCopy.guideTitle,
+                                        guideWhyItMatters: detailsCopy.guideWhyItMatters,
+                                        guideWhatWeAnalyze: detailsCopy.guideWhatWeAnalyze,
+                                        guideHowToUseBetter: detailsCopy.guideHowToUseBetter,
+                                        guideCommonGaps: detailsCopy.guideCommonGaps,
+                                        guideDetectedChip: detailsCopy.guideDetectedChip,
+                                        guideExpand: detailsCopy.guideExpand,
+                                        guideCollapse: detailsCopy.guideCollapse,
+                                    }}
+                                />
+                            )}
+                        </div>
+                    </PolicySection>
+
+                    {/* 2 ── Terms that can affect a claim ─────────────────── */}
+                    {!isAnalyzing && (
+                        <PolicySection
+                            id="terms"
+                            title={detailsCopy.sectionTerms}
+                            summary={detailsCopy.sectionTermsSummary}
+                            icon={<FileWarning className="h-5 w-5" />}
+                            forceOpen={openSection === "terms"}
+                        >
+                            <ExclusionsCard
+                                exclusions={exclusions}
+                                conditions={notableConditions}
+                                finePrint={finePrint}
+                                lang={lang}
+                                copy={{
+                                    exclusionsTitle: detailsCopy.exclusionsTitle,
+                                    exclusionsSubtitle: detailsCopy.exclusionsSubtitle,
+                                    exclusionsListTitle: detailsCopy.exclusionsListTitle,
+                                    notableConditionsTitle: detailsCopy.notableConditionsTitle,
+                                    finePrintTitle: detailsCopy.finePrintTitle,
+                                    actionRequiredChip: detailsCopy.actionRequiredChip,
+                                    noExclusionsDetected: detailsCopy.noExclusionsDetected,
+                                    exclusionsReanalyzeHint: detailsCopy.exclusionsReanalyzeHint,
+                                    showMoreFinePrint: detailsCopy.showMoreFinePrint,
+                                    showLessFinePrint: detailsCopy.showLessFinePrint,
+                                    showAllExclusions: detailsCopy.showAllExclusions,
+                                    showFewerExclusions: detailsCopy.showFewerExclusions,
+                                    conditionTypes: detailsCopy.conditionTypes,
+                                    riskLevels: detailsCopy.riskLevels,
+                                }}
+                                disclaimer={t.coverageDetails.exclusionsDisclaimer}
+                                termHint={exclusionHint}
+                                conditionHints={{
+                                    sub_limit: glossaryHints?.sublimit ?? null,
+                                    co_payment: glossaryHints?.copayment ?? null,
+                                }}
+                            />
+                        </PolicySection>
+                    )}
+
+                    {/* 3 ── Items for review ──────────────────────────────── */}
+                    <PolicySection
+                        id="review"
+                        title={detailsCopy.sectionReview}
+                        summary={detailsCopy.sectionReviewSummary}
+                        icon={<ClipboardList className="h-5 w-5" />}
+                        forceOpen={openSection === "review"}
+                    >
+                        <div className="space-y-6">
+                            <AnalysisCard
+                                policyId={policy.id}
+                                gaps={gapsForAnalysis}
+                                policyStatus={policy.status}
+                                processingError={policy.acordData?.processingError || null}
+                                analysisPipeline={policy.acordData?.analysis?.pipeline || null}
+                                report={{ items: gapReportItems, reportUnlocked }}
+                                tier={tier}
+                                trialAnalysisAvailable={trialAnalysisAvailable}
+                            />
+
+                            {/* The "worth checking" half of the branch actions —
+                                the answered half is a coverage fact and lives in
+                                the cover section's data. */}
+                            {!isAnalyzing && branchActionItems.length > 0 && (
+                                <BranchActionsCard
+                                    actions={branchActionItems}
+                                    profileHref="/questionnaires"
+                                    uploadHref="/wallet/add"
+                                    onRequestQuote={isOwner ? handleRequestQuote : undefined}
+                                    isRequestingQuote={isRequestingQuote}
+                                    onAskAgent={isOwner ? handleAskAgentAction : undefined}
+                                    onCreateTask={isOwner ? handleCreateTaskAction : undefined}
+                                    agentActionsLocked={!canUseCollaboration}
+                                    pendingActionId={pendingActionId}
+                                    copy={{
+                                        actionsTitle: detailsCopy.actionsTitle,
+                                        actionsAnsweredHeading: detailsCopy.actionsAnsweredHeading,
+                                        actionsTodoHeading: detailsCopy.actionsTodoHeading,
+                                        actionsCall: detailsCopy.actionsCall,
+                                        actionsShowAll: detailsCopy.actionsShowAll,
+                                        actionsShowLess: detailsCopy.actionsShowLess,
+                                        actionsLocked: detailsCopy.actionsLocked,
+                                        actionsWorking: detailsCopy.actionsWorking,
+                                    }}
+                                />
+                            )}
+
+                            {showRecommendations && (
+                                <div id="recommendations" className="scroll-mt-20">
+                                    <RecommendationCards
+                                        recommendations={relatedRecommendations}
+                                        language={lang}
+                                        tier={tier}
+                                    />
+                                </div>
+                            )}
+
+                            {tier !== 'pro' && (
+                                <PremiumInsightCards
+                                    triggerSource="policy_detail_locked_cards"
+                                    returnTo={`/wallet/${policy.id}#review`}
+                                    className="rounded-3xl border border-black/10 dark:border-white/15 bg-white/60 dark:bg-white/5 p-6"
+                                />
+                            )}
+                        </div>
+                    </PolicySection>
+
+                    {/* 4 ── Dates & renewal — stated ONCE ─────────────────── */}
+                    {!isAnalyzing && (
+                        <PolicySection
+                            id="dates"
+                            title={detailsCopy.sectionDates}
+                            summary={detailsCopy.sectionDatesSummary}
+                            icon={<CalendarDays className="h-5 w-5" />}
+                            forceOpen={openSection === "dates"}
+                        >
+                            <div className="space-y-4">
                                 <KeyDatesCard
                                     startDate={getStartDate()}
                                     endDate={getEndDate()}
@@ -957,6 +1062,12 @@ export function PolicyDetailsClient({
                                     renewalHistory={renewalHistory}
                                     renewals={renewals}
                                     locale={locale}
+                                    premiumAmount={getPremiumAmount()}
+                                    premiumCurrency={getPremiumCurrency()}
+                                    premiumFrequency={premiumFrequency}
+                                    // The head owns status, expiry and the countdown.
+                                    // This card renders the PERIOD and what is paid.
+                                    suppressStatusAndCountdown
                                     onRequestQuote={isOwner ? handleRequestQuote : undefined}
                                     isRequestingQuote={isRequestingQuote}
                                     dateSources={{
@@ -984,369 +1095,95 @@ export function PolicyDetailsClient({
                                         requestQuote: detailsCopy.requestQuote,
                                         requestingQuote: detailsCopy.requestingQuote,
                                         reminders: detailsCopy.renewalReminders,
+                                        premiumLabel: detailsCopy.premiumLabel,
+                                        premiumFrequencies: detailsCopy.premiumFrequency,
+                                        annualPremium: t.wallet.annualPremium,
                                     }}
                                 />
-                                {/* Renewal outlook — deep-linked from the dashboard
-                                    and the brief as #renewal. Facts only. */}
-                                <div id="renewal" className="mt-3 scroll-mt-24">
-                                    <RenewalOutlookCard
-                                        headline={renewalHeadline}
-                                        headlineTone={renewalHeadlineTone}
-                                        checklist={renewalChecklistLabels}
-                                        reminderLine={renewalReminderLine}
-                                        pastPeriodsLine={renewalPastPeriodsLine}
-                                        expired={isExpiredPolicy}
-                                        onRequestQuote={isOwner ? handleRequestQuote : undefined}
-                                        isRequestingQuote={isRequestingQuote}
-                                        copy={{
-                                            title: detailsCopy.renewalOutlookTitle,
-                                            checkTitle: detailsCopy.renewalOutlookCheckTitle,
-                                            checklistEmpty: detailsCopy.renewalOutlookChecklistEmpty,
-                                            requestQuote: detailsCopy.requestQuote,
-                                            requestingQuote: detailsCopy.requestingQuote,
-                                        }}
-                                    />
-                                </div>
-                                {/* Trigger D on the dedicated renewal surface:
-                                    smart multi-milestone reminders are paid. */}
+
+                                {/* Renewal outlook: the checklist and reminder trail
+                                    only. Its headline duplicated the head's countdown
+                                    and its quote button duplicated KeyDates'. */}
+                                <RenewalOutlookCard
+                                    headline={null}
+                                    headlineTone="neutral"
+                                    checklist={renewalChecklistLabels}
+                                    reminderLine={renewalReminderLine}
+                                    pastPeriodsLine={renewalPastPeriodsLine}
+                                    expired={isExpiredPolicy}
+                                    copy={{
+                                        title: detailsCopy.renewalOutlookTitle,
+                                        checkTitle: detailsCopy.renewalOutlookCheckTitle,
+                                        checklistEmpty: detailsCopy.renewalOutlookChecklistEmpty,
+                                        requestQuote: detailsCopy.requestQuote,
+                                        requestingQuote: detailsCopy.requestingQuote,
+                                    }}
+                                />
+
                                 {isOwner && isFreeTier && (
-                                    <div className="mt-3">
-                                        <UpgradeTriggerCard
-                                            featureKey="advanced_renewal_reminders"
-                                            triggerSource="policy_key_dates"
-                                            returnTo={pathname || undefined}
-                                            variant="inline"
-                                        />
-                                    </div>
-                                )}
-                            </section>
-                        )}
-
-                        {/* 2b ── Per-branch actions, data-backed where possible ── */}
-                        {!isAnalyzing && branchActionItems.length > 0 && (
-                            <section id="branch-actions" className="scroll-mt-24">
-                                <BranchActionsCard
-                                    actions={branchActionItems}
-                                    profileHref="/questionnaires"
-                                    uploadHref="/wallet/add"
-                                    onRequestQuote={isOwner ? handleRequestQuote : undefined}
-                                    isRequestingQuote={isRequestingQuote}
-                                    onAskAgent={isOwner ? handleAskAgentAction : undefined}
-                                    onCreateTask={isOwner ? handleCreateTaskAction : undefined}
-                                    agentActionsLocked={!canUseCollaboration}
-                                    pendingActionId={pendingActionId}
-                                    copy={{
-                                        actionsTitle: detailsCopy.actionsTitle,
-                                        actionsAnsweredHeading: detailsCopy.actionsAnsweredHeading,
-                                        actionsTodoHeading: detailsCopy.actionsTodoHeading,
-                                        actionsCall: detailsCopy.actionsCall,
-                                        actionsShowAll: detailsCopy.actionsShowAll,
-                                        actionsShowLess: detailsCopy.actionsShowLess,
-                                        actionsLocked: detailsCopy.actionsLocked,
-                                        actionsWorking: detailsCopy.actionsWorking,
-                                    }}
-                                />
-                            </section>
-                        )}
-
-                        {/* 3 ── Coverage breakdown ────────────────────────── */}
-                        {hasCoverageDetails ? (
-                            <section id="coverage" className="scroll-mt-24">
-                                <div className="pw-card pw-pad sm:p-7">
-                                    <h2 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                        <ShieldCheck className="h-4 w-4 text-primary dark:text-mint" />
-                                        {detailsCopy.navCoverage}
-                                    </h2>
-                                    <CoverageTabView
-                                        hints={glossaryHints}
-                                        acordData={policy.acordData}
-                                        lineOfBusiness={coverageType}
-                                        language={lang}
+                                    <UpgradeTriggerCard
+                                        featureKey="advanced_renewal_reminders"
+                                        triggerSource="policy_key_dates"
+                                        returnTo={pathname || undefined}
+                                        variant="inline"
                                     />
-                                </div>
-                            </section>
-                        ) : shouldShowReanalyzeHint ? (
-                            <section id="coverage" className="scroll-mt-24">
-                                <div className="pw-card pw-pad sm:p-7">
-                                    <div className="flex items-start gap-3 rounded-2xl border border-amber-300/45 bg-amber-50 px-4 py-4 dark:bg-amber-950/20">
-                                        <RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-300" />
-                                        <div>
-                                            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">{absenceCopy.title}</p>
-                                            <p className="mt-1 text-xs text-amber-700 dark:text-amber-300/90">{absenceCopy.hint}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                        ) : null}
-
-                        {/* 4 ── Exclusions & notable conditions ───────────── */}
-                        {!isAnalyzing && (
-                            <section id="exclusions" className="scroll-mt-24">
-                                <ExclusionsCard
-                                    exclusions={exclusions}
-                                    conditions={notableConditions}
-                                    finePrint={finePrint}
-                                    lang={lang}
-                                    copy={{
-                                        exclusionsTitle: detailsCopy.exclusionsTitle,
-                                        exclusionsSubtitle: detailsCopy.exclusionsSubtitle,
-                                        exclusionsListTitle: detailsCopy.exclusionsListTitle,
-                                        notableConditionsTitle: detailsCopy.notableConditionsTitle,
-                                        finePrintTitle: detailsCopy.finePrintTitle,
-                                        actionRequiredChip: detailsCopy.actionRequiredChip,
-                                        noExclusionsDetected: detailsCopy.noExclusionsDetected,
-                                        exclusionsReanalyzeHint: detailsCopy.exclusionsReanalyzeHint,
-                                        showMoreFinePrint: detailsCopy.showMoreFinePrint,
-                                        showLessFinePrint: detailsCopy.showLessFinePrint,
-                                        showAllExclusions: detailsCopy.showAllExclusions,
-                                        showFewerExclusions: detailsCopy.showFewerExclusions,
-                                        conditionTypes: detailsCopy.conditionTypes,
-                                        riskLevels: detailsCopy.riskLevels,
-                                    }}
-                                    disclaimer={t.coverageDetails.exclusionsDisclaimer}
-                                    termHint={exclusionHint}
-                                    conditionHints={{
-                                        sub_limit: glossaryHints?.sublimit ?? null,
-                                        co_payment: glossaryHints?.copayment ?? null,
-                                    }}
-                                />
-                            </section>
-                        )}
-
-                        {/* 5 ── Perks & benefits ──────────────────────────── */}
-                        {!isAnalyzing && (
-                            <section id="perks" className="scroll-mt-24">
-                                <PerksCard
-                                    perks={perks}
-                                    lang={lang}
-                                    copy={{
-                                        perksTitle: detailsCopy.perksTitle,
-                                        perksSubtitle: detailsCopy.perksSubtitle,
-                                        usageLimitLabel: detailsCopy.usageLimitLabel,
-                                        callServiceCta: detailsCopy.callServiceCta,
-                                        visitSiteCta: detailsCopy.visitSiteCta,
-                                        dontForgetChip: detailsCopy.dontForgetChip,
-                                        noPerksDetected: detailsCopy.noPerksDetected,
-                                        exclusionsReanalyzeHint: detailsCopy.exclusionsReanalyzeHint,
-                                        perkTypes: detailsCopy.perkTypes,
-                                    }}
-                                />
-                            </section>
-                        )}
-
-                        {/* 6 ── AI gap analysis ───────────────────────────── */}
-                        <section id="analysis" className="scroll-mt-24">
-                            <PolicyAnalysisTabs
-                                policyId={policy.id}
-                                gaps={gapsForAnalysis}
-                                acordData={policy.acordData}
-                                t={t}
-                                lastAnalyzedAt={policy.lastAnalyzedAt}
-                                policyStatus={policy.status}
-                                processingError={policy.acordData?.processingError || null}
-                                analysisPipeline={policy.acordData?.analysis?.pipeline || null}
-                                report={{ items: gapReportItems, reportUnlocked }}
-                                tier={tier}
-                                trialAnalysisAvailable={trialAnalysisAvailable}
-                            />
-                        </section>
-
-                        {/* 6a ── Per-branch editorial guide ──────────────── */}
-                        {!isAnalyzing && (
-                            <section id="branch-guide" className="scroll-mt-24">
-                                <BranchGuideCard
-                                    tagline={branchContent.tagline[lang]}
-                                    shortDescription={branchContent.shortDescription[lang]}
-                                    whyItMatters={branchContent.whyItMatters.map((item) => item[lang])}
-                                    whatWeAnalyze={branchContent.whatWeAnalyze.map((item) => item[lang])}
-                                    howToUseBetter={branchContent.howToUseBetter.map((item) => item[lang])}
-                                    commonGaps={branchGuideGaps}
-                                    copy={{
-                                        guideTitle: detailsCopy.guideTitle,
-                                        guideWhyItMatters: detailsCopy.guideWhyItMatters,
-                                        guideWhatWeAnalyze: detailsCopy.guideWhatWeAnalyze,
-                                        guideHowToUseBetter: detailsCopy.guideHowToUseBetter,
-                                        guideCommonGaps: detailsCopy.guideCommonGaps,
-                                        guideDetectedChip: detailsCopy.guideDetectedChip,
-                                        guideExpand: detailsCopy.guideExpand,
-                                        guideCollapse: detailsCopy.guideCollapse,
-                                    }}
-                                />
-                            </section>
-                        )}
-
-                        {/* 6b ── Locked premium insights (free/Starter) ────── */}
-                        {tier !== 'pro' && (
-                            <section id="premium-insights" className="scroll-mt-24">
-                                <PremiumInsightCards
-                                    triggerSource="policy_detail_locked_cards"
-                                    returnTo={`/wallet/${policy.id}#analysis`}
-                                    className="rounded-3xl border border-black/10 dark:border-white/15 bg-white/60 dark:bg-white/5 p-6 sm:p-8"
-                                />
-                            </section>
-                        )}
-
-                        {/* 7 ── Related recommendations ───────────────────── */}
-                        {showRecommendations && (
-                            <section id="recommendations" className="scroll-mt-24">
-                                <RecommendationCards
-                                    recommendations={relatedRecommendations}
-                                    language={lang}
-                                    tier={tier}
-                                />
-                            </section>
-                        )}
-
-                        {/* 8 ── Ask AI about this policy ──────────────────── */}
-                        <section id="policy-qa" className="scroll-mt-24">
-                            <PolicyQA
-                                policyId={policy.id}
-                                tier={tier}
-                                lineOfBusiness={coverageType}
-                                freeQuestionsRemaining={freeQuestionsRemaining}
-                            />
-                        </section>
-
-                        {/* 9 ── Claims guidance ───────────────────────────── */}
-                        <section id="claims" className="scroll-mt-24">
-                            <ClaimsGuidanceCard
-                                lang={lang}
-                                insurerName={displayInsurer}
-                                policyNumber={displayPolicyNumber}
-                                insurerPhone={insurerPhone}
-                                deadlines={claimDeadlines}
-                                hasAgent={showAgentSection}
-                                branchSteps={branchContent.claimsSteps.map((step) => step[lang])}
-                                copy={{
-                                    claimsTitle: detailsCopy.claimsTitle,
-                                    claimsSubtitle: detailsCopy.claimsSubtitle,
-                                    claimStep1Title: detailsCopy.claimStep1Title,
-                                    claimStep1Desc: detailsCopy.claimStep1Desc,
-                                    claimStep2Title: detailsCopy.claimStep2Title,
-                                    claimStep2Desc: detailsCopy.claimStep2Desc,
-                                    claimStep3Title: detailsCopy.claimStep3Title,
-                                    claimStep3Desc: detailsCopy.claimStep3Desc,
-                                    claimStep4Title: detailsCopy.claimStep4Title,
-                                    claimStep4Desc: detailsCopy.claimStep4Desc,
-                                    claimNoDeadlines: detailsCopy.claimNoDeadlines,
-                                    claimWhatYouNeedTitle: detailsCopy.claimWhatYouNeedTitle,
-                                    claimDeadlinesTitle: detailsCopy.claimDeadlinesTitle,
-                                    claimNeedHelp: detailsCopy.claimNeedHelp,
-                                    claimAskAiCta: detailsCopy.claimAskAiCta,
-                                    claimAskAgentCta: detailsCopy.claimAskAgentCta,
-                                    claimFindAgentCta: detailsCopy.claimFindAgentCta,
-                                    claimsDisclaimer: detailsCopy.claimsDisclaimer,
-                                    contactInsurer: claimsPhoneLabel,
-                                    claimsPhoneUnknown: detailsCopy.claimsPhoneUnknown,
-                                    policyNumberLabel: t.wallet.policyNumber,
-                                }}
-                                onCallInsurer={handleCallInsurer}
-                            />
-                        </section>
-
-                        {/* 10 ── Agent notes & collaboration ──────────────── */}
-                        {showAgentSection && (
-                            <section id="agent" className="scroll-mt-24">
-                                {canShowCollaborationTimeline ? (
-                                    <div className="space-y-4">
-                                        <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                            <Users className="h-4 w-4 text-primary dark:text-mint" />
-                                            {detailsCopy.agentSectionTitle}
-                                        </h2>
-                                        <CollaborationTimeline
-                                            policyId={policy.id}
-                                            relationshipId={relationshipId || null}
-                                            viewerRole={isOwner ? "policyholder" : "agent"}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="pw-card pw-pad sm:p-7">
-                                        <h2 className="mb-3 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                            <Lock className="h-4 w-4 text-primary dark:text-mint" />
-                                            {detailsCopy.agentSectionTitle}
-                                        </h2>
-                                        <p className="mb-4 text-sm text-black/65 dark:text-white/70">{detailsCopy.agentLockedHint}</p>
-                                        <a
-                                            href="/upgrade"
-                                            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
-                                        >
-                                            <Crown className="h-4 w-4" />
-                                            {t.wallet.upgradePlan}
-                                        </a>
-                                    </div>
-                                )}
-                            </section>
-                        )}
-                    </div>
-
-                    {/* ── Sidebar ────────────────────────────────────────── */}
-                    <aside className="space-y-6">
-                        {/* Tier upgrade banner for free users */}
-                        {isFreeTier && !isAnalyzing && (
-                            <div className="pw-card relative overflow-hidden border-primary/30 p-6">
-                                <div className="pointer-events-none absolute inset-0 bg-primary/5" />
-                                <div className="relative">
-                                    <div className="mb-3 flex items-center gap-2">
-                                        <Crown className="h-4 w-4 text-primary dark:text-mint" />
-                                        <h3 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                            {t.wallet.upgradePlan}
-                                        </h3>
-                                    </div>
-                                    <p className="mb-4 text-xs leading-relaxed text-black/60 dark:text-white/65">
-                                        {detailsCopy.upgradeHint}
-                                    </p>
-                                    <a
-                                        href="/upgrade"
-                                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
-                                    >
-                                        <Crown className="h-4 w-4" />
-                                        {t.wallet.upgradePlan}
-                                    </a>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Trigger J: savings report export — visible to all, Pro-unlocked */}
-                        {isOwner && (
-                            <div className="pw-card pw-pad">
-                                <h3 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                    <FileDown className="h-4 w-4 text-primary dark:text-mint" />
-                                    {pickCopy(EXPORT_COPY.title, lang)}
-                                </h3>
-                                <p className="mb-4 text-xs leading-relaxed text-black/60 dark:text-white/65">
-                                    {pickCopy(EXPORT_COPY.subtitle, lang)}
-                                </p>
-                                {tier === "pro" ? (
-                                    <a
-                                        href={`/api/v1/policies/${policy.id}/savings-report`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
-                                    >
-                                        <FileDown className="h-4 w-4" />
-                                        {pickCopy(EXPORT_COPY.exportCta, lang)}
-                                    </a>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            trackJourneyEvent("upgrade_trigger_clicked", {
-                                                trigger_source: "savings_report_export",
-                                                feature_requested: "export_report",
-                                            })
-                                            setExportUpgradeOpen(true)
-                                        }}
-                                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary-soft px-4 text-sm font-bold text-primary transition-colors hover:bg-primary/15 dark:bg-primary/10 dark:text-mint"
-                                    >
-                                        <Crown className="h-4 w-4" />
-                                        {pickCopy(EXPORT_COPY.unlockCta, lang)}
-                                    </button>
                                 )}
                             </div>
-                        )}
+                        </PolicySection>
+                    )}
 
-                        {/* Uploaded documents */}
-                        <section id="documents" className="scroll-mt-24">
+                    {/* 5 ── Making a claim ────────────────────────────────── */}
+                    <PolicySection
+                        id="claims"
+                        title={detailsCopy.sectionClaims}
+                        summary={detailsCopy.sectionClaimsSummary}
+                        icon={<LifeBuoy className="h-5 w-5" />}
+                        forceOpen={openSection === "claims"}
+                    >
+                        <ClaimsGuidanceCard
+                            lang={lang}
+                            insurerName={displayInsurer}
+                            policyNumber={displayPolicyNumber}
+                            insurerPhone={insurerPhone}
+                            deadlines={claimDeadlines}
+                            hasAgent={showAgentSection}
+                            branchSteps={branchContent.claimsSteps.map((step) => step[lang])}
+                            copy={{
+                                claimsTitle: detailsCopy.claimsTitle,
+                                claimsSubtitle: detailsCopy.claimsSubtitle,
+                                claimStep1Title: detailsCopy.claimStep1Title,
+                                claimStep1Desc: detailsCopy.claimStep1Desc,
+                                claimStep2Title: detailsCopy.claimStep2Title,
+                                claimStep2Desc: detailsCopy.claimStep2Desc,
+                                claimStep3Title: detailsCopy.claimStep3Title,
+                                claimStep3Desc: detailsCopy.claimStep3Desc,
+                                claimStep4Title: detailsCopy.claimStep4Title,
+                                claimStep4Desc: detailsCopy.claimStep4Desc,
+                                claimNoDeadlines: detailsCopy.claimNoDeadlines,
+                                claimWhatYouNeedTitle: detailsCopy.claimWhatYouNeedTitle,
+                                claimDeadlinesTitle: detailsCopy.claimDeadlinesTitle,
+                                claimNeedHelp: detailsCopy.claimNeedHelp,
+                                claimAskAiCta: detailsCopy.claimAskAiCta,
+                                claimAskAgentCta: detailsCopy.claimAskAgentCta,
+                                claimFindAgentCta: detailsCopy.claimFindAgentCta,
+                                claimsDisclaimer: detailsCopy.claimsDisclaimer,
+                                contactInsurer: claimsPhoneLabel,
+                                claimsPhoneUnknown: detailsCopy.claimsPhoneUnknown,
+                                policyNumberLabel: t.wallet.policyNumber,
+                            }}
+                            onCallInsurer={handleCallInsurer}
+                        />
+                    </PolicySection>
+
+                    {/* 6 ── Documents, notes & sharing ────────────────────── */}
+                    <PolicySection
+                        id="documents"
+                        title={detailsCopy.sectionDocuments}
+                        summary={detailsCopy.sectionDocumentsSummary}
+                        icon={<FolderOpen className="h-5 w-5" />}
+                        forceOpen={openSection === "documents"}
+                    >
+                        <div className="space-y-6">
                             <DocumentsCard
                                 policyId={policy.id}
                                 documents={policy.documents}
@@ -1364,49 +1201,136 @@ export function PolicyDetailsClient({
                                     previewLabels: t.wallet.documentPreview,
                                 }}
                             />
-                        </section>
 
-                        {/* Insured people */}
-                        {(insuredNames.length > 0 || !isAnalyzing) && (
-                            <InsuredPeopleCard
-                                names={insuredNames}
-                                copy={{
-                                    insuredPeople: detailsCopy.insuredPeople,
-                                    noInsuredPeople: detailsCopy.noInsuredPeople,
-                                }}
-                            />
-                        )}
+                            {/* Share and download: the head keeps ONE primary
+                                action, so the secondary ones live with the file
+                                they act on. */}
+                            <div className="flex flex-wrap gap-2">
+                                <button onClick={handleShare} className="pw-secondary-button min-h-[44px]">
+                                    <Share2 className="h-4 w-4" />
+                                    {detailsCopy.sharePolicy}
+                                </button>
+                                {firstDocumentHref && (
+                                    <button onClick={handleDownloadPrimaryDoc} className="pw-secondary-button min-h-[44px]">
+                                        <FileDown className="h-4 w-4" />
+                                        {t.wallet.downloadContract}
+                                    </button>
+                                )}
+                            </div>
 
-                        <AIUsageWidget
-                            count={aiUsageStats.count}
-                            limit={aiUsageStats.limit}
-                            t={t}
-                            reportUnlock={{
-                                locked: !reportUnlocked,
-                                lockedCount: Math.max(gapReportItems.length - FREE_GAP_PREVIEW_COUNT, 0),
-                            }}
-                        />
+                            {(insuredNames.length > 0 || !isAnalyzing) && (
+                                <InsuredPeopleCard
+                                    names={insuredNames}
+                                    copy={{
+                                        insuredPeople: detailsCopy.insuredPeople,
+                                        noInsuredPeople: detailsCopy.noInsuredPeople,
+                                    }}
+                                />
+                            )}
 
-                        {canShowCollaborationPanel && (
-                            <CollaborationPanel
-                                policyId={policy.id}
-                                policyNumber={policyNumber}
-                                initialShares={serializedShares || []}
-                                isOwner={isOwner}
-                            />
-                        )}
+                            {isOwner && (
+                                <div className="pw-card pw-pad">
+                                    <h3 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                        <FileDown className="h-4 w-4 text-primary dark:text-mint" />
+                                        {pickCopy(EXPORT_COPY.title, lang)}
+                                    </h3>
+                                    <p className="mb-4 text-xs leading-relaxed text-black/60 dark:text-white/65">
+                                        {pickCopy(EXPORT_COPY.subtitle, lang)}
+                                    </p>
+                                    {tier === "pro" ? (
+                                        <a
+                                            href={`/api/v1/policies/${policy.id}/savings-report`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                        >
+                                            <FileDown className="h-4 w-4" />
+                                            {pickCopy(EXPORT_COPY.exportCta, lang)}
+                                        </a>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                trackJourneyEvent("upgrade_trigger_clicked", {
+                                                    trigger_source: "savings_report_export",
+                                                    feature_requested: "export_report",
+                                                })
+                                                setExportUpgradeOpen(true)
+                                            }}
+                                            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary-soft px-4 text-sm font-bold text-primary transition-colors hover:bg-primary/15 dark:bg-primary/10 dark:text-mint"
+                                        >
+                                            <Crown className="h-4 w-4" />
+                                            {pickCopy(EXPORT_COPY.unlockCta, lang)}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
 
-                        {/* Free owners hit an invisible wall here (the panel is
-                            simply absent) — surface the upgrade path instead. */}
-                        {isOwner && !canUseCollaboration && (
-                            <UpgradeTriggerCard
-                                featureKey="agent_collaboration"
-                                triggerSource="policy_collaboration"
-                                returnTo={pathname || undefined}
-                            />
-                        )}
+                            {/* Advisor notes & collaboration — the same subject as
+                                sharing: who else can see and act on this policy. */}
+                            {showAgentSection && (
+                                <div id="agent" className="scroll-mt-20">
+                                    {canShowCollaborationTimeline ? (
+                                        <div className="space-y-4">
+                                            <h3 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                                <Users className="h-4 w-4 text-primary dark:text-mint" />
+                                                {detailsCopy.agentSectionTitle}
+                                            </h3>
+                                            <CollaborationTimeline
+                                                policyId={policy.id}
+                                                relationshipId={relationshipId || null}
+                                                viewerRole={isOwner ? "policyholder" : "agent"}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="pw-card pw-pad">
+                                            <h3 className="mb-3 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                                <Lock className="h-4 w-4 text-primary dark:text-mint" />
+                                                {detailsCopy.agentSectionTitle}
+                                            </h3>
+                                            <p className="mb-4 text-sm text-black/65 dark:text-white/70">{detailsCopy.agentLockedHint}</p>
+                                            <a
+                                                href="/upgrade"
+                                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
+                                            >
+                                                <Crown className="h-4 w-4" />
+                                                {t.wallet.upgradePlan}
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
-                    </aside>
+                            {canShowCollaborationPanel && (
+                                <CollaborationPanel
+                                    policyId={policy.id}
+                                    policyNumber={policyNumber}
+                                    initialShares={serializedShares || []}
+                                    isOwner={isOwner}
+                                />
+                            )}
+
+                            {isOwner && !canUseCollaboration && (
+                                <UpgradeTriggerCard
+                                    featureKey="agent_collaboration"
+                                    triggerSource="policy_collaboration"
+                                    returnTo={pathname || undefined}
+                                />
+                            )}
+
+                            {isOwner && (
+                                <button
+                                    type="button"
+                                    onClick={() => setDeleteDialogOpen(true)}
+                                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-red-300/60 px-4 text-sm font-bold text-red-700 transition-colors hover:bg-red-50 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-950/25"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    {t.wallet.deletePolicyModal.deletePolicy}
+                                </button>
+                            )}
+                        </div>
+                    </PolicySection>
+
                 </div>
                 </PolicyQaPrefillProvider>
             </div>

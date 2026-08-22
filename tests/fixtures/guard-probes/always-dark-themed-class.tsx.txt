@@ -1,0 +1,18 @@
+// PROBE FIXTURE — not compiled, not rendered. It exists so
+// tests/unit/always-dark-surfaces.test.ts can prove its detector still fires.
+//
+// This is the defect that shipped to production twice in PolicyHero: a surface
+// hardcoded dark in BOTH themes, carrying classes and helpers that resolve to
+// their LIGHT value in light mode — dark text on a near-black card.
+import { getStatusColor } from "@/lib/policy-status"
+
+export function AlwaysDarkProbe({ status }: { status: any }) {
+    const c = getStatusColor(status)
+    return (
+        <section className="rounded-3xl bg-[#111111] p-6 text-white">
+            <span className={`${c.bg} ${c.text} ${c.border}`}>status</span>
+            <button className="pw-secondary-button">action</button>
+            <p className="text-muted-foreground">caption</p>
+        </section>
+    )
+}

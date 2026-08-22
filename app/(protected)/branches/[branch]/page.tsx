@@ -270,7 +270,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                             {perkRows.slice(0, 6).map(({ perk, policyId, insurerName }, index) => (
                                 <Link
                                     key={`${policyId}-${index}`}
-                                    href={`/wallet/${policyId}#perks`}
+                                    href={`/wallet/${policyId}#coverage`}
                                     className="block rounded-xl border border-black/10 bg-white px-4 py-3 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40"
                                 >
                                     <p className="text-sm font-bold text-black dark:text-white">{pickLang(perk.name, lang)}</p>

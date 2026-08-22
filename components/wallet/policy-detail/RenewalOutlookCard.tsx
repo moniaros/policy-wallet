@@ -23,7 +23,15 @@ export function RenewalOutlookCard({
     copy,
 }: {
     /** "Renewal in 24 days" / "This policy has expired" / the no-end-date line. */
-    headline: string
+    /**
+     * `null` when the page's head already states the countdown.
+     *
+     * This card's headline WAS the countdown, rendered a second time a few
+     * hundred pixels below the key-dates tile that also stated it — one of the
+     * duplicate facts the restructure removes. The checklist and the reminder
+     * trail are what only this card says.
+     */
+    headline: string | null
     headlineTone: "critical" | "warning" | "neutral"
     /** Resolved labels for each real point to check; empty renders `checklistEmpty`. */
     checklist: string[]
@@ -55,7 +63,9 @@ export function RenewalOutlookCard({
                 <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
                 {copy.title}
             </h3>
-            <p className={`mt-3 text-body-lg font-semibold ${headlineClass}`}>{headline}</p>
+            {headline !== null && (
+                <p className={`mt-3 text-body-lg font-semibold ${headlineClass}`}>{headline}</p>
+            )}
 
             <div className="mt-4">
                 <p className="flex items-center gap-1.5 text-caption font-semibold text-black/60 dark:text-white/60">

@@ -434,6 +434,29 @@ pre {
     color: var(--pw-text-muted);
   }
 
+  /* The fixed bottom navigation's footprint, in ONE place.
+     
+     The bar is `min-h-[76px]` plus `env(safe-area-inset-bottom)`, and `<main>`
+     reserved a static `pb-24` (96px). Those two numbers were written
+     independently and only agree when the inset is zero: measured at 390px the
+     bar renders 77px, so a phone with no notch has 19px to spare — and every
+     iPhone since the X has a 34px inset, making the bar 111px against a 96px
+     reservation. Fifteen pixels of the page sat behind the bar on the product's
+     primary device, permanently, on every authenticated screen.
+     
+     `viewportFit: "cover"` (fixed 2026-08-21c) is what makes env() resolve to a
+     real number at all, which is why this was inert before then and live after.
+     
+     One variable, two consumers: the bar sizes itself from it and the layout
+     reserves it, so they cannot drift apart again. */
+  :root {
+    --pw-bottom-nav-h: 5rem;
+  }
+
+  .pw-bottom-nav-reserve {
+    padding-bottom: calc(var(--pw-bottom-nav-h) + env(safe-area-inset-bottom, 0px));
+  }
+
   /* A horizontally SCROLLING row of controls — section anchors, filter chips,
      any strip that is meant to run off the edge and be swiped.
 

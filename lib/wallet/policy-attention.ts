@@ -1,0 +1,122 @@
+/**
+ * "What needs attention?" and "What do I do next?" — the two questions the
+ * policy page's head has to answer, decided in one place.
+ *
+ * The page could already answer neither. It rendered every state at once —
+ * an expired banner, a renewal outlook, a failed-run banner, a gap count, an
+ * unverified-extraction note, three quote CTAs — and left the reader to work
+ * out which mattered. Twenty sections deep, that is not a question a customer
+ * standing in a garage can answer.
+ *
+ * Both functions are PURE and total: every input maps to exactly one outcome,
+ * including the case nothing needs attention, which is stated rather than left
+ * as an empty space (absence of a warning is not the same as an all-clear, and
+ * only one of those is trustworthy).
+ *
+ * They decide nothing about coverage. Detection and severity remain the
+ * deterministic engine's (`lib/gap-detection.ts`); this module only ranks
+ * states the page already knows about, and it deliberately never reads a gap's
+ * SEVERITY — those values are unvalidated pending underwriter review, so
+ * ordering by them here would smuggle a judgement into the one line the reader
+ * is most likely to act on.
+ */
+
+export type AttentionKind =
+    | "analysis_failed"
+    | "expired"
+    | "expiring"
+    | "items_to_review"
+    | "unverified"
+    | "clear"
+
+export interface AttentionInput {
+    /** Athens-calendar days to expiry from resolvePolicyLifecycle; null = unknown. */
+    daysLeft: number | null
+    /** The latest analysis run failed (acordData.processingError / run status). */
+    analysisFailed: boolean
+    /** Count of open findings — a COUNT only; severity is never consulted here. */
+    reviewItemCount: number
+    /** Extraction is unconfirmed or flagged. */
+    unverified: boolean
+    /** No trustworthy end date exists at all. */
+    unknownDuration?: boolean
+}
+
+export interface Attention {
+    kind: AttentionKind
+    /** Which section the one action opens. null for `clear`. */
+    target: string | null
+    /** Substituted into the copy key by the caller (count / days). */
+    count?: number
+}
+
+/**
+ * The single most important thing about this policy right now.
+ *
+ * Ordered by what costs the reader most if missed, NOT by how loud the current
+ * UI is about it:
+ *
+ *  1. `analysis_failed` — everything else on the page may be stale, so it is
+ *     the precondition for trusting any other line.
+ *  2. `expired` — there is no cover at all; nothing else competes.
+ *  3. `expiring` — a deadline the reader can still act on.
+ *  4. `items_to_review` — findings, framed as items rather than verdicts.
+ *  5. `unverified` — the data was read by a machine and not checked.
+ *  6. `clear` — said out loud.
+ *
+ * `unknown_duration` deliberately does NOT outrank findings: a missing expiry
+ * date is a data problem the review screen already chases, while a finding is
+ * about the cover itself.
+ */
+export function resolveAttention(input: AttentionInput): Attention {
+    if (input.analysisFailed) return { kind: "analysis_failed", target: "review" }
+    if (input.daysLeft !== null && input.daysLeft < 0) return { kind: "expired", target: "dates" }
+    if (input.daysLeft !== null && input.daysLeft <= 30) {
+        return { kind: "expiring", target: "dates", count: input.daysLeft }
+    }
+    if (input.reviewItemCount > 0) {
+        return { kind: "items_to_review", target: "review", count: input.reviewItemCount }
+    }
+    if (input.unverified) return { kind: "unverified", target: "documents" }
+    return { kind: "clear", target: null }
+}
+
+export type PrimaryActionKind = "renew" | "review" | "retry_analysis" | "download" | "share"
+
+export interface PrimaryAction {
+    kind: PrimaryActionKind
+    /** Anchor/section the action leads to, when it is navigational. */
+    target: string | null
+}
+
+/**
+ * The ONE action the head offers, contextual to state.
+ *
+ * Deliberately not "the action for the attention item" in every case: an
+ * expired policy's attention line explains the lapse, but the useful action is
+ * still getting a renewal quote. A failed analysis is the exception — retrying
+ * it is both the explanation and the fix.
+ *
+ * `download` is the fallback rather than `share`, because the document is the
+ * thing a customer is asked for at a garage or a hospital desk; sharing is
+ * offered from the documents section, where the rest of the sharing controls
+ * already live.
+ */
+export function resolvePrimaryAction(input: {
+    attention: Attention
+    hasDocument: boolean
+}): PrimaryAction {
+    switch (input.attention.kind) {
+        case "analysis_failed":
+            return { kind: "retry_analysis", target: "review" }
+        case "expired":
+        case "expiring":
+            return { kind: "renew", target: "dates" }
+        case "items_to_review":
+            return { kind: "review", target: "review" }
+        case "unverified":
+        case "clear":
+        default:
+            return input.hasDocument ? { kind: "download", target: null } : { kind: "share", target: null }
+    }
+}

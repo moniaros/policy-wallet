@@ -1,5 +1,63 @@
 # PolicyWallet — Project Status
 
+## Waiting on humans — three decisions from the policy-detail series (2026-08-23)
+
+None of these are mine to take. Each blocks a specific downstream goal; none blocks the dashboard
+series, which can proceed in parallel.
+
+### 1. Monetization density — blocks policy-detail Goal 2's "≤8 sections"
+
+**Twelve of the sixty ledger capabilities are upsells** (rows 25, 34, 36, 39, 43, 49, 50, 51, 54,
+55, 57, 58). The free-tier capture — added after the baseline, because the E2E account turned out to
+be `ph-pro` and the free paths had never been measured — shows **eight monetization moments on one
+page** for a free customer:
+
+| surface | evidence |
+|---|---|
+| €3 gap-report unlock | «Ξεκλειδώστε και τα υπόλοιπα 2 κενά — €3» |
+| locked gap cards | report locks after 3 of 5 findings |
+| UpgradeTriggerCard ×3 | full analysis · smart renewal reminders · claims guide |
+| «Pro»-locked branch actions ×2 | ask-advisor, green-card |
+| sidebar upgrade banner | «…με Plus ή Pro. Αναβάθμιση» |
+| savings-report export lock | «Ξεκλείδωμα εξαγωγής αναφοράς» |
+
+One in five things on a page whose stated job is answering four questions in ten seconds. The free
+page is also **longer** than the pro page (13,038px vs 11,870px at 390) purely from upsell height.
+
+**Decision needed:** how many upsell slots survive, and where. Goal 2 kept all of them, placed in the
+section each belongs to; that satisfies "no capability removed" and not "≤8 sections comfortably".
+**Recommendation:** two — one contextual (at the locked capability) and one persistent (account/plan)
+— with the rest reachable from the plan page. I have not removed any.
+
+### 2. Register scope — blocks policy-detail Goal 3
+
+`wallet.policyDetailsPage` is now formal throughout. The rest is an **editorial project, not a string
+sweep**: 33 of 35 files in `lib/insurance/content/*.ts` are informal (σου / Δες / Ρώτησε / Έλεγξε),
+and they feed the branch guide, branch actions, claims steps and renewal notes **on this page and on
+every branch surface**. `components/monetization/` is a third source («Μην περιμένεις», «Ξεκλείδωσε»).
+
+Scope: ~35 files, several hundred strings, each needing an editorial pass rather than a
+find-and-replace (verb forms change, not just pronouns).
+
+**Decision needed:** convert all 35 files in Goal 3, or convert only what this page renders and open
+a separate workstream. **Recommendation:** all 35 — a partial conversion leaves register alternating
+section by section on `/branches`, which is worse than consistent informality. Flagging that this is
+the larger of the two options.
+
+### 3. Control-boundary contrast — blocks policy-detail Goal 1's amended 1.4.11 clause
+
+The 1.4.11 measurement built in §0.5 finds **10 control boundaries at 1.04–1.07:1** on the policy
+page. Every one is the same shared pattern: a secondary control with a near-transparent fill and a
+`border-black/10` edge. Raising it to the required 3:1 means roughly `border-black/40`, **and it
+changes the appearance of every secondary control in the application**, not just this page.
+
+**Decision needed:** raise the design system's control-boundary token app-wide, or accept the
+failures with a documented exception. **Recommendation:** raise it — 1.4.11 is a conformance
+requirement and the current edge is invisible on a white page — but it is a visual change across the
+whole product and not one to make unattended. The one control this series introduced is already
+fixed; the shared pattern is untouched.
+
+
 ## Session wrap — 2026-08-22b (Policy-detail mobile series: GOAL 1 — the confirmed defects, fixed)
 
 **Workstream:** policy-detail (mobile), B2C wallet — Goal 1 (fix what is broken, change nothing else).

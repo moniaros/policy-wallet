@@ -119,6 +119,17 @@ The failure banner rendered inside the analysis card, in the same register as th
 Asserted structurally (the failure element is not a descendant of the findings card) rather than by
 appearance.
 
+> **Disclosure — this fix crosses one surface boundary.** `AnalysisCard` is imported by
+> `app/(protected)/customers/[id]/policy/[policyId]/page.tsx`, the agent's view of a customer policy,
+> which this series lists as out of scope. Every other component on the policy page is used by
+> `PolicyDetailsClientView` alone (verified by grep across `app/` and `components/`); this is the sole
+> exception, and it was not noticed until the Goal 2 blast-radius check. The change is
+> capability-preserving and moves in the same direction for that surface too — the failed-run state
+> stops sitting in the same register as the findings, and stale findings say so — so it was kept rather
+> than forked into a policy-page-only copy, which would have duplicated the component the repo has
+> deliberately kept single. **Goal 2 restructures at the composition level (`PolicyDetailsClientView`),
+> not inside `AnalysisCard`**, so the agent surface stays out of scope from here on.
+
 ### B6 — the garbled heading
 
 For a slug the authored catalogue does not know, a gap card's heading is the AI's first Greek sentence
@@ -233,6 +244,34 @@ quietly edited away. Consequences:
 
 Every metric in the baseline table stands — the tier decides which optional blocks render, not how any
 of them were measured.
+
+**The gap is now closed, before Goal 2 touches the structure.** A free-tier fixture account
+(`e2e-ph-free@policywallet.test` — free is the ABSENCE of a live subscription, so global-setup deletes
+any policyholder subscription rather than writing one), its own auth setup, a `measure-free` Playwright
+project, and `tests/measure/policy-detail-free.spec.ts` with two gappy fixtures (five and four findings
+— more than `FREE_GAP_PREVIEW_COUNT`, or the paywall boundary never renders). The spec asserts the free
+surfaces are actually on screen, so the coverage claim cannot be empty; captures in
+`data/free/`, `screenshots/free/`.
+
+What 18 pro captures never showed — **eight monetization moments on one page**:
+
+| surface | evidence |
+|---|---|
+| €3 gap-report unlock | «Ξεκλειδώστε και τα υπόλοιπα 2 κενά — €3 · Ασφαλής πληρωμή με Stripe» |
+| locked gap cards behind the preview boundary | report locked after 3 of 5 findings |
+| UpgradeTriggerCard ×3 | full AI analysis · smart renewal reminders · claims-preparation guide |
+| «Pro»-locked branch actions ×2 | ask-advisor and green-card actions |
+| sidebar upgrade banner | «…με Plus ή Pro. Αναβάθμιση» |
+| savings-report export lock | «Ξεκλείδωμα εξαγωγής αναφοράς» |
+| premium insight cards | present |
+
+Two things fall out of it that matter later: the free page is **longer** than the pro page
+(13,038px vs 11,870px at 390) because the upsells add height, and the monetization copy is
+**informal** («Μην περιμένεις», «Ξεκλείδωσε», «το ασφαλιστήριό σου») — a third register source, in
+`components/monetization/`, for Goal 3's sweep alongside `lib/insurance/content/`.
+
+The same captures independently confirm Goal 1's B3 fix on a fresh account: sub-44px tap targets fell
+from 12–13 to **3** at 390px.
 
 ## Ledger delta (Goal 1)
 
