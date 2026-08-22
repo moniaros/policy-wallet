@@ -1,5 +1,42 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-22 (Policy-detail mobile series: GOAL 0 baseline, measured)
+
+**Workstream:** policy-detail (mobile), B2C wallet — goal series, Goal 0 only (verify, no code
+changes). Output: `docs/evidence/policy-detail-mobile/BASELINE.md` + 27 captures (18-capture
+matrix + dark-contrast passes + the real defective policy at 3 widths) + the measurement
+harness (`tests/measure/`, new `measure` Playwright project). App code untouched.
+
+**Broken / insecure (gates launch):**
+- B2 CONFIRMED: English stored summary rendered under «σε απλά ελληνικά» — no language pinned
+  on the extraction summary field, no language tag stored (real policy 64504715).
+- B3 CONFIRMED (all 3 widths, root-caused): global `min-width:0` @ ≤430px collapses the
+  section-nav pills to ~34px slivers; labels clip mid-word.
+- B5 CONFIRMED: failed-run banner renders above a reassuring "no gaps found" empty state in
+  the same card.
+- Score renders «100 · Σε καλή κατάσταση» on a third-party-only policy with a failed run.
+- Latent B4 seam: client countdown is UTC-float (renders 44) vs server Athens-calendar status
+  (45) — no visible contradiction mid-day; diverges around Athens midnight.
+
+**UI/UX (does not gate):** register mixing is systemic (33/35 branch-content files informal,
+page bundle formal); usage meter counts against «Απεριόριστες» with an upgrade CTA reasoned by
+a removed limit (pricing v2); duplicate renders (quote CTA ×2–3, countdown ×2, «Δεν έχει
+μοιραστεί ακόμα» ×2 in one card); ~19-screen scroll height at 320px; ~14 sub-44 tap targets
+per capture (pills dominate).
+
+**Refuted / reproduces differently:** B4's visible contradiction (misread of adjacent hero
+tiles), B9 (all phones are tel: links since the 2026-08-21c pass), B10 (no redaction feature
+exists — masked strings are stored extractor output; prod instance unverifiable, prod read
+classifier-blocked).
+
+**Next 3 actions:** (1) owner review of BASELINE.md — Goal 0 stops here by design;
+(2) Goal 1 fixes in priority order B2/B4/B10 → B1 → B3/B9 → B5/B6/B7/B8, re-measured on the
+same harness; (3) wire the `measure` project into the local pre-merge routine for Goal 5.
+
+**Waiting on humans (carried forward):** underwriter validation of CoverageEnvelope severities;
+DPO sign-off on privacy wording / compliance-badge accuracy. Until the first lands, gap
+severities render non-authoritatively regardless of output quality (series invariant 1).
+
 ## Session wrap — 2026-08-21d (Reference data: both databases now match the repo)
 
 Dev held 11 gap definitions, prod held 70, and only 6 were shared — so no local

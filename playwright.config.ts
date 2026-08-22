@@ -20,6 +20,9 @@ const policyholderIgnores = [
     // public-marketing asserts ANONYMOUS behavior (own `public-anon` project);
     // a signed-in header state would audit a page no anonymous visitor sees.
     '**/public-marketing.spec.ts',
+    // policy-detail evidence harness (own `measure` project — serial, writes
+    // into docs/evidence/; running it under the parallel projects would race).
+    '**/tests/measure/**',
 ];
 
 export default defineConfig({
@@ -137,6 +140,19 @@ export default defineConfig({
             // the wallet and the policy page are behind auth.
             name: 'mobile',
             testMatch: /mobile-viewport-matrix\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: 'playwright/.auth/user.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+            dependencies: ['setup'],
+        },
+        {
+            // Policy-detail mobile evidence matrix (Goal series, docs/evidence/
+            // policy-detail-mobile). Policyholder session; the spec itself sets
+            // per-capture viewports, so no device preset here.
+            name: 'measure',
+            testMatch: /tests\/measure\/.*\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/user.json',
