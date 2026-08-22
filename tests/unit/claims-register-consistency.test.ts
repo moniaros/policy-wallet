@@ -4,18 +4,35 @@ import { globSync } from "../helpers/glob"
 
 const CONTENT = globSync('lib/insurance/content/*.ts')
 
-// Second-person SINGULAR imperatives — the voice the branch guidance uses.
-// Case-insensitive, and NO \b: JavaScript's word boundary is defined on ASCII
-// word characters, so `\bΚράτα\b` can never match — a Greek letter is not a
-// word character, so there is no boundary beside it. The first version of this
-// guard carried \b on every alternation and was inert for exactly the content it
-// was written to check. (Python's \b is Unicode-aware, which is why the analysis
-// that found the defect worked and the guard that pinned it did not.)
-const SINGULAR =
-    /(Ασφάλισε|Κάλεσε|Φωτογράφισε|Κράτα|Κατάγραψε|Δήλωσε|Στείλε|Ζήτησε|Περίμενε|Πήγαινε|Ενημέρωσε|Ετοίμασε|Συγκέντρωσε|Σημείωσε|Αναγγείλε|Περιόρισε|Ειδοποίησε|Κατάθεσε|Επικοινώνησε|Συμπλήρωσε|Δες|Συζήτησε|άσε|μην ξεκινήσεις|μην υπογράψεις|μη συμφωνήσεις|μην αναγνωρίσεις)/i
+// Second-person SINGULAR imperatives.
+//
+// NO \b — JavaScript's word boundary is ASCII-only, so `\bΚράτα\b` can never
+// match: a Greek letter is not a word character, so there is no boundary beside
+// it. The guard's first version carried \b on every alternation and was inert
+// for exactly the content it was written to check.
+//
+// But dropping \b made it match INSIDE words instead, which is its own defect:
+// «άσε» fired on «βάσεις», «δες» on «πινακίδες», and «Αναγγείλε» on its own
+// formal replacement «Αναγγείλετε». Greek-aware lookarounds give a real
+// boundary — the letter class is the boundary JS will not provide.
+const GK = "[Α-Ωα-ωΆ-ώάέήίόύώϊϋΐΰ]"
+const word = (alternation: string) => new RegExp(`(?<!${GK})(?:${alternation})(?!${GK})`, "i")
+
+const SINGULAR = word(
+    "Ασφάλισε|Κάλεσε|Φωτογράφισε|Κράτα|Κατάγραψε|Δήλωσε|Στείλε|Ζήτησε|Περίμενε|Πήγαινε|" +
+    "Ενημέρωσε|Ετοίμασε|Συγκέντρωσε|Σημείωσε|Αναγγείλε|Περιόρισε|Ειδοποίησε|Κατάθεσε|" +
+    "Επικοινώνησε|Συμπλήρωσε|Δες|Συζήτησε|άσε|μην ξεκινήσεις|μην υπογράψεις|" +
+    "μη συμφωνήσεις|μην αναγνωρίσεις"
+)
+
 // Second-person PLURAL / formal.
-const PLURAL =
-    /(Ασφαλίστε|Καλέστε|Φωτογραφίστε|Κρατήστε|Καταγράψτε|Δηλώστε|Στείλτε|Ζητήστε|Περιμένετε|Ενημερώστε|Ετοιμάστε|Συγκεντρώστε|Σημειώστε|Περιορίστε|Ειδοποιήστε|Επικοινωνήστε|Συμπληρώστε|Δείτε|Συζητήστε|αφήστε|μην ξεκινήσετε|μην υπογράψετε|μη συμφωνήσετε|Ανατρέξτε)/i
+const PLURAL = word(
+    "Ασφαλίστε|Καλέστε|Φωτογραφίστε|Κρατήστε|Καταγράψτε|Δηλώστε|Στείλτε|Ζητήστε|Περιμένετε|" +
+    "Ενημερώστε|Ετοιμάστε|Συγκεντρώστε|Σημειώστε|Περιορίστε|Ειδοποιήστε|Επικοινωνήστε|" +
+    "Συμπληρώστε|Δείτε|Συζητήστε|αφήστε|Αναγγείλετε|Καταθέστε|μην ξεκινήσετε|" +
+    "μην υπογράψετε|μη συμφωνήσετε|μην αναγνωρίσετε|Ανατρέξτε"
+)
+
 
 function stepsOf(src: string): string[][] {
     const lists: string[][] = []
@@ -27,14 +44,24 @@ function stepsOf(src: string): string[][] {
 
 /**
  * Greek distinguishes the singular «κάλεσε» from the formal plural «καλέστε».
- * The branch claims guidance is written in the singular throughout — a
- * deliberate voice, distinct from the app chrome, which is formal.
  *
- * A later pass rewrote motor's amicable-statement step with better content and
- * put it in the plural, so the most-read claims list in the product — motor is
- * the compulsory line, so nearly every user has one — switched register halfway
- * down, at the step someone reads standing at the roadside. Nothing catches
- * this: it is not a translation gap, not a hardcoded string, not a casing error.
+ * THE VOICE CHANGED, DELIBERATELY, ON 2026-08-23. This guard was written when
+ * the branch claims guidance used the SINGULAR throughout — a voice chosen to
+ * be distinct from the app chrome, which is formal. That choice was reversed by
+ * an owner decision: the policy page renders the app's own copy and these steps
+ * inside ONE card, so the distinction read as inconsistency rather than as
+ * voice, and 33 of 35 files in this directory were converted to formal «εσείς»
+ * (docs/STATUS.md, "Waiting on humans" #2).
+ *
+ * The original defect this guard caught remains worth catching: a later pass
+ * rewrote motor's amicable-statement step with better content in the OTHER
+ * register, so the most-read claims list in the product — motor is compulsory,
+ * so nearly every user has one — switched register halfway down, at the step
+ * someone reads standing at the roadside.
+ *
+ * So the rule is now stronger than "be consistent": every step must be FORMAL.
+ * Consistency alone would let a future rewrite drag a whole list back to the
+ * singular and still pass.
  */
 describe('claim guidance keeps one voice within a list', () => {
     it('has lists to check', () => {
@@ -56,11 +83,24 @@ describe('claim guidance keeps one voice within a list', () => {
         expect(offenders, `register switches mid-list:\n${offenders.join('\n')}`).toEqual([])
     })
 
+    it('uses the FORMAL voice — consistency alone would let a whole list regress', () => {
+        const offenders: string[] = []
+        for (const file of CONTENT) {
+            for (const steps of stepsOf(readFileSync(file, 'utf-8'))) {
+                for (const step of steps) {
+                    const hit = step.match(SINGULAR)
+                    if (hit) offenders.push(`${file.split('/').pop()}: «${hit[0]}» in "${step.slice(0, 60)}…"`)
+                }
+            }
+        }
+        expect(offenders, `singular (informal) claim step(s):\n${offenders.join('\n')}`).toEqual([])
+    })
+
     it('motor keeps every operative point it gained', () => {
         const motor = readFileSync('lib/insurance/content/motor.ts', 'utf-8')
         expect(motor).toMatch(/φιλική δήλωση μόνο αν συμφωνείτε/)
-        expect(motor).toMatch(/μην υπογράψεις δήλωση υπαιτιότητας/)
-        expect(motor).toMatch(/κατάγραψε μόνο τα γεγονότα/)
+        expect(motor).toMatch(/μην υπογράψετε δήλωση υπαιτιότητας/)
+        expect(motor).toMatch(/καταγράψτε μόνο τα γεγονότα/)
         expect(motor).toMatch(/do not sign an admission of fault/)
     })
 

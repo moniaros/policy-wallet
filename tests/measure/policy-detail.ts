@@ -481,6 +481,14 @@ export async function contrastFailures(page: Page): Promise<string[]> {
  *               B1 was, is a defect by any reading.
  *
  * Decorative dividers are excluded by requiring a minimum size.
+ *
+ * KNOWN LIMITATION. It measures the CONTAINER's boundary, so it cannot see that
+ * a control is identified by something else — the app shell's active tab has a
+ * `bg-primary/15` fill measuring 1.25:1, and reports as a failure, but its state
+ * is carried by a `text-primary` icon and label at ~7:1, which satisfies the
+ * success criterion by a different affordance. Findings tagged `shell` are
+ * reported and not gated for exactly this reason; a `control` finding inside the
+ * page still needs a human to confirm the boundary is the only carrier.
  */
 export interface BoundaryFinding {
     tag: string
@@ -525,9 +533,16 @@ export async function nonTextContrastFailures(page: Page): Promise<string[]> {
                 label: (el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 34),
             })
         }
-        document.querySelectorAll(sel).forEach(el => push(el, 'control'))
+        // Scoped to the PAGE's own controls. The app shell is site chrome and a
+        // separate workstream; its findings are reported by the caller rather
+        // than gated here, so this series cannot be blocked by a defect it is
+        // not allowed to fix.
+        const root = document.querySelector('.pw-page-shell') || document.body
+        root.querySelectorAll(sel).forEach(el => push(el, 'control'))
         // Distinct surfaces: cards and tiles the reader is meant to perceive as separate.
-        document.querySelectorAll('.pw-card, [data-fact], section > div, header').forEach(el => push(el, 'surface'))
+        root.querySelectorAll('.pw-card, [data-fact], section > div, header').forEach(el => push(el, 'surface'))
+        // Shell controls, reported but NOT gated.
+        document.querySelectorAll(sel).forEach(el => { if (!root.contains(el)) push(el, 'shell') })
         return out
     })()`)) as { x: number; y: number; w: number; h: number; tag: string; kind: string; label: string }[]
 
@@ -561,14 +576,36 @@ export async function nonTextContrastFailures(page: Page): Promise<string[]> {
         const y1 = Math.round((box.y + box.h) * dpr)
         if (x1 - x0 < 8 || y1 - y0 < 8) continue
 
-        // Sample the TOP edge: a band inside vs a band outside, away from corners.
+        // Sample the TOP edge, away from corners.
+        //
+        // THE BOUNDARY IS WHATEVER IS MOST VISIBLE ACROSS THE EDGE — the border
+        // if there is one, the fill if there is not. The first version compared
+        // a band 3px INSIDE against a band 3px OUTSIDE, which steps straight
+        // over a 1px border and measures fill-against-fill: it reported the
+        // same 1.04–1.07:1 before and after every control in the product was
+        // given a 3.35:1 border, because it was never looking at the border.
+        // A metric no fix can satisfy is not a metric.
+        //
+        // So: walk the rows from just outside to just inside and take the BEST
+        // contrast any of them achieves against the outside surface. That
+        // credits a thin border, which SC 1.4.11 accepts, while still failing a
+        // control that has no boundary at all.
         const cx0 = x0 + Math.round((x1 - x0) * 0.25)
         const cx1 = x0 + Math.round((x1 - x0) * 0.75)
-        const inside = meanAt(cx0, y0 + GAP, cx1, y0 + GAP + BAND)
         const outside = meanAt(cx0, y0 - GAP - BAND, cx1, y0 - GAP)
-        if (!inside || !outside) continue
+        if (!outside) continue
+        const outsideLum = lum(outside[0], outside[1], outside[2])
 
-        const cr = ratio(lum(inside[0], inside[1], inside[2]), lum(outside[0], outside[1], outside[2]))
+        let cr = 0
+        const EDGE_SPAN = Math.max(2, Math.round(3 * dpr))
+        for (let dy = -1; dy <= EDGE_SPAN; dy++) {
+            const row = meanAt(cx0, y0 + dy, cx1, y0 + dy + 1)
+            if (!row) continue
+            const rowCr = ratio(lum(row[0], row[1], row[2]), outsideLum)
+            if (rowCr > cr) cr = rowCr
+        }
+        if (cr === 0) continue
+        const inside = meanAt(cx0, y0 + GAP, cx1, y0 + GAP + BAND) || outside
         if (cr < 3 - 0.05) {
             const hexOf = (c: number[]) =>
                 "#" + c.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("")

@@ -83,7 +83,7 @@ function AnsweredChip({ item, callLabel }: { item: BranchActionItem; callLabel: 
                     {item.resolved.phone && (
                         <a
                             href={`tel:${item.resolved.phone.replace(/\s+/g, "")}`}
-                            className="min-h-[44px] mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-white/70 px-2.5 py-1 text-micro font-bold text-primary hover:bg-white dark:border-mint/25 dark:bg-mint/10 dark:text-mint"
+                            className="min-h-[44px] mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-[color:var(--pw-border-control)] bg-white/70 px-2.5 py-1 text-micro font-bold text-primary hover:bg-white dark:bg-mint/10 dark:text-mint"
                         >
                             <Phone className="h-3 w-3" aria-hidden />
                             <span>{callLabel}</span>
@@ -97,7 +97,7 @@ function AnsweredChip({ item, callLabel }: { item: BranchActionItem; callLabel: 
 }
 
 const CTA_CLASS =
-    "flex w-full items-center justify-between gap-3 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2.5 text-left text-xs font-semibold text-black/75 transition-colors hover:bg-black/[0.06] disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/15 dark:bg-white/5 dark:text-white/75 dark:hover:bg-white/10"
+    "flex w-full items-center justify-between gap-3 rounded-xl border border-[color:var(--pw-border-control)] bg-black/[0.03] px-3 py-2.5 text-left text-xs font-semibold text-black/75 transition-colors hover:bg-black/[0.06] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white/5 dark:text-white/75 dark:hover:bg-white/10"
 
 export function BranchActionsCard({
     actions,

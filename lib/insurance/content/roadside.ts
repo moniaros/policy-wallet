@@ -16,11 +16,11 @@ import type { BranchContent } from './types'
 export const roadsideContent: BranchContent = {
     branchId: 'roadside',
     tagline: {
-        el: 'Το συμβόλαιο που κρίνεται σε ένα τηλεφώνημα από την άκρη του δρόμου — δες τι ακριβώς υπόσχεται.',
+        el: 'Το συμβόλαιο που κρίνεται σε ένα τηλεφώνημα από την άκρη του δρόμου — δείτε τι ακριβώς υπόσχεται.',
         en: 'The contract judged by a single phone call from the roadside — see exactly what it promises.',
     },
     shortDescription: {
-        el: 'Ρυμούλκηση και ακτίνα κάλυψης, επιτόπια επισκευή, όχημα αντικατάστασης, αριθμός κλήσεων ανά έτος, γεωγραφική εμβέλεια και επαναπατρισμός: το PolicyWallet σου δείχνει τι δικαιούσαι πριν μείνεις.',
+        el: 'Ρυμούλκηση και ακτίνα κάλυψης, επιτόπια επισκευή, όχημα αντικατάστασης, αριθμός κλήσεων ανά έτος, γεωγραφική εμβέλεια και επαναπατρισμός: το PolicyWallet σας δείχνει τι δικαιούσαι πριν μείνετε.',
         en: 'Towing and its radius, on-the-spot repair, replacement vehicle, call-outs per year, geographic scope and repatriation: PolicyWallet shows what you are entitled to before you break down.',
     },
     whyItMatters: [
@@ -29,7 +29,7 @@ export const roadsideContent: BranchContent = {
             en: 'Most assistance services are not unlimited: they allow a set number of call-outs per year, after which the next tow is charged.',
         },
         {
-            el: 'Η ακτίνα ρυμούλκησης καθορίζει αν θα φτάσεις στο συνεργείο της επιλογής σου ή στο πλησιέστερο· η διαφορά φαίνεται μόνο όταν έχεις μείνει μακριά από την πόλη σου.',
+            el: 'Η ακτίνα ρυμούλκησης καθορίζει αν θα φτάσεις στο συνεργείο της επιλογής σας ή στο πλησιέστερο· η διαφορά φαίνεται μόνο όταν έχετε μείνει μακριά από την πόλη σας.',
             en: 'The towing radius decides whether you reach the garage you want or the nearest one; the difference only shows when you break down far from home.',
         },
         {
@@ -41,13 +41,13 @@ export const roadsideContent: BranchContent = {
             en: 'On-the-spot fixes (battery, tyre, fuel, keys) resolve most incidents without towing — but are not in every package.',
         },
         {
-            el: 'Ο επαναπατρισμός οχήματος και επιβαινόντων είναι ξεχωριστή παροχή από τη ρυμούλκηση, και συνήθως ενεργοποιείται μόνο πέρα από μια απόσταση από την κατοικία σου.',
+            el: 'Ο επαναπατρισμός οχήματος και επιβαινόντων είναι ξεχωριστή παροχή από τη ρυμούλκηση, και συνήθως ενεργοποιείται μόνο πέρα από μια απόσταση από την κατοικία σας.',
             en: 'Repatriation of vehicle and occupants is a separate benefit from towing, and usually triggers only beyond a set distance from home.',
         },
     ],
     whatWeAnalyze: [
         {
-            el: 'Το αυτοτελές συμβόλαιο οδικής βοήθειας δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε τις παροχές και τις εξαιρέσεις όπως τις γράφει το έγγραφο που ανέβασες.',
+            el: 'Το αυτοτελές συμβόλαιο οδικής βοήθειας δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε τις παροχές και τις εξαιρέσεις όπως τις γράφει το έγγραφο που ανεβάσατε.',
             en: 'A standalone roadside contract has no structured fields in our analysis: we read the benefits and exclusions as the document you uploaded words them.',
         },
         {
@@ -61,19 +61,19 @@ export const roadsideContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Αποθήκευσε τον αριθμό του κέντρου βοήθειας στις επαφές σου σήμερα — τη στιγμή που θα τον χρειαστείς, το συμβόλαιο είναι συνήθως στο σπίτι.',
+            el: 'Αποθηκεύστε τον αριθμό του κέντρου βοήθειας στις επαφές σας σήμερα — τη στιγμή που θα τον χρειαστείτε, το συμβόλαιο είναι συνήθως στο σπίτι.',
             en: 'Save the assistance centre’s number in your contacts today — the moment you need it, the contract is usually at home.',
         },
         {
-            el: 'Δες αν η κάλυψη ακολουθεί το όχημα ή το πρόσωπο· η διαφορά μετράει όταν οδηγείς άλλο αυτοκίνητο ή όταν οδηγεί κάποιος άλλος το δικό σου.',
+            el: 'Δείτε αν η κάλυψη ακολουθεί το όχημα ή το πρόσωπο· η διαφορά μετράει όταν οδηγείτε άλλο αυτοκίνητο ή όταν οδηγεί κάποιος άλλος το δικό σας.',
             en: 'Check whether the cover follows the vehicle or the person; the difference matters when you drive another car, or someone else drives yours.',
         },
         {
-            el: 'Πριν από ταξίδι σε νησί ή στο εξωτερικό, επιβεβαίωσε ότι η διαδρομή είναι εντός εμβέλειας και ρώτησε τι ισχύει για μεταφορά με πλοίο.',
+            el: 'Πριν από ταξίδι σε νησί ή στο εξωτερικό, επιβεβαιώστε ότι η διαδρομή είναι εντός εμβέλειας και ρωτήστε τι ισχύει για μεταφορά με πλοίο.',
             en: 'Before an island or overseas trip, confirm the route is within scope and ask what applies to transport by ferry.',
         },
         {
-            el: 'Αν έχεις ήδη οδική βοήθεια μέσα στο ασφαλιστήριο του αυτοκινήτου, δες αν οι δύο υπηρεσίες επικαλύπτονται — ίσως πληρώνεις δύο φορές για το ίδιο.',
+            el: 'Αν έχετε ήδη οδική βοήθεια μέσα στο ασφαλιστήριο του αυτοκινήτου, δείτε αν οι δύο υπηρεσίες επικαλύπτονται — ίσως πληρώνετε δύο φορές για το ίδιο.',
             en: 'If your motor policy already includes assistance, check whether the two services overlap — you may be paying twice for the same thing.',
         },
     ],
@@ -90,7 +90,7 @@ export const roadsideContent: BranchContent = {
             id: 'roadside_scope_gap',
             title: { el: 'Γεωγραφική εμβέλεια στενότερη από τη χρήση', en: 'Scope narrower than your use' },
             description: {
-                el: 'Αν ταξιδεύεις σε νησιά ή εκτός Ελλάδας, αξίζει έλεγχος ότι η εμβέλεια καλύπτει πραγματικά τις διαδρομές σου.',
+                el: 'Αν ταξιδεύετε σε νησιά ή εκτός Ελλάδας, αξίζει έλεγχος ότι η εμβέλεια καλύπτει πραγματικά τις διαδρομές σας.',
                 en: 'If you travel to islands or outside Greece, it is worth checking the scope actually covers your routes.',
             },
         },
@@ -98,7 +98,7 @@ export const roadsideContent: BranchContent = {
             id: 'roadside_radius_gap',
             title: { el: 'Ακτίνα ρυμούλκησης χωρίς επιλογή συνεργείου', en: 'Towing radius with no garage choice' },
             description: {
-                el: 'Μια μικρή ακτίνα σημαίνει μεταφορά στο πλησιέστερο συνεργείο, όχι στο δικό σου — ίσως αξίζει να ξέρεις το όριο από πριν.',
+                el: 'Μια μικρή ακτίνα σημαίνει μεταφορά στο πλησιέστερο συνεργείο, όχι στο δικό σας — ίσως αξίζει να ξέρετε το όριο από πριν.',
                 en: 'A short radius means transport to the nearest garage, not yours — worth knowing the limit in advance.',
             },
         },
@@ -114,21 +114,21 @@ export const roadsideContent: BranchContent = {
     recommendedActions: [
         {
             id: 'roadside_check_radius',
-            label: { el: 'Δες μέχρι πόσα χιλιόμετρα φτάνει η ρυμούλκηση', en: 'See how far the towing reaches' },
+            label: { el: 'Δείτε μέχρι πόσα χιλιόμετρα φτάνει η ρυμούλκηση', en: 'See how far the towing reaches' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Μέχρι πόσα χιλιόμετρα καλύπτεται η ρυμούλκηση;', en: 'How many kilometres of towing are covered?' },
         },
         {
             id: 'roadside_check_call_limit',
-            label: { el: 'Έλεγξε πόσες κλήσεις δικαιούσαι τον χρόνο', en: 'Check how many call-outs you get per year' },
+            label: { el: 'Ελέγξτε πόσες κλήσεις δικαιούσαι τον χρόνο', en: 'Check how many call-outs you get per year' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Πόσες κλήσεις βοήθειας δικαιούμαι ανά έτος;', en: 'How many assistance call-outs am I entitled to per year?' },
         },
         {
             id: 'roadside_check_scope',
-            label: { el: 'Δες αν η κάλυψη ισχύει σε νησιά και εξωτερικό', en: 'See whether cover applies on islands and abroad' },
+            label: { el: 'Δείτε αν η κάλυψη ισχύει σε νησιά και εξωτερικό', en: 'See whether cover applies on islands and abroad' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -138,26 +138,26 @@ export const roadsideContent: BranchContent = {
         },
         {
             id: 'roadside_check_replacement_vehicle',
-            label: { el: 'Έλεγξε αν προβλέπεται όχημα αντικατάστασης', en: 'Check whether a replacement vehicle is provided' },
+            label: { el: 'Ελέγξτε αν προβλέπεται όχημα αντικατάστασης', en: 'Check whether a replacement vehicle is provided' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Δικαιούμαι όχημα αντικατάστασης;', en: 'Am I entitled to a replacement vehicle?' },
         },
         {
             id: 'roadside_review_overlap',
-            label: { el: 'Δες αν επικαλύπτεται με το συμβόλαιο του αυτοκινήτου', en: 'See if it overlaps with your motor policy' },
+            label: { el: 'Δείτε αν επικαλύπτεται με το συμβόλαιο του αυτοκινήτου', en: 'See if it overlaps with your motor policy' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'roadside_ask_agent_scope',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για ευρύτερη εμβέλεια κάλυψης', en: 'Ask your advisor about wider cover scope' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για ευρύτερη εμβέλεια κάλυψης', en: 'Ask your advisor about wider cover scope' },
             href: '/agent',
             ctaType: 'askAgent',
         },
         {
             id: 'roadside_save_assistance_details',
-            label: { el: 'Κράτα πρόχειρα τα στοιχεία του κέντρου βοήθειας', en: 'Keep the assistance centre details at hand' },
+            label: { el: 'Κρατήστε πρόχειρα τα στοιχεία του κέντρου βοήθειας', en: 'Keep the assistance centre details at hand' },
             href: null,
             ctaType: 'task',
         },
@@ -171,32 +171,32 @@ export const roadsideContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Ασφάλισε πρώτα τη θέση σου: τρίγωνο, φώτα και, όπου γίνεται, έξοδος από το οδόστρωμα πριν από κάθε τηλεφώνημα.',
+            el: 'Ασφαλίστε πρώτα τη θέση σας: τρίγωνο, φώτα και, όπου γίνεται, έξοδος από το οδόστρωμα πριν από κάθε τηλεφώνημα.',
             en: 'Secure your position first: warning triangle, hazard lights and, where possible, get off the carriageway before making any call.',
         },
         {
-            el: 'Κάλεσε το κέντρο βοήθειας του συμβολαίου πριν από οποιοδήποτε ιδιωτικό γερανό — αυθαίρετη ρυμούλκηση συνήθως δεν αποζημιώνεται.',
+            el: 'Καλέστε το κέντρο βοήθειας του συμβολαίου πριν από οποιοδήποτε ιδιωτικό γερανό — αυθαίρετη ρυμούλκηση συνήθως δεν αποζημιώνεται.',
             en: 'Call the contract’s assistance centre before any private tow truck — an unauthorised tow is usually not reimbursed.',
         },
         {
-            el: 'Δώσε ακριβή τοποθεσία, πινακίδα και σύντομη περιγραφή της βλάβης· ο διαχωρισμός μηχανικής βλάβης από ατύχημα αλλάζει την παροχή που ενεργοποιείται.',
+            el: 'Δώστε ακριβή τοποθεσία, πινακίδα και σύντομη περιγραφή της βλάβης· ο διαχωρισμός μηχανικής βλάβης από ατύχημα αλλάζει την παροχή που ενεργοποιείται.',
             en: 'Give the exact location, plate and a short description of the fault; distinguishing mechanical breakdown from an accident changes which benefit applies.',
         },
         {
-            el: 'Κράτα τον αριθμό περιστατικού που θα σου δώσουν και όποιο παραστατικό υπογράψεις στο σημείο.',
+            el: 'Κρατήστε τον αριθμό περιστατικού που θα σας δώσουν και όποιο παραστατικό υπογράψετε στο σημείο.',
             en: 'Keep the incident number they give you and any document you sign at the scene.',
         },
     ],
     renewalNote: {
-        el: 'Πριν την ανανέωση, δες αν άλλαξαν τα οχήματα ή οι διαδρομές σου — η αξία της οδικής βοήθειας κρίνεται από το πού οδηγείς, όχι από το ασφάλιστρο.',
+        el: 'Πριν την ανανέωση, δείτε αν άλλαξαν τα οχήματα ή οι διαδρομές σας — η αξία της οδικής βοήθειας κρίνεται από το πού οδηγείτε, όχι από το ασφάλιστρο.',
         en: 'Before renewal, check whether your vehicles or routes have changed — the value of assistance is decided by where you drive, not by the premium.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει συμβόλαιο οδικής βοήθειας', en: 'No roadside assistance contract added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο οδικής βοήθειας', en: 'No roadside assistance contract added yet' },
         description: {
-            el: 'Ανέβασε το συμβόλαιο και δες πόσες κλήσεις δικαιούσαι, μέχρι πού φτάνει η ρυμούλκηση και πού ισχύει η κάλυψη.',
+            el: 'Ανεβάστε το συμβόλαιο και δείτε πόσες κλήσεις δικαιούσαι, μέχρι πού φτάνει η ρυμούλκηση και πού ισχύει η κάλυψη.',
             en: 'Upload the contract and see how many call-outs you get, how far towing reaches and where the cover applies.',
         },
-        ctaLabel: { el: 'Ανέβασε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
     },
 }

@@ -15,11 +15,11 @@ import type { BranchContent } from './types'
 export const motorbikeContent: BranchContent = {
     branchId: 'motorbike',
     tagline: {
-        el: 'Στη μηχανή, ο αναβάτης είναι το πιο ευάλωτο κομμάτι — δες αν το συμβόλαιο καλύπτει εσένα ή μόνο το όχημα.',
+        el: 'Στη μηχανή, ο αναβάτης είναι το πιο ευάλωτο κομμάτι — δείτε αν το συμβόλαιο καλύπτει εσάς ή μόνο το όχημα.',
         en: 'On a bike, the rider is the most exposed part — see whether the policy covers you or only the machine.',
     },
     shortDescription: {
-        el: 'Σωματικές βλάβες αναβάτη, συνεπιβάτης, κλοπή με όρους φύλαξης, εξοπλισμός προστασίας, περίοδοι ακινησίας: το PolicyWallet ξεχωρίζει τι αφορά τη μοτοσικλέτα από τι αφορά εσένα.',
+        el: 'Σωματικές βλάβες αναβάτη, συνεπιβάτης, κλοπή με όρους φύλαξης, εξοπλισμός προστασίας, περίοδοι ακινησίας: το PolicyWallet ξεχωρίζει τι αφορά τη μοτοσικλέτα από τι αφορά εσάς.',
         en: 'Rider bodily injury, pillion passenger, theft with security conditions, protective gear, lay-up periods: PolicyWallet separates what covers the bike from what covers you.',
     },
     whyItMatters: [
@@ -28,11 +28,11 @@ export const motorbikeContent: BranchContent = {
             en: 'Compulsory motorbike insurance covers third parties. The rider is covered only if a separate rider bodily-injury cover exists.',
         },
         {
-            el: 'Σε πτώση χωρίς άλλο εμπλεκόμενο όχημα δεν υπάρχει τρίτος να αποζημιώσει — ό,τι ισχύει, ισχύει μόνο από το δικό σου συμβόλαιο.',
+            el: 'Σε πτώση χωρίς άλλο εμπλεκόμενο όχημα δεν υπάρχει τρίτος να αποζημιώσει — ό,τι ισχύει, ισχύει μόνο από το δικό σας συμβόλαιο.',
             en: 'In a fall with no other vehicle involved there is no third party to pay — whatever applies comes only from your own policy.',
         },
         {
-            el: 'Ο συνεπιβάτης δεν αντιμετωπίζεται πάντα με τους ίδιους όρους με τον αναβάτη· αν μεταφέρεις τακτικά κάποιον, ίσως αξίζει να το επιβεβαιώσεις.',
+            el: 'Ο συνεπιβάτης δεν αντιμετωπίζεται πάντα με τους ίδιους όρους με τον αναβάτη· αν μεταφέρετε τακτικά κάποιον, ίσως αξίζει να το επιβεβαιώσεις.',
             en: 'A pillion passenger is not always treated on the same terms as the rider; if you regularly carry someone, it may be worth confirming.',
         },
         {
@@ -46,7 +46,7 @@ export const motorbikeContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Με βάση το έγγραφο που ανέβασες: στοιχεία του δικύκλου (μάρκα, μοντέλο, πινακίδα), τύπο κάλυψης και απαλλαγή, όπως αναγράφονται.',
+            el: 'Με βάση το έγγραφο που ανεβάσατε: στοιχεία του δικύκλου (μάρκα, μοντέλο, πινακίδα), τύπο κάλυψης και απαλλαγή, όπως αναγράφονται.',
             en: 'Based on the document you uploaded: the bike’s details (make, model, plate), coverage tier and deductible, as stated.',
         },
         {
@@ -64,15 +64,15 @@ export const motorbikeContent: BranchContent = {
             en: 'Look in the policy for “rider bodily injury” or similar wording — it is what genuinely separates two bikes on a similar premium.',
         },
         {
-            el: 'Αν έχεις ακριβό κράνος ή στολή, ρώτησε αν ο εξοπλισμός μπορεί να δηλωθεί χωριστά αντί να θεωρείται προσωπικό αντικείμενο.',
+            el: 'Αν έχετε ακριβό κράνος ή στολή, ρωτήστε αν ο εξοπλισμός μπορεί να δηλωθεί χωριστά αντί να θεωρείται προσωπικό αντικείμενο.',
             en: 'If you own an expensive helmet or suit, ask whether the gear can be declared separately instead of counting as a personal item.',
         },
         {
-            el: 'Πριν αφήσεις τη μηχανή ακίνητη για μήνες, δες τι προβλέπει το συμβόλαιο για κλοπή και ζημιά ενώ δεν κυκλοφορεί — η ακινησία δεν σημαίνει πάντα μειωμένο ρίσκο για τον ασφαλιστή.',
+            el: 'Πριν αφήσετε τη μηχανή ακίνητη για μήνες, δείτε τι προβλέπει το συμβόλαιο για κλοπή και ζημιά ενώ δεν κυκλοφορεί — η ακινησία δεν σημαίνει πάντα μειωμένο ρίσκο για τον ασφαλιστή.',
             en: 'Before laying the bike up for months, check what the policy says about theft and damage while it is off the road — lay-up does not always mean lower risk to the insurer.',
         },
         {
-            el: 'Φωτογράφισε τον αριθμό πλαισίου και το σημείο στάθμευσης· σε δήλωση κλοπής ζητούνται σχεδόν πάντα.',
+            el: 'Φωτογραφίστε τον αριθμό πλαισίου και το σημείο στάθμευσης· σε δήλωση κλοπής ζητούνται σχεδόν πάντα.',
             en: 'Photograph the frame number and where you park; a theft report will almost always ask for both.',
         },
     ],
@@ -81,7 +81,7 @@ export const motorbikeContent: BranchContent = {
             id: 'motorbike_rider_injury_gap',
             title: { el: 'Χωρίς κάλυψη σωματικών βλαβών αναβάτη', en: 'No rider bodily-injury cover' },
             description: {
-                el: 'Αν δεν εντοπίζεται ρητή κάλυψη για τον αναβάτη, ο τραυματισμός σου σε μονομερή πτώση ενδέχεται να μένει εκτός.',
+                el: 'Αν δεν εντοπίζεται ρητή κάλυψη για τον αναβάτη, ο τραυματισμός σας σε μονομερή πτώση ενδέχεται να μένει εκτός.',
                 en: 'If no explicit rider cover appears, your own injury in a single-vehicle fall may fall outside the policy.',
             },
         },
@@ -89,7 +89,7 @@ export const motorbikeContent: BranchContent = {
             id: 'motorbike_pillion_gap',
             title: { el: 'Ασαφείς όροι για τον συνεπιβάτη', en: 'Unclear pillion terms' },
             description: {
-                el: 'Ορισμένα συμβόλαια δικύκλου περιορίζουν ή εξαιρούν τη μεταφορά επιβάτη. Αν μεταφέρεις τακτικά κάποιον, ίσως χρειάζεται επιβεβαίωση.',
+                el: 'Ορισμένα συμβόλαια δικύκλου περιορίζουν ή εξαιρούν τη μεταφορά επιβάτη. Αν μεταφέρετε τακτικά κάποιον, ίσως χρειάζεται επιβεβαίωση.',
                 en: 'Some two-wheeler policies limit or exclude carrying a passenger. If you regularly carry someone, it may need confirming.',
             },
         },
@@ -97,7 +97,7 @@ export const motorbikeContent: BranchContent = {
             id: 'motorbike_theft_conditions_gap',
             title: { el: 'Όροι φύλαξης στην κάλυψη κλοπής', en: 'Security conditions on theft cover' },
             description: {
-                el: 'Η κλοπή δικύκλου συχνά καλύπτεται υπό προϋποθέσεις ασφάλισης ή στάθμευσης. Αξίζει να δεις ποιες ακριβώς ισχύουν πριν τις χρειαστείς.',
+                el: 'Η κλοπή δικύκλου συχνά καλύπτεται υπό προϋποθέσεις ασφάλισης ή στάθμευσης. Αξίζει να δείτε ποιες ακριβώς ισχύουν πριν τις χρειαστείτε.',
                 en: 'Two-wheeler theft is often covered subject to locking or parking conditions. It is worth seeing exactly which apply before you need them.',
             },
             relatedRuleId: 'motor-theft',
@@ -106,7 +106,7 @@ export const motorbikeContent: BranchContent = {
             id: 'motorbike_gear_gap',
             title: { el: 'Εξοπλισμός προστασίας εκτός κάλυψης', en: 'Protective gear outside cover' },
             description: {
-                el: 'Κράνος, στολή και μπότες συχνά δεν αναφέρονται καθόλου στο συμβόλαιο — μια ζημιά μπορεί να τα αφήσει εξ ολοκλήρου σε εσένα.',
+                el: 'Κράνος, στολή και μπότες συχνά δεν αναφέρονται καθόλου στο συμβόλαιο — μια ζημιά μπορεί να τα αφήσει εξ ολοκλήρου σε εσάς.',
                 en: 'Helmet, suit and boots often go unmentioned in the policy — a claim can leave them entirely on you.',
             },
         },
@@ -114,7 +114,7 @@ export const motorbikeContent: BranchContent = {
     recommendedActions: [
         {
             id: 'motorbike_check_rider_injury',
-            label: { el: 'Δες αν καλύπτεσαι ως αναβάτης', en: 'See whether you are covered as the rider' },
+            label: { el: 'Δείτε αν καλύπτεστε ως αναβάτης', en: 'See whether you are covered as the rider' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -124,14 +124,14 @@ export const motorbikeContent: BranchContent = {
         },
         {
             id: 'motorbike_check_pillion',
-            label: { el: 'Έλεγξε τι ισχύει για τον συνεπιβάτη', en: 'Check what applies to the pillion passenger' },
+            label: { el: 'Ελέγξτε τι ισχύει για τον συνεπιβάτη', en: 'Check what applies to the pillion passenger' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Καλύπτεται ο συνεπιβάτης της μηχανής;', en: 'Is the pillion passenger covered?' },
         },
         {
             id: 'motorbike_check_theft_conditions',
-            label: { el: 'Δες τους όρους της κάλυψης κλοπής', en: 'See the theft cover conditions' },
+            label: { el: 'Δείτε τους όρους της κάλυψης κλοπής', en: 'See the theft cover conditions' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -141,26 +141,26 @@ export const motorbikeContent: BranchContent = {
         },
         {
             id: 'motorbike_check_roadside',
-            label: { el: 'Έλεγξε αν υπάρχει οδική βοήθεια για δίκυκλο', en: 'Check whether roadside assistance covers two-wheelers' },
+            label: { el: 'Ελέγξτε αν υπάρχει οδική βοήθεια για δίκυκλο', en: 'Check whether roadside assistance covers two-wheelers' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Έχω οδική βοήθεια για τη μοτοσικλέτα;', en: 'Do I have roadside assistance for the motorbike?' },
         },
         {
             id: 'motorbike_ask_agent_gear',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για κάλυψη εξοπλισμού', en: 'Ask your advisor about gear cover' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για κάλυψη εξοπλισμού', en: 'Ask your advisor about gear cover' },
             href: '/agent',
             ctaType: 'askAgent',
         },
         {
             id: 'motorbike_request_green_card',
-            label: { el: 'Ζήτησε πράσινη κάρτα', en: 'Request a green card' },
+            label: { el: 'Ζητήστε πράσινη κάρτα', en: 'Request a green card' },
             href: '/agent',
             ctaType: 'askAgent',
         },
         {
             id: 'motorbike_save_emergency_line',
-            label: { el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
+            label: { el: 'Αποθηκεύστε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
             href: null,
             ctaType: 'task',
             requiresPhone: true,
@@ -179,11 +179,11 @@ export const motorbikeContent: BranchContent = {
             en: 'If anyone is injured, medical help comes before any procedure — the policy can wait, an injury cannot.',
         },
         {
-            el: 'Φωτογράφισε το δίκυκλο, το οδόστρωμα και τα σημεία πρόσκρουσης· σε πτώσεις χωρίς μάρτυρες, οι φωτογραφίες είναι συχνά η μόνη καταγραφή.',
+            el: 'Φωτογραφίστε το δίκυκλο, το οδόστρωμα και τα σημεία πρόσκρουσης· σε πτώσεις χωρίς μάρτυρες, οι φωτογραφίες είναι συχνά η μόνη καταγραφή.',
             en: 'Photograph the bike, the road surface and the impact points; in falls without witnesses, photos are often the only record.',
         },
         {
-            el: 'Κράτα και τον κατεστραμμένο εξοπλισμό προστασίας — αν καλύπτεται, θα ζητηθεί ως απόδειξη ζημιάς.',
+            el: 'Κρατήστε και τον κατεστραμμένο εξοπλισμό προστασίας — αν καλύπτεται, θα ζητηθεί ως απόδειξη ζημιάς.',
             en: 'Keep the damaged protective gear too — if it is covered, it will be requested as evidence of loss.',
         },
         {
@@ -196,11 +196,11 @@ export const motorbikeContent: BranchContent = {
         en: 'For two-wheelers, renewal is a good moment to revisit rider cover and theft conditions — they change more often than the premium.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει συμβόλαιο μοτοσικλέτας', en: 'No motorbike policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο μοτοσικλέτας', en: 'No motorbike policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο του δικύκλου και δες τι καλύπτει για εσένα ως αναβάτη — όχι μόνο για τη μηχανή.',
+            el: 'Ανεβάστε το ασφαλιστήριο του δικύκλου και δείτε τι καλύπτει για εσάς ως αναβάτη — όχι μόνο για τη μηχανή.',
             en: 'Upload your two-wheeler policy and see what it covers for you as the rider — not just for the bike.',
         },
-        ctaLabel: { el: 'Ανέβασε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
     },
 }

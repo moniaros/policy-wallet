@@ -135,6 +135,18 @@
      product's off-white surfaces, well under the 4.5:1 AA floor. */
   --pw-text-muted: #5b6a7a;
   --pw-border: #E2E8F0;
+  /* CONTROL boundaries — a separate token from --pw-border on purpose.
+     
+     WCAG 1.4.11 requires 3:1 for the visual information that identifies a user
+     interface component. `--pw-border` is ~1.2:1 against a white page, which is
+     right for a decorative card edge (the standard does not govern those) and
+     wrong for the edge that tells someone a thing is a button. Measured on the
+     policy page, ten controls sat at 1.04–1.07:1 — boundaries a sighted user
+     cannot locate (docs/evidence/policy-detail-mobile/BASELINE.md §0.5c).
+     
+     rgba(0,0,0,.45) measures 3.35:1 on white. Raising --pw-border itself would
+     have darkened every card edge in the product to fix a control problem. */
+  --pw-border-control: rgba(0, 0, 0, 0.45);
   --pw-radius-button: 9999px;
   --pw-radius-card: 16px;
   --pw-shadow-card: 0 16px 48px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.04);
@@ -254,6 +266,8 @@
   --pw-primary-hover: #7de8ba;
   --pw-text-muted: #94a3b8;
   --pw-border: rgba(255, 255, 255, 0.14);
+  /* 4.5:1 on the dark page, 4.47:1 on a dark card — see the light note above. */
+  --pw-border-control: rgba(255, 255, 255, 0.45);
 }
 
 body {
@@ -525,7 +539,12 @@ pre {
        `none`, so still nothing was drawn. Nothing needs suppressing here; at
        rest an input has no outline, and on focus the rule below draws ours over
        the browser's. */
-    @apply w-full rounded-2xl border-none bg-neutral-50 px-6 py-4 text-sm text-[#0F172A] transition-all;
+    /* `border-none` + a #FAFAFA fill on a white page is a ~1.05:1 boundary —
+       a text field a sighted user cannot locate, which is exactly what WCAG
+       1.4.11 is about. The control token gives every input in the product a
+       visible edge without touching card surfaces. */
+    @apply w-full rounded-2xl bg-neutral-50 px-6 py-4 text-sm text-[#0F172A] transition-all;
+    border: 1px solid var(--pw-border-control);
     /* Was `focus:ring-4 focus:ring-primary/10`, which painted nothing for the
        same reason as the button recipes — leaving every input on the site,
        including the public sign-in and sign-up forms, with no focus indicator
@@ -596,14 +615,14 @@ pre {
   :where(.pw-secondary-button) {
     @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] disabled:opacity-60 disabled:pointer-events-none;
     border-radius: var(--pw-radius-button);
-    border: 1px solid var(--pw-border);
+    border: 1px solid var(--pw-border-control);
     color: var(--pw-text-primary-light);
     background: transparent;
   }
 
   .dark .pw-secondary-button {
     color: var(--pw-text-primary-dark);
-    border-color: rgba(255, 255, 255, 0.18);
+    border-color: var(--pw-border-control);
   }
 
   /* The two bases above use :where() for the same reason .pw-input does —
@@ -641,7 +660,14 @@ pre {
   .pw-secondary-button-inverse {
     @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-colors;
     border-radius: var(--pw-radius-button);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    /* .55, not .25. On the brand teal (#29685B) a white border at 25% measures
+       1.76:1 and at 45% still only 2.64:1 — below the 3:1 SC 1.4.11 wants for
+       the edge that identifies a control. .55 computes to 3.18:1 but MEASURED
+       2.93 on screen: a 1px border antialiases, and the sampled row is a blend
+       rather than the pure colour. .62 clears it with the blend accounted for —
+       the arithmetic and the pixels disagree slightly, and the pixels are what
+       a reader sees. */
+    border: 1px solid rgba(255, 255, 255, 0.62);
     background: transparent;
   }
 

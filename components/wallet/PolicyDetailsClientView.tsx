@@ -42,7 +42,6 @@ import {
 } from "@/lib/wallet/policy-detail"
 import { AlertTriangle, CalendarDays, ClipboardList, Crown, FileDown, FileWarning, FolderOpen, LifeBuoy, Lock, RefreshCw, Share2, ShieldCheck, Trash2, Users } from "lucide-react"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
-import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
@@ -1029,13 +1028,16 @@ export function PolicyDetailsClient({
                                 </div>
                             )}
 
-                            {tier !== 'pro' && (
-                                <PremiumInsightCards
-                                    triggerSource="policy_detail_locked_cards"
-                                    returnTo={`/wallet/${policy.id}#review`}
-                                    className="rounded-3xl border border-black/10 dark:border-white/15 bg-white/60 dark:bg-white/5 p-6"
-                                />
-                            )}
+                            {/* The standalone upsell that used to sit here moved to
+                                the ONE persistent slot in #documents. A card
+                                advertising unrelated paid features, wedged between
+                                a customer's coverage findings, competes with the
+                                findings for the attention the page exists to
+                                direct. What stays in place is the opposite kind of
+                                thing: a lock ON the capability the reader just
+                                reached for (the €3 report unlock below, the
+                                PDF-preview lock, the advisor section) — those are
+                                the feature's locked STATE, not an advertisement. */}
                         </div>
                     </PolicySection>
 
@@ -1120,14 +1122,8 @@ export function PolicyDetailsClient({
                                     }}
                                 />
 
-                                {isOwner && isFreeTier && (
-                                    <UpgradeTriggerCard
-                                        featureKey="advanced_renewal_reminders"
-                                        triggerSource="policy_key_dates"
-                                        returnTo={pathname || undefined}
-                                        variant="inline"
-                                    />
-                                )}
+                                {/* Renewal-reminder upsell relocated to the single
+                                    persistent slot — see #documents. */}
                             </div>
                         </PolicySection>
                     )}
@@ -1310,11 +1306,22 @@ export function PolicyDetailsClient({
                                 />
                             )}
 
-                            {isOwner && !canUseCollaboration && (
-                                <UpgradeTriggerCard
-                                    featureKey="agent_collaboration"
-                                    triggerSource="policy_collaboration"
-                                    returnTo={pathname || undefined}
+                            {/* THE ONE PERSISTENT UPGRADE SLOT.
+                                
+                                The page carried five standalone upsells plus the
+                                in-place locks — one in five capabilities on the
+                                ledger asked for money, on a page whose job is
+                                answering four questions in ten seconds. They are
+                                consolidated here, beside the plan and account
+                                surface where a purchase decision actually belongs,
+                                and the scattered ones are gone rather than moved
+                                twice. Contextual locks stay with their capability;
+                                this is the only place that ADVERTISES. */}
+                            {isOwner && tier !== 'pro' && (
+                                <PremiumInsightCards
+                                    triggerSource="policy_detail_plan_slot"
+                                    returnTo={`/wallet/${policy.id}#documents`}
+                                    className="rounded-3xl border border-black/10 dark:border-white/15 bg-white/60 dark:bg-white/5 p-6"
                                 />
                             )}
 

@@ -1819,6 +1819,24 @@ export const el = {
             heroReasonFell: '{category}: πτώση {points} μονάδων από την προηγούμενη αξιολόγηση.',
             heroReasonRose: '{category}: άνοδος {points} μονάδων από την προηγούμενη αξιολόγηση.',
             heroAreasOne: '1 περιοχή ίσως χρειάζεται έλεγχο',
+            // ── The factual composition that replaced the verdict ──
+            // Each is a COUNT of something the wallet contains, so none of them
+            // can be wrong the way «Καλή κάλυψη» could.
+            factTotalOne: '1 ασφαλιστήριο',
+            factTotalMany: '{count} ασφαλιστήρια',
+            factExpiredOne: '1 έχει λήξει',
+            factExpiredMany: '{count} έχουν λήξει',
+            factExpiringOne: '1 λήγει σύντομα',
+            factExpiringMany: '{count} λήγουν σύντομα',
+            factNeverAnalysedOne: '1 δεν έχει αναλυθεί',
+            factNeverAnalysedMany: '{count} δεν έχουν αναλυθεί',
+            factFailedOne: '1 δεν διαβάστηκε',
+            factFailedMany: '{count} δεν διαβάστηκαν',
+            // Why no number is shown, said out loud rather than left blank.
+            scoreUnsupportedNothingAnalysed: 'Δεν έχουμε αναλύσει ακόμη κανένα ασφαλιστήριό σας, οπότε δεν μπορούμε να δώσουμε δείκτη κάλυψης.',
+            scoreUnsupportedNoCover: 'Όλα τα ασφαλιστήριά σας έχουν λήξει — αυτή τη στιγμή δεν έχετε ενεργή κάλυψη. Δεν εμφανίζουμε δείκτη για κάλυψη που δεν ισχύει.',
+            scoreDisclosureOpen: 'Δείτε τον δείκτη κάλυψης',
+            scoreDisclosureLabel: 'Δείκτης εύρους κάλυψης',
             heroAreasMany: '{count} περιοχές ίσως χρειάζονται έλεγχο',
             heroPoliciesOne: '1 ασφαλιστήριο καταχωρημένο',
             heroPoliciesMany: '{count} ασφαλιστήρια καταχωρημένα',

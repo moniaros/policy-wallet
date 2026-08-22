@@ -9,7 +9,7 @@
  *
  * COMPLIANCE (docs/audits/ai-advice-compliance.md): copy must stay
  * observational and hedged — "φαίνεται", "ενδέχεται", "ίσως αξίζει" — never
- * directive ("πρέπει να αγοράσεις") or absolute ("είσαι πλήρως καλυμμένος").
+ * directive ("πρέπει να αγοράσεις") or absolute ("είστε πλήρως καλυμμένος").
  * A unit test scans every bundle for banned phrases. Editorial content is
  * static (not AI output), so AiDisclaimer is required only next to
  * engine/AI-derived sections on the pages that render it.

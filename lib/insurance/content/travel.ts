@@ -3,11 +3,11 @@ import type { BranchContent } from './types'
 export const travelContent: BranchContent = {
     branchId: 'travel',
     tagline: {
-        el: 'Πριν φύγεις, μάθε τι καλύπτει η ταξιδιωτική σου — προορισμός, ιατρικά, αποσκευές, ακύρωση.',
+        el: 'Πριν φύγετε, μάθετε τι καλύπτει η ταξιδιωτική σας — προορισμός, ιατρικά, αποσκευές, ακύρωση.',
         en: 'Before you go, know what your travel policy covers — destination, medical, luggage, cancellation.',
     },
     shortDescription: {
-        el: 'Ιατρικά έξοδα στο εξωτερικό, ακύρωση ταξιδιού, αποσκευές, καθυστερήσεις και επαναπατρισμός — τι φαίνεται να ισχύει στο δικό σου συμβόλαιο.',
+        el: 'Ιατρικά έξοδα στο εξωτερικό, ακύρωση ταξιδιού, αποσκευές, καθυστερήσεις και επαναπατρισμός — τι φαίνεται να ισχύει στο δικό σας συμβόλαιο.',
         en: 'Medical expenses abroad, trip cancellation, luggage, delays and repatriation — what appears to apply in your own policy.',
     },
     whyItMatters: [
@@ -20,13 +20,13 @@ export const travelContent: BranchContent = {
             en: 'Geographic limits matter: a "Europe" policy may not apply in the US or Asia.',
         },
         {
-            el: 'Σπορ και δραστηριότητες (σκι, καταδύσεις, ενοικίαση μηχανής) συχνά εξαιρούνται — αν τα σχεδιάζεις, έλεγξέ το από πριν.',
+            el: 'Σπορ και δραστηριότητες (σκι, καταδύσεις, ενοικίαση μηχανής) συχνά εξαιρούνται — αν τα σχεδιάζετε, έλεγξέ το από πριν.',
             en: 'Sports and activities (ski, diving, renting a scooter) are often excluded — if you plan them, check beforehand.',
         },
     ],
     whatWeAnalyze: [
         {
-            el: 'Με βάση το έγγραφο που ανέβασες: όρια ιατρικών εξόδων, γεωγραφική ισχύ, διάρκεια ταξιδιού και εξαιρέσεις.',
+            el: 'Με βάση το έγγραφο που ανεβάσατε: όρια ιατρικών εξόδων, γεωγραφική ισχύ, διάρκεια ταξιδιού και εξαιρέσεις.',
             en: 'Based on the document you uploaded: medical limits, geographic validity, trip duration and exclusions.',
         },
         {
@@ -34,21 +34,21 @@ export const travelContent: BranchContent = {
             en: 'Cancellation, luggage, flight-delay and repatriation covers — with their limits and conditions.',
         },
         {
-            el: 'Τη γραμμή επείγουσας βοήθειας του ασφαλιστή, αν αναγράφεται — τον αριθμό που θες πρόχειρο στο ταξίδι.',
+            el: 'Τη γραμμή επείγουσας βοήθειας του ασφαλιστή, αν αναγράφεται — τον αριθμό που θέλετε πρόχειρο στο ταξίδι.',
             en: 'The insurer’s emergency assistance line, if stated — the number you want at hand while travelling.',
         },
     ],
     howToUseBetter: [
         {
-            el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας στο κινητό σου πριν φύγεις — σε επείγον δεν θα ψάχνεις PDF.',
+            el: 'Αποθηκεύστε τη γραμμή επείγουσας βοήθειας στο κινητό σας πριν φύγετε — σε επείγον δεν θα ψάχνετε PDF.',
             en: 'Save the emergency line on your phone before departure — in an emergency you will not be searching PDFs.',
         },
         {
-            el: 'Κράτα αποδείξεις για ό,τι αγοράζεις λόγω καθυστέρησης ή απώλειας αποσκευών — χωρίς αυτές δύσκολα αποζημιώνεσαι.',
+            el: 'Κρατήστε αποδείξεις για ό,τι αγοράζεις λόγω καθυστέρησης ή απώλειας αποσκευών — χωρίς αυτές δύσκολα αποζημιώνεσαι.',
             en: 'Keep receipts for anything you buy due to delay or lost luggage — without them reimbursement is hard.',
         },
         {
-            el: 'Για ακύρωση, δήλωσε το συμβάν άμεσα και κράτα κάθε έγγραφο (ιατρικά, ματαίωση πτήσης) — οι προθεσμίες είναι σύντομες.',
+            el: 'Για ακύρωση, δηλώστε το συμβάν άμεσα και κρατήστε κάθε έγγραφο (ιατρικά, ματαίωση πτήσης) — οι προθεσμίες είναι σύντομες.',
             en: 'For cancellation, report the event immediately and keep every document (medical, flight cancellation) — deadlines are short.',
         },
     ],
@@ -73,7 +73,7 @@ export const travelContent: BranchContent = {
             id: 'travel_no_travel_gap',
             title: { el: 'Ταξιδεύεις συχνά χωρίς ετήσια κάλυψη', en: 'Frequent travel without annual cover' },
             description: {
-                el: 'Αν ταξιδεύεις πολλές φορές τον χρόνο, μια ετήσια πολυταξιδιωτική κάλυψη μπορεί να συμφέρει από μεμονωμένες.',
+                el: 'Αν ταξιδεύετε πολλές φορές τον χρόνο, μια ετήσια πολυταξιδιωτική κάλυψη μπορεί να συμφέρει από μεμονωμένες.',
                 en: 'If you travel several times a year, an annual multi-trip policy can beat single-trip ones.',
             },
             relatedRuleId: 'travels_no_travel',
@@ -82,28 +82,28 @@ export const travelContent: BranchContent = {
     recommendedActions: [
         {
             id: 'travel_check_destination',
-            label: { el: 'Έλεγξε αν ο προορισμός σου καλύπτεται', en: 'Check your destination is covered' },
+            label: { el: 'Ελέγξτε αν ο προορισμός σας καλύπτεται', en: 'Check your destination is covered' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Σε ποιες χώρες ισχύει το συμβόλαιό μου;', en: 'In which countries does my policy apply?' },
         },
         {
             id: 'travel_check_luggage',
-            label: { el: 'Δες τι ισχύει για αποσκευές', en: 'See what applies for luggage' },
+            label: { el: 'Δείτε τι ισχύει για αποσκευές', en: 'See what applies for luggage' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Τι καλύπτεται για απώλεια αποσκευών;', en: 'What is covered for lost luggage?' },
         },
         {
             id: 'travel_prep',
-            label: { el: 'Προετοιμάσου πριν το ταξίδι', en: 'Prepare before the trip' },
+            label: { el: 'Προετοιμαστείτε πριν το ταξίδι', en: 'Prepare before the trip' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Τι πρέπει να έχω μαζί μου από το συμβόλαιο στο ταξίδι;', en: 'What from my policy should I carry on the trip?' },
         },
         {
             id: 'travel_check_activities',
-            label: { el: 'Δες αν καλύπτονται τα σπορ που σχεδιάζεις', en: 'See whether the sports you plan are covered' },
+            label: { el: 'Δείτε αν καλύπτονται τα σπορ που σχεδιάζετε', en: 'See whether the sports you plan are covered' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -113,20 +113,20 @@ export const travelContent: BranchContent = {
         },
         {
             id: 'travel_find_hotline',
-            label: { el: 'Βρες τη γραμμή επείγουσας βοήθειας', en: 'Find the emergency assistance line' },
+            label: { el: 'Βρείτε τη γραμμή επείγουσας βοήθειας', en: 'Find the emergency assistance line' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Ποιος είναι ο αριθμός επείγουσας βοήθειας;', en: 'What is the emergency assistance number?' },
         },
         {
             id: 'travel_ask_agent_scope',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για επέκταση προορισμού ή δραστηριοτήτων', en: 'Ask your advisor about extending destination or activities' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για επέκταση προορισμού ή δραστηριοτήτων', en: 'Ask your advisor about extending destination or activities' },
             href: '/agent',
             ctaType: 'askAgent',
         },
         {
             id: 'travel_save_trip_note',
-            label: { el: 'Κράτα πρόχειρα τα στοιχεία του ταξιδιού', en: 'Keep your trip details at hand' },
+            label: { el: 'Κρατήστε πρόχειρα τα στοιχεία του ταξιδιού', en: 'Keep your trip details at hand' },
             href: null,
             ctaType: 'task',
         },
@@ -140,28 +140,28 @@ export const travelContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Σε ιατρικό περιστατικό στο εξωτερικό, κάλεσε πρώτα τη γραμμή βοήθειας — συντονίζει νοσοκομείο και έξοδα πριν πληρώσεις εσύ.',
+            el: 'Σε ιατρικό περιστατικό στο εξωτερικό, καλέστε πρώτα τη γραμμή βοήθειας — συντονίζει νοσοκομείο και έξοδα πριν πληρώσετε εσείς.',
             en: 'For a medical event abroad, call the assistance line first — it coordinates hospital and costs before you pay.',
         },
         {
-            el: 'Για αποσκευές, ζήτησε βεβαίωση από την αεροπορική (PIR) πριν φύγεις από το αεροδρόμιο.',
+            el: 'Για αποσκευές, ζητήστε βεβαίωση από την αεροπορική (PIR) πριν φύγετε από το αεροδρόμιο.',
             en: 'For luggage, get the airline’s Property Irregularity Report before leaving the airport.',
         },
         {
-            el: 'Κράτα κάθε απόδειξη και έγγραφο — οι ταξιδιωτικές αποζημιώσεις βασίζονται σχεδόν εξ ολοκλήρου σε παραστατικά.',
+            el: 'Κρατήστε κάθε απόδειξη και έγγραφο — οι ταξιδιωτικές αποζημιώσεις βασίζονται σχεδόν εξ ολοκλήρου σε παραστατικά.',
             en: 'Keep every receipt and document — travel claims rely almost entirely on paperwork.',
         },
     ],
     renewalNote: {
-        el: 'Οι ταξιδιωτικές καλύψεις έχουν συγκεκριμένη διάρκεια ταξιδιού — για το επόμενο ταξίδι, έλεγξε ημερομηνίες και προορισμό ξανά.',
+        el: 'Οι ταξιδιωτικές καλύψεις έχουν συγκεκριμένη διάρκεια ταξιδιού — για το επόμενο ταξίδι, ελέγξτε ημερομηνίες και προορισμό ξανά.',
         en: 'Travel covers run for a specific trip duration — for the next trip, check dates and destination again.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ταξιδιωτική ασφάλιση', en: 'No travel policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ταξιδιωτική ασφάλιση', en: 'No travel policy added yet' },
         description: {
-            el: 'Ανέβασε την ταξιδιωτική σου κάλυψη και δες όρια ιατρικών, αποσκευές και τη γραμμή βοήθειας — πριν φύγεις.',
+            el: 'Ανεβάστε την ταξιδιωτική σας κάλυψη και δείτε όρια ιατρικών, αποσκευές και τη γραμμή βοήθειας — πριν φύγετε.',
             en: 'Upload your travel cover and see medical limits, luggage terms and the assistance line — before you leave.',
         },
-        ctaLabel: { el: 'Ανέβασε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
     },
 }

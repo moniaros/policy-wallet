@@ -46,7 +46,7 @@ export const fineArtContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: την κατάσταση ασφαλιζόμενων αντικειμένων με τον τίτλο και την αξία καθενός, καθώς και το συνολικό ανώτατο όριο ευθύνης.',
+            el: 'Από το έγγραφο που ανεβάσατε: την κατάσταση ασφαλιζόμενων αντικειμένων με τον τίτλο και την αξία καθενός, καθώς και το συνολικό ανώτατο όριο ευθύνης.',
             en: 'From the document you uploaded: the schedule of insured items with each title and value, plus the overall ceiling of liability.',
         },
         {
@@ -64,15 +64,15 @@ export const fineArtContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Φωτογράφισε κάθε αντικείμενο με λεπτομέρειες υπογραφής και φθορών, και κράτα τιμολόγια, πιστοποιητικά γνησιότητας και εκθέσεις εκτίμησης στο ίδιο σημείο με το συμβόλαιο.',
+            el: 'Φωτογραφίστε κάθε αντικείμενο με λεπτομέρειες υπογραφής και φθορών, και κρατήστε τιμολόγια, πιστοποιητικά γνησιότητας και εκθέσεις εκτίμησης στο ίδιο σημείο με το συμβόλαιο.',
             en: 'Photograph each piece including the signature and any wear, and keep invoices, certificates of authenticity and valuation reports in the same place as the policy.',
         },
         {
-            el: 'Επανεκτίμησε τη συλλογή περιοδικά. Οι αγορές έργων τέχνης κινούνται και μια συμφωνημένη αξία από παλιά μπορεί να έχει μείνει πολύ πίσω.',
+            el: 'Επανεκτιμήστε τη συλλογή περιοδικά. Οι αγορές έργων τέχνης κινούνται και μια συμφωνημένη αξία από παλιά μπορεί να έχει μείνει πολύ πίσω.',
             en: 'Revalue the collection periodically. Art markets move, and an agreed value set years ago can be a long way behind.',
         },
         {
-            el: 'Πριν δανείσεις έργο για έκθεση ή το στείλεις για συντήρηση, ρώτησε γραπτώς αν η κάλυψη ακολουθεί το αντικείμενο και υπό ποιους όρους μεταφοράς.',
+            el: 'Πριν δανείσετε έργο για έκθεση ή το στείλετε για συντήρηση, ρωτήστε γραπτώς αν η κάλυψη ακολουθεί το αντικείμενο και υπό ποιους όρους μεταφοράς.',
             en: 'Before lending a piece for exhibition or sending it for restoration, ask in writing whether cover follows the object and on what transport terms.',
         },
         {
@@ -117,7 +117,7 @@ export const fineArtContent: BranchContent = {
     recommendedActions: [
         {
             id: 'fine_art_check_schedule',
-            label: { el: 'Δες την κατάσταση αντικειμένων και τις αξίες', en: 'See the schedule of items and values' },
+            label: { el: 'Δείτε την κατάσταση αντικειμένων και τις αξίες', en: 'See the schedule of items and values' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -127,7 +127,7 @@ export const fineArtContent: BranchContent = {
         },
         {
             id: 'fine_art_check_conditions',
-            label: { el: 'Έλεγξε τους όρους ασφαλείας του χώρου', en: 'Check the premises security conditions' },
+            label: { el: 'Ελέγξτε τους όρους ασφαλείας του χώρου', en: 'Check the premises security conditions' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -137,7 +137,7 @@ export const fineArtContent: BranchContent = {
         },
         {
             id: 'fine_art_check_transit',
-            label: { el: 'Δες τι ισχύει όταν μετακινείται ένα έργο', en: 'See what applies when a piece is moved' },
+            label: { el: 'Δείτε τι ισχύει όταν μετακινείται ένα έργο', en: 'See what applies when a piece is moved' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -147,13 +147,13 @@ export const fineArtContent: BranchContent = {
         },
         {
             id: 'fine_art_review_values',
-            label: { el: 'Σύγκρινε τις αξίες με τη σημερινή συλλογή', en: 'Compare the values against today’s collection' },
+            label: { el: 'Συγκρίνετε τις αξίες με τη σημερινή συλλογή', en: 'Compare the values against today’s collection' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'fine_art_ask_agent_valuation',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για επανεκτίμηση', en: 'Ask your advisor about a revaluation' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για επανεκτίμηση', en: 'Ask your advisor about a revaluation' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -171,15 +171,15 @@ export const fineArtContent: BranchContent = {
             en: 'Do not clean or attempt restoration before the survey — with artworks a hasty intervention lowers value more than the damage itself.',
         },
         {
-            el: 'Σε κλοπή, δήλωσε στην αστυνομία και ζήτησε καταχώριση των στοιχείων του έργου σε βάσεις απολεσθέντων έργων τέχνης.',
+            el: 'Σε κλοπή, δηλώστε στην αστυνομία και ζητήστε καταχώριση των στοιχείων του έργου σε βάσεις απολεσθέντων έργων τέχνης.',
             en: 'In a theft, report to the police and ask for the piece to be listed on stolen-art databases.',
         },
         {
-            el: 'Παρέδωσε τη φωτογραφική τεκμηρίωση και τις εκθέσεις εκτίμησης που είχες πριν από το συμβάν· η προγενέστερη τεκμηρίωση βαραίνει περισσότερο από κάθε μεταγενέστερη.',
+            el: 'Παραδώστε τη φωτογραφική τεκμηρίωση και τις εκθέσεις εκτίμησης που είχες πριν από το συμβάν· η προγενέστερη τεκμηρίωση βαραίνει περισσότερο από κάθε μεταγενέστερη.',
             en: 'Hand over the photographic record and valuation reports you held before the incident; documentation that predates the loss carries more weight than anything produced after it.',
         },
         {
-            el: 'Κατάγραψε την κατάσταση του συναγερμού και του χώρου τη στιγμή του συμβάντος, καθώς αυτά θα εξεταστούν ως προϋποθέσεις της κάλυψης.',
+            el: 'Καταγράψτε την κατάσταση του συναγερμού και του χώρου τη στιγμή του συμβάντος, καθώς αυτά θα εξεταστούν ως προϋποθέσεις της κάλυψης.',
             en: 'Record the state of the alarm and the premises at the time of the incident, since these will be examined as conditions of the cover.',
         },
     ],
@@ -188,11 +188,11 @@ export const fineArtContent: BranchContent = {
         en: 'Renewal is the natural moment to add new acquisitions to the schedule and remove what has been sold — otherwise the policy describes a collection that no longer exists.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση έργων τέχνης ή τιμαλφών', en: 'No fine art or valuables cover added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση έργων τέχνης ή τιμαλφών', en: 'No fine art or valuables cover added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες ποια αντικείμενα περιλαμβάνονται, με ποιες αξίες και υπό ποιους όρους ασφαλείας.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε ποια αντικείμενα περιλαμβάνονται, με ποιες αξίες και υπό ποιους όρους ασφαλείας.',
             en: 'Upload the policy and see which items are included, at what values and under what security conditions.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

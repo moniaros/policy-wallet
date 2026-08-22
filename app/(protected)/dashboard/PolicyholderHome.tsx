@@ -17,6 +17,7 @@ import { categoryMovements } from "@/lib/services/gap-engine/score-trend"
 import { getTimeline } from "@/lib/services/timeline/service"
 import { assembleWatch } from "@/lib/services/risk-dna/service"
 import { buildProtectionPlan } from "@/lib/services/protection-plan"
+import { portfolioFacts, scoreSupport } from "@/lib/dashboard/portfolio-summary"
 import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -320,14 +321,44 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 : healthScore >= 40
                     ? "stroke-amber-500"
                     : "stroke-red-500"
-    const verdict =
-        healthScore === null
-            ? null
-            : healthScore >= 70
-                ? home.scoreGood
-                : healthScore >= 40
-                    ? home.scoreNeedsImprovement
-                    : home.scoreNeedsAttention
+    /**
+     * THE FACTS, which replaced the verdict.
+     *
+     * The verdict was `healthScore >= 70 ? «Καλή κάλυψη» : …` — a grade derived
+     * from a BREADTH measure, rendered over portfolios the measure could not
+     * describe: one never-analysed policy scored «Καλή κάλυψη», and a wallet
+     * where every policy had expired scored «Χρειάζεται βελτίωση». See
+     * docs/evidence/dashboard-mobile/BASELINE.md D1.
+     */
+    const portfolioInput = {
+        total: policies.length,
+        expired: policies.filter((p) => resolvePolicyLifecycle(p, now).status === "expired").length,
+        expiringSoon: policies.filter((p) => resolvePolicyLifecycle(p, now).status === "expiring_soon").length,
+        neverAnalysed: policies.filter((p) => !p.lastAnalyzedAt).length,
+        analysisFailed: policies.filter((p) => Boolean((p.acordData as any)?.processingError)).length,
+    }
+    const factLabel: Record<string, [string, string]> = {
+        total: [home.factTotalOne, home.factTotalMany],
+        expired: [home.factExpiredOne, home.factExpiredMany],
+        expiringSoon: [home.factExpiringOne, home.factExpiringMany],
+        neverAnalysed: [home.factNeverAnalysedOne, home.factNeverAnalysedMany],
+        analysisFailed: [home.factFailedOne, home.factFailedMany],
+    }
+    const factsLine = portfolioFacts(portfolioInput)
+        .map(({ kind, count }) => {
+            const [one, many] = factLabel[kind]
+            return count === 1 ? one : many.replace('{count}', String(count))
+        })
+        .join(' · ')
+
+    const support = scoreSupport(portfolioInput)
+    const scoreUnsupportedReason = support.supported
+        ? null
+        : support.reason === "nothing_analysed"
+            ? home.scoreUnsupportedNothingAnalysed
+            : support.reason === "no_active_cover"
+                ? home.scoreUnsupportedNoCover
+                : null
 
     // Movement since the previous assessment. Needs two determinate versions —
     // most accounts have fewer, and "no delta" is a first-class state, never a
@@ -669,7 +700,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         state={heroState}
                         score={healthScore}
                         ringToneClass={ringToneClass}
-                        verdict={verdict}
+                        factsLine={factsLine}
+                        scoreUnsupportedReason={scoreUnsupportedReason}
                         deltaLabel={deltaLabel}
                         deltaDirection={deltaDirection}
                         keyReason={keyReason}
@@ -692,6 +724,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             methodologyBody: home.scoreMethodologyBody,
                             methodologyLimits: home.scoreMethodologyLimits,
                             methodologyNotAdvice: home.scoreMethodologyNotAdvice,
+                            scoreDisclosureOpen: home.scoreDisclosureOpen,
+                            scoreDisclosureLabel: home.scoreDisclosureLabel,
                         }}
                     />
 

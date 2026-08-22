@@ -58,13 +58,13 @@ describe('generic claims guidance leads with safety and mitigation', () => {
 describe('branch claim steps keep their operative detail', () => {
     it('home tells the policyholder to stop the damage spreading', () => {
         const steps = getBranchContent('home')?.claimsSteps?.map((s) => s.el).join(' ') ?? ''
-        expect(steps).toMatch(/Περιόρισε τη ζημιά/)
-        expect(steps).toMatch(/μην ξεκινήσεις επισκευές/)
+        expect(steps).toMatch(/Περιορίστε τη ζημιά/)
+        expect(steps).toMatch(/μην ξεκινήσετε επισκευές/)
     })
 
     it('motor tells them not to sign an admission of fault when unsure', () => {
         const steps = getBranchContent('motor')?.claimsSteps?.map((s) => s.el).join(' ') ?? ''
-        expect(steps).toMatch(/μην υπογράψεις δήλωση υπαιτιότητας/)
+        expect(steps).toMatch(/μην υπογράψετε δήλωση υπαιτιότητας/)
     })
 
     it('business keeps the turnover evidence that business interruption is paid on', () => {

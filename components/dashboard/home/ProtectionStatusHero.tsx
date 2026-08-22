@@ -28,7 +28,8 @@ export function ProtectionStatusHero({
     state,
     score,
     ringToneClass,
-    verdict,
+    factsLine,
+    scoreUnsupportedReason,
     deltaLabel,
     deltaDirection,
     keyReason,
@@ -41,8 +42,23 @@ export function ProtectionStatusHero({
     /** null in `empty` and `indeterminate` states. */
     score: number | null
     ringToneClass: string
-    /** Resolved verdict sentence; null when no score renders. */
-    verdict: string | null
+    /**
+     * THE HEADLINE, and what replaced the verdict.
+     *
+     * A composition of counts — «12 ασφαλιστήρια · 3 λήγουν σύντομα · 2 δεν
+     * έχουν αναλυθεί» — resolved by lib/dashboard/portfolio-summary.ts. Every
+     * part is a count of something in the wallet, so unlike «Καλή κάλυψη» it
+     * cannot be a false statement about a customer's protection. It also
+     * answers three of the four ten-second questions before anything is
+     * scrolled.
+     */
+    factsLine: string
+    /**
+     * Set when NO score may render: nothing has ever been analysed, or every
+     * policy has expired. The reason is shown; a blank space where a number was
+     * would read as a loading state.
+     */
+    scoreUnsupportedReason: string | null
     /** e.g. "+6 · since 12 Jul 2026". Null when there is nothing to compare. */
     deltaLabel: string | null
     deltaDirection: "up" | "down" | null
@@ -69,6 +85,8 @@ export function ProtectionStatusHero({
         methodologyBody: string
         methodologyLimits: string
         methodologyNotAdvice: string
+        scoreDisclosureOpen: string
+        scoreDisclosureLabel: string
     }
 }) {
     if (state === "empty") {
@@ -126,65 +144,99 @@ export function ProtectionStatusHero({
     return (
         <section className="pw-card pw-pad-roomy" aria-labelledby="protection-status-heading">
             <p className="pw-kicker">{labels.kicker}</p>
-            <div className="mt-4 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-                <ScoreRing value={score} toneClass={ringToneClass} sizeClass="h-24 w-24 lg:h-28 lg:w-28">
-                    <span className="text-h3 font-semibold text-black dark:text-white lg:text-h2">{score}</span>
-                </ScoreRing>
-                <div className="min-w-0 flex-1">
-                    {state === "provisional" && (
-                        <p className="pw-kicker mb-1 text-amber-700 dark:text-amber-400">{labels.provisionalBadge}</p>
-                    )}
-                    <h2 id="protection-status-heading" className="text-title font-semibold text-black dark:text-white">
-                        {verdict}
-                    </h2>
-                    {state === "provisional" ? (
-                        <p className="mt-1 text-xs text-muted-foreground">{labels.provisionalHint}</p>
-                    ) : (
-                        deltaLabel && (
-                            <p
-                                className={`mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                    deltaDirection === "down"
-                                        ? "bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300"
-                                        : "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
-                                }`}
-                            >
-                                {deltaDirection === "down" ? (
-                                    <TrendingDown className="h-3.5 w-3.5" aria-hidden="true" />
-                                ) : (
-                                    <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
-                                )}
-                                {deltaLabel}
-                            </p>
-                        )
-                    )}
-                    {keyReason && (
-                        <div className="mt-3">
-                            <p className="pw-kicker">{labels.reasonKicker}</p>
-                            <p className="mt-0.5 text-sm text-black/75 dark:text-white/75">{keyReason}</p>
-                        </div>
-                    )}
-                    {(areasLine || policyLine) && (
-                        <p className="mt-2 text-xs text-muted-foreground">
-                            {[areasLine, policyLine].filter(Boolean).join(" · ")}
-                        </p>
-                    )}
+
+            {/* THE HEADLINE IS THE FACTS, not a grade.
+                
+                This was a 96px ring with a number inside it and a verdict word
+                beside it — «Καλή κάλυψη» over a single never-analysed policy,
+                «Χρειάζεται βελτίωση» over a wallet with no cover at all. The
+                counts below say what the wallet contains, which is what the
+                reader came for and what cannot be wrong. */}
+            <h2
+                id="protection-status-heading"
+                className="mt-3 text-title font-semibold leading-snug text-black dark:text-white"
+            >
+                {factsLine}
+            </h2>
+
+            {keyReason && (
+                <div className="mt-3">
+                    <p className="pw-kicker">{labels.reasonKicker}</p>
+                    <p className="mt-0.5 text-sm text-black/75 dark:text-white/75">{keyReason}</p>
                 </div>
-            </div>
+            )}
+
+            {areasLine && <p className="mt-2 text-sm text-black/70 dark:text-white/70">{areasLine}</p>}
+
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <Link href="/coverage-insights" className="pw-primary-button inline-flex items-center gap-2">
                     {labels.cta}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
             </div>
-            <ScoreMethodology
-                className="mt-3"
-                copy={{
-                    title: labels.methodologyTitle,
-                    body: labels.methodologyBody,
-                    limits: labels.methodologyLimits,
-                    notAdvice: labels.methodologyNotAdvice,
-                }}
-            />
+
+            {/* The score, demoted to a disclosure and stripped of its verdict.
+                
+                It measures BREADTH of cover — which lines you hold against the
+                ones your profile implies — and that is a genuinely useful thing
+                to be able to look up. It is not a grade on how protected
+                someone is, and it was being read as one. */}
+            {scoreUnsupportedReason ? (
+                <p className="mt-4 rounded-2xl border border-black/10 bg-black/[0.02] px-4 py-3 text-sm leading-snug text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/70">
+                    {scoreUnsupportedReason}
+                </p>
+            ) : (
+                <details className="mt-4 rounded-2xl border border-black/10 bg-black/[0.02] px-4 py-3 dark:border-white/15 dark:bg-white/5">
+                    <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-2 text-sm font-semibold text-black/75 dark:text-white/75">
+                        <ShieldCheck className="h-4 w-4 text-primary dark:text-mint" aria-hidden="true" />
+                        {labels.scoreDisclosureOpen}
+                    </summary>
+                    <div className="mt-3 flex items-center gap-4">
+                        <ScoreRing value={score} toneClass={ringToneClass} sizeClass="h-16 w-16">
+                            <span className="text-base font-semibold text-black dark:text-white">{score}</span>
+                        </ScoreRing>
+                        <div className="min-w-0 flex-1">
+                            <p className="pw-kicker">{labels.scoreDisclosureLabel}</p>
+                            {/* Badge and hint stay SEPARATE elements: they are a
+                                label and its explanation, and the fallback
+                                formula differs materially from the engine's, so
+                                the label has to be findable on its own. */}
+                            {state === "provisional" && (
+                                <>
+                                    <p className="mt-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
+                                        {labels.provisionalBadge}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">{labels.provisionalHint}</p>
+                                </>
+                            )}
+                            {/* The delta keeps its arrow but loses its colour-as-judgement:
+                                a fall in BREADTH is not necessarily bad news. */}
+                            {state !== "provisional" && deltaLabel && (
+                                <p className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-black/65 dark:text-white/65">
+                                    {deltaDirection === "down" ? (
+                                        <TrendingDown className="h-3.5 w-3.5" aria-hidden="true" />
+                                    ) : (
+                                        <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
+                                    )}
+                                    {deltaLabel}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                    <ScoreMethodology
+                        className="mt-3"
+                        copy={{
+                            title: labels.methodologyTitle,
+                            body: labels.methodologyBody,
+                            limits: labels.methodologyLimits,
+                            notAdvice: labels.methodologyNotAdvice,
+                        }}
+                    />
+                </details>
+            )}
+
+            {/* Point of use: the facts above are counts, but the areas line and
+                the key reason are AI-derived. */}
             <AiDisclaimer language={language} variant="inline" className="mt-2" />
         </section>
     )

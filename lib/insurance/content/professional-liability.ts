@@ -44,7 +44,7 @@ export const professionalLiabilityContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: το όριο ανά απαίτηση και το συνολικό όριο για την περίοδο, μαζί με την απαλλαγή.',
+            el: 'Από το έγγραφο που ανεβάσατε: το όριο ανά απαίτηση και το συνολικό όριο για την περίοδο, μαζί με την απαλλαγή.',
             en: 'From the document you uploaded: the limit per claim and the aggregate for the period, together with the deductible.',
         },
         {
@@ -62,19 +62,19 @@ export const professionalLiabilityContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Σημείωσε την αναδρομική ημερομηνία δίπλα στην ημερομηνία έναρξης και έλεγξέ την σε κάθε αλλαγή ασφαλιστή — είναι το στοιχείο που χάνεται πιο εύκολα στη μετάβαση.',
+            el: 'Σημειώστε την αναδρομική ημερομηνία δίπλα στην ημερομηνία έναρξης και έλεγξέ την σε κάθε αλλαγή ασφαλιστή — είναι το στοιχείο που χάνεται πιο εύκολα στη μετάβαση.',
             en: 'Note the retroactive date beside the inception date and check it at every change of insurer — it is the detail most easily lost in a transfer.',
         },
         {
-            el: 'Δήλωσε περιστατικά που ενδέχεται να εξελιχθούν σε απαίτηση όσο το συμβόλαιο είναι σε ισχύ, ακόμη κι αν ο πελάτης δεν έχει ζητήσει τίποτα ακόμη.',
+            el: 'Δηλώστε περιστατικά που ενδέχεται να εξελιχθούν σε απαίτηση όσο το συμβόλαιο είναι σε ισχύ, ακόμη κι αν ο πελάτης δεν έχει ζητήσει τίποτα ακόμη.',
             en: 'Report circumstances that could develop into a claim while the policy is live, even if the client has asked for nothing yet.',
         },
         {
-            el: 'Κράτα αρχείο εντολών, παραδοτέων και επικοινωνίας ανά έργο· στην επαγγελματική ευθύνη η υπεράσπιση στηρίζεται στο τι συμφωνήθηκε και πότε.',
+            el: 'Κρατήστε αρχείο εντολών, παραδοτέων και επικοινωνίας ανά έργο· στην επαγγελματική ευθύνη η υπεράσπιση στηρίζεται στο τι συμφωνήθηκε και πότε.',
             en: 'Keep a record of instructions, deliverables and correspondence per engagement; in professional liability the defence rests on what was agreed and when.',
         },
         {
-            el: 'Πριν σταματήσεις τη δραστηριότητα, ρώτησε γραπτώς για κάλυψη εκκαθάρισης και για τη διάρκειά της.',
+            el: 'Πριν σταματήσεις τη δραστηριότητα, ρωτήστε γραπτώς για κάλυψη εκκαθάρισης και για τη διάρκειά της.',
             en: 'Before ceasing practice, ask in writing about run-off cover and how long it lasts.',
         },
     ],
@@ -115,7 +115,7 @@ export const professionalLiabilityContent: BranchContent = {
     recommendedActions: [
         {
             id: 'professional_liability_check_retroactive',
-            label: { el: 'Δες την αναδρομική ημερομηνία', en: 'See the retroactive date' },
+            label: { el: 'Δείτε την αναδρομική ημερομηνία', en: 'See the retroactive date' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -125,7 +125,7 @@ export const professionalLiabilityContent: BranchContent = {
         },
         {
             id: 'professional_liability_check_defence',
-            label: { el: 'Έλεγξε πού εντάσσονται τα έξοδα υπεράσπισης', en: 'Check where defence costs sit' },
+            label: { el: 'Ελέγξτε πού εντάσσονται τα έξοδα υπεράσπισης', en: 'Check where defence costs sit' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -135,7 +135,7 @@ export const professionalLiabilityContent: BranchContent = {
         },
         {
             id: 'professional_liability_check_activities',
-            label: { el: 'Δες ποιες δραστηριότητες καλύπτονται', en: 'See which activities are covered' },
+            label: { el: 'Δείτε ποιες δραστηριότητες καλύπτονται', en: 'See which activities are covered' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -145,13 +145,13 @@ export const professionalLiabilityContent: BranchContent = {
         },
         {
             id: 'professional_liability_review_continuity',
-            label: { el: 'Έλεγξε τη συνέχεια της κάλυψης στον χρόνο', en: 'Check the continuity of cover over time' },
+            label: { el: 'Ελέγξτε τη συνέχεια της κάλυψης στον χρόνο', en: 'Check the continuity of cover over time' },
             href: '/renewals',
             ctaType: 'renewals',
         },
         {
             id: 'professional_liability_ask_agent_runoff',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για κάλυψη εκκαθάρισης', en: 'Ask your advisor about run-off cover' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για κάλυψη εκκαθάρισης', en: 'Ask your advisor about run-off cover' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -165,19 +165,19 @@ export const professionalLiabilityContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Γνωστοποίησε στον ασφαλιστή μόλις γίνει γνωστό περιστατικό που ενδέχεται να οδηγήσει σε απαίτηση, ακόμη και χωρίς επίσημη όχληση.',
+            el: 'Γνωστοποιήστε στον ασφαλιστή μόλις γίνει γνωστό περιστατικό που ενδέχεται να οδηγήσει σε απαίτηση, ακόμη και χωρίς επίσημη όχληση.',
             en: 'Notify the insurer as soon as a circumstance that might give rise to a claim is known, even without a formal demand.',
         },
         {
-            el: 'Μην απαντήσεις ουσιαστικά στον πελάτη και μην αναγνωρίσεις υπαιτιότητα πριν συνεννοηθείς με τον ασφαλιστή.',
+            el: 'Μην απαντήσεις ουσιαστικά στον πελάτη και μην αναγνωρίσετε υπαιτιότητα πριν συνεννοηθείς με τον ασφαλιστή.',
             en: 'Do not respond substantively to the client or admit fault before speaking with the insurer.',
         },
         {
-            el: 'Συγκέντρωσε τη σύμβαση έργου, τις οδηγίες του πελάτη και τα παραδοτέα με τις ημερομηνίες τους — η αλληλουχία ορίζει το πεδίο της ευθύνης.',
+            el: 'Συγκεντρώστε τη σύμβαση έργου, τις οδηγίες του πελάτη και τα παραδοτέα με τις ημερομηνίες τους — η αλληλουχία ορίζει το πεδίο της ευθύνης.',
             en: 'Gather the engagement contract, the client’s instructions and the deliverables with their dates — the sequence defines the scope of the duty.',
         },
         {
-            el: 'Κράτα χωριστό αρχείο για τα έξοδα υπεράσπισης, ώστε να παρακολουθείται πώς επηρεάζουν το διαθέσιμο όριο.',
+            el: 'Κρατήστε χωριστό αρχείο για τα έξοδα υπεράσπισης, ώστε να παρακολουθείται πώς επηρεάζουν το διαθέσιμο όριο.',
             en: 'Keep a separate record of defence costs, so their effect on the remaining limit can be tracked.',
         },
     ],
@@ -186,11 +186,11 @@ export const professionalLiabilityContent: BranchContent = {
         en: 'At each renewal it is worth confirming the retroactive date has not moved and that the declared activities include whatever was added during the year.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει επαγγελματική αστική ευθύνη', en: 'No professional liability policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει επαγγελματική αστική ευθύνη', en: 'No professional liability policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες το όριο ανά απαίτηση, την αναδρομική ημερομηνία και τη θέση των εξόδων υπεράσπισης.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε το όριο ανά απαίτηση, την αναδρομική ημερομηνία και τη θέση των εξόδων υπεράσπισης.',
             en: 'Upload the policy and see the limit per claim, the retroactive date and where defence costs sit.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

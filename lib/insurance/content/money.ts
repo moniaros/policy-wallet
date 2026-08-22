@@ -42,7 +42,7 @@ export const moneyContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: τα ανώτατα όρια ανά κάλυψη και τα επιμέρους όρια ανά χρηματοκιβώτιο, ταμείο ή αποστολή, όπως αναγράφονται.',
+            el: 'Από το έγγραφο που ανεβάσατε: τα ανώτατα όρια ανά κάλυψη και τα επιμέρους όρια ανά χρηματοκιβώτιο, ταμείο ή αποστολή, όπως αναγράφονται.',
             en: 'From the document you uploaded: the maximum limits per cover and the sub-limits per safe, till or transit, as stated.',
         },
         {
@@ -60,19 +60,19 @@ export const moneyContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Έλεγξε ότι η σύνδεση του συναγερμού με το κέντρο λήψης σημάτων είναι ενεργή και πληρωμένη — είναι το μέτρο που δηλώνεται πιο συχνά και συντηρείται λιγότερο.',
+            el: 'Ελέγξτε ότι η σύνδεση του συναγερμού με το κέντρο λήψης σημάτων είναι ενεργή και πληρωμένη — είναι το μέτρο που δηλώνεται πιο συχνά και συντηρείται λιγότερο.',
             en: 'Check that the alarm’s link to the monitoring centre is live and paid up — it is the measure most often declared and least often maintained.',
         },
         {
-            el: 'Καθιέρωσε γραπτή διαδικασία για τα κλειδιά εκτός ωραρίου, με ονόματα και σημείο φύλαξης, ώστε ο όρος να είναι αποδείξιμος και όχι απλώς αληθής.',
+            el: 'Καθιερώστε γραπτή διαδικασία για τα κλειδιά εκτός ωραρίου, με ονόματα και σημείο φύλαξης, ώστε ο όρος να είναι αποδείξιμος και όχι απλώς αληθής.',
             en: 'Put the out-of-hours key routine in writing, with names and where they are held, so the condition is provable rather than merely true.',
         },
         {
-            el: 'Κράτα το μητρώο επιταγών ενημερωμένο την ίδια μέρα. Αναδρομική συμπλήρωση μετά από κλοπή δεν έχει την ίδια αξία.',
+            el: 'Κρατήστε το μητρώο επιταγών ενημερωμένο την ίδια μέρα. Αναδρομική συμπλήρωση μετά από κλοπή δεν έχει την ίδια αξία.',
             en: 'Keep the cheque register current the same day. Filling it in after a theft does not carry the same weight.',
         },
         {
-            el: 'Περιόρισε το μέγιστο υπόλοιπο ανά ταμείο κοντά στο επιμέρους όριο του συμβολαίου· τα μετρητά που ξεπερνούν το όριο μένουν εκτεθειμένα ακόμη κι όταν η κάλυψη ισχύει.',
+            el: 'Περιορίστε το μέγιστο υπόλοιπο ανά ταμείο κοντά στο επιμέρους όριο του συμβολαίου· τα μετρητά που ξεπερνούν το όριο μένουν εκτεθειμένα ακόμη κι όταν η κάλυψη ισχύει.',
             en: 'Cap the maximum balance per till near the policy’s sub-limit; cash above the sub-limit stays exposed even where the cover responds.',
         },
     ],
@@ -113,7 +113,7 @@ export const moneyContent: BranchContent = {
     recommendedActions: [
         {
             id: 'money_check_sublimits',
-            label: { el: 'Δες τα όρια ανά σημείο', en: 'See the limits per point' },
+            label: { el: 'Δείτε τα όρια ανά σημείο', en: 'See the limits per point' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -123,7 +123,7 @@ export const moneyContent: BranchContent = {
         },
         {
             id: 'money_check_conditions',
-            label: { el: 'Έλεγξε τις προϋποθέσεις ασφαλείας', en: 'Check the security conditions' },
+            label: { el: 'Ελέγξτε τις προϋποθέσεις ασφαλείας', en: 'Check the security conditions' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -133,7 +133,7 @@ export const moneyContent: BranchContent = {
         },
         {
             id: 'money_check_transit',
-            label: { el: 'Δες πού ισχύει η κάλυψη χρηματαποστολής', en: 'See where the transit cover applies' },
+            label: { el: 'Δείτε πού ισχύει η κάλυψη χρηματαποστολής', en: 'See where the transit cover applies' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -143,13 +143,13 @@ export const moneyContent: BranchContent = {
         },
         {
             id: 'money_review_property_link',
-            label: { el: 'Έλεγξε αν απαιτείται ασφαλιστήριο περιουσίας σε ισχύ', en: 'Check whether an in-force property policy is required' },
+            label: { el: 'Ελέγξτε αν απαιτείται ασφαλιστήριο περιουσίας σε ισχύ', en: 'Check whether an in-force property policy is required' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'money_ask_agent_limits',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για τα όρια ανά σημείο', en: 'Ask your advisor about the per-point limits' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για τα όρια ανά σημείο', en: 'Ask your advisor about the per-point limits' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -163,19 +163,19 @@ export const moneyContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Δήλωσε το περιστατικό στην αστυνομία αμέσως και κράτα αντίγραφο της καταγγελίας — σε κλοπή μετρητών είναι το πρώτο έγγραφο του φακέλου.',
+            el: 'Δηλώστε το περιστατικό στην αστυνομία αμέσως και κρατήστε αντίγραφο της καταγγελίας — σε κλοπή μετρητών είναι το πρώτο έγγραφο του φακέλου.',
             en: 'Report the incident to the police at once and keep a copy of the report — in a cash theft it is the first document in the file.',
         },
         {
-            el: 'Απομόνωσε τον χώρο και διατήρησε τα δεδομένα του συναγερμού και των καμερών πριν αντικατασταθούν από τον κύκλο εγγραφής.',
+            el: 'Απομονώστε τον χώρο και διατηρήστε τα δεδομένα του συναγερμού και των καμερών πριν αντικατασταθούν από τον κύκλο εγγραφής.',
             en: 'Secure the area and preserve alarm and camera data before the recording cycle overwrites it.',
         },
         {
-            el: 'Ετοίμασε τα λογιστικά παραστατικά που αποδεικνύουν το ποσό τη στιγμή της απώλειας· η αποζημίωση κρίνεται από αυτά, όχι από εκτίμηση.',
+            el: 'Ετοιμάστε τα λογιστικά παραστατικά που αποδεικνύουν το ποσό τη στιγμή της απώλειας· η αποζημίωση κρίνεται από αυτά, όχι από εκτίμηση.',
             en: 'Prepare the accounting records proving the amount at the moment of loss; the claim is settled from those, not from an estimate.',
         },
         {
-            el: 'Αν χάθηκαν επιταγές, ξεκίνησε αμέσως τη διαδικασία ακύρωσης με την τράπεζα — οι προθεσμίες σε αυτόν τον όρο μετριούνται σε ώρες.',
+            el: 'Αν χάθηκαν επιταγές, ξεκινήστε αμέσως τη διαδικασία ακύρωσης με την τράπεζα — οι προθεσμίες σε αυτόν τον όρο μετριούνται σε ώρες.',
             en: 'If cheques were lost, start the cancellation process with the bank immediately — the deadlines in that condition are measured in hours.',
         },
     ],
@@ -184,11 +184,11 @@ export const moneyContent: BranchContent = {
         en: 'At renewal it is worth re-measuring the actual balances per point and confirming the declared security measures still hold.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση χρημάτων', en: 'No money policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση χρημάτων', en: 'No money policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες τα όρια ανά σημείο, τις απαλλαγές και τα μέτρα ασφαλείας που θεωρούνται δεδομένα.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε τα όρια ανά σημείο, τις απαλλαγές και τα μέτρα ασφαλείας που θεωρούνται δεδομένα.',
             en: 'Upload the policy and see the limits per point, the deductibles and the security measures being assumed.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

@@ -17,7 +17,7 @@ import type { BranchContent } from './types'
 export const boatHullContent: BranchContent = {
     branchId: 'boat_hull',
     tagline: {
-        el: 'Το ποσό που θα πάρεις για ζημιά στο ίδιο το σκάφος κρίνεται από την απαλλαγή, όχι από το ασφαλισμένο κεφάλαιο.',
+        el: 'Το ποσό που θα πάρετε για ζημιά στο ίδιο το σκάφος κρίνεται από την απαλλαγή, όχι από το ασφαλισμένο κεφάλαιο.',
         en: 'What a claim on the boat itself pays out is decided by the deductible, not by the sum insured.',
     },
     shortDescription: {
@@ -48,7 +48,7 @@ export const boatHullContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: την ασφαλισμένη αξία σκάφους και μηχανών, καθώς και τις χωριστές αξίες βοηθητικών σκαφών, εξωλέμβιων και εξοπλισμού όπου αναγράφονται.',
+            el: 'Από το έγγραφο που ανεβάσατε: την ασφαλισμένη αξία σκάφους και μηχανών, καθώς και τις χωριστές αξίες βοηθητικών σκαφών, εξωλέμβιων και εξοπλισμού όπου αναγράφονται.',
             en: 'From the document you uploaded: the insured value of hull and machinery, plus the separate values of tenders, outboards and equipment where they are stated.',
         },
         {
@@ -56,7 +56,7 @@ export const boatHullContent: BranchContent = {
             en: 'The ladder of deductibles by type of damage, and the rule that decides which one applies when a single incident touches more than one.',
         },
         {
-            el: 'Τους απαράβατους όρους και τις προϋποθέσεις κάλυψης — συντήρηση, δίπλωμα κυβερνήτη, τόπος ελλιμενισμού, ισχύ εγγράφων — όπως είναι διατυπωμένοι, χωρίς δικές μας συμπληρώσεις.',
+            el: 'Τους απαράβατους όρους και τις προϋποθέσεις κάλυψης — συντήρηση, δίπλωμα κυβερνήτη, τόπος ελλιμενισμού, ισχύ εγγράφων — όπως είναι διατυπωμένοι, χωρίς δικές μας συμπληρώσετε.',
             en: 'The warranties and conditions of cover — servicing, skipper licence, place of berthing, validity of the craft’s papers — as they are worded, with nothing added by us.',
         },
         {
@@ -66,19 +66,19 @@ export const boatHullContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Κράτα τα δελτία service μηχανής μαζί με το συμβόλαιο. Στη μηχανική βλάβη το πρώτο ερώτημα είναι σχεδόν πάντα πότε έγινε η τελευταία συντήρηση και με ποιες προδιαγραφές.',
+            el: 'Κρατήστε τα δελτία service μηχανής μαζί με το συμβόλαιο. Στη μηχανική βλάβη το πρώτο ερώτημα είναι σχεδόν πάντα πότε έγινε η τελευταία συντήρηση και με ποιες προδιαγραφές.',
             en: 'Keep the engine service records with the policy. In a machinery claim the first question is nearly always when the last service happened and to what specification.',
         },
         {
-            el: 'Δώσε αναλυτική κατάσταση εξοπλισμού και προσωπικών αντικειμένων με φωτογραφίες και αριθμούς σειράς, και ανανέωσέ την όταν προσθέτεις ηλεκτρονικά.',
+            el: 'Δώστε αναλυτική κατάσταση εξοπλισμού και προσωπικών αντικειμένων με φωτογραφίες και αριθμούς σειράς, και ανανέωσέ την όταν προσθέτετε ηλεκτρονικά.',
             en: 'Provide an itemised list of equipment and personal effects with photos and serial numbers, and refresh it whenever you add electronics.',
         },
         {
-            el: 'Σύγκρινε την ασφαλισμένη αξία με την τρέχουσα αγοραία αξία του σκάφους μία φορά τον χρόνο. Η υπερασφάλιση δεν αποδίδει παραπάνω και η υπασφάλιση μειώνει την αποζημίωση.',
+            el: 'Συγκρίνετε την ασφαλισμένη αξία με την τρέχουσα αγοραία αξία του σκάφους μία φορά τον χρόνο. Η υπερασφάλιση δεν αποδίδει παραπάνω και η υπασφάλιση μειώνει την αποζημίωση.',
             en: 'Compare the insured value against the boat’s current market value once a year. Over-insuring pays no more, and under-insuring reduces what a claim returns.',
         },
         {
-            el: 'Αν αλλάξεις σημείο ελλιμενισμού ή περάσεις σε χειμερινό παροπλισμό, ενημέρωσε γραπτώς — ο τόπος φύλαξης είναι από τους λίγους όρους που αλλάζουν χωρίς να το σκεφτούμε.',
+            el: 'Αν αλλάξετε σημείο ελλιμενισμού ή περάσετε σε χειμερινό παροπλισμό, ενημερώστε γραπτώς — ο τόπος φύλαξης είναι από τους λίγους όρους που αλλάζουν χωρίς να το σκεφτούμε.',
             en: 'If you change berth or move into winter lay-up, say so in writing — where the boat is kept is one of the few terms that changes without our thinking about it.',
         },
     ],
@@ -119,7 +119,7 @@ export const boatHullContent: BranchContent = {
     recommendedActions: [
         {
             id: 'boat_hull_check_deductibles',
-            label: { el: 'Δες την κλίμακα απαλλαγών', en: 'See the deductible ladder' },
+            label: { el: 'Δείτε την κλίμακα απαλλαγών', en: 'See the deductible ladder' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -129,7 +129,7 @@ export const boatHullContent: BranchContent = {
         },
         {
             id: 'boat_hull_check_warranties',
-            label: { el: 'Έλεγξε τους απαράβατους όρους', en: 'Check the warranties' },
+            label: { el: 'Ελέγξτε τους απαράβατους όρους', en: 'Check the warranties' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -139,7 +139,7 @@ export const boatHullContent: BranchContent = {
         },
         {
             id: 'boat_hull_check_machinery',
-            label: { el: 'Δες αν καλύπτονται μηχανικές βλάβες', en: 'See whether machinery breakdown is covered' },
+            label: { el: 'Δείτε αν καλύπτονται μηχανικές βλάβες', en: 'See whether machinery breakdown is covered' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -149,13 +149,13 @@ export const boatHullContent: BranchContent = {
         },
         {
             id: 'boat_hull_review_value',
-            label: { el: 'Σύγκρινε ασφαλισμένη και αγοραία αξία', en: 'Compare insured and market value' },
+            label: { el: 'Συγκρίνετε ασφαλισμένη και αγοραία αξία', en: 'Compare insured and market value' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'boat_hull_ask_agent_schedule',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για την κατάσταση εξοπλισμού', en: 'Ask your advisor about the equipment schedule' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για την κατάσταση εξοπλισμού', en: 'Ask your advisor about the equipment schedule' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -169,19 +169,19 @@ export const boatHullContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Ειδοποίησε τον ασφαλιστή πριν από οποιαδήποτε επισκευή ή ανέλκυση, ώστε να προηγηθεί πραγματογνωμοσύνη όπου προβλέπεται.',
+            el: 'Ειδοποιήστε τον ασφαλιστή πριν από οποιαδήποτε επισκευή ή ανέλκυση, ώστε να προηγηθεί πραγματογνωμοσύνη όπου προβλέπεται.',
             en: 'Notify the insurer before any repair or lifting, so that a survey can come first where the policy provides for one.',
         },
         {
-            el: 'Σε κλοπή ή κακόβουλη ζημιά, κάνε καταγγελία στην αστυνομία ή στη λιμενική αρχή αμέσως — η καθυστέρηση της δήλωσης σχολιάζεται στον φάκελο.',
+            el: 'Σε κλοπή ή κακόβουλη ζημιά, κάντε καταγγελία στην αστυνομία ή στη λιμενική αρχή αμέσως — η καθυστέρηση της δήλωσης σχολιάζεται στον φάκελο.',
             en: 'For theft or malicious damage, report to the police or the port authority at once — a late report is remarked upon in the file.',
         },
         {
-            el: 'Συγκέντρωσε δελτία service, τιμολόγια εξοπλισμού και την κατάσταση αντικειμένων που είχε δοθεί στην ανάληψη· εκεί κρίνεται η αξία, όχι στην εκτίμηση της στιγμής.',
+            el: 'Συγκεντρώστε δελτία service, τιμολόγια εξοπλισμού και την κατάσταση αντικειμένων που είχε δοθεί στην ανάληψη· εκεί κρίνεται η αξία, όχι στην εκτίμηση της στιγμής.',
             en: 'Gather service records, equipment invoices and the schedule submitted at inception; that is where value is settled, not in an on-the-spot estimate.',
         },
         {
-            el: 'Κατάγραψε ώρα, στίγμα και συνθήκες πριν μετακινηθεί οτιδήποτε, και κράτησε φωτογραφίες πριν και μετά την επέμβαση διάσωσης.',
+            el: 'Καταγράψτε ώρα, στίγμα και συνθήκες πριν μετακινηθεί οτιδήποτε, και κρατήστε φωτογραφίες πριν και μετά την επέμβαση διάσωσης.',
             en: 'Record time, position and conditions before anything is moved, and keep photographs from before and after any salvage operation.',
         },
     ],
@@ -190,11 +190,11 @@ export const boatHullContent: BranchContent = {
         en: 'At renewal three things are worth checking: the boat’s value, the equipment schedule, and whether the servicing the policy asks for was actually done.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει κάλυψη ιδίων ζημιών σκάφους', en: 'No boat hull cover added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει κάλυψη ιδίων ζημιών σκάφους', en: 'No boat hull cover added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες την ασφαλισμένη αξία, τις απαλλαγές ανά είδος ζημιάς και τους όρους που πρέπει να τηρούνται.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε την ασφαλισμένη αξία, τις απαλλαγές ανά είδος ζημιάς και τους όρους που πρέπει να τηρούνται.',
             en: 'Upload the policy and see the insured value, the deductibles per type of damage, and the conditions that have to be kept.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

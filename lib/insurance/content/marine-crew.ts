@@ -42,7 +42,7 @@ export const marineCrewContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: τον πίνακα ορίων ανά παροχή και ανά κατηγορία πληρώματος, με το νόμισμα στο οποίο εκφράζονται.',
+            el: 'Από το έγγραφο που ανεβάσατε: τον πίνακα ορίων ανά παροχή και ανά κατηγορία πληρώματος, με το νόμισμα στο οποίο εκφράζονται.',
             en: 'From the document you uploaded: the table of limits per benefit and per crew class, with the currency they are expressed in.',
         },
         {
@@ -60,19 +60,19 @@ export const marineCrewContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Συγχρόνισε την περίοδο του συμβολαίου με τις ημερομηνίες ναυτολόγησης. Τα κενά εμφανίζονται στις αλλαγές πληρώματος και στις παρατάσεις ταξιδιού.',
+            el: 'Συγχρονίστε την περίοδο του συμβολαίου με τις ημερομηνίες ναυτολόγησης. Τα κενά εμφανίζονται στις αλλαγές πληρώματος και στις παρατάσεις ταξιδιού.',
             en: 'Align the policy period with the sign-on dates. Gaps show up at crew changes and voyage extensions.',
         },
         {
-            el: 'Ενημέρωσε τη σύνθεση πληρώματος όταν αλλάζει ο αριθμός ή οι ειδικότητες — ο πίνακας παροχών γράφτηκε πάνω σε συγκεκριμένη σύνθεση.',
+            el: 'Ενημερώστε τη σύνθεση πληρώματος όταν αλλάζει ο αριθμός ή οι ειδικότητες — ο πίνακας παροχών γράφτηκε πάνω σε συγκεκριμένη σύνθεση.',
             en: 'Update the crew composition when the number or the ranks change — the benefit table was written against a specific composition.',
         },
         {
-            el: 'Κράτα τα ναυτολόγια και τα πιστοποιητικά ικανότητας προσβάσιμα από το πλοίο και από το γραφείο· σε περιστατικό ζητούνται ταυτόχρονα και από τις δύο πλευρές.',
+            el: 'Κρατήστε τα ναυτολόγια και τα πιστοποιητικά ικανότητας προσβάσιμα από το πλοίο και από το γραφείο· σε περιστατικό ζητούνται ταυτόχρονα και από τις δύο πλευρές.',
             en: 'Keep the articles and competency certificates reachable from both ship and office; in an incident both sides are asked for them at once.',
         },
         {
-            el: 'Δες πώς συνδυάζεται η κάλυψη με τυχόν αμοιβαία ασφάλιση προστασίας και αποζημίωσης, ώστε να είναι σαφές ποια απαίτηση πηγαίνει πού.',
+            el: 'Δείτε πώς συνδυάζεται η κάλυψη με τυχόν αμοιβαία ασφάλιση προστασίας και αποζημίωσης, ώστε να είναι σαφές ποια απαίτηση πηγαίνει πού.',
             en: 'Check how this cover sits alongside any protection-and-indemnity entry, so it is clear which claim goes where.',
         },
     ],
@@ -113,7 +113,7 @@ export const marineCrewContent: BranchContent = {
     recommendedActions: [
         {
             id: 'marine_crew_check_benefits',
-            label: { el: 'Δες τον πίνακα παροχών ανά κατηγορία', en: 'See the benefit table per class' },
+            label: { el: 'Δείτε τον πίνακα παροχών ανά κατηγορία', en: 'See the benefit table per class' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -123,7 +123,7 @@ export const marineCrewContent: BranchContent = {
         },
         {
             id: 'marine_crew_check_cap',
-            label: { el: 'Έλεγξε το όριο ανά περιστατικό', en: 'Check the per-incident cap' },
+            label: { el: 'Ελέγξτε το όριο ανά περιστατικό', en: 'Check the per-incident cap' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -133,7 +133,7 @@ export const marineCrewContent: BranchContent = {
         },
         {
             id: 'marine_crew_check_period',
-            label: { el: 'Δες την ακριβή περίοδο κάλυψης', en: 'See the exact period of cover' },
+            label: { el: 'Δείτε την ακριβή περίοδο κάλυψης', en: 'See the exact period of cover' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -143,13 +143,13 @@ export const marineCrewContent: BranchContent = {
         },
         {
             id: 'marine_crew_review_dates',
-            label: { el: 'Συγχρόνισε με τις ημερομηνίες ναυτολόγησης', en: 'Align with the sign-on dates' },
+            label: { el: 'Συγχρονίστε με τις ημερομηνίες ναυτολόγησης', en: 'Align with the sign-on dates' },
             href: '/renewals',
             ctaType: 'renewals',
         },
         {
             id: 'marine_crew_ask_agent_pandi',
-            label: { el: 'Ρώτησε τον σύμβουλό σου πώς δένει με το P&I', en: 'Ask your advisor how this sits with P&I' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας πώς δένει με το P&I', en: 'Ask your advisor how this sits with P&I' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -163,19 +163,19 @@ export const marineCrewContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Κατάγραψε το συμβάν στο ημερολόγιο του πλοίου με ώρα, θέση και συνθήκες, και ειδοποίησε τη διαχειρίστρια εταιρεία αμέσως.',
+            el: 'Καταγράψτε το συμβάν στο ημερολόγιο του πλοίου με ώρα, θέση και συνθήκες, και ειδοποιήστε τη διαχειρίστρια εταιρεία αμέσως.',
             en: 'Record the incident in the ship’s log with time, position and conditions, and notify the managing company at once.',
         },
         {
-            el: 'Ζήτησε ιατρική γνωμάτευση στο πρώτο λιμάνι και κράτησε πρωτότυπα παραστατικά στο νόμισμα που εκδόθηκαν.',
+            el: 'Ζητήστε ιατρική γνωμάτευση στο πρώτο λιμάνι και κρατήστε πρωτότυπα παραστατικά στο νόμισμα που εκδόθηκαν.',
             en: 'Obtain a medical report at the first port and keep original receipts in the currency they were issued in.',
         },
         {
-            el: 'Συγκέντρωσε ναυτολόγιο, σύμβαση ναυτολόγησης και πιστοποιητικά ικανότητας — η ιδιότητα του παθόντος κρίνεται πρώτη.',
+            el: 'Συγκεντρώστε ναυτολόγιο, σύμβαση ναυτολόγησης και πιστοποιητικά ικανότητας — η ιδιότητα του παθόντος κρίνεται πρώτη.',
             en: 'Gather the articles, the employment agreement and competency certificates — the injured person’s status is settled first.',
         },
         {
-            el: 'Αν εμπλέκονται περισσότερα μέλη του πληρώματος, δήλωσέ τα ως ένα περιστατικό· η κατανομή γίνεται μέσα στο όριο, όχι με χωριστές δηλώσεις.',
+            el: 'Αν εμπλέκονται περισσότερα μέλη του πληρώματος, δήλωσέ τα ως ένα περιστατικό· η κατανομή γίνεται μέσα στο όριο, όχι με χωριστές δηλώσετε.',
             en: 'If several crew members are involved, report them as one incident; the allocation happens inside the cap, not through separate notices.',
         },
     ],
@@ -184,11 +184,11 @@ export const marineCrewContent: BranchContent = {
         en: 'There is no annual renewal here but a run of short periods. The reminder belongs on the voyage end date, not on an anniversary.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση πληρώματος', en: 'No crew policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση πληρώματος', en: 'No crew policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες τον πίνακα παροχών, το όριο ανά περιστατικό και την ακριβή περίοδο κάλυψης.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε τον πίνακα παροχών, το όριο ανά περιστατικό και την ακριβή περίοδο κάλυψης.',
             en: 'Upload the policy and see the benefit table, the per-incident cap and the exact period of cover.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

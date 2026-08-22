@@ -42,7 +42,7 @@ export const transportsContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: τα όρια ευθύνης και τη βάση υπολογισμού τους, όπως αναγράφονται στο συμβόλαιο.',
+            el: 'Από το έγγραφο που ανεβάσατε: τα όρια ευθύνης και τη βάση υπολογισμού τους, όπως αναγράφονται στο συμβόλαιο.',
             en: 'From the document you uploaded: the liability limits and the basis on which they are calculated, as stated in the policy.',
         },
         {
@@ -60,19 +60,19 @@ export const transportsContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Σύγκρινε το όριο ανά κιλό με τη μέση αξία ανά κιλό των φορτίων που πραγματικά μεταφέρεις — εκεί φαίνεται αν το όριο αντιστοιχεί στο έργο.',
+            el: 'Συγκρίνετε το όριο ανά κιλό με τη μέση αξία ανά κιλό των φορτίων που πραγματικά μεταφέρετε — εκεί φαίνεται αν το όριο αντιστοιχεί στο έργο.',
             en: 'Compare the limit per kilo against the average value per kilo of what you actually carry — that shows whether the limit matches the work.',
         },
         {
-            el: 'Ενημέρωσε τους πελάτες σου ότι η ευθύνη μεταφορέα δεν αντικαθιστά ασφάλιση εμπορευμάτων· η διαφορά συνήθως ανακαλύπτεται μετά τη ζημιά.',
+            el: 'Ενημερώστε τους πελάτες σας ότι η ευθύνη μεταφορέα δεν αντικαθιστά ασφάλιση εμπορευμάτων· η διαφορά συνήθως ανακαλύπτεται μετά τη ζημιά.',
             en: 'Tell your customers that carrier’s liability does not replace cargo insurance; the difference is usually discovered after a loss.',
         },
         {
-            el: 'Καθιέρωσε κανόνα στάθμευσης σύμφωνο με τους όρους και κατάγραψέ τον, ώστε ο οδηγός να ξέρει τι επιτρέπεται πριν χρειαστεί να το αποφασίσει στον δρόμο.',
+            el: 'Καθιερώστε κανόνα στάθμευσης σύμφωνο με τους όρους και κατάγραψέ τον, ώστε ο οδηγός να ξέρει τι επιτρέπεται πριν χρειαστεί να το αποφασίσει στον δρόμο.',
             en: 'Set a parking rule that matches the conditions and write it down, so the driver knows what is allowed before having to decide it on the road.',
         },
         {
-            el: 'Ζήτησε και αρχειοθέτησε βεβαιώσεις ασφάλισης από κάθε υπεργολάβο πριν από την πρώτη φόρτωση.',
+            el: 'Ζητήστε και αρχειοθετήστε βεβαιώσεις ασφάλισης από κάθε υπεργολάβο πριν από την πρώτη φόρτωση.',
             en: 'Ask for and file certificates of insurance from every subcontractor before the first load.',
         },
     ],
@@ -113,7 +113,7 @@ export const transportsContent: BranchContent = {
     recommendedActions: [
         {
             id: 'transports_check_limit_basis',
-            label: { el: 'Δες πώς υπολογίζεται το όριο ευθύνης', en: 'See how the liability limit is calculated' },
+            label: { el: 'Δείτε πώς υπολογίζεται το όριο ευθύνης', en: 'See how the liability limit is calculated' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -123,7 +123,7 @@ export const transportsContent: BranchContent = {
         },
         {
             id: 'transports_check_excluded_cargo',
-            label: { el: 'Έλεγξε ποια φορτία εξαιρούνται', en: 'Check which cargoes are excluded' },
+            label: { el: 'Ελέγξτε ποια φορτία εξαιρούνται', en: 'Check which cargoes are excluded' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -133,7 +133,7 @@ export const transportsContent: BranchContent = {
         },
         {
             id: 'transports_check_parking',
-            label: { el: 'Δες τους όρους στάθμευσης και φύλαξης', en: 'See the parking and custody conditions' },
+            label: { el: 'Δείτε τους όρους στάθμευσης και φύλαξης', en: 'See the parking and custody conditions' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -143,13 +143,13 @@ export const transportsContent: BranchContent = {
         },
         {
             id: 'transports_review_cargo_pairing',
-            label: { el: 'Δες πώς συνδυάζεται με ασφάλιση εμπορευμάτων', en: 'See how it pairs with cargo insurance' },
+            label: { el: 'Δείτε πώς συνδυάζεται με ασφάλιση εμπορευμάτων', en: 'See how it pairs with cargo insurance' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'transports_ask_agent_subcontractors',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για τους υπεργολάβους', en: 'Ask your advisor about subcontractors' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για τους υπεργολάβους', en: 'Ask your advisor about subcontractors' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -163,19 +163,19 @@ export const transportsContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Κατάγραψε επιφύλαξη στη φορτωτική κατά την παράδοση όταν υπάρχει ορατή ζημιά ή έλλειμμα, και κράτησε αντίγραφο υπογεγραμμένο από τον παραλήπτη.',
+            el: 'Καταγράψτε επιφύλαξη στη φορτωτική κατά την παράδοση όταν υπάρχει ορατή ζημιά ή έλλειμμα, και κρατήστε αντίγραφο υπογεγραμμένο από τον παραλήπτη.',
             en: 'Note a reservation on the waybill at delivery where there is visible damage or a shortage, and keep a copy signed by the consignee.',
         },
         {
-            el: 'Ειδοποίησε τον ασφαλιστή γραπτώς μέσα στην προθεσμία της σύμβασης μεταφοράς, ακόμη κι αν η ευθύνη αμφισβητείται.',
+            el: 'Ειδοποιήστε τον ασφαλιστή γραπτώς μέσα στην προθεσμία της σύμβασης μεταφοράς, ακόμη κι αν η ευθύνη αμφισβητείται.',
             en: 'Notify the insurer in writing within the deadline set by the contract of carriage, even where liability is disputed.',
         },
         {
-            el: 'Συγκέντρωσε ταχογράφο, δεδομένα ιχνηλάτη και στοιχεία στάθμευσης· σε κλοπή αυτά κρίνουν αν τηρήθηκαν οι όροι.',
+            el: 'Συγκεντρώστε ταχογράφο, δεδομένα ιχνηλάτη και στοιχεία στάθμευσης· σε κλοπή αυτά κρίνουν αν τηρήθηκαν οι όροι.',
             en: 'Gather tachograph data, tracker records and parking details; in a theft these decide whether the conditions were kept.',
         },
         {
-            el: 'Μην αναγνωρίσεις ευθύνη προς τον πελάτη πριν εξεταστεί αν συντρέχει λόγος απαλλαγής κατά τη σύμβαση μεταφοράς.',
+            el: 'Μην αναγνωρίσετε ευθύνη προς τον πελάτη πριν εξεταστεί αν συντρέχει λόγος απαλλαγής κατά τη σύμβαση μεταφοράς.',
             en: 'Do not accept liability towards the customer before it is examined whether an exonerating cause applies under the contract of carriage.',
         },
     ],
@@ -184,11 +184,11 @@ export const transportsContent: BranchContent = {
         en: 'If routes, fleet or the kind of cargo have changed, renewal is the moment to align the limits with the work as it is now.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση ευθύνης μεταφορέα', en: 'No carrier’s liability policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση ευθύνης μεταφορέα', en: 'No carrier’s liability policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες τα όρια ευθύνης, τις εξαιρέσεις ανά φορτίο και τους όρους στάθμευσης.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε τα όρια ευθύνης, τις εξαιρέσεις ανά φορτίο και τους όρους στάθμευσης.',
             en: 'Upload the policy and see the liability limits, the exclusions by cargo and the parking conditions.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

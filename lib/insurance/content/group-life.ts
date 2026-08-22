@@ -21,11 +21,11 @@ export const groupLifeContent: BranchContent = {
     },
     whyItMatters: [
         {
-            el: 'Το κεφάλαιο ορίζεται συνήθως ως πολλαπλάσιο των ετήσιων αποδοχών — δύο, τρεις ή τέσσερις μισθοί. Ακολουθεί δηλαδή τον μισθό σου, όχι τις ανάγκες της οικογένειάς σου.',
+            el: 'Το κεφάλαιο ορίζεται συνήθως ως πολλαπλάσιο των ετήσιων αποδοχών — δύο, τρεις ή τέσσερις μισθοί. Ακολουθεί δηλαδή τον μισθό σας, όχι τις ανάγκες της οικογένειάς σας.',
             en: 'The sum is usually set as a multiple of annual earnings — two, three or four salaries. It therefore tracks your pay, not your family’s needs.',
         },
         {
-            el: 'Η δήλωση δικαιούχου γίνεται μέσα από το σχήμα του εργοδότη και όχι σε δικό σου έντυπο. Αν δεν έχει συμπληρωθεί δήλωση στον φάκελό σου, το ποσό ακολουθεί ό,τι προβλέπει ο κανονισμός του προγράμματος.',
+            el: 'Η δήλωση δικαιούχου γίνεται μέσα από το σχήμα του εργοδότη και όχι σε δικό σας έντυπο. Αν δεν έχει συμπληρωθεί δήλωση στον φάκελό σας, το ποσό ακολουθεί ό,τι προβλέπει ο κανονισμός του προγράμματος.',
             en: 'The beneficiary nomination sits inside the employer’s scheme, not on a form of your own. If no nomination is on your file, the amount follows whatever the scheme rules provide.',
         },
         {
@@ -33,7 +33,7 @@ export const groupLifeContent: BranchContent = {
             en: 'Cover ends with the employment relationship. The day you leave, retire or go on extended leave it may no longer exist — and the family rarely knows.',
         },
         {
-            el: 'Γι’ αυτό ένα ομαδικό σπάνια αντικαθιστά μια προσωπική κάλυψη: το ύψος το αποφασίζει τρίτος, η διάρκειά του εξαρτάται από τη δουλειά, και δεν κλειδώνει την ασφαλισιμότητά σου στη σημερινή ηλικία και υγεία σου.',
+            el: 'Γι’ αυτό ένα ομαδικό σπάνια αντικαθιστά μια προσωπική κάλυψη: το ύψος το αποφασίζει τρίτος, η διάρκειά του εξαρτάται από τη δουλειά, και δεν κλειδώνει την ασφαλισιμότητά σας στη σημερινή ηλικία και υγεία σας.',
             en: 'That is why a group scheme rarely replaces personal cover: a third party sets the amount, the duration depends on the job, and it does not lock in your insurability at today’s age and health.',
         },
         {
@@ -43,7 +43,7 @@ export const groupLifeContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Η ομαδική ζωή δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: βασιζόμαστε στο ελεύθερο κείμενο των καλύψεων και των εξαιρέσεων του εγγράφου που ανέβασες.',
+            el: 'Η ομαδική ζωή δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: βασιζόμαστε στο ελεύθερο κείμενο των καλύψεων και των εξαιρέσεων του εγγράφου που ανεβάσατε.',
             en: 'Group life has no standardised fields in our analysis: we rely on the free-text coverages and exclusions of the document you uploaded.',
         },
         {
@@ -57,19 +57,19 @@ export const groupLifeContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Ρώτησε το HR αν υπάρχει καταχωρημένη δήλωση δικαιούχου στο όνομά σου και επικαιροποίησέ την μετά από γάμο, γέννηση ή διαζύγιο — η δήλωση δεν μεταφέρεται από άλλα έγγραφά σου.',
+            el: 'Ρωτήστε το HR αν υπάρχει καταχωρημένη δήλωση δικαιούχου στο όνομά σας και επικαιροποίησέ την μετά από γάμο, γέννηση ή διαζύγιο — η δήλωση δεν μεταφέρεται από άλλα έγγραφά σας.',
             en: 'Ask HR whether a beneficiary nomination is on file in your name and refresh it after a marriage, a birth or a divorce — the nomination does not carry over from your other documents.',
         },
         {
-            el: 'Υπολόγισε τι θα έμενε αν αύριο άλλαζες εργοδότη. Αυτό που απομένει είναι το πραγματικό μέγεθος της προσωπικής σου προστασίας.',
+            el: 'Υπολογίστε τι θα έμενε αν αύριο αλλάζατε εργοδότη. Αυτό που απομένει είναι το πραγματικό μέγεθος της προσωπικής σας προστασίας.',
             en: 'Work out what would remain if you changed employer tomorrow. What is left is the real size of your personal protection.',
         },
         {
-            el: 'Κράτα αντίγραφο του πιστοποιητικού εκτός εταιρικών συστημάτων — μετά την αποχώρηση χάνεται η πρόσβαση στο εσωτερικό δίκτυο και μαζί της το έγγραφο.',
+            el: 'Κρατήστε αντίγραφο του πιστοποιητικού εκτός εταιρικών συστημάτων — μετά την αποχώρηση χάνεται η πρόσβαση στο εσωτερικό δίκτυο και μαζί της το έγγραφο.',
             en: 'Keep a copy of the certificate outside corporate systems — after you leave, access to the internal network goes and the document goes with it.',
         },
         {
-            el: 'Πριν από μια αποχώρηση, ρώτησε αν προβλέπεται δικαίωμα συνέχισης σε ατομικό συμβόλαιο και μέσα σε ποια προθεσμία ασκείται.',
+            el: 'Πριν από μια αποχώρηση, ρωτήστε αν προβλέπεται δικαίωμα συνέχισης σε ατομικό συμβόλαιο και μέσα σε ποια προθεσμία ασκείται.',
             en: 'Before leaving, ask whether a right to continue as an individual policy exists and within what deadline it must be exercised.',
         },
     ],
@@ -86,7 +86,7 @@ export const groupLifeContent: BranchContent = {
             id: 'group_life_beneficiary_gap',
             title: { el: 'Δικαιούχος που δεν έχει δηλωθεί', en: 'Beneficiary never nominated' },
             description: {
-                el: 'Αν δεν υπάρχει δήλωση στον εταιρικό φάκελο, το ποσό διανέμεται με βάση τον κανονισμό του προγράμματος και όχι με βάση τη δική σου πρόθεση.',
+                el: 'Αν δεν υπάρχει δήλωση στον εταιρικό φάκελο, το ποσό διανέμεται με βάση τον κανονισμό του προγράμματος και όχι με βάση τη δική σας πρόθεση.',
                 en: 'With no nomination on the corporate file, the amount is distributed under the scheme rules rather than by your own intention.',
             },
         },
@@ -94,7 +94,7 @@ export const groupLifeContent: BranchContent = {
             id: 'group_life_mortgage_reliance_gap',
             title: { el: 'Στεγαστικό που στηρίζεται σε εταιρική παροχή', en: 'Mortgage leaning on a company benefit' },
             description: {
-                el: 'Με βάση το προφίλ σου, ένα δάνειο που βασίζεται σε κεφάλαιο ομαδικού προγράμματος μένει ακάλυπτο τη στιγμή που σταματά η εργασιακή σχέση.',
+                el: 'Με βάση το προφίλ σας, ένα δάνειο που βασίζεται σε κεφάλαιο ομαδικού προγράμματος μένει ακάλυπτο τη στιγμή που σταματά η εργασιακή σχέση.',
                 en: 'Based on your profile, a loan resting on a group-scheme benefit is left uncovered the moment the employment stops.',
             },
             relatedRuleId: 'mortgage_no_life',
@@ -111,7 +111,7 @@ export const groupLifeContent: BranchContent = {
     recommendedActions: [
         {
             id: 'group_life_check_sum',
-            label: { el: 'Δες πώς ορίζεται το κεφάλαιο', en: 'See how the benefit amount is defined' },
+            label: { el: 'Δείτε πώς ορίζεται το κεφάλαιο', en: 'See how the benefit amount is defined' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -121,7 +121,7 @@ export const groupLifeContent: BranchContent = {
         },
         {
             id: 'group_life_check_beneficiaries',
-            label: { el: 'Έλεγξε ποιοι αναφέρονται ως δικαιούχοι', en: 'Check who is named as beneficiary' },
+            label: { el: 'Ελέγξτε ποιοι αναφέρονται ως δικαιούχοι', en: 'Check who is named as beneficiary' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -131,7 +131,7 @@ export const groupLifeContent: BranchContent = {
         },
         {
             id: 'group_life_check_leaving',
-            label: { el: 'Δες τι ισχύει αν αλλάξεις εργοδότη', en: 'See what applies if you change employer' },
+            label: { el: 'Δείτε τι ισχύει αν αλλάξετε εργοδότη', en: 'See what applies if you change employer' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -141,13 +141,13 @@ export const groupLifeContent: BranchContent = {
         },
         {
             id: 'group_life_update_profile',
-            label: { el: 'Ενημέρωσε το προφίλ σου με εξαρτώμενα και δάνεια', en: 'Update your profile with dependants and loans' },
+            label: { el: 'Ενημερώστε το προφίλ σας με εξαρτώμενα και δάνεια', en: 'Update your profile with dependants and loans' },
             href: '/coverage-insights',
             ctaType: 'profile',
         },
         {
             id: 'group_life_ask_agent',
-            label: { el: 'Ρώτησε τον σύμβουλό σου τι μένει μετά την αποχώρηση', en: 'Ask your advisor what remains after you leave' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας τι μένει μετά την αποχώρηση', en: 'Ask your advisor what remains after you leave' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -178,15 +178,15 @@ export const groupLifeContent: BranchContent = {
         },
     ],
     renewalNote: {
-        el: 'Το πρόγραμμα ανανεώνεται από την εταιρεία. Αν αλλάξουν οι αποδοχές σου ή ο κανονισμός, ενδέχεται να αλλάξει και το κεφάλαιο — χωρίς να το δεις πουθενά αν δεν το ζητήσεις.',
+        el: 'Το πρόγραμμα ανανεώνεται από την εταιρεία. Αν αλλάξουν οι αποδοχές σας ή ο κανονισμός, ενδέχεται να αλλάξει και το κεφάλαιο — χωρίς να το δείτε πουθενά αν δεν το ζητήσετε.',
         en: 'The scheme is renewed by the company. If your pay or the scheme rules change, the benefit may change too — invisibly, unless you ask.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ομαδικό πρόγραμμα ζωής', en: 'No group life scheme added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ομαδικό πρόγραμμα ζωής', en: 'No group life scheme added yet' },
         description: {
-            el: 'Ανέβασε το πιστοποιητικό της εταιρικής παροχής και δες πώς περιγράφεται το κεφάλαιο, ποιοι αναφέρονται ως δικαιούχοι και μέχρι πότε ισχύει.',
+            el: 'Ανεβάστε το πιστοποιητικό της εταιρικής παροχής και δείτε πώς περιγράφεται το κεφάλαιο, ποιοι αναφέρονται ως δικαιούχοι και μέχρι πότε ισχύει.',
             en: 'Upload the certificate of the company benefit and see how the sum is described, who is named as beneficiary and how long it runs.',
         },
-        ctaLabel: { el: 'Ανέβασε πιστοποιητικό', en: 'Upload certificate' },
+        ctaLabel: { el: 'Ανεβάστε πιστοποιητικό', en: 'Upload certificate' },
     },
 }

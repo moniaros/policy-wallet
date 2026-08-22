@@ -47,7 +47,7 @@ export const boatTplContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: τα όρια ευθύνης ανά πρόσωπο, ανά συμβάν και συνολικά για την περίοδο, όπως αναγράφονται στον πίνακα.',
+            el: 'Από το έγγραφο που ανεβάσατε: τα όρια ευθύνης ανά πρόσωπο, ανά συμβάν και συνολικά για την περίοδο, όπως αναγράφονται στον πίνακα.',
             en: 'From the document you uploaded: the liability limits per person, per event and in aggregate for the period, as they appear in the schedule.',
         },
         {
@@ -65,7 +65,7 @@ export const boatTplContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Κράτα το πιστοποιητικό ασφάλισης επάνω στο σκάφος μαζί με τα έγγραφα λεμβολογίου — σε έλεγχο ζητούνται μαζί.',
+            el: 'Κρατήστε το πιστοποιητικό ασφάλισης επάνω στο σκάφος μαζί με τα έγγραφα λεμβολογίου — σε έλεγχο ζητούνται μαζί.',
             en: 'Keep the certificate of insurance aboard alongside the registry papers — a port check asks for them together.',
         },
         {
@@ -73,11 +73,11 @@ export const boatTplContent: BranchContent = {
             en: 'If others use the craft, or it is chartered even occasionally, declare it: private and commercial use are judged on different limits and a different framework.',
         },
         {
-            el: 'Αν κάνεις θαλάσσιο σκι ή σύρεις φουσκωτά, ζήτησε να αναγράφεται ρητά η σχετική κάλυψη με το όριό της, αντί να θεωρείς ότι περιλαμβάνεται.',
+            el: 'Αν κάνετε θαλάσσιο σκι ή σύρετε φουσκωτά, ζητήστε να αναγράφεται ρητά η σχετική κάλυψη με το όριό της, αντί να θεωρείς ότι περιλαμβάνεται.',
             en: 'If you water-ski or tow inflatables, ask for that cover and its limit to be written in explicitly, rather than assuming it is included.',
         },
         {
-            el: 'Σημείωσε χωριστά τις δύο ημερομηνίες λήξης — ευθύνης και ιδίων ζημιών. Η μία μπορεί να ανανεωθεί και η άλλη να ξεχαστεί.',
+            el: 'Σημειώστε χωριστά τις δύο ημερομηνίες λήξης — ευθύνης και ιδίων ζημιών. Η μία μπορεί να ανανεωθεί και η άλλη να ξεχαστεί.',
             en: 'Note the two expiry dates separately — liability and own damage. One can be renewed while the other is forgotten.',
         },
     ],
@@ -118,7 +118,7 @@ export const boatTplContent: BranchContent = {
     recommendedActions: [
         {
             id: 'boat_tpl_check_towers',
-            label: { el: 'Δες τα όρια ανά πρόσωπο και ανά συμβάν', en: 'See the per-person and per-event limits' },
+            label: { el: 'Δείτε τα όρια ανά πρόσωπο και ανά συμβάν', en: 'See the per-person and per-event limits' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -128,7 +128,7 @@ export const boatTplContent: BranchContent = {
         },
         {
             id: 'boat_tpl_check_pollution',
-            label: { el: 'Έλεγξε το όριο θαλάσσιας ρύπανσης', en: 'Check the marine-pollution limit' },
+            label: { el: 'Ελέγξτε το όριο θαλάσσιας ρύπανσης', en: 'Check the marine-pollution limit' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -138,7 +138,7 @@ export const boatTplContent: BranchContent = {
         },
         {
             id: 'boat_tpl_check_towed',
-            label: { el: 'Δες αν καλύπτονται σκι και jet ski', en: 'See whether skiing and jet-skis are covered' },
+            label: { el: 'Δείτε αν καλύπτονται σκι και jet ski', en: 'See whether skiing and jet-skis are covered' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -148,13 +148,13 @@ export const boatTplContent: BranchContent = {
         },
         {
             id: 'boat_tpl_review_dates',
-            label: { el: 'Σύγκρινε τις ημερομηνίες λήξης των δύο καλύψεων', en: 'Compare the expiry dates of the two covers' },
+            label: { el: 'Συγκρίνετε τις ημερομηνίες λήξης των δύο καλύψεων', en: 'Compare the expiry dates of the two covers' },
             href: '/renewals',
             ctaType: 'renewals',
         },
         {
             id: 'boat_tpl_ask_agent_use',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για τη χρήση του σκάφους', en: 'Ask your advisor about how the craft is used' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για τη χρήση του σκάφους', en: 'Ask your advisor about how the craft is used' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -168,19 +168,19 @@ export const boatTplContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Φρόντισε πρώτα τους ανθρώπους και ενημέρωσε τη λιμενική αρχή — σε συμβάν με τραυματισμό ή ρύπανση η αναφορά είναι υποχρέωση, όχι επιλογή.',
+            el: 'Φροντίστε πρώτα τους ανθρώπους και ενημερώστε τη λιμενική αρχή — σε συμβάν με τραυματισμό ή ρύπανση η αναφορά είναι υποχρέωση, όχι επιλογή.',
             en: 'See to people first and inform the port authority — where there is injury or pollution the report is an obligation, not a choice.',
         },
         {
-            el: 'Μην αναγνωρίσεις ευθύνη επί τόπου. Κατάγραψε στοιχεία των εμπλεκομένων και τυχόν μαρτύρων και άφησε την κρίση στον φάκελο.',
+            el: 'Μην αναγνωρίσετε ευθύνη επί τόπου. Καταγράψτε στοιχεία των εμπλεκομένων και τυχόν μαρτύρων και άφησε την κρίση στον φάκελο.',
             en: 'Do not admit liability on the spot. Take the details of those involved and of any witnesses, and leave the judgement to the file.',
         },
         {
-            el: 'Σε διαρροή καυσίμου ή λαδιών, ειδοποίησε αμέσως τη μαρίνα και τον ασφαλιστή — ο περιορισμός της ρύπανσης στα πρώτα λεπτά καθορίζει το τελικό κόστος.',
+            el: 'Σε διαρροή καυσίμου ή λαδιών, ειδοποιήστε αμέσως τη μαρίνα και τον ασφαλιστή — ο περιορισμός της ρύπανσης στα πρώτα λεπτά καθορίζει το τελικό κόστος.',
             en: 'In a fuel or oil spill, alert the marina and the insurer at once — containment in the first minutes decides the final cost.',
         },
         {
-            el: 'Κράτα αντίγραφο κάθε εγγράφου που παραδίδεις στη λιμενική αρχή· ο ασφαλιστής θα ζητήσει τα ίδια στοιχεία στη δική του σειρά.',
+            el: 'Κρατήστε αντίγραφο κάθε εγγράφου που παραδίδετε στη λιμενική αρχή· ο ασφαλιστής θα ζητήσει τα ίδια στοιχεία στη δική του σειρά.',
             en: 'Keep a copy of every document handed to the port authority; the insurer will ask for the same material in its own sequence.',
         },
     ],
@@ -189,11 +189,11 @@ export const boatTplContent: BranchContent = {
         en: 'Because the cover is compulsory, a gap between expiry and renewal is not merely a risk but a breach. A reminder set well in advance is worth having.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει αστική ευθύνη σκάφους', en: 'No boat liability cover added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει αστική ευθύνη σκάφους', en: 'No boat liability cover added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο αστικής ευθύνης και δες τα όρια ανά πρόσωπο, ανά συμβάν και για τη θαλάσσια ρύπανση.',
+            el: 'Ανεβάστε το ασφαλιστήριο αστικής ευθύνης και δείτε τα όρια ανά πρόσωπο, ανά συμβάν και για τη θαλάσσια ρύπανση.',
             en: 'Upload the liability policy and see the limits per person, per event and for marine pollution.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

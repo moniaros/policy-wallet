@@ -13,7 +13,7 @@ import type { BranchContent } from './types'
 export const boatContent: BranchContent = {
     branchId: 'boat',
     tagline: {
-        el: 'Στη θάλασσα, τα όρια του συμβολαίου είναι κυριολεκτικά γεωγραφικά — δες πού και πότε ισχύει το δικό σου.',
+        el: 'Στη θάλασσα, τα όρια του συμβολαίου είναι κυριολεκτικά γεωγραφικά — δείτε πού και πότε ισχύει το δικό σας.',
         en: 'At sea, a policy’s limits are literally geographic — see where and when yours applies.',
     },
     shortDescription: {
@@ -26,7 +26,7 @@ export const boatContent: BranchContent = {
             en: 'Third-party liability insurance is compulsory for pleasure craft in Greek waters — without it, sailing is already a breach, regardless of any damage.',
         },
         {
-            el: 'Τα όρια πλόων είναι από τα λιγότερο προσεγμένα σημεία: αν βγεις εκτός της περιοχής που ορίζει το συμβόλαιο, ενδέχεται να μην ισχύει τίποτα από όσα πληρώνεις.',
+            el: 'Τα όρια πλόων είναι από τα λιγότερο προσεγμένα σημεία: αν βγείτε εκτός της περιοχής που ορίζει το συμβόλαιο, ενδέχεται να μην ισχύει τίποτα από όσα πληρώνετε.',
             en: 'Navigation limits are among the least-noticed clauses: sail outside the area the policy names and none of what you pay for may apply.',
         },
         {
@@ -44,11 +44,11 @@ export const boatContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Το ναυτασφαλιστήριο δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε τις καλύψεις και τις εξαιρέσεις όπως αναγράφονται στο έγγραφο που ανέβασες.',
+            el: 'Το ναυτασφαλιστήριο δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε τις καλύψεις και τις εξαιρέσεις όπως αναγράφονται στο έγγραφο που ανεβάσατε.',
             en: 'Marine policies have no structured fields in our analysis: we read the coverages and exclusions as stated in the document you uploaded.',
         },
         {
-            el: 'Εντοπίζουμε τις αναφορές σε κάλυψη σκάφους, αστική ευθύνη, ναυαγιαίρεση, όρια πλόων και περιόδους παροπλισμού — με τη διατύπωση του συμβολαίου, χωρίς δικές μας συμπληρώσεις.',
+            el: 'Εντοπίζουμε τις αναφορές σε κάλυψη σκάφους, αστική ευθύνη, ναυαγιαίρεση, όρια πλόων και περιόδους παροπλισμού — με τη διατύπωση του συμβολαίου, χωρίς δικές μας συμπληρώσετε.',
             en: 'We surface references to hull cover, liability, salvage, navigation limits and lay-up periods — in the policy’s own wording, with nothing added by us.',
         },
         {
@@ -58,19 +58,19 @@ export const boatContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Πριν από κάθε μεγάλο πλου, σύγκρινε τη διαδρομή που σχεδιάζεις με την περιοχή πλόων του συμβολαίου — ένα νησί παραπέρα μπορεί να είναι εκτός ορίων.',
+            el: 'Πριν από κάθε μεγάλο πλου, συγκρίνετε τη διαδρομή που σχεδιάζετε με την περιοχή πλόων του συμβολαίου — ένα νησί παραπέρα μπορεί να είναι εκτός ορίων.',
             en: 'Before any long passage, compare your planned route with the policy’s navigation area — one island further out can be outside the limits.',
         },
         {
-            el: 'Κράτα επικαιροποιημένη λίστα του εξοπλισμού με φωτογραφίες και αριθμούς σειράς· ηλεκτρονικά και βοηθητικά σκάφη χάνονται ή κλέβονται συχνότερα από το ίδιο το σκάφος.',
+            el: 'Κρατήστε επικαιροποιημένη λίστα του εξοπλισμού με φωτογραφίες και αριθμούς σειράς· ηλεκτρονικά και βοηθητικά σκάφη χάνονται ή κλέβονται συχνότερα από το ίδιο το σκάφος.',
             en: 'Keep an up-to-date equipment list with photos and serial numbers; electronics and tenders are lost or stolen more often than the boat itself.',
         },
         {
-            el: 'Δήλωσε ρητά αν το σκάφος εκναυλώνεται ή χρησιμοποιείται από τρίτους — η επαγγελματική χρήση κρίνεται με εντελώς άλλους όρους από την ιδιωτική.',
+            el: 'Δηλώστε ρητά αν το σκάφος εκναυλώνεται ή χρησιμοποιείται από τρίτους — η επαγγελματική χρήση κρίνεται με εντελώς άλλους όρους από την ιδιωτική.',
             en: 'Declare explicitly if the boat is chartered or used by others — commercial use is judged on entirely different terms from private use.',
         },
         {
-            el: 'Ενημέρωσε τον ασφαλιστή για την περίοδο παροπλισμού και το σημείο φύλαξης, ώστε να ξέρεις τι ισχύει όσο το σκάφος δεν χρησιμοποιείται.',
+            el: 'Ενημερώστε τον ασφαλιστή για την περίοδο παροπλισμού και το σημείο φύλαξης, ώστε να ξέρετε τι ισχύει όσο το σκάφος δεν χρησιμοποιείται.',
             en: 'Tell your insurer about the lay-up period and where the boat is kept, so you know what applies while it is not in use.',
         },
     ],
@@ -79,7 +79,7 @@ export const boatContent: BranchContent = {
             id: 'boat_navigation_limits_gap',
             title: { el: 'Πλους εκτός ορίων', en: 'Sailing outside the limits' },
             description: {
-                el: 'Αν η περιοχή πλόων είναι στενότερη από τη χρήση που κάνεις, η κάλυψη ενδέχεται να μην ισχύει ακριβώς εκεί που την χρειάζεσαι.',
+                el: 'Αν η περιοχή πλόων είναι στενότερη από τη χρήση που κάνετε, η κάλυψη ενδέχεται να μην ισχύει ακριβώς εκεί που την χρειάζεστε.',
                 en: 'If the navigation area is narrower than your actual use, cover may not apply precisely where you need it.',
             },
         },
@@ -103,7 +103,7 @@ export const boatContent: BranchContent = {
             id: 'boat_layup_gap',
             title: { el: 'Ασαφείς όροι παροπλισμού', en: 'Unclear lay-up terms' },
             description: {
-                el: 'Οι καλύψεις κατά τον παροπλισμό συχνά διαφέρουν από αυτές εν πλω — αξίζει να δεις τι ισχύει όσο το σκάφος είναι δεμένο ή σε στεριά.',
+                el: 'Οι καλύψεις κατά τον παροπλισμό συχνά διαφέρουν από αυτές εν πλω — αξίζει να δείτε τι ισχύει όσο το σκάφος είναι δεμένο ή σε στεριά.',
                 en: 'Lay-up covers often differ from those under way — worth seeing what applies while the boat is moored or ashore.',
             },
         },
@@ -111,14 +111,14 @@ export const boatContent: BranchContent = {
     recommendedActions: [
         {
             id: 'boat_check_navigation_limits',
-            label: { el: 'Δες μέχρι πού ισχύει η κάλυψη', en: 'See how far the cover extends' },
+            label: { el: 'Δείτε μέχρι πού ισχύει η κάλυψη', en: 'See how far the cover extends' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Ποια είναι τα όρια πλόων στο συμβόλαιό μου;', en: 'What are the navigation limits on my policy?' },
         },
         {
             id: 'boat_check_liability',
-            label: { el: 'Έλεγξε την αστική ευθύνη προς τρίτους', en: 'Check the third-party liability cover' },
+            label: { el: 'Ελέγξτε την αστική ευθύνη προς τρίτους', en: 'Check the third-party liability cover' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -128,7 +128,7 @@ export const boatContent: BranchContent = {
         },
         {
             id: 'boat_check_salvage',
-            label: { el: 'Δες τι ισχύει για ρυμούλκηση και ανέλκυση', en: 'See what applies for towing and salvage' },
+            label: { el: 'Δείτε τι ισχύει για ρυμούλκηση και ανέλκυση', en: 'See what applies for towing and salvage' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -138,14 +138,14 @@ export const boatContent: BranchContent = {
         },
         {
             id: 'boat_check_crew',
-            label: { el: 'Έλεγξε αν καλύπτονται πλήρωμα και επιβαίνοντες', en: 'Check whether crew and passengers are covered' },
+            label: { el: 'Ελέγξτε αν καλύπτονται πλήρωμα και επιβαίνοντες', en: 'Check whether crew and passengers are covered' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Καλύπτονται οι επιβαίνοντες και το πλήρωμα;', en: 'Are passengers and crew covered?' },
         },
         {
             id: 'boat_ask_agent_layup',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για την περίοδο παροπλισμού', en: 'Ask your advisor about the lay-up period' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για την περίοδο παροπλισμού', en: 'Ask your advisor about the lay-up period' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -163,15 +163,15 @@ export const boatContent: BranchContent = {
             en: 'First the safety of everyone on board and notifying the port authority — in many incidents the harbour report is a prerequisite for the file.',
         },
         {
-            el: 'Κατάγραψε στίγμα, ώρα, καιρικές συνθήκες και κατάσταση θάλασσας· στα ναυτικά συμβάντα αυτά τα στοιχεία κρίνουν την αιτία.',
+            el: 'Καταγράψτε στίγμα, ώρα, καιρικές συνθήκες και κατάσταση θάλασσας· στα ναυτικά συμβάντα αυτά τα στοιχεία κρίνουν την αιτία.',
             en: 'Record position, time, weather and sea state; in marine incidents these details determine the cause.',
         },
         {
-            el: 'Φωτογράφισε ζημιές και εξοπλισμό πριν από κάθε ρυμούλκηση ή ανέλκυση — μετά την επέμβαση η αρχική εικόνα χάνεται.',
+            el: 'Φωτογραφίστε ζημιές και εξοπλισμό πριν από κάθε ρυμούλκηση ή ανέλκυση — μετά την επέμβαση η αρχική εικόνα χάνεται.',
             en: 'Photograph damage and equipment before any towing or lifting — once the operation starts the original picture is gone.',
         },
         {
-            el: 'Μην συμφωνήσεις κόστος ναυαγιαίρεσης πριν ενημερώσεις τον ασφαλιστή, εφόσον οι συνθήκες το επιτρέπουν.',
+            el: 'Μην συμφωνήσετε κόστος ναυαγιαίρεσης πριν ενημερώσετε τον ασφαλιστή, εφόσον οι συνθήκες το επιτρέπουν.',
             en: 'Do not agree salvage costs before notifying your insurer, where conditions allow.',
         },
     ],
@@ -180,11 +180,11 @@ export const boatContent: BranchContent = {
         en: 'Before renewal, the navigation area and the boat’s value are worth a check — both change more easily than we remember.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφαλιστήριο σκάφους', en: 'No boat policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφαλιστήριο σκάφους', en: 'No boat policy added yet' },
         description: {
-            el: 'Ανέβασε το ναυτασφαλιστήριο και δες πού ισχύει, τι καλύπτει εν πλω και τι στον παροπλισμό.',
+            el: 'Ανεβάστε το ναυτασφαλιστήριο και δείτε πού ισχύει, τι καλύπτει εν πλω και τι στον παροπλισμό.',
             en: 'Upload the marine policy and see where it applies, what it covers under way and what it covers in lay-up.',
         },
-        ctaLabel: { el: 'Ανέβασε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
     },
 }

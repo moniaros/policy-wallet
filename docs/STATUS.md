@@ -1,5 +1,49 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-23b (All four pending decisions, implemented)
+
+The four questions logged as "Waiting on humans" were answered "proceed with your proposals", so each
+recommendation is now built. **Not deployed** — production still runs `638ee037`.
+
+**#4 — the score.** Verdict words are gone from the dashboard in every state. The headline is now the
+factual composition I recommended — «3 ασφαλιστήρια · 1 λήγει σύντομα · 1 δεν διαβάστηκε» — and the
+score sits behind a disclosure labelled as a breadth-of-cover indicator. New pure module
+`lib/dashboard/portfolio-summary.ts` decides both. Where the inputs cannot support a figure at all
+(nothing analysed, or every policy expired) **no number renders and the page says why**. Verified by
+re-measurement: `single` went from «Καλή κάλυψη» to «1 ασφαλιστήριο · 1 δεν έχει αναλυθεί» plus an
+explanation. Score ARITHMETIC untouched, per the brief.
+
+**#3 — control contrast.** New `--pw-border-control` token (3.35:1 on white, 4.5:1 on dark) applied
+to `.pw-secondary-button`, `.pw-input` and the named offenders, kept SEPARATE from `--pw-border` so
+card edges are not darkened to fix a control problem. The inverse variant went to .62 alpha (3:1 on
+the brand teal). **Policy page: 10 → 0 control-boundary failures.**
+
+Two measurement defects were found doing it: the 1.4.11 sampler stepped OVER the 1px border and so
+could never be satisfied by any border (it now samples across the edge), and it gated on app-shell
+chrome this series cannot fix (now reported separately). The shell's active-tab tint at 1.25:1 is a
+false positive — its state is carried by a ~7:1 label — and is documented as a known limitation.
+
+**#1 — monetization.** Consolidated to ONE persistent slot in the documents/plan section. Contextual
+locks stay on the capability they lock (€3 report unlock, PDF preview, advisor section) — those are a
+feature's locked state, not an advertisement. Two scattered upsell cards removed.
+
+**#2 — register.** All 35 branch-content files plus `components/monetization/` converted to formal
+«εσείς»: 977 tokens over four passes, with imperatives converted by form (Δες→Δείτε), not
+find-replace. Ambiguous words handled only in verb collocations — «ενημερώσεις» is also a noun.
+`αποφάσισε` was deliberately kept: in its one occurrence it is 3rd-person past.
+
+**This reversed a prior deliberate decision.** `claims-register-consistency.test.ts` documented that
+branch claims guidance used the SINGULAR on purpose, as a voice distinct from the app chrome. The
+policy page renders both inside one card, so it read as inconsistency. The guard is updated to say so
+and **strengthened**: it now requires the formal voice, where before it only required internal
+consistency — which would have let a future rewrite drag a whole list back. Its regexes also had no
+word boundaries and were matching «άσε» inside «βάσεις» and «δες» inside «πινακίδες»; fixed with
+Greek-aware lookarounds.
+
+**4,985 unit tests green.** All guardrails pass. `lib/gap-detection.ts` and the score arithmetic
+untouched.
+
+
 ## Session wrap — 2026-08-23 (Dashboard mobile: GOAL 0 baseline, measured)
 
 **Workstream:** dashboard (`/dashboard`), Goal 0 only — verify and stop. Output:

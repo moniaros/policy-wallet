@@ -244,7 +244,7 @@ export function AskAiDock({ label, onOpen }: { label: string; onOpen: () => void
                (WCAG 1.4.11 wants 3:1). The 0.5c edge-sampling pass is what
                surfaced it — the text-only contrast check reported this page
                clean. */
-            className="mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border border-black/40 bg-white px-5 text-sm font-bold text-black transition-colors hover:bg-black/[0.04] dark:border-white/45 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+            className="mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border border-[color:var(--pw-border-control)] bg-white px-5 text-sm font-bold text-black transition-colors hover:bg-black/[0.04] dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
             <MessageCircle className="h-4 w-4 text-primary dark:text-mint" aria-hidden />
             {label}

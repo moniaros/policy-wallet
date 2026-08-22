@@ -46,7 +46,7 @@ export const marineCargoContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: την ασφαλισμένη αξία, τη βάση αποτίμησης και την περιγραφή των ασφαλισμένων αντικειμένων.',
+            el: 'Από το έγγραφο που ανεβάσατε: την ασφαλισμένη αξία, τη βάση αποτίμησης και την περιγραφή των ασφαλισμένων αντικειμένων.',
             en: 'From the document you uploaded: the insured value, the basis of valuation and the description of the subject-matter insured.',
         },
         {
@@ -64,19 +64,19 @@ export const marineCargoContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Ζήτησε να αναγράφεται ρητά το σετ ρητρών στο συμβόλαιο και κράτησε το δίπλα στο δελτίο αποστολής — στη ζημιά, αυτά τα δύο διαβάζονται μαζί.',
+            el: 'Ζητήστε να αναγράφεται ρητά το σετ ρητρών στο συμβόλαιο και κρατήστε το δίπλα στο δελτίο αποστολής — στη ζημιά, αυτά τα δύο διαβάζονται μαζί.',
             en: 'Ask for the clause set to be written into the policy explicitly and keep it beside the consignment note — in a loss those two are read together.',
         },
         {
-            el: 'Φωτογράφισε τη φόρτωση και την πρόσδεση πριν κλείσει το όχημα. Η τεκμηρίωση της συσκευασίας είναι η απάντηση στην πιο συχνή εξαίρεση του κλάδου.',
+            el: 'Φωτογραφίστε τη φόρτωση και την πρόσδεση πριν κλείσει το όχημα. Η τεκμηρίωση της συσκευασίας είναι η απάντηση στην πιο συχνή εξαίρεση του κλάδου.',
             en: 'Photograph the load and the lashing before the vehicle is closed. Documenting the packing is the answer to this line’s most common exclusion.',
         },
         {
-            el: 'Σημείωσε επιφύλαξη στη φορτωτική κατά την παραλαβή αν υπάρχει ορατή ζημιά ή σπασμένη σφραγίδα — η ανεπιφύλακτη παραλαβή περιορίζει τα δικαιώματα αργότερα.',
+            el: 'Σημειώστε επιφύλαξη στη φορτωτική κατά την παραλαβή αν υπάρχει ορατή ζημιά ή σπασμένη σφραγίδα — η ανεπιφύλακτη παραλαβή περιορίζει τα δικαιώματα αργότερα.',
             en: 'Note a reservation on the consignment note at delivery if there is visible damage or a broken seal — accepting without comment narrows the rights available later.',
         },
         {
-            el: 'Για επαναλαμβανόμενες αποστολές, σύγκρινε το κόστος ανά μεμονωμένη ασφάλιση με ένα ανοικτό συμβόλαιο· η κάλυψη ανά ταξίδι αφήνει κενά ακριβώς στις αποστολές που ξεχάστηκαν.',
+            el: 'Για επαναλαμβανόμενες αποστολές, συγκρίνετε το κόστος ανά μεμονωμένη ασφάλιση με ένα ανοικτό συμβόλαιο· η κάλυψη ανά ταξίδι αφήνει κενά ακριβώς στις αποστολές που ξεχάστηκαν.',
             en: 'For repeat shipments, compare the cost of insuring each one against an open cover; per-voyage insurance leaves gaps exactly on the shipments that were forgotten.',
         },
     ],
@@ -117,7 +117,7 @@ export const marineCargoContent: BranchContent = {
     recommendedActions: [
         {
             id: 'marine_cargo_check_clause_set',
-            label: { el: 'Δες ποιο σετ ρητρών εφαρμόζεται', en: 'See which clause set applies' },
+            label: { el: 'Δείτε ποιο σετ ρητρών εφαρμόζεται', en: 'See which clause set applies' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -127,7 +127,7 @@ export const marineCargoContent: BranchContent = {
         },
         {
             id: 'marine_cargo_check_theft',
-            label: { el: 'Έλεγξε αν καλύπτεται η κλοπή', en: 'Check whether theft is covered' },
+            label: { el: 'Ελέγξτε αν καλύπτεται η κλοπή', en: 'Check whether theft is covered' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -137,7 +137,7 @@ export const marineCargoContent: BranchContent = {
         },
         {
             id: 'marine_cargo_check_conditions',
-            label: { el: 'Δες τις προϋποθέσεις συσκευασίας', en: 'See the packing conditions' },
+            label: { el: 'Δείτε τις προϋποθέσεις συσκευασίας', en: 'See the packing conditions' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -147,13 +147,13 @@ export const marineCargoContent: BranchContent = {
         },
         {
             id: 'marine_cargo_review_period',
-            label: { el: 'Έλεγξε αν η κάλυψη αφορά ένα ταξίδι ή περίοδο', en: 'Check whether cover is per voyage or per period' },
+            label: { el: 'Ελέγξτε αν η κάλυψη αφορά ένα ταξίδι ή περίοδο', en: 'Check whether cover is per voyage or per period' },
             href: '/renewals',
             ctaType: 'renewals',
         },
         {
             id: 'marine_cargo_ask_agent_open_cover',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για ανοικτή κάλυψη', en: 'Ask your advisor about an open cover' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για ανοικτή κάλυψη', en: 'Ask your advisor about an open cover' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -167,32 +167,32 @@ export const marineCargoContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Σημείωσε επιφύλαξη στη φορτωτική ή στο δελτίο παράδοσης πριν υπογράψεις παραλαβή, όταν υπάρχει ορατή ζημιά, έλλειμμα ή παραβιασμένη σφραγίδα.',
+            el: 'Σημειώστε επιφύλαξη στη φορτωτική ή στο δελτίο παράδοσης πριν υπογράψετε παραλαβή, όταν υπάρχει ορατή ζημιά, έλλειμμα ή παραβιασμένη σφραγίδα.',
             en: 'Note a reservation on the waybill or delivery note before signing for receipt, where there is visible damage, a shortage or a broken seal.',
         },
         {
-            el: 'Ειδοποίησε ασφαλιστή και μεταφορέα γραπτώς μέσα στις προθεσμίες που ορίζει η σύμβαση μεταφοράς — οι δύο προθεσμίες τρέχουν παράλληλα και είναι διαφορετικές.',
+            el: 'Ειδοποιήστε ασφαλιστή και μεταφορέα γραπτώς μέσα στις προθεσμίες που ορίζει η σύμβαση μεταφοράς — οι δύο προθεσμίες τρέχουν παράλληλα και είναι διαφορετικές.',
             en: 'Notify insurer and carrier in writing within the deadlines the contract of carriage sets — the two run in parallel and are not the same.',
         },
         {
-            el: 'Κράτα το φορτίο και τη συσκευασία στην κατάσταση που παραλήφθηκαν μέχρι την πραγματογνωμοσύνη, και φωτογράφισε πριν από κάθε αποσυσκευασία.',
+            el: 'Κρατήστε το φορτίο και τη συσκευασία στην κατάσταση που παραλήφθηκαν μέχρι την πραγματογνωμοσύνη, και φωτογραφίστε πριν από κάθε αποσυσκευασία.',
             en: 'Keep the goods and packaging as received until the survey, and photograph before any unpacking.',
         },
         {
-            el: 'Συγκέντρωσε τιμολόγιο, packing list, φορτωτική και αποδεικτικά συσκευασίας· η αξία και η αιτία κρίνονται από αυτά μαζί, όχι από ένα.',
+            el: 'Συγκεντρώστε τιμολόγιο, packing list, φορτωτική και αποδεικτικά συσκευασίας· η αξία και η αιτία κρίνονται από αυτά μαζί, όχι από ένα.',
             en: 'Gather the invoice, packing list, waybill and packing evidence; value and cause are settled from those together, not from any one of them.',
         },
     ],
     renewalNote: {
-        el: 'Αν οι αποστολές είναι τακτικές, αξίζει να δεις στην ανανέωση αν οι διαδρομές και οι αξίες που δηλώθηκαν αντιστοιχούν ακόμη στο πραγματικό μεταφορικό έργο.',
+        el: 'Αν οι αποστολές είναι τακτικές, αξίζει να δείτε στην ανανέωση αν οι διαδρομές και οι αξίες που δηλώθηκαν αντιστοιχούν ακόμη στο πραγματικό μεταφορικό έργο.',
         en: 'If shipments are regular, renewal is the moment to check whether the routes and values declared still match what is actually being moved.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση μεταφοράς εμπορευμάτων', en: 'No cargo policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση μεταφοράς εμπορευμάτων', en: 'No cargo policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες ποιο σετ ρητρών ισχύει, τι καλύπτει και ποιες προϋποθέσεις θέτει για τη συσκευασία.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε ποιο σετ ρητρών ισχύει, τι καλύπτει και ποιες προϋποθέσεις θέτει για τη συσκευασία.',
             en: 'Upload the policy and see which clause set applies, what it covers and what it requires of the packing.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

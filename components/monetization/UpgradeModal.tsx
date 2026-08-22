@@ -38,7 +38,7 @@ const MODAL_COPY = {
     currentPlan: { el: "Τρέχον πλάνο", en: "Current plan" },
     recommendedTag: { el: "Προτείνεται · Πιο δημοφιλές · Καλύτερη αξία", en: "Recommended · Most popular · Best value" },
     plusPrefix: { el: "Συνέχεια με Plus —", en: "Continue with Plus —" },
-    starterPrefix: { el: "Ξεκίνα με Starter —", en: "Start with Starter —" },
+    starterPrefix: { el: "Ξεκινήστε με Starter —", en: "Start with Starter —" },
     notNow: { el: "Όχι τώρα", en: "Not now" },
     checkoutError: { el: "Η μετάβαση στην πληρωμή απέτυχε. Δοκιμάστε ξανά.", en: "Could not start checkout. Please try again." },
     close: { el: "Κλείσιμο", en: "Close" },

@@ -43,7 +43,7 @@ export const employerLiabilityContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: τα όρια ευθύνης ανά εργαζόμενο, ανά γεγονός και συνολικά για την περίοδο.',
+            el: 'Από το έγγραφο που ανεβάσατε: τα όρια ευθύνης ανά εργαζόμενο, ανά γεγονός και συνολικά για την περίοδο.',
             en: 'From the document you uploaded: the liability limits per employee, per event and in aggregate for the period.',
         },
         {
@@ -61,19 +61,19 @@ export const employerLiabilityContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Κράτα τη γραπτή εκτίμηση επαγγελματικού κινδύνου ενημερωμένη και αρχειοθετημένη μαζί με το συμβόλαιο — ζητούνται μαζί μετά από ατύχημα.',
+            el: 'Κρατήστε τη γραπτή εκτίμηση επαγγελματικού κινδύνου ενημερωμένη και αρχειοθετημένη μαζί με το συμβόλαιο — ζητούνται μαζί μετά από ατύχημα.',
             en: 'Keep the written occupational risk assessment current and filed with the policy — they are asked for together after an accident.',
         },
         {
-            el: 'Τήρησε αποδεικτικά εκπαίδευσης και παραλαβής μέσων ατομικής προστασίας με υπογραφή· η προφορική ενημέρωση δεν αφήνει ίχνος.',
+            el: 'Τηρήστε αποδεικτικά εκπαίδευσης και παραλαβής μέσων ατομικής προστασίας με υπογραφή· η προφορική ενημέρωση δεν αφήνει ίχνος.',
             en: 'Keep signed records of training and of protective equipment issued; a verbal briefing leaves no trace.',
         },
         {
-            el: 'Δήλωσε νέες δραστηριότητες ή αλλαγή στον αριθμό εργαζομένων πριν ξεκινήσουν, όχι στην επόμενη ανανέωση.',
+            el: 'Δηλώστε νέες δραστηριότητες ή αλλαγή στον αριθμό εργαζομένων πριν ξεκινήσουν, όχι στην επόμενη ανανέωση.',
             en: 'Declare new activities or a change in headcount before they start, not at the next renewal.',
         },
         {
-            el: 'Έλεγξε αν το προσωπικό μέσω τρίτων ή οι υπεργολάβοι περιλαμβάνονται· συχνά χρειάζονται ρητή μνεία ή δική τους κάλυψη.',
+            el: 'Ελέγξτε αν το προσωπικό μέσω τρίτων ή οι υπεργολάβοι περιλαμβάνονται· συχνά χρειάζονται ρητή μνεία ή δική τους κάλυψη.',
             en: 'Check whether agency staff or subcontractors are included; they often need an explicit mention or cover of their own.',
         },
     ],
@@ -114,7 +114,7 @@ export const employerLiabilityContent: BranchContent = {
     recommendedActions: [
         {
             id: 'employer_liability_check_limits',
-            label: { el: 'Δες τα όρια ανά εργαζόμενο και ανά γεγονός', en: 'See the per-employee and per-event limits' },
+            label: { el: 'Δείτε τα όρια ανά εργαζόμενο και ανά γεγονός', en: 'See the per-employee and per-event limits' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -124,7 +124,7 @@ export const employerLiabilityContent: BranchContent = {
         },
         {
             id: 'employer_liability_check_activities',
-            label: { el: 'Έλεγξε ποιες δραστηριότητες καλύπτονται', en: 'Check which activities are covered' },
+            label: { el: 'Ελέγξτε ποιες δραστηριότητες καλύπτονται', en: 'Check which activities are covered' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -134,7 +134,7 @@ export const employerLiabilityContent: BranchContent = {
         },
         {
             id: 'employer_liability_check_safety_terms',
-            label: { el: 'Δες τις υποχρεώσεις ασφάλειας και υγείας', en: 'See the health-and-safety obligations' },
+            label: { el: 'Δείτε τις υποχρεώσεις ασφάλειας και υγείας', en: 'See the health-and-safety obligations' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -144,13 +144,13 @@ export const employerLiabilityContent: BranchContent = {
         },
         {
             id: 'employer_liability_review_headcount',
-            label: { el: 'Επικαιροποίησε αριθμό εργαζομένων και δραστηριότητες', en: 'Refresh headcount and activities' },
+            label: { el: 'Επικαιροποιήστε αριθμό εργαζομένων και δραστηριότητες', en: 'Refresh headcount and activities' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'employer_liability_ask_agent_contractors',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για υπεργολάβους', en: 'Ask your advisor about subcontractors' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για υπεργολάβους', en: 'Ask your advisor about subcontractors' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -164,19 +164,19 @@ export const employerLiabilityContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Παρέχε πρώτες βοήθειες και δήλωσε το εργατικό ατύχημα στις αρμόδιες αρχές μέσα στις προβλεπόμενες προθεσμίες.',
+            el: 'Παρέχε πρώτες βοήθειες και δηλώστε το εργατικό ατύχημα στις αρμόδιες αρχές μέσα στις προβλεπόμενες προθεσμίες.',
             en: 'Give first aid and report the workplace accident to the competent authorities within the statutory deadlines.',
         },
         {
-            el: 'Κατάγραψε τον χώρο, τον εξοπλισμό και τις συνθήκες πριν αποκατασταθεί η λειτουργία, και συγκέντρωσε καταθέσεις μαρτύρων νωρίς.',
+            el: 'Καταγράψτε τον χώρο, τον εξοπλισμό και τις συνθήκες πριν αποκατασταθεί η λειτουργία, και συγκεντρώστε καταθέσεις μαρτύρων νωρίς.',
             en: 'Record the area, the equipment and the conditions before operations resume, and gather witness accounts early.',
         },
         {
-            el: 'Ετοίμασε τον φάκελο τήρησης υποχρεώσεων — εκτίμηση κινδύνου, εκπαιδεύσεις, μέσα ατομικής προστασίας — μαζί με τη δήλωση προς τον ασφαλιστή.',
+            el: 'Ετοιμάστε τον φάκελο τήρησης υποχρεώσεων — εκτίμηση κινδύνου, εκπαιδεύσεις, μέσα ατομικής προστασίας — μαζί με τη δήλωση προς τον ασφαλιστή.',
             en: 'Prepare the compliance file — risk assessment, training, protective equipment — alongside the notice to the insurer.',
         },
         {
-            el: 'Μην συμφωνήσεις αποζημίωση με τον εργαζόμενο χωρίς τη συναίνεση του ασφαλιστή· ο συμβιβασμός εκτός συμβολαίου μπορεί να μην αναγνωριστεί.',
+            el: 'Μην συμφωνήσετε αποζημίωση με τον εργαζόμενο χωρίς τη συναίνεση του ασφαλιστή· ο συμβιβασμός εκτός συμβολαίου μπορεί να μην αναγνωριστεί.',
             en: 'Do not agree compensation with the employee without the insurer’s consent; a settlement made outside the contract may not be recognised.',
         },
     ],
@@ -185,11 +185,11 @@ export const employerLiabilityContent: BranchContent = {
         en: 'Headcount and activities are the two things that change quietly during the year — renewal is when they are worth redeclaring.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση ευθύνης εργοδότη', en: 'No employer’s liability policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση ευθύνης εργοδότη', en: 'No employer’s liability policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες τα όρια ανά εργαζόμενο, τις δηλωμένες δραστηριότητες και τις υποχρεώσεις που το συνοδεύουν.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε τα όρια ανά εργαζόμενο, τις δηλωμένες δραστηριότητες και τις υποχρεώσεις που το συνοδεύουν.',
             en: 'Upload the policy and see the per-employee limits, the declared activities and the obligations that come with it.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

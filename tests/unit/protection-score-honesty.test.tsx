@@ -5,6 +5,7 @@ import { LanguageProvider } from '@/contexts/LanguageContext'
 import { TranslationsProvider } from '@/contexts/TranslationsProvider'
 import { ProtectionStatusHero } from '@/components/dashboard/home/ProtectionStatusHero'
 import { ScoreMethodology } from '@/components/coverage/ScoreMethodology'
+import { portfolioFacts, scoreSupport } from '@/lib/dashboard/portfolio-summary'
 
 const LABELS = {
     kicker: 'Protection status',
@@ -22,6 +23,8 @@ const LABELS = {
     methodologyBody: 'We compare the lines of insurance expected for your profile…',
     methodologyLimits: 'The score does NOT assess premiums, insurers, or wording.',
     methodologyNotAdvice: 'Not personalised insurance advice.',
+    scoreDisclosureOpen: 'See the coverage indicator',
+    scoreDisclosureLabel: 'Breadth-of-cover indicator',
 }
 
 function renderHero(props: Partial<Parameters<typeof ProtectionStatusHero>[0]> = {}) {
@@ -32,7 +35,8 @@ function renderHero(props: Partial<Parameters<typeof ProtectionStatusHero>[0]> =
                     state="scored"
                     score={62}
                     ringToneClass="stroke-amber-500"
-                    verdict="Needs improvement"
+                    factsLine="12 policies · 3 expire soon · 2 not analysed"
+                    scoreUnsupportedReason={null}
                     deltaLabel={null}
                     deltaDirection={null}
                     keyReason={null}
@@ -56,14 +60,14 @@ function renderHero(props: Partial<Parameters<typeof ProtectionStatusHero>[0]> =
  */
 describe('protection status hero — no policies', () => {
     it('shows an invitation, never a number or a verdict', () => {
-        renderHero({ state: 'empty', score: null, verdict: null })
+        renderHero({ state: 'empty', score: null, factsLine: "12 policies" })
         expect(screen.getByText(LABELS.emptyTitle)).toBeTruthy()
         expect(screen.queryByText('0')).toBeNull()
         expect(screen.queryByText('Needs improvement')).toBeNull()
     })
 
     it('draws no progress arc and offers no methodology with no score', () => {
-        const { container } = renderHero({ state: 'empty', score: null, verdict: null })
+        const { container } = renderHero({ state: 'empty', score: null, factsLine: "12 policies" })
         expect(container.querySelectorAll('path[stroke-dasharray]').length).toBe(0)
         expect(screen.queryByText(LABELS.methodologyTitle)).toBeNull()
     })
@@ -77,7 +81,7 @@ describe('protection status hero — no policies', () => {
  */
 describe('protection status hero — indeterminate', () => {
     it('renders no number and no verdict, and routes to the profile', () => {
-        const { container } = renderHero({ state: 'indeterminate', score: null, verdict: null })
+        const { container } = renderHero({ state: 'indeterminate', score: null, factsLine: "12 policies" })
         expect(screen.getByText(LABELS.indeterminateTitle)).toBeTruthy()
         // "—", not "0": scored-zero and not-scored are different claims.
         expect(screen.getByText('—')).toBeTruthy()
@@ -96,13 +100,13 @@ describe('protection status hero — indeterminate', () => {
  */
 describe('protection status hero — provisional fallback', () => {
     it('labels the fallback estimate as provisional', () => {
-        renderHero({ state: 'provisional', score: 62, verdict: 'Needs improvement' })
+        renderHero({ state: 'provisional', score: 62, factsLine: '12 policies' })
         expect(screen.getByText('Provisional estimate')).toBeTruthy()
         expect(screen.getByText(LABELS.provisionalHint)).toBeTruthy()
     })
 
     it('does not label the real engine score as provisional', () => {
-        renderHero({ state: 'scored', score: 62, verdict: 'Needs improvement' })
+        renderHero({ state: 'scored', score: 62, factsLine: '12 policies' })
         expect(screen.queryByText('Provisional estimate')).toBeNull()
     })
 })
@@ -202,5 +206,77 @@ describe('score methodology disowns the dangerous misreadings', () => {
         const limits = /scoreMethodologyLimits:\s*'([^']*)'/.exec(el)?.[1] || ''
         expect(limits).toContain('Υψηλή βαθμολογία δεν σημαίνει επαρκή ασφάλιση')
         expect(limits).toContain('δεν σημαίνει ότι μια απαίτηση θα απορριφθεί')
+    })
+})
+
+/**
+ * THE THREE STATES THE SCORE COULD NOT SUPPORT — measured before this fix in
+ * docs/evidence/dashboard-mobile/BASELINE.md (D1), where the dashboard rendered:
+ *
+ *   · «Καλή κάλυψη» over ONE never-analysed policy
+ *   · «Χρειάζεται προσοχή» when nothing in the wallet had ever been analysed
+ *   · «Χρειάζεται βελτίωση» over a wallet where every policy had expired —
+ *     a customer with no cover at all, told their protection "needs improvement"
+ *
+ * The score is a breadth measure over risk categories; none of those states can
+ * support any figure, let alone a graded word.
+ */
+describe('the score does not render where its inputs cannot support it', () => {
+    it('says why, rather than leaving a blank where a number was', () => {
+        renderHero({
+            scoreUnsupportedReason: 'All of your policies have expired — you have no active cover right now.',
+        })
+        expect(screen.getByText(/no active cover right now/i)).toBeInTheDocument()
+        // No ring, no number, no methodology for a score that is not shown.
+        expect(screen.queryByText('62')).not.toBeInTheDocument()
+        expect(screen.queryByText(LABELS.scoreDisclosureOpen)).not.toBeInTheDocument()
+    })
+
+    it('never renders a verdict word, even when a score IS shown', () => {
+        const { container } = renderHero()
+        const heading = container.querySelector('#protection-status-heading')
+        // The headline is the facts, not a grade.
+        expect(heading?.textContent).toContain('12 policies')
+        for (const verdict of ['Needs improvement', 'Good coverage', 'Needs attention', 'Καλή κάλυψη']) {
+            expect(container.textContent).not.toContain(verdict)
+        }
+    })
+
+    it('puts the score behind a disclosure rather than in the headline', () => {
+        const { container } = renderHero()
+        const heading = container.querySelector('#protection-status-heading')
+        expect(heading?.textContent).not.toContain('62')
+        // It is still reachable — demoted, not deleted.
+        expect(container.querySelector('details')).toBeTruthy()
+        expect(screen.getByText(LABELS.scoreDisclosureOpen)).toBeInTheDocument()
+    })
+})
+
+/**
+ * The pure rules behind all of the above. Kept beside the rendering guard so a
+ * change to either is visible against the other.
+ */
+describe('scoreSupport / portfolioFacts', () => {
+    it('withholds a score when nothing has been analysed', () => {
+        expect(scoreSupport({ total: 3, expired: 0, expiringSoon: 0, neverAnalysed: 3, analysisFailed: 0 }))
+            .toEqual({ supported: false, reason: 'nothing_analysed' })
+    })
+
+    it('withholds a score when every policy has expired', () => {
+        expect(scoreSupport({ total: 4, expired: 4, expiringSoon: 0, neverAnalysed: 0, analysisFailed: 0 }))
+            .toEqual({ supported: false, reason: 'no_active_cover' })
+    })
+
+    it('still scores a wallet where only SOME policies are unanalysed', () => {
+        // The figure is about the lines held; the unanalysed count is stated as
+        // its own fact so the reader can see what it did not include.
+        expect(scoreSupport({ total: 12, expired: 1, expiringSoon: 3, neverAnalysed: 2, analysisFailed: 1 }))
+            .toEqual({ supported: true })
+    })
+
+    it('leads with the total and omits zero-valued facts', () => {
+        const facts = portfolioFacts({ total: 12, expired: 0, expiringSoon: 3, neverAnalysed: 2, analysisFailed: 0 })
+        expect(facts.map((f) => f.kind)).toEqual(['total', 'expiringSoon', 'neverAnalysed'])
+        expect(facts[0].count).toBe(12)
     })
 })

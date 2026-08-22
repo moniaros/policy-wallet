@@ -3,11 +3,11 @@ import type { BranchContent } from './types'
 export const homeContent: BranchContent = {
     branchId: 'home',
     tagline: {
-        el: 'Το σπίτι σου είναι πιθανότατα το μεγαλύτερο περιουσιακό σου στοιχείο — δες τι πραγματικά προστατεύει το συμβόλαιό σου.',
+        el: 'Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι πραγματικά προστατεύει το συμβόλαιό σας.',
         en: 'Your home is likely your biggest asset — see what your policy really protects.',
     },
     shortDescription: {
-        el: 'Κτίριο, περιεχόμενο, πυρκαγιά, σεισμός, πλημμύρα, κλοπή, θραύση σωληνώσεων: το PolicyWallet σου δείχνει τι φαίνεται να καλύπτεται και με ποιους όρους.',
+        el: 'Κτίριο, περιεχόμενο, πυρκαγιά, σεισμός, πλημμύρα, κλοπή, θραύση σωληνώσεων: το PolicyWallet σας δείχνει τι φαίνεται να καλύπτεται και με ποιους όρους.',
         en: 'Building, contents, fire, earthquake, flood, theft, pipe bursts: PolicyWallet shows what appears to be covered and on what terms.',
     },
     whyItMatters: [
@@ -30,7 +30,7 @@ export const homeContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Με βάση το έγγραφο που ανέβασες: ασφαλισμένα κεφάλαια κτιρίου και περιεχομένου, καλύψεις (πυρκαγιά, σεισμός, πλημμύρα, καιρικά φαινόμενα, κλοπή, σωληνώσεις) και απαλλαγές.',
+            el: 'Με βάση το έγγραφο που ανεβάσατε: ασφαλισμένα κεφάλαια κτιρίου και περιεχομένου, καλύψεις (πυρκαγιά, σεισμός, πλημμύρα, καιρικά φαινόμενα, κλοπή, σωληνώσεις) και απαλλαγές.',
             en: 'Based on the document you uploaded: insured amounts for building and contents, coverages (fire, earthquake, flood, weather, theft, pipes) and deductibles.',
         },
         {
@@ -48,15 +48,15 @@ export const homeContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Έλεγξε αν το ασφαλισμένο κεφάλαιο αντιστοιχεί στο κόστος ανακατασκευής — όχι στην εμπορική αξία του ακινήτου.',
+            el: 'Ελέγξτε αν το ασφαλισμένο κεφάλαιο αντιστοιχεί στο κόστος ανακατασκευής — όχι στην εμπορική αξία του ακινήτου.',
             en: 'Check that the insured amount matches rebuilding cost — not the property’s market value.',
         },
         {
-            el: 'Κράτα πρόχειρες φωτογραφίες και αποδείξεις για αντικείμενα αξίας — κάνουν τον φάκελο ζημιάς πολύ πιο εύκολο.',
+            el: 'Κρατήστε πρόχειρες φωτογραφίες και αποδείξεις για αντικείμενα αξίας — κάνουν τον φάκελο ζημιάς πολύ πιο εύκολο.',
             en: 'Keep photos and receipts of valuable items handy — they make a claim file much easier.',
         },
         {
-            el: 'Μετά από ανακαίνιση ή αγορά ακριβού εξοπλισμού, ενημέρωσε τον ασφαλιστή σου — η κάλυψη δεν προσαρμόζεται αυτόματα.',
+            el: 'Μετά από ανακαίνιση ή αγορά ακριβού εξοπλισμού, ενημερώστε τον ασφαλιστή σας — η κάλυψη δεν προσαρμόζεται αυτόματα.',
             en: 'After a renovation or an expensive purchase, inform your insurer — coverage does not adjust automatically.',
         },
     ],
@@ -98,40 +98,40 @@ export const homeContent: BranchContent = {
     recommendedActions: [
         {
             id: 'home_check_earthquake',
-            label: { el: 'Έλεγξε αν έχεις κάλυψη σεισμού', en: 'Check if you have earthquake cover' },
+            label: { el: 'Ελέγξτε αν έχετε κάλυψη σεισμού', en: 'Check if you have earthquake cover' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Έχω κάλυψη σεισμού;', en: 'Do I have earthquake coverage?' },
         },
         {
             id: 'home_check_contents',
-            label: { el: 'Δες αν καλύπτεται το περιεχόμενο', en: 'See if contents are covered' },
+            label: { el: 'Δείτε αν καλύπτεται το περιεχόμενο', en: 'See if contents are covered' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Καλύπτεται το περιεχόμενο της κατοικίας μου;', en: 'Are my home contents covered?' },
         },
         {
             id: 'home_check_value',
-            label: { el: 'Έλεγξε αν η κατοικία είναι ασφαλισμένη στη σωστή αξία', en: 'Check the home is insured at the right value' },
+            label: { el: 'Ελέγξτε αν η κατοικία είναι ασφαλισμένη στη σωστή αξία', en: 'Check the home is insured at the right value' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'home_claim_folder',
-            label: { el: 'Προετοίμασε φάκελο ζημιάς', en: 'Prepare a claim file' },
+            label: { el: 'Προετοιμάστε φάκελο ζημιάς', en: 'Prepare a claim file' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Τι χρειάζεται ο φάκελος ζημιάς για την κατοικία;', en: 'What does a home claim file need?' },
         },
         {
             id: 'home_ask_agent',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για πλημμύρα και φυσικά φαινόμενα', en: 'Ask your advisor about flood and natural events' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για πλημμύρα και φυσικά φαινόμενα', en: 'Ask your advisor about flood and natural events' },
             href: '/agent',
             ctaType: 'askAgent',
         },
         {
             id: 'home_save_emergency_line',
-            label: { el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
+            label: { el: 'Αποθηκεύστε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
             href: null,
             ctaType: 'task',
             requiresPhone: true,
@@ -146,32 +146,32 @@ export const homeContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Περιόρισε τη ζημιά αν είναι ασφαλές (π.χ. κλείσε τον γενικό διακόπτη νερού) — μην ξεκινήσεις επισκευές πριν την καταγραφή.',
+            el: 'Περιορίστε τη ζημιά αν είναι ασφαλές (π.χ. κλείστε τον γενικό διακόπτη νερού) — μην ξεκινήσετε επισκευές πριν την καταγραφή.',
             en: 'Limit the damage if safe to do so (e.g. shut the main water valve) — do not start repairs before the damage is recorded.',
         },
         {
-            el: 'Φωτογράφισε ή βιντεοσκόπησε τη ζημιά από κοντά και από απόσταση, πριν μετακινήσεις οτιδήποτε.',
+            el: 'Φωτογραφίστε ή βιντεοσκοπήστε τη ζημιά από κοντά και από απόσταση, πριν μετακινήσεις οτιδήποτε.',
             en: 'Photograph or film the damage close-up and from a distance, before moving anything.',
         },
         {
-            el: 'Δήλωσε τη ζημιά στον ασφαλιστή σου το συντομότερο — τα περισσότερα συμβόλαια ορίζουν προθεσμία λίγων ημερών.',
+            el: 'Δηλώστε τη ζημιά στον ασφαλιστή σας το συντομότερο — τα περισσότερα συμβόλαια ορίζουν προθεσμία λίγων ημερών.',
             en: 'Report the damage to your insurer promptly — most policies set a deadline of a few days.',
         },
         {
-            el: 'Συγκέντρωσε αποδείξεις και τιμολόγια για ό,τι καταστράφηκε — βοηθούν τον πραγματογνώμονα να αποτιμήσει σωστά.',
+            el: 'Συγκεντρώστε αποδείξεις και τιμολόγια για ό,τι καταστράφηκε — βοηθούν τον πραγματογνώμονα να αποτιμήσει σωστά.',
             en: 'Gather receipts and invoices for what was destroyed — they help the loss adjuster value things correctly.',
         },
     ],
     renewalNote: {
-        el: 'Πριν την ανανέωση, έλεγξε αν η ασφαλισμένη αξία συμβαδίζει με το σημερινό κόστος ανακατασκευής — ειδικά μετά από ανακαινίσεις.',
+        el: 'Πριν την ανανέωση, ελέγξτε αν η ασφαλισμένη αξία συμβαδίζει με το σημερινό κόστος ανακατασκευής — ειδικά μετά από ανακαινίσεις.',
         en: 'Before renewal, check the insured value against today’s rebuilding cost — especially after renovations.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει συμβόλαιο κατοικίας', en: 'No home policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο κατοικίας', en: 'No home policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο της κατοικίας σου και δες αν καλύπτεσαι για σεισμό, πλημμύρα και περιεχόμενο.',
+            el: 'Ανεβάστε το ασφαλιστήριο της κατοικίας σας και δείτε αν καλύπτεστε για σεισμό, πλημμύρα και περιεχόμενο.',
             en: 'Upload your home policy and see whether you are covered for earthquake, flood and contents.',
         },
-        ctaLabel: { el: 'Ανέβασε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
     },
 }

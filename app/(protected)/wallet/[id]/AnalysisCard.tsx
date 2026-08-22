@@ -635,10 +635,15 @@ export function AnalysisCard({
                 <button
                     onClick={handleAnalyze}
                     disabled={analysisInProgress}
-                    // Dark label on a translucent white panel over the brand teal: at /20 the
-                    // effective surface is #54867c and the label measures 4.32:1. /35 lifts it
-                    // to ~5.9 while keeping the glass treatment.
-                    className="pw-secondary-button bg-white/35 backdrop-blur-sm"
+                    // `-inverse`, NOT the plain class. This sits on `bg-primary`, a
+                    // surface that is teal in BOTH themes, so the plain recipe's
+                    // control border (--pw-border-control, black at 45%) is nearly
+                    // invisible against it — measured 2.17:1, below 1.4.11's 3:1.
+                    // The inverse variant carries the on-dark boundary, which is
+                    // the same distinction tests/unit/always-dark-surfaces.test.ts
+                    // exists to protect (its detector looks for hardcoded dark
+                    // hexes and does not yet see `bg-primary`).
+                    className="pw-secondary-button-inverse bg-white/35 backdrop-blur-sm"
                 >
                     {analysisInProgress ? statusCopy.inProgress : t.analysis.runAnalysis}
                 </button>

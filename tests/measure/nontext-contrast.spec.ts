@@ -46,12 +46,28 @@ test.beforeAll(async () => {
 })
 
 async function open(page: import("@playwright/test").Page, key: string, width: number) {
+    expect(ids[key], `fixture ${key} provisioned`).toBeTruthy()
     await page.setViewportSize({ width, height: HEIGHT[width] })
-    await page.goto(`/wallet/${ids[key]}`, { waitUntil: "domcontentloaded", timeout: 90_000 })
-    await page.waitForTimeout(400)
-    await dismissCookieBanner(page)
-    await page.waitForSelector(".pw-page-shell h1", { timeout: 45_000, state: "attached" })
-    await settle(page)
+    for (let attempt = 0; attempt < 2; attempt++) {
+        await page.goto(`/wallet/${ids[key]}`, { waitUntil: "domcontentloaded", timeout: 90_000 })
+        await page.waitForTimeout(400)
+        if (page.url().includes("/auth/signin")) continue
+        await dismissCookieBanner(page)
+        try {
+            await page.waitForSelector(".pw-page-shell h1", { timeout: 45_000, state: "attached" })
+        } catch {
+            continue
+        }
+        // REFUSE TO MEASURE THE WRONG PAGE. `.pw-page-shell h1` exists on the
+        // dashboard too, so a bounce off the policy route passes the readiness
+        // check and the run reports DASHBOARD contrast under a policy label —
+        // which is exactly what happened once on motor-expiring@390, producing
+        // 27 "failures" for controls that are not on this surface at all.
+        if (!page.url().includes(`/wallet/${ids[key]}`)) continue
+        await settle(page)
+        return
+    }
+    throw new Error(`open: ${key} did not land on its own policy page — refusing to measure`)
 }
 
 test("THE PROBE: the measurement detects a B1-shaped boundary", async ({ page }) => {
@@ -91,12 +107,14 @@ for (const spec of FIXTURE_SPECS) {
             const findings = await nonTextContrastFailures(page)
             const controls = findings.filter((f) => f.startsWith("[1.4.11:control]"))
             const surfaces = findings.filter((f) => f.startsWith("[1.4.11:surface]"))
+            const shell = findings.filter((f) => f.startsWith("[1.4.11:shell]"))
             console.log(
                 `[0.5c] ${spec.key}@${width}: ${controls.length} control boundary failure(s), ` +
                 `${surfaces.length} subtle surface boundaries (reported, not gated)`
             )
             if (controls.length) console.log("  CONTROL " + controls.slice(0, 8).join("\n  CONTROL "))
             if (surfaces.length) console.log("  surface " + surfaces.slice(0, 5).join("\n  surface "))
+            if (shell.length) console.log("  shell (reported, separate workstream) " + shell.slice(0, 4).join("\n  shell "))
 
             // GATE on controls: SC 1.4.11 is about identifying UI components.
             expect(

@@ -8,7 +8,7 @@
  *
  * Two shapes exist today:
  *
- *  - `target: 'phone'` — «Αποθήκευσε τη γραμμή επείγουσας βοήθειας». The task's
+ *  - `target: 'phone'` — «Αποθηκεύστε τη γραμμή επείγουσας βοήθειας». The task's
  *    `actionUrl` is a `tel:` link built from the number the Phase-2 resolver
  *    extracted from THIS policy. The bundle marks these actions
  *    `requiresPhone: true`, so when nothing was extracted the button never
@@ -16,7 +16,7 @@
  *    hotline, and a saved reminder pointing at no number is a trap at exactly
  *    the moment someone needs it.
  *
- *  - `target: 'policy'` — «Σημείωσε αλλαγή ζωής». Always available; the task
+ *  - `target: 'policy'` — «Σημειώστε αλλαγή ζωής». Always available; the task
  *    links back to the policy detail page so the note has somewhere to land.
  *
  * Copy is bilingual `{el, en}` in `.ts` so it stays out of the `.tsx`
@@ -43,7 +43,7 @@ const SAVE_EMERGENCY_LINE: SelfTaskSpec = {
     priority: 'high',
     title: { el: 'Γραμμή επείγουσας βοήθειας', en: 'Emergency assistance line' },
     description: {
-        el: 'Ο αριθμός βοήθειας από το ασφαλιστήριό σου, αποθηκευμένος ώστε να τον βρεις χωρίς να ψάχνεις το έγγραφο.',
+        el: 'Ο αριθμός βοήθειας από το ασφαλιστήριό σας, αποθηκευμένος ώστε να τον βρείτε χωρίς να ψάχνετε το έγγραφο.',
         en: 'The assistance number from your policy, saved so you can find it without digging through the document.',
     },
     actionLabel: { el: 'Κλήση', en: 'Call' },
@@ -53,7 +53,7 @@ const SAVE_EMERGENCY_LINE: SelfTaskSpec = {
 const NOTE_LIFE_CHANGE: SelfTaskSpec = {
     type: 'general',
     priority: 'medium',
-    title: { el: 'Σημείωσε αλλαγή ζωής', en: 'Note a life change' },
+    title: { el: 'Σημειώστε αλλαγή ζωής', en: 'Note a life change' },
     description: {
         el: 'Γάμος, παιδί, νέα δουλειά ή δάνειο ενδέχεται να αλλάζουν το τι χρειάζεται αυτό το συμβόλαιο. Αξίζει ένας έλεγχος όταν συμβεί κάτι τέτοιο.',
         en: 'Marriage, a child, a new job or a loan may change what this policy needs to do. It is worth a review when something like that happens.',
@@ -63,7 +63,7 @@ const NOTE_LIFE_CHANGE: SelfTaskSpec = {
 }
 
 /**
- * «Κράτα το πρόχειρο» tasks for branches where the number or the procedure the
+ * «Κρατήστε το πρόχειρο» tasks for branches where the number or the procedure the
  * user needs in an emergency lives ONLY in the document's free text.
  *
  * These deliberately use `target: 'policy'`, not `'phone'`. travel, cyber and
@@ -78,7 +78,7 @@ const KEEP_TRIP_DETAILS: SelfTaskSpec = {
     priority: 'medium',
     title: { el: 'Στοιχεία ταξιδιωτικής κάλυψης', en: 'Travel cover details' },
     description: {
-        el: 'Άνοιξε το συμβόλαιο πριν φύγεις και κράτα πρόχειρα τη γραμμή βοήθειας, τον αριθμό συμβολαίου και τα όρια — σε επείγον στο εξωτερικό δεν θα ψάχνεις PDF.',
+        el: 'Άνοιξε το συμβόλαιο πριν φύγετε και κρατήστε πρόχειρα τη γραμμή βοήθειας, τον αριθμό συμβολαίου και τα όρια — σε επείγον στο εξωτερικό δεν θα ψάχνετε PDF.',
         en: 'Open the policy before you leave and keep the assistance line, the policy number and the limits at hand — in an emergency abroad you will not be searching PDFs.',
     },
     actionLabel: { el: 'Άνοιξε το συμβόλαιο', en: 'Open the policy' },
@@ -102,7 +102,7 @@ const KEEP_ASSISTANCE_DETAILS: SelfTaskSpec = {
     priority: 'high',
     title: { el: 'Στοιχεία κέντρου οδικής βοήθειας', en: 'Roadside assistance centre details' },
     description: {
-        el: 'Άνοιξε το συμβόλαιο και κράτα πρόχειρο το τηλέφωνο του κέντρου βοήθειας μαζί με τον αριθμό συμβολαίου — τη στιγμή που θα μείνεις, το έγγραφο είναι συνήθως στο σπίτι.',
+        el: 'Άνοιξε το συμβόλαιο και κρατήστε πρόχειρο το τηλέφωνο του κέντρου βοήθειας μαζί με τον αριθμό συμβολαίου — τη στιγμή που θα μείνετε, το έγγραφο είναι συνήθως στο σπίτι.',
         en: 'Open the contract and keep the assistance centre’s number and your contract number at hand — the moment you break down, the document is usually at home.',
     },
     actionLabel: { el: 'Άνοιξε το συμβόλαιο', en: 'Open the policy' },

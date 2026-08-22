@@ -21,7 +21,7 @@ const pick = (pair: { el: string; en: string }, language: string) =>
 const SECTION = {
     heading: { el: "Διαθέσιμα με το Plus", en: "Available with Plus" },
     sub: {
-        el: "Το βασικό σου summary είναι έτοιμο. Δες τι προσθέτει η πλήρης AI εμπειρία.",
+        el: "Το βασικό σας summary είναι έτοιμο. Δείτε τι προσθέτει η πλήρης AI εμπειρία.",
         en: "Your basic summary is ready. Here's what the full AI experience adds.",
     },
 }

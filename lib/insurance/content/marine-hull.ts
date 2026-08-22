@@ -42,7 +42,7 @@ export const marineHullContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: την ασφαλισμένη αξία σκάφους, μηχανών και εξαρτημάτων, και το ανώτατο όριο ευθύνης.',
+            el: 'Από το έγγραφο που ανεβάσατε: την ασφαλισμένη αξία σκάφους, μηχανών και εξαρτημάτων, και το ανώτατο όριο ευθύνης.',
             en: 'From the document you uploaded: the insured value of hull, machinery and fittings, and the ceiling of liability.',
         },
         {
@@ -60,19 +60,19 @@ export const marineHullContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Κράτα ημερολόγιο πιστοποιητικών με ημερομηνίες λήξης. Ο όρος «σε ισχύ καθ’ όλη τη διάρκεια» μεταφράζεται σε υπενθυμίσεις, όχι σε πρόθεση.',
+            el: 'Κρατήστε ημερολόγιο πιστοποιητικών με ημερομηνίες λήξης. Ο όρος «σε ισχύ καθ’ όλη τη διάρκεια» μεταφράζεται σε υπενθυμίσεις, όχι σε πρόθεση.',
             en: 'Keep a certificate calendar with expiry dates. “Valid at all times” translates into reminders, not into intent.',
         },
         {
-            el: 'Αρχειοθέτησε τα δελτία ετήσιας συντήρησης μαζί με τις οδηγίες του κατασκευαστή στις οποίες παραπέμπει ο όρος — η αντιστοιχία των δύο είναι αυτό που ελέγχεται.',
+            el: 'Αρχειοθετήστε τα δελτία ετήσιας συντήρησης μαζί με τις οδηγίες του κατασκευαστή στις οποίες παραπέμπει ο όρος — η αντιστοιχία των δύο είναι αυτό που ελέγχεται.',
             en: 'File the annual service records alongside the maker’s instructions the warranty points to — it is the correspondence between them that gets checked.',
         },
         {
-            el: 'Πριν από εργασίες επισκευής ή μετακίνηση της μονάδας, ενημέρωσε τον ασφαλιστή γραπτώς· πολλές εξαιρέσεις ενεργοποιούνται ακριβώς σε αυτές τις περιόδους.',
+            el: 'Πριν από εργασίες επισκευής ή μετακίνηση της μονάδας, ενημερώστε τον ασφαλιστή γραπτώς· πολλές εξαιρέσεις ενεργοποιούνται ακριβώς σε αυτές τις περιόδους.',
             en: 'Before repair works or moving the unit, tell the insurer in writing; a number of exclusions switch on precisely in those periods.',
         },
         {
-            el: 'Τήρησε αρχείο επιβατών ή σκαφών ανά ημέρα όπου υπάρχει όριο χωρητικότητας — η υπέρβαση κρίνεται εκ των υστέρων και χρειάζεται στοιχεία.',
+            el: 'Τηρήστε αρχείο επιβατών ή σκαφών ανά ημέρα όπου υπάρχει όριο χωρητικότητας — η υπέρβαση κρίνεται εκ των υστέρων και χρειάζεται στοιχεία.',
             en: 'Keep a daily record of persons or craft where a capacity limit exists — an excess is judged after the fact and needs evidence.',
         },
     ],
@@ -113,7 +113,7 @@ export const marineHullContent: BranchContent = {
     recommendedActions: [
         {
             id: 'marine_hull_check_warranties',
-            label: { el: 'Δες τη λίστα απαράβατων όρων', en: 'See the list of warranties' },
+            label: { el: 'Δείτε τη λίστα απαράβατων όρων', en: 'See the list of warranties' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -123,7 +123,7 @@ export const marineHullContent: BranchContent = {
         },
         {
             id: 'marine_hull_check_deductible',
-            label: { el: 'Έλεγξε την απαλλαγή ανά ατύχημα', en: 'Check the deductible per accident' },
+            label: { el: 'Ελέγξτε την απαλλαγή ανά ατύχημα', en: 'Check the deductible per accident' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -133,7 +133,7 @@ export const marineHullContent: BranchContent = {
         },
         {
             id: 'marine_hull_check_liability',
-            label: { el: 'Δες τα όρια ευθύνης σύγκρουσης και τρίτων', en: 'See the collision and third-party limits' },
+            label: { el: 'Δείτε τα όρια ευθύνης σύγκρουσης και τρίτων', en: 'See the collision and third-party limits' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -143,13 +143,13 @@ export const marineHullContent: BranchContent = {
         },
         {
             id: 'marine_hull_review_certificates',
-            label: { el: 'Οργάνωσε τις ημερομηνίες πιστοποιητικών', en: 'Organise the certificate dates' },
+            label: { el: 'Οργανώστε τις ημερομηνίες πιστοποιητικών', en: 'Organise the certificate dates' },
             href: '/renewals',
             ctaType: 'renewals',
         },
         {
             id: 'marine_hull_ask_agent_repairs',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για τις περιόδους επισκευής', en: 'Ask your advisor about repair periods' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για τις περιόδους επισκευής', en: 'Ask your advisor about repair periods' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -163,19 +163,19 @@ export const marineHullContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Ενημέρωσε ασφαλιστή και λιμενική αρχή αμέσως, και μην ξεκινήσεις εργασίες αποκατάστασης πριν οριστεί πραγματογνώμονας.',
+            el: 'Ενημερώστε ασφαλιστή και λιμενική αρχή αμέσως, και μην ξεκινήσετε εργασίες αποκατάστασης πριν οριστεί πραγματογνώμονας.',
             en: 'Inform the insurer and the port authority at once, and do not start remedial works before a surveyor is appointed.',
         },
         {
-            el: 'Ετοίμασε τον φάκελο τήρησης όρων — πιστοποιητικά, δελτία συντήρησης, στοιχεία αγκυροβολίου — μαζί με τη δήλωση ζημιάς, γιατί θα ζητηθεί μαζί.',
+            el: 'Ετοιμάστε τον φάκελο τήρησης όρων — πιστοποιητικά, δελτία συντήρησης, στοιχεία αγκυροβολίου — μαζί με τη δήλωση ζημιάς, γιατί θα ζητηθεί μαζί.',
             en: 'Prepare the compliance file — certificates, service records, mooring details — alongside the loss notice, because it will be asked for together.',
         },
         {
-            el: 'Κατάγραψε καιρικές συνθήκες, ώρα και κατάσταση της μονάδας πριν από οποιαδήποτε μετακίνηση ή ρυμούλκηση.',
+            el: 'Καταγράψτε καιρικές συνθήκες, ώρα και κατάσταση της μονάδας πριν από οποιαδήποτε μετακίνηση ή ρυμούλκηση.',
             en: 'Record weather, time and the unit’s condition before any move or tow.',
         },
         {
-            el: 'Κράτα χωριστά τα κόστη διάσωσης και περιορισμού της ζημιάς από τα κόστη επισκευής — εκκαθαρίζονται με διαφορετικούς όρους.',
+            el: 'Κρατήστε χωριστά τα κόστη διάσωσης και περιορισμού της ζημιάς από τα κόστη επισκευής — εκκαθαρίζονται με διαφορετικούς όρους.',
             en: 'Keep salvage and mitigation costs separate from repair costs — they are adjusted under different terms.',
         },
     ],
@@ -184,11 +184,11 @@ export const marineHullContent: BranchContent = {
         en: 'Before renewal the certificate and maintenance calendar is worth a pass: that is where most of the declinature risk sits.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση επαγγελματικού σκάφους', en: 'No commercial marine hull policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση επαγγελματικού σκάφους', en: 'No commercial marine hull policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες την ασφαλισμένη αξία, τα όρια ευθύνης και τους απαράβατους όρους που το συνοδεύουν.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε την ασφαλισμένη αξία, τα όρια ευθύνης και τους απαράβατους όρους που το συνοδεύουν.',
             en: 'Upload the policy and see the insured value, the liability limits and the warranties attached to it.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

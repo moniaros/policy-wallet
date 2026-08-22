@@ -3,30 +3,30 @@ import type { BranchContent } from './types'
 export const motorContent: BranchContent = {
     branchId: 'motor',
     tagline: {
-        el: 'Κατάλαβε τι πραγματικά καλύπτει το συμβόλαιο του αυτοκινήτου σου — πριν το χρειαστείς.',
+        el: 'Καταλάβετε τι πραγματικά καλύπτει το συμβόλαιο του αυτοκινήτου σας — πριν το χρειαστείτε.',
         en: 'Understand what your motor policy actually covers — before you need it.',
     },
     shortDescription: {
-        el: 'Αστική ευθύνη, μικτή, κλοπή, φυσικά φαινόμενα, κρύσταλλα, οδική βοήθεια: το PolicyWallet διαβάζει το συμβόλαιό σου και σου δείχνει τι ισχύει, με απλά λόγια.',
+        el: 'Αστική ευθύνη, μικτή, κλοπή, φυσικά φαινόμενα, κρύσταλλα, οδική βοήθεια: το PolicyWallet διαβάζει το συμβόλαιό σας και σας δείχνει τι ισχύει, με απλά λόγια.',
         en: 'Liability, comprehensive, theft, natural events, glass, roadside assistance: PolicyWallet reads your policy and shows you what applies, in plain language.',
     },
     whyItMatters: [
         {
-            el: 'Η βασική αστική ευθύνη είναι υποχρεωτική, αλλά καλύπτει μόνο τις ζημιές που προκαλείς σε τρίτους — όχι το δικό σου όχημα.',
+            el: 'Η βασική αστική ευθύνη είναι υποχρεωτική, αλλά καλύπτει μόνο τις ζημιές που προκαλείτε σε τρίτους — όχι το δικό σας όχημα.',
             en: 'Basic liability is mandatory, but it only covers damage you cause to others — not your own vehicle.',
         },
         {
-            el: 'Καλύψεις όπως θραύση κρυστάλλων, φυσικά φαινόμενα ή κλοπή συχνά έχουν δικές τους απαλλαγές και όρια που αξίζει να γνωρίζεις από πριν.',
+            el: 'Καλύψεις όπως θραύση κρυστάλλων, φυσικά φαινόμενα ή κλοπή συχνά έχουν δικές τους απαλλαγές και όρια που αξίζει να γνωρίζετε από πριν.',
             en: 'Coverages like glass breakage, natural events or theft often carry their own deductibles and limits worth knowing in advance.',
         },
         {
-            el: 'Σε ένα ατύχημα, το τι θα πληρώσεις εσύ εξαρτάται από την απαλλαγή και τους όρους — όχι μόνο από το αν «έχεις μικτή».',
+            el: 'Σε ένα ατύχημα, το τι θα πληρώσετε εσείς εξαρτάται από την απαλλαγή και τους όρους — όχι μόνο από το αν «έχετε μικτή».',
             en: 'In an accident, what you pay depends on the deductible and the terms — not just on whether you "have comprehensive".',
         },
     ],
     whatWeAnalyze: [
         {
-            el: 'Με βάση το έγγραφο που ανέβασες: καλύψεις (αστική ευθύνη, ίδιες ζημιές, κλοπή, πυρκαγιά, φυσικά φαινόμενα, κρύσταλλα), απαλλαγές και όρια.',
+            el: 'Με βάση το έγγραφο που ανεβάσατε: καλύψεις (αστική ευθύνη, ίδιες ζημιές, κλοπή, πυρκαγιά, φυσικά φαινόμενα, κρύσταλλα), απαλλαγές και όρια.',
             en: 'Based on the document you uploaded: coverages (liability, own damage, theft, fire, natural events, glass), deductibles and limits.',
         },
         {
@@ -40,15 +40,15 @@ export const motorContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Πριν από ταξίδι στο εξωτερικό, έλεγξε αν χρειάζεσαι Πράσινη Κάρτα και ζήτησέ την έγκαιρα από τον ασφαλιστή σου.',
+            el: 'Πριν από ταξίδι στο εξωτερικό, ελέγξτε αν χρειάζεστε Πράσινη Κάρτα και ζητήστε την έγκαιρα από τον ασφαλιστή σας.',
             en: 'Before a trip abroad, check whether you need a Green Card and request it from your insurer in time.',
         },
         {
-            el: 'Αν το συμβόλαιο φαίνεται να περιλαμβάνει οδική βοήθεια, αποθήκευσε το τηλέφωνο βοήθειας στο κινητό σου — θα το χρειαστείς στον δρόμο, όχι στο σπίτι.',
+            el: 'Αν το συμβόλαιο φαίνεται να περιλαμβάνει οδική βοήθεια, αποθηκεύστε το τηλέφωνο βοήθειας στο κινητό σας — θα το χρειαστείτε στον δρόμο, όχι στο σπίτι.',
             en: 'If the policy appears to include roadside assistance, save the assistance number on your phone — you will need it on the road, not at home.',
         },
         {
-            el: 'Πριν την ανανέωση, σύγκρινε τις βασικές καλύψεις και τις απαλλαγές — όχι μόνο το ασφάλιστρο.',
+            el: 'Πριν την ανανέωση, συγκρίνετε τις βασικές καλύψεις και τις απαλλαγές — όχι μόνο το ασφάλιστρο.',
             en: 'Before renewal, compare the core coverages and deductibles — not just the premium.',
         },
     ],
@@ -66,7 +66,7 @@ export const motorContent: BranchContent = {
             id: 'motor_legal_gap',
             title: { el: 'Χωρίς νομική προστασία', en: 'No legal protection' },
             description: {
-                el: 'Η νομική προστασία βοηθά στη διεκδίκηση αποζημίωσης μετά από ατύχημα που δεν προκάλεσες εσύ.',
+                el: 'Η νομική προστασία βοηθά στη διεκδίκηση αποζημίωσης μετά από ατύχημα που δεν προκάλεσες εσείς.',
                 en: 'Legal protection helps you pursue compensation after an accident that was not your fault.',
             },
             relatedRuleId: 'motor-legal',
@@ -75,7 +75,7 @@ export const motorContent: BranchContent = {
             id: 'motor_green_card_gap',
             title: { el: 'Πράσινη Κάρτα προς λήξη', en: 'Green Card expiring' },
             description: {
-                el: 'Αν οδηγείς εκτός Ελλάδας, η Πράσινη Κάρτα πρέπει να ισχύει για όλη τη διάρκεια του ταξιδιού.',
+                el: 'Αν οδηγείτε εκτός Ελλάδας, η Πράσινη Κάρτα πρέπει να ισχύει για όλη τη διάρκεια του ταξιδιού.',
                 en: 'If you drive outside Greece, the Green Card must be valid for the whole trip.',
             },
             relatedRuleId: 'green_card_expiring',
@@ -93,46 +93,46 @@ export const motorContent: BranchContent = {
     recommendedActions: [
         {
             id: 'motor_check_roadside',
-            label: { el: 'Έλεγξε αν έχεις οδική βοήθεια', en: 'Check if you have roadside assistance' },
+            label: { el: 'Ελέγξτε αν έχετε οδική βοήθεια', en: 'Check if you have roadside assistance' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Έχω οδική βοήθεια;', en: 'Do I have roadside assistance?' },
         },
         {
             id: 'motor_check_glass',
-            label: { el: 'Δες τι ισχύει για θραύση κρυστάλλων', en: 'See what applies for glass breakage' },
+            label: { el: 'Δείτε τι ισχύει για θραύση κρυστάλλων', en: 'See what applies for glass breakage' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Τι ισχύει για θραύση κρυστάλλων;', en: 'What applies for glass breakage?' },
         },
         {
             id: 'motor_trip_prep',
-            label: { el: 'Προετοιμάσου για ταξίδι με το αυτοκίνητο', en: 'Prepare for a road trip' },
+            label: { el: 'Προετοιμαστείτε για ταξίδι με το αυτοκίνητο', en: 'Prepare for a road trip' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Ισχύει το συμβόλαιό μου για οδήγηση στο εξωτερικό;', en: 'Does my policy apply for driving abroad?' },
         },
         {
             id: 'motor_renewal_compare',
-            label: { el: 'Σύγκρινε βασικές καλύψεις πριν την ανανέωση', en: 'Compare core coverages before renewal' },
+            label: { el: 'Συγκρίνετε βασικές καλύψεις πριν την ανανέωση', en: 'Compare core coverages before renewal' },
             href: '/renewals',
             ctaType: 'renewals',
         },
         {
             id: 'motor_ask_agent_mikti',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για μικτή ασφάλιση', en: 'Ask your advisor about comprehensive cover' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για μικτή ασφάλιση', en: 'Ask your advisor about comprehensive cover' },
             href: '/agent',
             ctaType: 'askAgent',
         },
         {
             id: 'motor_request_green_card',
-            label: { el: 'Ζήτησε πράσινη κάρτα', en: 'Request a green card' },
+            label: { el: 'Ζητήστε πράσινη κάρτα', en: 'Request a green card' },
             href: '/agent',
             ctaType: 'askAgent',
         },
         {
             id: 'motor_save_emergency_line',
-            label: { el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
+            label: { el: 'Αποθηκεύστε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
             href: null,
             ctaType: 'task',
             requiresPhone: true,
@@ -147,11 +147,11 @@ export const motorContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Σε ατύχημα: κάλεσε πρώτα τη φροντίδα ατυχήματος του ασφαλιστή σου — καταγράφει το συμβάν και σε καθοδηγεί επί τόπου.',
+            el: 'Σε ατύχημα: καλέστε πρώτα τη φροντίδα ατυχήματος του ασφαλιστή σας — καταγράφει το συμβάν και σας καθοδηγεί επί τόπου.',
             en: 'In an accident: call your insurer’s accident-care line first — it records the incident and guides you on the spot.',
         },
         {
-            el: 'Φωτογράφισε τα οχήματα, τις πινακίδες και το σημείο. Αν υπάρχουν τραυματισμοί ή διαφωνία, κάλεσε και την Τροχαία.',
+            el: 'Φωτογραφίστε τα οχήματα, τις πινακίδες και το σημείο. Αν υπάρχουν τραυματισμοί ή διαφωνία, καλέστε και την Τροχαία.',
             en: 'Photograph the vehicles, the plates and the scene. If there are injuries or a dispute, also call the traffic police.',
         },
         {
@@ -160,24 +160,24 @@ export const motorContent: BranchContent = {
             // most-read claims list in the product — motor is the compulsory line —
             // switched register halfway down, at the step someone reads standing at
             // the roadside. Every point it makes is unchanged.
-            el: 'Συμπλήρωσε φιλική δήλωση μόνο αν συμφωνείτε για το τι συνέβη — επιταχύνει τη διαδικασία. Αν δεν είσαι σίγουρος ποιος φταίει, μην υπογράψεις δήλωση υπαιτιότητας· κατάγραψε μόνο τα γεγονότα και άσε τους ασφαλιστές να κρίνουν.',
+            el: 'Συμπληρώστε φιλική δήλωση μόνο αν συμφωνείτε για το τι συνέβη — επιταχύνει τη διαδικασία. Αν δεν είστε σίγουροι ποιος φταίει, μην υπογράψετε δήλωση υπαιτιότητας· καταγράψτε μόνο τα γεγονότα και αφήστε τους ασφαλιστές να κρίνουν.',
             en: 'Fill in the amicable accident statement only if you agree on what happened — it speeds things up. If you are unsure who is at fault, do not sign an admission of fault; record only the facts and let the insurers assess.',
         },
         {
-            el: 'Κράτα το συμβόλαιο και τον αριθμό του πρόχειρα — θα σου ζητηθούν σε κάθε επικοινωνία.',
+            el: 'Κρατήστε το συμβόλαιο και τον αριθμό του πρόχειρα — θα σας ζητηθούν σε κάθε επικοινωνία.',
             en: 'Keep your policy and its number at hand — you will be asked for them in every interaction.',
         },
     ],
     renewalNote: {
-        el: 'Θα σου θυμίσουμε πριν τη λήξη. Πριν ανανεώσεις, αξίζει ένας γρήγορος έλεγχος: ίδιες καλύψεις, ίδιες απαλλαγές, σωστή αξία οχήματος.',
+        el: 'Θα σας θυμίσουμε πριν τη λήξη. Πριν ανανεώσετε, αξίζει ένας γρήγορος έλεγχος: ίδιες καλύψεις, ίδιες απαλλαγές, σωστή αξία οχήματος.',
         en: 'We will remind you before expiry. Before renewing, a quick check is worth it: same coverages, same deductibles, correct vehicle value.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει συμβόλαιο αυτοκινήτου', en: 'No motor policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο αυτοκινήτου', en: 'No motor policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο του οχήματός σου και δες με απλά λόγια τι καλύπτει — και τι ίσως λείπει.',
+            el: 'Ανεβάστε το ασφαλιστήριο του οχήματός σας και δείτε με απλά λόγια τι καλύπτει — και τι ίσως λείπει.',
             en: 'Upload your vehicle policy and see in plain language what it covers — and what may be missing.',
         },
-        ctaLabel: { el: 'Ανέβασε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
     },
 }

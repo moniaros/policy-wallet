@@ -14,20 +14,20 @@ import type { BranchContent } from './types'
 export const groupPensionContent: BranchContent = {
     branchId: 'group_pension',
     tagline: {
-        el: 'Κεφάλαιο που χτίζεται στο όνομά σου με χρήματα που δεν διαχειρίζεσαι εσύ — αξίζει να ξέρεις τι σου ανήκει ήδη.',
+        el: 'Κεφάλαιο που χτίζεται στο όνομά σας με χρήματα που δεν διαχειρίζεσαι εσείς — αξίζει να ξέρετε τι σας ανήκει ήδη.',
         en: 'Capital building in your name from money you do not manage — worth knowing how much of it is already yours.',
     },
     shortDescription: {
-        el: 'Επαγγελματικό πρόγραμμα αποταμίευσης ή σύνταξης: εισφορές εργοδότη και εργαζομένου, περίοδος κατοχύρωσης, τι μεταφέρεται αν αποχωρήσεις και ποιες επιλογές ανοίγουν στη λήξη.',
+        el: 'Επαγγελματικό πρόγραμμα αποταμίευσης ή σύνταξης: εισφορές εργοδότη και εργαζομένου, περίοδος κατοχύρωσης, τι μεταφέρεται αν αποχωρήσετε και ποιες επιλογές ανοίγουν στη λήξη.',
         en: 'An occupational savings or pension scheme: employer and employee contributions, vesting period, what transfers if you leave, and which options open at maturity.',
     },
     whyItMatters: [
         {
-            el: 'Οι εισφορές έχουν δύο πηγές, τη δική σου και του εργοδότη, και συχνά διαφορετικούς κανόνες: το δικό σου σκέλος σου ανήκει κατά κανόνα εξαρχής, ενώ το εργοδοτικό συνήθως κατοχυρώνεται σταδιακά.',
+            el: 'Οι εισφορές έχουν δύο πηγές, τη δική σας και του εργοδότη, και συχνά διαφορετικούς κανόνες: το δικό σας σκέλος σας ανήκει κατά κανόνα εξαρχής, ενώ το εργοδοτικό συνήθως κατοχυρώνεται σταδιακά.',
             en: 'Contributions come from two sources, yours and the employer’s, and often follow different rules: your part is normally yours from the start, while the employer’s part usually vests gradually.',
         },
         {
-            el: 'Η περίοδος κατοχύρωσης είναι το κλειδί. Αν αποχωρήσεις πριν συμπληρώσεις τα έτη που ορίζει ο κανονισμός, ενδέχεται να πάρεις μόνο μέρος του εργοδοτικού σκέλους — ή τίποτα από αυτό.',
+            el: 'Η περίοδος κατοχύρωσης είναι το κλειδί. Αν αποχωρήσεις πριν συμπληρώσετε τα έτη που ορίζει ο κανονισμός, ενδέχεται να πάρετε μόνο μέρος του εργοδοτικού σκέλους — ή τίποτα από αυτό.',
             en: 'The vesting period is the crux. Leave before completing the years the rules set and you may take only part of the employer’s share — or none of it.',
         },
         {
@@ -45,7 +45,7 @@ export const groupPensionContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Τα επαγγελματικά προγράμματα δεν έχουν τυποποιημένα πεδία στην ανάλυσή μας. Διαβάζουμε το ελεύθερο κείμενο του εγγράφου που ανέβασες: τι περιγράφεται ως παροχή και τι ως εξαίρεση ή περιορισμός.',
+            el: 'Τα επαγγελματικά προγράμματα δεν έχουν τυποποιημένα πεδία στην ανάλυσή μας. Διαβάζουμε το ελεύθερο κείμενο του εγγράφου που ανεβάσατε: τι περιγράφεται ως παροχή και τι ως εξαίρεση ή περιορισμός.',
             en: 'Occupational schemes have no standardised fields in our analysis. We read the free text of the document you uploaded: what is described as a benefit and what as an exclusion or restriction.',
         },
         {
@@ -59,19 +59,19 @@ export const groupPensionContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Ζήτησε μία φορά τον χρόνο κατάσταση λογαριασμού και δες χωριστά το δικό σου και το εργοδοτικό σκέλος — τα δύο ποσά δεν συμπεριφέρονται με τον ίδιο τρόπο.',
+            el: 'Ζητήστε μία φορά τον χρόνο κατάσταση λογαριασμού και δείτε χωριστά το δικό σας και το εργοδοτικό σκέλος — τα δύο ποσά δεν συμπεριφέρονται με τον ίδιο τρόπο.',
             en: 'Ask once a year for an account statement and look at your part and the employer’s part separately — the two amounts do not behave the same way.',
         },
         {
-            el: 'Πριν από μια αποχώρηση, ρώτησε γραπτώς πόσο έχεις κατοχυρώσει εκείνη τη στιγμή. Λίγοι μήνες διαφορά μπορεί να αλλάζουν το ποσοστό που παίρνεις μαζί σου.',
+            el: 'Πριν από μια αποχώρηση, ρωτήστε γραπτώς πόσο έχετε κατοχυρώσει εκείνη τη στιγμή. Λίγοι μήνες διαφορά μπορεί να αλλάζουν το ποσοστό που παίρνεις μαζί σας.',
             en: 'Before leaving, ask in writing how much is vested at that moment. A few months’ difference can change the share you take with you.',
         },
         {
-            el: 'Αν το πρόγραμμα προβλέπει προαιρετική δική σου εισφορά με αντιστοίχιση από τον εργοδότη, δες αν την αξιοποιείς — είναι μέρος του πακέτου αποδοχών σου.',
+            el: 'Αν το πρόγραμμα προβλέπει προαιρετική δική σας εισφορά με αντιστοίχιση από τον εργοδότη, δείτε αν την αξιοποιείς — είναι μέρος του πακέτου αποδοχών σας.',
             en: 'If the scheme offers an optional employee contribution matched by the employer, check whether you are using it — it is part of your remuneration package.',
         },
         {
-            el: 'Για κάθε φορολογικό ερώτημα, απευθύνσου σε λογιστή ή φοροτεχνικό: η μεταχείριση εξαρτάται από τα συνολικά σου οικονομικά, όχι μόνο από το πρόγραμμα.',
+            el: 'Για κάθε φορολογικό ερώτημα, απευθύνσου σε λογιστή ή φοροτεχνικό: η μεταχείριση εξαρτάται από τα συνολικά σας οικονομικά, όχι μόνο από το πρόγραμμα.',
             en: 'For any tax question, go to an accountant or tax adviser: the treatment depends on your finances as a whole, not on the scheme alone.',
         },
     ],
@@ -80,7 +80,7 @@ export const groupPensionContent: BranchContent = {
             id: 'group_pension_vesting_gap',
             title: { el: 'Άγνωστη περίοδος κατοχύρωσης', en: 'Vesting period unknown' },
             description: {
-                el: 'Αν δεν ξέρεις πόσα έτη απαιτούνται για πλήρη κατοχύρωση, δεν μπορείς να αποτιμήσεις τι πραγματικά αξίζει σήμερα το εργοδοτικό σκέλος.',
+                el: 'Αν δεν ξέρετε πόσα έτη απαιτούνται για πλήρη κατοχύρωση, δεν μπορείτε να αποτιμήσεις τι πραγματικά αξίζει σήμερα το εργοδοτικό σκέλος.',
                 en: 'Without knowing how many years full vesting takes, you cannot value what the employer’s share is actually worth today.',
             },
         },
@@ -88,7 +88,7 @@ export const groupPensionContent: BranchContent = {
             id: 'group_pension_transfer_gap',
             title: { el: 'Ασαφείς όροι αποχώρησης', en: 'Unclear leaver terms' },
             description: {
-                el: 'Αν το έγγραφο δεν περιγράφει τι γίνεται με το κεφάλαιο σε αποχώρηση, η επιλογή ενδέχεται να πρέπει να ασκηθεί μέσα σε προθεσμία που δεν γνωρίζεις.',
+                el: 'Αν το έγγραφο δεν περιγράφει τι γίνεται με το κεφάλαιο σε αποχώρηση, η επιλογή ενδέχεται να πρέπει να ασκηθεί μέσα σε προθεσμία που δεν γνωρίζετε.',
                 en: 'If the document does not describe what happens to the capital on leaving, the choice may have to be exercised within a deadline you do not know.',
             },
         },
@@ -112,7 +112,7 @@ export const groupPensionContent: BranchContent = {
     recommendedActions: [
         {
             id: 'group_pension_check_contributions',
-            label: { el: 'Δες ποιος εισφέρει και σε τι αναλογία', en: 'See who contributes and in what proportion' },
+            label: { el: 'Δείτε ποιος εισφέρει και σε τι αναλογία', en: 'See who contributes and in what proportion' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -122,7 +122,7 @@ export const groupPensionContent: BranchContent = {
         },
         {
             id: 'group_pension_check_vesting',
-            label: { el: 'Έλεγξε πότε κατοχυρώνεται το εργοδοτικό σκέλος', en: 'Check when the employer share vests' },
+            label: { el: 'Ελέγξτε πότε κατοχυρώνεται το εργοδοτικό σκέλος', en: 'Check when the employer share vests' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -132,7 +132,7 @@ export const groupPensionContent: BranchContent = {
         },
         {
             id: 'group_pension_check_leaving',
-            label: { el: 'Δες τι μεταφέρεται αν αποχωρήσεις', en: 'See what transfers if you leave' },
+            label: { el: 'Δείτε τι μεταφέρεται αν αποχωρήσετε', en: 'See what transfers if you leave' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -142,13 +142,13 @@ export const groupPensionContent: BranchContent = {
         },
         {
             id: 'group_pension_check_dates',
-            label: { el: 'Σημείωσε ημερομηνίες ωρίμανσης και προθεσμίες', en: 'Note maturity dates and deadlines' },
+            label: { el: 'Σημειώστε ημερομηνίες ωρίμανσης και προθεσμίες', en: 'Note maturity dates and deadlines' },
             href: '/renewals',
             ctaType: 'renewals',
         },
         {
             id: 'group_pension_ask_agent',
-            label: { el: 'Ρώτησε τον σύμβουλό σου πώς δένει με τη δική σου αποταμίευση', en: 'Ask your advisor how it fits your own saving' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας πώς δένει με τη δική σας αποταμίευση', en: 'Ask your advisor how it fits your own saving' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -162,32 +162,32 @@ export const groupPensionContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Δεν πρόκειται για ζημιά αλλά για καταβολή παροχής: το αίτημα ξεκινά συνήθως από την εταιρεία, που βεβαιώνει τα έτη συμμετοχής σου.',
+            el: 'Δεν πρόκειται για ζημιά αλλά για καταβολή παροχής: το αίτημα ξεκινά συνήθως από την εταιρεία, που βεβαιώνει τα έτη συμμετοχής σας.',
             en: 'This is not a loss claim but a benefit payment: the request usually starts at the company, which certifies your years of membership.',
         },
         {
-            el: 'Ζήτησε γραπτή κατάσταση με το κατοχυρωμένο ποσό πριν υπογράψεις οποιαδήποτε επιλογή — εξαγορά, μεταφορά ή διατήρηση.',
+            el: 'Ζητήστε γραπτή κατάσταση με το κατοχυρωμένο ποσό πριν υπογράψετε οποιαδήποτε επιλογή — εξαγορά, μεταφορά ή διατήρηση.',
             en: 'Ask for a written statement of the vested amount before signing any option — surrender, transfer or retention.',
         },
         {
-            el: 'Σημείωσε τις προθεσμίες άσκησης επιλογής. Αν περάσουν άπρακτες, ο κανονισμός συνήθως εφαρμόζει μια προεπιλεγμένη λύση αντί για τη δική σου.',
+            el: 'Σημειώστε τις προθεσμίες άσκησης επιλογής. Αν περάσουν άπρακτες, ο κανονισμός συνήθως εφαρμόζει μια προεπιλεγμένη λύση αντί για τη δική σας.',
             en: 'Note the deadlines for exercising an option. If they lapse, the rulebook usually applies a default outcome instead of your choice.',
         },
         {
-            el: 'Πριν από την τελική απόφαση, συζήτησε τη φορολογική διάσταση με λογιστή — η μορφή της καταβολής μπορεί να την επηρεάζει.',
+            el: 'Πριν από την τελική απόφαση, συζητήστε τη φορολογική διάσταση με λογιστή — η μορφή της καταβολής μπορεί να την επηρεάζει.',
             en: 'Before the final decision, discuss the tax dimension with an accountant — the form of the payout can affect it.',
         },
     ],
     renewalNote: {
-        el: 'Δεν υπάρχει κλασική ανανέωση εδώ: υπάρχουν ημερομηνίες κατοχύρωσης και ωρίμανσης. Αυτές είναι που αξίζει να έχεις στο ημερολόγιό σου.',
+        el: 'Δεν υπάρχει κλασική ανανέωση εδώ: υπάρχουν ημερομηνίες κατοχύρωσης και ωρίμανσης. Αυτές είναι που αξίζει να έχετε στο ημερολόγιό σας.',
         en: 'There is no classic renewal here: there are vesting and maturity dates. Those are the ones worth having in your calendar.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει επαγγελματικό συνταξιοδοτικό πρόγραμμα', en: 'No occupational pension scheme added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει επαγγελματικό συνταξιοδοτικό πρόγραμμα', en: 'No occupational pension scheme added yet' },
         description: {
-            el: 'Ανέβασε το πιστοποιητικό ή τον κανονισμό του προγράμματος και δες τι περιγράφεται για εισφορές, κατοχύρωση και αποχώρηση.',
+            el: 'Ανεβάστε το πιστοποιητικό ή τον κανονισμό του προγράμματος και δείτε τι περιγράφεται για εισφορές, κατοχύρωση και αποχώρηση.',
             en: 'Upload the scheme certificate or rulebook and see what is described about contributions, vesting and leaving.',
         },
-        ctaLabel: { el: 'Ανέβασε πιστοποιητικό', en: 'Upload certificate' },
+        ctaLabel: { el: 'Ανεβάστε πιστοποιητικό', en: 'Upload certificate' },
     },
 }

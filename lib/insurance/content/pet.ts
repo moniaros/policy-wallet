@@ -3,11 +3,11 @@ import type { BranchContent } from './types'
 export const petContent: BranchContent = {
     branchId: 'pet',
     tagline: {
-        el: 'Κτηνίατρος, ατύχημα, ασθένεια: δες τι καλύπτει το συμβόλαιο του κατοικιδίου σου — και με ποιες αναμονές.',
+        el: 'Κτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το συμβόλαιο του κατοικιδίου σας — και με ποιες αναμονές.',
         en: 'Vet, accident, illness: see what your pet policy covers — and with what waiting periods.',
     },
     shortDescription: {
-        el: 'Κτηνιατρικά έξοδα, χειρουργεία, αστική ευθύνη και ηλικιακά όρια — τι φαίνεται να προβλέπει η κάλυψη του κατοικιδίου σου.',
+        el: 'Κτηνιατρικά έξοδα, χειρουργεία, αστική ευθύνη και ηλικιακά όρια — τι φαίνεται να προβλέπει η κάλυψη του κατοικιδίου σας.',
         en: 'Vet costs, surgery, liability and age limits — what your pet cover appears to provide.',
     },
     whyItMatters: [
@@ -16,17 +16,17 @@ export const petContent: BranchContent = {
             en: 'An emergency surgery can cost hundreds or thousands of euros — but covers carry per-incident and annual limits.',
         },
         {
-            el: 'Οι αναμονές στα κατοικίδια είναι συχνά μεγαλύτερες για ασθένεια από ό,τι για ατύχημα — μετράει πότε ξεκίνησε η κάλυψη.',
+            el: 'Οι αναμονές στα κατοικίδια είναι συχνά μεγαλύτερες για ασθένεια από ό,τι για ατύχημα — μετράει πότε ξεκινήστε η κάλυψη.',
             en: 'Pet waiting periods are often longer for illness than accident — when cover started matters.',
         },
         {
-            el: 'Η αστική ευθύνη (ζημιά ή τραυματισμός που προκαλεί το κατοικίδιο σε τρίτους) είναι δική σου ευθύνη κατά τον νόμο.',
+            el: 'Η αστική ευθύνη (ζημιά ή τραυματισμός που προκαλεί το κατοικίδιο σε τρίτους) είναι δική σας ευθύνη κατά τον νόμο.',
             en: 'Liability (damage or injury your pet causes to others) is legally your responsibility.',
         },
     ],
     whatWeAnalyze: [
         {
-            el: 'Με βάση το έγγραφο που ανέβασες: κτηνιατρικά έξοδα για ατύχημα και ασθένεια, όρια, απαλλαγές και συμμετοχές.',
+            el: 'Με βάση το έγγραφο που ανεβάσατε: κτηνιατρικά έξοδα για ατύχημα και ασθένεια, όρια, απαλλαγές και συμμετοχές.',
             en: 'Based on the document you uploaded: vet costs for accident and illness, limits, deductibles and co-payments.',
         },
         {
@@ -40,15 +40,15 @@ export const petContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Κράτα το βιβλιάριο υγείας και τα ιστορικά του κατοικιδίου οργανωμένα — ζητούνται σχεδόν σε κάθε αποζημίωση.',
+            el: 'Κρατήστε το βιβλιάριο υγείας και τα ιστορικά του κατοικιδίου οργανωμένα — ζητούνται σχεδόν σε κάθε αποζημίωση.',
             en: 'Keep the pet’s health booklet and history organised — they are requested in almost every claim.',
         },
         {
-            el: 'Δες αν ο κτηνίατρός σου συνεργάζεται με τον ασφαλιστή — σε δίκτυο, η διαδικασία είναι συνήθως απλούστερη.',
+            el: 'Δείτε αν ο κτηνίατρός σας συνεργάζεται με τον ασφαλιστή — σε δίκτυο, η διαδικασία είναι συνήθως απλούστερη.',
             en: 'See whether your vet works with the insurer — in-network, the process is usually simpler.',
         },
         {
-            el: 'Έλεγξε την κάλυψη για λεϊσμανίαση — στην Ελλάδα είναι από τις πιο σημαντικές παθήσεις για σκύλους.',
+            el: 'Ελέγξτε την κάλυψη για λεϊσμανίαση — στην Ελλάδα είναι από τις πιο σημαντικές παθήσεις για σκύλους.',
             en: 'Check leishmaniasis cover — in Greece it is one of the most relevant canine conditions.',
         },
     ],
@@ -74,7 +74,7 @@ export const petContent: BranchContent = {
             id: 'pet_liability_gap',
             title: { el: 'Χωρίς αστική ευθύνη', en: 'No liability cover' },
             description: {
-                el: 'Αν το κατοικίδιο προκαλέσει ζημιά ή τραυματισμό, η ευθύνη είναι δική σου — δες αν το συμβόλαιο την καλύπτει.',
+                el: 'Αν το κατοικίδιο προκαλέσει ζημιά ή τραυματισμό, η ευθύνη είναι δική σας — δείτε αν το συμβόλαιο την καλύπτει.',
                 en: 'If your pet causes damage or injury, the responsibility is yours — see if the policy covers it.',
             },
         },
@@ -82,28 +82,28 @@ export const petContent: BranchContent = {
     recommendedActions: [
         {
             id: 'pet_check_vet',
-            label: { el: 'Δες τι καλύπτεται στον κτηνίατρο', en: 'See what is covered at the vet' },
+            label: { el: 'Δείτε τι καλύπτεται στον κτηνίατρο', en: 'See what is covered at the vet' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Τι κτηνιατρικά έξοδα καλύπτονται;', en: 'Which vet costs are covered?' },
         },
         {
             id: 'pet_check_waits',
-            label: { el: 'Έλεγξε αναμονές και όρια', en: 'Check waits and limits' },
+            label: { el: 'Ελέγξτε αναμονές και όρια', en: 'Check waits and limits' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Ποιες αναμονές και ποια όρια ισχύουν;', en: 'Which waiting periods and limits apply?' },
         },
         {
             id: 'pet_prepare_records',
-            label: { el: 'Προετοίμασε τα στοιχεία του κατοικιδίου', en: 'Prepare your pet’s records' },
+            label: { el: 'Προετοιμάστε τα στοιχεία του κατοικιδίου', en: 'Prepare your pet’s records' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Τι έγγραφα χρειάζομαι για αποζημίωση κτηνιάτρου;', en: 'What documents do I need for a vet claim?' },
         },
         {
             id: 'pet_check_liability',
-            label: { el: 'Δες τι ισχύει αν το κατοικίδιο προκαλέσει ζημιά', en: 'See what applies if your pet causes damage' },
+            label: { el: 'Δείτε τι ισχύει αν το κατοικίδιο προκαλέσει ζημιά', en: 'See what applies if your pet causes damage' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -113,13 +113,13 @@ export const petContent: BranchContent = {
         },
         {
             id: 'pet_renewal_age',
-            label: { el: 'Δες τι αλλάζει στην ανανέωση λόγω ηλικίας', en: 'See what changes at renewal because of age' },
+            label: { el: 'Δείτε τι αλλάζει στην ανανέωση λόγω ηλικίας', en: 'See what changes at renewal because of age' },
             href: '/renewals',
             ctaType: 'renewals',
         },
         {
             id: 'pet_ask_agent_leishmania',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για κάλυψη λεϊσμανίασης', en: 'Ask your advisor about leishmaniasis cover' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για κάλυψη λεϊσμανίασης', en: 'Ask your advisor about leishmaniasis cover' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -133,28 +133,28 @@ export const petContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Σε ατύχημα ή αιφνίδια ασθένεια, πήγαινε πρώτα στον κτηνίατρο — η υγεία του ζώου προηγείται της διαδικασίας.',
+            el: 'Σε ατύχημα ή αιφνίδια ασθένεια, πηγαίνετε πρώτα στον κτηνίατρο — η υγεία του ζώου προηγείται της διαδικασίας.',
             en: 'In an accident or sudden illness, go to the vet first — the animal’s health comes before paperwork.',
         },
         {
-            el: 'Ζήτησε αναλυτική απόδειξη και γνωμάτευση με διάγνωση — τα δύο βασικά έγγραφα κάθε φακέλου.',
+            el: 'Ζητήστε αναλυτική απόδειξη και γνωμάτευση με διάγνωση — τα δύο βασικά έγγραφα κάθε φακέλου.',
             en: 'Ask for an itemised receipt and a report with diagnosis — the two core documents of any claim.',
         },
         {
-            el: 'Δήλωσε το περιστατικό στον ασφαλιστή εντός της προθεσμίας του συμβολαίου, μαζί με το ιστορικό εμβολίων αν ζητηθεί.',
+            el: 'Δηλώστε το περιστατικό στον ασφαλιστή εντός της προθεσμίας του συμβολαίου, μαζί με το ιστορικό εμβολίων αν ζητηθεί.',
             en: 'Report to the insurer within the policy deadline, with the vaccination record if requested.',
         },
     ],
     renewalNote: {
-        el: 'Στην ανανέωση, δες αν αλλάζουν όρια ή όροι λόγω ηλικίας του κατοικιδίου — και αν οι αναμονές που πέρασες διατηρούνται.',
+        el: 'Στην ανανέωση, δείτε αν αλλάζουν όρια ή όροι λόγω ηλικίας του κατοικιδίου — και αν οι αναμονές που πέρασες διατηρούνται.',
         en: 'At renewal, check whether limits or terms change with your pet’s age — and whether served waiting periods carry over.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση κατοικιδίου', en: 'No pet policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση κατοικιδίου', en: 'No pet policy added yet' },
         description: {
-            el: 'Ανέβασε το συμβόλαιο του κατοικιδίου σου και δες κτηνιατρικά όρια, αναμονές και τι ισχύει για λεϊσμανίαση.',
+            el: 'Ανεβάστε το συμβόλαιο του κατοικιδίου σας και δείτε κτηνιατρικά όρια, αναμονές και τι ισχύει για λεϊσμανίαση.',
             en: 'Upload your pet policy and see vet limits, waiting periods and what applies for leishmaniasis.',
         },
-        ctaLabel: { el: 'Ανέβασε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
     },
 }

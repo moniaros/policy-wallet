@@ -1,8 +1,8 @@
 /**
  * What an `askAgent` action actually SAYS to the advisor.
  *
- * Every `ctaType: 'askAgent'` action in a branch bundle is a label — «Ρώτησε
- * τον σύμβουλό σου για μικτή ασφάλιση». This module turns that label into the
+ * Every `ctaType: 'askAgent'` action in a branch bundle is a label — «Ρωτήστε
+ * τον σύμβουλό σας για μικτή ασφάλιση». This module turns that label into the
  * thread it opens: a subject line, a collaboration category, a priority, and
  * the first message the agent reads. `startBranchActionThread` (in
  * app/(protected)/wallet/collaborationActions.ts) looks the action id up here
@@ -16,7 +16,7 @@
  * dedupes against an OPEN thread with the same `(relationshipId, category)`,
  * so the category is the unit of "don't spam the agent". Two different
  * questions in the same category reuse one thread — which is what we want for
- * a user tapping around a policy page, and why «ζήτησε πράσινη κάρτα» gets
+ * a user tapping around a policy page, and why «ζητήστε πράσινη κάρτα» gets
  * `document_request` rather than piling onto the general enquiry thread.
  *
  * UNMAPPED ids fall back to `DEFAULT_AGENT_REQUEST`. That matters because the
@@ -50,7 +50,7 @@ export const DEFAULT_AGENT_REQUEST: AgentRequestSpec = {
     priority: 'medium',
     subject: { el: 'Ερώτηση για συμβόλαιο', en: 'Question about a policy' },
     message: {
-        el: 'Ο πελάτης ζήτησε να μιλήσετε για αυτό το συμβόλαιο μέσα από το PolicyWallet.',
+        el: 'Ο πελάτης ζητήστε να μιλήσετε για αυτό το συμβόλαιο μέσα από το PolicyWallet.',
         en: 'The customer asked to talk about this policy from inside PolicyWallet.',
     },
 }
@@ -71,7 +71,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'high',
         subject: { el: 'Αίτημα για πράσινη κάρτα', en: 'Green card request' },
         message: {
-            el: 'Ο πελάτης ζήτησε πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτό το όχημα.',
+            el: 'Ο πελάτης ζητήστε πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτό το όχημα.',
             en: 'The customer requested a green card (international insurance certificate) for this vehicle.',
         },
     },
@@ -91,7 +91,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'high',
         subject: { el: 'Αίτημα για πράσινη κάρτα', en: 'Green card request' },
         message: {
-            el: 'Ο πελάτης ζήτησε πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτή τη μοτοσικλέτα.',
+            el: 'Ο πελάτης ζητήστε πράσινη κάρτα (διεθνές πιστοποιητικό ασφάλισης) για αυτή τη μοτοσικλέτα.',
             en: 'The customer requested a green card (international insurance certificate) for this motorbike.',
         },
     },
@@ -162,7 +162,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'medium',
         subject: { el: 'Αίτημα για πίνακα ποσοστών ανικανότητας', en: 'Request for the disability percentage table' },
         message: {
-            el: 'Ο πελάτης ζήτησε τον πίνακα ποσοστών ανικανότητας που εφαρμόζεται στο συμβόλαιο προσωπικού ατυχήματος.',
+            el: 'Ο πελάτης ζητήστε τον πίνακα ποσοστών ανικανότητας που εφαρμόζεται στο συμβόλαιο προσωπικού ατυχήματος.',
             en: 'The customer requested the disability percentage table that applies to this personal accident policy.',
         },
     },
@@ -209,7 +209,7 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         priority: 'high',
         subject: { el: 'Έλεγχος καλύψεων ως προς τη δραστηριότητα', en: 'Covers review against business activity' },
         message: {
-            el: 'Ο πελάτης ζήτησε έλεγχο του αν οι καλύψεις της επιχείρησης ταιριάζουν με την πραγματική δραστηριότητα.',
+            el: 'Ο πελάτης ζητήστε έλεγχο του αν οι καλύψεις της επιχείρησης ταιριάζουν με την πραγματική δραστηριότητα.',
             en: 'The customer asked for a review of whether the business covers match the actual activity.',
         },
     },

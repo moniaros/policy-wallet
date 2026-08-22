@@ -46,7 +46,7 @@ export const fidelityContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Από το έγγραφο που ανέβασες: το όριο ανά υπάλληλο και το συνολικό ανώτατο όριο, μαζί με την απαλλαγή ανά ζημιογόνο γεγονός.',
+            el: 'Από το έγγραφο που ανεβάσατε: το όριο ανά υπάλληλο και το συνολικό ανώτατο όριο, μαζί με την απαλλαγή ανά ζημιογόνο γεγονός.',
             en: 'From the document you uploaded: the per-employee limit and the overall ceiling, together with the deductible per loss occurrence.',
         },
         {
@@ -64,19 +64,19 @@ export const fidelityContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Επικαιροποίησε την κατάσταση καλυπτόμενων θέσεων σε κάθε πρόσληψη ή αλλαγή τμήματος· μια θέση που δεν περιλαμβάνεται δεν αποκτά κάλυψη επειδή υπάρχει το συμβόλαιο.',
+            el: 'Επικαιροποιήστε την κατάσταση καλυπτόμενων θέσεων σε κάθε πρόσληψη ή αλλαγή τμήματος· μια θέση που δεν περιλαμβάνεται δεν αποκτά κάλυψη επειδή υπάρχει το συμβόλαιο.',
             en: 'Refresh the schedule of covered positions at every hire or transfer; a role that is not listed does not gain cover simply because a policy exists.',
         },
         {
-            el: 'Διατήρησε διαχωρισμό καθηκόντων στα σημεία που διακινούν χρήμα, και τεκμηρίωσε τους ελέγχους. Ο ίδιος φάκελος εξυπηρετεί την πρόληψη και την απόδειξη του όρου.',
+            el: 'Διατηρήστε διαχωρισμό καθηκόντων στα σημεία που διακινούν χρήμα, και τεκμηριώστε τους ελέγχους. Ο ίδιος φάκελος εξυπηρετεί την πρόληψη και την απόδειξη του όρου.',
             en: 'Keep duties separated wherever money moves, and document the checks. The same file serves both prevention and proof of the condition.',
         },
         {
-            el: 'Στην αποχώρηση υπαλλήλου με πρόσβαση σε χρήμα, προγραμμάτισε επισκόπηση λογαριασμών μέσα στην προθεσμία ανακάλυψης αντί να την αφήσεις στον επόμενο ετήσιο έλεγχο.',
+            el: 'Στην αποχώρηση υπαλλήλου με πρόσβαση σε χρήμα, προγραμματίστε επισκόπηση λογαριασμών μέσα στην προθεσμία ανακάλυψης αντί να την αφήσετε στον επόμενο ετήσιο έλεγχο.',
             en: 'When someone with access to money leaves, schedule an account review inside the discovery window rather than leaving it to the next annual audit.',
         },
         {
-            el: 'Κράτα το μητρώο επιταγών και τις εγκρίσεις πληρωμών σε μορφή που μπορεί να ανακτηθεί αναδρομικά· η ζημιά εδώ αποκαλύπτεται συνήθως μήνες μετά.',
+            el: 'Κρατήστε το μητρώο επιταγών και τις εγκρίσεις πληρωμών σε μορφή που μπορεί να ανακτηθεί αναδρομικά· η ζημιά εδώ αποκαλύπτεται συνήθως μήνες μετά.',
             en: 'Keep the cheque register and payment approvals in a form that can be reconstructed retrospectively; losses in this line usually surface months later.',
         },
     ],
@@ -117,7 +117,7 @@ export const fidelityContent: BranchContent = {
     recommendedActions: [
         {
             id: 'fidelity_check_discovery',
-            label: { el: 'Δες τις προθεσμίες ανακάλυψης', en: 'See the discovery deadlines' },
+            label: { el: 'Δείτε τις προθεσμίες ανακάλυψης', en: 'See the discovery deadlines' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -127,7 +127,7 @@ export const fidelityContent: BranchContent = {
         },
         {
             id: 'fidelity_check_limits',
-            label: { el: 'Έλεγξε το όριο ανά υπάλληλο', en: 'Check the per-employee limit' },
+            label: { el: 'Ελέγξτε το όριο ανά υπάλληλο', en: 'Check the per-employee limit' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -137,7 +137,7 @@ export const fidelityContent: BranchContent = {
         },
         {
             id: 'fidelity_check_conditions',
-            label: { el: 'Δες τις προϋποθέσεις για τα καλυπτόμενα πρόσωπα', en: 'See the conditions on who is covered' },
+            label: { el: 'Δείτε τις προϋποθέσεις για τα καλυπτόμενα πρόσωπα', en: 'See the conditions on who is covered' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -147,13 +147,13 @@ export const fidelityContent: BranchContent = {
         },
         {
             id: 'fidelity_review_schedule',
-            label: { el: 'Επικαιροποίησε τις καλυπτόμενες θέσεις', en: 'Refresh the covered positions' },
+            label: { el: 'Επικαιροποιήστε τις καλυπτόμενες θέσεις', en: 'Refresh the covered positions' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'fidelity_ask_agent_controls',
-            label: { el: 'Ρώτησε τον σύμβουλό σου για τις απαιτούμενες δικλείδες', en: 'Ask your advisor about the controls required' },
+            label: { el: 'Ρωτήστε τον σύμβουλό σας για τις απαιτούμενες δικλείδες', en: 'Ask your advisor about the controls required' },
             href: '/agent',
             ctaType: 'askAgent',
         },
@@ -167,19 +167,19 @@ export const fidelityContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Δήλωσε στον ασφαλιστή μόλις υπάρξει βάσιμη υπόνοια, χωρίς να περιμένεις την ολοκλήρωση της εσωτερικής έρευνας — η προθεσμία τρέχει από την ανακάλυψη.',
+            el: 'Δηλώστε στον ασφαλιστή μόλις υπάρξει βάσιμη υπόνοια, χωρίς να περιμένετε την ολοκλήρωση της εσωτερικής έρευνας — η προθεσμία τρέχει από την ανακάλυψη.',
             en: 'Notify the insurer as soon as there is a reasonable suspicion, without waiting for the internal investigation to finish — the deadline runs from discovery.',
         },
         {
-            el: 'Διατήρησε τα ηλεκτρονικά ίχνη και τα πρωτότυπα παραστατικά πριν από οποιαδήποτε τακτοποίηση λογαριασμών.',
+            el: 'Διατηρήστε τα ηλεκτρονικά ίχνη και τα πρωτότυπα παραστατικά πριν από οποιαδήποτε τακτοποίηση λογαριασμών.',
             en: 'Preserve the electronic trail and the original documents before any tidying of accounts.',
         },
         {
-            el: 'Κατάγραψε ποσά, ημερομηνίες και τον τρόπο με τον οποίο ανακαλύφθηκε η πράξη· η αλληλουχία είναι αυτό που εξετάζεται πρώτο.',
+            el: 'Καταγράψτε ποσά, ημερομηνίες και τον τρόπο με τον οποίο ανακαλύφθηκε η πράξη· η αλληλουχία είναι αυτό που εξετάζεται πρώτο.',
             en: 'Record amounts, dates and how the act came to light; the sequence is what gets examined first.',
         },
         {
-            el: 'Συντόνισε την ποινική διαδικασία με τον ασφαλιστή, και κράτα χωριστό λογαριασμό για ό,τι ανακτάται από τον υπάλληλο.',
+            el: 'Συντονίστε την ποινική διαδικασία με τον ασφαλιστή, και κρατήστε χωριστό λογαριασμό για ό,τι ανακτάται από τον υπάλληλο.',
             en: 'Coordinate any criminal process with the insurer, and keep a separate account of whatever is recovered from the employee.',
         },
     ],
@@ -188,11 +188,11 @@ export const fidelityContent: BranchContent = {
         en: 'Renewal is the moment to revisit which roles handle money today — a staff list changes faster than a policy does.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει ασφάλιση εμπιστοσύνης υπαλλήλων', en: 'No fidelity policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει ασφάλιση εμπιστοσύνης υπαλλήλων', en: 'No fidelity policy added yet' },
         description: {
-            el: 'Ανέβασε το ασφαλιστήριο και δες τα όρια ανά υπάλληλο, τις προθεσμίες ανακάλυψης και τις δικλείδες που ζητά.',
+            el: 'Ανεβάστε το ασφαλιστήριο και δείτε τα όρια ανά υπάλληλο, τις προθεσμίες ανακάλυψης και τις δικλείδες που ζητά.',
             en: 'Upload the policy and see the per-employee limits, the discovery deadlines and the controls it asks for.',
         },
-        ctaLabel: { el: 'Ανέβασε ασφαλιστήριο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε ασφαλιστήριο', en: 'Upload policy' },
     },
 }

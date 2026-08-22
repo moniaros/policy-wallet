@@ -284,7 +284,7 @@ export function KeyDatesCard({
                         className={
                             isExpired
                                 ? "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420] cursor-pointer disabled:cursor-default sm:w-auto"
-                                : "inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-60 dark:border-mint/35 dark:bg-mint/10 dark:text-mint dark:hover:bg-mint/15 cursor-pointer disabled:cursor-default"
+                                : "inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[color:var(--pw-border-control)] bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-60 dark:bg-mint/10 dark:text-mint dark:hover:bg-mint/15 cursor-pointer disabled:cursor-default"
                         }
                     >
                         <RefreshCw className={`h-3.5 w-3.5 ${isRequestingQuote ? "animate-spin" : ""}`} aria-hidden />

@@ -15,11 +15,11 @@ import type { BranchContent } from './types'
 export const personalAccidentContent: BranchContent = {
     branchId: 'personal_accident',
     tagline: {
-        el: 'Πληρώνει για ατύχημα — και μόνο για ατύχημα. Δες τι μετρά ως τέτοιο και πόσο αποδίδει η κάθε περίπτωση.',
+        el: 'Πληρώνει για ατύχημα — και μόνο για ατύχημα. Δείτε τι μετρά ως τέτοιο και πόσο αποδίδει η κάθε περίπτωση.',
         en: 'It pays for accidents — and only for accidents. See what counts as one and what each case pays.',
     },
     shortDescription: {
-        el: 'Εφάπαξ κεφάλαια, πίνακας ποσοστών μόνιμης ανικανότητας, ημερήσια αποζημίωση, εύρος 24 ωρών ή μόνο εργασίας: το PolicyWallet σου δείχνει πώς μεταφράζεται ένα ατύχημα σε ποσό.',
+        el: 'Εφάπαξ κεφάλαια, πίνακας ποσοστών μόνιμης ανικανότητας, ημερήσια αποζημίωση, εύρος 24 ωρών ή μόνο εργασίας: το PolicyWallet σας δείχνει πώς μεταφράζεται ένα ατύχημα σε ποσό.',
         en: 'Lump-sum capital, permanent-disability percentage scale, daily indemnity, 24-hour or work-only scope: PolicyWallet shows how an accident translates into an amount.',
     },
     whyItMatters: [
@@ -46,7 +46,7 @@ export const personalAccidentContent: BranchContent = {
     ],
     whatWeAnalyze: [
         {
-            el: 'Το προσωπικό ατύχημα δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε τις καλύψεις και τις εξαιρέσεις όπως είναι γραμμένες στο έγγραφο που ανέβασες.',
+            el: 'Το προσωπικό ατύχημα δεν έχει τυποποιημένα πεδία στην ανάλυσή μας: διαβάζουμε τις καλύψεις και τις εξαιρέσεις όπως είναι γραμμένες στο έγγραφο που ανεβάσατε.',
             en: 'Personal accident has no structured fields in our analysis: we read the coverages and exclusions as written in the document you uploaded.',
         },
         {
@@ -60,19 +60,19 @@ export const personalAccidentContent: BranchContent = {
     ],
     howToUseBetter: [
         {
-            el: 'Ζήτησε τον πίνακα ποσοστών μόνιμης ανικανότητας και διάβασέ τον μία φορά με ηρεμία — εκεί βρίσκεται η πραγματική αξία του συμβολαίου, όχι στο κεφάλαιο της πρώτης σελίδας.',
+            el: 'Ζητήστε τον πίνακα ποσοστών μόνιμης ανικανότητας και διάβασέ τον μία φορά με ηρεμία — εκεί βρίσκεται η πραγματική αξία του συμβολαίου, όχι στο κεφάλαιο της πρώτης σελίδας.',
             en: 'Ask for the permanent-disability percentage table and read it once, calmly — the policy’s real value lives there, not in the headline capital on page one.',
         },
         {
-            el: 'Αν έχεις παρόμοια κάλυψη μέσω εργοδότη ή ομαδικού συμβολαίου, δες πώς συνδυάζονται· τα εφάπαξ συνήθως αθροίζονται, οι δαπάνες συνήθως όχι.',
+            el: 'Αν έχετε παρόμοια κάλυψη μέσω εργοδότη ή ομαδικού συμβολαίου, δείτε πώς συνδυάζονται· τα εφάπαξ συνήθως αθροίζονται, οι δαπάνες συνήθως όχι.',
             en: 'If you have similar cover through an employer or group scheme, see how they combine; lump sums usually add up, expense reimbursements usually do not.',
         },
         {
-            el: 'Δήλωσε με ακρίβεια τις δραστηριότητες και το επάγγελμά σου — μια παράλειψη εδώ είναι από τους συχνότερους λόγους απόρριψης σε ατύχημα.',
+            el: 'Δηλώστε με ακρίβεια τις δραστηριότητες και το επάγγελμά σας — μια παράλειψη εδώ είναι από τους συχνότερους λόγους απόρριψης σε ατύχημα.',
             en: 'Declare your activities and occupation accurately — an omission here is among the most common reasons an accident claim is declined.',
         },
         {
-            el: 'Κράτα τα ιατρικά έγγραφα κάθε ατυχήματος, ακόμη και μικρού· ορισμένες συνέπειες αποτιμώνται μήνες αργότερα.',
+            el: 'Κρατήστε τα ιατρικά έγγραφα κάθε ατυχήματος, ακόμη και μικρού· ορισμένες συνέπειες αποτιμώνται μήνες αργότερα.',
             en: 'Keep the medical records of every accident, even a minor one; some consequences are assessed months later.',
         },
     ],
@@ -81,7 +81,7 @@ export const personalAccidentContent: BranchContent = {
             id: 'personal_accident_illness_gap',
             title: { el: 'Η ασθένεια μένει εκτός', en: 'Illness stays outside' },
             description: {
-                el: 'Το προσωπικό ατύχημα δεν καλύπτει παθήσεις. Αν χρειάζεσαι προστασία και για ασθένεια, αυτή έρχεται από άλλο συμβόλαιο.',
+                el: 'Το προσωπικό ατύχημα δεν καλύπτει παθήσεις. Αν χρειάζεστε προστασία και για ασθένεια, αυτή έρχεται από άλλο συμβόλαιο.',
                 en: 'Personal accident does not cover illness. If you need protection for illness too, that comes from a different policy.',
             },
         },
@@ -105,7 +105,7 @@ export const personalAccidentContent: BranchContent = {
             id: 'personal_accident_activities_gap',
             title: { el: 'Δραστηριότητες στις εξαιρέσεις', en: 'Activities in the exclusions' },
             description: {
-                el: 'Αθλήματα, χόμπι ή οχήματα που χρησιμοποιείς τακτικά μπορεί να αναφέρονται ρητά ως εξαιρέσεις — ίσως αξίζει να το επιβεβαιώσεις πριν χρειαστεί.',
+                el: 'Αθλήματα, χόμπι ή οχήματα που χρησιμοποιείτε τακτικά μπορεί να αναφέρονται ρητά ως εξαιρέσεις — ίσως αξίζει να το επιβεβαιώσεις πριν χρειαστεί.',
                 en: 'Sports, hobbies or vehicles you use regularly may be named explicitly as exclusions — worth confirming before it matters.',
             },
             relatedRuleId: 'unclear_exclusions',
@@ -114,7 +114,7 @@ export const personalAccidentContent: BranchContent = {
     recommendedActions: [
         {
             id: 'personal_accident_check_scale',
-            label: { el: 'Δες πώς υπολογίζεται η μόνιμη ανικανότητα', en: 'See how permanent disability is calculated' },
+            label: { el: 'Δείτε πώς υπολογίζεται η μόνιμη ανικανότητα', en: 'See how permanent disability is calculated' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -124,7 +124,7 @@ export const personalAccidentContent: BranchContent = {
         },
         {
             id: 'personal_accident_check_scope',
-            label: { el: 'Έλεγξε αν ισχύει 24 ώρες το 24ωρο', en: 'Check whether it applies around the clock' },
+            label: { el: 'Ελέγξτε αν ισχύει 24 ώρες το 24ωρο', en: 'Check whether it applies around the clock' },
             href: null,
             ctaType: 'askAi',
             question: {
@@ -134,26 +134,26 @@ export const personalAccidentContent: BranchContent = {
         },
         {
             id: 'personal_accident_check_exclusions',
-            label: { el: 'Δες ποιες δραστηριότητες εξαιρούνται', en: 'See which activities are excluded' },
+            label: { el: 'Δείτε ποιες δραστηριότητες εξαιρούνται', en: 'See which activities are excluded' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Ποιες δραστηριότητες εξαιρούνται από την κάλυψη;', en: 'Which activities are excluded from cover?' },
         },
         {
             id: 'personal_accident_review_overlap',
-            label: { el: 'Έλεγξε αν επικαλύπτεται με άλλη κάλυψη ατυχήματος', en: 'Check for overlap with other accident cover' },
+            label: { el: 'Ελέγξτε αν επικαλύπτεται με άλλη κάλυψη ατυχήματος', en: 'Check for overlap with other accident cover' },
             href: '/coverage-insights',
             ctaType: 'review',
         },
         {
             id: 'personal_accident_ask_agent_scale',
-            label: { el: 'Ζήτησε από τον σύμβουλό σου τον πίνακα ποσοστών', en: 'Ask your advisor for the percentage table' },
+            label: { el: 'Ζητήστε από τον σύμβουλό σας τον πίνακα ποσοστών', en: 'Ask your advisor for the percentage table' },
             href: '/agent',
             ctaType: 'askAgent',
         },
         {
             id: 'personal_accident_note_life_change',
-            label: { el: 'Σημείωσε αλλαγή ζωής', en: 'Note a life change' },
+            label: { el: 'Σημειώστε αλλαγή ζωής', en: 'Note a life change' },
             href: null,
             ctaType: 'task',
         },
@@ -167,32 +167,32 @@ export const personalAccidentContent: BranchContent = {
     ],
     claimsSteps: [
         {
-            el: 'Ζήτησε από την πρώτη στιγμή ιατρική βεβαίωση που περιγράφει το γεγονός ως ατύχημα — ο χαρακτηρισμός στο αρχικό έγγραφο βαραίνει πολύ αργότερα.',
+            el: 'Ζητήστε από την πρώτη στιγμή ιατρική βεβαίωση που περιγράφει το γεγονός ως ατύχημα — ο χαρακτηρισμός στο αρχικό έγγραφο βαραίνει πολύ αργότερα.',
             en: 'From the outset, ask for a medical certificate describing the event as an accident — how the first document characterises it carries weight much later.',
         },
         {
-            el: 'Κατάγραψε πού, πότε και πώς συνέβη, με μάρτυρες αν υπάρχουν· το «αιφνίδιο και εξωτερικό» πρέπει να προκύπτει από τα στοιχεία.',
+            el: 'Καταγράψτε πού, πότε και πώς συνέβη, με μάρτυρες αν υπάρχουν· το «αιφνίδιο και εξωτερικό» πρέπει να προκύπτει από τα στοιχεία.',
             en: 'Record where, when and how it happened, with witnesses if any; “sudden and external” has to be evident from the evidence.',
         },
         {
-            el: 'Δήλωσε το συμβάν εντός της προθεσμίας που ορίζει το συμβόλαιο — στα ατυχήματα οι προθεσμίες είναι συχνά σύντομες.',
+            el: 'Δηλώστε το συμβάν εντός της προθεσμίας που ορίζει το συμβόλαιο — στα ατυχήματα οι προθεσμίες είναι συχνά σύντομες.',
             en: 'Report the event within the deadline the policy sets — for accidents the deadlines are often short.',
         },
         {
-            el: 'Κράτα κάθε παραστατικό δαπάνης χωριστά από τις γνωματεύσεις· τα δύο κρίνονται με διαφορετικούς όρους.',
+            el: 'Κρατήστε κάθε παραστατικό δαπάνης χωριστά από τις γνωματεύσεις· τα δύο κρίνονται με διαφορετικούς όρους.',
             en: 'Keep every expense receipt separate from the medical opinions; the two are assessed under different terms.',
         },
     ],
     renewalNote: {
-        el: 'Αν άλλαξαν επάγγελμα, αθλήματα ή συνήθειες μετακίνησης, η ανανέωση είναι η στιγμή να τα δηλώσεις — το εύρος της κάλυψης εξαρτάται από αυτά.',
+        el: 'Αν άλλαξαν επάγγελμα, αθλήματα ή συνήθειες μετακίνησης, η ανανέωση είναι η στιγμή να τα δηλώσετε — το εύρος της κάλυψης εξαρτάται από αυτά.',
         en: 'If your occupation, sports or commuting habits have changed, renewal is the moment to declare them — the scope of cover depends on them.',
     },
     emptyState: {
-        headline: { el: 'Δεν έχεις προσθέσει συμβόλαιο προσωπικού ατυχήματος', en: 'No personal accident policy added yet' },
+        headline: { el: 'Δεν έχετε προσθέσει συμβόλαιο προσωπικού ατυχήματος', en: 'No personal accident policy added yet' },
         description: {
-            el: 'Ανέβασε το συμβόλαιο και δες τι μετρά ως ατύχημα, τι αποδίδει η κάθε περίπτωση και πού σταματά η κάλυψη.',
+            el: 'Ανεβάστε το συμβόλαιο και δείτε τι μετρά ως ατύχημα, τι αποδίδει η κάθε περίπτωση και πού σταματά η κάλυψη.',
             en: 'Upload the policy and see what counts as an accident, what each case pays and where the cover stops.',
         },
-        ctaLabel: { el: 'Ανέβασε συμβόλαιο', en: 'Upload policy' },
+        ctaLabel: { el: 'Ανεβάστε συμβόλαιο', en: 'Upload policy' },
     },
 }
