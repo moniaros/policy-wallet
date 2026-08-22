@@ -202,11 +202,18 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                         </div>
                         <div>
                             <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{copy.title}</h3>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                {shares.length === 0
-                                    ? copy.notSharedYet
-                                    : `${shares.length} ${shares.length === 1 ? copy.collaboratorSingular : copy.collaboratorPlural}`}
-                            </p>
+                            {/* At zero shares this said «Δεν έχει μοιραστεί ακόμα»
+                                and the empty state ~150px below said it again —
+                                one component, one string, twice on screen. The
+                                empty state owns that sentence (it can also
+                                explain and offer the invite); the header keeps
+                                the count, which is the only thing it can say
+                                that the panel below does not. */}
+                            {shares.length > 0 && (
+                                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                                    {`${shares.length} ${shares.length === 1 ? copy.collaboratorSingular : copy.collaboratorPlural}`}
+                                </p>
+                            )}
                         </div>
                     </div>
                     {isOwner && (

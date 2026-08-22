@@ -22,6 +22,20 @@ export function AIUsageWidget({ count, limit, t, reportUnlock }: AIUsageWidgetPr
     const remaining = isUnlimited ? null : Math.max(safeLimit - count, 0)
     const showReportUnlock = Boolean(reportUnlock?.locked && (reportUnlock?.lockedCount || 0) > 0)
 
+    // Pricing v2 (2026-08-21) made B2C CAPACITY-based: `aiAnalysisPerMonth` is
+    // null on EVERY consumer tier, deliberately — "analyses are unlimited,
+    // because metering them was what made the old model incomprehensible"
+    // (lib/pricing/plan-defaults.ts). This widget predates that and was never
+    // retired, so it rendered «0 / Απεριόριστες αναλύσεις» — a counter with
+    // nothing to count against — above an upgrade button whose own href says
+    // `reason=ai_analysis_limit`, a limit that no longer exists. A meter for an
+    // unlimited allowance measures nothing and the upsell argues from a
+    // removed constraint, so neither renders.
+    //
+    // Nothing is lost: the free tier's upgrade path is the sidebar's own
+    // upgrade card, and the locked-report variant below is untouched.
+    if (isUnlimited && !showReportUnlock) return null
+
     if (showReportUnlock) {
         return (
             <div className="bg-gradient-to-br from-black to-[#111111] dark:from-[#111111] dark:to-black rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">

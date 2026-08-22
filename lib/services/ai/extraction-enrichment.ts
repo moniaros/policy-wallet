@@ -3,6 +3,7 @@ import { assessExtractionEvidence, type DocumentKind, type EvidenceVerdict } fro
 import { sanitizeExtractionSources } from './extraction-citations'
 import { parseDocumentDate, toIsoDateString } from '@/lib/dates/document-date'
 import { normalizeTaxId } from '@/lib/identity/tax-id'
+import { detectSummaryLanguage } from '@/lib/wallet/summary-language'
 
 type RawExtractionPayload = {
     /** What kind of document this is — see document-kind.ts. */
@@ -21,6 +22,8 @@ type RawExtractionPayload = {
     customerEmail?: unknown
     customerPhone?: unknown
     customerTaxId?: unknown
+    /** COMPOSED plain-language summary — pinned to Greek; see summaryLanguage below. */
+    coverageSummary?: unknown
     exclusions?: unknown
     extractionConfidence?: unknown
     /** Per-field source citations (flag-gated; see extraction-citations.ts) */
@@ -195,6 +198,21 @@ export function enrichExtractionPayload(
             missingCriticalFields,
             requiresReview,
             reviewState: (baseAcord?.extraction?.reviewState as string) || 'unconfirmed',
+            // Which language the COMPOSED coverageSummary came back in. The
+            // schema and prompt both pin Greek, but a model that ignores the
+            // instruction must not be able to reach the wallet unnoticed —
+            // lib/wallet/summary-language.ts refuses to render a summary whose
+            // language disagrees with the view, and can only do that if the row
+            // says what it holds. Detected from the text rather than assumed
+            // from the request: what was asked for is not evidence of what
+            // arrived. `null` when there is no summary or too little text to
+            // judge; a null tag falls back to script inspection at read time.
+            // A run that produced no summary of its own must not erase the tag
+            // describing the summary the row still holds.
+            summaryLanguage:
+                detectSummaryLanguage(asText(payload.coverageSummary))
+                ?? (baseAcord?.extraction?.summaryLanguage as string | undefined)
+                ?? null,
         },
         policy: {
             ...(baseAcord?.policy || {}),

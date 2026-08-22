@@ -434,6 +434,41 @@ pre {
     color: var(--pw-text-muted);
   }
 
+  /* A horizontally SCROLLING row of controls — section anchors, filter chips,
+     any strip that is meant to run off the edge and be swiped.
+
+     It exists because the narrow-viewport safety net above
+     (`:where(.grid, .flex) > * { min-width: 0 }`, ≤430px) is exactly wrong
+     here. That rule lets text blocks shrink below their min-content width so a
+     long Greek compound cannot push the page sideways. Applied to a scroll
+     strip it removes the floor that MAKES it scroll: instead of overflowing,
+     N children compress equally into the viewport. The policy page's section
+     nav rendered fourteen 34px slivers at 320px with every Greek label clipped
+     mid-word — «Σύνοψη» as «Σύν», «Ημερομηνίες» as «Ημε» — and the strip never
+     scrolled, because there was nothing left to scroll.
+
+     Children of a scroll strip therefore never shrink and never wrap; the
+     STRIP overflows, which is the whole point of it. Declared once here rather
+     than as a `shrink-0` sprinkled per call site, so the next strip inherits
+     the fix instead of rediscovering the bug. */
+  .pw-scroll-strip {
+    @apply flex overflow-x-auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .pw-scroll-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Not `:where()` — this must OUTRANK the min-width:0 safety net, which is
+     itself zero-specificity by design. */
+  .pw-scroll-strip > * {
+    flex: 0 0 auto;
+    min-width: max-content;
+    white-space: nowrap;
+  }
+
   /* The canonical text control — input, select and textarea.
      107 controls with a static className used 48 distinct appearance
      signatures, so no two forms agreed on radius, fill or padding. MASTER.md

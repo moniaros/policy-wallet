@@ -26,7 +26,18 @@ Each carries a realistic v3 acord envelope (coverages with statuses + structured
 exclusions, notable conditions, fine print, perks, extraction meta), a Greek `coverageSummary`,
 one document row, one completed analysis run, and two open rule-provenanced gap instances from
 ACTIVE authored definitions (severity copied from the definition — nothing re-decides anything).
-The account is free-tier, so the captures exercise the locked-report / upgrade-trigger paths.
+
+> **CORRECTION (Goal 1, 2026-08-22).** This section originally stated that the account is free-tier
+> "so the captures exercise the locked-report / upgrade-trigger paths". That was an unverified
+> assumption and it is **wrong**: `e2e-ph@policywallet.test` holds an ACTIVE `ph-pro` (Family)
+> subscription — `entitlements.agentCollaboration: true`, `savingsReportExport: true`,
+> `aiAnalysisPerMonth: null`. Consequences for how the baseline should be read: the captures exercise
+> the PRO paths (direct savings-report export, collaboration panel visible — which is why B8's
+> duplicate string appears in them), and they do **NOT** exercise the free-tier paths (locked gap
+> report + €3 unlock CTA, PDF-preview lock, premium-insight upsell cards, the sidebar upgrade banner).
+> Those states are unmeasured by this baseline and must be added before Goal 5 can claim the ledger is
+> complete. Every metric in the table stands — the tier changes which optional blocks render, not how
+> they were measured.
 
 Additionally, the account's real analysed policy **Εθνική 64504715** (the page the candidate
 defects were observed on: English stored summary, failed latest run) is captured as

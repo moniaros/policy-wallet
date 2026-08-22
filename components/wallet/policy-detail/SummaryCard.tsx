@@ -1,12 +1,22 @@
 "use client"
 
-import { FileText, Sparkles } from "lucide-react"
+import { FileText, RefreshCw, Sparkles } from "lucide-react"
 
 import { ScoreMethodology } from "@/components/coverage/ScoreMethodology"
 import type { PolicyHealthScore } from "@/lib/wallet/policy-detail"
+import { containsUnreadableMarker } from "@/lib/wallet/unreadable-value"
 
 interface SummaryCardProps {
-    summary: string
+    /**
+     * The RESOLVED summary — `null` when nothing may be rendered, either
+     * because the policy has none or because the stored text is in the wrong
+     * language. Resolution happens in lib/wallet/summary-language.ts; this
+     * component never reads `policy.coverageSummary` itself, so a
+     * wrong-language string has no path to the screen.
+     */
+    summary: string | null
+    /** Why `summary` is null, when it is. */
+    summaryState: "ok" | "absent" | "language_mismatch"
     health: PolicyHealthScore
     isAnalyzing: boolean
     copy: {
@@ -14,7 +24,15 @@ interface SummaryCardProps {
         summaryAiChip: string
         healthTitle: string
         healthLevels: Record<string, string>
+        /** Shown INSTEAD of the summary when the stored one is wrong-language. */
+        summaryLanguageMismatch: string
+        summaryLanguageMismatchCta: string
+        /** Shown BESIDE the summary when the model's own sentence contains «XXXX». */
+        summaryHasUnreadable: string
+        valueUnreadableCta: string
     }
+    /** Source document, offered wherever a value could not be read. */
+    documentHref?: string | null
     /**
      * Methodology disclosure for the health donut — a 0–100 figure with a verdict
      * must not ship bare, the same rule the portfolio protection score follows.
@@ -45,12 +63,20 @@ const HEALTH_COLOR: Record<string, string> = {
  */
 export function SummaryCard({
     summary,
+    summaryState,
     health,
     isAnalyzing,
     copy,
     methodology,
+    documentHref = null,
 }: SummaryCardProps) {
     const healthColorClass = HEALTH_COLOR[health.level] || HEALTH_COLOR.good
+    // A placeholder embedded in the model's own sentence — "…for vehicle
+    // (XXXX)…" — cannot be replaced without rewriting the sentence, so it is
+    // annotated instead. The note exists because nothing on this page redacts
+    // anything: an XXXX is an unread value, and the reader must not mistake it
+    // for one we are withholding.
+    const summaryHasUnreadable = summaryState === "ok" && containsUnreadableMarker(summary)
 
     return (
         <div className="pw-card pw-pad sm:p-7">
@@ -107,7 +133,44 @@ export function SummaryCard({
                     </div>
                 )}
             </div>
-            <p className="text-sm leading-relaxed text-black/75 dark:text-white/80">{summary}</p>
+            {summaryState === "language_mismatch" ? (
+                /* A summary the analysis produced in the wrong language is a
+                   pipeline defect, not content. It is withheld rather than
+                   shown, and the reader is told why and where the fix is —
+                   re-analysis is metered, so it is offered, never silently run. */
+                <div className="flex flex-col items-start gap-2 rounded-2xl border border-black/10 bg-black/[0.02] px-4 py-3 dark:border-white/15 dark:bg-white/5">
+                    <p className="text-sm leading-relaxed text-black/70 dark:text-white/70">
+                        {copy.summaryLanguageMismatch}
+                    </p>
+                    <a
+                        href="#analysis"
+                        className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-black/15 bg-white px-4 text-xs font-bold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10"
+                    >
+                        <RefreshCw className="h-3.5 w-3.5 text-primary dark:text-mint" aria-hidden />
+                        {copy.summaryLanguageMismatchCta}
+                    </a>
+                </div>
+            ) : (
+                <>
+                    <p className="text-sm leading-relaxed text-black/75 dark:text-white/80">{summary}</p>
+                    {summaryHasUnreadable && (
+                        <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl border border-black/10 bg-black/[0.02] px-3 py-2 text-xs leading-relaxed text-black/65 dark:border-white/15 dark:bg-white/5 dark:text-white/65">
+                            <span>{copy.summaryHasUnreadable}</span>
+                            {documentHref && (
+                                <a
+                                    href={documentHref}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex min-h-[44px] items-center gap-1.5 font-bold text-primary underline underline-offset-2 dark:text-mint"
+                                >
+                                    <FileText className="h-3.5 w-3.5" aria-hidden />
+                                    {copy.valueUnreadableCta}
+                                </a>
+                            )}
+                        </p>
+                    )}
+                </>
+            )}
         </div>
     )
 }

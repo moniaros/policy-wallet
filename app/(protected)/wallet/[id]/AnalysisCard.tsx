@@ -556,6 +556,71 @@ export function AnalysisCard({
     }
 
     return (
+        <>
+            {analysisError && !analysisInProgress && (
+                /* OUTSIDE the analysis card on purpose. A failed run is not a
+                   finding, and rendering it in the same register as the findings
+                   put «Απαιτείται ενέργεια / Επανάληψη» directly above a
+                   reassuring «Δεν εντοπίστηκαν ασφαλιστικά κενά» — an error and a
+                   clean bill of health in one card. It is now a state block that
+                   sits above the card and owns its own retry. */
+                <div className="mb-4">
+                    <div className="rounded-2xl border-2 border-amber-400/70 bg-amber-50 p-4 dark:border-amber-600/60 dark:bg-amber-950/25">
+                        <div className="flex items-start gap-3">
+                            <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-700 dark:text-amber-300" />
+                            <div className="flex-1">
+                                <p className="text-sm font-bold text-amber-900 dark:text-amber-100">
+                                    {statusCopy.attention}
+                                </p>
+                                <p className="mt-1 text-xs text-amber-800 dark:text-amber-200/90">
+                                    {analysisError}
+                                </p>
+                            </div>
+                            {showConsentRequest ? (
+                                <button
+                                    onClick={async () => {
+                                        setRequestingConsent(true)
+                                        const res = await requestAiConsent(policyId)
+                                        if ("error" in res && res.error) {
+                                            toast.error(mapWalletErrorToMessage(res.error, t, "generic"))
+                                        } else if ("emailDelivered" in res && res.emailDelivered === false) {
+                                            // The invite/notification exists but the email never
+                                            // left — hand the agent the link instead of celebrating.
+                                            const link = "inviteLink" in res ? res.inviteLink : undefined
+                                            if (link) {
+                                                navigator.clipboard?.writeText(link).catch(() => {})
+                                                toast.warning(t.common.aiConsentEmailFailedLinkCopied)
+                                            } else {
+                                                toast.warning(t.common.aiConsentEmailFailed)
+                                            }
+                                            setShowConsentRequest(false)
+                                            setAnalysisError(null)
+                                        } else {
+                                            toast.success(t.common.aiConsentRequestSent)
+                                            setShowConsentRequest(false)
+                                            setAnalysisError(null)
+                                        }
+                                        setRequestingConsent(false)
+                                    }}
+                                    disabled={requestingConsent}
+                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 dark:text-amber-200 transition-colors hover:bg-amber-100 disabled:opacity-50 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                >
+                                    {t.common.aiConsentRequestAction}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleAnalyze}
+                                    disabled={analysisInProgress}
+                                    className="pw-secondary-button border-amber-400/60 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100"
+                                >
+                                    <RefreshCw className={`h-3 w-3 ${analysisInProgress ? "animate-spin" : ""}`} />
+                                    {statusCopy.retry}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-xl">
             <div className="bg-primary p-6 flex justify-between items-center">
                 <div className="flex items-center gap-3 text-white">
@@ -712,65 +777,16 @@ export function AnalysisCard({
                     </div>
                 </div>
             )}
-            {analysisError && !analysisInProgress && (
-                <div className="px-6 pt-5">
-                    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700/60 dark:bg-amber-950/20">
-                        <div className="flex items-start gap-3">
-                            <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-700 dark:text-amber-300" />
-                            <div className="flex-1">
-                                <p className="text-sm font-bold text-amber-900 dark:text-amber-100">
-                                    {statusCopy.attention}
-                                </p>
-                                <p className="mt-1 text-xs text-amber-800 dark:text-amber-200/90">
-                                    {analysisError}
-                                </p>
-                            </div>
-                            {showConsentRequest ? (
-                                <button
-                                    onClick={async () => {
-                                        setRequestingConsent(true)
-                                        const res = await requestAiConsent(policyId)
-                                        if ("error" in res && res.error) {
-                                            toast.error(mapWalletErrorToMessage(res.error, t, "generic"))
-                                        } else if ("emailDelivered" in res && res.emailDelivered === false) {
-                                            // The invite/notification exists but the email never
-                                            // left — hand the agent the link instead of celebrating.
-                                            const link = "inviteLink" in res ? res.inviteLink : undefined
-                                            if (link) {
-                                                navigator.clipboard?.writeText(link).catch(() => {})
-                                                toast.warning(t.common.aiConsentEmailFailedLinkCopied)
-                                            } else {
-                                                toast.warning(t.common.aiConsentEmailFailed)
-                                            }
-                                            setShowConsentRequest(false)
-                                            setAnalysisError(null)
-                                        } else {
-                                            toast.success(t.common.aiConsentRequestSent)
-                                            setShowConsentRequest(false)
-                                            setAnalysisError(null)
-                                        }
-                                        setRequestingConsent(false)
-                                    }}
-                                    disabled={requestingConsent}
-                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 dark:text-amber-200 transition-colors hover:bg-amber-100 disabled:opacity-50 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
-                                >
-                                    {t.common.aiConsentRequestAction}
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={handleAnalyze}
-                                    disabled={analysisInProgress}
-                                    className="pw-secondary-button border-amber-400/60 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100"
-                                >
-                                    <RefreshCw className={`h-3 w-3 ${analysisInProgress ? "animate-spin" : ""}`} />
-                                    {statusCopy.retry}
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
             <div className="p-6">
+                {/* The findings below were produced by an EARLIER run when the
+                    latest one failed. Saying so on the findings is the other half
+                    of moving the failure out of this card: without it, "no gaps
+                    found" reads as the verdict of the analysis that just broke. */}
+                {analysisError && !analysisInProgress && (
+                    <p className="mb-4 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2 text-xs leading-relaxed text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/70">
+                        {t.wallet.policyDetailsPage.analysisFindingsStale}
+                    </p>
+                )}
                 {report && report.items.length > 0 ? (
                     <>
                         <GapReportList
@@ -951,5 +967,6 @@ export function AnalysisCard({
                 source="wallet_analysis_card"
             />
         </div>
+        </>
     )
 }

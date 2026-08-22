@@ -41,7 +41,14 @@ export function buildExtractionSchema() {
         issueDate: z.string().optional().describe('Policy issue/signature date in YYYY-MM-DD (look for Ημερομηνία έκδοσης, Issue date)'),
         premiumFrequency: z.enum(['annual', 'semiannual', 'quarterly', 'monthly', 'one_off']).optional().describe('Premium payment frequency (look for Συχνότητα καταβολής, δόσεις, payment frequency/installments)'),
         renewalDate: z.string().optional().describe('Policy renewal date in YYYY-MM-DD if stated (look for Ημερομηνία ανανέωσης, Renewal)'),
-        coverageSummary: z.string().optional().describe('Brief summary of main coverages, max 200 chars'),
+        // COMPOSED, not copied — so unlike the plain string fields above (which
+        // keep the document's own language) this one has a language of its own
+        // and must be pinned. Left unpinned, a Greek schedule routinely yielded
+        // an English sentence, which the wallet rendered verbatim under the
+        // heading «Το ασφαλιστήριό σας σε απλά ελληνικά». The reader is a Greek
+        // consumer; lib/wallet/summary-language.ts refuses to display a summary
+        // that comes back in any other language.
+        coverageSummary: z.string().optional().describe('Brief summary of main coverages, max 200 chars. WRITE THIS IN GREEK (στα ελληνικά) regardless of the document language — it is shown to a Greek consumer as plain-language copy.'),
         customerName: z.string().optional().describe('Policyholder first name'),
         customerSurname: z.string().optional().describe('Policyholder surname'),
         customerEmail: z.string().optional(),

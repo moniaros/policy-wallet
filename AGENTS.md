@@ -126,6 +126,41 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   `describeSeverity()` ([lib/gaps/severity-display.ts](lib/gaps/severity-display.ts)) and show
   its `caveatKey`. `tests/unit/gap-severity-display-single-source.test.ts` fails on a new
   hand-rolled severity map and carries the migration debt list.
+- **A composed AI field has a language of its own — pin it, tag it, and refuse a
+  mismatch.** The extraction prompt's rule "keep the document's original language"
+  covers fields COPIED from the document; it does not cover `coverageSummary`,
+  which the model WRITES. Unpinned, a Greek schedule returned English prose that
+  the wallet rendered verbatim under «Το ασφαλιστήριό σας σε απλά ελληνικά».
+  Greek is now pinned in both places the model reads (the schema `.describe()`
+  and the prompt's LANGUAGE block), `enrichExtractionPayload` records
+  `acordData.extraction.summaryLanguage` **detected from the returned text, never
+  assumed from the request**, and `lib/wallet/summary-language.ts` is the only
+  thing allowed to decide whether a stored summary may render. Do not render
+  `policy.coverageSummary` directly from a component.
+- **Nothing on the policy surface is redacted — so a masked value is an
+  extraction failure, and must say so.** `(XXXX)` / `????` / `N/A` in a field or
+  a summary is the model's placeholder for something it could not read, stored
+  verbatim. Rendering it as data makes "we are hiding this" and "we could not
+  read this" indistinguishable. Route extracted values through
+  `lib/wallet/unreadable-value.ts`; an unreadable one states that it could not
+  be read and links to the source document.
+- **Status, expiry and any countdown come from ONE call.** `resolvePolicyLifecycle`
+  ([lib/policy-status.ts](lib/policy-status.ts)) resolves all three on the Athens
+  calendar. A client that recomputes the day count with
+  `(end - Date.now()) / 86_400_000` disagrees with it around Athens midnight, and
+  three numbers that disagree destroy trust in every other number on the page.
+  Pass the server's values down; never re-derive them.
+- **A strip that is meant to scroll uses `.pw-scroll-strip`.** The narrow-viewport
+  safety net `:where(.grid, .flex) > * { min-width: 0 }` (≤430px, app/globals.css)
+  exists so a long Greek compound cannot push the page sideways. Applied to a
+  horizontal scroll strip it removes the floor that MAKES it scroll: the children
+  compress into the viewport instead of overflowing (the policy page's section nav
+  rendered fourteen 34px slivers with every label clipped mid-word). The primitive
+  declares that a strip's children never shrink and never wrap.
+- **`data-fact="<namespace>.<key>"` marks the element that renders a fact.**
+  One fact, one element, one place on the page. The attribute is what makes
+  duplicate-fact regressions measurable rather than argued about — see
+  `docs/evidence/policy-detail-mobile/`.
 - **A policy's identity may be a placeholder — never render it raw.** `insurerName` /
   `policyNumber` can hold sentinels (`__PENDING_EXTRACTION__`, `PENDING-…`, `Unknown
   Insurer`) even on healthy `active` policies, because the AI providers substitute them for

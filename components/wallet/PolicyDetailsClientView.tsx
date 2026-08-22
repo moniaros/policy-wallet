@@ -55,6 +55,7 @@ import {
 } from "@/lib/wallet/policy-identity"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
+import { resolveStoredSummary } from "@/lib/wallet/summary-language"
 import { deriveRenewalChecklist, upcomingReminderMilestones } from "@/lib/wallet/renewal-outlook"
 import { complianceObligations } from "@/lib/insurance/policy-conditions"
 
@@ -68,7 +69,7 @@ import { deriveInsuredNames } from "@/lib/wallet/insured-people"
 const EXPORT_COPY = {
     title: { el: "Αναφορά εξοικονόμησης", en: "Savings report" },
     subtitle: {
-        el: "Κατέβασε μια καθαρή σύνοψη καλύψεων, κενών και πιθανής εξοικονόμησης για αυτό το ασφαλιστήριο.",
+        el: "Κατεβάστε μια καθαρή σύνοψη καλύψεων, κενών και πιθανής εξοικονόμησης για αυτό το ασφαλιστήριο.",
         en: "Download a clean summary of coverages, gaps and potential savings for this policy.",
     },
     exportCta: { el: "Εξαγωγή αναφοράς", en: "Export report" },
@@ -96,7 +97,19 @@ interface PolicyDetailsClientProps {
     statusLabel: string
     statusColor: any
     statusColorOnDark: any
+    /**
+     * Days to expiry on the ATHENS CALENDAR, from the server's
+     * resolvePolicyLifecycle — the same call that produced `statusLabel`.
+     * `null` when no trustworthy end date exists (no fabricated countdown).
+     */
     daysLeft: number | null
+    /**
+     * The resolved end date (renewal history → extracted envelope → column) as
+     * ISO, from that same call. Rendering this instead of re-resolving it is
+     * what keeps the expiry date, the status chip and the day count from
+     * disagreeing — see the B4 note in lib/policy-status.ts.
+     */
+    resolvedEndDate?: string | null
     isOwner: boolean
     relationshipId?: string | null
     t: any
@@ -135,6 +148,7 @@ export function PolicyDetailsClient({
     statusColor,
     statusColorOnDark,
     daysLeft,
+    resolvedEndDate = null,
     isOwner,
     relationshipId,
     t,
@@ -204,19 +218,49 @@ export function PolicyDetailsClient({
     const { renewalDate, premiumFrequency } = derivePolicyMeta(policy?.acordData)
 
     const getStartDate = () => policy.acordData?.policy?.effectiveDate || policy.startDate
+    /**
+     * ONE end date for the whole page.
+     *
+     * `resolvedEndDate` is the server's `resolvePolicyLifecycle` output — the
+     * same call that produced `statusLabel` and `daysLeft`, applying the same
+     * resolution order (renewal history → extracted envelope → endDate column).
+     * The local fallback exists only for a caller that has not been updated to
+     * pass it; it reproduces that order rather than inventing another one.
+     */
     const getEndDate = () => {
+        if (resolvedEndDate) return resolvedEndDate
         if (latestRenewalEnd) return latestRenewalEnd.toISOString()
         return policy.acordData?.policy?.expirationDate || policy.endDate
     }
 
-    // null when no trustworthy end date exists — never the server's DB-column
-    // days (the column can hold the historical upload placeholder).
-    const computedDaysLeft: number | null = (() => {
-        const end = parsePolicyDate(getEndDate())
-        if (!end) return daysLeft ?? null
-        return Math.floor((end.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    })()
+    /**
+     * The day count is the SERVER's, not a re-computation.
+     *
+     * This used to be `Math.floor((end - Date.now()) / 86_400_000)` — raw UTC
+     * millisecond arithmetic, the exact pattern lib/policy-status.ts documents
+     * as the recurring defect. The status chip beside it comes from
+     * `calendarDaysUntil`, which counts ATHENS CALENDAR days, so between Athens
+     * midnight and ~03:00 the two disagreed by one: «Ληγμένο» over a countdown
+     * still showing a day left, or «Ενεργό» beside «λήγει σε 0 ημέρες». Three
+     * numbers that disagree destroy trust in every other number on the page.
+     *
+     * Status, expiry and countdown now all derive from one call.
+     */
+    const computedDaysLeft: number | null = daysLeft ?? null
     const isExpiredPolicy = computedDaysLeft !== null && computedDaysLeft < 0
+
+    // The stored summary, gated on language. `resolveStoredSummary` reads the
+    // tag the extraction wrote (acordData.extraction.summaryLanguage) and falls
+    // back to script inspection for rows written before the tag existed — which
+    // is every row in the book today. See lib/wallet/summary-language.ts.
+    const storedSummary = useMemo(
+        () => resolveStoredSummary({
+            summary: policy.coverageSummary,
+            acordData: policy.acordData,
+            viewLanguage: lang,
+        }),
+        [policy.coverageSummary, policy.acordData, lang]
+    )
 
     const insuredNames = useMemo(() => deriveInsuredNames(policy?.acordData), [policy])
 
@@ -797,11 +841,15 @@ export function PolicyDetailsClient({
                     isAnalyzing={isAnalyzing}
                     isPendingInsurer={isPendingInsurer}
                     locale={locale}
+                    // Where an unreadable value actually exists: the document.
+                    documentHref={firstDocumentHref}
                     copy={{
                         expiresIn: t.wallet.expiresIn,
                         days: t.wallet.days,
                         policyId: t.wallet.policyId,
                         plateNumber: t.wallet.plateNumber,
+                        valueUnreadable: detailsCopy.valueUnreadable,
+                        valueUnreadableCta: detailsCopy.valueUnreadableCta,
                         starts: t.wallet.starts,
                         ends: t.wallet.ends,
                         annualPremium: t.wallet.annualPremium,
@@ -845,7 +893,17 @@ export function PolicyDetailsClient({
                         {/* 1 ── Plain-language AI summary ─────────────────── */}
                         <section id="summary" className="scroll-mt-24">
                             <SummaryCard
-                                summary={policy.coverageSummary || t.wallet.summaryFallback}
+                                // Never `policy.coverageSummary` directly — a
+                                // stored summary in the wrong language must not
+                                // reach the screen under «σε απλά ελληνικά».
+                                summary={
+                                    storedSummary.state === "ok"
+                                        ? storedSummary.text
+                                        : storedSummary.state === "absent"
+                                            ? t.wallet.summaryFallback
+                                            : null
+                                }
+                                summaryState={storedSummary.state}
                                 health={health}
                                 isAnalyzing={isAnalyzing}
                                 copy={{
@@ -853,7 +911,12 @@ export function PolicyDetailsClient({
                                     summaryAiChip: detailsCopy.summaryAiChip,
                                     healthTitle: t.wallet.healthScore.title,
                                     healthLevels: detailsCopy.healthLevels,
+                                    summaryLanguageMismatch: detailsCopy.summaryLanguageMismatch,
+                                    summaryLanguageMismatchCta: detailsCopy.summaryLanguageMismatchCta,
+                                    summaryHasUnreadable: detailsCopy.summaryHasUnreadable,
+                                    valueUnreadableCta: detailsCopy.valueUnreadableCta,
                                 }}
+                                documentHref={firstDocumentHref}
                                 methodology={{
                                     title: t.wallet.healthScore.methodologyTitle,
                                     body: t.wallet.healthScore.methodologyBody,

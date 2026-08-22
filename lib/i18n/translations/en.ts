@@ -482,6 +482,7 @@ export const en: TranslationKeys = {
             analysisBlockedUpgradeHint: 'The analysis did not fail — detailed coverage, gaps and terms unlock when you upgrade to Plus. Your document is fine; no need to re-upload.',
             analysisBlockedConsentTitle: 'AI-processing consent pending',
             analysisBlockedConsentHint: 'The analysis did not fail — it needs the owner\'s explicit consent to process the documents with AI first. Grant consent, then start the analysis again.',
+            analysisFindingsStale: 'The items below come from an earlier analysis — the latest one did not complete, so they may be out of date.',
             analysisFailedHint: 'You can try again. If it fails again the file may not be readable — upload a clearer copy, or ask your advisor.',
             analysisFoundNothingTitle: 'The analysis finished without detailed coverages',
             analysisFoundNothingHint: 'This document did not contain structured coverage detail we could read. Re-analysing the same file will most likely give the same result — upload the full policy document, or ask your advisor.',
@@ -510,6 +511,12 @@ export const en: TranslationKeys = {
             // Plain-language summary
             summaryTitle: 'Your policy in plain language',
             summaryAiChip: 'AI summary',
+            summaryLanguageMismatch: 'This policy\'s summary was produced in another language, so it is not shown here. Re-run the analysis to generate it in your language.',
+            summaryLanguageMismatchCta: 'Go to the analysis',
+            valueUnreadable: 'Could not be read from the document',
+            valueUnreadableHint: 'We could not read this detail. It is not hidden — open the document to see it.',
+            valueUnreadableCta: 'Open document',
+            summaryHasUnreadable: 'Some details could not be read from the document and appear as "XXXX" in the text. They are not hidden — open the document to see them.',
             // AI Policy Brief — seven honest one-liners, each anchored to its detail card
             navBrief: 'Brief',
             briefTitle: 'Policy brief',

@@ -128,6 +128,10 @@ LANGUAGE:
 - Plain string fields: keep the document's original language (Greek stays Greek).
 - Fields the schema defines as an {en, el} object: provide BOTH English and Greek.
 - Never emit an {en, el} object where the schema expects a plain string.
+- EXCEPTION — coverageSummary is COMPOSED by you rather than copied out of the
+  document, so it has no "original language" to keep. Write it in GREEK
+  (στα ελληνικά), always, whatever language the document is in: it is shown to a
+  Greek consumer as the policy "in plain Greek".
 
 FINE PRINT & HIDDEN VALUE (inside acordData):
 - finePrintClauses: clauses that limit coverage, impose obligations, or hide exclusions — hunt the Γενικοί Όροι, Ειδικοί Όροι, Εξαιρέσεις and Απαλλαγές sections.

@@ -25,6 +25,24 @@ export interface FixtureSpec {
     premiumAmount: number
     /** slugs of ACTIVE authored gap definitions to attach as open instances */
     gapSlugs: string[]
+    /**
+     * DEFECT-STATE fixtures (Goal 1 acceptance).
+     *
+     * The six matrix fixtures are healthy by construction, which is right for
+     * measuring layout but proves nothing about a fix to a broken state. These
+     * flags reproduce the exact conditions the Goal 0 baseline confirmed, so
+     * the acceptance pass can assert the fixed behaviour rather than assume it:
+     *
+     *  - `englishSummary`  → B2: a stored summary in the wrong language, and
+     *                        no language tag (the state every legacy row is in).
+     *  - `unreadableValues`→ B10: extractor placeholders («XXXX») in a field
+     *                        AND embedded in the composed summary sentence.
+     *  - `failedLatestRun` → B5: a completed run followed by a FAILED one, with
+     *                        the processingError the page reads.
+     */
+    englishSummary?: boolean
+    unreadableValues?: boolean
+    failedLatestRun?: boolean
 }
 
 export const FIXTURE_SPECS: FixtureSpec[] = [
@@ -34,6 +52,44 @@ export const FIXTURE_SPECS: FixtureSpec[] = [
     { key: "health-active",   policyNumber: "E2E-PDM-HL-ACT", lineOfBusiness: "health", state: "active",   insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1138.27, gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
     { key: "health-expiring", policyNumber: "E2E-PDM-HL-EXP", lineOfBusiness: "health", state: "expiring", insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1102.9,  gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
     { key: "health-expired",  policyNumber: "E2E-PDM-HL-XPD", lineOfBusiness: "health", state: "expired",  insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1064.3,  gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
+]
+
+/**
+ * Defect-state fixtures — NOT part of the 18-capture measurement matrix.
+ * They exist so Goal 1 can prove each confirmed defect is actually fixed in
+ * the state that produced it, at all three widths.
+ */
+export const DEFECT_SPECS: FixtureSpec[] = [
+    {
+        key: "defect-english-summary",
+        policyNumber: "E2E-PDM-DEF-EN",
+        lineOfBusiness: "motor",
+        state: "active",
+        insurerName: "Interamerican",
+        premiumAmount: 94.07,
+        gapSlugs: ["no_own_damage_cover"],
+        englishSummary: true,
+    },
+    {
+        key: "defect-unreadable",
+        policyNumber: "E2E-PDM-DEF-XX",
+        lineOfBusiness: "motor",
+        state: "active",
+        insurerName: "Interamerican",
+        premiumAmount: 287.4,
+        gapSlugs: ["no_glass_breakage_cover"],
+        unreadableValues: true,
+    },
+    {
+        key: "defect-failed-run",
+        policyNumber: "E2E-PDM-DEF-FA",
+        lineOfBusiness: "health",
+        state: "active",
+        insurerName: "Εθνική Ασφαλιστική",
+        premiumAmount: 1138.27,
+        gapSlugs: [],
+        failedLatestRun: true,
+    },
 ]
 
 const DAY = 86_400_000
@@ -270,6 +326,14 @@ function healthAcord(spec: FixtureSpec, start: Date, end: Date) {
     }
 }
 
+/** B2 reproduction: composed in English, exactly as the providers returned it. */
+const ENGLISH_SUMMARY =
+    "The policy concerns the insurance of the Toyota Yaris vehicle for the 2025-2026 period. It provides mandatory third-party liability, coverage for natural disasters (flood), forest fire, damages caused by an uninsured vehicle, and roadside assistance."
+
+/** B10 reproduction: an extractor placeholder embedded in the model's sentence. */
+const UNREADABLE_SUMMARY =
+    "Το συμβόλαιο αφορά την ασφάλιση του οχήματος με αριθμό κυκλοφορίας (XXXX) για την περίοδο 2025-2026. Καλύπτει αστική ευθύνη προς τρίτους, πυρκαγιά και φυσικά φαινόμενα."
+
 const SUMMARY: Record<string, string> = {
     motor:
         "Το συμβόλαιο καλύπτει την αστική ευθύνη προς τρίτους έως €1.300.000, πυρκαγιά και φυσικά φαινόμενα για το Toyota Yaris. Περιλαμβάνει οδική βοήθεια 24/7. Δεν καλύπτει ίδιες ζημιές και θραύση κρυστάλλων — και η ζημιά πρέπει να δηλωθεί εντός 8 εργάσιμων ημερών.",
@@ -291,10 +355,35 @@ export async function provisionMatrixFixtures(db: any, ownerEmail: string): Prom
     const now = new Date()
     const ids: Record<string, string> = {}
 
-    for (const spec of FIXTURE_SPECS) {
+    for (const spec of [...FIXTURE_SPECS, ...DEFECT_SPECS]) {
         const { start, end } = fixtureDates(spec.state, now)
-        const acord = spec.lineOfBusiness === "motor" ? motorAcord(spec, start, end) : healthAcord(spec, start, end)
+        const acord: any = spec.lineOfBusiness === "motor" ? motorAcord(spec, start, end) : healthAcord(spec, start, end)
         const analyzedAt = new Date(start.getTime() + 2 * 86_400_000)
+        let summary = SUMMARY[spec.lineOfBusiness]
+
+        // ── Defect states (Goal 1 acceptance) ───────────────────────────────
+        if (spec.englishSummary) {
+            // A summary composed in English and stored with NO language tag —
+            // the state of every row written before the tag existed, and the
+            // exact shape of production policy 64504715.
+            summary = ENGLISH_SUMMARY
+            delete acord.extraction.summaryLanguage
+        }
+        if (spec.unreadableValues) {
+            // The extractor's own placeholders, stored verbatim: one whole
+            // field, one embedded in the composed sentence.
+            acord.vehicle.plateNumber = "XXXX"
+            summary = UNREADABLE_SUMMARY
+        }
+        if (spec.failedLatestRun) {
+            // What the page reads to decide "the last analysis failed".
+            acord.processingError = {
+                code: "TRANSIENT_FAILURE",
+                message: "Your project has exceeded its monthly spending cap.",
+                retryable: true,
+                occurredAt: new Date(now.getTime() - 3 * 86_400_000).toISOString(),
+            }
+        }
 
         const data = {
             insurerName: spec.insurerName,
@@ -306,7 +395,7 @@ export async function provisionMatrixFixtures(db: any, ownerEmail: string): Prom
             coverageEndDate: end,
             premiumAmount: spec.premiumAmount,
             premiumCurrency: "EUR",
-            coverageSummary: SUMMARY[spec.lineOfBusiness],
+            coverageSummary: summary,
             acordData: acord,
             lastAnalyzedAt: analyzedAt,
         }
@@ -356,6 +445,25 @@ export async function provisionMatrixFixtures(db: any, ownerEmail: string): Prom
                     finishedAt: analyzedAt,
                 },
             })
+            // B5: a FAILED run AFTER the completed one — the real shape, where
+            // the page body renders the last good extraction while the newest
+            // run is the broken one.
+            if (spec.failedLatestRun) {
+                const failedAt = new Date(now.getTime() - 3 * 86_400_000)
+                await db.policyAnalysisRun.create({
+                    data: {
+                        policyId: policy.id,
+                        userId: owner.id,
+                        provider: "fixture",
+                        model: "fixture",
+                        status: "failed",
+                        failureCode: "TRANSIENT_FAILURE",
+                        failureMessage: "Your project has exceeded its monthly spending cap.",
+                        startedAt: failedAt,
+                        finishedAt: failedAt,
+                    },
+                })
+            }
         }
 
         // Open gap instances from ACTIVE authored definitions. Severity is

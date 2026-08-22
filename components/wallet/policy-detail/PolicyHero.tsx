@@ -1,8 +1,9 @@
 "use client"
 
-import { Calendar, Download, MessageCircle, Phone, Share2, Shield, Sparkles, TrendingUp } from "lucide-react"
+import { Calendar, Download, FileText, MessageCircle, Phone, Share2, Shield, Sparkles, TrendingUp } from "lucide-react"
 
 import { formatPolicyDate, type PremiumFrequency } from "@/lib/wallet/policy-detail"
+import { extractedField } from "@/lib/wallet/unreadable-value"
 
 interface PolicyHeroProps {
     displayInsurer: string
@@ -22,11 +23,16 @@ interface PolicyHeroProps {
     isAnalyzing: boolean
     isPendingInsurer: boolean
     locale: string
+    /** Where the source document opens — the only place an unreadable value exists. */
+    documentHref?: string | null
     copy: {
         expiresIn: string
         days: string
         policyId: string
         plateNumber: string
+        /** Shown in place of a value the extractor could not read. */
+        valueUnreadable: string
+        valueUnreadableCta: string
         starts: string
         ends: string
         annualPremium: string
@@ -45,6 +51,38 @@ interface PolicyHeroProps {
     onCallInsurer: () => void
     /** Overflow (kebab) menu rendered top-right — e.g. delete policy. */
     headerMenu?: React.ReactNode
+}
+
+/**
+ * A field the extraction could not read, stated as such.
+ *
+ * The customer's alternative is the document itself, so the affordance to open
+ * it is part of the state rather than something to hunt for elsewhere on the
+ * page. Never styled like a value.
+ */
+function UnreadableValue({
+    copy,
+    documentHref,
+}: {
+    copy: { valueUnreadable: string; valueUnreadableCta: string }
+    documentHref: string | null
+}) {
+    return (
+        <>
+            <p className="text-sm font-semibold italic text-white/55">{copy.valueUnreadable}</p>
+            {documentHref && (
+                <a
+                    href={documentHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1.5 inline-flex min-h-[44px] items-center gap-1.5 text-xs font-bold text-mint underline underline-offset-2 hover:text-mint/80"
+                >
+                    <FileText className="h-3.5 w-3.5" aria-hidden />
+                    {copy.valueUnreadableCta}
+                </a>
+            )}
+        </>
+    )
 }
 
 /**
@@ -68,12 +106,19 @@ export function PolicyHero({
     isAnalyzing,
     isPendingInsurer,
     locale,
+    documentHref = null,
     copy,
     onShare,
     onDownload,
     onCallInsurer,
     headerMenu,
 }: PolicyHeroProps) {
+    // A value the extractor wrote as a placeholder («XXXX») is NOT redacted —
+    // PolicyWallet redacts nothing. Saying so, and offering the document, is
+    // the difference between "we are hiding this" and "we could not read it".
+    const policyNumberField = extractedField(displayPolicyNumber)
+    const plateField = extractedField(plateNumber)
+
     return (
         <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] p-6 text-white shadow-2xl sm:p-8 lg:p-10">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(137,217,178,0.22),_transparent_45%)]" />
@@ -128,28 +173,36 @@ export function PolicyHero({
                         BOTH themes, so in light mode it rendered dark text on a
                         near-black surface and the three actions were invisible. */}
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                            {displayPolicyNumber && (
-                                <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
+                            {(policyNumberField.readable ? displayPolicyNumber : true) && (
+                                <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3" data-fact="policy.policyNumber">
                                     <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.policyId}</p>
-                                    <p className="font-mono text-sm font-bold text-white">{displayPolicyNumber}</p>
+                                    {policyNumberField.readable ? (
+                                        <p className="font-mono text-sm font-bold text-white">{displayPolicyNumber}</p>
+                                    ) : (
+                                        <UnreadableValue copy={copy} documentHref={documentHref} />
+                                    )}
                                 </div>
                             )}
 
                             {plateNumber ? (
-                                <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
+                                <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3" data-fact="vehicle.plateNumber">
                                     <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.plateNumber}</p>
-                                    <p className="font-mono text-sm font-bold text-white">{plateNumber}</p>
+                                    {plateField.readable ? (
+                                        <p className="font-mono text-sm font-bold text-white">{plateField.value}</p>
+                                    ) : (
+                                        <UnreadableValue copy={copy} documentHref={documentHref} />
+                                    )}
                                 </div>
                             ) : null}
 
                             {!isAnalyzing && (
                                 <>
-                                    <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
+                                    <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3" data-fact="policy.startDate">
                                         <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.starts}</p>
                                         <p className="text-sm font-bold text-white">{formatPolicyDate(startDate, locale)}</p>
                                     </div>
 
-                                    <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
+                                    <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3" data-fact="policy.expiryDate">
                                         <p className="mb-1 text-kicker font-black uppercase tracking-widest text-white/65">{copy.ends}</p>
                                         <p className="text-sm font-bold text-white">{formatPolicyDate(endDate, locale)}</p>
                                     </div>
@@ -168,8 +221,15 @@ export function PolicyHero({
                         </div>
                     </div>
 
+                    {/* `bg-white/5`, NOT `bg-[#111111]`. This card carried the
+                        hero's own background colour, separated from it only by a
+                        15%-alpha border — so on a phone, where it stacks between
+                        the metadata tiles and the action row, it read as a large
+                        black void rather than as the premium. The sibling tiles
+                        above already use the lifted surface; this one now matches
+                        them, which is also what makes it legible as a card. */}
                     {premiumAmount > 0 && (
-                        <div className="w-full max-w-xs rounded-3xl border border-white/15 bg-[#111111] p-5 shadow-lg">
+                        <div className="w-full max-w-xs rounded-3xl border border-white/15 bg-white/5 p-5 shadow-lg" data-fact="policy.premiumAmount">
                             <p className="mb-2 flex items-center gap-2 text-kicker font-black uppercase tracking-widest text-white/65">
                                 <TrendingUp className="h-3.5 w-3.5 text-mint" />
                                 {premiumFrequency && premiumFrequency !== "annual"

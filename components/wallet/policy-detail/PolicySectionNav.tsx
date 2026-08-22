@@ -14,7 +14,11 @@ export function PolicySectionNav({ items, ariaLabel }: { items: PolicySectionNav
 
     return (
         <nav aria-label={ariaLabel} className="mt-5">
-            <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {/* `pw-scroll-strip` (app/globals.css) — the shared primitive for a
+                strip that is meant to overflow and be swiped. It is what keeps
+                the ≤430px `min-width: 0` safety net from compressing these pills
+                into unreadable slivers; see the primitive's own note. */}
+            <div className="pw-scroll-strip gap-2 pb-1">
                 {items.map((item) => (
                     <a
                         key={item.id}

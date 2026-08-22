@@ -874,7 +874,20 @@ export function firstSentence(text: string | null | undefined, maxLen = 140): st
     const match = trimmed.match(/^.*?[.;!?](?=\s|$)/)
     const sentence = (match ? match[0] : trimmed).trim()
     if (sentence.length <= maxLen) return sentence
-    return `${sentence.slice(0, maxLen - 1).trimEnd()}…`
+    // Cut at a WORD boundary, not at the character index.
+    //
+    // This output is used as a gap card's HEADING (resolveGapContent, for slugs
+    // the authored catalogue does not know — production holds 41 AI-minted
+    // definitions whose instances still render). A raw slice ended headings
+    // mid-word — «…δεν καλύπτ…» — which reads as a rendering fault rather than
+    // as a truncation, on the one surface where the reader is deciding whether
+    // to trust the finding.
+    const hard = sentence.slice(0, maxLen - 1)
+    const lastBreak = hard.search(/\s\S*$/)
+    // Only honour the break if it keeps a usable amount of the sentence;
+    // otherwise a single very long word would truncate to almost nothing.
+    const cut = lastBreak > maxLen * 0.6 ? hard.slice(0, lastBreak) : hard
+    return `${cut.trimEnd().replace(/[.,;:·\-–—]$/, "")}…`
 }
 
 /**

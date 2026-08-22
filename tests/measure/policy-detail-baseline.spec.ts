@@ -102,9 +102,18 @@ async function gotoPolicy(page: import("@playwright/test").Page, policyId: strin
     for (let attempt = 0; attempt < 2; attempt++) {
         await page.goto(`/wallet/${policyId}`, { waitUntil: "domcontentloaded", timeout: 90_000 })
         await page.waitForTimeout(500)
-        if (!page.url().includes("/auth/signin")) return
+        if (page.url().includes("/auth/signin")) continue
+        // …and the content itself, not just the shell. Measuring a page whose
+        // RSC body is still streaming reports a shorter, emptier page than the
+        // product has — the metric equivalent of the redirect defect above.
+        try {
+            await page.waitForSelector("#summary", { timeout: 45_000, state: "attached" })
+            return
+        } catch {
+            continue
+        }
     }
-    throw new Error(`gotoPolicy: redirected to signin for ${policyId} — session not live, refusing to measure`)
+    throw new Error(`gotoPolicy: ${policyId} never rendered its content (or bounced to signin) — refusing to measure`)
 }
 
 for (const spec of FIXTURE_SPECS) {

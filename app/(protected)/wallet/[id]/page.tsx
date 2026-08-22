@@ -143,6 +143,13 @@ export default async function PolicyDetailPage({
     // trustworthy end date exists (no fabricated countdown).
     const lifecycle = resolvePolicyLifecycle(policy)
     const status = lifecycle.status
+    // THE resolved end date — renewal history → extracted envelope → column,
+    // decided once, here. The client used to re-derive this (and the day count)
+    // with its own resolution order and raw UTC millisecond arithmetic, so the
+    // status chip (Athens calendar) and the countdown beside it could disagree
+    // by a day around Athens midnight. Status, expiry and countdown now all
+    // come from this one call. See lib/policy-status.ts.
+    const resolvedEndDate = lifecycle.endDate ? lifecycle.endDate.toISOString() : null
     const statusColor = getStatusColor(status)
     // The hero is dark in both themes; its chip needs the on-dark palette.
     const statusColorOnDark = getStatusColorOnDark(status)
@@ -359,6 +366,7 @@ export default async function PolicyDetailPage({
             serializedShares={serializedShares}
             aiUsageStats={aiUsageStats}
             statusLabel={statusLabel}
+            resolvedEndDate={resolvedEndDate}
             statusColor={statusColor}
             statusColorOnDark={statusColorOnDark}
             daysLeft={daysLeft}

@@ -1,5 +1,55 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-22b (Policy-detail mobile series: GOAL 1 — the confirmed defects, fixed)
+
+**Workstream:** policy-detail (mobile), B2C wallet — Goal 1 (fix what is broken, change nothing else).
+Output: `docs/evidence/policy-detail-mobile/GOAL1.md`, a 16-assertion Playwright acceptance spec, and
+34 unit probes that run in CI. Goal 0's baseline and harness are unchanged and still the comparison
+basis for Goal 5.
+
+**Fixed, each asserted at 320/390/430:**
+- **B2** (wrong-language summary) — Greek pinned in BOTH the extraction schema and the prompt;
+  `acordData.extraction.summaryLanguage` now records what actually came back (detected, not assumed);
+  a mismatched summary is withheld, explained in Greek, and offers re-analysis. Dev assertion logs
+  loudly, never throws. New single-owner module `lib/wallet/summary-language.ts`.
+- **B4** (three numbers that could disagree) — the client's raw UTC-millisecond countdown and its
+  private end-date resolution are gone. Status, expiry and countdown all come from the server's
+  `resolvePolicyLifecycle`. Asserted across all six type×state fixtures.
+- **B10** (masked ≠ redacted) — new `lib/wallet/unreadable-value.ts` states the fact the codebase never
+  had: this surface redacts nothing, so a masked-looking value is something the extractor could not
+  read. Fields say so and link to the document; an in-sentence placeholder is annotated.
+- **B1** — the "void" was the premium card painting the hero's own `#111111`; now the same lifted
+  surface its sibling tiles use.
+- **B3** — fixed in the shared primitive layer per invariant 5: `.pw-scroll-strip` in `globals.css`,
+  because the ≤430px `min-width:0` safety net was removing the floor that makes a strip scroll.
+- **B5** — the failed-run state moved OUT of the findings card; findings under a failed run now say
+  they predate it.
+- **B6** — gap headings cut at a word boundary; `wallet.policyDetailsPage` is now free of informal
+  address (the branch-content layer is Goal 3's, by name).
+- **B7** — the usage meter and its `reason=ai_analysis_limit` upsell are gone on unlimited plans
+  (pricing v2 made every consumer tier unlimited). Ledger: capability #54 RETIRED.
+- **B8** — the collaboration empty-state sentence renders once.
+- **B9** — nothing to fix; a regression hold keeps it that way.
+
+**Two harness defects found during acceptance, both fixed:** measuring a half-rendered page (the RSC
+body can still be streaming after networkidle+1s), and counting the RSC `<script>` payload as rendered
+text. Both would have produced false verdicts.
+
+**A committed claim was wrong and is corrected in place:** BASELINE.md said the E2E account is
+free-tier. It is **ph-pro (Family)**. The baseline therefore never exercised the free-tier paths
+(locked report + €3 unlock, PDF-preview lock, premium-insight cards, sidebar upgrade banner) — those
+states are unmeasured and must be added before Goal 5 can call the ledger complete.
+
+**Not done here, by design:** the register sweep of `lib/insurance/content/*.ts` (33 of 35 files, also
+feeds out-of-scope /branches) → Goal 3. Automatic regeneration of a mismatched summary — it spends the
+customer's metered allowance → needs an owner decision. All structure/density/trust-framing work →
+Goals 2–4.
+
+**Next 3 actions:** (1) owner review of GOAL1.md; (2) Goal 2 — one structure, one navigation, with the
+free-tier fixture gap closed first; (3) keep `verify:migrations` + the unit probes in the pre-merge
+routine (Playwright still is not in CI here — an owner step).
+
+
 ## Session wrap — 2026-08-22 (Policy-detail mobile series: GOAL 0 baseline, measured)
 
 **Workstream:** policy-detail (mobile), B2C wallet — goal series, Goal 0 only (verify, no code
