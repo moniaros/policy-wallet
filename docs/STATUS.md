@@ -207,10 +207,22 @@ is a chargeback risk.
 
 ### Mandatory fixes
 - **maxDuration 300 → 336** in vercel.json, on the route, and in
-  `ANALYSIS_FUNCTION_BUDGET_MS`, from the only successful measured run (258s, 2026-08-14,
-  run `cmsted5fb001uf566yax22h1b`) × 1.3. **That run predates the optimisation**, so 336
-  errs high — the safe direction for a kill timer. The projection of ~205s is superseded;
-  a true post-optimisation measurement is still blocked by the Gemini spend cap.
+  `ANALYSIS_FUNCTION_BUDGET_MS`, originally from the only measured run at the time
+  (258s, 2026-08-14, run `cmsted5fb001uf566yax22h1b`) × 1.3.
+
+  **MEASURED 2026-08-22 — the post-optimisation number was never blocked, just never
+  read.** The per-step-tax fix (`1fac92f9`) deployed 2026-08-20 15:20Z. Two production
+  runs completed AFTER it, on 2026-08-21, and both are in `policy_analysis_runs`:
+
+  | run | wall-clock | tokens | success |
+  |---|---|---|---|
+  | `cmt2ekfwz0008fk38sx7ft0x6` | **57s** | 33,827 | 96% |
+  | `cmt2elvgh002ffk38iami91f1` | **82s** | 99,936 | 100% |
+
+  So the ~205s projection was pessimistic by roughly 3x, and 258s no longer describes
+  anything the pipeline does. Not a controlled comparison — the three runs are different
+  documents with different token counts — but it is a real measurement, which is what was
+  missing. 336s stays: it is a kill timer and should err high.
 - **regions: cdg1** added (Supabase is eu-west-3).
 - **agent-free re-based**: was 500,000 tokens — 3.3× the free consumer tier and 83% of a
   PAYING €39/yr consumer. Now 150,000 / 5 analyses, ph-free's basis, in code and both DBs.

@@ -135,6 +135,46 @@ describe("no new hand-rolled severity presentation", () => {
         .filter((path) => !KNOWN_BYPASSES.has(path))
         .sort()
 
+    // The walk and the matcher are the whole guard. If either silently returned
+    // nothing — a moved directory, a renamed class convention — `offenders`
+    // would be empty and this file would report success while checking nothing.
+    // That is the failure mode a guard cannot self-report, so it is asserted.
+    const walked = [...sourceFiles("components"), ...sourceFiles("app")]
+    const severityRelated = walked.filter((p) => /gap|severity|urgency/i.test(readFileSync(p, "utf-8")))
+
+    it("the walk and the pre-filter both find files (the scan is not vacuous)", () => {
+        expect(walked.length, "sourceFiles() found nothing — did a directory move?").toBeGreaterThan(200)
+        expect(
+            severityRelated.length,
+            "no file mentions gap/severity/urgency — the pre-filter is now excluding everything"
+        ).toBeGreaterThan(10)
+    })
+
+    it("the matcher fires on a hand-rolled map, and not on a compliant surface", () => {
+        // A guard never shown to fail is not a guard. This is the shape that
+        // multiplied: all four severity words plus a colour class keyed by them.
+        const handRolled = `
+            const TONE = {
+                critical: "bg-red-100 text-red-800",
+                high: "bg-orange-100 text-orange-800",
+                medium: "bg-amber-100 text-amber-800",
+                low: "bg-slate-100 text-slate-800",
+            }
+        `
+        expect(handRollsSeverityPresentation(handRolled)).toBe(true)
+
+        // Names the words but presents nothing — logic, not a colour map.
+        const logicOnly = `
+            const ORDER = ["critical", "high", "medium", "low"] as const
+            export const worst = (a: string, b: string) => (ORDER.indexOf(a as any) < ORDER.indexOf(b as any) ? a : b)
+        `
+        expect(handRollsSeverityPresentation(logicOnly)).toBe(false)
+
+        // Presents colour but is not about severity at all.
+        const unrelated = `const BADGE = "bg-blue-100 text-blue-800"`
+        expect(handRollsSeverityPresentation(unrelated)).toBe(false)
+    })
+
     it("every severity surface goes through the primitive, or is listed as debt", () => {
         expect(
             offenders,

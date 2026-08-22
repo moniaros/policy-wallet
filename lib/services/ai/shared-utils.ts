@@ -12,8 +12,22 @@ import { logger } from '@/lib/logger'
  * app/api/v1/jobs/execute-analysis/route.ts and vercel.json. Named here because
  * the timeout below has to FIT INSIDE it, and nothing enforced that.
  */
-// Sized from the only successful measured run: 258s wall-clock
-// (policy_analysis_runs cmsted5fb001uf566yax22h1b, 2026-08-14) × 1.3 = 336s.
+// Originally sized from the only successful measured run at the time: 258s
+// wall-clock (policy_analysis_runs cmsted5fb001uf566yax22h1b, 2026-08-14) × 1.3.
+//
+// That run PREDATES the per-step-tax fix (1fac92f9, deployed 2026-08-20
+// 15:20Z). Two production runs measured AFTER it, on 2026-08-21, came in at
+// 57s (cmt2ekfwz0008fk38sx7ft0x6, 33,827 tokens) and 82s
+// (cmt2elvgh002ffk38iami91f1, 99,936 tokens) — so the ~205s that was once
+// PROJECTED for the optimised pipeline was pessimistic by roughly 3x, and 258s
+// is no longer representative of anything the pipeline does.
+//
+// The value stays at 336s regardless. This is a KILL TIMER: it should err high,
+// because the cost of being wrong low is destroying a legitimate analysis of an
+// unusually large document, and the cost of being wrong high is a stuck job
+// noticed a few minutes later. The number is deliberately not re-derived from
+// the faster runs.
+//
 // Kept in lockstep with vercel.json and the route's own `maxDuration` export;
 // tests/unit/ai-timeout-budget.test.ts fails if any of the three drift apart.
 export const ANALYSIS_FUNCTION_BUDGET_MS = 336_000
