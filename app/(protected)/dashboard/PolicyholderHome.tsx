@@ -862,7 +862,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
             <Link
                 href="/wallet/add"
-                className="fixed bottom-24 left-1/2 z-30 grid h-14 w-14 -translate-x-1/2 place-items-center rounded-2xl bg-primary text-white dark:text-[#1A2420] shadow-xl transition hover:bg-primary-hover lg:bottom-6 lg:left-auto lg:right-6 lg:translate-x-0"
+                // Desktop only. On the phone this FAB has nowhere honest to
+                // live: centred it split the hero CTA's label in two, and
+                // bottom-right it clipped the same CTA's end — a floating
+                // action and a full-width primary CTA fundamentally compete on
+                // a 393px canvas, and the screen's one primary action wins.
+                // Upload stays one tab away (the wallet's own FAB) and inside
+                // the hero flow itself; on lg+ there is no bottom nav and no
+                // full-width CTA, so the quick-upload earns its corner back.
+                className="hidden lg:grid fixed bottom-8 right-8 z-30 h-14 w-14 place-items-center rounded-2xl bg-primary text-white dark:text-[#1A2420] shadow-xl transition hover:bg-primary-hover"
                 aria-label={home.quickUploadAria}
             >
                 <Upload className="h-6 w-6" />

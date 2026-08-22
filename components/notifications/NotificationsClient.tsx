@@ -141,7 +141,12 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                         className="pw-secondary-button pw-btn-sm inline-flex shrink-0 items-center gap-2"
                     >
                         <Settings2 aria-hidden="true" className="h-3.5 w-3.5" />
-                        {t.settings.nav.notifications.label}
+                        {/* Not t.settings.nav.notifications.label: that is
+                            «Ειδοποιήσεις», the same word as the page title two
+                            lines up — a button that repeats the heading tells
+                            the reader nothing about what it DOES. It opens the
+                            notification PREFERENCES. */}
+                        {tr("Προτιμήσεις", "Preferences")}
                     </Link>
                 </div>
 
@@ -227,7 +232,13 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                             >
                                                 {fixMojibakeText(event.subject || "")}
                                             </p>
-                                            <p className="mt-1 text-sm text-black/65 dark:text-white/70">
+                                            {/* Clamped: stored messages carry whatever the
+                                                writer put there — one quotes an insurer's
+                                                full legal name («ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ
+                                                ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ...»), five lines of
+                                                boilerplate in a list cell. A list shows the
+                                                gist; the item's own page shows the rest. */}
+                                            <p className="mt-1 line-clamp-3 text-sm text-black/65 dark:text-white/70">
                                                 {fixMojibakeText(event.message || "")}
                                             </p>
                                             <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-black/5 px-2 py-0.5 text-xs font-medium text-black/70 dark:bg-white/10 dark:text-white/75">

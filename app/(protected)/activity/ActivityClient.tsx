@@ -26,6 +26,8 @@ interface ActivityClientProps {
     events: ActivityEvent[]
     // language prop is no longer strictly needed since we have context, but we can keep it for backwards compatibility if needed
     language?: string
+    /** Agent view gets office framing and the customer/opportunity filters. */
+    isAgent?: boolean
 }
 
 /* ─── Helpers ─────────────────────────────────────── */
@@ -92,15 +94,23 @@ const getEntityLink = (event: ActivityEvent) => {
 
 /* ─── Main Component ──────────────────────────────── */
 
-export function ActivityClient({ events }: ActivityClientProps) {
+export function ActivityClient({ events, isAgent = false }: ActivityClientProps) {
     const { language, t } = useLanguage()
     const [filter, setFilter] = useState<ActivityCategory | 'all'>('all')
 
+    // «Πελάτες» and «Ευκαιρίες» are an AGENT's nouns. A policyholder has
+    // neither — showing them framed the whole page as someone else's tool
+    // («ό,τι συμβαίνει στο γραφείο σας» to a person with no office). The feed
+    // itself is role-agnostic; only the chrome differed.
     const tabs: { id: ActivityCategory | 'all'; label: string }[] = [
         { id: 'all', label: t.activity.tabs.all },
         { id: 'policy', label: t.activity.tabs.policies },
-        { id: 'customer', label: t.activity.tabs.customers },
-        { id: 'opportunity', label: t.activity.tabs.opportunities },
+        ...(isAgent
+            ? [
+                  { id: 'customer' as const, label: t.activity.tabs.customers },
+                  { id: 'opportunity' as const, label: t.activity.tabs.opportunities },
+              ]
+            : []),
         { id: 'system', label: t.activity.tabs.system },
     ]
 
@@ -125,7 +135,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                     {t.activity.title}
                                 </h1>
                                 <p className="text-sm text-muted-foreground mt-0.5">
-                                    {t.activity.desc}
+                                    {isAgent ? t.activity.desc : t.activity.descPersonal}
                                 </p>
                             </div>
                         </div>

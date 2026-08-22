@@ -1226,6 +1226,7 @@ export const en: TranslationKeys = {
         noActivityDesc: 'Activity will appear here as your customers interact with their wallets.',
         title: 'Activity Feed',
         desc: 'Stay updated with everything happening in your practice.',
+        descPersonal: 'Everything happening across your policies — analyses, documents and changes.',
         emptyTitle: 'No activity found',
         emptyDesc: 'There are no events in this category yet.',
         tabs: {
@@ -1248,6 +1249,8 @@ export const en: TranslationKeys = {
         riskProfileKicker: 'Your risk profile',
         riskProfileBlurb: 'Nine dimensions of your life, with every risk nested inside the one it belongs to.',
         riskProfileCta: 'Open your risk profile',
+        hubTitle: 'AI Insights',
+        hubSubtitle: 'Recommendations, findings and your protection score, drawn from your policies.',
         refreshAnalysis: 'Refresh analysis',
         refreshingAnalysis: 'Analyzing…',
         refreshFailed: 'Refreshing the analysis failed. Please try again.',

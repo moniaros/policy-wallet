@@ -126,8 +126,24 @@ export async function getActivityFeed(limit = 50): Promise<ActivityEvent[]> {
             id: `notif_${n.id}`,
             type: n.eventType,
             category,
-            title: { en: n.title, el: n.title }, // We rely on DB title currently, can be translated if needed
-            description: { en: n.message, el: n.message },
+            // Stored title/message are whatever the WRITER of the day put
+            // there. Rows from before the dispatch pipeline localized carry the
+            // registry's internal English prose ("AI extraction finished and
+            // the policy is readable") — documentation text, not customer copy,
+            // and it rendered verbatim in an otherwise-Greek feed. For event
+            // types we know, the copy comes from here and the stored text is
+            // only a fallback for types added before this map learns them.
+            title:
+                n.eventType === 'policy_analyzed'
+                    ? { en: 'Analysis complete', el: 'Η ανάλυση ολοκληρώθηκε' }
+                    : { en: n.title, el: n.title },
+            description:
+                n.eventType === 'policy_analyzed'
+                    ? {
+                          en: 'The policy was read and analysed successfully.',
+                          el: 'Το ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.',
+                      }
+                    : { en: n.message, el: n.message },
             timestamp: n.createdAt,
             policyId: n.relatedObjectType === 'policy' ? n.relatedObjectId || undefined : undefined,
             customerId: n.relatedObjectType === 'customer' ? n.relatedObjectId || undefined : undefined,

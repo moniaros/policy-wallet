@@ -163,7 +163,19 @@ export default async function CoverageInsightsPage() {
             {engineResult && (
                 <div>
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 lg:pt-10 space-y-6">
-                        <div className="flex justify-end">
+                        {/* A page that opens with a lone right-aligned action
+                            and no title reads as a fragment — every other
+                            surface in the app leads with what the screen IS.
+                            Title left, action right: the standard app header. */}
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                                <h1 className="text-2xl font-bold text-black dark:text-white">
+                                    {t.insights.hubTitle}
+                                </h1>
+                                <p className="mt-1 text-sm leading-snug text-black/65 dark:text-white/70">
+                                    {t.insights.hubSubtitle}
+                                </p>
+                            </div>
                             <RefreshAnalysisButton
                                 labels={{
                                     refresh: t.insights.refreshAnalysis,

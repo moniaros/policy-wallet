@@ -264,7 +264,15 @@ export function PolicyWallet({
                             onShare={() => onShareWithAgent?.(policy.id)}
                             onViewDocuments={() => onViewDocuments?.(policy.id)}
                             onRunAnalysis={() => onRunAnalysis?.(policy.id)}
-                            onDelete={() => onDeletePolicy?.(policy.id)}
+                            // No onDelete on the LIST card. A red trash on every
+                            // row keeps a destructive action permanently in
+                            // thumb's reach next to three routine ones — the
+                            // confirm dialog catches slips, but the HIG's point
+                            // is distance, not recovery. Deletion lives on the
+                            // policy page (PolicyDetailsClientView), where the
+                            // same confirm modal already owns it. The xl:
+                            // PolicyTable keeps its delete column: a desktop
+                            // table row is not a thumb target.
                             onViewHistory={() => onViewHistory?.(policy.id)}
                             id={index === 0 ? 'tour-policy-card-0' : undefined}
                         />

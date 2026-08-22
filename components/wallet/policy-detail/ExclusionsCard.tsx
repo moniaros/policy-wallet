@@ -96,6 +96,24 @@ const EXCLUSIONS_PREVIEW_COUNT = 8
  * (waiting periods, deadlines, sub-limits) and fine-print clauses that
  * commonly surprise policyholders at claim time.
  */
+/**
+ * Extractor values arrive in the document's own units and, often, in English —
+ * "14 days" rendered inside an otherwise-Greek card. Free prose cannot be
+ * translated at display time, but the one shape that appears constantly in
+ * insurance conditions — a bare duration — can be, safely, because it is
+ * unambiguous. Anything else passes through untouched.
+ */
+function localizeConditionValue(value: string, lang: "el" | "en"): string {
+    if (lang !== "el") return value
+    const m = /^(\d+)\s*(days?|months?|years?)$/i.exec(value.trim())
+    if (!m) return value
+    const n = Number(m[1])
+    const unit = m[2].toLowerCase()
+    if (unit.startsWith("day")) return `${n} ${n === 1 ? "ημέρα" : "ημέρες"}`
+    if (unit.startsWith("month")) return `${n} ${n === 1 ? "μήνας" : "μήνες"}`
+    return `${n} ${n === 1 ? "έτος" : "έτη"}`
+}
+
 export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, disclaimer, termHint, conditionHints }: ExclusionsCardProps) {
     const [showAllFinePrint, setShowAllFinePrint] = useState(false)
     const [showAllExclusions, setShowAllExclusions] = useState(false)
@@ -181,7 +199,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                                                     </span>
                                                     {condition.value && (
                                                         <span className="rounded-full bg-primary/10 px-2 py-0.5 font-mono text-kicker font-bold text-primary dark:bg-primary/15 dark:text-mint">
-                                                            {condition.value}
+                                                            {localizeConditionValue(condition.value, lang)}
                                                         </span>
                                                     )}
                                                     {condition.userActionRequired && (
