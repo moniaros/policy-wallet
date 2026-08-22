@@ -12,7 +12,7 @@
 
 import { readFileSync } from 'fs'
 import path from 'path'
-import { E2E_POLICYHOLDER, E2E_POLICYHOLDER_FREE, E2E_AGENT, E2E_ADMIN } from './e2e-users'
+import { E2E_POLICYHOLDER, E2E_POLICYHOLDER_FREE, E2E_POLICYHOLDER_DASH, E2E_AGENT, E2E_ADMIN } from './e2e-users'
 
 function loadEnvFromDotenvFiles() {
     for (const file of ['.env.local', '.env']) {
@@ -217,6 +217,11 @@ export default async function globalSetup() {
             console.log(`✅ E2E free policyholder: removed ${removed.count} policyholder subscription row(s)`)
         }
         console.log('✅ E2E free policyholder provisioned (no live subscription → tier "free")')
+
+        // The dashboard account. Its POLICIES are provisioned per portfolio
+        // state by tests/measure/dashboard-fixtures.ts, not here — the whole
+        // point is that its wallet is rebuilt between captures.
+        await provisionUser(db, E2E_POLICYHOLDER_DASH)
 
         // Deterministic usage-state reset: the free-tier gates are LIFETIME
         // counters (free questions from activityLog POLICY_QUESTION_ASKED, the

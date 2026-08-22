@@ -1,0 +1,62 @@
+/**
+ * The Pro-tier dashboard capture.
+ *
+ * Runs in the `measure` project because tier is a property of the SESSION's
+ * user and that project carries the `ph-pro` account — the same reason the
+ * free-tier policy-detail captures needed their own project. Named to avoid the
+ * `measure-dash` testMatch, which owns the portfolio-state matrix.
+ *
+ * One capture, not a matrix: the question is only what tier gating changes
+ * about what renders (advisor row, upgrade teasers, plan limits).
+ */
+import { test, expect } from "@playwright/test"
+import { mkdirSync, writeFileSync } from "fs"
+import path from "path"
+import { dismissCookieBanner } from "../helpers/ui"
+import { clippedContent, countConsistency, duplicateBlocks, internalTokenLeaks } from "./dashboard"
+import { settle, scrollHeight, sectionCount, containerCount, smallTapTargets, nonTextContrastFailures } from "./policy-detail"
+
+const DATA = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile", "data", "baseline")
+const SHOTS = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile", "screenshots", "baseline")
+
+test("baseline: dashboard on a Pro account", async ({ page }) => {
+    test.setTimeout(8 * 60_000)
+    mkdirSync(DATA, { recursive: true })
+    mkdirSync(SHOTS, { recursive: true })
+
+    await page.setViewportSize({ width: 320, height: 720 })
+    await page.goto("/dashboard", { waitUntil: "domcontentloaded", timeout: 90_000 })
+    await page.waitForTimeout(500)
+    expect(page.url(), "bounced to signin — refusing to measure").not.toContain("/auth/signin")
+    await dismissCookieBanner(page)
+    await page.waitForSelector(".pw-page-shell h1, main h1", { timeout: 45_000, state: "attached" })
+    await settle(page)
+
+    const text = await page.evaluate(() => (document.body.innerText || "").replace(/\s+/g, " "))
+    const data = {
+        capture: "pro-tier",
+        width: 320,
+        tier: "pro",
+        scrollHeight: await scrollHeight(page),
+        sections: await sectionCount(page),
+        containers: await containerCount(page),
+        tapTargets: await smallTapTargets(page),
+        countConsistency: await countConsistency(page),
+        duplicateBlocks: await duplicateBlocks(page),
+        internalTokenLeaks: await internalTokenLeaks(page),
+        probes: { clippedContent: await clippedContent(page), fullText: text },
+        contrast: { nonText: await nonTextContrastFailures(page) },
+    }
+    writeFileSync(path.join(DATA, "pro-tier-320.json"), JSON.stringify(data, null, 2))
+    await page.screenshot({ path: path.join(SHOTS, "pro-tier-320.png"), fullPage: true })
+
+    console.log(
+        `[dash] pro-tier@320: ${data.scrollHeight}px, ${data.sections.count} sections, ` +
+        `${data.tapTargets.length} sub-44, ${data.countConsistency.failures} count-consistency, ` +
+        `${data.duplicateBlocks.length} duplicate blocks, ${data.internalTokenLeaks.length} token leaks, ` +
+        `${data.contrast.nonText.length} 1.4.11`
+    )
+
+    // Tier sanity — a mislabelled capture would poison the comparison.
+    expect(data.tier).toBe("pro")
+})

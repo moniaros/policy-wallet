@@ -14,6 +14,7 @@ const policyholderIgnores = [
     '**/agent-viewport-overflow.spec.ts',
     '**/admin-auth.setup.ts',
     '**/free-auth.setup.ts',
+    '**/dash-auth.setup.ts',
     // /admin/* bounces a policyholder to /dashboard, so this spec could only
     // ever fail here — four "failures" that said nothing about the insurer
     // console. It belongs to `admin-chromium`, which has the admin session.
@@ -65,6 +66,11 @@ export default defineConfig({
         {
             name: 'free-setup',
             testMatch: /free-auth\.setup\.ts/,
+            use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
+        },
+        {
+            name: 'dash-setup',
+            testMatch: /dash-auth\.setup\.ts/,
             use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
         },
         {
@@ -160,7 +166,7 @@ export default defineConfig({
             name: 'measure',
             // Excludes *free* specs — those need the free-tier session and run
             // in `measure-free`.
-            testMatch: /tests\/measure\/(?!.*free).*\.spec\.ts/,
+            testMatch: /tests\/measure\/(?!.*(free|dashboard)).*\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/user.json',
@@ -183,6 +189,20 @@ export default defineConfig({
                 launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
             dependencies: ['free-setup'],
+        },
+        {
+            // The DASHBOARD matrix. Its own account because portfolio state is a
+            // property of the user's whole wallet: the spec rebuilds this
+            // wallet between captures, which would destroy the policy-detail
+            // fixtures if it ran against the shared policyholder.
+            name: 'measure-dash',
+            testMatch: /tests\/measure\/dashboard.*\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: 'playwright/.auth/dash.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+            dependencies: ['dash-setup'],
         },
         {
             // Cross-tenant enforcement. Builds BOTH request contexts itself

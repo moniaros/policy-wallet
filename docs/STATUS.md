@@ -1,6 +1,45 @@
 # PolicyWallet — Project Status
 
-## Waiting on humans — three decisions from the policy-detail series (2026-08-23)
+## Session wrap — 2026-08-23 (Dashboard mobile: GOAL 0 baseline, measured)
+
+**Workstream:** dashboard (`/dashboard`), Goal 0 only — verify and stop. Output:
+`docs/evidence/dashboard-mobile/BASELINE.md`, 19 captures (5 portfolio states × 3 widths + 3
+analysis states + Pro tier). Shared metrics imported verbatim from the policy-detail harness; no app
+code changed.
+
+**The headline (D1), measured per portfolio state:** the score's `empty` guard works — no verdict on
+an empty wallet. But it renders «Καλή κάλυψη» over **one never-analysed policy**, «Χρειάζεται
+βελτίωση» over a wallet where **every policy has expired** (i.e. no cover at all), and a verdict when
+**nothing has ever been analysed** or **every analysis failed**. Nothing in the score model or the
+hero reads `lastAnalyzedAt` / `processingError` / run status. Same defect as policy-detail A1, one
+level up.
+
+**The brief's premise needed correcting:** the score is NOT an aggregate of per-policy scores. It is a
+weighted average over six risk-assessment categories measuring BREADTH of cover, with an existing
+`indeterminate` guard below 50% catalogue coverage.
+
+**Also confirmed:** D5 — an agent with no name has their **email rendered to the customer**
+(`agent.name || agent.email`); D10 — «6 ασφαλιστήρια» on the renewal timeline is a `slice(0,6)`
+display cap presented as a count; D7 — insurer names do NOT clip, but branch chips do, «Σύνταξη &
+Αποταμίευση» losing 57% of its text; D6 — three disclaimer call sites, and a second duplicated block
+nobody reported; D11 — identical rows confirmed by a deliberate twin fixture.
+
+**Refuted:** D2 (no absolutely-positioned element exists on this page); two of D3's five strings are
+screenshot misreads of correct Greek («μετράει», «και θα»).
+
+**Two of my own metrics were wrong on first run and were corrected before publishing** — count
+consistency reported 0 on a page that says 12 and 6, and truncation reported 0 on a page with 11
+clipped elements. Both recorded in the baseline rather than quietly fixed.
+
+**Outstanding in Goal 0:** per-CTA enumeration with destinations; screen-reader announcement of the
+donut and severity chips; «ο βαθμολογία» not reproduced or traced.
+
+**Next 3 actions:** (1) owner review of the dashboard BASELINE + the 0e score decision;
+(2) the three founder decisions below still block policy-detail Goals 1–3; (3) policy-detail Goal 2
+is committed but unreviewed and undeployed — production runs `638ee037`.
+
+
+## Waiting on humans — four decisions across both series (2026-08-23)
 
 None of these are mine to take. Each blocks a specific downstream goal; none blocks the dashboard
 series, which can proceed in parallel.
@@ -56,6 +95,20 @@ failures with a documented exception. **Recommendation:** raise it — 1.4.11 is
 requirement and the current edge is invisible on a white page — but it is a visual change across the
 whole product and not one to make unattended. The one control this series introduced is already
 fixed; the shared pattern is untouched.
+
+
+### 4. What should the protection score be, or should it exist? — blocks dashboard Goals 1 & 3
+
+Measured per portfolio state (`docs/evidence/dashboard-mobile/BASELINE.md`, D1 and 0e). It is a
+weighted average over six risk-assessment CATEGORIES measuring breadth of cover — not, as assumed, an
+aggregate of per-policy scores. It correctly renders nothing on an empty wallet, and renders a verdict
+in every other state including "one policy, never analysed", "nothing ever analysed", "every analysis
+failed", and "every policy expired".
+
+**Options:** remove it · replace it with a factual composition («12 ασφαλιστήρια · 3 λήγουν σύντομα ·
+2 δεν έχουν αναλυθεί») · keep it behind a disclosure with no verdict.
+**Recommendation:** the composition as the headline, the score behind a disclosure underneath — the
+composition is what the ten-second test asks for and cannot be wrong. **Not my decision.**
 
 
 ## Session wrap — 2026-08-22b (Policy-detail mobile series: GOAL 1 — the confirmed defects, fixed)

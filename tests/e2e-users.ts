@@ -42,6 +42,23 @@ export const E2E_POLICYHOLDER_FREE = {
 }
 
 /**
+ * DASHBOARD fixture.
+ *
+ * Portfolio state — empty / single / typical / heavy / all-expired — is a
+ * property of the USER's whole wallet, not of a policy, so the dashboard matrix
+ * cannot be built the way the policy-detail one was. This account exists to
+ * have its wallet REBUILT between captures, which is why it is separate: doing
+ * that to `E2E_POLICYHOLDER` would destroy the policy-detail fixtures every
+ * time the dashboard suite ran.
+ */
+export const E2E_POLICYHOLDER_DASH = {
+    email: 'e2e-ph-dash@policywallet.test',
+    password: 'E2ePolicyholderDash!2026',
+    name: 'E2E Dashboard Policyholder',
+    role: 'policyholder' as const,
+}
+
+/**
  * Admin fixture. Without it, the 14 /admin/* routes were audited no further
  * than their redirect — 29 of 108 routes covered only as a bounce. Admin is
  * gated by BOTH the JWT metadata role and the DB roles column, and
