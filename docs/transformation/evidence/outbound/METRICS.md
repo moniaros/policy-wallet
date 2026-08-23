@@ -46,7 +46,7 @@ Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
 ### drip: day 7 (never-analysed portfolio)
 
 - subject: «📊 Η εβδομαδιαία σύνοψη κάλυψης»
-- rendered length: 359 chars
+- rendered length: 522 chars
 - **score renders: 0**
 - **internal tokens: 0**
 - **Latin-script sentences: 0**

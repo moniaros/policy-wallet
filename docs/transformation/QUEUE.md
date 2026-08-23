@@ -157,7 +157,7 @@ template passed while the service still emitted `0`.
 - [ ] `ProtectionScoreCard`'s `scoreColor` gains a text equivalent or goes (WCAG 1.4.1)
 - [ ] guard demonstrated failing first; probe recorded
 
-### P1-02 — No all-clear in outbound where the check never ran · `todo` — **RESCOPED after P1-01**
+### P1-02 — No all-clear in outbound where the check never ran · `done` — REVIEW PASSED
 
 P1-01 removed every product caller of `provisionalProtectionScore`, so **the predicate change is
 moot** — it is now dead code, not a live defect. Do NOT change it and do NOT delete it
@@ -526,3 +526,50 @@ P1-01 was written to fix, and no audit in this run had found it.
 It correctly did **not** delete `provisionalProtectionScore` despite reporting that it now has zero
 product callers, and did not touch `ScoreRing` or any agent surface. That is the D-006 boundary held
 under exactly the temptation that would have breached it.
+
+
+---
+
+## P1-02 — Adversarial review: **PASS**
+
+| check | result |
+|---|---|
+| Never-analysed state | `gapFigure = nothingAnalysed ? '—' : String(gapCount)` — **«—», not «0»** |
+| Green means one thing | `gapCount > 0 ? amber : fullyAnalysed ? green : grey`. The policy-count tile also went from *permanent* green to neutral, so green is now earned rather than default |
+| Colour not sole carrier | in-tile text states the basis in el+en; survives a CSS-stripping client |
+| Basis forced at the type level | `analysedPolicyCount` is **required** on `stats`, so the compiler makes every caller state it — stronger than a runtime check |
+| Guard arm fails first | **proven by me.** Injecting «Δεν εντοπίσαμε κανένα κενό κάλυψης» into `getDay7Email`'s *rendered output* turned 2 tests red with "All-clear claimed where nothing was checked (zero recorded findings is not a finding of zero)"; reverted → 22/22 |
+| `provisionalProtectionScore` | untouched, as required |
+| CI | tsc · lint · i18n · utf8 clean; **5090/5090** (+14 = exactly the new guard tests) |
+
+**The `knownDefect` pin is a ratchet, not a skip** — the thing I checked hardest. `churn-prevention`
+has the same defect and was outside this brief, so it is registered with a reason AND an assertion
+that it is *still violating*: "no longer violates the invariant — delete its knownDefect entry".
+Fixing churn therefore breaks the test until the exemption is removed. Same precedent as the
+severity-display debt list.
+
+**Reviewer's own error, recorded:** my first two probes were no-ops — one used a missing anchor, the
+other injected a dead module-scope const that the guard (correctly) never renders. Both produced
+false greens. The guard was fine; my instrument was not. Third instance this run, and the reason
+D-015's rule now reads *assert the probe changed rendered behaviour*, not merely that it changed the file.
+
+---
+
+## P1-03 — sharpened by what P1-02 left behind
+
+P1-02 fixed `engagement-drip`'s day-7 **fetch** (`:164`, now `NON_LIVE_POLICY_STATUSES`). Three
+offenders remain, and the guard is the real story:
+
+| site | current | needed |
+|---|---|---|
+| `engagement-drip.service.ts:99` | `{ ownerUserId }` — no filter | `NON_LIVE_POLICY_STATUSES` |
+| `weekly-digest.service.ts` count | no filter | same |
+| `engagement-scoring.ts:167` | `status: "active"` | same |
+
+**`tests/unit/live-policy-status-filter.test.ts` imports `globSync` and then hardcodes a list of
+four files** (`:33-39`). `engagement-scoring.ts` is not on it — which is exactly why that file still
+carries the original bug while the four listed ones were fixed. D-005, fourth instance, and this
+time the guard even imports the enumeration helper it declines to use.
+
+So P1-03's primary deliverable is **converting that list into a real enumeration** over `lib/` +
+`app/`, with the three fixes falling out of it.

@@ -1,0 +1,21 @@
+<!-- PROBE, not product code. The honest rendering of the same portfolio state
+     (policies exist, nothing analysed): no count is claimed, the tile states
+     in WORDS that nobody has looked, and no green appears. The outbound
+     all-clear matcher in tests/unit/all-clear-honesty.test.ts must NOT flag
+     this text — if it does, the matcher is too broad to allow the truthful
+     disclosure and would force templates back into silence. -->
+<table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+    <tr>
+        <td style="text-align: center; padding: 16px; background: #F3F4F6; border-radius: 8px;">
+            <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">3</p>
+            <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">Ασφαλιστήρια</p>
+        </td>
+        <td style="width: 8px;"></td>
+        <td style="text-align: center; padding: 16px; background: #F3F4F6; border-radius: 8px;">
+            <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">—</p>
+            <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">Κενά κάλυψης</p>
+            <p style="font-size: 12px; color: #4B5563; margin: 4px 0 0;">Δεν έχει αναλυθεί ακόμη</p>
+        </td>
+    </tr>
+</table>
+<p>Τα ασφαλιστήριά σας δεν έχουν αναλυθεί ακόμη, οπότε δεν γνωρίζουμε αν υπάρχουν κενά κάλυψης.</p>

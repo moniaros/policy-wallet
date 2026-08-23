@@ -34,6 +34,9 @@ describe('no expiring-policy query regresses to status: "active"', () => {
         'lib/services/renewal.service.ts',
         'lib/services/weekly-digest.service.ts',
         'lib/services/churn-prevention.service.ts',
+        // Fourth bite of the class, found by P1-02: the day-7 drip counted
+        // exactly-'active' policies for its coverage-snapshot tile.
+        'lib/services/engagement-drip.service.ts',
     ]
 
     it('each uses the shared NON_LIVE_POLICY_STATUSES filter', () => {

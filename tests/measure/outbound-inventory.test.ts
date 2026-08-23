@@ -75,7 +75,7 @@ function findScoreRenders(text: string): string[] {
  * contracts; the fixture keeps the same portfolio state so the metric keeps
  * measuring the same situation.
  */
-const NEVER_ANALYSED = { policyCount: 3, gapCount: 0 }
+const NEVER_ANALYSED = { policyCount: 3, gapCount: 0, analysedPolicyCount: 0 }
 
 const TEMPLATES: { name: string; render: () => { subject: string; html: string } }[] = [
     {

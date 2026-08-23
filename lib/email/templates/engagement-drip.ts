@@ -88,7 +88,15 @@ export function getDay7Email(
     // estimate — 100% for a portfolio nothing had analysed — and the protection
     // score was removed from the product in Aug 2026 (PW-MOBILE-TRANSFORM-01,
     // halt H-001). Policies and gaps are counts of recorded things.
-    stats?: { policyCount: number; gapCount: number }
+    //
+    // `analysedPolicyCount` exists because `gapCount` alone cannot carry its
+    // own basis: the producer counts GapInstance ROWS, and a portfolio nobody
+    // has ever analysed records none — the same zero as a portfolio that was
+    // read and found clean. Until Aug 2026 that zero rendered as a green tile:
+    // an all-clear mailed to people whose documents had never been opened.
+    // The tile now states its basis in words, and colour never carries the
+    // meaning alone (email clients strip CSS; plain-text readers see no green).
+    stats?: { policyCount: number; gapCount: number; analysedPolicyCount: number }
 ): { subject: string; html: string } {
     const isGreek = language === 'el'
     const hello = greeting(name, isGreek)
@@ -97,30 +105,83 @@ export function getDay7Email(
         ? '📊 Η εβδομαδιαία σύνοψη κάλυψης'
         : '📊 Your weekly coverage snapshot'
 
-    const hasStats = stats && stats.policyCount > 0
+    const hasStats = !!stats && stats.policyCount > 0
 
-    const statsHtml = hasStats
-        ? `
+    let statsHtml: string
+    if (hasStats) {
+        const { policyCount, gapCount } = stats
+        const analysed = Math.min(Math.max(stats.analysedPolicyCount, 0), policyCount)
+        const nothingAnalysed = analysed === 0
+        const fullyAnalysed = analysed >= policyCount
+
+        // A COUNT renders only where something was counted. With nothing
+        // analysed there is no finding to count, and printing "0" would make
+        // "we looked and found none" and "nobody has looked" indistinguishable
+        // — zero findings because the engine could not look is not zero
+        // findings.
+        const gapFigure = nothingAnalysed ? '—' : String(gapCount)
+
+        // The basis, in words, inside the tile.
+        const gapBasis = nothingAnalysed
+            ? (isGreek ? 'Δεν έχει αναλυθεί ακόμη' : 'Not analysed yet')
+            : isGreek
+                ? (fullyAnalysed
+                    ? (analysed === 1 ? 'Αναλύθηκε 1 ασφαλιστήριο' : `Αναλύθηκαν και τα ${analysed} ασφαλιστήρια`)
+                    : (analysed === 1
+                        ? `Αναλύθηκε 1 από ${policyCount} ασφαλιστήρια`
+                        : `Αναλύθηκαν ${analysed} από ${policyCount} ασφαλιστήρια`))
+                : (fullyAnalysed
+                    ? (analysed === 1 ? '1 policy analysed' : `All ${analysed} policies analysed`)
+                    : `${analysed} of ${policyCount} policies analysed`)
+
+        // Amber for findings; green ONLY for an all-clear the analysis earned
+        // (every policy read, none found wanting); neutral everywhere else.
+        // The words above carry the same distinction for readers who never
+        // see the colour.
+        const gapBg = gapCount > 0 ? '#FEF3C7' : fullyAnalysed ? '#F0FDF4' : '#F3F4F6'
+
+        const remainder = policyCount - analysed
+        const analysisNote = nothingAnalysed
+            ? `
+            <p>${isGreek
+                ? 'Τα ασφαλιστήριά σας δεν έχουν αναλυθεί ακόμη, οπότε δεν γνωρίζουμε αν υπάρχουν κενά κάλυψης. Ξεκινήστε την ανάλυση από τον πίνακα ελέγχου.'
+                : 'Your policies have not been analysed yet, so we do not know whether there are coverage gaps. Start the analysis from your dashboard.'
+            }</p>
+        `
+            : !fullyAnalysed
+                ? `
+            <p style="color: #6B7280; font-size: 14px;">${isGreek
+                ? counted(remainder, 'ασφαλιστήριο δεν έχει αναλυθεί ακόμη.', 'ασφαλιστήρια δεν έχουν αναλυθεί ακόμη.')
+                : counted(remainder, 'policy has not been analysed yet.', 'policies have not been analysed yet.')
+            }</p>
+        `
+                : ''
+
+        statsHtml = `
             <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
                 <tr>
-                    <td style="text-align: center; padding: 16px; background: #F0FDF4; border-radius: 8px;">
-                        <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${stats!.policyCount}</p>
+                    <td style="text-align: center; padding: 16px; background: #F3F4F6; border-radius: 8px;">
+                        <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${policyCount}</p>
                         <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Ασφαλιστήρια' : 'Policies'}</p>
                     </td>
                     <td style="width: 8px;"></td>
-                    <td style="text-align: center; padding: 16px; background: ${stats!.gapCount > 0 ? '#FEF3C7' : '#F0FDF4'}; border-radius: 8px;">
-                        <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${stats!.gapCount}</p>
+                    <td style="text-align: center; padding: 16px; background: ${gapBg}; border-radius: 8px;">
+                        <p style="font-size: 28px; font-weight: bold; margin: 0; color: #111827;">${gapFigure}</p>
                         <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Κενά κάλυψης' : 'Coverage gaps'}</p>
+                        <p style="font-size: 12px; color: #4B5563; margin: 4px 0 0;">${gapBasis}</p>
                     </td>
                 </tr>
             </table>
+            ${analysisNote}
         `
-        : `
+    } else {
+        statsHtml = `
             <p>${isGreek
                 ? 'Ανεβάστε τα ασφαλιστήρια σας για να δείτε τη σύνοψη κάλυψής σας.'
                 : 'Upload your policies to see your coverage snapshot.'
             }</p>
         `
+    }
 
     const content = `
         <h2>${isGreek ? 'Η πρώτη σας εβδομάδα!' : 'Your first week!'}</h2>

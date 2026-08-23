@@ -1,4 +1,5 @@
 import { db } from "../db"
+import { NON_LIVE_POLICY_STATUSES } from "../policy-status"
 import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWelcomeEmail, getDay3Email, getDay7Email } from "../email/templates/engagement-drip"
 
@@ -146,21 +147,36 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
         // Pre-filter; `emit` asks the same question again and is authoritative.
         if (await isChannelSuppressed(user.id, "engagement_day7", "email")) continue
 
-        // Gather stats
+        // Gather stats — WITH their basis. `gapCount` is a count of recorded
+        // GapInstance rows, and a portfolio nobody has ever analysed records
+        // none: the same zero as "analysed and clean". The template renders
+        // those two zeros differently, so the producer must say how many of
+        // these policies the deep pipeline has actually read (`lastAnalyzedAt`
+        // is set only by it; a failed run leaves it null, which is honest —
+        // that policy has not been analysed).
+        //
+        // Same real-policy filter as the renewal cron / weekly digest / churn:
+        // requiring exactly 'active' silently dropped in-force policies stored
+        // as 'expiring_soon' / 'action_needed' / 'incomplete'.
         const policies = await db.policy.findMany({
-            where: { ownerUserId: user.id, status: "active" },
-            select: { id: true },
+            where: {
+                ownerUserId: user.id,
+                status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
+            },
+            select: { id: true, lastAnalyzedAt: true },
         })
         const policyCount = policies.length
+        const analysedPolicyCount = policies.filter((p) => p.lastAnalyzedAt != null).length
 
-        const openGaps = await db.gapInstance.findMany({
+        // Scoped to the SAME policies the tile counts, so the figure and its
+        // stated basis share a universe — a gap on a deleted or cancelled
+        // policy must not render against a live-policy count.
+        const gapCount = await db.gapInstance.count({
             where: {
-                policy: { ownerUserId: user.id },
+                policyId: { in: policies.map((p) => p.id) },
                 status: { in: ["open", "detected", "acknowledged"] },
             },
-            select: { severity: true },
         })
-        const gapCount = openGaps.length
         // No score. This email carried the provisional estimate until Aug 2026
         // — 100% for a portfolio nothing had analysed — and the protection
         // score was removed from the product (PW-MOBILE-TRANSFORM-01, H-001).
@@ -170,12 +186,13 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
             const { subject, html } = getDay7Email(lang, user.name || undefined, {
                 policyCount,
                 gapCount,
+                analysedPolicyCount,
             })
             const result = await emit({
                 event: "engagement_day7",
                 userId: user.id,
                 title: subject,
-                message: `Coverage snapshot: ${policyCount} policies, ${gapCount} gaps`,
+                message: `Coverage snapshot: ${policyCount} policies, ${analysedPolicyCount} analysed, ${gapCount} gaps`,
                 dedupeKey: "engagement_day7",
                 content: { email: { subject, html } },
             })
