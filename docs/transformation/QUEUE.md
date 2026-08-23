@@ -163,8 +163,27 @@ file_boundary: `lib/services/gap-engine/protection-score.ts`, `lib/email/templat
 
 - [ ] `provisionalProtectionScore`'s "nothing to score" predicate becomes "nothing **analysed**",
       not `policyCount === 0` (D-006 — basis, in scope; arithmetic untouched)
-- [ ] blast radius enumerated first: `engagement-drip.service.ts`, `weekly-digest.service.ts`,
-      `tests/unit/email-content-honesty.test.ts` assert current null-behaviour and change together
+- [x] **blast radius enumerated 2026-08-23 — it is wider than this item assumed:**
+
+| caller | status |
+|---|---|
+| `lib/services/weekly-digest.service.ts:167` | P1-01 removes it |
+| `lib/services/engagement-drip.service.ts:167` | P1-01 removes it |
+| `app/(protected)/dashboard/PolicyholderHome.tsx:305` | P1-01 removes the render — confirm it removes the CALL |
+| **`app/onboarding/actions.ts:338`** | **uncatalogued until now.** `provisionalProtectionScore(1, gaps.map(…))` in the onboarding flow. Not touched by P1-01, so P1-02 owns it |
+
+**Two guards pin the current behaviour with DUPLICATED assertions**, and both go red the moment the
+predicate changes:
+- `tests/unit/protection-score-single-source.test.ts:41-55`
+- `tests/unit/email-content-honesty.test.ts:41-61`
+
+Both assert `provisionalProtectionScore(1, []) === 100` and both re-state the same severity-weight
+table. That is §11.1's "one guard per defect class" already violated — two copies that will drift.
+**P1-02 consolidates them rather than editing both**, and the survivor states its universe.
+
+`calculateProtectionScore` has an agent-side caller (`lib/agent/health-score.ts`), which is §12.4
+out of scope. That confirms D-006: the function is not deletable by this run, only its render sites
+are. Do not "tidy" it away.
 - [ ] `engagement-drip.ts:123` green/amber gap tile gains a **text** equivalent (WCAG 1.4.1) and
       must not render green for "0 gaps" when nothing was analysed
 - [ ] `all-clear-honesty.test.ts` universe extended to outbound templates
