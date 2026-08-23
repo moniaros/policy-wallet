@@ -1,5 +1,28 @@
 # PolicyWallet — Project Status
 
+## DEPLOYED — 2026-08-23, `f23ee784` live in production
+
+CI green → Vercel production success. Verified after the deploy:
+
+| check | result |
+|---|---|
+| public routes render real Greek content | ✅ 6/6 |
+| no fixture identifier / UUID in customer-facing copy | ✅ |
+| no stray singular imperative survived the register conversion | ✅ |
+| `/dashboard`, `/wallet` redirect (not 500) for anonymous | ✅ 307 |
+| **new production Sentry errors since deploy** | **✅ none** |
+
+The one production issue in the last 24h (`/wallet`, Server Components render, 1 event, 0 users)
+**predates this deploy by ~3 hours** — it occurred on `638ee037`. Worth a look, not a rollback
+trigger for this release.
+
+Two Sentry issues that look alarming are **local dev, not production**: `ReferenceError: verdict is
+not defined` (/dashboard) and a `PrismaClientKnownRequestError` (/wallet/[id]). Both were captured
+from the dev server during this session's edits — neither appears under `environment:production`,
+and the first is a class `tsc` catches (it did, mid-edit, and the deployed tree type-checks clean).
+
+Rollback: `638ee037` is the previous production deploy and remains a rollback candidate.
+
 ## Session wrap — 2026-08-23b (All four pending decisions, implemented)
 
 The four questions logged as "Waiting on humans" were answered "proceed with your proposals", so each

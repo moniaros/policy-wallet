@@ -229,7 +229,10 @@ export default defineConfig({
             // Anonymous sweep of the public marketing site — no storageState,
             // no auth dependency, so it runs without the test-user setup.
             name: 'public-anon',
-            testMatch: /public-marketing\.spec\.ts/,
+            // prod-smoke belongs here: it is anonymous by construction (there are
+            // no test credentials in production and it must never mutate
+            // production data), and this is the only project with no session.
+            testMatch: /(public-marketing|prod-smoke)\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
