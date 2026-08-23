@@ -200,3 +200,54 @@ describe("B6 — a truncated gap heading never breaks mid-word", () => {
         expect(out).not.toMatch(/[,;:·\-–—]…$/)
     })
 })
+
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
+
+// ── P1-11 ────────────────────────────────────────────────────────────────────
+describe("P1-11 — every placeholder form comes from one list, and bare ???? is one of them", () => {
+    /**
+     * CLAUDE.md names `????` UNBRACKETED as a real placeholder form, but the
+     * embedded-marker detector's bare branch accepted only x/X/Χ/χ — so a
+     * summary containing «Αριθμός κυκλοφορίας ????» rendered to the customer
+     * as their data. The `?` now joins the ONE mask alphabet both detectors
+     * are composed from (`UNREADABLE_VALUE_FORMS` in lib/wallet/unreadable-value.ts):
+     * bracketed stays at 3+, bare stays at 4+ so «???» in ordinary prose is
+     * never swept up.
+     */
+    const probe = (name: string) =>
+        readFileSync(join(process.cwd(), "tests/fixtures/guard-probes", name), "utf-8").trim()
+
+    it("detects a bare ???? embedded in the model's own sentence (committed probe)", () => {
+        const text = probe("unreadable-bare-questionmarks.txt")
+        // Flow-through self-check: the probe genuinely carries a BARE 4-run —
+        // no brackets anywhere, so only the bare branch can catch it.
+        expect(text).toMatch(/\s\?{4}(?=\s|$|[.,])/)
+        expect(text).not.toMatch(/[([]/)
+        expect(containsUnreadableMarker(text)).toBe(true)
+    })
+
+    it("does not sweep up ??? in ordinary prose (committed probe)", () => {
+        const text = probe("unreadable-prose-triple-question.txt")
+        expect(text).toContain("???")
+        expect(text).not.toContain("????")
+        expect(containsUnreadableMarker(text)).toBe(false)
+    })
+
+    it("bare and bracketed thresholds: 4+ bare, 3+ bracketed", () => {
+        expect(containsUnreadableMarker("Αριθμός κυκλοφορίας ????")).toBe(true)
+        expect(containsUnreadableMarker("????")).toBe(true)
+        expect(containsUnreadableMarker("Αριθμός (???)")).toBe(true)
+        expect(containsUnreadableMarker("Αριθμός ???")).toBe(false)
+        expect(containsUnreadableMarker("Σοβαρά???")).toBe(false) // attached to a word
+    })
+
+    it("a grouped ? run is a whole-value placeholder like its x-run sibling", () => {
+        expect(isUnreadableValue("???-???")).toBe(true)
+        expect(isUnreadableValue("????")).toBe(true)
+        expect(extractedField("????")).toEqual({ readable: false, value: null })
+        // Real values stay real.
+        expect(isUnreadableValue("ΧΥΖ-1234")).toBe(false)
+        expect(isUnreadableValue("E2E-PDM-MOT-ACT")).toBe(false)
+    })
+})

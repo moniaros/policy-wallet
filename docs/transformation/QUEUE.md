@@ -285,7 +285,7 @@ owner: Implementation (Fable 5) · file_boundary: `lib/i18n/translations/{el,en}
       path back to the defect than an unreferenced bundle key. Delete the prop, the type and the
       import with the strings
 
-### P1-07 — Identity values never render raw · `todo`
+### P1-07 — Identity values never render raw · `done` — REVIEW PASSED (P1-11 absorbed)
 owner: Implementation (Fable 5)
 - [ ] «Καλώς ήρθατε πίσω, {name}» and every display-name render goes through the identity scrubber
       (candidate #6 — not an i18n defect; the string is clean)
@@ -354,7 +354,7 @@ owner: Implementation (Fable 5) · file_boundary: `app/(protected)/agent/page.ts
 - [ ] ledger row: no status state is lost in the migration — `action_needed` currently absorbs
       `expired`, so the mapping is one-to-many and must be written out
 
-### P1-11 — Every placeholder form is detected, from one list · `todo`
+### P1-11 — Every placeholder form is detected, from one list · `done` — ABSORBED INTO P1-07
 owner: Implementation (Fable 5) · file_boundary: `lib/wallet/unreadable-value.ts`, `tests/unit/`
 
 - [ ] a bare `????` is detected (candidate #30). Add `?` to the bare branch; keep bare at 4+ while
@@ -718,3 +718,39 @@ and `lib/agent/format.ts` — is frozen by neither this guard nor `lint:i18n-cha
 Third form of Greek in this codebase, covered by nothing. `lint:i18n-changed` scans `.tsx`; the P1-06
 freeze matches `{ el, en }` object pairs. A `lang === 'el' ? '…' : '…'` in a `.ts` file is invisible
 to both.
+
+
+---
+
+## P1-07 — Adversarial review: **PASS**. Outbound is now clean on all three metrics.
+
+| check | result |
+|---|---|
+| Outbound leakage | **score 0 · tokens 0 · Latin 0** — the §6.3 outbound target, met. Tokens went 1 → 0 by fixing `buildNotificationEmail`, so every notification email inherits it rather than each caller |
+| Bare `????` detected (P1-11) | **probed by me**: `????` → true, `Αριθμός ????` → true, `(????)` → true, `XXXX` → true, `???` → **false** (correctly not swept up in prose). Was rendering as customer data before |
+| Guard fails first | **proven by me.** Bypassing all 3 `assertRenderableText` calls turned **4 tests red**, covering both halves — dev/test THROWS on the exact payload that leaked, production degrades honestly and never throws. Reverted → 56/56 |
+| Guards extended, not added | `policy-sentinels-unrenderable` + the unreadable-value tests. §11.1 honoured |
+| CI | tsc · lint · i18n · utf8 clean; **5171/5171** (+36) |
+
+### The P1-06 freeze earned its keep on first contact
+
+P1-07 touched four Greek template literals, and the freeze **caught it and forced a deliberate
+regeneration**. I audited that diff, because regenerating a freeze is precisely how a copy change
+would slip past it: exactly 4 lines changed, every one `${agent.name}` → `${displayPersonName(agent.name)}`,
+with the Greek byte-identical. "Interpolation-only" verified in seconds — which is the whole point of
+making the artifact human-readable.
+
+### The right fix for the right defect
+
+Candidate #6 was never a copy defect. `welcomeBack` is clean Greek; `E2E` was the display name
+interpolated into it. A fixture-shaped name now renders the wallet title «Το πορτοφόλι μου» instead,
+the shell falls back to «Χρήστης», and `UserMenu` identifies the account by its **email** — the
+honest identifier. Fallbacks are always existing honest copy: an email, a role label
+(«Ο σύμβουλός σας», «Ένας πελάτης»), or the un-personalised sentence. **Never blank, never invented.**
+
+`greeting()` in `phrases.ts` is one chokepoint covering the weekly digest, 3 drip and 4 churn emails.
+
+### Scope held, and the remainder named
+Agent-facing sites carrying the same class — `renewal.service` customerName, `tasks/actions.ts`,
+`agent/actions.ts`, `cross-sell`, `customer.service` — were left unrouted under §12.4 and reported as
+needing a scope decision rather than quietly included.

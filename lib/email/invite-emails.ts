@@ -1,6 +1,7 @@
 import { sendEmail } from "@/lib/email/email-service"
 import { getBaseTemplate } from "@/lib/mail-templates"
 import { absoluteUrl } from "@/lib/seo/site"
+import { displayPolicyNumber } from "@/lib/wallet/policy-identity"
 
 type Language = "el" | "en"
 
@@ -11,8 +12,11 @@ function sanitizeName(name: string | null | undefined, language: Language) {
 }
 
 function policyLabel(policyNumber: string | null | undefined, language: Language) {
-    if (policyNumber) {
-        return language === "el" ? `το ασφαλιστήριο ${policyNumber}` : `Policy ${policyNumber}`
+    // A synthetic number (`PENDING-…`) must not name a policy in an email —
+    // displayPolicyNumber returns null for it and the generic label is used.
+    const safeNumber = displayPolicyNumber(policyNumber)
+    if (safeNumber) {
+        return language === "el" ? `το ασφαλιστήριο ${safeNumber}` : `Policy ${safeNumber}`
     }
     return language === "el" ? "ένα ασφαλιστήριο" : "a policy"
 }

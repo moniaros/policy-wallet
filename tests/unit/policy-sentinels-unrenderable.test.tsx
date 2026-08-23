@@ -323,3 +323,287 @@ describe('centrality — no file re-implements the check', () => {
         ).toEqual([])
     })
 })
+
+// ─────────────────────────────────────────────────────────────────────────────
+// P1-07 — person display names and fixture identifiers (same class, one guard).
+//
+// «Καλώς ήρθατε πίσω, E2E!» was not a copy defect: the string is clean and the
+// fixture USER NAME was interpolated into it. The universe of person-name
+// render sites was enumerated from the filesystem (D-005): every interpolation
+// of `user.name` / `agent.name` / `grantee.name` / `share.name` under `app/` +
+// `components/` + `lib/email/` on a B2C surface. Each probe below is
+// self-checked (the probe demonstrably carries the token) so a gutted fixture
+// fails instead of passing vacuously.
+// ─────────────────────────────────────────────────────────────────────────────
+import { vi } from 'vitest'
+
+// PolicyWalletClient statically imports two "use server" modules whose
+// transitive graph parses process.env (lib/storage → lib/env) and opens the
+// database. Neither is exercised here — the DOM assertions never click — so
+// they are mocked to keep this guard runnable as a pure unit test.
+vi.mock('@/app/(protected)/wallet/actions', () => ({
+    runPolicyAnalysis: vi.fn(),
+    deletePolicy: vi.fn(),
+}))
+vi.mock('@/app/onboarding/actions', () => ({
+    dismissTour: vi.fn(),
+    completeOnboardingStep: vi.fn(),
+}))
+
+import {
+    SYNTHETIC_PERSON_NAME_PATTERNS,
+    assertRenderableText,
+    containsFixtureIdentifier,
+    displayPersonName,
+    firstNameLabel,
+    isSyntheticPersonName,
+    scrubRenderableText,
+} from '@/lib/wallet/policy-identity'
+import { buildNotificationEmail } from '@/lib/mail-templates'
+import { UserMenu } from '@/components/shell/UserMenu'
+import { PolicyWalletClient } from '@/components/wallet/PolicyWalletClient'
+
+const PROBES_DIR = path.join(REPO_ROOT, 'tests/fixtures/guard-probes')
+const probeLines = (name: string): string[] =>
+    readFileSync(path.join(PROBES_DIR, name), 'utf-8')
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+
+describe('person display names — the primitive', () => {
+    const synthetic = probeLines('synthetic-person-names.txt')
+    const real = probeLines('real-person-names.txt')
+
+    it('the probe fixtures are intact (a gutted probe must not pass silently)', () => {
+        expect(synthetic).toContain('E2E Policyholder')
+        expect(synthetic).toContain('Agent User')
+        expect(synthetic.some((n) => /^Policyholder\s\d/.test(n))).toBe(true)
+        expect(real).toContain('Νίκος Παπαδόπουλος')
+        // The false positives that matter: a chi-initial Greek name and a
+        // surname that merely STARTS with a test token.
+        expect(real).toContain('Χρήστος Παπάς')
+        expect(real).toContain('Maria Demopoulos')
+    })
+
+    it.each(probeLines('synthetic-person-names.txt'))(
+        'never renders %s as a person\'s name',
+        (name) => {
+            expect(isSyntheticPersonName(name)).toBe(true)
+            // Flow-through: the synthetic value goes IN and the fallback comes
+            // OUT — proof the probe exercised the scrub, not just the matcher.
+            expect(displayPersonName(name)).toBe('')
+            expect(displayPersonName(name, 'honest fallback')).toBe('honest fallback')
+            expect(firstNameLabel(name)).toBe('')
+        }
+    )
+
+    it.each(probeLines('real-person-names.txt'))('leaves the real name %s alone', (name) => {
+        expect(isSyntheticPersonName(name)).toBe(false)
+        expect(displayPersonName(name)).toBe(name)
+        expect(firstNameLabel(name)).toBe(name.split(/\s+/)[0])
+    })
+
+    it('greets by first name, and only for a real name', () => {
+        expect(firstNameLabel('Νίκος Παπαδόπουλος')).toBe('Νίκος')
+        expect(firstNameLabel('E2E Policyholder')).toBe('')
+        expect(firstNameLabel(null)).toBe('')
+    })
+
+    it('detects a fixture identifier in prose, but never a hex colour', () => {
+        expect(containsFixtureIdentifier('Προστέθηκε έγγραφο στο E2E-PDM-MOT-ACT.')).toBe(true)
+        expect(containsFixtureIdentifier('policy e2e-mot-001 updated')).toBe(true)
+        expect(containsFixtureIdentifier('border-[#E2E8F0] bg-white')).toBe(false)
+        expect(containsFixtureIdentifier('Το ασφαλιστήριο Interamerican ενημερώθηκε.')).toBe(false)
+    })
+
+    it('scrubs both classes out of composed prose and tidies after itself', () => {
+        expect(
+            scrubRenderableText('Το ασφαλιστήριο E2E-PDM-MOT-ACT (PENDING-1786738708923) αναλύθηκε.')
+        ).toBe('Το ασφαλιστήριο αναλύθηκε.')
+    })
+
+    it('the enumerated pattern list is what the predicate consults', () => {
+        // Every pattern must be exercised by at least one synthetic probe line
+        // — an entry nothing can hit is a dead letter, not an enumeration.
+        for (const pattern of SYNTHETIC_PERSON_NAME_PATTERNS) {
+            expect(
+                synthetic.some((name) => pattern.test(name)),
+                `No probe line exercises ${pattern}`
+            ).toBe(true)
+        }
+    })
+})
+
+describe('§6.1.3 — the notification shell refuses an unresolved identity', () => {
+    const payloadFrom = (probe: string) =>
+        JSON.parse(readFileSync(path.join(PROBES_DIR, probe), 'utf-8')) as {
+            title: string
+            message: string
+            relatedObjectType?: string
+            relatedObjectId?: string
+            language: string
+        }
+
+    it('dev/test: THROWS on the exact payload that leaked to outbound email', () => {
+        const payload = payloadFrom('sentinel-notification-payload.json.txt')
+        // Flow-through self-check: the probe genuinely carries the sentinel.
+        expect(containsPlaceholderText(payload.message)).toBe(true)
+        expect(process.env.NODE_ENV).not.toBe('production')
+        expect(() => buildNotificationEmail(payload)).toThrow(/policy-identity/)
+    })
+
+    it('dev/test: THROWS on a fixture identifier in the message', () => {
+        const payload = payloadFrom('fixture-token-notification-payload.json.txt')
+        expect(containsFixtureIdentifier(payload.message)).toBe(true)
+        expect(() => buildNotificationEmail(payload)).toThrow(/policy-identity/)
+    })
+
+    it('production: degrades honestly — scrubs, keeps the clean copy, never throws', () => {
+        const payload = payloadFrom('sentinel-notification-payload.json.txt')
+        vi.stubEnv('NODE_ENV', 'production')
+        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+        try {
+            const { subject, html } = buildNotificationEmail(payload)
+            expectNoSentinel(html)
+            expectNoSentinel(subject)
+            expect(html).toContain('Η ανάλυση ολοκληρώθηκε')
+            expect(html).toContain('αναλύθηκε')
+        } finally {
+            consoleError.mockRestore()
+            vi.unstubAllEnvs()
+        }
+    })
+
+    it('production: strips a fixture identifier the same way', () => {
+        const payload = payloadFrom('fixture-token-notification-payload.json.txt')
+        vi.stubEnv('NODE_ENV', 'production')
+        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+        try {
+            const { html } = buildNotificationEmail(payload)
+            expect(containsFixtureIdentifier(html)).toBe(false)
+            expect(html).toContain('Νέο έγγραφο ασφαλιστηρίου')
+        } finally {
+            consoleError.mockRestore()
+            vi.unstubAllEnvs()
+        }
+    })
+
+    it('the assertion primitive itself: loud outside production, honest inside it', () => {
+        expect(() => assertRenderableText('Policy PENDING-9 analyzed', 'probe')).toThrow(
+            /policy-identity/
+        )
+        expect(assertRenderableText('Καθαρό κείμενο.', 'probe')).toBe('Καθαρό κείμενο.')
+        vi.stubEnv('NODE_ENV', 'production')
+        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+        try {
+            expect(assertRenderableText('Policy PENDING-9 analyzed', 'probe')).toBe(
+                'Policy analyzed'
+            )
+        } finally {
+            consoleError.mockRestore()
+            vi.unstubAllEnvs()
+        }
+    })
+})
+
+describe('rendered output — fixture names never render as people', () => {
+    it('the wallet greeting falls back to the wallet title, never «…, E2E!»', () => {
+        const { container } = withProviders(
+            <PolicyWalletClient
+                policies={[]}
+                user={{ id: 'u1', name: 'E2E Policyholder', email: 'e2e-ph@policywallet.test' }}
+            />
+        )
+        const text = container.textContent || ''
+        expect(text).not.toContain('E2E')
+        expect(text).toContain('Το πορτοφόλι μου')
+    })
+
+    it('a real first name still gets its greeting', () => {
+        const { container } = withProviders(
+            <PolicyWalletClient
+                policies={[]}
+                user={{ id: 'u1', name: 'Νίκος Παπαδόπουλος', email: 'nikos@example.gr' }}
+            />
+        )
+        const text = container.textContent || ''
+        expect(text).toContain('Καλώς ήρθατε πίσω')
+        expect(text).toContain('Νίκος')
+        expect(text).not.toContain('Παπαδόπουλος') // first name only
+    })
+
+    it('the user menu identifies a fixture account by its email, not its fake name', () => {
+        const { container } = withProviders(
+            <UserMenu user={{ name: 'E2E Policyholder', email: 'e2e-ph@policywallet.test' }} />
+        )
+        const text = container.textContent || ''
+        expect(text).not.toContain('E2E Policyholder')
+        expect(text).toContain('e2e-ph@policywallet.test')
+    })
+
+    it('the user menu still shows a real name', () => {
+        const { container } = withProviders(
+            <UserMenu user={{ name: 'Νίκος Παπαδόπουλος', email: 'nikos@example.gr' }} />
+        )
+        expect(container.textContent).toContain('Νίκος Παπαδόπουλος')
+    })
+})
+
+/**
+ * Centrality, part two: no file re-implements the synthetic-name check inline.
+ * app/onboarding/actions.ts had its own copy (`greetingFirstName`) that knew
+ * "Agent User" and /^Policyholder(\s|$)/ but not the E2E fixtures — the exact
+ * partial-knowledge drift the policy-placeholder scan above exists to prevent.
+ * Universe: every tracked .ts/.tsx under app/, components/, lib/, scripts/,
+ * hooks/, contexts/ (enumerated from git, same as the scan above).
+ */
+describe('centrality — no file re-implements the synthetic-name check', () => {
+    const ALLOWED_SYNTHETIC = new Set([
+        // The single owner of the shapes.
+        'lib/wallet/policy-identity.ts',
+        // The one layer that legitimately WRITES the signup defaults.
+        'app/auth/actions.ts',
+    ])
+
+    const knowsSyntheticNameLiterals = (code: string): boolean =>
+        /['"`]Agent User['"`]/.test(code) ||
+        /\^Policyholder\(/i.test(code) ||
+        /`Policyholder \$\{/.test(code)
+
+    it('the matcher is proven red against the committed probe', () => {
+        const probe = readFileSync(
+            path.join(PROBES_DIR, 'synthetic-name-inline-check.ts.txt'),
+            'utf-8'
+        )
+        expect(knowsSyntheticNameLiterals(probe)).toBe(true)
+    })
+
+    it('only the primitive and the signup writer know the synthetic-name shapes', () => {
+        const tracked = execFileSync(
+            'git',
+            ['ls-files', 'app', 'components', 'lib', 'scripts', 'hooks', 'contexts'],
+            { cwd: REPO_ROOT, encoding: 'utf-8' }
+        )
+            .split('\n')
+            .filter((f) => /\.(ts|tsx)$/.test(f))
+            .filter((f) => existsSync(path.join(REPO_ROOT, f)))
+
+        const offenders: string[] = []
+        for (const file of tracked) {
+            if (ALLOWED_SYNTHETIC.has(file)) continue
+            const source = readFileSync(path.join(REPO_ROOT, file), 'utf-8')
+            const code = source
+                .replace(/\/\*[\s\S]*?\*\//g, '')
+                .split('\n')
+                .map((line) => line.replace(/^\s*\/\/.*$/, ''))
+                .join('\n')
+            if (knowsSyntheticNameLiterals(code)) offenders.push(file)
+        }
+
+        expect(
+            offenders,
+            `These files hardcode a synthetic person-name shape instead of importing ` +
+                `lib/wallet/policy-identity:\n  ${offenders.join('\n  ')}`
+        ).toEqual([])
+    })
+})

@@ -19,7 +19,7 @@
  * Run explicitly:  npx vitest --run tests/measure/outbound-inventory.test.ts
  */
 
-import { describe, it } from "vitest"
+import { describe, it, vi } from "vitest"
 import { mkdirSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 
@@ -96,14 +96,28 @@ const TEMPLATES: { name: string; render: () => { subject: string; html: string }
     { name: "churn: day 60", render: () => getChurnDay60Email({ name: "Νίκος", language: "el" }) },
     {
         name: "notification shell (unresolved identity)",
-        render: () =>
-            buildNotificationEmail({
-                title: "Η ανάλυση ολοκληρώθηκε",
-                message: "PENDING-1786738708923 (__PENDING_EXTRACTION__)",
-                relatedObjectType: "policy",
-                relatedObjectId: "e2e-mot-001",
-                language: "el",
-            }),
+        // Since P1-07 the shell THROWS on this payload outside production
+        // (§6.1.3 — dev and test fail loudly; the guard for that lives in
+        // tests/unit/policy-sentinels-unrenderable.test.tsx). This file
+        // measures what a CUSTOMER receives, so it renders under production
+        // semantics: the shell scrubs the unresolved identity and sends the
+        // clean copy.
+        render: () => {
+            vi.stubEnv("NODE_ENV", "production")
+            const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+            try {
+                return buildNotificationEmail({
+                    title: "Η ανάλυση ολοκληρώθηκε",
+                    message: "PENDING-1786738708923 (__PENDING_EXTRACTION__)",
+                    relatedObjectType: "policy",
+                    relatedObjectId: "e2e-mot-001",
+                    language: "el",
+                })
+            } finally {
+                consoleError.mockRestore()
+                vi.unstubAllEnvs()
+            }
+        },
     },
 ]
 

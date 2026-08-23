@@ -3,6 +3,7 @@ import { absoluteUrl } from "./seo/site"
 // CTA, the in-app bell and the push payload, so a new object type reaches all
 // three at once instead of only the two that happened to be updated.
 import { notificationActionPath } from "./notifications/links"
+import { assertRenderableText } from "./wallet/policy-identity"
 
 export type Language = "el" | "en"
 
@@ -97,17 +98,27 @@ export function buildNotificationEmail(params: {
     relatedObjectId?: string
     language: string
 }): { subject: string; html: string } {
+    // §6.1.3 — the shared shell is the last stop before a customer's inbox, so
+    // it refuses an unresolved identity rather than inheriting one from every
+    // caller. The live dispatch path (lib/notifications/dispatch.ts) already
+    // redacts, but THIS wrapper is what every notification email renders
+    // through, and it once shipped «PENDING-1786738708923
+    // (__PENDING_EXTRACTION__)» verbatim. Dev and test throw; production
+    // scrubs and logs, never failing a send for a customer.
+    const title = assertRenderableText(params.title, "buildNotificationEmail title")
+    const message = assertRenderableText(params.message, "buildNotificationEmail message")
+
     const lang: Language = params.language === "el" ? "el" : "en"
     const copy = NOTIF_EMAIL_COPY[lang]
     const path = notificationActionPath(params.relatedObjectType, params.relatedObjectId)
     const html = getBaseTemplate({
-        title: escapeHtml(params.title),
-        description: escapeHtml(params.message),
+        title: escapeHtml(title),
+        description: escapeHtml(message),
         actionUrl: path ? absoluteUrl(path) : undefined,
         actionLabel: path ? copy.view : undefined,
         footerText: `${copy.footer}<br/>© ${new Date().getFullYear()} PolicyWallet`,
     })
-    return { subject: params.title, html }
+    return { subject: title, html }
 }
 
 export const templates = {

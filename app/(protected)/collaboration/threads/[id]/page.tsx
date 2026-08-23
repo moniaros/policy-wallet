@@ -10,6 +10,7 @@ import { collaborationService } from "@/lib/services/collaboration.service"
 import type { DocumentRequestData, ProposalData } from "@/components/collaboration/types"
 
 import { getTranslations } from "@/lib/i18n"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 export default async function CollaborationThreadPage({
     params,
 }: {
@@ -36,7 +37,7 @@ export default async function CollaborationThreadPage({
         db.proposal.findFirst({ where: { threadId: id } }),
         db.user.findUnique({
             where: { id: thread.relationship.agentUserId },
-            select: { name: true, agentProfile: { select: { licenseNumber: true } } },
+            select: { name: true, email: true, agentProfile: { select: { licenseNumber: true } } },
         }),
     ])
 
@@ -101,7 +102,7 @@ export default async function CollaborationThreadPage({
                 documentRequest={documentRequest}
                 proposal={proposal}
                 viewerRole={viewerRole}
-                agentName={agent?.name || ""}
+                agentName={displayPersonName(agent?.name) || agent?.email || ""}
                 licenseNumber={agent?.agentProfile?.licenseNumber}
             />
 

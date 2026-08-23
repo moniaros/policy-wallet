@@ -19,7 +19,7 @@ import { portfolioFacts } from "@/lib/dashboard/portfolio-summary"
 import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
-import { displayPolicyNumber } from "@/lib/wallet/policy-identity"
+import { displayPersonName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
 import { premiumExclusionNote } from "@/lib/wallet/premium-exclusion-note"
@@ -557,8 +557,12 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         }
     })
 
+    // The advisor's stored name can be synthetic — fall back to the account
+    // email, which identifies the real counterparty, never to a fixture token.
     const agentName = customerRelationship
-        ? customerRelationship.agent.name || customerRelationship.agent.email || ""
+        ? displayPersonName(customerRelationship.agent.name) ||
+          customerRelationship.agent.email ||
+          ""
         : ""
 
     // Branch coverage map: tile states from policies + the cached score's

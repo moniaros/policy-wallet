@@ -16,6 +16,7 @@ import { db } from "@/lib/db"
 import { getAgentRequest } from "@/lib/insurance/content/agent-requests"
 import { collaborationService } from "@/lib/services/collaboration.service"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 
 type StartThreadResult =
     | { success: true; threadId: string }
@@ -64,7 +65,7 @@ export async function startBranchActionThread(policyId: string, actionId: string
     if (!relationship) return { error: "NO_AGENT" }
 
     const spec = getAgentRequest(actionId)
-    const askerName = authResult.dbUser.name || "Policyholder"
+    const askerName = displayPersonName(authResult.dbUser.name) || "Policyholder"
 
     // Greek, not the clicker's UI language: this text is read by the ADVISOR,
     // whose locale we do not know here and who is Greek-market by definition.

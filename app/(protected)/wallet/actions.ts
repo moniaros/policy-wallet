@@ -1,6 +1,7 @@
 "use server"
 
 import { storedDocumentLabel } from "@/lib/wallet/document-label"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 import { db } from "@/lib/db"
 import { emit } from "@/lib/notifications/dispatch"
 import { revalidatePath } from "next/cache"
@@ -652,8 +653,8 @@ export async function requestRenewalQuote(policyId: string) {
                 en: "Client requested a renewal quote",
             },
             message: {
-                el: `${dbUser.name || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`,
-                en: `${dbUser.name || dbUser.email || "A client"} requested a renewal quote for policy ${policyRef}`,
+                el: `${displayPersonName(dbUser.name) || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`,
+                en: `${displayPersonName(dbUser.name) || dbUser.email || "A client"} requested a renewal quote for policy ${policyRef}`,
             },
             relatedObjectType: "policy",
             relatedObjectId: policyId,
@@ -758,8 +759,8 @@ export async function updatePolicy(policyId: string, formData: FormData) {
                     en: "One of your policies was updated",
                 },
                 message: {
-                    el: `${authResult.dbUser.name || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`,
-                    en: `${authResult.dbUser.name || "Your advisor"} updated the details on this policy.`,
+                    el: `${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`,
+                    en: `${displayPersonName(authResult.dbUser.name) || "Your advisor"} updated the details on this policy.`,
                 },
                 relatedObjectType: "policy",
                 relatedObjectId: policyId,
@@ -963,7 +964,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
             const emailResult = await sendPolicyInviteEmail({
                 to: agentEmail,
                 token: invite.token,
-                inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
                 language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
             })
             emailDelivered = emailResult.success
@@ -1050,8 +1051,8 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
             userId: authResult.dbUser.id,
             title: { el: "Συνδεθήκατε με σύμβουλο", en: "You are connected to an advisor" },
             message: {
-                el: `${agent.name || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`,
-                en: `${agent.name || agent.email || "Your advisor"} can now work with you. You can revoke this at any time.`,
+                el: `${displayPersonName(agent.name) || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`,
+                en: `${displayPersonName(agent.name) || agent.email || "Your advisor"} can now work with you. You can revoke this at any time.`,
             },
             dedupeKey: `advisor_assigned:${createdRel.id}`,
         })
@@ -1060,8 +1061,8 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
             userId: agent.id,
             title: { el: "Νέος πελάτης συνδέθηκε", en: "A new client connected" },
             message: {
-                el: `${authResult.dbUser.name || "Ένας πελάτης"} συνδέθηκε μαζί σας.`,
-                en: `${authResult.dbUser.name || "A client"} is now connected to you.`,
+                el: `${displayPersonName(authResult.dbUser.name) || "Ένας πελάτης"} συνδέθηκε μαζί σας.`,
+                en: `${displayPersonName(authResult.dbUser.name) || "A client"} is now connected to you.`,
             },
             relatedObjectType: "customer",
             relatedObjectId: authResult.dbUser.id,
@@ -1113,7 +1114,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         })
         await sendPolicySharedAccessEmail({
             to: agentEmail,
-            inviterName: authResult.dbUser.name || authResult.dbUser.email,
+            inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
             policyNumber: sharedPolicy?.policyNumber,
             language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
         })

@@ -9,6 +9,7 @@ import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { Users, UserPlus, Mail, Shield, Clock, CheckCircle2, Copy, Trash2, Eye, Edit3, AlertCircle } from "lucide-react"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Modal } from "@/components/ui/Modal"
+import { displayPersonName } from '@/lib/wallet/policy-identity'
 
 export interface Share {
     id: string
@@ -387,12 +388,12 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                             {share.image ? (
                                                 <img
                                                     src={share.image}
-                                                    alt={share.name || share.email}
+                                                    alt={displayPersonName(share.name) || share.email}
                                                     className="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-slate-700"
                                                 />
                                             ) : (
                                                 <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white dark:text-[#1A2420] font-bold text-sm shadow-lg">
-                                                    {(share.name?.[0] || share.email[0]).toUpperCase()}
+                                                    {(displayPersonName(share.name)[0] || share.email[0]).toUpperCase()}
                                                 </div>
                                             )}
                                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white dark:border-slate-800 flex items-center justify-center">
@@ -402,7 +403,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
 
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <p className="font-bold text-sm text-slate-900 dark:text-white truncate">{share.name || copy.agent}</p>
+                                                <p className="font-bold text-sm text-slate-900 dark:text-white truncate">{displayPersonName(share.name) || copy.agent}</p>
                                                 {getPermissionBadge(share.permissions)}
                                             </div>
                                             <p className="text-xs text-slate-500 dark:text-slate-400 truncate mb-1">{share.email}</p>

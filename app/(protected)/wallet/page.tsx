@@ -9,6 +9,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 import {
     displayInsurerName,
+    displayPersonName,
     displayPolicyNumber,
     fileNameLabel,
 } from "@/lib/wallet/policy-identity"
@@ -178,7 +179,7 @@ export default async function WalletPage() {
             premiumAmount: p.premiumAmount ? Number(p.premiumAmount) : undefined,
             premiumCurrency: p.premiumCurrency || 'EUR',
             sharedWithAgents: policyGrants.map(g => ({
-                agentName: g.grantee.name || roleCopy.defaults.agentName,
+                agentName: displayPersonName(g.grantee.name) || roleCopy.defaults.agentName,
                 agentId: g.grantee.id,
                 permissions: g.permissions
             })),

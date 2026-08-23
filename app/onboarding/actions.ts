@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { PolicyService } from "@/lib/services/policy.service"
 import { revalidatePath } from "next/cache"
 import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
+import { displayPersonName, firstNameLabel } from "@/lib/wallet/policy-identity"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
     "policy_expiring",
@@ -185,17 +186,10 @@ export async function uploadOnboardingPolicy(formData: FormData) {
     }
 }
 
-// First name for the onboarding greeting. `User.name` is a free-text full name,
-// but phone-only signups get a synthetic placeholder ("Policyholder 1234" /
-// "Agent User", set in app/auth/actions.ts) — those are NOT real names, so we
-// treat them (and a missing name) as unknown and return "" so the greeting omits
-// the name entirely rather than saying "Policyholder".
-function greetingFirstName(fullName: string | null | undefined): string {
-    const name = fullName?.trim()
-    if (!name) return ""
-    if (/^Policyholder(\s|$)/i.test(name) || name === "Agent User") return ""
-    return name.split(" ")[0] || ""
-}
+// First name for the onboarding greeting. `User.name` is free text but can be
+// synthetic (signup defaults, test fixtures) — firstNameLabel is the single
+// owner of that decision; this file used to carry its own partial copy, which
+// knew the signup defaults and not the fixtures.
 
 export async function getOnboardingState() {
     const { dbUser } = await getAuthenticatedUser()
@@ -207,7 +201,7 @@ export async function getOnboardingState() {
     if (!profile || !profile.preferences) return {
         step: 1,
         completed: false,
-        name: greetingFirstName(dbUser.name),
+        name: firstNameLabel(dbUser.name),
         onboardingSegment: null as "individual" | "family_manager" | "small_business" | null,
         onboardingGoals: [] as string[],
         onboardingFamiliarity: null as "beginner" | "intermediate" | "experienced" | null,
@@ -220,7 +214,7 @@ export async function getOnboardingState() {
     return {
         step: prefs.onboardingStep || 1,
         completed: prefs.onboardingCompleted || false,
-        name: greetingFirstName(dbUser.name),
+        name: firstNameLabel(dbUser.name),
         onboardingSegment: prefs.onboardingSegment ?? null,
         onboardingGoals: Array.isArray(prefs.onboardingGoals) ? prefs.onboardingGoals : [],
         onboardingFamiliarity: prefs.onboardingFamiliarity ?? null,
@@ -291,7 +285,7 @@ export async function redeemInviteCode(code: string) {
         select: { name: true },
     })
 
-    return { success: true, agentName: agent?.name || "Your advisor" }
+    return { success: true, agentName: displayPersonName(agent?.name) || "Your advisor" }
 }
 
 /**

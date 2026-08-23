@@ -2953,11 +2953,11 @@ inline	app/(protected)/wallet/actions.ts	"Πελάτης ζήτησε προσφ
 inline	app/(protected)/wallet/actions.ts	"Συνδεθήκατε με σύμβουλο"
 inline	app/(protected)/wallet/actions.ts	'Νέα ευκαιρία εντοπίστηκε'
 inline	app/(protected)/wallet/actions.ts	'Νέο ασφαλιστήριο κοινοποιήθηκε μαζί σας'
-inline	app/(protected)/wallet/actions.ts	`${agent.name || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
-inline	app/(protected)/wallet/actions.ts	`${authResult.dbUser.name || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
-inline	app/(protected)/wallet/actions.ts	`${authResult.dbUser.name || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`
 inline	app/(protected)/wallet/actions.ts	`${authResult.dbUser.name || 'Πελάτης'} ζήτησε λεπτομέρειες για ένα κενό κάλυψης.`
-inline	app/(protected)/wallet/actions.ts	`${dbUser.name || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`
+inline	app/(protected)/wallet/actions.ts	`${displayPersonName(agent.name) || agent.email || "Ο σύμβουλός σας"} μπορεί πλέον να συνεργάζεται μαζί σας. Μπορείτε να ανακαλέσετε την πρόσβαση οποτεδήποτε.`
+inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ένας πελάτης"} συνδέθηκε μαζί σας.`
+inline	app/(protected)/wallet/actions.ts	`${displayPersonName(authResult.dbUser.name) || "Ο σύμβουλός σας"} ενημέρωσε τα στοιχεία αυτού του ασφαλιστηρίου.`
+inline	app/(protected)/wallet/actions.ts	`${displayPersonName(dbUser.name) || dbUser.email || "Ένας πελάτης"} ζήτησε προσφορά ανανέωσης για το ασφαλιστήριο ${policyRef}`
 inline	app/(protected)/wallet/actions.ts	`${sharer || 'Ένας πελάτης'} κοινοποίησε το ασφαλιστήριό του ${branch ? branch.label.el : 'ασφάλισης'} (${policy?.insurerName}) μαζί σας με δικαιώματα ${permissions}.`
 inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policy.policyNumber}: ${trimmedReason || "επισημάνθηκε ως λανθασμένο"}`
 inline	app/(protected)/wallet/actions.ts	`Ασφαλιστήριο ${policyRef}: ζητήθηκε προσφορά ανανέωσης`

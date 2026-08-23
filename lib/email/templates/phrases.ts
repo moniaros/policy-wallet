@@ -1,3 +1,5 @@
+import { displayPersonName } from '@/lib/wallet/policy-identity'
+
 /**
  * Counted phrases for outbound email.
  *
@@ -37,6 +39,9 @@ export function daysToExpiryPhrase(days: number, isGreek: boolean): string {
  * product's own UI copy is formal throughout.
  */
 export function greeting(name: string | undefined, isGreek: boolean): string {
-    if (isGreek) return name ? `Αγαπητέ/ή ${name},` : 'Καλησπέρα σας,'
-    return name ? `Dear ${name},` : 'Hello,'
+    // A stored name can be synthetic ("E2E Policyholder", "Policyholder 1234")
+    // — greet a real person by name, everyone else impersonally.
+    const safeName = displayPersonName(name)
+    if (isGreek) return safeName ? `Αγαπητέ/ή ${safeName},` : 'Καλησπέρα σας,'
+    return safeName ? `Dear ${safeName},` : 'Hello,'
 }

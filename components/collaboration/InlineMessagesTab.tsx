@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { displayPersonName } from '@/lib/wallet/policy-identity'
 import {
     MessageSquare,
     Send,
@@ -60,7 +61,7 @@ export function InlineMessagesTab({
                         data.map((m: any) => ({
                             id: m.id,
                             body: m.body,
-                            senderName: m.sender?.name || "Unknown",
+                            senderName: displayPersonName(m.sender?.name) || m.sender?.email || "Unknown",
                             senderId: m.senderUserId,
                             senderIsAgent: m.senderUserId !== currentUserId,
                             messageType: m.messageType,

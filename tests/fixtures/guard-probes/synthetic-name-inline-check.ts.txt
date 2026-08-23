@@ -1,0 +1,9 @@
+// PROBE fixture for the synthetic-person-name centrality scan in
+// tests/unit/policy-sentinels-unrenderable.test.tsx. This is the exact shape of
+// inline re-implementation the scan must flag: a file deciding for itself which
+// display names are synthetic instead of importing lib/wallet/policy-identity.
+export function isRealName(name: string): boolean {
+    if (name === "Agent User") return false
+    if (/^Policyholder(\s|$)/i.test(name)) return false
+    return true
+}

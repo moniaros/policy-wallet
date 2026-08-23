@@ -5,6 +5,7 @@ import { rateLimit } from "@/lib/rate-limit"
 import { requireApiUser } from "@/lib/api-auth"
 import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 
 const InviteSchema = z.object({
     invitee_email: z.string().email(),
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
             const emailResult = await sendPolicyInviteEmail({
                 to: invitee_email,
                 token: invite.token,
-                inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
                 language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
             })
             emailQueued = Boolean(emailResult.success)

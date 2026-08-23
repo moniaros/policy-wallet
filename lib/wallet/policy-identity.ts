@@ -193,6 +193,137 @@ export function redactPolicyPlaceholders(text: string): string {
         .trim()
 }
 
+// ── Person display names ─────────────────────────────────────────────────────
+//
+// The same defect class as the policy sentinels, one column over. `User.name`
+// can hold values no layer ever meant a human to read as a name:
+//
+//   1. test fixtures ("E2E Policyholder", "e2e-ph-free" — tests/e2e-users.ts),
+//      which exist in the dev database and greeted a signed-in owner with
+//      «Καλώς ήρθατε πίσω, E2E!» (transformation candidate #6)
+//   2. the signup defaults app/auth/actions.ts mints when no name was given:
+//      "Agent User" and `Policyholder <last-4-digits>`
+//   3. bare test tokens left by seeds ("Test", "Demo User")
+//
+// This module is the only place allowed to know these shapes, same rule as the
+// policy placeholders above. A synthetic name renders as NOTHING — the caller
+// falls back to honest copy (an un-personalised greeting, the account email, a
+// role label) rather than a blank or an invented name.
+
+/** Every synthetic person-name shape any layer writes, enumerated once. */
+export const SYNTHETIC_PERSON_NAME_PATTERNS: readonly RegExp[] = [
+    // Test fixtures: a standalone E2E token anywhere in the name
+    // ("E2E Policyholder", "E2E Admin", "e2e-ph-free").
+    /(?:^|\s)e2e(?:$|[\s\-_.@])/i,
+    // Signup default for phone-only registrations: "Policyholder 1234".
+    /^policyholder(?:\s|$)/i,
+    // Signup default for agents who left the name blank.
+    /^agent user$/i,
+    // Bare test tokens. Whole-name matches only: "Maria Demopoulos" is a
+    // person, "Demo User" is not.
+    /^(?:test|demo|fixture|sample)(?:[\s\-_.](?:user|account|customer|agent))?$/i,
+    // A fixture email address standing in for a name.
+    /@policywallet\.test$/i,
+]
+
+/**
+ * A fixture identifier embedded in PROSE ("…στο ασφαλιστήριο E2E-PDM-MOT-ACT»).
+ * `#` is excluded on the left and digits on the right so hex colours
+ * (`#E2E8F0`) never match; a real Greek or Latin word never contains a
+ * standalone `e2e` token.
+ */
+const FIXTURE_IDENTIFIER_SOURCE =
+    '(?<![\\p{L}\\p{N}#])e2e(?:[-_.@][\\p{L}\\p{N}][\\p{L}\\p{N}\\-_.@]*)*(?![\\p{L}\\p{N}])'
+
+/** Does composed prose contain a fixture identifier (E2E, e2e-mot-001, …)? */
+export function containsFixtureIdentifier(text: string | null | undefined): boolean {
+    const value = String(text ?? '')
+    if (!value) return false
+    return new RegExp(FIXTURE_IDENTIFIER_SOURCE, 'iu').test(value)
+}
+
+/** Is this stored display name synthetic — a fixture or a signup default? */
+export function isSyntheticPersonName(value: string | null | undefined): boolean {
+    const text = normalized(value)
+    if (!text) return true
+    return SYNTHETIC_PERSON_NAME_PATTERNS.some((pattern) => pattern.test(text))
+}
+
+/**
+ * The person name to show, or `fallback` (the caller owns the wording — an
+ * email address, a role label, or nothing so the surrounding copy degrades to
+ * its un-personalised form). Returns `''` when there is nothing safe to show,
+ * so a bare `{displayPersonName(x)}` renders empty rather than a fixture token.
+ */
+export function displayPersonName(
+    value: string | null | undefined,
+    fallback?: string | null
+): string {
+    const text = normalized(value)
+    if (
+        !text ||
+        isSyntheticPersonName(text) ||
+        containsPlaceholderText(text) ||
+        containsFixtureIdentifier(text)
+    ) {
+        return normalized(fallback)
+    }
+    return text
+}
+
+/**
+ * The first name for a greeting («Καλώς ήρθατε πίσω, Νίκος!»), or `''` when
+ * the stored name is synthetic or absent — the greeting then omits the name
+ * entirely rather than greeting "E2E" or "Policyholder".
+ */
+export function firstNameLabel(value: string | null | undefined): string {
+    return displayPersonName(value).split(/\s+/)[0] || ''
+}
+
+/** Remove fixture identifiers from an already-composed sentence. */
+function stripFixtureIdentifiers(text: string): string {
+    return text.replace(new RegExp(FIXTURE_IDENTIFIER_SOURCE, 'giu'), '')
+}
+
+/**
+ * Prose scrub for a composed user-facing sentence: policy placeholders AND
+ * fixture identifiers, with the punctuation tidy-up of
+ * {@link redactPolicyPlaceholders}.
+ */
+export function scrubRenderableText(text: string): string {
+    if (!text) return text
+    return redactPolicyPlaceholders(stripFixtureIdentifiers(text))
+}
+
+/**
+ * §6.1.3 — the boundary assertion. Call it on composed text at the last shared
+ * point before it leaves for a customer (the notification email shell does).
+ *
+ * Development and test FAIL LOUDLY: a sentinel or fixture identifier reaching
+ * this point is an upstream defect, and rendering it quietly is how
+ * «PENDING-1786738708923 (__PENDING_EXTRACTION__)» reached outbound email.
+ * Production DEGRADES HONESTLY: it scrubs, logs, and never crashes a page or a
+ * send for a customer.
+ */
+export function assertRenderableText(text: string, context: string): string {
+    if (!text) return text
+    const leaks: string[] = []
+    if (containsPlaceholderText(text)) leaks.push('a policy-identity placeholder')
+    if (containsFixtureIdentifier(text)) leaks.push('a fixture identifier')
+    if (leaks.length === 0) return text
+
+    if (process.env.NODE_ENV !== 'production') {
+        throw new Error(
+            `[policy-identity] ${context} would render ${leaks.join(' and ')}: «${text}». ` +
+                'Route the value through lib/wallet/policy-identity before it reaches a customer.'
+        )
+    }
+    console.error(
+        `[policy-identity] ${context} received ${leaks.join(' and ')}; rendered the scrubbed text instead.`
+    )
+    return scrubRenderableText(text)
+}
+
 /**
  * Return a copy of a policy-shaped object with its identity columns made safe
  * for rendering. Applied at the server read boundaries that hand policies to

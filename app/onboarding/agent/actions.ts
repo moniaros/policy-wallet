@@ -8,6 +8,7 @@ import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time"
 import { uploadFile, deleteFile } from "@/lib/storage"
 import { sanitizeDisplayName, validateUploadFile, REJECTION_MESSAGES } from "@/lib/security/file-upload"
 import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 
 const AgentProfileSchema = z.object({
     agencyName: z.string().optional(),
@@ -156,7 +157,7 @@ export async function sendClientInvite(clientEmail: string) {
         const emailResult = await sendPolicyInviteEmail({
             to: normalizedEmail,
             token: invite.token,
-            inviterName: dbUser.name || dbUser.email || "PolicyWallet advisor",
+            inviterName: displayPersonName(dbUser.name) || dbUser.email || "PolicyWallet advisor",
             language: (dbUser.preferredLanguage as "el" | "en") || "en",
         })
 

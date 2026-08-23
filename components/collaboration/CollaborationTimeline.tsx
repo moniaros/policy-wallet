@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { apiErrorMessage } from "@/lib/api-error-copy"
 import { threadStatusLabel, threadPriorityLabel, actionStatusLabel } from "@/lib/collaboration/status-labels"
 import type { ViewerRole, ThreadType } from "./types"
+import { displayPersonName } from '@/lib/wallet/policy-identity'
 
 type Thread = {
     id: string
@@ -434,7 +435,7 @@ export function CollaborationTimeline({
                                             className={`text-sm ${item.isPrivate ? "border-l-2 border-amber-400 pl-2 bg-amber-50/50 dark:bg-amber-950/10 rounded-r" : ""}`}
                                         >
                                             <div className="flex items-center gap-1.5">
-                                                <p className="font-semibold text-neutral-800 dark:text-neutral-200">{item.sender.name || item.sender.email}</p>
+                                                <p className="font-semibold text-neutral-800 dark:text-neutral-200">{displayPersonName(item.sender.name) || item.sender.email}</p>
                                                 {item.isPrivate && (
                                                     <span className="inline-flex items-center gap-0.5 text-kicker font-bold text-amber-700 dark:text-amber-400">
                                                         <Lock className="w-3 h-3" />
@@ -522,7 +523,7 @@ export function CollaborationTimeline({
                                         <div key={item.id} className="flex items-center justify-between gap-2 border border-neutral-200 dark:border-neutral-700 rounded p-2">
                                             <div>
                                                 <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                                                <p className="text-xs text-neutral-500 dark:text-neutral-400">{t.collaboration.timeline.assignee}: {item.assignee.name || item.assignee.email}</p>
+                                                <p className="text-xs text-neutral-500 dark:text-neutral-400">{t.collaboration.timeline.assignee}: {displayPersonName(item.assignee.name) || item.assignee.email}</p>
                                             </div>
                                             <select
                                                 aria-label={t.collaboration.timeline.selectActionStatus}
@@ -554,7 +555,7 @@ export function CollaborationTimeline({
                                     >
                                         {selected.participants.map((p) => (
                                             <option key={p.user.id} value={p.user.id}>
-                                                {p.user.name || p.user.email}
+                                                {displayPersonName(p.user.name) || p.user.email}
                                             </option>
                                         ))}
                                     </select>

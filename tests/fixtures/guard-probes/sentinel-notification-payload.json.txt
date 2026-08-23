@@ -1,0 +1,7 @@
+{
+    "title": "Η ανάλυση ολοκληρώθηκε",
+    "message": "Το ασφαλιστήριο συμβόλαιο PENDING-1786738708923 (__PENDING_EXTRACTION__) αναλύθηκε.",
+    "relatedObjectType": "policy",
+    "relatedObjectId": "pol-1",
+    "language": "el"
+}

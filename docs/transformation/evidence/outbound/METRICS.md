@@ -12,7 +12,7 @@ the state in which `provisionalProtectionScore` returns 100.
 | metric | count |
 |---|---|
 | score renders in outbound | **0** |
-| internal-token leaks | **1** |
+| internal-token leaks | **0** |
 | Latin-script sentences in `el` output | **0** |
 
 Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
@@ -86,8 +86,7 @@ Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
 ### notification shell (unresolved identity)
 
 - subject: «Η ανάλυση ολοκληρώθηκε»
-- rendered length: 236 chars
+- rendered length: 189 chars
 - **score renders: 0**
-- **internal tokens: 1**
-  - `pending/sentinel marker`
+- **internal tokens: 0**
 - **Latin-script sentences: 0**

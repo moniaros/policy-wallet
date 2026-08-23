@@ -1,0 +1,10 @@
+E2E Policyholder
+E2E Free Policyholder
+E2E Dashboard Policyholder
+E2E Admin
+e2e-ph-free
+Agent User
+Policyholder 4715
+Test
+Demo User
+e2e-agent@policywallet.test

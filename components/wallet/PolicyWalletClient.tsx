@@ -20,7 +20,7 @@ import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { usePolling } from "@/hooks/usePolling"
 import { getOrRegisterServiceWorker } from "@/lib/push/register"
-import { policyLabel } from '@/lib/wallet/policy-identity'
+import { firstNameLabel, policyLabel } from '@/lib/wallet/policy-identity'
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -294,7 +294,10 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
         <div className="pw-page-shell relative isolate">
             <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none pw-app-canvas" />
 
-            <PageHeader title={user?.name ? `${t.auth.welcomeBack}, ${user.name.split(' ')[0]}!` : t.wallet.title} subtitle={t.wallet.manageTrack} />
+            {/* A stored display name can be synthetic ("E2E Policyholder",
+                "Policyholder 1234") — firstNameLabel greets only a real person,
+                and the greeting degrades to the wallet title otherwise. */}
+            <PageHeader title={firstNameLabel(user?.name) ? `${t.auth.welcomeBack}, ${firstNameLabel(user?.name)}!` : t.wallet.title} subtitle={t.wallet.manageTrack} />
 
             {hasComparablePolicies && (
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-4">

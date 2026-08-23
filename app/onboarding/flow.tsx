@@ -11,6 +11,7 @@ import { inviteAdvisorByEmail } from "@/app/(protected)/agent/relationship-actio
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
 import { acceptAttribute } from "@/lib/security/file-upload"
+import { displayPersonName } from '@/lib/wallet/policy-identity'
 
 type GoalType = "save_money" | "health_family" | "my_car" | "organize_policies" | "review_policy" | "investments_reminders"
 
@@ -76,7 +77,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const [consentModalOpen, setConsentModalOpen] = useState(false)
 
     const stepLabel = t(`Βήμα ${step} από ${TOTAL_STEPS}`, `Step ${step} of ${TOTAL_STEPS}`)
-    const displayName = initialState.name || ""
+    const displayName = displayPersonName(initialState.name)
 
     const [analysisResult, setAnalysisResult] = useState<{
         status: string

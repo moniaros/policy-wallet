@@ -6,6 +6,7 @@ import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { sendPolicySharedAccessEmail, sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
 import { withApiGuard } from '@/lib/api-guard'
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 
 const sharePolicySchema = z.object({
     policyId: z.string().min(1),
@@ -83,7 +84,7 @@ export const POST = withApiGuard(
                         const emailResult = await sendPolicyInviteEmail({
                             to: email,
                             token: invite.token,
-                            inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                            inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
                             policyNumber: policy.policyNumber,
                             language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
                         })
@@ -133,7 +134,7 @@ export const POST = withApiGuard(
             try {
                 const emailResult = await sendPolicySharedAccessEmail({
                     to: email,
-                    inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                    inviterName: displayPersonName(authResult.dbUser.name) || authResult.dbUser.email,
                     policyNumber: policy.policyNumber,
                     language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
                 })

@@ -20,6 +20,7 @@ import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
 import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, Gift, FileText, Inbox, Coins, History, Zap } from 'lucide-react'
+import { displayPersonName } from "@/lib/wallet/policy-identity"
 
 export default async function ProtectedLayout({
     children,
@@ -165,7 +166,7 @@ export default async function ProtectedLayout({
         <TranslationsProvider>
         <AppShell
             user={{
-                name: dbUser.name || roleCopy.defaults.userName,
+                name: displayPersonName(dbUser.name) || roleCopy.defaults.userName,
                 email: dbUser.email || "",
                 avatarUrl: dbUser.image || undefined,
             }}

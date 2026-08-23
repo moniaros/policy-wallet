@@ -27,7 +27,7 @@ import {
     overlapPartnerLabel,
     type PortfolioPolicyFacts,
 } from "@/lib/services/gap-engine/portfolio-rules"
-import { policyLabel } from '@/lib/wallet/policy-identity'
+import { displayPersonName, policyLabel } from '@/lib/wallet/policy-identity'
 
 export default async function PolicyDetailPage({
     params
@@ -207,7 +207,9 @@ export default async function PolicyDetailPage({
             mergeRequest = {
                 id: forThisPolicy.id,
                 requestedByLabel:
-                    forThisPolicy.requestedBy.name || forThisPolicy.requestedBy.email || "",
+                    displayPersonName(forThisPolicy.requestedBy.name) ||
+                    forThisPolicy.requestedBy.email ||
+                    "",
                 policyLabel: policyLabel(forThisPolicy.existingPolicy),
             }
         }

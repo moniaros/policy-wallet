@@ -25,17 +25,43 @@
  */
 
 /**
- * A value the extractor emitted as a placeholder.
+ * THE enumerated list of placeholder forms (P1-11). Every detector in this
+ * module is COMPOSED from these fragments — never restate one as a second
+ * regex, here or in a guard: a form added to this list reaches the whole-value
+ * check and the embedded-marker check at once, which is the property that was
+ * lost when the bare branch below forgot `?` and a summary shipped «Αριθμός
+ * κυκλοφορίας ????» to a customer as data.
  *
  * Shapes seen in stored data and in provider output:
  *   `XXXX`  `(XXXX)`  `XXX-XXXX`  `xxxxx`  `????`  `N/A`  `n/a`  `---`  `…`
  *
  * Latin AND Greek capital chi are both matched: the providers emit whichever
  * script they were last writing in, and «ΧΧΧΧ» (U+03A7) is visually identical
- * to `XXXX` (U+0058) while comparing unequal.
+ * to `XXXX` (U+0058) while comparing unequal. `?` is part of the same mask
+ * alphabet — the providers use it interchangeably with `X`.
  */
-const PLACEHOLDER_SHAPE =
-    /^[\s([]*(?:[xXΧχ]{3,}(?:[\s\-–—_./]+[xXΧχ]{1,})*|\?{3,}|-{3,}|_{3,}|[.…]{3,}|n\s*\/\s*a|N\s*\/\s*A|Ν\/Α)[\s)\]]*$/
+const MASK_CHAR = "[xXΧχ?]"
+
+export const UNREADABLE_VALUE_FORMS: Readonly<Record<string, string>> = {
+    /** XXXX · ???? · XXX-XXXX — runs of mask characters, optionally grouped. */
+    maskRun: `${MASK_CHAR}{3,}(?:[\\s\\-–—_./]+${MASK_CHAR}{1,})*`,
+    dashRun: "-{3,}",
+    underscoreRun: "_{3,}",
+    dotRun: "[.…]{3,}",
+    notAvailable: "n\\s*\\/\\s*a|N\\s*\\/\\s*A|Ν\\/Α",
+}
+
+const PLACEHOLDER_SHAPE = new RegExp(
+    `^[\\s([]*(?:${Object.values(UNREADABLE_VALUE_FORMS).join("|")})[\\s)\\]]*$`
+)
+
+/**
+ * Embedded forms, composed from the same mask alphabet: brackets license a run
+ * of 3+, a bare run needs 4+ so «???» in ordinary prose is never swept up.
+ */
+const BRACKETED_MASK_RUN = `[([]\\s*${MASK_CHAR}{3,}\\s*[)\\]]`
+const BARE_MASK_RUN = `(?:^|\\s)${MASK_CHAR}{4,}(?=$|[\\s.,;:)])`
+const EMBEDDED_MARKER = new RegExp(`${BRACKETED_MASK_RUN}|${BARE_MASK_RUN}`)
 
 /** Does this whole value read as an extractor placeholder rather than data? */
 export function isUnreadableValue(value: string | null | undefined): boolean {
@@ -58,7 +84,7 @@ export function isUnreadableValue(value: string | null | undefined): boolean {
 export function containsUnreadableMarker(text: string | null | undefined): boolean {
     const value = String(text ?? "")
     if (!value) return false
-    return /[([]\s*[xXΧχ?]{3,}\s*[)\]]|(?:^|\s)[xXΧχ]{4,}(?=$|[\s.,;:)])/.test(value)
+    return EMBEDDED_MARKER.test(value)
 }
 
 /**

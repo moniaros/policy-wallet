@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { ThemeToggle } from '../ThemeToggle'
 import { NotificationBell } from '../notifications/NotificationBell'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
+import { displayPersonName } from '@/lib/wallet/policy-identity'
 
 export interface UserMenuProps {
     user: {
@@ -63,7 +64,10 @@ export function UserMenu({
         })
     }
 
-    const initials = user.name
+    // A synthetic stored name ("E2E Policyholder", "Agent User") must not
+    // render as the person — the account's email is the honest identifier.
+    const displayName = displayPersonName(user.name) || user.email || roleCopy.defaults.userName
+    const initials = displayName
         .split(' ')
         .map((n) => n[0])
         .join('')
@@ -101,9 +105,9 @@ export function UserMenu({
                 </div>
                 <div className="flex-1 min-w-0 text-left">
                     <div className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
-                        {user.name}
+                        {displayName}
                     </div>
-                    {user.email && (
+                    {user.email && user.email !== displayName && (
                         <div className="text-xs text-stone-500 dark:text-stone-400 truncate">
                             {user.email}
                         </div>
