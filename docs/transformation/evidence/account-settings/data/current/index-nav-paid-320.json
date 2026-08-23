@@ -1,0 +1,63 @@
+{
+  "capture": "index-nav-paid",
+  "width": 320,
+  "url": "http://localhost:3000/account",
+  "scrollHeight": 896,
+  "viewportsOfContent": 1.2,
+  "headingCounts": {
+    "h1": 2,
+    "mainLandmark": 2
+  },
+  "sections": {
+    "count": 2,
+    "ids": [
+      "<header> Ρυθμίσεις",
+      "<div> Τα στοιχεία σας"
+    ]
+  },
+  "containers": {
+    "count": 15,
+    "maxDepth": 3,
+    "deepestChain": [
+      "ul.pw-card divide-y divide-black/5 dark:div",
+      "li.",
+      "span.grid h-9 w-9 shrink-0 place-items-center"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:surface] <ul> \"ΠροφίλΌνομα, email, τηλέφωνο, γλώσ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:shell] <a> \"9+Ρυθμίσεις\" boundary 1.25:1 (needs 3) inside=#cfdddb outside=#ffffff"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ρυθμίσεις Ο λογαριασμός, η συνδρομή, οι ειδοποιήσεις και τα δεδομένα σας — όλα σε ένα σημείο. Προφίλ Όνομα, email, τηλέφωνο, γλώσσα Συνδρομή και χρέωση Πρόγραμμα, χρήση, τιμολόγια Ασφάλεια Κωδικός πρόσβασης και συσκευές Ειδοποιήσεις Τι σας στέλνουμε και πότε Απόρρητο και δεδομένα Συγκαταθέσεις, εξαγωγή, διαγραφή Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "route": "/account"
+}

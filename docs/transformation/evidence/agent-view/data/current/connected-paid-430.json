@@ -1,0 +1,127 @@
+{
+  "capture": "connected-paid",
+  "width": 430,
+  "url": "http://localhost:3000/agent",
+  "scrollHeight": 1076,
+  "viewportsOfContent": 1.2,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 18,
+    "maxDepth": 4,
+    "deepestChain": [
+      "div.pw-card rounded-3xl p-6 sm:p-8",
+      "div.rounded-2xl border border-neutral-200 da",
+      "li.flex items-center justify-between gap-3 ",
+      "button.inline-flex flex-shrink-0 items-center g"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <button> \"Επισκόπηση\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff",
+      "[1.4.11:control] <a> \"Email\" boundary 1.12:1 (needs 3) inside=#fdfdfd outside=#f4f4f4",
+      "[1.4.11:unmeasured] <button> \"Ανάκληση\" boundary 1.18:1 (needs 3) inside=#f8fafc outside=#f8fafc — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ανάκληση\" boundary 1.18:1 (needs 3) inside=#f8fafc outside=#f8fafc — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Αποσύνδεση από τον σύμβουλο\" boundary 1.81:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <a> \"Σύμβουλος\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff",
+      "[1.4.11:surface] <div> \"Ο σύμβουλός μουΕπισκόπησηΜηνύματαΈ\" boundary 1.15:1 (needs 3) inside=#ffffff outside=#f4f7f8"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "button#_R_9bn5rtd5rcalb_-tab-overview.flex.items-center",
+        "text": "Επισκόπηση",
+        "scrollWidth": 102,
+        "clientWidth": 92,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button#_R_9bn5rtd5rcalb_-tab-messages.flex.items-center",
+        "text": "Μηνύματα",
+        "scrollWidth": 88,
+        "clientWidth": 83,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button#_R_9bn5rtd5rcalb_-tab-documents.flex.items-center",
+        "text": "Έγγραφα",
+        "scrollWidth": 81,
+        "clientWidth": 78,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button#_R_9bn5rtd5rcalb_-tab-proposals.flex.items-center",
+        "text": "Προτάσεις",
+        "scrollWidth": 90,
+        "clientWidth": 84,
+        "reason": "overflow"
+      },
+      {
+        "selector": "h1.text-2xl.font-black",
+        "text": "Νίκος Παπαδόπουλος",
+        "scrollWidth": 266,
+        "clientWidth": 224,
+        "reason": "overflow"
+      },
+      {
+        "selector": "p.truncate.text-sm",
+        "text": "Interamerican · E2E-MOT-001",
+        "scrollWidth": 200,
+        "clientWidth": 155,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Κοινοποιήθηκε από εσάς",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Αποσύνδεση από τον σύμβουλο",
+        "count": 2,
+        "where": [
+          "top <h3>",
+          "top <button>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [
+      "E2E fixture identifier: \"Interamerican · E2E-MOT-001\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ο ΣΥΜΒΟΥΛΟΣ ΜΟΥ Επισκόπηση Μηνύματα Έγγραφα Προτάσεις Ν Νίκος Παπαδόπουλος Ασφαλιστικό Γραφείο Κλήση Email Κοινή πρόσβαση Ελέγχετε τι βλέπει ο σύμβουλός σας. Ανακαλέστε ανά πάσα στιγμή. Interamerican · E2E-MOT-001 Κοινοποιήθηκε από εσάς Ανάκληση ΕΘΝΙΚΗ · 63708952 Κοινοποιήθηκε από εσάς Ανάκληση Αποσύνδεση από τον σύμβουλο Η σύνδεση τερματίζεται και η πρόσβαση του συμβούλου στα ασφαλιστήριά σας ανακαλείται. Αποσύνδεση από τον σύμβουλο Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "state": "active-relationship-long-name"
+}

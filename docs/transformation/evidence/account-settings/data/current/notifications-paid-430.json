@@ -1,0 +1,124 @@
+{
+  "capture": "notifications-paid",
+  "width": 430,
+  "url": "http://localhost:3000/account/notifications",
+  "scrollHeight": 1784,
+  "viewportsOfContent": 1.9,
+  "headingCounts": {
+    "h1": 2,
+    "mainLandmark": 2
+  },
+  "sections": {
+    "count": 2,
+    "ids": [
+      "<header> Ειδοποιήσεις",
+      "<div> Email που σας στέλνουμε"
+    ]
+  },
+  "containers": {
+    "count": 32,
+    "maxDepth": 4,
+    "deepestChain": [
+      "section.pw-card pw-pad  ",
+      "div.flex min-h-11 items-start justify-betwee",
+      "span.relative block h-6 w-11 rounded-full tra",
+      "span.absolute top-1 h-4 w-4 rounded-full bg-w"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "input",
+      "text": "",
+      "w": 20,
+      "h": 24,
+      "chain": "div < form < div < section"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:surface] <section> \"Email που σας στέλνουμεΕπιλέξτε τι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:unmeasured] <section> \"Αυτή η συσκευήΟι ειδοποιήσεις push\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <section> \"Πότε σας ενοχλούμεΏρες ησυχίαςΚρατ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <section> \"Ιστορικό ειδοποιήσεωνΔείτε τι σας \" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:shell] <a> \"9+Ρυθμίσεις\" boundary 1.24:1 (needs 3) inside=#d4e0de outside=#ffffff"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.mt-4",
+        "text": "Υπενθυμίσεις ανανέωσης και λήξηςΣας ειδοποιούμε πριν λήξει ένα ασφαλιστήριο, ώστ",
+        "scrollWidth": 370,
+        "clientWidth": 364,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.divide-y.divide-black/5",
+        "text": "Υπενθυμίσεις ανανέωσης και λήξηςΣας ειδοποιούμε πριν λήξει ένα ασφαλιστήριο, ώστ",
+        "scrollWidth": 370,
+        "clientWidth": 364,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.min-h-11",
+        "text": "Υπενθυμίσεις ανανέωσης και λήξηςΣας ειδοποιούμε πριν λήξει ένα ασφαλιστήριο, ώστ",
+        "scrollWidth": 370,
+        "clientWidth": 364,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.min-h-11",
+        "text": "Εβδομαδιαία σύνοψηΜία φορά την εβδομάδα, τι άλλαξε στο χαρτοφυλάκιό σας.",
+        "scrollWidth": 370,
+        "clientWidth": 364,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.min-h-11",
+        "text": "Ευρήματα ανάλυσης κάλυψηςΌταν ολοκληρώνεται μια ανάλυση ή εντοπίζεται κενό στην ",
+        "scrollWidth": 370,
+        "clientWidth": 364,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.min-h-11",
+        "text": "Μηνύματα και υπενθυμίσεις συμβούλουΌταν ο σύμβουλός σας σας γράφει ή εκκρεμεί κά",
+        "scrollWidth": 370,
+        "clientWidth": 364,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.flex.min-h-11",
+        "text": "Ενημερώσεις και συμβουλές για το προϊόνΝέες δυνατότητες και συμβουλές για να αξι",
+        "scrollWidth": 370,
+        "clientWidth": 364,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ρυθμίσεις Ειδοποιήσεις Τι σας στέλνουμε και πότε Email που σας στέλνουμε Επιλέξτε τι θέλετε να λαμβάνετε. Τα email που αφορούν την ασφάλεια και τις πληρωμές σας φτάνουν πάντα. Υπενθυμίσεις ανανέωσης και λήξης Σας ειδοποιούμε πριν λήξει ένα ασφαλιστήριο, ώστε να μη μείνετε ακάλυπτος. Εβδομαδιαία σύνοψη Μία φορά την εβδομάδα, τι άλλαξε στο χαρτοφυλάκιό σας. Ευρήματα ανάλυσης κάλυψης Όταν ολοκληρώνεται μια ανάλυση ή εντοπίζεται κενό στην κάλυψή σας. Μηνύματα και υπενθυμίσεις συμβούλου Όταν ο σύμβουλός σας σας γράφει ή εκκρεμεί κάτι από τους δυο σας. Ενημερώσεις και συμβουλές για το προϊόν Νέες δυνατότητες και συμβουλές για να αξιοποιήσετε το PolicyWallet. Αυτή η συσκευή Οι ειδοποιήσεις push αφορούν μόνο το πρόγραμμα περιήγησης που χρησιμοποιείτε τώρα. Ειδοποιήσεις push Οι ειδοποιήσεις push δεν έχουν ρυθμιστεί ακόμη σε αυτή την εγκατάσταση. Πότε σας ενοχλούμε Ώρες ησυχίας Κρατάμε τις μη επείγουσες ειδοποιήσεις τη νύχτα και τις στέλνουμε το πρωί. Από 00:00 01:00 02:00 03:00 04:00 05:00 06:00 07:00 08:00 09:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00 18:00 19:00 20:00 21:00 22:00 23:00 Έως 00:00 01:00 02:00 03:00 04:00 05:00 06:00 07:00 08:00 09:00 10:00 11:00 12:00 13:00 14:00 15:00 16:00 17:00 18:00 19:00 20:00 21:00 22:00 23:00 Οι επείγουσες ειδοποιήσεις — αποτυχία πληρωμής, λήξη ασφαλιστηρίου, αλλαγή στα στοιχεία σύνδεσης — φτάνουν πάντα. Αποθήκευση ωρών ησυχίας Ιστορικό ειδοποιήσεων Δείτε τι σας έχουμε στείλει. Άνοιγμα ιστορικού Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "route": "/account/notifications"
+}

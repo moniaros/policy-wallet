@@ -155,10 +155,19 @@ contradiction. The outbound services are (D-007).
 Source: `components/wallet/PolicyDetailsClientView.tsx` + 17 components in
 `components/wallet/policy-detail/`.
 
-**Unlike the dashboard, the brief is ACCURATE about this surface.** The committed Goal 0 baseline
-(`docs/evidence/policy-detail-mobile/BASELINE.md`, 2026-08-22, 18 captures) measures **20 sections,
-187–189 containers, max depth 3, 13,428px scroll at 320px = 18.6 screens.** D-004's staleness
-finding applies to Αρχική and does not transfer here.
+**CORRECTED 2026-08-23 by T-015.** I wrote here that the brief is accurate about this surface,
+citing the Goal 0 baseline (20 sections, 187–189 containers, 13,428px at 320px). Goal 2 shipped
+after that baseline and cut the default view to **10 sections / 53 containers / 4,930px**. So the
+brief is stale here too — I under-applied D-004.
+
+**But the correction has a correction, and it is the more important number.** `PolicySection`
+unmounts closed content and every section defaults closed, so 4,930px measures a folded page.
+Expanded, the same surface is **12,399px — 2.5×, and within 8% of the pre-restructure figure**
+(D-011). The reduction is largely an accordion, not a deletion.
+
+Consequences for every row below: the published tap-target, truncation and 1.4.11 counts for this
+surface are **floors for the always-visible heads**, not measurements of the page, and §10.2's
+ceilings are evaluated **expanded**.
 
 Reusable, with two caveats recorded for T-015:
 1. **Free-tier paths are unmeasured.** That baseline carries its own correction: the fixture

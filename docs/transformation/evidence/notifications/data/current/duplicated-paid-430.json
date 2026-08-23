@@ -1,0 +1,365 @@
+{
+  "capture": "duplicated-paid",
+  "width": 430,
+  "url": "http://localhost:3000/notifications",
+  "scrollHeight": 4222,
+  "viewportsOfContent": 4.5,
+  "sections": {
+    "count": 3,
+    "ids": [
+      "<div> Ειδοποιήσεις",
+      "<div> ",
+      "<div> Ειδοποιήσεις"
+    ]
+  },
+  "containers": {
+    "count": 55,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
+      "span.absolute right-1.5 top-1.5 flex h-4 min-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <div> \"Νέο ερωτηματολόγιο από τον σύμβουλ\" boundary 1.36:1 (needs 3) inside=#eef3f5 outside=#f9fbfd",
+      "[1.4.11:control] <div> \"Ο σύμβουλός σας ζήτησε ένα έγγραφο\" boundary 1.36:1 (needs 3) inside=#eff3f5 outside=#fafbfd",
+      "[1.4.11:control] <div> \"Η ανανέωση του συμβολαίου σας πλησ\" boundary 1.36:1 (needs 3) inside=#eff4f5 outside=#fafcfd",
+      "[1.4.11:control] <div> \"Η ανανέωση του συμβολαίου σας πλησ\" boundary 1.36:1 (needs 3) inside=#f0f4f5 outside=#fbfcfd",
+      "[1.4.11:control] <div> \"Η προστασία σας μειώθηκεΤο σκορ πρ\" boundary 1.37:1 (needs 3) inside=#f0f4f5 outside=#fbfcfd",
+      "[1.4.11:control] <div> \"Η προστασία σας μειώθηκεΤο σκορ πρ\" boundary 1.37:1 (needs 3) inside=#f1f5f6 outside=#fcfdfe",
+      "[1.4.11:control] <div> \"Ένας κίνδυνος έκλεισεΑναμονή για θ\" boundary 1.37:1 (needs 3) inside=#f1f5f6 outside=#fcfdfe",
+      "[1.4.11:control] <div> \"6 νέες προτάσεις για εσάςΜε βάση ό\" boundary 1.37:1 (needs 3) inside=#f2f5f6 outside=#fdfdfe",
+      "[1.4.11:control] <div> \"Η ανάλυση ολοκληρώθηκεΤο ασφαλιστή\" boundary 1.37:1 (needs 3) inside=#f2f6f6 outside=#fdfefe",
+      "[1.4.11:control] <div> \"Η ανάλυση ολοκληρώθηκεΤο ασφαλιστή\" boundary 1.36:1 (needs 3) inside=#f3f6f6 outside=#fefefe",
+      "[1.4.11:control] <div> \"AI extraction finished and the pol\" boundary 1.36:1 (needs 3) inside=#f3f6f7 outside=#fefeff",
+      "[1.4.11:control] <div> \"AI extraction finished and the pol\" boundary 1.37:1 (needs 3) inside=#f4f7f7 outside=#ffffff",
+      "[1.4.11:control] <div> \"Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυσ\" boundary 1.37:1 (needs 3) inside=#f4f7f7 outside=#ffffff",
+      "[1.4.11:control] <div> \"Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυσ\" boundary 1.36:1 (needs 3) inside=#f3f6f7 outside=#fefeff",
+      "[1.4.11:control] <div> \"Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυσ\" boundary 1.36:1 (needs 3) inside=#f3f6f6 outside=#fefefe",
+      "[1.4.11:control] <div> \"Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυσ\" boundary 1.37:1 (needs 3) inside=#f2f6f6 outside=#fdfefe",
+      "[1.4.11:control] <div> \"Η προστασία σας βελτιώθηκεΤο σκορ \" boundary 1.37:1 (needs 3) inside=#f2f5f6 outside=#fdfdfe",
+      "[1.4.11:control] <div> \"Η προστασία σας βελτιώθηκεΤο σκορ \" boundary 1.37:1 (needs 3) inside=#f2f5f5 outside=#fdfdfd",
+      "[1.4.11:control] <div> \"Ένας κίνδυνος έκλεισεΖημιά σε ακίν\" boundary 1.37:1 (needs 3) inside=#f1f5f5 outside=#fcfdfd",
+      "[1.4.11:control] <div> \"Εντοπίσαμε 2 κενά κάλυψηςΔιαδικτυα\" boundary 1.37:1 (needs 3) inside=#f1f4f5 outside=#fcfcfd",
+      "[1.4.11:control] <div> \"Εντοπίσαμε 2 κενά κάλυψηςΔιαδικτυα\" boundary 1.37:1 (needs 3) inside=#f1f4f5 outside=#fcfcfd",
+      "[1.4.11:control] <div> \"2 νέες προτάσεις για εσάςΜε βάση ό\" boundary 1.36:1 (needs 3) inside=#f0f4f4 outside=#fbfcfc",
+      "[1.4.11:control] <div> \"Ζητήθηκε προσφορά ανανέωσηςΑσφαλισ\" boundary 1.36:1 (needs 3) inside=#f0f3f4 outside=#fbfbfc",
+      "[1.4.11:control] <div> \"Ζητήθηκε προσφορά ανανέωσηςΑσφαλισ\" boundary 1.36:1 (needs 3) inside=#eff3f4 outside=#fafbfc"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "scrollWidth": 244,
+        "clientWidth": 244,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "scrollWidth": 244,
+        "clientWidth": 244,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "scrollWidth": 244,
+        "clientWidth": 244,
+        "reason": "css-truncation",
+        "scrollHeight": 100,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "scrollWidth": 244,
+        "clientWidth": 244,
+        "reason": "css-truncation",
+        "scrollHeight": 100,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "scrollWidth": 240,
+        "clientWidth": 240,
+        "reason": "css-truncation",
+        "scrollHeight": 100,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "scrollWidth": 240,
+        "clientWidth": 240,
+        "reason": "css-truncation",
+        "scrollHeight": 100,
+        "clientHeight": 60
+      }
+    ],
+    "latinSentences": [
+      "AI extraction finished and the policy is readable",
+      "AI extraction read the policy successfully"
+    ],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [
+        "top: \"Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "23/8/26, 6:56 μ.μ.",
+        "count": 4,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανανέωση του συμβολαίου σας πλησιάζει",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η προστασία σας μειώθηκε",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Το σκορ προστασίας σας πήγε από 83% σε 74%.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "23/8/26, 12:33 π.μ.",
+        "count": 4,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Ένας κίνδυνος έκλεισε",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση ολοκληρώθηκε",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 11:31 μ.μ.",
+        "count": 4,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "AI extraction finished and the policy is readable",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "AI extraction read the policy successfully",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση δεν ολοκληρώθηκε",
+        "count": 4,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 11:19 μ.μ.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 10:53 μ.μ.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η προστασία σας βελτιώθηκε",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Το σκορ προστασίας σας πήγε από 44% σε 86%.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 10:49 μ.μ.",
+        "count": 5,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Εντοπίσαμε 2 κενά κάλυψης",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Ζητήθηκε προσφορά ανανέωσης",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 1:50 π.μ.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [
+      "snake_case enum token: \"in_app\"",
+      "pending/sentinel marker: \"Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκ\"",
+      "pending/sentinel marker: \"Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκ\"",
+      "E2E fixture identifier: \"Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ειδοποιήσεις Τι σας έχουμε στείλει πρόσφατα. Προτιμήσεις Σήμανση όλων ως αναγνωσμένα Νέο ερωτηματολόγιο από τον σύμβουλό σας Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας. in_app 23/8/26, 6:56 μ.μ. Ο σύμβουλός σας ζήτησε ένα έγγραφο Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας. in_app 23/8/26, 6:56 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Push 23/8/26, 6:56 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Email 23/8/26, 6:56 μ.μ. Η προστασία σας μειώθηκε Το σκορ προστασίας σας πήγε από 83% σε 74%. Email 23/8/26, 12:33 π.μ. Η προστασία σας μειώθηκε Το σκορ προστασίας σας πήγε από 83% σε 74%. in_app 23/8/26, 12:33 π.μ. Ένας κίνδυνος έκλεισε Αναμονή για θεραπεία τη στιγμή που μετράει και 1 ακόμη αλλαγές. in_app 23/8/26, 12:33 π.μ. 6 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. in_app 23/8/26, 12:33 π.μ. Η ανάλυση ολοκληρώθηκε Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ «Η ΕΘΝΙΚΗ») αναλύθηκε επιτυχώς. Email 14/8/26, 11:31 μ.μ. Η ανάλυση ολοκληρώθηκε Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ «Η ΕΘΝΙΚΗ») αναλύθηκε επιτυχώς. in_app 14/8/26, 11:31 μ.μ. AI extraction finished and the policy is readable AI extraction read the policy successfully Email 14/8/26, 11:31 μ.μ. AI extraction finished and the policy is readable AI extraction read the policy successfully in_app 14/8/26, 11:31 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. Email 14/8/26, 11:19 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. in_app 14/8/26, 11:19 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. Email 14/8/26, 10:53 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. in_app 14/8/26, 10:53 μ.μ. Η προστασία σας βελτιώθηκε Το σκορ προστασίας σας πήγε από 44% σε 86%. Email 14/8/26, 10:49 μ.μ. Η προστασία σας βελτιώθηκε Το σκορ προστασίας σας πήγε από 44% σε 86%. in_app 14/8/26, 10:49 μ.μ. Ένας κίνδυνος έκλεισε Ζημιά σε ακίνητο που σας ανήκει και 3 ακόμη αλλαγές. in_app 14/8/26, 10:49 μ.μ. Εντοπίσαμε 2 κενά κάλυψης Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη. Email 14/8/26, 10:49 μ.μ. Εντοπίσαμε 2 κενά κάλυψης Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη. in_app 14/8/26, 10:49 μ.μ. 2 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. in_app 14/8/26, 10:48 μ.μ. Ζητήθηκε προσφορά ανανέωσης Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης Email 14/8/26, 1:50 π.μ. Ζητήθηκε προσφορά ανανέωσης Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης in_app 14/8/26, 1:50 π.μ. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "state": "duplicated"
+}

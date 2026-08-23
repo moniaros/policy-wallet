@@ -76,7 +76,7 @@ owner: Orchestrator (Opus 5) · blocked_by: T-010
 Per D-004 the contract's evidence is partly stale. Record reproduces / does not reproduce /
 reproduces differently, with width, state, tier, root cause file:line, and fixture-vs-code-confirmed.
 
-### T-015 — Baseline every surface · `in_progress` — THE ONLY THING LEFT BEFORE THE PHASE 0 GATE
+### T-015 — Baseline every surface · `partial` — 10 of 10 documents published, 5 targets uncaptured
 owner: Evidence (Sonnet 5) · blocked_by: T-012 only (T-011 done)
 
 **Ready to run:** a dev server is live on `:3000`, `playwright.config.ts` has a `measure` project,
@@ -268,3 +268,45 @@ surface that needs them.
 ### P1-12…P1-13
 Truncation (blocked by Phase 3 primitive, per candidate #12), layout integrity, global chrome,
 sub-44px sweep, settings subtree, upload flow. Written when their surfaces are baselined.
+
+
+---
+
+## PHASE 0 GATE — assessed 2026-08-23: **NOT MET**
+
+§1.1.5 forbids the Orchestrator softening a gate, so this is recorded as failed rather than
+rounded up. Six of the seven conditions in §5.6 hold.
+
+| §5.6 condition | status |
+|---|---|
+| Every surface in `SURFACES.md` has a published baseline, all three widths, every applicable state | **NOT MET** — see below |
+| Every candidate defect reproduced in a fixture, or recorded code-confirmed-only with a reason | MET — 30 verified, 9 `defect-*` fixtures |
+| 1.4.11 automated and reported | MET — measured on every capture |
+| Outbound-copy inventory complete, templates measured | MET — `evidence/outbound/METRICS.md` |
+| `LEDGER.md` complete, no unenumerated capability | MET — 20 surfaces + 7 overlays, 89 capabilities |
+| Instrumentation plan agreed | MET |
+| Adversarial Reviewer confirms all of the above | **cannot** — condition 1 fails |
+
+### T-016b — Close the five uncaptured targets · `todo`
+owner: Evidence (Sonnet 5) · blocks: the Phase 0 gate, and therefore all of Phase 1
+- [ ] `/wallet/[id]/edit` — never captured. It is where a customer corrects an unreadable value
+      (ledger U-06), so it is not optional
+- [ ] `/consent/ai` — reachability only; content uncaptured. **Read-only measurement**: it is a
+      §12.2 consent surface, so measure it and change nothing
+- [ ] AI Consent Modal · Coverage Limit Modal · Policy Comparison Dialog · generic Confirm Dialog
+      (4 of 7 overlays)
+- [ ] a genuine "no advisor" state on `/agent` at paid tier — the shared fixture account has a
+      pre-existing relationship, so the empty state is unreachable there. §5.3 requires it: the
+      empty state is one of the two most likely to fail and least likely to be checked
+
+### T-016c — Re-measure `/wallet/[id]` EXPANDED · `todo`
+owner: Evidence (Sonnet 5) · blocks: any Phase 1 item claiming zero on that surface
+Per D-011, its published tap-target / truncation / 1.4.11 numbers are floors for the collapsed
+heads. Re-measure with all sections expanded and publish both.
+
+### T-016d — `/coverage` legacy redirect is broken · `todo`
+owner: Implementation (Fable 5) · file_boundary: `app/(protected)/coverage/page.tsx`
+Confirmed twice in a real browser: the correct content is silently substituted but the URL never
+becomes `/coverage-insights`. `SURFACES.md` reported zero broken destinations because the
+enumeration checked that routes EXIST, not that redirects actually redirect — a route-level check
+cannot see a runtime behaviour, which is the same universe lesson as D-005.

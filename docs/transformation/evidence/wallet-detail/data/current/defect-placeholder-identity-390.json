@@ -1,0 +1,116 @@
+{
+  "capture": "defect-placeholder-identity",
+  "width": 390,
+  "url": "http://localhost:3000/wallet/cmt5z1dx0000c510st3tchvdi",
+  "scrollHeight": 3461,
+  "viewportsOfContent": 4.1,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 11,
+    "ids": [
+      "#coverage",
+      "#terms",
+      "#review",
+      "#dates",
+      "#claims",
+      "#documents",
+      "<header> Αυτοκίνητο",
+      "<button> Ρωτήστε το AI για αυτό το ασφαλιστήριο",
+      "<div> Το ασφαλιστήριό σας σε απλά ελληνικά",
+      "<div> Το ασφαλιστήριό σας σε απλά ελληνικά",
+      "<p> Ορισμένα στοιχεία δεν διαβάστηκαν από το"
+    ]
+  },
+  "containers": {
+    "count": 43,
+    "maxDepth": 5,
+    "deepestChain": [
+      "div.mt-6 border-t border-black/10 dark:borde",
+      "section.scroll-mt-20 border-b border-black/10 da",
+      "div.pw-card pw-pad",
+      "a.flex flex-1 items-center gap-3 rounded-x",
+      "div.flex h-9 w-9 items-center justify-center"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "button",
+      "text": "Προεπισκόπηση",
+      "w": 26,
+      "h": 44,
+      "chain": "li < ul < div < div"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <a> \"Ασφαλιστήριο Αυτοκίνητο · PENDING-\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Δημιουργία\" boundary 2.73:1 (needs 3) inside=#7ea49c outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Διαγραφή ασφαλιστηρίου\" boundary 1.43:1 (needs 3) inside=#fbfbfc outside=#fafbfc — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <header> \"ΑυτοκίνητοΑυτοκίνητοΑΡΙΘΜΟΣ ΣΥΜΒΟΛ\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fbfc",
+      "[1.4.11:surface] <span> \"Ενεργό\" boundary 1.21:1 (needs 3) inside=#f0fdf4 outside=#ffffff",
+      "[1.4.11:surface] <div> \"Χρειάζεται προσοχήΤα στοιχεία διαβ\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:surface] <div> \"Το ασφαλιστήριό σας σε απλά ελληνι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:unmeasured] <div> \"Έγγραφα ασφαλιστηρίουΑσφαλιστήριο \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Ασφαλισμένα πρόσωπαE2E Policyholde\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Αναφορά εξοικονόμησηςΚατεβάστε μια\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:shell] <a> \"Πορτοφόλι\" boundary 1.25:1 (needs 3) inside=#dee7e6 outside=#fefefe"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "p.truncate.text-sm",
+        "text": "Ασφαλιστήριο Αυτοκίνητο · PENDING-1700000000000",
+        "scrollWidth": 374,
+        "clientWidth": 188,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "top: 4/2/2027 — \"Ισχύει έως 4/2/2027\""
+      ],
+      "dayCounts": [],
+      "statusChips": [
+        "top: \"Ενεργό\""
+      ]
+    },
+    "repeatedStrings": [
+      {
+        "text": "Λήψη ασφαλιστηρίου",
+        "count": 2,
+        "where": [
+          "top <button>",
+          "#documents <button>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [
+      "pending/sentinel marker: \"Ασφαλιστήριο Αυτοκίνητο · PENDING-1700000000000\"",
+      "E2E fixture identifier: \"E2E Policyholder\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου / Αυτοκίνητο ΑΥΤΟΚΙΝΗΤΟ Αυτοκίνητο ΑΡΙΘΜΟΣ ΣΥΜΒΟΛΑΙΟΥ ΟΧΗΜΑ ΙΚΖ-4821 ΕΝΕΡΓΟ Ισχύει έως 4/2/2027 ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ Τα στοιχεία διαβάστηκαν αυτόματα και δεν έχουν επαληθευτεί. Λήψη ασφαλιστηρίου Ρωτήστε το AI για αυτό το ασφαλιστήριο ΤΟ ΑΣΦΑΛΙΣΤΗΡΙΟ ΣΑΣ ΣΕ ΑΠΛΑ ΕΛΛΗΝΙΚΑ ΣΥΝΟΨΗ AI 100 ΕΛΕΓΧΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ στα 100 — δείκτης ανάγνωσης εγγράφου Πώς προκύπτει ο δείκτης; Αυτά τα στοιχεία διαβάστηκαν από το έγγραφό σας με AI και δεν έχουν επαληθευτεί. Ελέγξτε τα με το ασφαλιστήριό σας πριν βασιστείτε σε αυτά. Το συμβόλαιο αφορά ασφάλιση οχήματος με αριθμό κυκλοφορίας (????) για την περίοδο 2025-2026. Καλύπτει αστική ευθύνη τρίτων και πυρκαγιά. Ορισμένα στοιχεία δεν διαβάστηκαν από το έγγραφο και εμφανίζονται ως «XXXX» στο κείμενο. Δεν είναι κρυμμένα — ανοίξτε το έγγραφο για να τα δείτε. Άνοιγμα εγγράφου Καλύψεις Τι καλύπτεται και τι όχι Όροι που μπορούν να επηρεάσουν μια αποζημίωση Εξαιρέσεις, προθεσμίες και ψιλά γράμματα Σημεία για έλεγχο Ενδείξεις από την αυτόματη ανάγνωση — όχι αξιολόγηση Ημερομηνίες & ανανέωση Έναρξη, λήξη, υπενθυμίσεις Δήλωση ζημιάς Βήματα, προθεσμίες και τηλέφωνα Έγγραφα, σημειώσεις & κοινοποίηση Το αρχείο σας, ο σύμβουλος και η πρόσβαση ΕΓΓΡΑΦΑ ΑΣΦΑΛΙΣΤΗΡΙΟΥ Ασφαλιστήριο Αυτοκίνητο · PENDING-1700000000000 Έγγραφο PDF · 23 Αυγ 2026 Κοινοποίηση σε σύμβουλο ή οικογένεια Λήψη ασφαλιστηρίου ΑΣΦΑΛΙΣΜΕΝΑ ΠΡΟΣΩΠΑ E2E Policyholder ΑΝΑΦΟΡΑ ΕΞΟΙΚΟΝΟΜΗΣΗΣ Κατεβάστε μια καθαρή σύνοψη καλύψεων, κενών και πιθανής εξοικονόμησης για αυτό το ασφαλιστήριο. Εξαγωγή αναφοράς ΣΗΜΕΙΩΣΕΙΣ ΣΥΜΒΟΥΛΟΥ & ΣΥΝΕΡΓΑΣΙΑ ΧΡΟΝΟΛΟΓΙΟ ΣΥΝΕΡΓΑΣΙΑΣ Γενικά Κενό κάλυψης Αίτημα εγγράφου Ανανέωση Ερωτηματολόγιο Δημιουργία Δεν υπάρχουν θέματα συνεργασίας ακόμα. Επιλέξτε ένα θέμα για να δείτε τις λεπτομέρειες του χρονολογίου. Συνεργασία Δεν έχει μοιραστεί ακόμα Προσκαλέστε συνεργάτες για να διαχειριστείτε μαζί αυτό το ασφαλιστήριο. Πρόσκληση συνεργάτη Διαγραφή ασφαλιστηρίου Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "fixtureState": "active",
+  "lineOfBusiness": "motor",
+  "defectFixture": true
+}

@@ -40,7 +40,7 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 15 · REFUTED 10 · DIFFERENT 5 · PENDING 3 — 30 candidates verified
+- CONFIRMED 20 · REFUTED 11 · DIFFERENT 5 · PENDING 0 — **36 candidates verified, none left pending**
 - **1 defect found by building a fixture rather than by auditing** (#30)
 - Of the brief's own candidates, **7 are refuted or reclassified** — a third of everything checked
 - Guard failure modes found: **universe** too small (D-005, D-009), **adoption** incomplete (D-007), **assertion** weaker than the invariant (#17)
@@ -370,6 +370,26 @@ defect" — earning its cost on the first use.
 one stays at 3+, so `???` in ordinary prose is not swept up. Needs a probe fixture per
 `CLAUDE.md`'s guard rule, and the guard must enumerate the placeholder forms from one list rather
 than restating the regex.
+
+
+## Measured, not read — T-015 closes four PENDING candidates and confirms one unmeasured claim
+
+| # | Candidate | Verdict | Evidence |
+|---|---|---|---|
+| 8 | `in_app` channel chip rendered to customers | **CONFIRMED** (was PENDING) | Measured on the notifications baseline: the raw enum renders. My source grep missed it because the value reaches the DOM through data, not a literal. |
+| 31 | §7.5's "Αναλύσεις is the densest surface in the app" | **CONFIRMED — first empirical support** | `/coverage-insights` at 320px: **13,454px (18.7 screens), 192 containers** — more than double any other surface, and 9,444px even on free tier with two policies. The brief asserted this; nothing had measured it. It is now the single largest reduction target in the run. |
+| 32 | All four `/agent` tabs render at 320px | **CONFIRMED VIOLATION** | The fourth clips, as §4.3 said. |
+| 33 | Advisor name truncation «Νίκος Παπαδό…» | **CONFIRMED — worse than cited** | The advisor's own name clips to **under half** its width. |
+| 34 | Delete Policy Dialog contrast | **NEW — CONFIRMED** | «Η ενέργεια είναι οριστική» fails WCAG 1.4.3. A destructive-action warning is the worst possible place for a contrast failure. |
+| 35 | `SURFACES.md` reported zero broken navigation destinations | **REFUTED — one is broken** | `/coverage` silently substitutes the right content but **never changes the URL** to `/coverage-insights`. Confirmed twice in a real browser. |
+
+**#35 is the D-005 lesson again, in a third form.** The enumeration checked that routes *exist*; a
+redirect that fails to redirect is a *runtime* behaviour a filesystem check cannot see. Its universe
+was the route table, and the defect lives in what the route does. Recorded as T-016d.
+
+**#31 changes Phase 2's priorities.** Every earlier assumption in this run treated the policy detail
+page as the worst surface. Measured, `/coverage-insights` is 2.7× its default view and larger even
+than its expanded view — and unlike the policy page it has no accordion mitigating it.
 
 
 ---

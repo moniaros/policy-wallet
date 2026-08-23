@@ -1,0 +1,195 @@
+{
+  "capture": "upgrade-free",
+  "width": 430,
+  "url": "http://localhost:3000/upgrade",
+  "scrollHeight": 4682,
+  "viewportsOfContent": 5,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 56,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.min-h-screen bg-background pb-20 relativ",
+      "div.bg-muted p-1 rounded-2xl flex items-cent",
+      "button.px-6 py-2.5 rounded-xl text-sm font-bold"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <button> \"Μηνιαία\" boundary 1.09:1 (needs 3) inside=#ffffff outside=#f6f9fb",
+      "[1.4.11:control] <button> \"Τρέχον Πλάνο\" boundary 1.04:1 (needs 3) inside=#f1f5f9 outside=#f6f9fb",
+      "[1.4.11:control] <button> \"Αναβάθμιση\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f8fafc"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.absolute.inset-0",
+        "text": "",
+        "scrollWidth": 473,
+        "clientWidth": 430,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.bg-muted.p-1",
+        "text": "ΜηνιαίαΕτήσια-20%",
+        "scrollWidth": 217,
+        "clientWidth": 209,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.px-6.py-2.5",
+        "text": "Ετήσια-20%",
+        "scrollWidth": 108,
+        "clientWidth": 96,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.grid.grid-cols-1",
+        "text": "ΔωρεάνΙδανικό για να ξεκινήσετε€0/μήναΜέχρι 3 συμβόλαιαΒασική σύνοψη συμβολαίου ",
+        "scrollWidth": 408,
+        "clientWidth": 398,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.overflow-x-auto.rounded-2xl",
+        "text": "Σύγκριση ΧαρακτηριστικώνΧαρακτηριστικόΔωρεάνPlusFamilyΌριο συμβολαίων310∞Προηγμέ",
+        "scrollWidth": 581,
+        "clientWidth": 396,
+        "reason": "overflow"
+      },
+      {
+        "selector": "caption.sr-only",
+        "text": "Σύγκριση Χαρακτηριστικών",
+        "scrollWidth": 201,
+        "clientWidth": 1,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.mt-16.bg-muted/50",
+        "text": "Συχνές ΕρωτήσειςΜπορώ να αλλάξω πλάνο ανά πάσα στιγμή;Ναι, μπορείτε να αναβαθμίσ",
+        "scrollWidth": 526,
+        "clientWidth": 398,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "2",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [
+      "Δεχόμαστε όλες τις κύριες πιστωτικές και χρεωστικές κάρτες μέσω Stripe (Visa, Mastercard, American Express)."
+    ],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [
+        "top: \"Θα διατηρήσετε πρόσβαση μέχρι το τέλος της τρέχουσας περιόδου χρέωσης.\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Ασφαλής πληρωμή με Stripe",
+        "count": 2,
+        "where": [
+          "top <div>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Ασφαλής αποθήκευση εγγράφων",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Προηγμένη ανάλυση AI",
+        "count": 3,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <th>"
+        ]
+      },
+      {
+        "text": "Ειδοποιήσεις email",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Διαδραστικές ερωτήσεις AI",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <th>"
+        ]
+      },
+      {
+        "text": "Προηγμένα analytics",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <th>"
+        ]
+      },
+      {
+        "text": "Υποστήριξη προτεραιότητας",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <th>"
+        ]
+      },
+      {
+        "text": "Συνεργασία με σύμβουλο",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <th>"
+        ]
+      },
+      {
+        "text": "Ψηφιακό πορτοφόλι",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <th>"
+        ]
+      },
+      {
+        "text": "Σύγκριση Χαρακτηριστικών",
+        "count": 2,
+        "where": [
+          "top <h2>",
+          "top <caption>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Πίσω ΑΣΦΑΛΗΣ ΠΛΗΡΩΜΗ ΜΕ STRIPE ΑΝΑΒΑΘΜΙΣΗ ΛΟΓΑΡΙΑΣΜΟΥ Επιλέξτε το Πλάνο που σας Ταιριάζει Ξεκινήστε δωρεάν και αναβαθμίστε όποτε είστε έτοιμοι Μηνιαία Ετήσια -20% Δωρεάν Ιδανικό για να ξεκινήσετε €0 /μήνα Μέχρι 3 συμβόλαια Βασική σύνοψη συμβολαίου από το AI Ασφαλής αποθήκευση εγγράφων Προηγμένη ανάλυση AI Ειδοποιήσεις email ΤΡΕΧΟΝ ΠΛΑΝΟ Plus Για όλα τα δικά σας ασφαλιστήρια €4.99 /μήνα Μέχρι 10 συμβόλαια Ασφαλής αποθήκευση εγγράφων Ειδοποιήσεις email Βασικές πληροφορίες κάλυψης Προηγμένη ανάλυση AI Διαδραστικές ερωτήσεις AI ΑΝΑΒΑΘΜΙΣΗ 14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ ΔΗΜΟΦΙΛΕΣ Family Για τα ασφαλιστήρια όλου του σπιτιού €8.99 /μήνα Απεριόριστα συμβόλαια Προηγμένα analytics Υποστήριξη προτεραιότητας Συνεργασία με σύμβουλο Ψηφιακό πορτοφόλι ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ Σύγκριση Χαρακτηριστικών Σύγκριση Χαρακτηριστικών ΧΑΡΑΚΤΗΡΙΣΤΙΚΟ ΔΩΡΕΑΝ PLUS FAMILY Όριο συμβολαίων 3 10 ∞ Προηγμένη ανάλυση AI Αυτόματος εντοπισμός κενών Διαδραστικές ερωτήσεις AI Ψηφιακό πορτοφόλι Υποστήριξη προτεραιότητας Προηγμένα analytics Συνεργασία με σύμβουλο Συχνές Ερωτήσεις Μπορώ να αλλάξω πλάνο ανά πάσα στιγμή; Ναι, μπορείτε να αναβαθμίσετε ή να υποβαθμίσετε το πλάνο σας ανά πάσα στιγμή. Οι αλλαγές θα εφαρμοστούν αμέσως. Τι συμβαίνει αν ακυρώσω; Θα διατηρήσετε πρόσβαση μέχρι το τέλος της τρέχουσας περιόδου χρέωσης. Τα δεδομένα σας θα διατηρηθούν για 30 ημέρες. Ποιες μέθοδοι πληρωμής δέχεστε; Δεχόμαστε όλες τις κύριες πιστωτικές και χρεωστικές κάρτες μέσω Stripe (Visa, Mastercard, American Express). Υπάρχει έκπτωση για ετήσια συνδρομή; Ναι — το Starter κοστίζει €39/έτος και το Plus €79/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση. Είναι ασφαλής η πληρωμή; Οι πληρωμές γίνονται εξ ολοκλήρου μέσα στο Stripe, πιστοποιημένο κατά PCI DSS Level 1. Τα στοιχεία της κάρτας σας δεν περνούν ποτέ από τους δικούς μας διακομιστές και δεν τα αποθηκεύουμε. Μπορώ να αναβαθμίσω αργότερα; Φυσικά! Ξεκινήστε με το δωρεάν πλάνο και αναβαθμίστε όποτε χρειάζεστε περισσότερες δυνατότητες. Ασφαλής πληρωμή με Stripe Ακύρωση ανά πάσα στιγμή Χωρίς κρυφές χρεώσεις Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+  },
+  "tier": "free"
+}

@@ -1,0 +1,120 @@
+{
+  "capture": "help-index-paid",
+  "width": 390,
+  "url": "http://localhost:3000/help",
+  "scrollHeight": 3129,
+  "viewportsOfContent": 3.7,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 39,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.min-h-screen bg-background pb-20",
+      "section.rounded-3xl border border-border bg-card",
+      "button.inline-flex items-center gap-2 px-4 py-2"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "a",
+      "text": "Αποστολή Email",
+      "w": 168,
+      "h": 42,
+      "chain": "div < section < div < div"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <button> \"Ξεκινώντας\" boundary 1.10:1 (needs 3) inside=#f1f5f9 outside=#ffffff",
+      "[1.4.11:control] <button> \"Διαχείριση ασφαλιστηρίων\" boundary 1.10:1 (needs 3) inside=#f1f5f9 outside=#ffffff",
+      "[1.4.11:control] <button> \"Λογαριασμός & ασφάλεια\" boundary 1.10:1 (needs 3) inside=#f1f5f9 outside=#ffffff",
+      "[1.4.11:control] <button> \"Χρεώσεις & συνδρομές\" boundary 1.10:1 (needs 3) inside=#f1f5f9 outside=#ffffff",
+      "[1.4.11:control] <button> \"Mobile App & PWA\" boundary 1.10:1 (needs 3) inside=#f1f5f9 outside=#ffffff",
+      "[1.4.11:control] <button> \"Βασικά ασφάλισης\" boundary 1.11:1 (needs 3) inside=#fefefe outside=#f2f2f2",
+      "[1.4.11:unmeasured] <button> \"Ανέβασε νέο ασφαλιστήριοΞεκίνα από\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Δες τις καλύψεις σου καθαράΆνοιξε \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Κοινοποίηση με σύμβουλο ή οικογένε\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Χρέωση και συνδρομήΔιαχείριση κάρτ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ξεκινώντας4 λεπτάΠώς να Ανεβάσετε \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Διαχείριση ασφαλιστηρίων2 λεπτάΚοι\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Διαχείριση ασφαλιστηρίων5 λεπτάΚατ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <a> \"Αποστολή Email\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Άνοιγμα σελίδας συμβούλου\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Λεξικό ασφαλιστικών όρωνΑπλές, δίγ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Υποστήριξη μέσω EmailΕπικοινωνήστε\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Συνεργασία με σύμβουλοΜοιραστείτε \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      },
+      {
+        "selector": "p.text-sm.text-muted-foreground",
+        "text": "Δώστε ασφαλή, προσωρινή ή μόνιμη πρόσβαση σε μέλη της οικογένειας ή στον ασφαλισ",
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "reason": "css-truncation",
+        "scrollHeight": 60,
+        "clientHeight": 40
+      },
+      {
+        "selector": "p.text-sm.text-muted-foreground",
+        "text": "Ξεκλειδώστε την πλήρη ανάλυση AI και περισσότερο χώρο ασφαλιστηρίων με τα πληρωμ",
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "reason": "css-truncation",
+        "scrollHeight": 60,
+        "clientHeight": 40
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Διαχείριση ασφαλιστηρίων",
+        "count": 3,
+        "where": [
+          "top <button>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Άνοιγμα οδηγού",
+        "count": 3,
+        "where": [
+          "top <div>",
+          "top <div>",
+          "top <div>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Κέντρο βοήθειας Είμαστε εδώ για να σας βοηθήσουμε να αξιοποιήσετε στο έπακρο το PolicyWallet. Τι θέλεις να κάνεις σήμερα; Βρες άμεσα οδηγούς για ανέβασμα ασφαλιστηρίου, κατανόηση καλύψεων και συνεργασία με τον σύμβουλό σου. Άνοιγμα πορτοφολιού Όλα Ξεκινώντας Διαχείριση ασφαλιστηρίων Λογαριασμός & ασφάλεια Χρεώσεις & συνδρομές Mobile App & PWA Βασικά ασφάλισης Γρήγορες ενέργειες Ανέβασε νέο ασφαλιστήριο Ξεκίνα από το πορτοφόλι σου σε λιγότερο από 1 λεπτό. Δες τις καλύψεις σου καθαρά Άνοιξε τα coverage insights και εντόπισε τα επόμενα βήματα. Κοινοποίηση με σύμβουλο ή οικογένεια Συνεργασία με πλήρη έλεγχο δικαιωμάτων. Χρέωση και συνδρομή Διαχείριση κάρτας, πλάνου και αναβαθμίσεων. Επιλεγμένα σεμινάρια ΞΕΚΙΝΩΝΤΑΣ 4 λεπτά Πώς να Ανεβάσετε το Πρώτο σας Ασφαλιστήριο Ψηφιοποιήστε με ασφάλεια τα ασφαλιστήριά σας χρησιμοποιώντας τον AI σαρωτή μας. Άνοιγμα οδηγού ΔΙΑΧΕΙΡΙΣΗ ΑΣΦΑΛΙΣΤΗΡΙΩΝ 2 λεπτά Κοινοποίηση Πρόσβασης Ασφαλιστηρίου Δώστε ασφαλή, προσωρινή ή μόνιμη πρόσβαση σε μέλη της οικογένειας ή στον ασφαλιστικό σας σύμβουλο. Άνοιγμα οδηγού ΔΙΑΧΕΙΡΙΣΗ ΑΣΦΑΛΙΣΤΗΡΙΩΝ 5 λεπτά Κατανόηση των προνομίων των πληρωμένων πλάνων Ξεκλειδώστε την πλήρη ανάλυση AI και περισσότερο χώρο ασφαλιστηρίων με τα πληρωμένα πλάνα. Άνοιγμα οδηγού Λεξικό ασφαλιστικών όρων Απλές, δίγλωσσες εξηγήσεις για κάθε ασφαλιστικό όρο — απαλλαγή, εξαίρεση, ανανέωση, εκπνοή και πολλά ακόμη. Άνοιγμα λεξικού Υποστήριξη μέσω Email Επικοινωνήστε με την ομάδα υποστήριξής μας για τυχόν τεχνικά προβλήματα. Αποστολή Email Συνεργασία με σύμβουλο Μοιραστείτε ασφαλιστήρια με τον σύμβουλό σας και εξετάστε μαζί τις καλύψεις και τα επόμενα βήματα. Άνοιγμα σελίδας συμβούλου Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid"
+}

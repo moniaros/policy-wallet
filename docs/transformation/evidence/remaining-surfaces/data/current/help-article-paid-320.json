@@ -1,0 +1,71 @@
+{
+  "capture": "help-article-paid",
+  "width": 320,
+  "url": "http://localhost:3000/help/article/upload-policy",
+  "scrollHeight": 3621,
+  "viewportsOfContent": 5,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 19,
+    "maxDepth": 4,
+    "deepestChain": [
+      "div.min-h-screen bg-background pb-24",
+      "div.bg-card rounded-3xl p-6 border border-bo",
+      "div.mt-8 pt-6 border-t border-border",
+      "a.inline-flex w-full items-center justify-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "a",
+      "text": "Επικοινωνία με υποστήριξη",
+      "w": 238,
+      "h": 40,
+      "chain": "div < div < div < div"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Ναι\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Όχι\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Κοινοποίηση άρθρου\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Εκτύπωση οδηγού\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Άνοιγμα πορτοφολιού\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Πίσω ΞΕΚΙΝΩΝΤΑΣ 4 ΛΕΠΤΑ Πώς να Ανεβάσετε το Πρώτο σας Ασφαλιστήριο Ψηφιοποιήστε με ασφάλεια τα ασφαλιστήριά σας χρησιμοποιώντας τον AI σαρωτή μας. Προετοιμασία Πριν ξεκινήσετε, βεβαιωθείτε ότι έχετε ένα καθαρό αντίγραφο PDF ή μια φωτογραφία υψηλής ποιότητας του εγγράφου του ασφαλιστηρίου σας. Η AI μας λειτουργεί καλύτερα με έγγραφα όπου το κείμενο είναι ευανάγνωστο. Συμβουλή: Μπορείτε να ανεβάσετε πολλά αρχεία ταυτόχρονα εάν το ασφαλιστήριό σας καλύπτει πολλά έγγραφα. Βήμα 1: Μετάβαση στο Πορτοφόλι Από τον πίνακα ελέγχου, εντοπίστε την καρτέλα \"Πορτοφόλι\" στο κεντρικό μενού πλοήγησης. Αυτό είναι το κεντρικό σημείο για όλα τα ασφαλιστήριά σας. Βήμα 2: Προσθήκη Νέου Ασφαλιστηρίου Κάντε κλικ στο μεγάλο πετρόλ κουμπί \"Προσθήκη ασφαλιστηρίου\". Θα σας παρουσιαστούν δύο επιλογές: \"Μεταφόρτωση εγγράφου\" και \"Χειροκίνητη προσθήκη\". Επιλέξτε \"Μεταφόρτωση εγγράφου\" για την πιο γρήγορη εμπειρία. Βήμα 3: Ανάλυση & Επαλήθευση Μόλις μεταφορτωθεί το αρχείο σας, η AI μας θα ξεκινήσει αυτόματα τη σάρωση. Θα δείτε μια κατάσταση \"Επεξεργασία\" — η ανάλυση ολοκληρώνεται συνήθως μέσα σε λίγα λεπτά και θα ειδοποιηθείτε μόλις είναι έτοιμη. Η AI εξάγει το Όνομα της Ασφαλιστικής Εντοπίζει τον Αριθμό Ασφαλιστηρίου Καταγράφει ημερομηνίες κάλυψης και ασφάλιστρα Σαρώνει για συγκεκριμένες λεπτομέρειες κάλυψης Βήμα 4: Επιβεβαίωση Στοιχείων Ελέγξτε τις πληροφορίες που εξαγάγαμε. Ενώ η AI μας είναι εξαιρετικά ακριβής, είναι πάντα καλή πρακτική να ελέγχετε ξανά τις κρίσιμες λεπτομέρειες όπως ημερομηνίες έναρξης/λήξης και ποσά ασφαλίστρων σε σύγκριση με το αρχικό σας έγγραφο. Κάντε κλικ στο \"Αποθήκευση\" για να ολοκληρώσετε. Ήταν χρήσιμο αυτό το άρθρο; Ναι Όχι ΕΝΕΡΓΕΙΕΣ Κοινοποίηση άρθρου Εκτύπωση οδηγού Άνοιγμα πορτοφολιού Θέλεις εξατομικευμένη βοήθεια; Η ομάδα υποστήριξης μπορεί να σε καθοδηγήσει στο επόμενο βήμα, με βάση το προφίλ και τις καλύψεις σου. Επικοινωνία με υποστήριξη Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid"
+}

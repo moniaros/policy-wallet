@@ -1,0 +1,119 @@
+{
+  "capture": "default-free",
+  "width": 320,
+  "url": "http://localhost:3000/notifications",
+  "scrollHeight": 1422,
+  "viewportsOfContent": 2,
+  "sections": {
+    "count": 3,
+    "ids": [
+      "<div> Ειδοποιήσεις",
+      "<div> ",
+      "<div> Ειδοποιήσεις"
+    ]
+  },
+  "containers": {
+    "count": 15,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
+      "span.absolute right-1.5 top-1.5 flex h-4 min-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <div> \"Νέο ερωτηματολόγιο από τον σύμβουλ\" boundary 1.37:1 (needs 3) inside=#f1f5f6 outside=#fcfdfe",
+      "[1.4.11:control] <div> \"Ο σύμβουλός σας ζήτησε ένα έγγραφο\" boundary 1.37:1 (needs 3) inside=#f3f6f6 outside=#fefefe",
+      "[1.4.11:control] <div> \"Η ανανέωση του συμβολαίου σας πλησ\" boundary 1.32:1 (needs 3) inside=#f2f5f5 outside=#f8f8f8",
+      "[1.4.11:control] <div> \"Η ανανέωση του συμβολαίου σας πλησ\" boundary 1.37:1 (needs 3) inside=#f2f5f6 outside=#fdfdfe"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "2",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας.",
+        "scrollWidth": 134,
+        "clientWidth": 134,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        "scrollWidth": 134,
+        "clientWidth": 134,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.line-clamp-3",
+        "text": "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        "scrollWidth": 134,
+        "clientWidth": 134,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [
+        "top: \"Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "23/8/26, 6:59 μ.μ.",
+        "count": 4,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανανέωση του συμβολαίου σας πλησιάζει",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [
+      "snake_case enum token: \"in_app\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ειδοποιήσεις Τι σας έχουμε στείλει πρόσφατα. Προτιμήσεις Σήμανση όλων ως αναγνωσμένα Νέο ερωτηματολόγιο από τον σύμβουλό σας Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας. in_app 23/8/26, 6:59 μ.μ. Ο σύμβουλός σας ζήτησε ένα έγγραφο Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας. in_app 23/8/26, 6:59 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Push 23/8/26, 6:59 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Email 23/8/26, 6:59 μ.μ. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+  },
+  "tier": "free",
+  "state": "default"
+}

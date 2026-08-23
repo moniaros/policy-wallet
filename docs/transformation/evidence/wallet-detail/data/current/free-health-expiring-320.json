@@ -1,0 +1,118 @@
+{
+  "capture": "free-health-expiring",
+  "width": 320,
+  "url": "http://localhost:3000/wallet/cmt4v4yhw000h6e05uhh7c17p",
+  "scrollHeight": 2756,
+  "viewportsOfContent": 3.8,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 10,
+    "ids": [
+      "#coverage",
+      "#terms",
+      "#review",
+      "#dates",
+      "#claims",
+      "#documents",
+      "<header> Εθνική Ασφαλιστική",
+      "<button> Ρωτήστε το AI για αυτό το ασφαλιστήριο",
+      "<div> Το ασφαλιστήριό σας σε απλά ελληνικά",
+      "<div> Το ασφαλιστήριό σας σε απλά ελληνικά"
+    ]
+  },
+  "containers": {
+    "count": 31,
+    "maxDepth": 5,
+    "deepestChain": [
+      "div.mt-6 border-t border-black/10 dark:borde",
+      "section.scroll-mt-20 border-b border-black/10 da",
+      "div.pw-card pw-pad sm:p-7",
+      "div.rounded-2xl border border-black/10 bg-bl",
+      "span.mt-1.5 block rounded-xl border border-bl"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [
+      {
+        "key": "policy.policyNumber",
+        "value": "E2E-PDF-HL-EXP",
+        "count": 2,
+        "where": [
+          "top <span> E2E-PDF-HL-EXP",
+          "top <dd> E2E-PDF-HL-EXP"
+        ]
+      }
+    ],
+    "duplicateFactCount": 1
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:surface] <header> \"ΥγείαΕθνική ΑσφαλιστικήΑΡΙΘΜΟΣ ΣΥΜ\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fbfc",
+      "[1.4.11:surface] <span> \"Λήγει σύντομα\" boundary 1.24:1 (needs 3) inside=#fffbeb outside=#ffffff",
+      "[1.4.11:surface] <div> \"Χρειάζεται προσοχήΛήγει σε 15 ημέρ\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:surface] <div> \"Το ασφαλιστήριό σας σε απλά ελληνι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:unmeasured] <div> \"Βασικές ημερομηνίες & ανανέωσηΈναρ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Έναρξη7/9/2025\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:surface] <div> \"Ετήσιο ασφάλιστρο1.102,90 €\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:surface] <div> \"Εικόνα ανανέωσηςΑξίζει έλεγχο πριν\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfcfd",
+      "[1.4.11:shell] <a> \"Πορτοφόλι\" boundary 1.25:1 (needs 3) inside=#dee7e6 outside=#fefefe"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative.h-14",
+        "text": "35",
+        "scrollWidth": 56,
+        "clientWidth": 45,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "2",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "top: 7/9/2026 — \"Ισχύει έως 7/9/2026\"",
+        "#dates: 7/9/2025 — \"7/9/2025\"",
+        "#dates: 7/9/2026 — \"7/9/2026\""
+      ],
+      "dayCounts": [
+        "top: \"Λήγει σε 15 ημέρες.\""
+      ],
+      "statusChips": [
+        "top: \"Λήγει σύντομα\""
+      ]
+    },
+    "repeatedStrings": [
+      {
+        "text": "E2E-PDF-HL-EXP",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <dd>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [
+      "E2E fixture identifier: \"E2E-PDF-HL-EXP\"",
+      "E2E fixture identifier: \"E2E Policyholder\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου / E2E-PDF-HL-EXP ΥΓΕΙΑ Εθνική Ασφαλιστική ΑΡΙΘΜΟΣ ΣΥΜΒΟΛΑΙΟΥ E2E-PDF-HL-EXP ΑΣΦΑΛΙΣΜΕΝΟΣ E2E Policyholder ΛΗΓΕΙ ΣΥΝΤΟΜΑ Ισχύει έως 7/9/2026 ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ Λήγει σε 15 ημέρες. Ζητήστε προσφορά ανανέωσης Ρωτήστε το AI για αυτό το ασφαλιστήριο ΤΟ ΑΣΦΑΛΙΣΤΗΡΙΟ ΣΑΣ ΣΕ ΑΠΛΑ ΕΛΛΗΝΙΚΑ ΣΥΝΟΨΗ AI 35 ΕΛΕΓΧΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ στα 100 — δείκτης ανάγνωσης εγγράφου Πώς προκύπτει ο δείκτης; Αυτά τα στοιχεία διαβάστηκαν από το έγγραφό σας με AI και δεν έχουν επαληθευτεί. Ελέγξτε τα με το ασφαλιστήριό σας πριν βασιστείτε σε αυτά. Το πρόγραμμα καλύπτει νοσοκομειακή περίθαλψη με ετήσιο όριο €1.500.000 και απαλλαγή €1.500 ανά περιστατικό, διαγνωστικές εξετάσεις έως €2.000 τον χρόνο και έξοδα από ατύχημα. Δεν περιλαμβάνει εξωνοσοκομειακή περίθαλψη και δεν προβλέπει απευθείας κάλυψη χωρίς προέγκριση. Καλύψεις Τι καλύπτεται και τι όχι Όροι που μπορούν να επηρεάσουν μια αποζημίωση Εξαιρέσεις, προθεσμίες και ψιλά γράμματα Σημεία για έλεγχο Ενδείξεις από την αυτόματη ανάγνωση — όχι αξιολόγηση Ημερομηνίες & ανανέωση Έναρξη, λήξη, υπενθυμίσεις ΒΑΣΙΚΕΣ ΗΜΕΡΟΜΗΝΙΕΣ & ΑΝΑΝΕΩΣΗ ΕΝΑΡΞΗ 7/9/2025 ΕΤΗΣΙΟ ΑΣΦΑΛΙΣΤΡΟ 1.102,90 € ΗΜΕΡΟΜΗΝΙΑ ΑΝΑΝΕΩΣΗΣ 7/9/2026 96% της περιόδου ασφάλισης έχει περάσει Στην ανανέωση, πρόσεξε αλλαγές σε απαλλαγή, συμμετοχή και όρια — και ρωτήστε αν οι αναμονές που έχετε ήδη «χτίσει» μεταφέρονται. ΙΣΤΟΡΙΚΟ ΑΝΑΝΕΩΣΕΩΝ Δεν υπάρχει ακόμη ιστορικό ανανεώσεων. Ζήτησε προσφορά ανανέωσης ΕΙΚΟΝΑ ΑΝΑΝΕΩΣΗΣ Αξίζει έλεγχο πριν από την ανανέωση 4 ανοιχτά σημεία κάλυψης 1 προθεσμία στους όρους Δήλωση ζημιάς Βήματα, προθεσμίες και τηλέφωνα Έγγραφα, σημειώσεις & κοινοποίηση Το αρχείο σας, ο σύμβουλος και η πρόσβαση Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+  },
+  "tier": "free",
+  "fixtureState": "expiring",
+  "lineOfBusiness": "health"
+}

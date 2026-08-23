@@ -282,3 +282,65 @@ history is explained rather than silently wrong.
 
 **Standing practice from now on:** `git diff --cached --name-only` before each commit, and prefer
 `git commit -- <explicit paths>` when a subagent has been active.
+
+---
+
+## D-011 — Collapsing content is not reducing it. Every structural metric records BOTH states.
+
+date: 2026-08-23
+raised_by: T-015, confirmed by Orchestrator
+decision: **Metric definition amended** (§1.4.4). Any surface with collapsible sections is measured
+twice — default state and fully-expanded — and both numbers are published. Neither alone is the
+surface.
+
+`components/wallet/policy-detail/PolicySection.tsx:55,59,97`: `defaultOpen = false`, state is
+`useState(defaultOpen || forceOpen)`, and the body renders behind `{open && (…)}` — so **closed
+sections are unmounted, not hidden.** Everything a collapsed section contains is invisible to
+`scrollHeight`, `sectionCount`, `containerCount`, tap-target and contrast scans alike.
+
+Measured consequence on `/wallet/[id]` at 320px:
+
+| state | scrollHeight |
+|---|---|
+| default (all collapsed) | **4,930px** |
+| all six expanded | **12,399px** |
+
+2.5×, and within 8% of the pre-restructure figure. So the apparent reduction from the Goal 0
+baseline (13,428px / 20 sections) to 4,930px / 10 sections is **substantially an accordion, not a
+deletion**. The content is still there and the customer still has to read it.
+
+This is not an accusation of gaming — `PolicySection`'s own comment says the measurement becomes one
+"of what the reader opened rather than of how much the product has to say", so the author saw it.
+The defect is in the **metric**, which cannot distinguish the two, and in this run's §10.2
+acceptance criterion, which would otherwise be satisfiable by collapsing things.
+
+**Consequences, all binding:**
+1. §10.2's "container count ≤50% of baseline" and every scroll-height ceiling are evaluated on the
+   **expanded** figure. A surface may not pass by defaulting sections closed.
+2. Every tap-target, truncation and 1.4.11 number already published for `/wallet/[id]` is a **floor
+   for the always-visible heads**, not a measurement of the page. Re-measure expanded before any
+   Phase 1 item claims zero on that surface.
+3. The ten-second test (§7.2) is affected in the opposite direction: if everything defaults closed,
+   the four questions may be *less* answerable in the first two viewports, not more. Phase 2's spec
+   must state which sections open by default and why.
+
+## D-012 — My own reuse instruction was the D-004 mistake, and the agent was right to disobey it
+
+date: 2026-08-23
+raised_by: Orchestrator (self-correction)
+decision: Stale captures corrected in place. **No committed capture is reused without re-verifying
+it against a fresh one on current HEAD.**
+
+My T-015 brief said: *"Reuse `docs/evidence/dashboard-mobile/data/current/` rather than recapturing
+where the fixtures and code are unchanged."* The premise was false.
+`data/current/heavy-320.json` records `sections.count: 13` and `scrollHeight: 6173` — pre-Goal-2
+numbers — while the shipped dashboard measures 6 sections. The directory is named `current` and is
+not.
+
+Had the instruction been followed, this run would have published a baseline asserting 13 sections
+for a page that has 6, and then measured Phase 1 against it. That is **exactly D-004** — trusting a
+stale artefact because it looks authoritative — committed by me, in the instruction warning about it.
+
+The agent verified with a live capture instead of obeying, found the discrepancy, and corrected the
+files. Correct call. Recorded so the lesson survives: "unchanged fixtures and code" is itself a
+claim that needs checking, and a directory called `current` is not evidence of currency.

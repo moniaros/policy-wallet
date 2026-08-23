@@ -1,0 +1,92 @@
+{
+  "capture": "profile-paid",
+  "width": 320,
+  "url": "http://localhost:3000/account/profile",
+  "scrollHeight": 1502,
+  "viewportsOfContent": 2.1,
+  "headingCounts": {
+    "h1": 2,
+    "mainLandmark": 2
+  },
+  "sections": {
+    "count": 2,
+    "ids": [
+      "<header> Προφίλ",
+      "<div> Τα στοιχεία σας"
+    ]
+  },
+  "containers": {
+    "count": 19,
+    "maxDepth": 4,
+    "deepestChain": [
+      "section.pw-card pw-pad  ",
+      "button.flex min-h-11 items-center gap-2.5 round",
+      "span.grid h-4 w-4 shrink-0 place-items-center",
+      "span.h-2 w-2 rounded-full bg-primary dark:bg-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:subpixel] <button> \"Επεξεργασία — Email\" boundary 1.14:1 (needs 3) inside=#e5e7ea outside=#d9dde0 — declared 3.18:1, rendered across two device rows",
+      "[1.4.11:unmeasured] <button> \"English\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <section> \"Τα στοιχεία σαςΠώς σας απευθυνόμασ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:unmeasured] <section> \"ΓλώσσαΙσχύει και για την εφαρμογή \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <section> \"Ο λογαριασμός σαςΜέλος από11 Ιουλί\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:shell] <a> \"9+Ρυθμίσεις\" boundary 1.25:1 (needs 3) inside=#cfdddb outside=#ffffff"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "span.sr-only",
+        "text": "— Ονοματεπώνυμο",
+        "scrollWidth": 128,
+        "clientWidth": 1,
+        "reason": "overflow"
+      },
+      {
+        "selector": "span.sr-only",
+        "text": "— Κινητό τηλέφωνο",
+        "scrollWidth": 134,
+        "clientWidth": 1,
+        "reason": "overflow"
+      },
+      {
+        "selector": "span.sr-only",
+        "text": "— Email",
+        "scrollWidth": 52,
+        "clientWidth": 1,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [
+      "E2E fixture identifier: \"E2E Policyholder\"",
+      "E2E fixture identifier: \"e2e-ph@policywallet.test\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ρυθμίσεις Προφίλ Όνομα, email, τηλέφωνο, γλώσσα Τα στοιχεία σας Πώς σας απευθυνόμαστε και πού μπορούμε να σας βρούμε. Ονοματεπώνυμο E2E Policyholder Επεξεργασία — Ονοματεπώνυμο Κινητό τηλέφωνο Δεν έχει οριστεί Προαιρετικό. Το βλέπει ο σύμβουλός σας, αν έχετε συνδεθεί με κάποιον. Προσθήκη — Κινητό τηλέφωνο Email e2e-ph@policywallet.test Η διεύθυνση με την οποία συνδέεστε. Επεξεργασία — Email Γλώσσα Ισχύει και για την εφαρμογή και για τα email που σας στέλνουμε. Ελληνικά English Ο λογαριασμός σας Μέλος από 11 Ιουλίου 2026 Ρόλος Ασφαλισμένος Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "route": "/account/profile"
+}

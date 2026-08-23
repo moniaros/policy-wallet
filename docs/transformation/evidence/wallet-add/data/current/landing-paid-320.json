@@ -1,0 +1,75 @@
+{
+  "capture": "landing-paid",
+  "width": 320,
+  "url": "http://localhost:3000/wallet/add",
+  "scrollHeight": 1566,
+  "viewportsOfContent": 2.2,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 24,
+    "maxDepth": 4,
+    "deepestChain": [
+      "div.min-h-screen bg-background pb-20",
+      "div.bg-card rounded-3xl p-6 md:p-8 shadow-xl",
+      "div.border-2 border-dashed rounded-2xl p-8 t",
+      "div.w-16 h-16 bg-white dark:bg-slate-800 rou"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "button",
+      "text": "Πίσω",
+      "w": 36,
+      "h": 44,
+      "chain": "div < div < div < div"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <select> \"Επιλέξτε τύποΑυτοκίνητοΜοτοσικλέτα\" boundary 1.24:1 (needs 3) inside=#f0fdf4 outside=#ffffff",
+      "[1.4.11:control] <a> \"Πορτοφόλι\" boundary 1.25:1 (needs 3) inside=#dee7e6 outside=#fefefe"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.bg-card.rounded-3xl",
+        "text": "Μεταφόρτωση εγγράφουΠατήστε για μεταφόρτωση PDFή σύρετε τα αρχεία σας εδώΗ AI θα",
+        "scrollWidth": 350,
+        "clientWidth": 286,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Προσθήκη ασφαλιστηρίου Μεταφόρτωση εγγράφου Πατήστε για μεταφόρτωση PDF ή σύρετε τα αρχεία σας εδώ Η AI θα εξαγάγει αυτόματα τα στοιχεία. Λεπτομέρειες ασφάλισης ΕΙΔΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ * Επιλέξτε τύπο Αυτοκίνητο Μοτοσικλέτα Οδική Βοήθεια Κατοικία Υγεία Ζωή Προστασία Εισοδήματος Προσωπικό Ατύχημα Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Αστική ευθύνη Νομική Προστασία Σκάφος Σκάφος — Ίδιες Ζημιές Σκάφος — Αστική Ευθύνη Έργα Τέχνης & Τιμαλφή Επιχείρηση Επαγγελματική Αστική Ευθύνη Ευθύνη Εργοδότη Μεταφορές Σκάφη & Πλοία (Επαγγελματικά) Μεταφορές Εμπορευμάτων Πληρώματα Πλοίων Χρήματα Εμπιστοσύνη Υπαλλήλων Ομαδική Υγεία Ομαδική Ζωή Ομαδική Σύνταξη Άλλο ΑΣΦΑΛΙΣΤΙΚΟΣ ΠΑΡΟΧΟΣ Προαιρετικό Επιλέξτε ή αφήστε κενό 2ος Αλληλασφαλιστικός Συνεταιρισμός AIG Ελλάδος Allianz Ευρωπαϊκή Πίστη Anytime ERGO Ασφαλιστική EUROINS — Υποκατάστημα Ελλάδας Eurolife FFH Generali Hellas Groupama Ασφαλιστική Hellas Direct Interamerican INTERASCO INTERLIFE Ασφαλιστική NN Hellas NP Insurance — Νέος Ποσειδών Personal Insurance Prime Insurance Ατλαντική Ένωσις Γενική Πανελλαδική Συν.Π.Ε. ΔΥΝΑΜΙΣ Ασφαλιστική Εθνική Ασφαλιστική ΕΥΡΩΠΗ Ασφαλιστική ΙΝΤΕΡΣΑΛΟΝΙΚΑ ΜΙΝΕΤΤΑ Ασφαλιστική ΟΡΙΖΩΝ Ασφαλιστική Συνεταιριστική Ασφαλιστική ΥΔΡΟΓΕΙΟΣ Ασφαλιστική ΑΡΙΘΜΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ Προαιρετικό ΗΜΕΡΟΜΗΝΙΑ ΕΝΑΡΞΗΣ ΗΜΕΡΟΜΗΝΙΑ ΛΗΞΗΣ ΠΡΟΣΘΗΚΗ ΣΤΟ ΠΟΡΤΟΦΟΛΙ Τα δεδομένα σας είναι κρυπτογραφημένα και ασφαλή. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid"
+}
