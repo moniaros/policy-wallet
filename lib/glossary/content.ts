@@ -1118,25 +1118,25 @@ export const glossaryTerms: GlossaryTerm[] = [
             en: "What is the Protection Score?",
         },
         metaDescription: {
-            el: "Το Σκορ Προστασίας είναι μια βαθμολογία 0–100 που δείχνει πόσο πλήρης είναι η ασφαλιστική σας εικόνα. Δείτε πώς υπολογίζεται και τι δεν σημαίνει.",
-            en: "The Protection Score is a 0-100 rating showing how complete your insurance picture is. See exactly how it is calculated and what it does not mean.",
+            el: "Το PolicyWallet δεν υπολογίζει πλέον σκορ προστασίας. Εξηγούμε τι ήταν, γιατί το αφαιρέσαμε και τι δείχνουμε στη θέση του.",
+            en: "PolicyWallet no longer calculates a protection score. Here is what it was, why we removed it, and what we show instead.",
         },
         shortDefinition: {
-            el: "Το Σκορ Προστασίας είναι μια βαθμολογία από 0 έως 100 που δείχνει πόσο πλήρης είναι η ασφαλιστική σας εικόνα. Συγκρίνει τους κλάδους που θα ήταν αναμενόμενοι για το προφίλ σας με αυτούς που πράγματι έχετε, και αφαιρεί μονάδες για κενά μέσα στα ασφαλιστήρια που κατέχετε.",
-            en: "The Protection Score is a rating from 0 to 100 showing how complete your insurance picture is. It compares the branches that would be expected for your profile against the ones you actually hold, and deducts points for gaps found inside the policies you already own.",
+            el: "Βαθμολογία 0–100 που υπόσχεται να δείξει πόσο πλήρης είναι η ασφαλιστική σας εικόνα. Το PolicyWallet δεν υπολογίζει πλέον τέτοια βαθμολογία — δείχνει αντ' αυτού τα συγκεκριμένα ευρήματα και τι δεν έχει ελεγχθεί ακόμη.",
+            en: "A 0–100 rating that promises to show how complete your insurance picture is. PolicyWallet no longer calculates one — it states the specific findings instead, and what has not been checked yet.",
         },
         body: [
             {
-                el: "Κάθε κατηγορία σταθμίζεται ανάλογα με τη σημασία της: Υγεία 25 μονάδες, Ζωή και εισόδημα 25, Ακίνητα και αυτοκίνητο 20, Προστασία εισοδήματος 15, Αστική ευθύνη 10 και λοιπές καλύψεις 5. Οι τρεις πρώτες θεωρούνται βασικές: αν λείπουν εντελώς, το σκορ πέφτει πολύ περισσότερο απ' ό,τι αν λείπει μια προαιρετική κάλυψη.",
-                en: "Each category is weighted by how much it matters: Health 25 points, Life and income 25, Property and motor 20, Income protection 15, Liability 10, and other cover 5. The first three count as essential: if they are missing entirely, the score falls much further than it would for an optional cover.",
+                el: "Το PolicyWallet δεν υπολογίζει πλέον σκορ προστασίας. Το αφαιρέσαμε τον Αύγουστο του 2026, και ο λόγος αξίζει να ειπωθεί: ένας αριθμός 0–100 δεν μπορούσε να ξεχωρίσει το «δεν βρήκαμε πρόβλημα» από το «δεν μπορέσαμε να ελέγξουμε». Ένα χαρτοφυλάκιο που δεν είχε αναλυθεί ποτέ έπαιρνε την ίδια υψηλή βαθμολογία με ένα που είχε ελεγχθεί και ήταν εντάξει.",
+                en: "PolicyWallet no longer calculates a protection score. We removed it in August 2026, and the reason is worth stating: a 0–100 number could not distinguish \"we found no problem\" from \"we could not look\". A portfolio that had never been analysed scored the same as one that had been checked and was fine.",
             },
             {
-                el: "Το σκορ υπολογίζεται από τα δικά σας έγγραφα — όχι από ερωτηματολόγιο. Ο εντοπισμός κενών μέσα στα ασφαλιστήρια, που τροφοδοτεί τις αφαιρέσεις, γίνεται στο πλάνο Family.",
-                en: "The score is computed from your own documents, not from a questionnaire. The detection of gaps inside your policies, which drives the deductions, runs on the Family plan.",
+                el: "Στη θέση του, η εφαρμογή δείχνει τα ίδια τα γεγονότα: πόσα ασφαλιστήρια έχετε, πόσα λήγουν, πόσα δεν έχουν αναλυθεί ακόμη και ποια συγκεκριμένα κενά εντοπίστηκαν — το καθένα με παραπομπή στο δικό σας έγγραφο. Κανένα από αυτά δεν μπορεί να είναι λάθος με τον τρόπο που μπορούσε να είναι λάθος μια βαθμολογία.",
+                en: "In its place the app states the facts themselves: how many policies you hold, how many are expiring, how many have not been analysed yet, and which specific gaps were found — each pointing back to your own document. None of those can be wrong in the way a score could be.",
             },
             {
-                el: "Τι δεν σημαίνει: το σκορ δείχνει το εύρος των καλύψεων που έχετε — όχι αν τα όριά τους επαρκούν για τις ανάγκες σας. Υψηλή βαθμολογία δεν σημαίνει επαρκή ασφάλιση ούτε ότι μια ζημιά θα αποζημιωθεί· χαμηλή βαθμολογία δεν σημαίνει ότι μια απαίτηση θα απορριφθεί. Δεν αξιολογεί ασφάλιστρα, ασφαλιστικές εταιρείες ή την ποιότητα των όρων.",
-                en: "What it does not mean: the score shows the breadth of the cover you hold, not whether its limits are enough for your needs. A high score does not mean you are adequately insured, nor that a claim will be paid; a low score does not mean a claim will be refused. It does not rate premiums, insurers, or the quality of your terms.",
+                el: "Ο όρος παραμένει εδώ επειδή τον συναντάτε σε άλλες υπηρεσίες. Αν δείτε κάπου αλλού βαθμολογία προστασίας, αξίζει να ρωτήσετε τι ακριβώς μετρά: το εύρος των καλύψεων που έχετε ή την επάρκειά τους για τις δικές σας ανάγκες. Δεν είναι το ίδιο πράγμα, και μόνο το πρώτο μπορεί να υπολογιστεί από έγγραφα.",
+                en: "The term stays here because you will meet it elsewhere. If you see a protection score in another service, it is worth asking what it measures: the breadth of the cover you hold, or whether that cover is enough for your needs. Those are not the same thing, and only the first can be computed from documents.",
             },
         ],
         howToCheck: {

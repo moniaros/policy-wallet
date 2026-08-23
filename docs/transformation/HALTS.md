@@ -3,7 +3,7 @@
 Questions only the human may answer (§12.1) and items blocked under §12.2.
 A halt blocks the listed items, not the run, unless marked `blocks: RUN`.
 
-**Open: 1** (H-004). **Answered: 2** (H-001 = C, H-002 = B). H-003 is not yet raisable — it needs the Phase 2 specs.
+**Open: 0.** **Answered: 3** (H-001 = C, H-002 = B). H-003 is not yet raisable — it needs the Phase 2 specs.
 
 ---
 
@@ -249,10 +249,8 @@ removes.
 
 date: 2026-08-23
 raised_by: Adversarial Reviewer, from P1-01's out-of-scope findings
-blocks: nothing in the queue. Raised because fixing it means crossing a §12.4 boundary, and
-because `CLAUDE.md` lists "publishing a public claim the code does not support" under
-**Never, regardless of instruction**.
-status: **open**
+blocks: nothing.
+status: **ANSWERED 2026-08-23 — option B (as recommended)**
 
 P1-01 removed the protection score from the product. Three files still describe it to the public:
 
@@ -289,4 +287,33 @@ computes it).
 **This is time-sensitive in a way the other halts are not** — the guides and glossary are live
 public pages, and the pricing surface reads from them.
 
-answer: *(awaiting)*
+answer: **B — fix the guides plan-claim, rewrite the glossary, route legal to the DPO track.**
+Given by the owner, 2026-08-23. **This is an explicit authorisation to cross §12.4** for these
+files only; the public marketing site otherwise remains out of scope.
+
+### Done
+
+**`lib/guides/content.ts` — the purchase inducement is gone.** Two prose claims removed in both
+languages: "on the Family plan … calculates your Protection Score" and "Out of that comes the 0–100
+Protection Score, with its methodology written out inside the app". What replaced the second is the
+truth — each finding appears individually with its reasoning and a pointer to the customer's own
+document. The two `related` links to the glossary stay, because B rewrites that entry rather than
+deleting it.
+
+**`lib/glossary/content.ts` — rewritten, not deleted.** The concept is real and readers meet it in
+other services, so the entry now explains what a protection score is, states that PolicyWallet no
+longer calculates one, and says why in plain terms: *a 0–100 number could not distinguish "we found
+no problem" from "we could not look" — a portfolio that had never been analysed scored the same as
+one that had been checked and was fine.* It closes by telling readers what to ask of anyone else's
+score: does it measure the breadth of cover held, or whether that cover is enough? Only the first is
+computable from documents.
+
+Deleting the entry would have been easier and worse — the term is a real insurance-literacy term,
+and a product that removed a metric for honesty reasons should be able to say so.
+
+**`lib/legal/legal-content.ts:641` — untouched, routed to the DPO track.** The AI disclaimer
+mentioning "protection scores" is now over-disclosure rather than mis-selling, and editing wording
+on a compliance surface is a §12.2 change regardless of who authorised the §12.4 crossing. Recorded
+in `docs/STATUS.md` for that track.
+
+Gate after: tsc, lint, i18n, utf8 clean; 5076/5076 tests.
