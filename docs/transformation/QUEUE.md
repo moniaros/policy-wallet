@@ -162,10 +162,16 @@ file_boundary: `lib/events/catalog.ts`, `lib/notifications/registry.ts`, `app/(p
       time
 - [ ] locale-purity guard extended to stored notification rows, not only rendered DOM
 
-### P1-06 — Delete the dead verdict keys · `todo`
-owner: Implementation (Fable 5) · file_boundary: `lib/i18n/translations/{el,en}.ts`
+### P1-06 — Delete the dead verdict keys, and freeze the UNION · `todo`
+owner: Implementation (Fable 5) · file_boundary: `lib/i18n/translations/{el,en}.ts`, `tests/unit/`
 - [ ] `scoreGood`, `scoreNeedsImprovement`, `scoreNeedsAttention` deleted (zero references; §2.2-prohibited copy sitting in the bundle awaiting a caller)
 - [ ] string-inventory freeze covers deletions as well as additions
+- [ ] **the freeze's universe is the UNION** of the `el` bundle AND every inline `{ el, en }` pair in
+      `app/` + `components/` — 85 files carry them, `AgentClient.tsx` alone has 56, and a
+      bundle-only freeze would certify "no unreviewed Greek shipped" while a component grew 56 new
+      strings (candidate #26). These are not lint violations: a well-formed `{ el, en }` object is
+      the approved escape from `lint:i18n-changed`, so nothing flags them today
+- [ ] guard states its universe explicitly and is demonstrated failing on a newly added inline pair
 
 ### P1-07 — Identity values never render raw · `todo`
 owner: Implementation (Fable 5)

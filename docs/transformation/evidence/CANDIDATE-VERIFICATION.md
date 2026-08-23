@@ -40,7 +40,7 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 12 · REFUTED 8 · DIFFERENT 5 · PENDING 3 — 25 candidates verified
+- CONFIRMED 13 · REFUTED 8 · DIFFERENT 5 · PENDING 3 — 26 candidates verified
 - Of the brief's own candidates, **7 are refuted or reclassified** — a third of everything checked
 - Guard failure modes found: **universe** too small (D-005, D-009), **adoption** incomplete (D-007), **assertion** weaker than the invariant (#17)
 - **Score-in-outbound sites: 5** (brief said 1; I found 4 by grep; the emitter made 5)
@@ -282,6 +282,33 @@ today and drift again — which is the history this very file records.
 
 **Doc debt:** its comment says it serves "the `/agent` and `/account` summaries"; only `/agent`
 uses it now.
+
+
+## §6.1.8 — the string freeze, as specified, would miss 85 files
+
+| # | Finding | Verdict | Evidence |
+|---|---|---|---|
+| 26 | "Freeze the inventory so a newly composed string cannot ship unreviewed" | **CONFIRMED GAP — found before the freeze was built, which is the point of Phase 0** | The inventory covers `lib/i18n/translations/` (2,733 keys). **85 files under `app/` and `components/` carry inline `{ el: '…', en: '…' }` copy objects that never enter it.** Top B2C offender: `app/(protected)/agent/AgentClient.tsx` with **56** such pairs — a bottom-tab-bar surface. Others: `CustomerProfileClient.tsx` 22, `QuestionnairesClient.tsx` 15, `upgrade/success/page.tsx` 12, `InsightsClient.tsx` 11. |
+
+This is the D-005 shape applied to a *process* rather than a guard: the freeze would be
+exhaustive within too small a universe, and would therefore certify "no new unreviewed Greek
+shipped" while a component grew 56 new strings.
+
+Note these are not lint violations. `lint:i18n-changed` targets hardcoded literals and
+`el ? '…' : '…'` ternaries; a well-formed `{ el, en }` object is the *approved* escape and the check
+passes. So nothing currently flags them, and nothing would.
+
+**Two options for Phase 1, and the second is the honest one:**
+
+- Migrate all 85 files into the bundle first, then freeze. Large, touches out-of-scope surfaces
+  (`app/(public)/**` is explicitly out of scope in §12.4), and would balloon Phase 1.
+- **Freeze the union.** The inventory and its guard take their universe from *both* the bundle and
+  every inline `{ el, en }` pair found by walking `app/` + `components/`. Reviewing a string does not
+  require it to live in the bundle; it requires it to be *enumerable*. Migration then becomes
+  ordinary tidying rather than a precondition.
+
+Recommend the second. It also means the freeze guard states its universe explicitly, per D-005 —
+which is now the third time that rule has changed a design decision in this run.
 
 
 ---
