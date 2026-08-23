@@ -40,7 +40,7 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 7 · REFUTED 4 · DIFFERENT 4 · PENDING 2 — 15 of the brief's candidates verified
+- CONFIRMED 7 · REFUTED 4 · DIFFERENT 5 · PENDING 3 — 16 of the brief's candidates verified
 - **Score-in-outbound sites: 5** (brief said 1; I found 4 by grep; the emitter made 5)
 
 Two of the four refutations/reclassifications would have produced wasted or wrong work if the
@@ -122,6 +122,30 @@ question to ask of every guard — but here the answer is **benign**: #14 and #1
 gap severity reaches an outbound template at all, so there is nothing in `lib/` for it to miss
 today. The universe should still be widened when the guard is next touched, because "nothing
 reaches outbound today" is a fact about the current code, not an invariant anything enforces.
+
+
+## §2.6 — Count consistency
+
+| # | Candidate | Verdict | Evidence |
+|---|---|---|---|
+| 16 | Wallet stat tiles contradict the dashboard's; "23 − 5 − 5 − 2 = 11, not 13" | **DIFFERENT — the in-surface labelling is already solved; the cross-surface risk is not** | `components/wallet/StatusSummary.tsx` is careful work. Every prop documents exactly what it counts (`attentionCount` = "action_needed + unknown_duration + expired"), the active tile renders its own denominator as a hint (`${activeCount}/${totalPolicies}`), and **three separate exclusion notes** are surfaced to the customer — premium excludes unreadable end dates, other currencies, and policies with no amount recorded, each said out loud rather than silently dropped. |
+
+The brief's arithmetic (`23 − 5 − 5 − 2 = 11, not 13`) appears to subtract **overlapping**
+categories: `attentionCount` already contains `expired`, so subtracting both double-counts. That
+is the §2.6 case the contract itself anticipates — "where two figures are both correct but count
+different things, the defect is the labelling, not the arithmetic" — and this component has
+already done the labelling.
+
+**What is NOT solved, and is the real §2.6 exposure:** these counts are computed in
+`StatusSummary`'s callers, and the dashboard computes its own separately. Nothing ties the two
+together, and with `data-count` appearing three times in the entire product there is no way to
+measure whether they agree. The cross-surface comparison is the defect; the in-surface labelling
+is not. That makes instrumentation (P1-05 → `INSTRUMENTATION-PLAN.md`) the prerequisite for
+proving or disproving this, not a wallet code change.
+
+**Still PENDING a fixture capture.** Everything above is code-confirmed. Whether the rendered
+numbers agree across surfaces on one portfolio is exactly the question a capture answers and
+reading cannot.
 
 
 ---
