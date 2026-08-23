@@ -307,8 +307,31 @@ surface.
 
 `components/wallet/policy-detail/PolicySection.tsx:55,59,97`: `defaultOpen = false`, state is
 `useState(defaultOpen || forceOpen)`, and the body renders behind `{open && (…)}` — so **closed
-sections are unmounted, not hidden.** Everything a collapsed section contains is invisible to
-`scrollHeight`, `sectionCount`, `containerCount`, tap-target and contrast scans alike.
+sections are unmounted, not hidden.**
+
+**CORRECTED 2026-08-23, and the correction matters.** I originally wrote that `sectionCount` is
+among the metrics fooled by this. It is not. Every `<section id>` element exists in the DOM whether
+its `PolicySection` is open or closed — only the *inner content* is conditionally rendered — so
+sections read **10 in both states, at every fixture and every width**. An earlier capture that read
+2 was a **scroll-position bug** in the capture harness (it measured after the page had scrolled past
+eight headers), and the previous version of the evidence document explained that away as "a
+counting-method artifact" without tracing it. Both the number and the explanation were wrong.
+
+What IS hidden by the fold, measured on `motor-active` at 320px:
+
+| metric | folded | expanded |
+|---|---|---|
+| scrollHeight | 4,930 | **12,399** (2.5×) |
+| containers | 53 | **159** (3×) |
+| sub-44px tap targets | 0 | **1** |
+| WCAG 1.4.11 total (control-class) | 7 (0) | **26 (3)** |
+| truncation failures | 2 | **5** |
+| **internal-token leaks** | **0** | **1** |
+
+The last two rows are the ones that should worry us: **an internal-token leak and three
+control-class 1.4.11 failures exist on this page today and are invisible in its default state.** A
+Phase 1 item could truthfully report zero leaks on this surface and be wrong. That is the
+absence-is-not-evidence rule applied to measurement itself.
 
 Measured consequence on `/wallet/[id]` at 320px:
 

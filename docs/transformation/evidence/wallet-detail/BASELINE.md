@@ -3,8 +3,11 @@
 **Date:** 2026-08-23 · **Branch:** NEW-UI · **Surface:** `/wallet/[id]` (authenticated policyholder) · **Locale:** `el`
 **Harness:** `tests/measure/metrics.ts` + `tests/measure/surface-harness.ts` +
 `tests/measure/wallet-detail-baseline.spec.ts` (paid, 15 fixtures × 3 widths = 45 captures) +
-`tests/measure/wallet-detail-free.spec.ts` (free, 2 fixtures × 3 widths = 6 captures).
-**Run:** `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" npx playwright test --project=measure wallet-detail-baseline` / `--project=measure-free wallet-detail-free`
+`tests/measure/wallet-detail-free.spec.ts` (free, 2 fixtures × 3 widths = 6 captures) +
+`tests/measure/wallet-detail-expanded-matrix.spec.ts` (T-016c, paid, 6 healthy-matrix fixtures × 3
+widths, all sections force-open = 18 captures; supersedes `wallet-detail-expanded.spec.ts`'s
+single-fixture, scroll-position-affected numbers — see "0c" below).
+**Run:** `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" npx playwright test --project=measure wallet-detail-baseline` / `--project=measure-free wallet-detail-free` / `--project=measure wallet-detail-expanded-matrix`
 
 ## CORRECTION: this surface's evidence is STALE too — a second instance of the D-004 class
 
@@ -43,32 +46,146 @@ actions, AI summary, gap-count banner — but NOT the six sections' own content*
 truncation, container and 1.4.11 count above is a **floor**, not the whole page a reader eventually
 sees once they start opening sections.
 
-**Supplementary capture, added to close this gap**: `wallet-detail-expanded.spec.ts` re-measures
-`motor-active` with all six sections force-opened (each accordion header clicked before capture).
+**Supplementary capture, added to close this gap**: `wallet-detail-expanded.spec.ts` (previous pass)
+re-measured `motor-active` only, with all six sections force-opened (each accordion header clicked
+before capture). **T-016c (this pass) found that capture's own numbers were themselves wrong** — not
+because any metric definition was broken, but because of WHEN they ran — and replaced it with
+`wallet-detail-expanded-matrix.spec.ts`, which fixes the defect and extends the capture to all six
+healthy-matrix fixtures (not just `motor-active`) so the expanded state has a genuine row-for-row
+companion to table "0a" above, at every width, for every fixture.
 
-| state | width | scrollHeight | screens | containers/depth | sub-44 | 1.4.11 | truncation | leaks |
-|---|---|---|---|---|---|---|---|---|
-| collapsed (original) | 320 | 4930 | 6.8 | 53/5 | 0 | 7 | 2 | 0 |
-| **all 6 expanded** | 320 | **12399** | **17.2** | 37/5 | 1 | 11 | 2 | 1 |
-| collapsed | 390 | 4339 | 5.1 | 53/5 | 0 | 7 | 1 | 0 |
-| **all 6 expanded** | 390 | **10964** | **13.0** | 40/5 | 1 | 11 | 2 | 1 |
-| collapsed | 430 | 4013 | 4.3 | 53/5 | 0 | 7 | 1 | 0 |
-| **all 6 expanded** | 430 | **10397** | **11.2** | 41/5 | 1 | 11 | 2 | 1 |
+### A second harness defect found and fixed: scroll position, not the metrics
 
-**Confirms the correction's premise with a number: expanding all six sections MORE THAN DOUBLES the
-page (4930px → 12399px at 320px, a 2.5×increase) and lands within 8% of the pre-Goal-2 Goal-0
-baseline's 13,428px.** Most of the "63% reduction" the earlier correction in this document measured
-is real for the DEFAULT view, but a large share of the original content did not leave the page — it
-moved behind a disclosure. `sections` reads 2 rather than 10 in the expanded state purely because
-`sectionCount()`'s heuristic (metrics.ts) credits direct children of `.pw-page-shell` that are
-NOT already inside a `section[id]` — with content now filling in below each `<section id>` header,
-fewer stray top-level divs qualify; this is a counting-method artifact of measuring a different DOM
-shape, not evidence that opening sections reduces structure.
+`wallet-detail-expanded.spec.ts` clicks each of the six `PolicySection` headers in document order and
+then calls `captureSurface` with **no scroll reset**. Playwright's `click()` auto-scrolls its target
+into view when the target is not already on screen, and by the time the LAST header ("documents") is
+clicked on a page that has grown past 10,000px, the click has scrolled the viewport to near the
+BOTTOM of the page. Every "visible" filter in `metrics.ts` (`sectionCount`, `containerCount`,
+`duplicateFacts`, `smallTapTargets`, the 1.4.11 boundary scan) is `getBoundingClientRect()`-based and
+treats `r.bottom <= 0` — scrolled ABOVE the current viewport — as invisible, with no equivalent
+exclusion for content below it. A capture taken from that end-of-page scroll position therefore
+silently dropped everything ABOVE roughly the "claims"/"documents" boundary from every one of those
+scans — not merely `duplicateFacts` (confirmed directly: a standalone probe against
+`motor-active@320` found the SAME policy-number `<span>` inside the "claims" section at
+`getBoundingClientRect().y = -205` at the moment `captureSurface` ran, which is why the old capture
+recorded 0 duplicate-fact hits at 320px and 1 at 390/430px — a WIDTH-dependent difference that was
+itself a symptom, since the DOM content is identical at every width and `document.body.innerText`
+contains the policy number 4 times regardless).
 
-`sub-44` rises from 0 to 1 once expanded (one target inside the previously-unmounted content), and
-`1.4.11` from 7 to 11 (four additional boundary findings inside the six sections' own controls) —
-both confirm the same point from a different angle: real controls exist inside this content that the
-collapsed-state baseline could not see at all.
+**The consequence was not confined to duplicate facts — `sections` reading 2 instead of 10 was the
+same bug, not (as the previous version of this document speculated) "a counting-method artifact of
+measuring a different DOM shape".** Every `<section id>` element is present in the DOM whether its
+`PolicySection` is open or closed (only the inner content is conditionally rendered) — collapsed and
+expanded states have the identical ten `section[id]` elements, and the folded baseline above already
+counts all ten. The old expanded capture counted only the two whose header hadn't been scrolled past.
+**Corrected: `sections` reads 10 in the expanded state too, at every fixture and every width** — the
+"counting-method artifact" explanation in the previous version of this section was itself wrong,
+published without having traced the number to its cause, exactly the honesty rule this pass was
+asked to enforce. Fix: `wallet-detail-expanded-matrix.spec.ts` runs `window.scrollTo(0, 0)` and
+settles again after every section is force-opened, before calling `captureSurface` — the same
+scroll-position convention (measure from the top) every OTHER capture in this evidence set already
+uses implicitly, since `openSurface` never scrolls a freshly-loaded page. `wallet-detail-expanded.spec.ts`
+is left in place (outside this pass's file boundary to edit or remove) but is now SUPERSEDED — running
+it again would reproduce the same undercounts, so it should be retired in favour of the matrix file.
+
+### 0c. Metric table — folded vs. expanded, all 6 healthy-matrix fixtures × 3 widths, full metric set
+
+`1.4.3`, `attr`/`val` (dup facts), and locale purity (Latin-script sentence detector) are 0 across
+**every** row in both states — omitted as columns below to keep the table readable, stated once here.
+`1.4.11` is `total (control)` — the control-class count is the one SC 1.4.11 gates.
+
+| fixture | width | state | scrollHeight | screens | sections | containers/depth | sub-44 | dup (val) | 1.4.11 total (control) | truncation | leaks |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| motor-active | 320 | folded | 4930 | 6.8 | 10 | 53/5 | 0 | 1 | 7 (0) | 2 | 0 |
+| motor-active | 320 | **expanded** | **12399** | **17.2** | 10 | **159/5** | 1 | **2** | **26 (3)** | **5** | 1 |
+| motor-active | 390 | folded | 4339 | 5.1 | 10 | 53/5 | 0 | 1 | 7 (0) | 1 | 0 |
+| motor-active | 390 | **expanded** | **10964** | **13.0** | 10 | **159/5** | 1 | **2** | **26 (3)** | 2 | 1 |
+| motor-active | 430 | folded | 4013 | 4.3 | 10 | 53/5 | 0 | 1 | 7 (0) | 1 | 0 |
+| motor-active | 430 | **expanded** | **10397** | **11.2** | 10 | **159/5** | 1 | **2** | **26 (3)** | 2 | 1 |
+| motor-expiring | 320 | folded | 2817 | 3.9 | 10 | 31/5 | 0 | 2 | 9 (0) | 2 | 0 |
+| motor-expiring | 320 | **expanded** | **12389** | **17.2** | 10 | **159/5** | 1 | 2 | **26 (3)** | **5** | 1 |
+| motor-expiring | 390 | folded | 2615 | 3.1 | 10 | 31/5 | 0 | 2 | 9 (0) | 1 | 0 |
+| motor-expiring | 390 | **expanded** | **10945** | **13.0** | 10 | **159/5** | 1 | 2 | **26 (3)** | 2 | 1 |
+| motor-expiring | 430 | folded | 2514 | 2.7 | 10 | 31/5 | 0 | 2 | 9 (0) | 1 | 0 |
+| motor-expiring | 430 | **expanded** | **10361** | **11.1** | 10 | **159/5** | 1 | 2 | **26 (3)** | 2 | 1 |
+| motor-expired | 320 | folded | 2793 | 3.9 | 10 | 32/5 | 0 | 2 | 9 (0) | 2 | 0 |
+| motor-expired | 320 | **expanded** | **12365** | **17.2** | 10 | **160/5** | 1 | 2 | **26 (3)** | **5** | 1 |
+| motor-expired | 390 | folded | 2619 | 3.1 | 10 | 32/5 | 0 | 2 | 9 (0) | 1 | 0 |
+| motor-expired | 390 | **expanded** | **10949** | **13.0** | 10 | **160/5** | 1 | 2 | **26 (3)** | 2 | 1 |
+| motor-expired | 430 | folded | 2535 | 2.7 | 10 | 32/5 | 0 | 2 | 9 (0) | 1 | 0 |
+| motor-expired | 430 | **expanded** | **10382** | **11.1** | 10 | **160/5** | 1 | 2 | **26 (3)** | 2 | 1 |
+| health-active | 320 | folded | 5273 | 7.3 | 10 | 56/5 | 1 | 1 | 7 (0) | 2 | 1 |
+| health-active | 320 | **expanded** | **12811** | **17.8** | 10 | **162/5** | 2 | **2** | **24 (1)** | **15** | 1 |
+| health-active | 390 | folded | 4684 | 5.5 | 10 | 56/5 | 1 | 1 | 7 (0) | 1 | 1 |
+| health-active | 390 | **expanded** | **11095** | **13.1** | 10 | **162/5** | 2 | **2** | **24 (1)** | 2 | 1 |
+| health-active | 430 | folded | 4318 | 4.6 | 10 | 56/5 | 1 | 1 | 7 (0) | 1 | 1 |
+| health-active | 430 | **expanded** | **10546** | **11.3** | 10 | **162/5** | 2 | **2** | **24 (1)** | 2 | 1 |
+| health-expiring | 320 | folded | 2801 | 3.9 | 10 | 31/5 | 0 | 2 | 9 (0) | 2 | 1 |
+| health-expiring | 320 | **expanded** | **12801** | **17.8** | 10 | **162/5** | **2** | 2 | **24 (1)** | **15** | 1 |
+| health-expiring | 390 | folded | 2638 | 3.1 | 10 | 31/5 | 0 | 2 | 9 (0) | 1 | 1 |
+| health-expiring | 390 | **expanded** | **11076** | **13.1** | 10 | **162/5** | **2** | 2 | **24 (1)** | 2 | 1 |
+| health-expiring | 430 | folded | 2537 | 2.7 | 10 | 31/5 | 0 | 2 | 9 (0) | 1 | 1 |
+| health-expiring | 430 | **expanded** | **10510** | **11.3** | 10 | **162/5** | **2** | 2 | **24 (1)** | 2 | 1 |
+| health-expired | 320 | folded | 2777 | 3.9 | 10 | 32/5 | 0 | 2 | 9 (0) | 2 | 1 |
+| health-expired | 320 | **expanded** | **12777** | **17.7** | 10 | **163/5** | **2** | 2 | **24 (1)** | **15** | 1 |
+| health-expired | 390 | folded | 2642 | 3.1 | 10 | 32/5 | 0 | 2 | 9 (0) | 1 | 1 |
+| health-expired | 390 | **expanded** | **11080** | **13.1** | 10 | **163/5** | **2** | 2 | **24 (1)** | 2 | 1 |
+| health-expired | 430 | folded | 2558 | 2.7 | 10 | 32/5 | 0 | 2 | 9 (0) | 1 | 1 |
+| health-expired | 430 | **expanded** | **10531** | **11.3** | 10 | **163/5** | **2** | 2 | **24 (1)** | 2 | 1 |
+
+(`dup (val)` folded counts read from table 0a's `0/1` and `0/2` cells above, taking the value-scan
+half since the attr scan is 0 everywhere; `folded` rows are restated here, not re-captured, so the
+two states sit in one table per the brief's requirement.)
+
+### What changed materially, corrected numbers
+
+- **`scrollHeight` more than doubles** on every fixture: 4930→12399px (motor-active@320, +152%) down to
+  2514→10361px (motor-expiring@430, +312%) — the shorter the folded state, the larger the relative
+  jump, because the collapsed states of an urgency-flagged (`expiring`/`expired`) policy already had
+  one section forced open, so they had less "hidden" content proportionally... except expanding all
+  six still adds ~9,500-10,000px regardless of starting state, landing every fixture in the
+  10,300-12,800px band regardless of what its folded height was.
+- **`containers` jumps 3× or more everywhere, not the ~1.15× the pre-fix capture reported.**
+  motor-active: 53→**159** at 320px (the buggy capture said 37, i.e. UNDER the folded count — the
+  scroll bug was hiding container content the folded capture could already see). health-active:
+  56→**162**. This is the corrected version of the number the previous section of this document got
+  wrong.
+- **`sections` is unchanged at 10→10** — corrected from the buggy capture's 2, and from that
+  capture's own wrong explanation for why (see above). Opening every section does not change how many
+  the page has; it changes how much is inside them.
+- **`1.4.11` total rises 3.7× on motor (7→26) and 3.4× on health (7→24)**, not the pre-fix capture's
+  7→11. **The control-class subset — the one SC 1.4.11 actually gates — rises from 0 to 3 on every
+  motor fixture and 0 to 1 on every health fixture, on ALL SIX HEALTHY fixtures, not just the
+  degraded/edge-case ones.** This directly qualifies the "1.4.11 — mandatory this pass" section
+  below: its claim of "ZERO control-class findings across all 18 healthy captures" is true only for
+  the FOLDED state. The three motor controls are «Δήλωση ατυχήματος» (accident-declaration call link,
+  1.24:1), «Οδική βοήθεια» (roadside-assistance link, 1.14:1) — both live inside the "claims"
+  accordion — and «Δημιουργία» (2.74:1, inside "documents", present on every fixture including
+  health). Any Phase 1 target of "zero 1.4.11 control failures on this surface" must now also cover
+  these three, not only the three `defect-*` states the folded-state section already named.
+- **`truncation` at 320px only: 2→5 on motor, 2→15 on health** (390/430 stay flat at the folded
+  values, 1→2). The health increase is a genuine, previously-invisible content defect, not a
+  measurement artifact: the "coverage" section's `Ετήσιο όριο κάλυψης 1.500.000 €` (annual limit) and
+  its sibling limit lines overflow their box by 6-23px sideways at 320px — a coverage AMOUNT clipped
+  at the narrowest supported width, inside content nobody could see before this pass because the
+  section was closed by default. Motor's five 320px-only overflows are a roadside-assistance phone
+  number (`2109099999`, twice, in the "claims" section) and two badge/counter overflows.
+- **`sub-44` rises from 0→1 on motor (unchanged from the buggy capture's number — this one happened
+  to survive the scroll bug) and 1→2 on health**, the second offender appearing only once sections are
+  expanded.
+- **The end-date duplicate becomes universal, not conditional.** The folded-state section below
+  ("Duplicate facts") found the `Ισχύει έως {date}` / `#dates` pair duplicated on only 4 of 18 healthy
+  captures (`expiring`/`expired`; 0 of 6 `active`) — because `#dates` only auto-opens when the policy's
+  urgency makes it the page's one forced-open section, which never happens for `active`. Once every
+  section is force-opened, the duplicate appears on **all 6 fixtures including both `active` ones**
+  (`motor-active`, `health-active`) — confirmed directly in the capture JSON
+  (`health-active-all-expanded-320.json`: `'top <p> Ισχύει έως 4/2/2027'` and `'#dates <p> 4/2/2027'`).
+  The policy-number duplicate also strengthens from 2 hits (folded) to 4 (expanded: hero span, a `<dd>`
+  definition-list value, the "claims" section's own copy, and the "documents" section's generated
+  label) on every fixture.
+- **Locale purity and 1.4.3 text contrast stay at zero** in the expanded state on all 18 captures,
+  matching the folded baseline — expanding the accordions does not surface any Latin-script leak or
+  text-contrast failure this pass, only structural/boundary/duplication ones.
 
 **The delete button's location is itself a finding worth naming**: a destructive, identity-critical
 action (deleting a policy and all its documents/analyses) is nested three interactions deep — open
@@ -128,10 +245,14 @@ see "Harness defect found and fixed" below; the value above is the corrected one
 
 ## 1.4.11 — mandatory this pass, and the result is NOT uniformly zero
 
-The 6-fixture healthy matrix confirms commit `f23ee784`'s claim holds for ordinary states: **ZERO
-`control`-class findings** across all 18 healthy captures — only `surface` (4–7), `unmeasured` (1–2)
-and `shell` (1, app-shell chrome, reported not gated) readings, none of which SC 1.4.11 requires to
-be zero. **But three of the nine degraded/edge-case fixtures DO produce a live control failure:**
+**This section is the FOLDED state only — see "0c" above for the expanded correction.** The
+6-fixture healthy matrix confirms commit `f23ee784`'s claim holds for ordinary states while every
+`PolicySection` is collapsed: **ZERO `control`-class findings** across all 18 healthy captures — only
+`surface` (4–7), `unmeasured` (1–2) and `shell` (1, app-shell chrome, reported not gated) readings,
+none of which SC 1.4.11 requires to be zero. Once every section is expanded (T-016c, "0c" above),
+this ZERO does not hold: all six healthy fixtures show 1–3 live control failures inside content the
+folded state never rendered. **But three of the nine degraded/edge-case fixtures ALSO produce a live
+control failure even while folded:**
 
 - **`defect-english-summary` — «Μετάβαση στην ανάλυση»** (Go to analysis) link, 1.35:1. This is the
   link the B2 fix's own UI shows when it suppresses a wrong-language summary — the fix for one
@@ -240,3 +361,10 @@ resized).
 - The 14-pill section-nav strip's own tap-target sizes were not re-measured as an isolated finding
   here (folded into the whole-page count above, which is otherwise clean — B3's fix appears to hold,
   but this baseline did not isolate the nav strip the way the Goal 0 baseline did).
+- **T-016c scope note**: the corrected expanded-state capture ("0c" above) covers the 6 healthy-matrix
+  fixtures only, matching table 0a. The 9 `defect-*` states (table 0b) were NOT re-measured expanded —
+  their own sections/accordions were never opened, so a defect living inside a collapsed section
+  (e.g. a placeholder or leak inside "coverage"/"terms"/"review") would not appear in table 0b either.
+  Free tier was also not re-measured expanded. Both are open gaps for whoever picks up the Phase 1
+  fix for this surface — expand-all should be re-run against at least the fixtures a fix actually
+  touches before that fix is marked done.
