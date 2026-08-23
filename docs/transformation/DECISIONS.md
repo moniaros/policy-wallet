@@ -431,3 +431,50 @@ recreating the emitter.
 The brief said one. Grep found four. Reading the emitter found five. Mapping call sites for the
 actual fix found seven. **This is why §6.1 says to grep for the value rather than inspect
 components, and why the guard must enumerate rather than carry a list.**
+
+---
+
+## D-015 — I published "0 defects" from a script that could not find the field. Same shape as the score returning 100.
+
+date: 2026-08-23
+raised_by: T-016b, correcting my commit `75eb6e45`
+decision: An extraction script must **assert its keys exist**. `d.get(k) or []` is banned in
+evidence tooling — it converts "I looked in the wrong place" into "there is nothing there".
+
+In `75eb6e45` I published an overlay table reporting **0 truncation failures and 0 leaks** for every
+overlay. The real figure for the Policy Comparison picker alone is **46 truncation failures and 1
+leak**.
+
+Cause, exactly:
+
+```python
+len(d.get('truncation') or d.get('truncationFailures') or [])   # -> 0
+len(d['probes']['truncation'])                                  # -> 46
+```
+
+The metric lives under `probes`. My script looked at the top level, found nothing, defaulted to an
+empty list, and printed a clean zero. **Zero findings because the script could not look is not zero
+findings** — the exact invariant this run exists to enforce, committed by me, in the evidence
+itself, while writing the document that enforces it.
+
+### The second error was worse, because the answer was already written down
+
+I also reported a §4.4.3 finding: that `/agent`'s empty state has "two distinct renderings"
+(1072px/14 containers vs 1191px/18). It has one. `no-advisor-fixture-paid` is not an empty state —
+its probes contain the four adviser tabs («Επισκόπηση Μηνύματα Έγγραφα Προτάσεις»), i.e. the
+**connected** view. The fixture flip terminated only the newest of the account's **two** active
+`CustomerRelationship` rows, so the page stayed connected.
+
+T-015 had already flagged that capture as mislabeled. I read the JSON again without checking the
+earlier finding, and produced a "discovery" from a known-bad artefact. Retracted.
+
+What survives: the genuine paid empty state IS byte-identical to free tier, so `NoAgentEmptyState`
+does not vary by plan. That part was right, for the wrong reasons.
+
+### Rules adopted
+1. Evidence tooling asserts key presence and **fails loudly** on a missing field. No silent defaults.
+2. Before treating a capture as evidence, check whether an earlier pass already flagged it. The
+   evidence set carries its own corrections; not reading them is how a retracted artefact gets
+   re-promoted to a finding.
+3. A number that is suspiciously clean — a whole column of zeros — is a prompt to verify the
+   extraction, not a result. Every other surface in this run had non-zero truncation.

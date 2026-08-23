@@ -1,11 +1,12 @@
-# BASELINE — remaining surfaces — T-015, PW-MOBILE-TRANSFORM-01
+# BASELINE — remaining surfaces — T-015 + T-016b, PW-MOBILE-TRANSFORM-01
 
 **Date:** 2026-08-23 · **Branch:** NEW-UI · **Surfaces:** `/help`, `/help/article/[slug]`, `/activity`,
-`/insights/risk-profile`, `/upgrade`, `/upgrade/success`, `/benefits`, plus `/consent/ai`, `/coverage`
-and `/home` reachability probes · **Locale:** `el`
+`/insights/risk-profile`, `/upgrade`, `/upgrade/success`, `/benefits`, `/consent/ai` (content), plus
+`/coverage` and `/home` reachability probes · **Locale:** `el`
 **Harness:** `tests/measure/metrics.ts` + `tests/measure/surface-harness.ts` +
-`tests/measure/remaining-surfaces-baseline.spec.ts` (paid) + `tests/measure/remaining-surfaces-free.spec.ts` (free).
-**Run:** `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" npx playwright test --project=measure remaining-surfaces-baseline` / `--project=measure-free remaining-surfaces-free`
+`tests/measure/remaining-surfaces-baseline.spec.ts` (paid) + `tests/measure/remaining-surfaces-free.spec.ts` (free)
++ `tests/measure/consent-ai-content-baseline.spec.ts` (T-016b, paid, `/consent/ai` content).
+**Run:** `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" npx playwright test --project=measure remaining-surfaces-baseline` / `--project=measure-free remaining-surfaces-free` / `--project=measure consent-ai-content-baseline`
 
 None of these pages is confirmed to use `.pw-page-shell`/`section[id]` except `/insights/risk-profile`
 (confirmed present) — captured with `minSections: 0` throughout, per the fix documented in
@@ -84,8 +85,41 @@ The spec's own comment assumed this would redirect (every long-lived E2E account
 landed on `http://localhost:3000/consent/ai` directly, meaning `e2e-ph@policywallet.test` does NOT
 currently carry a consent version despite its extraction history. Worth a follow-up: either the
 consent flag is not being set where expected, or this account's consent was reset by another spec
-between runs. Recorded as an open question, not investigated further in this pass — content of the
-actual `/consent/ai` page was not captured as part of this probe (it only checked the landing URL).
+between runs (RESOLVED below — the account was in a normal state; the flip needed for the CONTENT
+capture is deliberate and self-restoring, not evidence of drift).
+
+### `/consent/ai` CONTENT — T-016b, READ-ONLY capture (§12.2 consent surface: measured, nothing changed)
+The whole route's content is `AiConsentModal` rendered full-page (`AiConsentApprovalClient.tsx`
+passes `isOpen` unconditionally, `source="agent_consent_request"` — this is the standalone link an
+agent can send a customer to request consent, distinct from the modal's other three call sites
+inline on `/wallet/add`, `/wallet/[id]`'s AnalysisCard, and `PolicyWalletClient`). Reached by flipping
+`aiProcessingConsentVersion` to `null` for the single capture and restoring the original value
+(`2026-07`) in `finally` — verified restored directly against the DB afterward. The ACCEPT button was
+never clicked.
+
+| width | scrollHeight | screens | sections | containers/depth | sub-44 | 1.4.3 | 1.4.11 | truncation | leaks |
+|---|---|---|---|---|---|---|---|---|---|
+| 320 | 864 | 1.2 | 0 | 9/2 | 0 | 0 | 1 | 2 | 0 |
+| 390 | 988 | 1.2 | 0 | 9/2 | 0 | 0 | 1 | 2 | 0 |
+| 430 | 1076 | 1.2 | 0 | 9/2 | 0 | 0 | 1 | 2 | 0 |
+
+Content, verbatim: *"Για να αναλύσουμε τα ασφαλιστήριά σας, το περιεχόμενο των εγγράφων σας — που
+ενδέχεται να περιλαμβάνει δεδομένα υγείας — αποστέλλεται σε πάροχο τεχνητής νοημοσύνης για
+επεξεργασία. Η συγκατάθεσή σας καταγράφεται και μπορείτε να την ανακαλέσετε ανά πάσα στιγμή από τις
+ρυθμίσεις απορρήτου."* — names the Art. 9 category explicitly ("δεδομένα υγείας", health data), says
+where the content goes, and points to where consent can be withdrawn. No hardcoded strings, no
+placeholder content.
+
+**Cleanest measurement of `AiConsentModal`'s OWN defects in this run — zero background page to
+confound it.** `overlays/BASELINE.md`'s capture of the same component on `/wallet/add` carries 8
+non-text-contrast findings and 1 sub-44 target, all attributed there to the `/wallet/add` form
+underneath. This page has almost no background (`AiConsentApprovalClient.tsx`'s wrapper is an
+sr-only `<h1>` and nothing else), and the numbers confirm that attribution: **0 sub-44, 1 nonText
+finding (the Cancel button, `[1.4.11:unmeasured]` — flat, no edge crossed, excluded from any gated
+count), same 2 truncation findings as everywhere else this component's icon/badge render** (the
+shell's "9+" notification badge, `scrollWidth 30/clientWidth 24`, and the modal's own `ShieldCheck`
+icon wrapper, `scrollWidth 36/clientWidth 26`, both also seen on `overlays/BASELINE.md`'s AI Consent
+Modal capture). The component's own accept/cancel buttons contribute no confirmed defect.
 
 ### `/coverage` legacy redirect — CONFIRMED BROKEN, root cause narrowed, in a REAL browser
 `/home` redirects correctly — confirmed by curl (`307 Temporary Redirect` to `/dashboard`) AND by
@@ -134,7 +168,9 @@ exists but did not fire for this account. Not investigated further; recorded as 
 SURFACES.md's tier classification and this route's actual server-side behaviour.
 
 ## Not captured in this pass
-- `/consent/ai`'s actual page CONTENT (only its reachability/redirect outcome was probed).
 - The Quick-Start form's post-submission state on `/insights/risk-profile` (captured only in its
   pre-submission, `needsQuickStart` state).
 - Dark theme, on any surface in this document.
+- `/consent/ai`'s OTHER three call sites (`/wallet/[id]`'s AnalysisCard, `PolicyWalletClient`, and
+  `app/onboarding/flow.tsx`) — this pass captured the standalone `agent_consent_request` route only;
+  `overlays/BASELINE.md` separately covers the `/wallet/add` (`wallet_add_policy`) instance.

@@ -126,18 +126,44 @@ genuine no-relationship paid fixture now exists.
 | capture | scroll @320 | sections | containers/depth | sub-44 | truncation | leaks |
 |---|---|---|---|---|---|---|
 | `no-advisor-genuine-paid` | 1072 | 0* | 14/4 | 1 | 0 | 0 |
-| `no-advisor-fixture-paid` (relationship deactivated) | 1191 | 0* | 18/4 | 0 | 0 | 0 |
-| `no-advisor-fixture-free` | 1072 | 0* | 14/4 | 1 | 0 | 0 |
+| `no-advisor-fixture-free` (free tier, from the FREE tier table above) | 1072 | 0* | 14/4 | 1 | 0 | 0 |
 
 `*` the known no-`section[id]` artifact on this surface.
 
-**The finding is the first two rows disagreeing.** A genuinely absent relationship (1072px, 14
-containers) and a *deactivated* one (1191px, 18 containers) render differently — 4 extra containers
-and 119px. So "no advisor" has **two distinct renderings**, and only one of them was ever measured
-before.
+**`no-advisor-genuine-paid` is byte-identical in every metric to the free tier's own empty state**
+(1072px, 14 containers, 1 sub-44, at every one of the three widths) — confirming what the code
+already implies: `NoAgentEmptyState` (`AgentClient.tsx`) takes no tier prop, so its markup does not
+vary by plan. This is the FIRST genuine measurement of the paid-tier empty state; T-015 never
+reached it (see "Confirmed finding" above).
 
-That matters beyond a metric: `genuine-paid` is byte-identical in size to `free`, meaning the paid
-tier shows the free tier's empty state, while the deactivated-relationship path shows something
-else again. Which of the three a customer sees depends on *how* they came to have no advisor, which
-is exactly the kind of state-dependent divergence §4.4.3 ("one empty state per component") exists to
-eliminate. Flagged for the Phase 2 spec rather than fixed here.
+### CORRECTION — an earlier draft of this section reported a second "deactivated relationship"
+### rendering (1191px/18 containers) that does not exist; it was the SAME mislabeled capture T-015
+### already found and named, read a second time
+
+An intermediate version of this document reused `no-advisor-fixture-paid` (T-015's own capture,
+1191px/18 containers) and presented it as a distinct "relationship deactivated" empty state, sitting
+alongside `no-advisor-genuine-paid` as if the two were different product renderings. They are not.
+`no-advisor-fixture-paid` is the EXACT SAME capture the "Confirmed finding" section above already
+identified and explained: the connected-advisor page (Νίκος Παπαδόπουλος's card, tab bar, shared-
+policy list), byte-identical to `connected-paid` — not a variant of the empty state at all, just the
+same T-015 mislabeling read again without re-checking the earlier finding.
+
+The actual bug behind it, found while building `no-advisor-genuine-paid`: `e2e-ph@policywallet.test`
+carries **two** `CustomerRelationship` rows, not one (`cmrynz33t...`, created 2026-07-24, and
+`cmt6206v6...`, created 2026-08-23) — both `active`. The first version of
+`wallet-edit-and-agent-noadvisor-baseline.spec.ts`'s relationship-terminating test used
+`findFirst({ orderBy: { createdAt: "desc" } })`, which only ever sees the newest, so terminating it
+left the OLDER relationship active — and `/agent`'s own query (`where: { status: "active" }`, no
+`orderBy`) found that one instead, rendering "connected" regardless. That first run's capture
+(1191px/18 containers) is arithmetically identical to `no-advisor-fixture-paid` for exactly this
+reason: both are the SAME underlying bug (an active relationship the test failed to remove), not two
+independent samples of two different real states. Fixed by terminating EVERY non-terminated
+relationship for the duration of the capture, not just the one the query happens to return first —
+`no-advisor-genuine-paid` is the corrected result, verified against the DB directly afterward (both
+relationships restored to `active`).
+
+**There is one genuine paid "no advisor" empty state, and it matches free tier exactly.** The §4.4.3
+"one empty state per component" concern this section previously raised does not apply here — retract
+it. What DOES generalize from this: a relationship-count assumption ("the account has at most one")
+baked into a test can silently reproduce the exact defect class T-015's own "unmodified relationship"
+finding warned about, even in a spec written specifically to work around it.
