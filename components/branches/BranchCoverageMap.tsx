@@ -47,14 +47,22 @@ export function BranchCoverageMap({
                     <ArrowRight className="h-3 w-3" aria-hidden />
                 </Link>
             </div>
-            <div className="-mx-1 mt-3 flex snap-x gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
+            {/* D7 / policy-detail B3, second sighting. This was a hand-rolled
+                `flex overflow-x-auto` whose tiles were pinned at min-w-[128px],
+                which is not enough for «Σύνταξη & Αποταμίευση» (146px) — so the
+                label that names the branch was clipped on every narrow viewport.
+                `.pw-scroll-strip` is the primitive for a row that is MEANT to run
+                off the edge: its children never shrink and never wrap, so they
+                size to their content and the strip scrolls instead of the words
+                being cut. The sm: grid is unaffected. */}
+            <div className="pw-scroll-strip -mx-1 mt-3 snap-x gap-2 px-1 pb-1 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
                 {entries.map((entry) => (
                     <Link
                         key={entry.id}
                         href={`/branches/${entry.id}`}
                         title={entry.stateLabel}
                         className={cn(
-                            "flex min-w-[128px] snap-start items-center gap-2 rounded-xl border border-black/10 bg-white px-3 py-2.5 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40 sm:min-w-0",
+                            "flex snap-start items-center gap-2 rounded-xl border border-black/10 bg-white px-3 py-2.5 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40 sm:min-w-0",
                             // "neutral" means the user holds NO cover in this branch.
                             // This used to be `opacity-70`, which multiplied against the
                             // label's own text-black/75 and pushed it to 4.35:1 — under
@@ -69,7 +77,7 @@ export function BranchCoverageMap({
                         )}
                     >
                         <entry.icon className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" aria-hidden />
-                        <span className="min-w-0 flex-1 truncate text-xs font-bold text-black/75 dark:text-white/80">
+                        <span className="flex-1 text-xs font-bold text-black/75 dark:text-white/80 sm:min-w-0 sm:truncate">
                             {entry.label}
                         </span>
                         <span

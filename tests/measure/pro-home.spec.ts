@@ -24,6 +24,29 @@ const RUN = process.env.MEASURE_RUN || "current"
 const DATA = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile", "data", RUN)
 const SHOTS = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile", "screenshots", RUN)
 
+/**
+ * REFUSE TO WRITE A NON-RENDER.
+ *
+ * A retry of `pro-home` after a fixture error wrote a 864px capture over a good
+ * 6139px one, and a `empty@390` landed at 988px. Both are shell-only pages — a
+ * dashboard that rendered its chrome and none of its content. Nothing in the
+ * pipeline noticed, because "smaller" reads as "better" in every metric this
+ * harness collects, so a broken capture is indistinguishable from an
+ * improvement in the summary table.
+ *
+ * The floor is deliberately crude: the smallest real capture in the whole
+ * matrix is the EMPTY portfolio at 430px, ~2900px. Anything under 1500px did
+ * not render the page.
+ */
+function assertRendered(label: string, width: number, scrollHeight: number, sections: number) {
+    if (scrollHeight < 1500 || sections < 3) {
+        throw new Error(
+            `${label}@${width}: refusing to record a non-render — ${scrollHeight}px, ${sections} sections. ` +
+            `The page did not paint its content (auth bounce, error boundary, or a retry racing the fixtures).`
+        )
+    }
+}
+
 test("baseline: dashboard on a Pro account", async ({ page }) => {
     test.setTimeout(8 * 60_000)
     mkdirSync(DATA, { recursive: true })
@@ -52,6 +75,7 @@ test("baseline: dashboard on a Pro account", async ({ page }) => {
         probes: { clippedContent: await clippedContent(page), fullText: text },
         contrast: { nonText: await nonTextContrastFailures(page) },
     }
+    assertRendered("pro-tier", 320, data.scrollHeight, data.sections?.count ?? 99)
     writeFileSync(path.join(DATA, "pro-tier-320.json"), JSON.stringify(data, null, 2))
     await page.screenshot({ path: path.join(SHOTS, "pro-tier-320.png"), fullPage: true })
 

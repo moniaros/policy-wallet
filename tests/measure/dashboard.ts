@@ -80,6 +80,11 @@ export async function countConsistency(page: Page): Promise<CountConsistencyResu
         const shell = document.querySelector(".pw-page-shell") || document.body
         shell.querySelectorAll<HTMLElement>("*").forEach((el) => {
             if (!visible(el)) return
+            // PER-ROW facts are not page-level counts. Each renewal row states
+            // its own countdown, each policy link its own premium; grouping
+            // those by the noun they share makes every list look like a
+            // contradiction. Only quantities stated ABOUT the page count here.
+            if (el.closest("li, a[href^='/wallet/'], [data-row]")) return
             const own = Array.from(el.childNodes)
                 .filter((n) => n.nodeType === 3)
                 .map((n) => (n.textContent || "").trim())
@@ -138,11 +143,26 @@ export async function countConsistency(page: Page): Promise<CountConsistencyResu
                 labels: [noun, ...arr.map((a) => `${a.value} = "${a.label}"`)],
             }))
 
+        // ONCE THE PAGE IS INSTRUMENTED, THE ATTRIBUTES ARE THE ANSWER.
+        //
+        // The value scan was the honest stand-in before `data-count` existed,
+        // but it can only group by the words around a number, and that grouped
+        // three things that are correctly different: the protection score (it
+        // sits in the same sentence as the policy count), an upsell's plan limit
+        // («το Plus έχει χώρο για έως 10 ασφαλιστήρια»), and a subset that now
+        // carries its own label («6 ασφαλιστήρια με επερχόμενη ανανέωση»). A
+        // metric that reports those as contradictions cannot reach zero, and one
+        // that cannot reach zero stops being read.
+        //
+        // With attributes present, a failure is what the definition always said
+        // it was: ONE key rendering more than one value. The value scan is still
+        // recorded, as context rather than a verdict.
+        const instrumented = document.querySelectorAll("[data-count]").length > 0
         return {
             instances,
             disagreements,
             attributeDisagreements,
-            failures: Math.max(disagreements.length, attributeDisagreements.length),
+            failures: instrumented ? attributeDisagreements.length : disagreements.length,
         }
     })
 }
@@ -210,6 +230,17 @@ export async function internalTokenLeaks(page: Page): Promise<string[]> {
             if (!text) continue
             const hits: string[] = []
             if (/\bE2E[-\s]/i.test(text)) hits.push("E2E fixture identifier")
+            // PLACEHOLDER / DRAFT / TEST content must never reach a customer.
+            // Extended here rather than in a second probe so one definition
+            // covers both classes: a fixture identifier and a fixture STRING are
+            // the same failure — internal material rendered as product.
+            if (/δοκιμαστικ\w*|υπόδειγμα|placeholder|lorem ipsum|\bTODO\b|\bFIXME\b/i.test(text)) {
+                hits.push("placeholder/draft content")
+            }
+            if (/\bPENDING-|__[A-Z_]+__/.test(text)) hits.push("pending/sentinel marker")
+            // A standalone English word like "sample"/"draft"/"test" is too
+            // common to match blindly; require it to be labelling the content.
+            if (/\((?:sample|draft|test|dummy)[^)]*\)/i.test(text)) hits.push("content marked as sample/draft")
             if (/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(text)) hits.push("UUID")
             if (/\b(?:c[a-z0-9]{24})\b/.test(text)) hits.push("cuid")
             // A bare snake_case token as content — the raw-enum class.

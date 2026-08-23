@@ -216,6 +216,22 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   titles the card with the model's first sentence, so the customer reads AI prose
   as a heading. Sentry POLICYWALLET-7 tags each one; author it in
   `GAP_CONTENT_MAP` with the sibling's `concept` so the variants still collapse.
+- **Absence of a detected problem is not evidence of no problem — and must never
+  render as reassurance.** This has now produced defects on three surfaces, so it
+  is stated once here rather than three times in guard files. The protection
+  score rendered «Καλή κάλυψη» over a wallet nothing had ever analysed; the
+  monitoring card rendered «Κάλυψη που λήγει: Εντάξει» over a portfolio whose
+  cover had *entirely expired*, because its window was `days >= 0` and every
+  policy was already past it; and `resolveGapContent` titled an unauthored slug
+  with the model's own prose, which `recommendation-generator` then wrote into
+  `recommendation_instances.title` for the dashboard to render as a heading.
+  Same shape each time: a check that could not run, or did not cover the case,
+  reported the good outcome. Before rendering a verdict, an all-clear or a score,
+  establish that the check actually COVERED the situation — and when it did not,
+  say so. Guards: `tests/unit/all-clear-honesty.test.ts`,
+  `tests/unit/score-containment.test.ts`, `tests/unit/protection-score-honesty.test.tsx`.
+  The `missing`-operator wording rule and `scoreSupport()` are the same idea
+  applied to gaps and to the score.
 - **Env precedence: exactly one `DATABASE_URL` and one `DIRECT_URL`, both dev.** dotenv
   keeps the LAST occurrence within a file, so a duplicate further down silently wins —
   that is how local tooling was pointed at production twice. `lib/db.ts` resolves

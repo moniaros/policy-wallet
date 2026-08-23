@@ -53,19 +53,16 @@ export function RecentChangesWidget({
                                 />
                                 <span className="min-w-0">
                                     <span className="block text-xs leading-snug text-black/75 dark:text-white/75 [overflow-wrap:anywhere]">
+                                        {/* NO DELTA BADGE. A delta is a derivative of
+                                            the score, and the score is not in this card
+                                            — nor reachable from it in one tap. A number
+                                            like «-9» with nothing to be nine of is a
+                                            claim the reader cannot check, and it
+                                            disagreed with the «πτώση 20 μονάδων» the
+                                            hero was showing at the same time. The
+                                            direction is in the title; the magnitude
+                                            lives with the value it derives from. */}
                                         {change.title}
-                                        {typeof change.delta === "number" && change.delta !== 0 && (
-                                            <span
-                                                className={`ml-1 font-bold ${
-                                                    change.delta > 0
-                                                        ? "text-primary dark:text-mint"
-                                                        : "text-red-600 dark:text-red-400"
-                                                }`}
-                                            >
-                                                {change.delta > 0 ? "+" : ""}
-                                                {change.delta}
-                                            </span>
-                                        )}
                                     </span>
                                     {change.explained && (
                                         <span className="mt-0.5 block text-micro text-muted-foreground">

@@ -492,26 +492,32 @@ function scoreTitle(previous: VersionRow | null, current: VersionRow): Bilingual
         return { en: "Not enough known to score yet", el: "Ανεπαρκή στοιχεία για βαθμολόγηση" }
     }
     if (!comparableScores(previous, current)) {
+        // NO NUMBER. A timeline says what HAPPENED; the score is a metric someone
+        // computed, and stating it as an event («your protection fell to 74»)
+        // makes a stronger claim than the dashboard's own donut ever did — it
+        // reads as something that befell the customer rather than something we
+        // calculated. The value itself lives in exactly one place, behind the
+        // dashboard's disclosure, where it carries its qualifier.
         return {
-            en: `Protection score: ${current.overallScore}`,
-            el: `Σκορ προστασίας: ${current.overallScore}`,
+            en: "Your cover was assessed",
+            el: "Η κάλυψή σας αξιολογήθηκε",
         }
     }
     const delta = current.overallScore - previous.overallScore
     if (delta === 0) {
         return {
-            en: `Protection score held at ${current.overallScore}`,
-            el: `Το σκορ προστασίας παρέμεινε στο ${current.overallScore}`,
+            en: "The assessment did not move",
+            el: "Η αξιολόγηση δεν μετακινήθηκε",
         }
     }
     return delta > 0
         ? {
-              en: `Protection score rose to ${current.overallScore}`,
-              el: `Το σκορ προστασίας ανέβηκε στο ${current.overallScore}`,
+              en: "The assessment improved",
+              el: "Η αξιολόγηση βελτιώθηκε",
           }
         : {
-              en: `Protection score fell to ${current.overallScore}`,
-              el: `Το σκορ προστασίας έπεσε στο ${current.overallScore}`,
+              en: "The assessment declined",
+              el: "Η αξιολόγηση υποχώρησε",
           }
 }
 

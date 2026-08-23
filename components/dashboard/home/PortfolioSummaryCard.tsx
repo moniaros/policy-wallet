@@ -6,6 +6,8 @@ import { displayInsurerName } from '@/lib/wallet/policy-identity'
 export interface LobChip {
     id: string
     icon: LucideIcon
+    /** What the amount is FOR. An icon is not a label. */
+    branchLabel: string
     amountLabel: string
 }
 
@@ -67,7 +69,8 @@ export function PortfolioSummaryCard({
                     <div className="flex flex-wrap gap-2">
                         {chips.map((chip) => (
                             <div key={chip.id} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
-                                <chip.icon className="h-3.5 w-3.5 text-primary dark:text-mint" />
+                                <chip.icon className="h-3.5 w-3.5 text-primary dark:text-mint" aria-hidden />
+                                <span className="text-xs text-black/60 dark:text-white/60">{chip.branchLabel}</span>
                                 <span className="text-xs font-bold text-black/70 dark:text-white/75">{chip.amountLabel}</span>
                             </div>
                         ))}

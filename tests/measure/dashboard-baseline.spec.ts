@@ -114,6 +114,29 @@ async function openDashboard(page: Page, width: number) {
     throw new Error("openDashboard: never rendered its content (or bounced to signin) — refusing to measure")
 }
 
+/**
+ * REFUSE TO WRITE A NON-RENDER.
+ *
+ * A retry of `pro-home` after a fixture error wrote a 864px capture over a good
+ * 6139px one, and a `empty@390` landed at 988px. Both are shell-only pages — a
+ * dashboard that rendered its chrome and none of its content. Nothing in the
+ * pipeline noticed, because "smaller" reads as "better" in every metric this
+ * harness collects, so a broken capture is indistinguishable from an
+ * improvement in the summary table.
+ *
+ * The floor is deliberately crude: the smallest real capture in the whole
+ * matrix is the EMPTY portfolio at 430px, ~2900px. Anything under 1500px did
+ * not render the page.
+ */
+function assertRendered(label: string, width: number, scrollHeight: number, sections: number) {
+    if (scrollHeight < 1500 || sections < 3) {
+        throw new Error(
+            `${label}@${width}: refusing to record a non-render — ${scrollHeight}px, ${sections} sections. ` +
+            `The page did not paint its content (auth bounce, error boundary, or a retry racing the fixtures).`
+        )
+    }
+}
+
 async function capture(page: Page, label: string, width: number, extra: Record<string, unknown> = {}) {
     const text = await page.evaluate(() => (document.body.innerText || "").replace(/\s+/g, " "))
     const data = {
@@ -143,6 +166,7 @@ async function capture(page: Page, label: string, width: number, extra: Record<s
         },
         ...extra,
     }
+    assertRendered(label, width, data.scrollHeight, data.sections.count)
     writeFileSync(path.join(DATA, `${label}-${width}.json`), JSON.stringify(data, null, 2))
     await page.screenshot({ path: path.join(SHOTS, `${label}-${width}.png`), fullPage: true })
     console.log(
@@ -172,7 +196,7 @@ for (const state of PORTFOLIO_STATES) {
             // policy-detail, applied before the numbers are believed.
             const rendered = await page.evaluate(() => (document.body.innerText || "").replace(/\s+/g, " "))
             if (state === "empty") {
-                expect(rendered, "empty state still lists policies").not.toMatch(/E2E-DASH-/)
+                expect(rendered, "empty state still lists policies").not.toMatch(/ΣΥΜΒ-2026-/)
             } else {
                 const first = policiesFor(state as PortfolioState)[0]
                 expect(
@@ -180,6 +204,20 @@ for (const state of PORTFOLIO_STATES) {
                     `${state}@${width}: the wallet does not look like this state`
                 ).toBe(true)
             }
+
+            // COUNT, not shape. The check above passed while every state was
+            // rendering a stale `heavy` wallet on top of itself: renaming the
+            // fixture policy prefix orphaned 12 rows that the cleanup filter no
+            // longer matched, so `empty` measured 13 sections and 80 containers.
+            // `rendered.length > 400` cannot tell a correct wallet from a
+            // correct wallet plus somebody else's. The count can.
+            const shown = await page.evaluate(
+                () => document.querySelectorAll("[data-policy-row], a[href^='/wallet/']").length
+            )
+            expect(
+                shown,
+                `${state}@${width}: the page shows ${shown} policy links for a ${ids.length}-policy wallet — stale fixtures?`
+            ).toBeLessThanOrEqual(Math.max(ids.length, 6) + 4)
 
             await capture(page, `${state}`, width, { portfolioState: state, policyCount: ids.length })
         }
@@ -195,7 +233,7 @@ test("baseline: analysis states on the heavy portfolio", async ({ page }) => {
     await withDb(async (db) => {
         const owner = await db.user.findUnique({ where: { email: DASH_EMAIL }, select: { id: true } })
         await db.policy.updateMany({
-            where: { ownerUserId: owner.id, policyNumber: "E2E-DASH-H12" },
+            where: { ownerUserId: owner.id, policyNumber: "ΣΥΜΒ-2026-H12" },
             data: { status: "analyzing" },
         })
     })
@@ -206,11 +244,11 @@ test("baseline: analysis states on the heavy portfolio", async ({ page }) => {
     await withDb(async (db) => {
         const owner = await db.user.findUnique({ where: { email: DASH_EMAIL }, select: { id: true } })
         await db.policy.updateMany({
-            where: { ownerUserId: owner.id, policyNumber: { startsWith: "E2E-DASH-" } },
+            where: { ownerUserId: owner.id, policyNumber: { startsWith: "ΣΥΜΒ-2026-" } },
             data: { status: "active", lastAnalyzedAt: null, coverageSummary: null },
         })
         await db.policyAnalysisRun.deleteMany({
-            where: { policy: { ownerUserId: owner.id, policyNumber: { startsWith: "E2E-DASH-" } } },
+            where: { policy: { ownerUserId: owner.id, policyNumber: { startsWith: "ΣΥΜΒ-2026-" } } },
         })
     })
     await openDashboard(page, 320)
@@ -220,7 +258,7 @@ test("baseline: analysis states on the heavy portfolio", async ({ page }) => {
     await withDb(async (db) => {
         const owner = await db.user.findUnique({ where: { email: DASH_EMAIL }, select: { id: true } })
         const policies = await db.policy.findMany({
-            where: { ownerUserId: owner.id, policyNumber: { startsWith: "E2E-DASH-" } },
+            where: { ownerUserId: owner.id, policyNumber: { startsWith: "ΣΥΜΒ-2026-" } },
             select: { id: true, acordData: true },
         })
         for (const p of policies) {

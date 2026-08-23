@@ -16,6 +16,8 @@ export interface RenewalItem {
     premiumLabel: string | null
     /** Real points to check before renewing (open gaps on THIS policy); 0 renders nothing. */
     checkpointCount: number
+    /** The policy number, scrubbed of sentinels — null when there isn't one. */
+    policyRef?: string | null
     /** "2 points to check" — resolved by the server; null when count is 0. */
     checkpointLabel: string | null
 }
@@ -53,7 +55,12 @@ export function RenewalsTimelineCard({
                 <p className="pw-kicker">{labels.kicker}</p>
                 {items.length > 0 && (
                     <p className="text-micro font-semibold text-muted-foreground">
-                        {items.length} {labels.policiesSuffix}
+                        {/* A DIFFERENT key from portfolio.total on purpose: this
+                            counts renewals coming up, not the wallet. Naming it
+                            is what makes the difference checkable instead of
+                            arguable. */}
+                        <span data-count="renewals.upcoming">{items.length}</span>{" "}
+                        {labels.policiesSuffix}
                     </p>
                 )}
             </div>
@@ -103,8 +110,22 @@ export function RenewalsTimelineCard({
                                         <p className="text-xs font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
                                             {item.titleLabel}
                                         </p>
-                                        <p className="truncate text-micro text-black/60 dark:text-white/55">
-                                            {[displayInsurerName(item.insurerName), item.endDateLabel, item.premiumLabel]
+                                        {/* D7 + D11 in ONE line that may wrap to two.
+                                            Was a single `truncate` row, so the insurer —
+                                            the thing that identifies the policy — was the
+                                            first casualty («Εθνική Ασφαλιστικ…»). Wrapping
+                                            it freely cost 873px of scroll on the heavy
+                                            fixture, because two of those names are 57
+                                            characters of legal boilerplate. Two lines is
+                                            the compromise: the insurer and the policy
+                                            number both fit, and the row cannot run away. */}
+                                        <p className="line-clamp-2 text-micro text-black/65 dark:text-white/60 [overflow-wrap:anywhere]">
+                                            {[
+                                                displayInsurerName(item.insurerName),
+                                                item.policyRef,
+                                                item.endDateLabel,
+                                                item.premiumLabel,
+                                            ]
                                                 .filter(Boolean)
                                                 .join(" · ")}
                                         </p>

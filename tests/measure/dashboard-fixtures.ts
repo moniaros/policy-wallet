@@ -68,7 +68,7 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
             // and twelve sections for one policy is the density question.
             return [
                 {
-                    policyNumber: "E2E-DASH-S1",
+                    policyNumber: "ΣΥΜΒ-2026-S1",
                     lineOfBusiness: "motor",
                     insurerName: "Interamerican",
                     endInDays: 200,
@@ -80,10 +80,10 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
 
         case "typical":
             return [
-                { policyNumber: "E2E-DASH-T1", lineOfBusiness: "motor", insurerName: "Interamerican", endInDays: 210, premiumAmount: 312.4, analyzed: true, gaps: 2 },
-                { policyNumber: "E2E-DASH-T2", lineOfBusiness: "health", insurerName: "Εθνική Ασφαλιστική", endInDays: 18, premiumAmount: 1138.27, analyzed: true, gaps: 1 },
+                { policyNumber: "ΣΥΜΒ-2026-T1", lineOfBusiness: "motor", insurerName: "Interamerican", endInDays: 210, premiumAmount: 312.4, analyzed: true, gaps: 2 },
+                { policyNumber: "ΣΥΜΒ-2026-T2", lineOfBusiness: "health", insurerName: "Εθνική Ασφαλιστική", endInDays: 18, premiumAmount: 1138.27, analyzed: true, gaps: 1 },
                 {
-                    policyNumber: "E2E-DASH-T3",
+                    policyNumber: "ΣΥΜΒ-2026-T3",
                     lineOfBusiness: "home",
                     insurerName: "Generali",
                     endInDays: 120,
@@ -97,7 +97,7 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
         case "heavy":
             return [
                 {
-                    policyNumber: "E2E-DASH-H1",
+                    policyNumber: "ΣΥΜΒ-2026-H1",
                     lineOfBusiness: "motor",
                     insurerName: LONG_INSURER,
                     endInDays: 164,
@@ -107,7 +107,7 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
                     reproduces: "D7 — the longest real insurer name, at 320px",
                 },
                 {
-                    policyNumber: "E2E-DASH-H2",
+                    policyNumber: "ΣΥΜΒ-2026-H2",
                     lineOfBusiness: "motor",
                     insurerName: "Interamerican",
                     endInDays: 164,
@@ -117,7 +117,7 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
                     reproduces: "D11 — display values identical to H3 (same branch, same days, same insurer, same gap count)",
                 },
                 {
-                    policyNumber: "E2E-DASH-H3",
+                    policyNumber: "ΣΥΜΒ-2026-H3",
                     lineOfBusiness: "motor",
                     insurerName: "Interamerican",
                     endInDays: 164,
@@ -127,7 +127,7 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
                     reproduces: "D11 — the twin of H2",
                 },
                 {
-                    policyNumber: "E2E-DASH-H4",
+                    policyNumber: "ΣΥΜΒ-2026-H4",
                     lineOfBusiness: "health",
                     insurerName: LONG_INSURER_2,
                     endInDays: 12,
@@ -136,12 +136,12 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
                     gaps: 3,
                     reproduces: "D4 — a policy with NO premium, against a page that totals premiums",
                 },
-                { policyNumber: "E2E-DASH-H5", lineOfBusiness: "home", insurerName: "Generali", endInDays: 30, premiumAmount: 240, analyzed: true, gaps: 1 },
-                { policyNumber: "E2E-DASH-H6", lineOfBusiness: "life", insurerName: "NN Hellas", endInDays: 400, premiumAmount: 600, analyzed: true, gaps: 1 },
-                { policyNumber: "E2E-DASH-H7", lineOfBusiness: "travel", insurerName: "Europ Assistance", endInDays: 45, premiumAmount: 60, analyzed: true },
-                { policyNumber: "E2E-DASH-H8", lineOfBusiness: "pet", insurerName: "Interamerican", endInDays: 90, premiumAmount: 120, analyzed: true, gaps: 1 },
+                { policyNumber: "ΣΥΜΒ-2026-H5", lineOfBusiness: "home", insurerName: "Generali", endInDays: 30, premiumAmount: 240, analyzed: true, gaps: 1 },
+                { policyNumber: "ΣΥΜΒ-2026-H6", lineOfBusiness: "life", insurerName: "NN Hellas", endInDays: 400, premiumAmount: 600, analyzed: true, gaps: 1 },
+                { policyNumber: "ΣΥΜΒ-2026-H7", lineOfBusiness: "travel", insurerName: "Europ Assistance", endInDays: 45, premiumAmount: 60, analyzed: true },
+                { policyNumber: "ΣΥΜΒ-2026-H8", lineOfBusiness: "pet", insurerName: "Interamerican", endInDays: 90, premiumAmount: 120, analyzed: true, gaps: 1 },
                 {
-                    policyNumber: "E2E-DASH-H9",
+                    policyNumber: "ΣΥΜΒ-2026-H9",
                     lineOfBusiness: "motor",
                     insurerName: "Ergo",
                     endInDays: 250,
@@ -150,7 +150,7 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
                     reproduces: "an UNANALYSED policy inside a scored portfolio",
                 },
                 {
-                    policyNumber: "E2E-DASH-H10",
+                    policyNumber: "ΣΥΜΒ-2026-H10",
                     lineOfBusiness: "health",
                     insurerName: "Generali",
                     endInDays: 300,
@@ -159,8 +159,8 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
                     failedRun: true,
                     reproduces: "D1 — a failed run the score cannot see",
                 },
-                { policyNumber: "E2E-DASH-H11", lineOfBusiness: "home", insurerName: "Ydrogios", endInDays: -20, premiumAmount: 180, analyzed: true, gaps: 1, reproduces: "an EXPIRED policy inside a live portfolio" },
-                { policyNumber: "E2E-DASH-H12", lineOfBusiness: "motor", insurerName: "Hellas Direct", endInDays: 500, premiumAmount: 210, analyzed: true },
+                { policyNumber: "ΣΥΜΒ-2026-H11", lineOfBusiness: "home", insurerName: "Ydrogios", endInDays: -20, premiumAmount: 180, analyzed: true, gaps: 1, reproduces: "an EXPIRED policy inside a live portfolio" },
+                { policyNumber: "ΣΥΜΒ-2026-H12", lineOfBusiness: "motor", insurerName: "Hellas Direct", endInDays: 500, premiumAmount: 210, analyzed: true },
             ]
 
         case "all-expired":
@@ -169,10 +169,10 @@ export function policiesFor(state: PortfolioState): PolicySpec[] {
             // verdict over this portfolio is a false statement about a
             // customer's protection (invariant 2).
             return [
-                { policyNumber: "E2E-DASH-X1", lineOfBusiness: "motor", insurerName: "Interamerican", endInDays: -400, premiumAmount: 312.4, analyzed: true, gaps: 2 },
-                { policyNumber: "E2E-DASH-X2", lineOfBusiness: "health", insurerName: LONG_INSURER, endInDays: -200, premiumAmount: 1138.27, analyzed: true, gaps: 1 },
-                { policyNumber: "E2E-DASH-X3", lineOfBusiness: "home", insurerName: "Generali", endInDays: -90, premiumAmount: 240, analyzed: true, gaps: 1 },
-                { policyNumber: "E2E-DASH-X4", lineOfBusiness: "life", insurerName: "NN Hellas", endInDays: -30, premiumAmount: 600, analyzed: true },
+                { policyNumber: "ΣΥΜΒ-2026-X1", lineOfBusiness: "motor", insurerName: "Interamerican", endInDays: -400, premiumAmount: 312.4, analyzed: true, gaps: 2 },
+                { policyNumber: "ΣΥΜΒ-2026-X2", lineOfBusiness: "health", insurerName: LONG_INSURER, endInDays: -200, premiumAmount: 1138.27, analyzed: true, gaps: 1 },
+                { policyNumber: "ΣΥΜΒ-2026-X3", lineOfBusiness: "home", insurerName: "Generali", endInDays: -90, premiumAmount: 240, analyzed: true, gaps: 1 },
+                { policyNumber: "ΣΥΜΒ-2026-X4", lineOfBusiness: "life", insurerName: "NN Hellas", endInDays: -30, premiumAmount: 600, analyzed: true },
             ]
     }
 }
@@ -183,7 +183,7 @@ const SUMMARY_EL =
 /**
  * Rebuild the dashboard account's wallet into `state`.
  *
- * Destructive by design and scoped by the `E2E-DASH-` prefix, so it can never
+ * Destructive by design and scoped by the `ΣΥΜΒ-2026-` prefix, so it can never
  * touch a policy another fixture set owns. Gap instances and analysis runs
  * cascade from the policy delete.
  */
@@ -249,7 +249,7 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
 
     // Clear only THIS fixture family's policies.
     await db.policy.deleteMany({
-        where: { ownerUserId: owner.id, policyNumber: { startsWith: "E2E-DASH-" } },
+        where: { ownerUserId: owner.id, policyNumber: { startsWith: "ΣΥΜΒ-2026-" } },
     })
 
     const specs = policiesFor(state)
@@ -348,6 +348,13 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
                 select: { id: true, severity: true, ruleId: true },
             })
             for (const [gapIndex, def] of defs.entries()) {
+                // TOLERANT OF A SUPERSEDED FIXTURE. Playwright retries the whole
+                // test, and a retry's `deleteMany` at the top of this function can
+                // remove the policies a previous attempt is still attaching gaps
+                // to — the previous attempt then fails on
+                // `gap_instances_policy_id_fkey`, which reads like a data bug and
+                // is a lifecycle one. If the policy has gone, this attempt is
+                // obsolete and its gaps are not wanted.
                 await db.gapInstance.create({
                     data: {
                         policyId: policy.id,
@@ -364,6 +371,11 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
                         aiSuggestionEl: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEl,
                         aiSuggestion: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEn,
                     },
+                }).catch((error: any) => {
+                    // P2003 foreign key (policy deleted by a retry), P2002 unique
+                    // (another attempt got there first). Both mean "someone else
+                    // owns this fixture now".
+                    if (error?.code !== "P2003" && error?.code !== "P2002") throw error
                 })
             }
         }

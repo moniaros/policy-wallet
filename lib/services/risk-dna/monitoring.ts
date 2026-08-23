@@ -63,23 +63,37 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
     const signals: WatchSignal[] = []
 
     // 1. Cover about to lapse. The only signal here that is a hard deadline.
-    const lapsing = policies
+    const dated = policies
         .filter((p) => readable(p.endDate))
         .map((p) => ({ ...p, days: calendarDaysUntil(p.endDate as Date, now) }))
-        .filter((p) => p.days >= 0 && p.days <= 45)
+    const lapsing = dated.filter((p) => p.days >= 0 && p.days <= 45)
+    // ALREADY LAPSED. The window used to be `days >= 0`, which quietly excluded
+    // every policy that had already ended — so a wallet whose cover was entirely
+    // expired reported «Κάλυψη που λήγει: Εντάξει». The check had not found
+    // anything about to lapse because there was nothing left to lapse, and it
+    // said so as reassurance. Absence of a detected problem is not evidence of
+    // no problem.
+    const expired = dated.filter((p) => p.days < 0)
     signals.push({
         id: "cover_lapsing",
         label: { en: "Cover about to lapse", el: "Κάλυψη που λήγει" },
-        verdict: lapsing.length > 0 ? "action" : "clear",
+        verdict: expired.length > 0 || lapsing.length > 0 ? "action" : "clear",
         detail:
-            lapsing.length > 0
+            expired.length > 0
+                ? {
+                      en: `${expired.length} ${expired.length === 1 ? "policy has" : "policies have"} already ended${lapsing.length > 0 ? `, and ${lapsing.length} more end within 45 days` : ""}.`,
+                      el: `${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}${lapsing.length > 0 ? ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες` : ""}.`,
+                  }
+                : lapsing.length > 0
                 ? {
                       en: `${lapsing.length} ${lapsing.length === 1 ? "policy ends" : "policies end"} within 45 days.`,
                       el: `${lapsing.length} ${lapsing.length === 1 ? "ασφαλιστήριο λήγει" : "ασφαλιστήρια λήγουν"} μέσα σε 45 ημέρες.`,
                   }
                 : null,
         action:
-            lapsing.length > 0
+            expired.length > 0
+                ? { en: "Renew or replace the cover that has ended.", el: "Ανανεώστε ή αντικαταστήστε την κάλυψη που έληξε." }
+                : lapsing.length > 0
                 ? { en: "Confirm each one is being renewed.", el: "Επιβεβαιώστε ότι ανανεώνεται το καθένα." }
                 : null,
         confidence: "high",
@@ -89,7 +103,7 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
     const worsening = dimensions.filter((d) => d.trend === "worsening")
     signals.push({
         id: "dimensions_worsening",
-        label: { en: "Protection moving backwards", el: "Προστασία που υποχωρεί" },
+        label: { en: "Protection moving backwards", el: "Κάλυψη που μειώνεται" },
         verdict: worsening.length > 1 ? "action" : worsening.length === 1 ? "attention" : "clear",
         detail:
             worsening.length > 0
@@ -112,7 +126,7 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
         lastAssessedAt && readable(lastAssessedAt) ? -calendarDaysUntil(lastAssessedAt, now) : null
     signals.push({
         id: "picture_stale",
-        label: { en: "How current this is", el: "Πόσο πρόσφατο είναι" },
+        label: { en: "How current this is", el: "Πότε έγινε ο τελευταίος έλεγχος" },
         verdict: staleDays === null ? "attention" : staleDays > 180 ? "attention" : "clear",
         detail:
             staleDays === null
@@ -134,7 +148,7 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
     const critical = dimensions.filter((d) => d.urgency === "now")
     signals.push({
         id: "critical_open",
-        label: { en: "Serious exposures open", el: "Ανοιχτές σοβαρές εκθέσεις" },
+        label: { en: "Serious exposures open", el: "Σοβαροί κίνδυνοι χωρίς κάλυψη" },
         verdict: critical.length > 0 ? "action" : "clear",
         detail:
             critical.length > 0

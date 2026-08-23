@@ -21,6 +21,7 @@ import { portfolioFacts, scoreSupport } from "@/lib/dashboard/portfolio-summary"
 import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
 import { premiumExclusionNote } from "@/lib/wallet/premium-exclusion-note"
@@ -344,12 +345,17 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         neverAnalysed: [home.factNeverAnalysedOne, home.factNeverAnalysedMany],
         analysisFailed: [home.factFailedOne, home.factFailedMany],
     }
-    const factsLine = portfolioFacts(portfolioInput)
-        .map(({ kind, count }) => {
-            const [one, many] = factLabel[kind]
-            return count === 1 ? one : many.replace('{count}', String(count))
-        })
-        .join(' · ')
+    // Each fact keeps its KIND and its COUNT, so the hero can mark the element
+    // that renders it with `data-count="portfolio.<kind>"`. The line used to be
+    // joined into one string here, which meant the page stated «12
+    // ασφαλιστήρια» with nothing machine-readable saying what the 12 counted —
+    // and the count-consistency metric had to guess by matching nouns, which
+    // grouped the score, an upsell's plan limit («έως 10 ασφαλιστήρια») and a
+    // labelled subset together as a contradiction.
+    const facts = portfolioFacts(portfolioInput).map(({ kind, count }) => {
+        const [one, many] = factLabel[kind]
+        return { kind, count, label: count === 1 ? one : many.replace('{count}', String(count)) }
+    })
 
     const support = scoreSupport(portfolioInput)
     const scoreUnsupportedReason = support.supported
@@ -562,6 +568,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             return {
                 id: lob,
                 icon: getBranchIcon(branch.id),
+                // The branch NAME, not just its icon. An icon is a decoration
+                // with no accessible name; two euro figures sitting under a
+                // larger one with only a pictogram to tell them apart is a
+                // breakdown the reader has to guess at.
+                branchLabel: branch.label[lang] || branch.label.en,
                 amountLabel: formatCurrencyValue(amount, lang, premiumCurrency) || '€0',
             }
         })
@@ -585,6 +596,12 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         return {
             id: policy.id,
             insurerName: policy.insurerName,
+            // D11: two motor policies with the same insurer and the same number
+            // of days left rendered as two identical rows. The branch, the
+            // countdown and the insurer are not enough to tell one contract from
+            // another — the policy number is. Through policyLabel, so a
+            // placeholder sentinel never reaches the row.
+            policyRef: displayPolicyNumber(policy.policyNumber),
             icon: getBranchIcon(branch.id),
             titleLabel:
                 days === 0
@@ -700,7 +717,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         state={heroState}
                         score={healthScore}
                         ringToneClass={ringToneClass}
-                        factsLine={factsLine}
+                        facts={facts}
                         scoreUnsupportedReason={scoreUnsupportedReason}
                         deltaLabel={deltaLabel}
                         deltaDirection={deltaDirection}
@@ -775,7 +792,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     medium: home.severityMedium,
                                     low: home.severityLow,
                                 },
-                                note: home.severityNote,
+                                // `severityNote` and `recPriorityNote` are the
+                                // same sentence authored under two keys, and the
+                                // attention list directly above already states
+                                // it. Passing null renders it once per page.
+                                note: null,
                             }}
                         />
                     </div>

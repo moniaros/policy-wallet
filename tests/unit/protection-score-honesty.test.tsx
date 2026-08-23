@@ -35,7 +35,11 @@ function renderHero(props: Partial<Parameters<typeof ProtectionStatusHero>[0]> =
                     state="scored"
                     score={62}
                     ringToneClass="stroke-amber-500"
-                    factsLine="12 policies · 3 expire soon · 2 not analysed"
+                    facts={[
+                        { kind: "total", count: 12, label: "12 policies" },
+                        { kind: "expiringSoon", count: 3, label: "3 expire soon" },
+                        { kind: "neverAnalysed", count: 2, label: "2 not analysed" },
+                    ]}
                     scoreUnsupportedReason={null}
                     deltaLabel={null}
                     deltaDirection={null}
@@ -60,14 +64,14 @@ function renderHero(props: Partial<Parameters<typeof ProtectionStatusHero>[0]> =
  */
 describe('protection status hero — no policies', () => {
     it('shows an invitation, never a number or a verdict', () => {
-        renderHero({ state: 'empty', score: null, factsLine: "12 policies" })
+        renderHero({ state: 'empty', score: null, facts: [{ kind: "total", count: 12, label: "12 policies" }] })
         expect(screen.getByText(LABELS.emptyTitle)).toBeTruthy()
         expect(screen.queryByText('0')).toBeNull()
         expect(screen.queryByText('Needs improvement')).toBeNull()
     })
 
     it('draws no progress arc and offers no methodology with no score', () => {
-        const { container } = renderHero({ state: 'empty', score: null, factsLine: "12 policies" })
+        const { container } = renderHero({ state: 'empty', score: null, facts: [{ kind: "total", count: 12, label: "12 policies" }] })
         expect(container.querySelectorAll('path[stroke-dasharray]').length).toBe(0)
         expect(screen.queryByText(LABELS.methodologyTitle)).toBeNull()
     })
@@ -81,7 +85,7 @@ describe('protection status hero — no policies', () => {
  */
 describe('protection status hero — indeterminate', () => {
     it('renders no number and no verdict, and routes to the profile', () => {
-        const { container } = renderHero({ state: 'indeterminate', score: null, factsLine: "12 policies" })
+        const { container } = renderHero({ state: 'indeterminate', score: null, facts: [{ kind: "total", count: 12, label: "12 policies" }] })
         expect(screen.getByText(LABELS.indeterminateTitle)).toBeTruthy()
         // "—", not "0": scored-zero and not-scored are different claims.
         expect(screen.getByText('—')).toBeTruthy()
@@ -100,13 +104,13 @@ describe('protection status hero — indeterminate', () => {
  */
 describe('protection status hero — provisional fallback', () => {
     it('labels the fallback estimate as provisional', () => {
-        renderHero({ state: 'provisional', score: 62, factsLine: '12 policies' })
+        renderHero({ state: 'provisional', score: 62, facts: [{ kind: "total", count: 12, label: "12 policies" }] })
         expect(screen.getByText('Provisional estimate')).toBeTruthy()
         expect(screen.getByText(LABELS.provisionalHint)).toBeTruthy()
     })
 
     it('does not label the real engine score as provisional', () => {
-        renderHero({ state: 'scored', score: 62, factsLine: '12 policies' })
+        renderHero({ state: 'scored', score: 62, facts: [{ kind: "total", count: 12, label: "12 policies" }] })
         expect(screen.queryByText('Provisional estimate')).toBeNull()
     })
 })

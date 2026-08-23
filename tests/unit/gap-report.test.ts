@@ -233,9 +233,20 @@ describe('resolveGapContent', () => {
         })
     })
 
-    it('titles unknown vocabulary with the AI\'s own Greek sentence, so two unknown gaps never read alike', () => {
-        // Before: every unmapped slug of the same mechanic got ONE generic
-        // heading, so a report full of unknown gaps was a wall of identical cards.
+    it('never titles an unknown gap with the model\'s prose', () => {
+        // REVERSED, 2026-08-23. This used to assert the opposite: an unmapped
+        // slug took the AI's first Greek sentence as its heading, so that a
+        // report full of unknown gaps was not a wall of identical cards.
+        //
+        // That trade reached further than the card. `recommendation-generator`
+        // builds a recommendation title from resolveGapContent and PERSISTS it
+        // into recommendation_instances.title, which the dashboard renders as an
+        // attention-item heading. Production carries three such rows — one
+        // quoting a customer's vehicle model, cut at exactly 80 characters,
+        // which is the firstSentence(…, 80) signature.
+        //
+        // A repeated generic heading is honest. The model's words presented as
+        // OUR heading are not. The prose still shows as the body.
         const a = resolveGapContent('brand-new-ai-vocabulary-a', {
             aiExplanationEl: 'Το συμβόλαιο δεν καλύπτει ζημιές από παγετό. Δείτε τον όρο 7.',
         })
@@ -246,10 +257,19 @@ describe('resolveGapContent', () => {
         expect(a.known).toBe(false)
         expect(b.known).toBe(false)
         expect(a.titleEl).toMatch(GREEK_TEXT)
-        expect(a.titleEl).not.toBe(b.titleEl)
-        expect(a.titleEl).toBe('Το συμβόλαιο δεν καλύπτει ζημιές από παγετό.')
-        // Still never the raw English slug.
+        // The heading is authored, not quoted.
+        expect(a.titleEl).not.toContain('παγετό')
+        expect(b.titleEl).not.toContain('ρυμούλκησης')
         expect(a.titleEl).not.toMatch(/vocabulary/i)
+        // No trailing full stop: a heading, not a sentence lifted from prose.
+        expect(a.titleEl.trim()).not.toMatch(/\.$/)
+    })
+
+    it('reports every unknown slug, because repetition is the signal to author it', () => {
+        captureMessage.mockClear()
+        resolveGapContent('unheard-of-slug-alpha', { aiExplanationEl: 'Κάτι.' })
+        resolveGapContent('unheard-of-slug-beta', { aiExplanationEl: 'Κάτι άλλο.' })
+        expect(captureMessage).toHaveBeenCalledTimes(2)
     })
 
     it('groups gaps by the policy branch, not by the words in the slug', () => {

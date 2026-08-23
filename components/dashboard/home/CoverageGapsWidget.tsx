@@ -26,7 +26,8 @@ export function CoverageGapsWidget({
         noGaps: string
         severity: Record<keyof GapSeverityCounts, string>
         /** Honest framing: these levels are a profile-based priority, not a risk grade. */
-        note: string
+        /** Null when the page already states this caveat elsewhere. */
+        note: string | null
     }
 }) {
     const total = counts.critical + counts.high + counts.medium + counts.low
@@ -56,9 +57,11 @@ export function CoverageGapsWidget({
                         {/* "Critical/high" read as a risk verdict; the gap engine treats
                             them as a profile-based priority (the report itself omits
                             severity as "unvalidated"). This says so plainly. */}
-                        <p className="mt-2 text-caption leading-snug text-muted-foreground">
-                            {labels.note}
-                        </p>
+                        {labels.note && (
+                            <p className="mt-2 text-caption leading-snug text-muted-foreground">
+                                {labels.note}
+                            </p>
+                        )}
                     </>
                 )}
             </div>

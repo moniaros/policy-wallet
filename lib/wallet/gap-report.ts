@@ -746,6 +746,166 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "other",
         coverageArea: "general",
     },
+
+    /**
+     * The AUTHORED CATALOGUE's own slugs — 18 of the 29 active rules had no
+     * entry here, so every finding the rule engine produced for them was titled
+     * with `firstSentence(aiExplanationEl, 80)`: the model's prose as a heading.
+     *
+     * That is not only a render-time defect. The recommendation engine
+     * DENORMALISES the resolved title into `recommendation_instances.title` at
+     * creation, so the prose was frozen into the database and authoring the slug
+     * afterwards did not repair the row. Production carries 3 such titles — one
+     * quotes a customer's vehicle model, cut at exactly 80 characters — and 18
+     * more whose `el` is identical to `en` with no Greek letter in it.
+     *
+     * Five lines of business had NO authored gap content at all: motorbike,
+     * travel, life, group_health, and four fifths of home.
+     *
+     * WORDING FOLLOWS THE OPERATOR, not the slug's English name. `missing` /
+     * `all_missing` fire on SILENCE — the document does not state a value — so
+     * they say «δεν καταγράφεται», never «δεν καλύπτεται». `is_false` needs an
+     * explicit false, so it may speak of absent cover. `value_drift` compares
+     * two figures the document itself states.
+     */
+
+    // ── home ─────────────────────────────────────────────────────────────────
+    "no-fire-cover": {
+        concept: "no-fire-cover",
+        titleEl: "Πιθανή έλλειψη κάλυψης πυρκαγιάς",
+        titleEn: "Possible missing fire cover",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    "no-flood-cover": {
+        concept: "no-flood-cover",
+        titleEl: "Πιθανή έλλειψη κάλυψης πλημμύρας",
+        titleEn: "Possible missing flood cover",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    "no-earthquake-cover": {
+        concept: "home-earthquake",
+        titleEl: "Πιθανή έλλειψη κάλυψης σεισμού",
+        titleEn: "Possible missing earthquake cover",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    "insured-value-below-rebuild-cost": {
+        concept: "insured-value-below-rebuild-cost",
+        titleEl: "Το ασφαλισμένο ποσό είναι κάτω από το κόστος ανακατασκευής",
+        titleEn: "Sum insured is below the rebuild cost",
+        mechanic: "limit",
+        coverageArea: "property",
+    },
+
+    // ── motor / motorbike ────────────────────────────────────────────────────
+    "insured-value-above-declared": {
+        concept: "insured-value-above-declared",
+        titleEl: "Το ασφαλισμένο ποσό είναι πολύ πάνω από τη δηλωμένη αξία",
+        titleEn: "Sum insured is well above the declared value",
+        mechanic: "limit",
+        coverageArea: "vehicle",
+    },
+    "moto-no-own-damage-cover": {
+        concept: "own-damage",
+        titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
+        titleEn: "Possible missing own-damage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "moto-no-roadside-assistance": {
+        concept: "roadside-assistance",
+        titleEl: "Πιθανή έλλειψη οδικής βοήθειας",
+        titleEn: "Possible missing roadside assistance",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "moto-missing-accident-declaration-phone": {
+        concept: "missing-accident-declaration-phone",
+        titleEl: "Δεν καταγράφεται τηλέφωνο αναγγελίας ατυχήματος",
+        titleEn: "Accident declaration phone not recorded",
+        mechanic: "other",
+        coverageArea: "vehicle",
+    },
+    "moto-green-card-expiring": {
+        concept: "green-card-expiring",
+        titleEl: "Η Πράσινη Κάρτα λήγει σύντομα",
+        titleEn: "Green Card expiring soon",
+        mechanic: "other",
+        coverageArea: "vehicle",
+    },
+
+    // ── pet ──────────────────────────────────────────────────────────────────
+    "no-direct-vet-payment": {
+        concept: "no-direct-vet-payment",
+        titleEl: "Πιθανή έλλειψη απευθείας εξόφλησης κτηνιάτρου",
+        titleEn: "Possible missing direct payment to the vet",
+        mechanic: "other",
+        coverageArea: "pet",
+    },
+    "missing-microchip-number": {
+        concept: "missing-microchip-number",
+        titleEl: "Δεν καταγράφεται ο αριθμός microchip",
+        titleEn: "Microchip number not recorded",
+        mechanic: "other",
+        coverageArea: "pet",
+    },
+
+    // ── travel ───────────────────────────────────────────────────────────────
+    "no-repatriation-cover": {
+        concept: "no-repatriation-cover",
+        titleEl: "Πιθανή έλλειψη κάλυψης υγειονομικού επαναπατρισμού",
+        titleEn: "Possible missing medical repatriation cover",
+        mechanic: "exclusion",
+        coverageArea: "abroad",
+    },
+    "no-trip-cancellation-cover": {
+        concept: "no-trip-cancellation-cover",
+        titleEl: "Πιθανή έλλειψη κάλυψης ακύρωσης ταξιδιού",
+        titleEn: "Possible missing trip cancellation cover",
+        mechanic: "exclusion",
+        coverageArea: "abroad",
+    },
+    "missing-emergency-assistance-phone": {
+        concept: "missing-emergency-assistance-phone",
+        titleEl: "Δεν καταγράφεται τηλέφωνο επείγουσας βοήθειας",
+        titleEn: "Emergency assistance number not recorded",
+        mechanic: "other",
+        coverageArea: "abroad",
+    },
+
+    // ── group health ─────────────────────────────────────────────────────────
+    "group-no-direct-billing": {
+        concept: "direct-billing",
+        titleEl: "Πιθανή έλλειψη απευθείας εξόφλησης νοσηλείας",
+        titleEn: "Possible missing direct billing",
+        mechanic: "other",
+        coverageArea: "hospital",
+    },
+    "group-missing-hospital-class": {
+        concept: "missing-hospital-class",
+        titleEl: "Δεν καταγράφεται η θέση νοσηλείας",
+        titleEn: "Hospital class not recorded",
+        mechanic: "other",
+        coverageArea: "hospital",
+    },
+    "group-missing-coordination-centre": {
+        concept: "missing-coordination-centre",
+        titleEl: "Δεν καταγράφεται συντονιστικό κέντρο",
+        titleEn: "Coordination centre not recorded",
+        mechanic: "other",
+        coverageArea: "hospital",
+    },
+
+    // ── life ─────────────────────────────────────────────────────────────────
+    "no-beneficiaries-recorded": {
+        concept: "no-beneficiaries-recorded",
+        titleEl: "Δεν καταγράφονται δικαιούχοι",
+        titleEn: "No beneficiary recorded",
+        mechanic: "other",
+        coverageArea: "general",
+    },
 }
 
 const GENERIC_TITLES: Record<GapMechanic, { el: string; en: string }> = {
@@ -859,12 +1019,23 @@ export function resolveGapContent(
     const generic = GENERIC_TITLES[mechanic]
 
     // Unmapped vocabulary (the AI's own words, e.g. a branch the map has not
-    // learned yet). The generic heading is the same for every slug of a given
-    // mechanic, so N unknown gaps used to render as N identical cards. Title
-    // them with the AI's first Greek sentence instead: distinct, in Greek, and
-    // still the model's own finding — never the raw English slug.
-    const titleEl = firstSentence(context.aiExplanationEl, 80) || generic.el
-    const titleEn = firstSentence(context.aiExplanation, 80) || generic.en
+    // learned yet). This used to title the card with the model's first Greek
+    // sentence, to avoid N unknown gaps rendering as N identical generic cards.
+    //
+    // That trade was the wrong way round, and it reached further than the card:
+    // `recommendation-generator.ts` builds a recommendation's title from THIS
+    // function and writes it into `recommendation_instances.title`, which the
+    // dashboard's attention list renders as a heading. Production carries three
+    // such rows — one quotes a customer's vehicle model, cut at exactly 80
+    // characters, because that is what `firstSentence(…, 80)` does to a sentence.
+    //
+    // A repeated generic heading is honest; a model's prose presented as OUR
+    // heading is not. The prose is still shown — as the body, where it reads as
+    // a finding rather than a label. The repetition this reintroduces is the
+    // signal to author the slug, and `reportUnknownGapSlug` above is how we hear
+    // about it.
+    const titleEl = generic.el
+    const titleEn = generic.en
 
     return {
         concept: slug,

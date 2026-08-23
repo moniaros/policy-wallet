@@ -37,8 +37,22 @@ import {
 } from "./policy-detail"
 
 const EVIDENCE = path.join(process.cwd(), "docs", "evidence", "policy-detail-mobile")
-const SHOTS = path.join(EVIDENCE, "screenshots", "baseline")
-const DATA = path.join(EVIDENCE, "data", "baseline")
+/**
+ * Which RUN this is. Defaults to `current`, never `baseline` — same rule as
+ * dashboard-baseline.spec.ts, and for the same reason, learned twice.
+ *
+ * Writing to a fixed `baseline/` directory means re-running the spec DESTROYS
+ * the reference it exists to be compared against. It happened to the dashboard
+ * series in `f23ee784`, and then again here: a `--project=measure` invocation
+ * with no file filter ran this spec as a side effect and replaced the
+ * pre-restructure baseline (13428px, 20 sections) with post-restructure numbers
+ * (4930px, 10 sections). The committed reference had to be restored from git.
+ *
+ * A run must be NAMED to overwrite anything.
+ */
+const RUN = process.env.MEASURE_RUN || "current"
+const SHOTS = path.join(EVIDENCE, "screenshots", RUN)
+const DATA = path.join(EVIDENCE, "data", RUN)
 
 const HEIGHT: Record<number, number> = { 320: 720, 390: 844, 430: 932 }
 

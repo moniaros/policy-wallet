@@ -28,7 +28,7 @@ export function ProtectionStatusHero({
     state,
     score,
     ringToneClass,
-    factsLine,
+    facts,
     scoreUnsupportedReason,
     deltaLabel,
     deltaDirection,
@@ -52,7 +52,8 @@ export function ProtectionStatusHero({
      * answers three of the four ten-second questions before anything is
      * scrolled.
      */
-    factsLine: string
+    /** One entry per stated fact, so each can be marked with `data-count`. */
+    facts: Array<{ kind: string; count: number; label: string }>
     /**
      * Set when NO score may render: nothing has ever been analysed, or every
      * policy has expired. The reason is shown; a blank space where a number was
@@ -156,15 +157,13 @@ export function ProtectionStatusHero({
                 id="protection-status-heading"
                 className="mt-3 text-title font-semibold leading-snug text-black dark:text-white"
             >
-                {factsLine}
+                {facts.map((fact, i) => (
+                    <span key={fact.kind}>
+                        {i > 0 && <span aria-hidden> · </span>}
+                        <span data-count={`portfolio.${fact.kind}`}>{fact.label}</span>
+                    </span>
+                ))}
             </h2>
-
-            {keyReason && (
-                <div className="mt-3">
-                    <p className="pw-kicker">{labels.reasonKicker}</p>
-                    <p className="mt-0.5 text-sm text-black/75 dark:text-white/75">{keyReason}</p>
-                </div>
-            )}
 
             {areasLine && <p className="mt-2 text-sm text-black/70 dark:text-white/70">{areasLine}</p>}
 
@@ -223,6 +222,20 @@ export function ProtectionStatusHero({
                             )}
                         </div>
                     </div>
+                    {/* THE DERIVATIVE LIVES WITH ITS BASE.
+                        «Υγεία: πτώση 20 μονάδων» used to render out here in the
+                        open, in a card that no longer showed any score — a
+                        number of points off a figure the reader could not see,
+                        which also disagreed with the «-9» the changes feed was
+                        showing at the same moment. A delta, a trend or a
+                        "points" figure only means something next to the value it
+                        came from, so it opens and closes with it. */}
+                    {keyReason && (
+                        <div className="mt-3">
+                            <p className="pw-kicker">{labels.reasonKicker}</p>
+                            <p className="mt-0.5 text-sm text-black/75 dark:text-white/75">{keyReason}</p>
+                        </div>
+                    )}
                     <ScoreMethodology
                         className="mt-3"
                         copy={{

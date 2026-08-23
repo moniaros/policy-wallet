@@ -14,7 +14,7 @@ export const E2E_POLICYHOLDER = {
 export const E2E_AGENT = {
     email: 'e2e-agent@policywallet.test',
     password: 'E2eAgent!2026',
-    name: 'E2E Agent',
+    name: 'Νίκος Παπαδόπουλος',
     role: 'agent' as const,
 }
 

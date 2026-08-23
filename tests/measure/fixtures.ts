@@ -46,12 +46,12 @@ export interface FixtureSpec {
 }
 
 export const FIXTURE_SPECS: FixtureSpec[] = [
-    { key: "motor-active",   policyNumber: "E2E-PDM-MOT-ACT", lineOfBusiness: "motor",  state: "active",   insurerName: "Interamerican", premiumAmount: 312.4,  gapSlugs: ["no_own_damage_cover", "no_glass_breakage_cover"] },
-    { key: "motor-expiring", policyNumber: "E2E-PDM-MOT-EXP", lineOfBusiness: "motor",  state: "expiring", insurerName: "Interamerican", premiumAmount: 298.1,  gapSlugs: ["no_own_damage_cover", "no_glass_breakage_cover"] },
-    { key: "motor-expired",  policyNumber: "E2E-PDM-MOT-XPD", lineOfBusiness: "motor",  state: "expired",  insurerName: "Interamerican", premiumAmount: 287.55, gapSlugs: ["no_own_damage_cover", "no_glass_breakage_cover"] },
-    { key: "health-active",   policyNumber: "E2E-PDM-HL-ACT", lineOfBusiness: "health", state: "active",   insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1138.27, gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
-    { key: "health-expiring", policyNumber: "E2E-PDM-HL-EXP", lineOfBusiness: "health", state: "expiring", insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1102.9,  gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
-    { key: "health-expired",  policyNumber: "E2E-PDM-HL-XPD", lineOfBusiness: "health", state: "expired",  insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1064.3,  gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
+    { key: "motor-active",   policyNumber: "ΣΥΜΒ-2025-MOT-ACT", lineOfBusiness: "motor",  state: "active",   insurerName: "Interamerican", premiumAmount: 312.4,  gapSlugs: ["no_own_damage_cover", "no_glass_breakage_cover"] },
+    { key: "motor-expiring", policyNumber: "ΣΥΜΒ-2025-MOT-EXP", lineOfBusiness: "motor",  state: "expiring", insurerName: "Interamerican", premiumAmount: 298.1,  gapSlugs: ["no_own_damage_cover", "no_glass_breakage_cover"] },
+    { key: "motor-expired",  policyNumber: "ΣΥΜΒ-2025-MOT-XPD", lineOfBusiness: "motor",  state: "expired",  insurerName: "Interamerican", premiumAmount: 287.55, gapSlugs: ["no_own_damage_cover", "no_glass_breakage_cover"] },
+    { key: "health-active",   policyNumber: "ΣΥΜΒ-2025-HL-ACT", lineOfBusiness: "health", state: "active",   insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1138.27, gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
+    { key: "health-expiring", policyNumber: "ΣΥΜΒ-2025-HL-EXP", lineOfBusiness: "health", state: "expiring", insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1102.9,  gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
+    { key: "health-expired",  policyNumber: "ΣΥΜΒ-2025-HL-XPD", lineOfBusiness: "health", state: "expired",  insurerName: "Εθνική Ασφαλιστική", premiumAmount: 1064.3,  gapSlugs: ["no_direct_billing", "no_annual_checkup"] },
 ]
 
 /**
@@ -62,7 +62,7 @@ export const FIXTURE_SPECS: FixtureSpec[] = [
 export const DEFECT_SPECS: FixtureSpec[] = [
     {
         key: "defect-english-summary",
-        policyNumber: "E2E-PDM-DEF-EN",
+        policyNumber: "ΣΥΜΒ-2025-DEF-EN",
         lineOfBusiness: "motor",
         state: "active",
         insurerName: "Interamerican",
@@ -72,7 +72,7 @@ export const DEFECT_SPECS: FixtureSpec[] = [
     },
     {
         key: "defect-unreadable",
-        policyNumber: "E2E-PDM-DEF-XX",
+        policyNumber: "ΣΥΜΒ-2025-DEF-XX",
         lineOfBusiness: "motor",
         state: "active",
         insurerName: "Interamerican",
@@ -82,7 +82,7 @@ export const DEFECT_SPECS: FixtureSpec[] = [
     },
     {
         key: "defect-failed-run",
-        policyNumber: "E2E-PDM-DEF-FA",
+        policyNumber: "ΣΥΜΒ-2025-DEF-FA",
         lineOfBusiness: "health",
         state: "active",
         insurerName: "Εθνική Ασφαλιστική",
@@ -582,6 +582,15 @@ export async function provisionMatrixFixtures(
                     },
                 })
             } else {
+                // RACE-SAFE. find-then-create is not atomic, and Playwright runs
+                // these specs on two workers against ONE account: both looked,
+                // both found nothing, both created, and the second hit the
+                // database's unique index on (policy_id, gap_definition_id).
+                //
+                // Note the index is enforced by the DATABASE but is NOT declared
+                // on the Prisma model — there is no `@@unique([policyId,
+                // gapDefinitionId])` — so `upsert` cannot address it and the
+                // violation only shows up at runtime. Recorded in GOAL1R.md.
                 await db.gapInstance.create({
                     data: {
                         policyId: policy.id,
@@ -598,6 +607,11 @@ export async function provisionMatrixFixtures(
                         aiSuggestionEl: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEl,
                         aiSuggestion: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEn,
                     },
+                }).catch((error: any) => {
+                    // Another worker won the race. Its row is equivalent — the
+                    // prose comes from the same pool at the same index — so the
+                    // fixture is satisfied either way.
+                    if (error?.code !== "P2002") throw error
                 })
             }
         }

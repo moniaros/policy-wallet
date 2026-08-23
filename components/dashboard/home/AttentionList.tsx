@@ -115,7 +115,12 @@ export function AttentionList({
                     // verdict — functional copy, so caption is its floor.
                     <p className="mt-3 text-caption leading-snug text-muted-foreground">{labels.priorityNote}</p>
                 )}
-                <AiDisclaimer language={language} variant="inline" className="mt-2" />
+                {/* NO SECOND DISCLAIMER. ProtectionStatusHero renders the same
+                    paragraph immediately above this card, and the measurement
+                    counted it as one duplicate block on every capture with
+                    policies. Repeating a caveat does not strengthen it; it makes
+                    the page read as boilerplate and pushes the actual findings
+                    further down. */}
             </div>
         </div>
     )
