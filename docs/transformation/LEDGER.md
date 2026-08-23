@@ -81,9 +81,9 @@ Verified directly: **6 `section[id]` landmarks** — `overview`, `attention`, `p
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
 | D-01 | See portfolio state as a factual composition (counts of total / expired / expiring / never-analysed / failed) | fact | **KEEP** | this is the honest replacement for the old verdict; it is the model for H-001 option C | — |
-| D-02 | See the protection score behind a disclosure | fact | **PENDING H-001** | one of: deleted (A/C) or kept behind disclosure (B) | H-001 |
+| D-02 | See the protection score behind a disclosure | fact | **REMOVE** | deleted — H-001 answered C. Replaced by D-01's factual composition, which already ships on this surface | P1-01 |
 | D-03 | Read why no score can be shown, when it cannot | fact | **KEEP** | `scoreUnsupportedNothingAnalysed` / `scoreUnsupportedNoCover` — the §2.3 pattern done right | — |
-| D-04 | Read the score methodology, its limits, and the not-advice statement | fact | **KEEP** | moves with D-02 | H-001 |
+| D-04 | Read the score methodology, its limits, and the not-advice statement | fact | **REMOVE** | goes with D-02 — it exists to qualify a number that will no longer render | P1-01 |
 | D-05 | See items needing attention (`AttentionList`) | fact | **KEEP** | gap findings render ONCE here; other locations link to it (§7.5) | — |
 | D-06 | See a protection plan with a bounded step count | fact | **KEEP** | already split from findings («3 από 5», not «11 από 22») | — |
 | D-07 | See a coverage map by branch (`BranchCoverageMap`) | fact | **KEEP** | — | — |
@@ -217,10 +217,10 @@ Source: `app/(protected)/coverage-insights/page.tsx` → `CoverageInsightsClient
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
-| A-01 | See the protection score as a dedicated card | fact | **PENDING H-001 — and it is the SECOND sanctioned location** | §2.2 permits one; `score-containment.test.ts` currently sanctions this and `ProtectionStatusHero` (candidate #17) | P1-01 |
-| A-02 | See the score's colour verdict (`scoreColor`) | fact | **REMOVE or add a text equivalent** | colour as sole carrier, WCAG 1.4.1 | P1-01 |
-| A-03 | Read the freshness stamp ("computed from data as of…") | fact | **KEEP** | good practice — it stops the score reading as timeless | — |
-| A-04 | Read methodology / limits / not-advice | fact | **KEEP** | moves with A-01 | H-001 |
+| A-01 | See the protection score as a dedicated card | fact | **REMOVE** | H-001 answered C, so the sanctioned count goes from two to **zero** and candidate #17 resolves by deletion | P1-01 |
+| A-02 | See the score's colour verdict (`scoreColor`) | fact | **REMOVE** | goes with A-01, so the WCAG 1.4.1 finding resolves by deletion rather than by adding a text equivalent | P1-01 |
+| A-03 | Read the freshness stamp ("computed from data as of…") | fact | **REMOVE** | it stamps the score; nothing left to stamp | P1-01 |
+| A-04 | Read methodology / limits / not-advice | fact | **REMOVE** | goes with A-01 | P1-01 |
 | A-05 | See recommendations (`RecommendationCards`) | fact | **KEEP** | titles must not be AI prose from an unauthored slug | — |
 | A-06 | Declare life events (`LifeEventsPanel`) | action | **KEEP** | duplicates the dashboard's `LifeEventPromptCard` — one must link to the other (§7.5 renders once) | Phase 5 |
 | A-07 | Complete the risk-profile wizard | action | **KEEP** | the long form; §7.5 says it is not the first thing on the surface | Phase 2 |
@@ -349,8 +349,8 @@ fixture, which is exactly the gap the policy-detail baseline already documented 
 | | count | note |
 |---|---|---|
 | capabilities enumerated | **89** | across 7 detailed surfaces + shell + upload + summarised remainder |
-| removals proposed | **6** | N-04, N-05, N-09, P-04, P-17 (2 of 3 nav systems), SH-09 |
+| removals proposed | **12** | N-04, N-05, N-09, P-04, P-17 (2 of 3 nav systems), SH-09 + the six H-001 rows |
 | removals that are pure delivery/dev metadata | **3** | N-04, N-05, SH-09 — no customer capability lost |
-| contingent on H-001 | **4** | D-02, D-04, A-01, A-04 |
+| **decided by H-001 (option C) — REMOVE** | **6** | D-02, D-04, A-01, A-02, A-03, A-04 |
 | DO NOT TOUCH (§12.2) | **4** | W-15, U-02, R-03, `/consent/ai` + Change Password |
 | monetization surfaces | **5** | dashboard ×2, wallet ×2, analyses ×1 |

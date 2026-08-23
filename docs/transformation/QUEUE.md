@@ -115,7 +115,23 @@ owner: mixed · blocked_by: T-010
 Ordering is §6.1's: highest exposure first. Every item instruments what it touches per
 `INSTRUMENTATION-PLAN.md`, and every item's guard must be demonstrated failing first.
 
-### P1-01 — Score leaves every outbound channel · `todo`
+### P1-01 — The protection score is removed from the product · `todo`
+**Scope expanded by H-001 = option C (2026-08-23).** This was "score leaves outbound"; it is now
+"score leaves everywhere". The in-product half is below the outbound half.
+
+**In-product (new, from H-001):**
+- [ ] `components/dashboard/home/ProtectionStatusHero.tsx` — score, ring, delta, four-state logic.
+      The surface keeps D-01's factual composition, which already ships beneath it
+- [ ] `components/coverage/ProtectionScoreCard.tsx` — deleted outright: value, `scoreColor`
+      verdict, freshness stamp, methodology / limits / not-advice block
+- [ ] `score-containment.test.ts`'s `SANCTIONED` set becomes **empty** and the guard asserts the
+      value renders nowhere — a stronger and simpler claim than the allowlist it replaces
+- [ ] **Do NOT delete `calculateProtectionScore` / `provisionalProtectionScore`.** They may have
+      non-rendering and agent-side callers, and agent surfaces are §12.4 out of scope. Remove by
+      render site; dead-code removal only after a sweep proves no caller remains
+- [ ] ledger rows D-02, D-04, A-01, A-02, A-03, A-04 marked done as removed
+
+**Outbound (unchanged — never depended on the answer):**
 owner: Implementation (Fable 5) · blocked_by: T-013 metric half
 file_boundary: `lib/notifications/risk-events.ts`, `lib/notifications/templates.ts`,
 `lib/email/templates/{weekly-digest,engagement-drip,churn-prevention}.ts`,

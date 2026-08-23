@@ -3,7 +3,7 @@
 Questions only the human may answer (§12.1) and items blocked under §12.2.
 A halt blocks the listed items, not the run, unless marked `blocks: RUN`.
 
-**Open: 1.**
+**Open: 1** (H-002). **Answered: 1** (H-001).
 
 ---
 
@@ -13,7 +13,7 @@ date: 2026-08-23
 raised_by: Product-Truth (Opus 5)
 blocks: the *final* disposition of the score. Does **not** block Phase 1's removal of the score
 from outbound, which §12.1 states explicitly is not a decision.
-status: **open**
+status: **ANSWERED 2026-08-23 — option C**
 
 ### What §12.1.1 asks for: what the score returns in each broken state
 
@@ -107,5 +107,99 @@ the score leaves all five outbound sites; the green/amber gap tile gets a text e
 (WCAG 1.4.1) whatever colours it keeps; and the two missed `status: "active"` reads adopt
 `NON_LIVE_POLICY_STATUSES` (D-007), because "expired policies count as live cover, and
 expiring-soon ones do not count at all" is wrong under every option above.
+
+answer: **C — factual composition in-product, score removed from outbound.**
+Given by the owner, 2026-08-23, in response to this halt's options and recommendation.
+
+### What C means concretely, so the decision cannot be reinterpreted later
+
+**The protection score is removed from the product. All of it.** Not gated, not disclosed, not
+kept behind a threshold — replaced by counts of things the wallet actually contains, which is what
+the dashboard already ships (`factTotalMany`, `factExpiredMany`, `factNeverAnalysedMany`,
+`el.ts:1825-1834`) and what measurably improved every metric on that surface.
+
+In scope as a direct consequence:
+- **Both** in-product render sites go: `components/dashboard/home/ProtectionStatusHero.tsx` and
+  `components/coverage/ProtectionScoreCard.tsx`. This resolves candidate #17 — §2.2 permits at most
+  one sanctioned location and the guard authorised two; the answer is now zero.
+- All five outbound sites go (this was already Phase 1 and never depended on the answer).
+- `scoreColor`'s colour verdict goes with the card, so the WCAG 1.4.1 finding resolves by deletion
+  rather than by adding a text equivalent.
+- The methodology / limits / not-advice block goes with it — it exists to qualify a number that
+  will no longer render.
+- `churn-prevention.ts:91,97` advertises the score as a product feature and becomes a false claim.
+  It must be removed in the same change, not left for later.
+- `score-containment.test.ts`'s `SANCTIONED` set becomes **empty**, and the guard asserts the score
+  value renders nowhere — which is a far stronger and simpler assertion than the allowlist it
+  replaces.
+
+**Explicitly NOT in scope**, per §0.10 and D-006: the score's *arithmetic*.
+`calculateProtectionScore` and `provisionalProtectionScore` are not deleted in Phase 1. They may
+still have non-rendering callers (trend storage, agent-side surfaces which are §12.4 out of scope),
+so removal is by render site first; dead-code removal follows only once a sweep proves no caller
+remains. **Deleting a function that an out-of-scope agent surface still calls would breach §12.4.**
+
+`provisionalProtectionScore`'s honesty bug (returns 100 for an unanalysed portfolio) is still fixed
+in P1-02 rather than waved away as "about to be deleted" — the agent-side callers are out of scope
+for deletion but not immune to the defect.
+
+### Ledger consequence
+Rows D-02, D-04, A-01 and A-04 move from `PENDING H-001` to **REMOVE**. That is four capabilities
+deleted, and it is the largest deliberate capability removal in the run — recorded as such rather
+than absorbed quietly.
+
+---
+
+## H-002 — Send-side notification policy: what replaces what Phase 1 removes?
+
+date: 2026-08-23
+raised_by: Product-Truth (Opus 5)
+blocks: nothing currently queued. Phase 1 only **removes**; this decides what, if anything, is
+added back. It must be answered before Phase 4 designs any outbound mechanic.
+status: **open**
+
+### Why now
+§12.1.2 reserves this for a human and said it needs the outbound-copy inventory. That inventory now
+exists (`evidence/outbound/INVENTORY.md` + `METRICS.md`, measured).
+
+### What Phase 1 is about to delete from the outbound channel
+
+| template / emitter | what goes | what remains |
+|---|---|---|
+| `risk-events.ts:176-190` | the whole `protection_score_changed` event type | — nothing replaces it |
+| `weekly-digest.ts:118-126` | the score block | renewals list, gap count, unread messages |
+| `engagement-drip.ts:115-118` | the score stat tile | policy count, gap count |
+| `churn-prevention.ts:91,97` | the score as an advertised feature | the rest of the win-back copy |
+
+After Phase 1, the digest and drip still send — they just say less. **No decision is needed for the
+run to proceed.** The question is whether that residue is the right outbound policy.
+
+### The question, precisely
+Which events warrant reaching a Greek policyholder *outside the app at all*, at what cadence, and
+with what digest rule? §2.8 already constrains the answer: every outbound message must trace to a
+dated real-world event, so "we ran an analysis" and "your score moved" are excluded by invariant,
+not by preference.
+
+Candidates that survive §2.8 on their face — a renewal date approaching, a policy lapsing, cover
+lost on a risk, a document a person actually needs to read, an adviser action, a share granted or
+revoked. Candidates that do not — anything describing an internal pipeline state.
+
+### Options
+- **A — renewals and lapses only.** The two things with a real deadline and a real consequence.
+  Smallest, hardest to get wrong, and closest to what §9.5 means by "a prompt earns an outbound
+  message only where it has a real, dated deadline."
+- **B — A, plus a monthly digest** of what changed in the customer's own data, sent only when
+  something actually changed (§9.3's discipline applied to email).
+- **C — status quo minus the score:** keep the weekly digest, the drip and the churn sequence at
+  current cadence with the score stripped out.
+
+**Recommendation: B.** A is defensible but gives up the one honest recurring touch; C keeps a weekly
+cadence that §9.1 argues directly against — an insurance wallet has no weekly event stream, and
+manufacturing one is what produced the score email in the first place. B's "only when something
+changed" rule is the part that must survive whichever option is chosen.
+
+**Dependency worth stating:** B and C both require the §9.5 cadence controls, which do not exist —
+no monthly ceiling, no global off switch, and the preferences screen currently writes `email` only
+while push is live (P1-09). Choosing B or C commits to building those first.
 
 answer: *(awaiting)*
