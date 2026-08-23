@@ -76,11 +76,34 @@ owner: Orchestrator (Opus 5) · blocked_by: T-010
 Per D-004 the contract's evidence is partly stale. Record reproduces / does not reproduce /
 reproduces differently, with width, state, tier, root cause file:line, and fixture-vs-code-confirmed.
 
-### T-015 — Baseline every surface · `todo`
-owner: Evidence (Sonnet 5) · blocked_by: T-011, T-012
+### T-015 — Baseline every surface · `todo` — THE ONLY THING LEFT BEFORE THE PHASE 0 GATE
+owner: Evidence (Sonnet 5) · blocked_by: T-012 only (T-011 done)
+
+**Ready to run:** a dev server is live on `:3000`, `playwright.config.ts` has a `measure` project,
+and the invocation the existing baselines used is:
+`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" npx playwright test --project=measure`
+(Node 20.20.2 first: `export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm use`.)
+
 §4.5 order: Ειδοποιήσεις → Αρχική → Πορτοφόλι → Ασφαλιστήριο → Αναλύσεις AI → Σύμβουλος →
 Ρυθμίσεις +5 subpages → app shell → upload flow → modals.
-- [ ] Every metric, 320/390/430, every applicable state, published to `evidence/<surface>/BASELINE.md`
+
+- [ ] Every metric from `tests/measure/metrics.ts` at 320/390/430, every applicable state,
+      published to `docs/transformation/evidence/<surface>/BASELINE.md`
+- [ ] **Record BOTH the `data-*` attribute scan and the value scan** for duplicate facts, actions
+      and counts. Instrumentation is 8 attributes product-wide, so the attribute scan returns a
+      vacuous zero on 22 of 24 surfaces and the VALUE scan is authoritative until P1 instruments
+      (`INSTRUMENTATION-PLAN.md`)
+- [ ] **Close the two gaps the existing policy-detail baseline documents about itself:**
+      free-tier paths were never captured (the fixture account holds an active `ph-pro`), and
+      **1.4.11 was never automated** — `tests/measure/nontext-contrast.spec.ts` exists now and §5.6
+      makes it mandatory, not deferred
+- [ ] Reuse `docs/evidence/dashboard-mobile/data/current/` rather than recapturing where the
+      fixtures and code are unchanged; state explicitly which captures were reused
+- [ ] Fix the stale `tests/measure/policy-detail.ts` reference in the old `BASELINE.md` (now `metrics.ts`)
+- [ ] Any comparison whose fixtures differ between passes is INVALID and must not be published (§1.4.5)
+
+**Do not soften the gate.** §5.6 requires every surface in `SURFACES.md` to have a published
+baseline before Phase 1 opens. 20 surfaces + 7 overlays.
 
 ### T-016 — `LEDGER.md`, Greek string inventory, instrumentation plan, chrome audit · `todo`
 owner: mixed · blocked_by: T-010
