@@ -246,6 +246,20 @@ file_boundary: `app/(protected)/notifications/actions.ts`, `components/notificat
 - [ ] reconcile with the second consumer at `actions.ts:140-144`, which filters `channel: "in_app"`
 
 ### P1-05 — English internal prose cannot reach a customer · `todo`
+
+**Recon 2026-08-23 — the ratio is the finding.** `lib/notifications/registry.ts` declares **63
+event types**. The interception map at `app/(protected)/activity/actions.ts:136-147` handles
+**one** (`policy_analyzed`). The other 62 fall through to `{ en: n.title, el: n.title }` — whatever
+prose the writer of the day stored, rendered verbatim in both languages.
+
+Whether a given event is safe therefore depends entirely on its emitter: `risk-events.ts` stores
+bilingual `{ el, en }` and is fine; anything that stored the registry's English `businessEvent`
+prose is not. So the fallback is not a small gap — it is the default path for 98% of event types,
+and its correctness is decided per-emitter with nothing enforcing it.
+
+**Fix at composition, not at render.** A complete 63-entry map would be correct today and wrong the
+moment event 64 is added. Nothing English may be *stored* in a customer-visible column; the render
+layer should not need a map at all.
 owner: Implementation (Fable 5)
 file_boundary: `lib/events/catalog.ts`, `lib/notifications/registry.ts`, `app/(protected)/activity/actions.ts`
 
