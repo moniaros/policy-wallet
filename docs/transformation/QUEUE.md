@@ -207,6 +207,23 @@ are. Do not "tidy" it away.
 - [ ] `all-clear-honesty.test.ts` universe extended to outbound templates
 
 ### P1-03 — One definition of "policies this person has" · `todo`
+
+**Call sites re-verified 2026-08-23 after P1-01** (line numbers had moved; P1-01 did NOT introduce
+any of these — checked against `27acb200^`):
+
+| site | current filter | verdict |
+|---|---|---|
+| `engagement-drip.service.ts:98` | `{ ownerUserId }` — **none** | wrong |
+| `engagement-drip.service.ts:151` | `{ ownerUserId, status: "active" }` | wrong, both directions |
+| `weekly-digest.service.ts:103` (renewals) | `NON_LIVE_POLICY_STATUSES` | correct |
+| `weekly-digest.service.ts` (count) | **none** | wrong |
+| `engagement-scoring.ts:167` | `{ ownerUserId, status: "active" }` | wrong |
+
+**D-007 is broader than recorded.** It said three services hold three different definitions. In
+fact **two services each disagree with themselves**: `weekly-digest` filters correctly for its
+renewals list and not at all for its count, and `engagement-drip` does the same — an unfiltered
+count at :98 and a `status: "active"` fetch at :151, in one function. So a single email can quote
+two different totals for one portfolio.
 owner: Implementation (Fable 5)
 file_boundary: `lib/services/engagement-drip.service.ts`, `lib/services/engagement-scoring.ts`,
 `lib/services/weekly-digest.service.ts`, `tests/unit/`
