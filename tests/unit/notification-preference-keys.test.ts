@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from "node:fs"
 import { globSync } from "../helpers/glob"
 import { NOTIFICATION_PREFERENCE_GROUPS, eventTypesFor } from '@/lib/notifications/preference-registry'
+import {
+    PREFERENCE_CHANNELS,
+    preferenceRowsForStream,
+    streamReachesOut,
+} from '@/lib/notifications/preference-channels'
+import { IMPLEMENTED_CHANNELS } from '@/lib/notifications/channels'
+import { getEventDefinition } from '@/lib/notifications/registry'
 import { el } from '@/lib/i18n/translations/el'
 import { en } from '@/lib/i18n/translations/en'
 
@@ -96,8 +103,16 @@ describe('the settings screen is driven by the registry', () => {
     it('writes every event type a switch governs, not just the first', () => {
         // One switch covers a stream: renewal reminders govern policy_expiring,
         // renewal_milestone and perk_reminder. Writing only the group key would
-        // leave the others still sending.
-        expect(UI).toMatch(/eventTypesFor\(group\)\.map/)
+        // leave the others still sending. The expansion now happens server-side
+        // (the screen passes only the group's key), so the assertion moved to
+        // the action and the shared row builder.
+        const ACTIONS = strip(readFileSync('app/(protected)/account/actions.ts', 'utf-8'))
+        expect(ACTIONS).toMatch(/preferenceRowsForStream/)
+        expect(UI).toMatch(/setNotificationStreamPreference\(/)
+        for (const group of NOTIFICATION_PREFERENCE_GROUPS) {
+            const written = new Set(preferenceRowsForStream('u1', group, false).map((r) => r.eventType))
+            expect([...written].sort()).toEqual([...eventTypesFor(group)].sort())
+        }
     })
 
     it('is the only preference UI — /notifications must not ship a second catalog', () => {
@@ -109,5 +124,174 @@ describe('the settings screen is driven by the registry', () => {
         const history = strip(readFileSync('components/notifications/NotificationsClient.tsx', 'utf-8'))
         expect(history).not.toMatch(/preferenceCatalog/)
         expect(history).not.toMatch(/pending_questionnaire/)
+    })
+})
+
+/**
+ * The channel dimension. The settings screen wrote `channel: "email"` and
+ * nothing else, so a customer who switched a stream "off" silenced one pipe of
+ * it: push is an implemented transport (VAPID web push), the dispatcher
+ * honours per-channel rows, and the missing push row defaulted to ON. A
+ * mislabelled control — "off" that keeps notifying — is the defect this
+ * section exists to keep out.
+ */
+
+/**
+ * Every file that writes NotificationPreference, enumerated from the
+ * filesystem — app/, components/ and lib/ in full, not a list of known
+ * locations (a guard that scopes itself to known files guards the files,
+ * not the invariant).
+ */
+function preferenceWriters(): string[] {
+    const universe = [
+        ...globSync('app/**/*.ts'),
+        ...globSync('app/**/*.tsx'),
+        ...globSync('components/**/*.ts'),
+        ...globSync('components/**/*.tsx'),
+        ...globSync('lib/**/*.ts'),
+    ]
+    return universe.filter((f) => isPreferenceWriter(strip(readFileSync(f, 'utf-8'))))
+}
+
+function isPreferenceWriter(src: string): boolean {
+    return /notificationPreference\s*\.\s*(upsert|create|createMany|update|updateMany)/.test(src)
+}
+
+/** Why a preference-writing file is not allowed to look like this. */
+function channelViolations(src: string): string[] {
+    const problems: string[] = []
+    // A literal channel at a write site is the original defect. The write
+    // key objects (`userId_eventType_channel`) use the same `channel:` label,
+    // so this catches literals in `where`, `create` and `data` alike.
+    if (/channel:\s*["'`]/.test(src)) problems.push('hardcodes a channel literal at a write site')
+    // The channel set must come from the one derived constant — directly, or
+    // through the row builder that wraps it — so a fourth implemented channel
+    // reaches every writer without any of them changing.
+    if (!/PREFERENCE_CHANNELS|preferenceRowsForStream/.test(src)) {
+        problems.push('does not derive its channels from PREFERENCE_CHANNELS')
+    }
+    return problems
+}
+
+describe('a switch governs the stream, not one pipe of it', () => {
+    it('the governed set is derived from the implemented set, minus only in_app', () => {
+        // in_app is implemented but deliberately not governable: the bell and
+        // the history read in_app rows with no status filter, so a suppressed
+        // in-app arm would still render — a checkbox wired to nothing. See
+        // lib/notifications/preference-channels.ts.
+        expect(IMPLEMENTED_CHANNELS).toContain('in_app')
+        expect(PREFERENCE_CHANNELS).toEqual(IMPLEMENTED_CHANNELS.filter((c) => c !== 'in_app'))
+        // email and push both exist and are both governed — the single
+        // hardcoded channel can never come back as "the derived set happens
+        // to have one member".
+        expect(PREFERENCE_CHANNELS).toContain('email')
+        expect(PREFERENCE_CHANNELS).toContain('push')
+
+        const src = strip(readFileSync('lib/notifications/preference-channels.ts', 'utf-8'))
+        expect(src).toMatch(/IMPLEMENTED_CHANNELS\.filter/)
+        expect(src, 'PREFERENCE_CHANNELS must be computed, never a literal list').not.toMatch(
+            /PREFERENCE_CHANNELS[^=\n]*=\s*\[/
+        )
+    })
+
+    it('every governed event is one the dispatcher will actually honour a preference for', () => {
+        for (const group of NOTIFICATION_PREFERENCE_GROUPS) {
+            let consultablePairs = 0
+            for (const eventType of eventTypesFor(group)) {
+                const def = getEventDefinition(eventType)
+                expect(def, `${eventType} is not in the registry — its switch writes rows nothing reads`).toBeTruthy()
+                // suppressedChannels() returns empty for transactional events:
+                // a switch over one would be a checkbox the dispatcher ignores.
+                expect(def!.transactional, `${eventType} is transactional — not suppressible`).toBe(false)
+                consultablePairs += def!.channels.filter((c) => PREFERENCE_CHANNELS.includes(c)).length
+            }
+            expect(
+                consultablePairs,
+                `group ${group.labelKey} has no outreach channel at all — its switch would govern nothing`
+            ).toBeGreaterThan(0)
+        }
+    })
+
+    it('what one switch writes silences the stream; what it reads reports the stream', () => {
+        for (const group of NOTIFICATION_PREFERENCE_GROUPS) {
+            const off = preferenceRowsForStream('u1', group, false)
+            // every event type × every governed channel, exactly once
+            expect(off.length).toBe(eventTypesFor(group).length * PREFERENCE_CHANNELS.length)
+            expect(new Set(off.map((r) => `${r.eventType} ${r.channel}`)).size).toBe(off.length)
+            for (const channel of PREFERENCE_CHANNELS) {
+                expect(off.some((r) => r.channel === channel)).toBe(true)
+            }
+
+            expect(streamReachesOut(off, group)).toBe(false)
+            expect(streamReachesOut(preferenceRowsForStream('u1', group, true), group)).toBe(true)
+            // Absent rows mean ON — the dispatcher's own rule.
+            expect(streamReachesOut([], group)).toBe(true)
+        }
+    })
+
+    it('the defect, demonstrated: an email-only opt-out does not silence a full-reach stream', () => {
+        // policy_expiring declares in_app+email+push. The pre-fix screen wrote
+        // only the email row, so push stayed live — the switch must therefore
+        // report this legacy state as ON (the stream still reaches out), and
+        // flipping it off writes the full set and actually ends it.
+        const renewals = NOTIFICATION_PREFERENCE_GROUPS.find((g) => g.eventType === 'policy_expiring')!
+        const legacy = [{ eventType: 'policy_expiring', channel: 'email', enabled: false }]
+        expect(streamReachesOut(legacy, renewals)).toBe(true)
+
+        // For an email-led stream the same legacy row IS the whole outreach —
+        // the switch must show OFF, not resurrect it because a virtual "push"
+        // pair defaults to on over a channel the event never uses.
+        const digest = NOTIFICATION_PREFERENCE_GROUPS.find((g) => g.eventType === 'weekly_digest')!
+        const digestOff = [{ eventType: 'weekly_digest', channel: 'email', enabled: false }]
+        expect(streamReachesOut(digestOff, digest)).toBe(false)
+    })
+})
+
+describe('no preference surface hardcodes a channel', () => {
+    const writers = preferenceWriters()
+
+    it('the universe enumerates itself and finds the known writers', () => {
+        // If the glob or the writer detector breaks, this goes red before the
+        // per-file checks can silently pass over an empty list.
+        expect(writers.length).toBeGreaterThan(0)
+        expect(writers, `writers found:\n${writers.join('\n')}`).toContain(
+            'app/(protected)/account/actions.ts'
+        )
+        expect(writers).toContain('app/onboarding/actions.ts')
+        expect(writers).toContain('app/api/v1/notifications/preferences/route.ts')
+    })
+
+    it('every writer derives its channels; none writes a literal one', () => {
+        const offenders: string[] = []
+        for (const f of writers) {
+            for (const problem of channelViolations(strip(readFileSync(f, 'utf-8')))) {
+                offenders.push(`${f}: ${problem}`)
+            }
+        }
+        expect(offenders, offenders.join('\n')).toEqual([])
+    })
+
+    it('the settings screen cannot name a channel at all', () => {
+        // The channel dimension belongs to the server action. A screen that
+        // never mentions a channel cannot re-grow `channel: "email"`.
+        const UI = strip(readFileSync('components/settings/sections/NotificationsSection.tsx', 'utf-8'))
+        for (const channel of IMPLEMENTED_CHANNELS) {
+            expect(UI, `the screen names "${channel}"`).not.toMatch(
+                new RegExp(`["'\`]${channel}["'\`]`)
+            )
+        }
+    })
+
+    it('the probe writer turns the detector red — on both counts', () => {
+        // A guard without a committed probe proven to fail it is not a guard.
+        const probe = readFileSync('tests/fixtures/guard-probes/pref-writer-hardcoded-channel.ts.txt', 'utf-8')
+        const stripped = strip(probe)
+        // The probe genuinely exercises the guarded path: the universe filter
+        // would classify it as a writer, and the detector flags it.
+        expect(isPreferenceWriter(stripped)).toBe(true)
+        expect(channelViolations(stripped)).toEqual([
+            'hardcodes a channel literal at a write site',
+            'does not derive its channels from PREFERENCE_CHANNELS',
+        ])
     })
 })

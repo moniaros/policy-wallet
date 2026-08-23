@@ -312,7 +312,7 @@ DevTools badge. Do not "fix" it. These are the real ones:
 - [ ] `ThemeToggle` bypasses the translation bundle with an inline literal pair
 - [ ] `NotificationBell` is dead in the shell — its only mount point is never invoked. Remove with a ledger row.
 
-### P1-09 — Notification preferences control every channel, not just email · `todo`
+### P1-09 — Notification preferences control every channel, not just email · `done` — REVIEW PASSED
 owner: Implementation (Fable 5) · file_boundary: `components/settings/sections/NotificationsSection.tsx`, `app/(protected)/account/actions.ts`
 
 `NotificationsSection.tsx:44,66` reads and writes `channel === "email"` only, while `push` is an
@@ -754,3 +754,33 @@ honest identifier. Fallbacks are always existing honest copy: an email, a role l
 Agent-facing sites carrying the same class — `renewal.service` customerName, `tasks/actions.ts`,
 `agent/actions.ts`, `cross-sell`, `customer.service` — were left unrouted under §12.4 and reported as
 needing a scope decision rather than quietly included.
+
+
+---
+
+## P1-09 — Adversarial review: **PASS**, plus one defect I found in review (D-016)
+
+| check | result |
+|---|---|
+| Channels derived, not listed | `PREFERENCE_CHANNELS = IMPLEMENTED_CHANNELS.filter(c => c !== "in_app")` — a fourth transport joins automatically |
+| Screen names no channel | the only `"email"`/`"push"` occurrence is a comment explaining the history |
+| Send path honours it | verified as a **seam test**: the exact rows the action persists go to the dispatcher with VAPID keys set and a live push device registered, so the push arm is genuinely attemptable — then every governed channel records `skipReason: "preference_off"` and no transport is called. A companion case pins the old defect: the email-only write yields `push.status: "sent"` and a real `sendWebPush`. **That is the difference between a preference and a checkbox.** |
+| Greek freeze diff | audited: 3 removed / 3 added exactly as reported. «Email που σας στέλνουμε» → «Τι σας στέλνουμε»; the new description names both channels; history copy now discloses the in-app record is always kept |
+| CI | tsc · lint · i18n · utf8 clean; **5181/5181** (+10) |
+
+**A security fix arrived incidentally.** `toggleNotificationPreference` was a `"use server"` export
+taking arbitrary strings — a public endpoint under `CLAUDE.md`'s rule that every export of such a file
+is reachable with no UI. Deleted and replaced by an action that refuses non-registry streams and
+writes the group in **one transaction** (the old UI fired parallel per-event calls that could
+half-fail, splitting a group).
+
+**The `in_app` decision is right and well-argued:** in-app delivery *is* the `NotificationEvent` row,
+and all five readers filter `channel: "in_app"` with no status filter — a suppressed arm would still
+render. A checkbox that changed nothing is exactly the dark pattern this item removes. Making it real
+means changing dispatch semantics across five readers: §12.4.
+
+### D-016 — the defect I found while reviewing
+`grep` returned nothing on a 4,907-byte file: it held a **raw NUL byte** instead of the `\u0000`
+escape. Valid UTF-8, so `lint:utf8` passed — but grep, ripgrep and git treat the file as **binary and
+skip it**. A source file invisible to every command-line text tool, with all gates green. Fixed at the
+source and in `check-utf8.js`, proven red on a planted NUL.

@@ -1,0 +1,15 @@
+// PROBE for tests/unit/notification-preference-keys.test.ts ("no preference
+// surface hardcodes a channel"). A preference writer that restates the channel
+// itself — the exact shape of the pre-fix defect, where the settings screen
+// wrote `channel: "email"` and a switched-off stream kept firing on push.
+// The guard's detector must flag this file on BOTH counts: a channel literal
+// at the write site, and no derivation from PREFERENCE_CHANNELS.
+export async function optOutOfDigest(db: any, userId: string) {
+    await db.notificationPreference.upsert({
+        where: {
+            userId_eventType_channel: { userId, eventType: "weekly_digest", channel: "email" },
+        },
+        update: { enabled: false },
+        create: { userId, eventType: "weekly_digest", channel: "email", enabled: false },
+    })
+}

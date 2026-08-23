@@ -2429,13 +2429,13 @@ export const en: TranslationKeys = {
         },
 
         notifications: {
-            emailTitle: 'Emails we send you',
-            emailDesc: 'Choose what you want to receive. Emails about your security and payments always arrive.',
+            streamsTitle: 'What we send you',
+            streamsDesc: 'Each switch applies to every way we reach you outside the app — email and push notifications. Messages about your security and payments always arrive.',
             deviceTitle: 'This device',
             deviceDesc: 'Push notifications apply only to the browser you are using right now.',
             timingTitle: 'When we interrupt you',
             historyTitle: 'Notification history',
-            historyDesc: 'See what we have sent you.',
+            historyDesc: 'See what we have sent you. The in-app history is always kept, whatever you switch off.',
             historyCta: 'Open history',
             saveFailed: 'That preference was not saved. Please try again.',
         },

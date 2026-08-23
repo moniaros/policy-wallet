@@ -9,11 +9,8 @@ import { SettingsSection } from "@/components/settings/SettingsSection"
 import { Switch } from "@/components/ui/form/Switch"
 import { PushOptIn } from "@/components/notifications/PushOptIn"
 import { QuietHours } from "@/components/notifications/QuietHours"
-import { toggleNotificationPreference } from "@/app/(protected)/account/actions"
-import {
-    NOTIFICATION_PREFERENCE_GROUPS,
-    eventTypesFor,
-} from "@/lib/notifications/preference-registry"
+import { setNotificationStreamPreference } from "@/app/(protected)/account/actions"
+import { NOTIFICATION_PREFERENCE_GROUPS } from "@/lib/notifications/preference-registry"
 import type { NotificationSettingsData } from "@/app/(protected)/account/data"
 
 const GROUP_ICON = {
@@ -34,15 +31,18 @@ const GROUP_ICON = {
  * governs it as part of a group. Turning a group off in one screen could be
  * silently half-undone in the other. `/notifications` now owns the history feed
  * and links here for the controls.
+ *
+ * A switch governs its whole STREAM, across every channel that reaches the
+ * customer outside the app. This screen used to write `channel: "email"` and
+ * nothing else, so "off" silenced email while push kept firing. The channel
+ * dimension now lives entirely server-side (`setNotificationStreamPreference`
+ * fans out; `data.streams` folds back) — this component never names a channel,
+ * and a guard holds it to that. The in-app timeline is deliberately not
+ * governable: it is the customer's own record and the bell does not interrupt.
  */
 export function NotificationsSection({ data }: { data: NotificationSettingsData }) {
     const { t } = useLanguage()
     const copy = t.settings.notifications
-
-    const initial = new Map<string, boolean>()
-    for (const pref of data.preferences) {
-        if (pref.channel === "email") initial.set(pref.eventType, pref.enabled)
-    }
 
     // Optimistic, keyed by the group's primary event type. A preference write is
     // a server round-trip; a switch that does not move until it lands reads as
@@ -50,24 +50,20 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
     const [overrides, setOverrides] = useState<Record<string, boolean>>({})
     const [pending, setPending] = useState<Record<string, boolean>>({})
 
-    // Absent row means on — the dispatcher only suppresses on an explicit false.
+    // Absent stream means on — the dispatcher only suppresses on an explicit false.
     const isEnabled = (eventType: string) =>
-        overrides[eventType] ?? initial.get(eventType) ?? true
+        overrides[eventType] ?? data.streams[eventType] ?? true
 
     const toggle = async (group: (typeof NOTIFICATION_PREFERENCE_GROUPS)[number], next: boolean) => {
         const key = group.eventType
         setOverrides((prev) => ({ ...prev, [key]: next }))
         setPending((prev) => ({ ...prev, [key]: true }))
 
-        // One switch governs every event type in its group, so they must all
-        // move together or the group splits.
-        const results = await Promise.all(
-            eventTypesFor(group).map((eventType) =>
-                toggleNotificationPreference(eventType, "email", next).catch(() => ({
-                    error: "FAILED",
-                }))
-            )
-        )
+        // One call, one transaction: every event type in the group, every
+        // outreach channel — they all move together or not at all.
+        const result = await setNotificationStreamPreference(key, next).catch(() => ({
+            error: "FAILED",
+        }))
 
         setPending((prev) => {
             const rest = { ...prev }
@@ -75,7 +71,7 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
             return rest
         })
 
-        if (results.some((result) => result && "error" in result && result.error)) {
+        if (result && "error" in result && result.error) {
             setOverrides((prev) => ({ ...prev, [key]: !next }))
             toast.error(copy.saveFailed)
         }
@@ -83,7 +79,7 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
 
     return (
         <>
-            <SettingsSection title={copy.emailTitle} description={copy.emailDesc}>
+            <SettingsSection title={copy.streamsTitle} description={copy.streamsDesc}>
                 <div className="divide-y divide-black/5 dark:divide-white/10">
                     {NOTIFICATION_PREFERENCE_GROUPS.map((group) => {
                         const Icon = GROUP_ICON[group.labelKey]

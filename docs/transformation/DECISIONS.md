@@ -514,3 +514,32 @@ does not vary by plan. That part was right, for the wrong reasons.
    re-promoted to a finding.
 3. A number that is suspiciously clean — a whole column of zeros — is a prompt to verify the
    extraction, not a result. Every other surface in this run had non-zero truncation.
+
+
+---
+
+## D-016 — A raw NUL byte makes a source file invisible to every grep-based guard
+
+date: 2026-08-24
+raised_by: Adversarial Reviewer, during P1-09 review
+decision: `scripts/check-utf8.js` now fails on a raw NUL in tracked source. Write the `\u0000` escape.
+
+Reviewing P1-09 I ran `grep -n "export" lib/notifications/preference-channels.ts` on a 4,907-byte
+file and got **nothing**. The file contained a NUL at line 73 — a deliberate composite-key delimiter
+written as a **literal NUL byte** rather than the `\u0000` escape.
+
+Runtime behaviour was correct and `tsc` was happy. The problem is tooling:
+
+- **grep, ripgrep and git classify a file containing NUL as binary** and skip it silently.
+- **`lint:utf8` passed**, because U+0000 *is* valid UTF-8 — the check decodes and accepts.
+
+So a source file can be invisible to every command-line text tool while every gate stays green. In a
+run whose entire method is filesystem-enumerating, grep-based guards, that is a hole under all of
+them at once — and unreadable by eye, because an editor renders the NUL as nothing.
+
+Fixed two ways: the delimiter is now the escape (behaviourally identical, textually greppable), and
+`check-utf8.js` reports a raw NUL with offset, line and reason. Proven red on a planted NUL in
+`lib/utils.ts`, green after revert. `lint:utf8` is already a blocking CI check.
+
+**The general point:** this run has repeatedly found guards whose *universe* was too small. This is
+the same failure one level down — a correct universe, and a file its *reader* cannot see.

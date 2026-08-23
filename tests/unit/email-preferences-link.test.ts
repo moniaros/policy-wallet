@@ -75,6 +75,6 @@ describe('the preferences link opens the preferences screen', () => {
         const section = strip(
             readFileSync('components/settings/sections/NotificationsSection.tsx', 'utf-8')
         )
-        expect(section).toMatch(/toggleNotificationPreference/)
+        expect(section).toMatch(/setNotificationStreamPreference/)
     })
 })

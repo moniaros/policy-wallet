@@ -9,6 +9,8 @@ import { stripe } from "@/lib/stripe"
 import { createCheckoutSession } from "@/lib/billing"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { getSiteOrigin } from "@/lib/seo/site"
+import { NOTIFICATION_PREFERENCE_GROUPS } from "@/lib/notifications/preference-registry"
+import { preferenceRowsForStream } from "@/lib/notifications/preference-channels"
 
 /**
  * Start a paid upgrade. ALWAYS goes through Stripe Checkout — the old
@@ -294,27 +296,49 @@ export async function updateEmail(newEmail: string) {
 }
 
 
-export async function toggleNotificationPreference(eventType: string, channel: string, enabled: boolean) {
+/**
+ * Switch one notification stream on or off — across EVERY channel that
+ * reaches the customer outside the app.
+ *
+ * The export this replaced (`toggleNotificationPreference`) took
+ * `(eventType, channel, enabled)` and the settings screen called it with
+ * `channel: "email"` hardcoded: a switch labelled as the stream governed one
+ * pipe of it, so "off" silenced email while push — an implemented transport,
+ * VAPID-keyed in production — kept firing, and the customer was told nothing.
+ * The channel dimension is decided here, derived from the channel registry
+ * (`PREFERENCE_CHANNELS`); a client cannot name a channel, and only streams
+ * the preference registry declares are writable. `in_app` is deliberately
+ * not governed — see lib/notifications/preference-channels.ts.
+ *
+ * One transaction: the switch governs the whole stream, and a half-applied
+ * write is exactly the split state the group exists to prevent.
+ */
+export async function setNotificationStreamPreference(eventType: string, enabled: boolean) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    await db.notificationPreference.upsert({
-        where: {
-            userId_eventType_channel: {
-                userId: authResult.dbUser.id,
-                eventType,
-                channel
-            }
-        },
-        update: { enabled },
-        create: {
-            userId: authResult.dbUser.id,
-            eventType,
-            channel,
-            enabled
-        }
-    })
+    const group = NOTIFICATION_PREFERENCE_GROUPS.find((g) => g.eventType === eventType)
+    // "use server" makes this a public endpoint: refuse anything but the
+    // declared streams rather than writing arbitrary rows.
+    if (!group) return { error: "Unknown stream" }
 
-    revalidatePath("/account")
+    const rows = preferenceRowsForStream(authResult.dbUser.id, group, enabled)
+    await db.$transaction(
+        rows.map((row) =>
+            db.notificationPreference.upsert({
+                where: {
+                    userId_eventType_channel: {
+                        userId: row.userId,
+                        eventType: row.eventType,
+                        channel: row.channel,
+                    },
+                },
+                update: { enabled: row.enabled },
+                create: row,
+            })
+        )
+    )
+
+    revalidatePath("/account/notifications")
     return { success: true }
 }

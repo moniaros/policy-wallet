@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { requireApiUser } from "@/lib/api-auth"
 import { z } from "zod"
+import { PREFERENCE_CHANNELS } from "@/lib/notifications/preference-channels"
 
 const DEFAULT_NOTIFICATION_EVENTS = [
     "policy_expiring",
@@ -12,7 +13,11 @@ const DEFAULT_NOTIFICATION_EVENTS = [
 
 const notificationPreferenceSchema = z.object({
     event_type: z.string().min(1),
-    channel: z.enum(["email", "push", "sms"]),
+    // Derived from the channel registry: only channels the dispatcher can
+    // actually deliver on outside the app are writable. The enum used to
+    // accept "sms" — a transport that has never existed — so a client could
+    // store a preference nothing would ever consult.
+    channel: z.enum(PREFERENCE_CHANNELS as [string, ...string[]]),
     enabled: z.boolean(),
 })
 
@@ -40,12 +45,15 @@ export async function GET() {
             const userPrefs = preferences.filter((p: any) => p.eventType === event)
             return {
                 event_type: event,
-                channels: {
-                    email: userPrefs.find((p: any) => p.channel === "email")?.enabled ?? true,
-                    push: userPrefs.find((p: any) => p.channel === "push")?.enabled ?? true,
-                    // SMS channel is not currently exposed in UI but is preserved for backward compatibility.
-                    sms: userPrefs.find((p: any) => p.channel === "sms")?.enabled ?? false,
-                }
+                // One key per deliverable outreach channel, absent row = on —
+                // the dispatcher's rule. The response used to include an
+                // `sms` key for a transport that has never existed.
+                channels: Object.fromEntries(
+                    PREFERENCE_CHANNELS.map((channel) => [
+                        channel,
+                        userPrefs.find((p: any) => p.channel === channel)?.enabled ?? true,
+                    ])
+                )
             }
         })
 

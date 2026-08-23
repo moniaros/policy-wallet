@@ -1,16 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { dbMock, sendEmail } = await vi.hoisted(async () => ({
+const { dbMock, sendEmail, sendWebPush } = await vi.hoisted(async () => ({
     dbMock: (await import("../helpers/notification-db-mock")).notificationDbMock(),
     sendEmail: vi.fn(async () => ({ success: true })),
+    sendWebPush: vi.fn(async () => ({ ok: true as const })),
 }))
 
 vi.mock("@/lib/db", () => ({ db: dbMock }))
 vi.mock("@/lib/email/email-service", () => ({ sendEmail }))
+vi.mock("@/lib/push/web-push", () => ({ sendWebPush }))
 vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
 
 import { emit } from "@/lib/notifications/dispatch"
 import { NOTIFICATION_EVENTS } from "@/lib/notifications/registry"
+import { NOTIFICATION_PREFERENCE_GROUPS } from "@/lib/notifications/preference-registry"
+import { PREFERENCE_CHANNELS, preferenceRowsForStream } from "@/lib/notifications/preference-channels"
 
 const rows = () => dbMock.notificationEvent.create.mock.calls.map((c: any[]) => c[0].data)
 const rowFor = (channel: string) => rows().find((r: any) => r.channel === channel)
@@ -322,5 +326,97 @@ describe("the dispatcher", () => {
         // The whole point of an override layer is that it is optional.
         expect(result.delivered).toContain("in_app")
         expect(rowFor("in_app").priority).toBe(NOTIFICATION_EVENTS.policy_analyzed.priority)
+    })
+})
+
+/**
+ * The settings switch and the send path, meeting in the middle.
+ *
+ * The switch's server action writes rows via `preferenceRowsForStream`; the
+ * dispatcher reads them in `suppressedChannels`. These cases feed the EXACT
+ * rows the action writes into the dispatcher's read and assert the outcome,
+ * so "the preference UI stores something the send path honours" is a tested
+ * seam, not an assumption. The first case pins the defect that motivated it.
+ */
+describe("the settings switch and the send path agree on channels", () => {
+    beforeEach(() => {
+        // Same reset discipline as the suite above: clear history AND
+        // re-install defaults, because clearAllMocks keeps implementations.
+        vi.clearAllMocks()
+        dbMock.notificationEvent.create.mockResolvedValue({} as never)
+        dbMock.notificationEvent.findFirst.mockResolvedValue(null as never)
+        dbMock.notificationPreference.findMany.mockResolvedValue([] as never)
+        dbMock.pushDevice.findMany.mockResolvedValue([] as never)
+        dbMock.notificationRuleOverride.findMany.mockResolvedValue([] as never)
+        dbMock.notificationSetting.findMany.mockResolvedValue([] as never)
+        dbMock.notificationTemplate.findMany.mockResolvedValue([] as never)
+        dbMock.user.findUnique.mockResolvedValue({
+            email: "owner@example.com",
+            preferredLanguage: "en",
+        } as never)
+        sendWebPush.mockResolvedValue({ ok: true as const })
+        delete process.env.VAPID_PUBLIC_KEY
+        delete process.env.VAPID_PRIVATE_KEY
+    })
+
+    // VAPID keys present and a live device registered: the push arm is
+    // genuinely attemptable, so anything that stops it can only be the
+    // preference. Without this, a "suppressed" push proves nothing — push
+    // would not have fired anyway.
+    const armPush = () => {
+        process.env.VAPID_PUBLIC_KEY = "test-public"
+        process.env.VAPID_PRIVATE_KEY = "test-private"
+        dbMock.pushDevice.findMany.mockResolvedValue([
+            { id: "d1", endpoint: "https://push.example/e1", p256dh: "k", auth: "a" },
+        ] as never)
+    }
+
+    it("the defect, end to end: an email-only opt-out (the old write shape) leaves push firing", async () => {
+        armPush()
+        dbMock.notificationPreference.findMany.mockResolvedValue([
+            { eventType: "policy_expiring", channel: "email", enabled: false },
+        ] as never)
+
+        await emit({
+            event: "policy_expiring",
+            userId: "u1",
+            title: { el: "Λήγει", en: "Expiring" },
+            message: { el: "Το ασφαλιστήριο λήγει.", en: "The policy expires." },
+        })
+
+        // Email is honoured — and the customer's phone lights up anyway.
+        expect(rowFor("email").skipReason).toBe("preference_off")
+        expect(rowFor("push").status).toBe("sent")
+        expect(sendWebPush).toHaveBeenCalledTimes(1)
+    })
+
+    it("what setNotificationStreamPreference writes silences every outreach arm — and only those", async () => {
+        armPush()
+        const renewals = NOTIFICATION_PREFERENCE_GROUPS.find((g) => g.eventType === "policy_expiring")!
+        const written = preferenceRowsForStream("u1", renewals, false)
+        // The dispatcher queries per event type; serve it exactly the rows the
+        // action's transaction persisted for that event type.
+        ;(dbMock.notificationPreference.findMany as ReturnType<typeof vi.fn>).mockImplementation(
+            async (args: any) => written.filter((r) => r.eventType === args?.where?.eventType)
+        )
+
+        const result = await emit({
+            event: "policy_expiring",
+            userId: "u1",
+            title: { el: "Λήγει", en: "Expiring" },
+            message: { el: "Το ασφαλιστήριο λήγει.", en: "The policy expires." },
+        })
+
+        for (const channel of PREFERENCE_CHANNELS) {
+            const row = rowFor(channel)
+            expect(row, `no row for ${channel}`).toBeTruthy()
+            expect(row.skipReason, `${channel} was not suppressed`).toBe("preference_off")
+        }
+        expect(sendEmail).not.toHaveBeenCalled()
+        expect(sendWebPush).not.toHaveBeenCalled()
+        // The in-app record stays: deliberately not governable — the bell is
+        // the customer's own history, and it does not interrupt.
+        expect(rowFor("in_app").status).toBe("sent")
+        expect(result.delivered).toEqual(["in_app"])
     })
 })

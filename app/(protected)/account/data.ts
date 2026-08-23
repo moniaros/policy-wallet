@@ -6,6 +6,8 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { getCanonicalPlanForTier, getPlanById } from "@/lib/pricing/plan-catalog"
 import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
 import { startOfAthensMonth } from "@/lib/policy-status"
+import { NOTIFICATION_PREFERENCE_GROUPS } from "@/lib/notifications/preference-registry"
+import { streamReachesOut } from "@/lib/notifications/preference-channels"
 import type { EntitlementLimits, PlanTier } from "@/types/subscription-entitlements"
 
 /**
@@ -188,7 +190,15 @@ export async function getSecurityData(): Promise<SecurityData> {
 // ── Notifications ────────────────────────────────────────────────────
 
 export interface NotificationSettingsData {
-    preferences: Array<{ eventType: string; channel: string; enabled: boolean }>
+    /**
+     * Per stream (keyed by the group's primary event type): does it still
+     * reach the customer outside the app? Computed here, server-side, by
+     * `streamReachesOut` — the client gets a verdict, not raw rows, so the
+     * screen never re-derives the channel dimension (and never learns the
+     * channel vocabulary; the guard in notification-preference-keys.test.ts
+     * holds it to that).
+     */
+    streams: Record<string, boolean>
     quietHours: { enabled: boolean; start: number; end: number; timezone: string } | null
 }
 
@@ -204,7 +214,12 @@ export async function getNotificationSettingsData(): Promise<NotificationSetting
         getQuietHours(),
     ])
 
-    return { preferences, quietHours: quietHours ?? null }
+    const streams: Record<string, boolean> = {}
+    for (const group of NOTIFICATION_PREFERENCE_GROUPS) {
+        streams[group.eventType] = streamReachesOut(preferences, group)
+    }
+
+    return { streams, quietHours: quietHours ?? null }
 }
 
 // ── Privacy & data ───────────────────────────────────────────────────

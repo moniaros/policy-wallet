@@ -6,6 +6,7 @@ import { PolicyService } from "@/lib/services/policy.service"
 import { revalidatePath } from "next/cache"
 import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
 import { displayPersonName, firstNameLabel } from "@/lib/wallet/policy-identity"
+import { PREFERENCE_CHANNELS } from "@/lib/notifications/preference-channels"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
     "policy_expiring",
@@ -15,22 +16,22 @@ const ONBOARDING_REMINDER_EVENT_TYPES = [
     "questionnaire_received",
 ]
 
-const ONBOARDING_NOTIFICATION_CHANNELS = ["email", "push"] as const
-
 async function syncOnboardingReminderPreferences(
     userId: string,
     reminderOptIn: boolean,
     reminderChannels: string[]
 ) {
+    // Only channels the product can deliver on outside the app — derived, so a
+    // newly implemented transport is accepted here without this file changing.
     const selectedChannels = new Set(
         reminderChannels
             .map((channel) => String(channel).toLowerCase().trim())
-            .filter((channel): channel is "email" | "push" => channel === "email" || channel === "push")
+            .filter((channel) => (PREFERENCE_CHANNELS as string[]).includes(channel))
     )
 
     const ops: Promise<unknown>[] = []
     for (const eventType of ONBOARDING_REMINDER_EVENT_TYPES) {
-        for (const channel of ONBOARDING_NOTIFICATION_CHANNELS) {
+        for (const channel of PREFERENCE_CHANNELS) {
             const enabled = reminderOptIn && selectedChannels.has(channel)
             ops.push(
                 db.notificationPreference.upsert({
