@@ -207,6 +207,17 @@ nothing says so.
 global off switch honoured in outbound. Neither exists. Phase 4 cannot ship a cadence-controlled
 mechanic until they do — recorded here so the dependency is not discovered during Phase 4.
 
-### P1-10…P1-13
+### P1-10 — One status vocabulary across every B2C surface · `todo`
+owner: Implementation (Fable 5) · file_boundary: `app/(protected)/agent/page.tsx`, `lib/wallet/map-policy-card-status.ts`
+
+- [ ] `/agent` adopts `getPolicyStatusView`; **delete** `mapPolicyCardStatus` rather than adding
+      `expired` to it — two pipelines that agree today drift again, which is the history that file
+      already records
+- [ ] guard: no B2C surface derives a policy status outside `getPolicyStatusView` /
+      `resolvePolicyLifecycle`. Universe = `app/` + `components/`, enumerated from the filesystem
+- [ ] ledger row: no status state is lost in the migration — `action_needed` currently absorbs
+      `expired`, so the mapping is one-to-many and must be written out
+
+### P1-11…P1-13
 Truncation (blocked by Phase 3 primitive, per candidate #12), layout integrity, global chrome,
 sub-44px sweep, settings subtree, upload flow. Written when their surfaces are baselined.

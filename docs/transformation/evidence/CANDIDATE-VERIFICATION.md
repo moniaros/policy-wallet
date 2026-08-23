@@ -40,7 +40,7 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 11 · REFUTED 8 · DIFFERENT 5 · PENDING 3 — 24 candidates verified
+- CONFIRMED 12 · REFUTED 8 · DIFFERENT 5 · PENDING 3 — 25 candidates verified
 - Of the brief's own candidates, **7 are refuted or reclassified** — a third of everything checked
 - Guard failure modes found: **universe** too small (D-005, D-009), **adoption** incomplete (D-007), **assertion** weaker than the invariant (#17)
 - **Score-in-outbound sites: 5** (brief said 1; I found 4 by grep; the emitter made 5)
@@ -252,6 +252,36 @@ label implies.
 a ceiling and a global off across every channel. Recorded as a Phase 4 precondition rather than a
 Phase 1 defect — except the email-only scoping, which is a mislabelled control now and belongs in
 Phase 1.
+
+
+## §4.4.4 — two B2C surfaces describe the same policy's status with different words
+
+| # | Finding | Verdict | Evidence |
+|---|---|---|---|
+| 25 | Σύμβουλος and Πορτοφόλι use different status pipelines | **CONFIRMED — a vocabulary divergence, not a clock bug** | `/agent` uses `mapPolicyCardStatus` (`lib/wallet/map-policy-card-status.ts`); the wallet and every card/table/pill use `getPolicyStatusView`. |
+
+The clock half of this was already fixed and fixed well: `mapPolicyCardStatus` existed as two
+byte-identical copies computing days by dividing milliseconds, so between 21:00 UTC and Athens
+midnight a policy still in force resolved to −1 and rendered "action needed" while the wallet
+called it active. It now calls `calendarDaysUntil`, the same Athens-calendar helper everything else
+uses. That is not the problem.
+
+The problem is the **vocabulary**. `mapPolicyCardStatus` returns
+`'active' | 'expiring_soon' | 'incomplete' | 'action_needed'` — **there is no `expired`.** A lapsed
+policy collapses into `action_needed`. `getPolicyStatusView` has a distinct `expired` state, which
+`PolicyWallet.tsx` renders as «Έληξε».
+
+So one policy, on one day, reads «Χρειάζεται προσοχή» on Σύμβουλος and «Έληξε» on Πορτοφόλι. Both
+are defensible in isolation; together they violate §4.4.4 — "identical facts render identically…
+status uses the same primitive on every surface" — and they blur the single most important
+distinction on the surface: *this cover has ended* versus *this needs a look*.
+
+**Fix shape:** `/agent` adopts `getPolicyStatusView`, and `mapPolicyCardStatus` is deleted rather
+than extended. Adding `expired` to the second vocabulary would leave two pipelines that agree
+today and drift again — which is the history this very file records.
+
+**Doc debt:** its comment says it serves "the `/agent` and `/account` summaries"; only `/agent`
+uses it now.
 
 
 ---
