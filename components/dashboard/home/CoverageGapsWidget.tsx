@@ -1,5 +1,7 @@
 import Link from "next/link"
 import { ShieldAlert } from "lucide-react"
+import { GAP_SEVERITIES, describeSeverity } from "@/lib/gaps/severity-display"
+import { toneDotClass } from "@/components/gaps/severity-tone"
 
 export interface GapSeverityCounts {
     critical: number
@@ -8,12 +10,6 @@ export interface GapSeverityCounts {
     low: number
 }
 
-const SEVERITY_DOTS: Array<{ key: keyof GapSeverityCounts; dot: string }> = [
-    { key: "critical", dot: "bg-rose-500" },
-    { key: "high", dot: "bg-amber-500" },
-    { key: "medium", dot: "bg-sky-500" },
-    { key: "low", dot: "bg-black/30 dark:bg-white/30" },
-]
 
 /** Open coverage gaps by severity — links into coverage insights. */
 export function CoverageGapsWidget({
@@ -28,6 +24,8 @@ export function CoverageGapsWidget({
         /** Honest framing: these levels are a profile-based priority, not a risk grade. */
         /** Null when the page already states this caveat elsewhere. */
         note: string | null
+        /** Accessible name for the chip group — a bare «4 υψηλά» has no subject. */
+        groupLabel: string
     }
 }) {
     const total = counts.critical + counts.high + counts.medium + counts.low
@@ -43,16 +41,26 @@ export function CoverageGapsWidget({
                     <p className="text-sm text-muted-foreground">{labels.noGaps}</p>
                 ) : (
                     <>
-                        <div className="flex flex-wrap gap-2">
-                            {SEVERITY_DOTS.filter(({ key }) => counts[key] > 0).map(({ key, dot }) => (
-                                <span
-                                    key={key}
-                                    className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
-                                >
-                                    <span className={`h-1.5 w-1.5 rounded-full ${dot}`} aria-hidden />
-                                    {counts[key]} {labels.severity[key]}
-                                </span>
-                            ))}
+                        {/* A LIST, with a name. Each chip reads «4 υψηλά» on its
+                            own, which is a number and an adjective with no
+                            subject; grouped and named, a screen reader announces
+                            what the four are and how many kinds there are. */}
+                        <div className="flex flex-wrap gap-2" role="list" aria-label={labels.groupLabel}>
+                            {GAP_SEVERITIES.filter((key) => counts[key] > 0).map((key) => {
+                                // Order and tone come from the primitive; this
+                                // card no longer keeps its own severity table.
+                                const { tone } = describeSeverity(key)
+                                return (
+                                    <span
+                                        key={key}
+                                        role="listitem"
+                                        className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
+                                    >
+                                        <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(tone)}`} aria-hidden />
+                                        {counts[key]} {labels.severity[key]}
+                                    </span>
+                                )
+                            })}
                         </div>
                         {/* "Critical/high" read as a risk verdict; the gap engine treats
                             them as a profile-based priority (the report itself omits

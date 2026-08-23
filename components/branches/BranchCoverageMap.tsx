@@ -41,7 +41,7 @@ export function BranchCoverageMap({
                 <p className="pw-kicker">{labels.kicker}</p>
                 <Link
                     href="/branches"
-                    className="inline-flex min-h-[24px] items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                    className="inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {labels.viewAll}
                     <ArrowRight className="h-3 w-3" aria-hidden />
@@ -62,7 +62,7 @@ export function BranchCoverageMap({
                         href={`/branches/${entry.id}`}
                         title={entry.stateLabel}
                         className={cn(
-                            "flex snap-start items-center gap-2 rounded-xl border border-black/10 bg-white px-3 py-2.5 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40 sm:min-w-0",
+                            "pw-control-boundary flex min-h-11 snap-start items-center gap-2 rounded-xl border bg-white px-3 py-2.5 transition-colors hover:border-primary/40 dark:bg-black dark:hover:border-mint/40 sm:min-w-0",
                             // "neutral" means the user holds NO cover in this branch.
                             // This used to be `opacity-70`, which multiplied against the
                             // label's own text-black/75 and pushed it to 4.35:1 — under

@@ -777,6 +777,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             methodologyNotAdvice: home.scoreMethodologyNotAdvice,
                             scoreDisclosureOpen: home.scoreDisclosureOpen,
                             scoreDisclosureLabel: home.scoreDisclosureLabel,
+                            scoreRingLabel: home.scoreRingLabel,
                         }}
                     />
 
@@ -822,6 +823,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 // attention list directly above already states
                                 // it. Passing null renders it once per page.
                                 note: null,
+                                groupLabel: home.severityGroupLabel,
                             }}
                         />
                     </div>

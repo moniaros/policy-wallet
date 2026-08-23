@@ -62,11 +62,13 @@ describe("the primitive", () => {
  * new entry means a new screen implied a risk verdict the product cannot back.
  */
 const KNOWN_BYPASSES = new Set([
-    // These three already show the caveat (`recPriorityNote`) — they still keep
-    // their own colour map, so migrating them is tidying, not a truth fix.
+    // Already shows the caveat (`recPriorityNote`) and still keeps its own colour
+    // map, so migrating it is tidying, not a truth fix.
     "components/coverage/RecommendationCards.tsx",
-    "components/dashboard/home/CoverageGapsWidget.tsx",
-    "components/dashboard/home/AttentionList.tsx",
+    // MIGRATED 2026-08-23 (dashboard Goal 3): CoverageGapsWidget and
+    // AttentionList now take order and tone from describeSeverity() and turn the
+    // neutral tone into a class in ONE place (components/gaps/severity-tone.ts),
+    // keyed by tone rather than by the severity words. Both dropped off this list.
 
     // These keep their own colour map AND print a severity WORD to a person, so
     // each now renders <SeverityCaveat /> — pinned by CAVEAT_REQUIRED below.
@@ -188,7 +190,7 @@ describe("no new hand-rolled severity presentation", () => {
     it("the debt list does not silently grow", () => {
         // A ceiling, so the list can only shrink without someone noticing. Drop
         // it as surfaces migrate; never raise it to make a new screen pass.
-        expect(KNOWN_BYPASSES.size).toBeLessThanOrEqual(11)
+        expect(KNOWN_BYPASSES.size).toBeLessThanOrEqual(9)
     })
 
     it("every surface that names a severity says what the word is worth", () => {

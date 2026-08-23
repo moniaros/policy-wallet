@@ -1812,6 +1812,8 @@ export const en: TranslationKeys = {
             scoreUnsupportedNothingAnalysed: 'We have not analysed any of your policies yet, so we cannot give a coverage indicator.',
             scoreUnsupportedNoCover: 'All of your policies have expired — you have no active cover right now. We do not show an indicator for cover that is not in force.',
             scoreDisclosureOpen: 'See the coverage indicator',
+            scoreRingLabel: 'Coverage breadth index: {score} out of 100',
+            severityGroupLabel: 'Open findings by priority',
             scoreDisclosureLabel: 'Breadth-of-cover indicator',
             heroAreasMany: '{count} risk categories may need review',
             heroPoliciesOne: '1 policy on file',

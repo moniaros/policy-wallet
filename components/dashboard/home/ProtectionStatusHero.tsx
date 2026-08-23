@@ -88,6 +88,8 @@ export function ProtectionStatusHero({
         methodologyNotAdvice: string
         scoreDisclosureOpen: string
         scoreDisclosureLabel: string
+        /** Accessible name for the ring; `{score}` is substituted. */
+        scoreRingLabel: string
     }
 }) {
     if (state === "empty") {
@@ -191,7 +193,12 @@ export function ProtectionStatusHero({
                         {labels.scoreDisclosureOpen}
                     </summary>
                     <div className="mt-3 flex items-center gap-4">
-                        <ScoreRing value={score} toneClass={ringToneClass} sizeClass="h-16 w-16">
+                        <ScoreRing
+                            value={score}
+                            toneClass={ringToneClass}
+                            sizeClass="h-16 w-16"
+                            label={labels.scoreRingLabel.replace("{score}", String(score ?? "—"))}
+                        >
                             <span className="text-base font-semibold text-black dark:text-white">{score}</span>
                         </ScoreRing>
                         <div className="min-w-0 flex-1">

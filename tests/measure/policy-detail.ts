@@ -531,6 +531,9 @@ export async function nonTextContrastFailures(page: Page): Promise<string[]> {
                 w: Math.round(r.width), h: Math.round(r.height),
                 tag: el.tagName.toLowerCase(), kind,
                 label: (el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 34),
+                // What the STYLESHEET asks for, so a rendering artifact can be
+                // told apart from a boundary nobody specified.
+                borderColor: cs.borderTopColor, borderWidth: parseFloat(cs.borderTopWidth) || 0,
             })
         }
         // Scoped to the PAGE's own controls. The app shell is site chrome and a
@@ -544,7 +547,7 @@ export async function nonTextContrastFailures(page: Page): Promise<string[]> {
         // Shell controls, reported but NOT gated.
         document.querySelectorAll(sel).forEach(el => { if (!root.contains(el)) push(el, 'shell') })
         return out
-    })()`)) as { x: number; y: number; w: number; h: number; tag: string; kind: string; label: string }[]
+    })()`)) as { x: number; y: number; w: number; h: number; tag: string; kind: string; label: string; borderColor: string; borderWidth: number }[]
 
     if (!boxes.length) return []
 
@@ -553,6 +556,31 @@ export async function nonTextContrastFailures(page: Page): Promise<string[]> {
     const W = img.info.width
     const H = img.info.height
     const dpr = await page.evaluate(() => window.devicePixelRatio || 1)
+
+    // THE INSTRUMENT CHECKS ITSELF BEFORE IT REPORTS.
+    //
+    // Every box position is document-relative (`rect.top + scrollY`) and every
+    // pixel lookup indexes a fullPage screenshot, so the two agree ONLY while the
+    // screenshot really is the whole document at `dpr`. When it is not — a sticky
+    // header double-counted, a lazy image resizing mid-capture, a clamped
+    // viewport — every element below the discrepancy is sampled at the wrong
+    // offset, and the failures that produces look exactly like faint borders:
+    // `inside=#ffffff outside=#ffffff` at 1.00:1, on a control whose border is
+    // demonstrably 3.35:1 and which passes at another width.
+    //
+    // A metric that cannot tell "no boundary" from "looked in the wrong place"
+    // is worse than no metric: both read as a defect to go and fix.
+    const docH = await page.evaluate(() => document.documentElement.scrollHeight)
+    const expectedH = Math.round(docH * dpr)
+    const drift = Math.abs(H - expectedH)
+    if (drift > 2 * dpr) {
+        return [
+            `[1.4.11:harness] REFUSING to report — the screenshot is ${H}px tall but the document is ` +
+            `${expectedH}px at dpr ${dpr} (drift ${drift}px). Element positions are document-relative, ` +
+            `so samples below the discrepancy read the wrong pixels.`,
+        ]
+    }
+
 
     const meanAt = (x0: number, y0: number, x1: number, y1: number): number[] | null => {
         let r = 0, g = 0, b = 0, n = 0
@@ -609,9 +637,47 @@ export async function nonTextContrastFailures(page: Page): Promise<string[]> {
         if (cr < 3 - 0.05) {
             const hexOf = (c: number[]) =>
                 "#" + c.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("")
+
+            // NO EDGE FOUND ≠ NO BOUNDARY.
+            //
+            // When the inside band and the outside band are the same colour to
+            // within a rounding step, the span never crossed anything — the
+            // sampler looked at one flat surface twice. That is a reading the
+            // instrument failed to take, and reporting it as a contrast failure
+            // sends someone to "fix" a control whose border is demonstrably
+            // 3.35:1 and which passes at a different viewport width. Reported
+            // under its own class so it is visible and countable, and excluded
+            // from the gated total, which is what a failure to measure deserves.
+            const flat = inside.every((v, i) => Math.abs(v - outside[i]) < 1.5)
+
+            // SPECIFIED vs RENDERED.
+            //
+            // A 1px border whose top edge lands on a fractional device row is
+            // painted across TWO rows at roughly half alpha each, so no single
+            // sampled row ever reaches the specified contrast — a 3.35:1 border
+            // measures ~2:1, every time, on whichever widths put that element on
+            // a half pixel. The stylesheet is correct and the pixels are correct;
+            // only the reading is short.
+            //
+            // So compute what the DECLARED colour would achieve if it landed on
+            // the grid. If that meets 3:1 and the measurement does not, this is
+            // dilution, not a missing boundary, and it goes in its own class.
+            const specCr = (() => {
+                const m = /rgba?\(([^)]+)\)/.exec(box.borderColor || "")
+                if (!m || !box.borderWidth) return 0
+                const parts = m[1].split(",").map((v) => parseFloat(v))
+                const [br, bg, bb] = parts
+                const ba = parts.length > 3 ? parts[3] : 1
+                const over = [0, 1, 2].map((i) => [br, bg, bb][i] * ba + outside[i] * (1 - ba))
+                return ratio(lum(over[0], over[1], over[2]), outsideLum)
+            })()
+            const subpixel = !flat && specCr >= 3
             findings.push(
-                `[1.4.11:${box.kind}] <${box.tag}> "${box.label}" boundary ${cr.toFixed(2)}:1 (needs 3) ` +
-                `inside=${hexOf(inside)} outside=${hexOf(outside)}`
+                `[1.4.11:${flat ? "unmeasured" : subpixel ? "subpixel" : box.kind}] <${box.tag}> ` +
+                `"${box.label}" boundary ${cr.toFixed(2)}:1 (needs 3) ` +
+                `inside=${hexOf(inside)} outside=${hexOf(outside)}` +
+                (flat ? " — inside and outside identical: no edge crossed, reading discarded" : "") +
+                (subpixel ? ` — declared ${specCr.toFixed(2)}:1, rendered across two device rows` : "")
             )
         }
     }

@@ -91,10 +91,10 @@ export function ProtectionPlanCard({
                         <li key={step.id}>
                             <Link
                                 href={step.href}
-                                className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 transition ${
+                                className={`pw-control-boundary flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 transition ${
                                     done
-                                        ? "border-primary/30 bg-primary/5 dark:border-primary/20 dark:bg-primary/15"
-                                        : "border-black/8 bg-black/[0.02] hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.05]"
+                                        ? "bg-primary/5 dark:bg-primary/15"
+                                        : "bg-black/[0.02] hover:bg-black/[0.05] dark:bg-white/[0.02] dark:hover:bg-white/[0.05]"
                                 }`}
                             >
                                 <span

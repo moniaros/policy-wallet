@@ -210,7 +210,9 @@ export function AppShell({
                         aria-label={t.nav.primaryNavigation}
                         aria-expanded={sidebarOpen}
                         aria-controls="app-sidebar"
-                        className="p-2 -ml-2 text-black/60 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg">
+                        // 40x44 before: `p-2` on a 24px icon gives 40 wide, which
+                        // is under the 44px floor on the axis a thumb misses on.
+                        className="grid h-11 w-11 -ml-2 place-items-center text-black/60 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>

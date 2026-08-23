@@ -25,6 +25,7 @@ const LABELS = {
     methodologyNotAdvice: 'Not personalised insurance advice.',
     scoreDisclosureOpen: 'See the coverage indicator',
     scoreDisclosureLabel: 'Breadth-of-cover indicator',
+    scoreRingLabel: "Coverage breadth index: {score} out of 100",
 }
 
 function renderHero(props: Partial<Parameters<typeof ProtectionStatusHero>[0]> = {}) {

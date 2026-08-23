@@ -100,7 +100,7 @@ export function RenewalsTimelineCard({
                                 <Link
                                     key={item.id}
                                     href={`/wallet/${item.id}#dates`}
-                                    className="flex items-center gap-3 rounded-xl border border-black/8 bg-black/[0.03] p-2.5 transition hover:bg-black/[0.06] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+                                    className="pw-control-boundary flex items-center gap-3 rounded-xl border bg-black/[0.03] p-2.5 transition hover:bg-black/[0.06] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
                                 >
                                     <div className={`h-8 w-1 flex-shrink-0 rounded-full ${urgencyColor}`} aria-hidden />
                                     <span className="grid h-7 w-7 flex-shrink-0 place-items-center rounded-lg bg-white text-black/70 dark:bg-black dark:text-white/70">

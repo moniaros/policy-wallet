@@ -89,7 +89,7 @@ export function PortfolioSummaryCard({
                                 <Link
                                     key={document.id}
                                     href={`/wallet/${document.policyId}`}
-                                    className="min-w-[220px] snap-start rounded-xl border border-black/10 bg-black/5 px-3 py-3 transition hover:bg-black/10 dark:border-white/15 dark:bg-black/30 dark:hover:bg-black/40"
+                                    className="pw-control-boundary min-w-[220px] snap-start rounded-xl border bg-black/5 px-3 py-3 transition hover:bg-black/10 dark:bg-black/30 dark:hover:bg-black/40"
                                 >
                                     <div className="flex items-center justify-between gap-2">
                                         <span className="truncate text-xs font-semibold text-black dark:text-white">{document.fileName}</span>

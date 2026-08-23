@@ -20,6 +20,7 @@ export function ScoreRing({
     sizeClass = "h-14 w-14",
     strokeWidth = 3,
     children,
+    label,
 }: {
     /** 0–100, or null when there is nothing to draw. */
     value: number | null
@@ -31,9 +32,21 @@ export function ScoreRing({
     strokeWidth?: number
     /** Centered content — usually the number, or an em dash. */
     children?: ReactNode
+    /**
+     * What a screen reader should hear INSTEAD of the bare centred number.
+     *
+     * The arc is `aria-hidden`, so without this the whole control announces as
+     * "74" — no scale, no units, no indication it is an index of cover BREADTH
+     * rather than a grade. Sighted readers get the scale from the ring; nobody
+     * else did. When set, the number is hidden so it is not read twice.
+     */
+    label?: string
 }) {
     return (
-        <div className={`relative shrink-0 ${sizeClass}`}>
+        <div
+            className={`relative shrink-0 ${sizeClass}`}
+            {...(label ? { role: "img", "aria-label": label } : {})}
+        >
             <svg viewBox="0 0 36 36" className={`${sizeClass} -rotate-90`} aria-hidden="true">
                 <path
                     d="M18 2 a 16 16 0 1 1 0 32 a 16 16 0 1 1 0 -32"
@@ -51,7 +64,9 @@ export function ScoreRing({
                     />
                 )}
             </svg>
-            <span className="absolute inset-0 grid place-items-center">{children}</span>
+            <span className="absolute inset-0 grid place-items-center" aria-hidden={label ? true : undefined}>
+                {children}
+            </span>
         </div>
     )
 }

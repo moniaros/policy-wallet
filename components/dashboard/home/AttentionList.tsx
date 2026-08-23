@@ -1,4 +1,6 @@
 import Link from "next/link"
+import { describeSeverity } from "@/lib/gaps/severity-display"
+import { toneDotClass } from "@/components/gaps/severity-tone"
 import { ArrowRight, ShieldCheck } from "lucide-react"
 
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
@@ -16,12 +18,6 @@ export interface AttentionItem {
     timingLabel: string | null
 }
 
-const URGENCY_DOTS: Record<AttentionItem["urgency"], string> = {
-    critical: "bg-rose-500",
-    high: "bg-amber-500",
-    medium: "bg-sky-500",
-    low: "bg-black/30 dark:bg-white/30",
-}
 
 /**
  * "What needs my attention" — the top findings, each framed as
@@ -77,10 +73,10 @@ export function AttentionList({
                             <li key={item.id}>
                                 <Link
                                     href="/coverage-insights"
-                                    className="flex items-start gap-3 rounded-xl border border-black/8 bg-black/[0.03] p-3 transition hover:bg-black/[0.06] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+                                    className="pw-control-boundary flex items-start gap-3 rounded-xl border bg-black/[0.03] p-3 transition hover:bg-black/[0.06] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
                                 >
                                     <span
-                                        className={`mt-1.5 h-2 w-2 flex-shrink-0 rounded-full ${URGENCY_DOTS[item.urgency]}`}
+                                        className={`mt-1.5 h-2 w-2 flex-shrink-0 rounded-full ${toneDotClass(describeSeverity(item.urgency).tone)}`}
                                         aria-hidden
                                     />
                                     <span className="min-w-0 flex-1">
@@ -94,7 +90,7 @@ export function AttentionList({
                                         )}
                                         <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
                                             <span className="inline-flex items-center gap-1 rounded-full border border-black/10 px-2 py-0.5 text-micro font-semibold text-black/60 dark:border-white/15 dark:text-white/60">
-                                                <span className={`h-1.5 w-1.5 rounded-full ${URGENCY_DOTS[item.urgency]}`} aria-hidden />
+                                                <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(describeSeverity(item.urgency).tone)}`} aria-hidden />
                                                 {item.urgencyLabel}
                                             </span>
                                             {item.timingLabel && (

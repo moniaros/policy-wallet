@@ -16,7 +16,7 @@ describe('dashboard gap severity is framed honestly', () => {
         kicker: 'Coverage gaps',
         noGaps: 'No gaps',
         severity: { critical: 'critical', high: 'high', medium: 'medium', low: 'low' },
-        note: 'Priorities are based on your profile — not a definitive risk assessment.',
+        note: 'Priorities are based on your profile — not a definitive risk assessment.', groupLabel: "Open findings by priority",
     }
 
     it('shows the not-a-risk-assessment note whenever severities are shown', () => {

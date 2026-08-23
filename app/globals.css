@@ -442,6 +442,29 @@ pre {
     border-color: rgba(137, 217, 178, 0.5);
   }
 
+  /* AN INTERACTIVE CARD IS A CONTROL, AND ITS EDGE IS ITS BOUNDARY.
+     WCAG 1.4.11 asks 3:1 of the visual boundary of a user-interface component.
+     `--pw-border` is tuned for a card as a SURFACE — a grouping the reader looks
+     past — and measures 1.1–1.7:1, which is right for decoration and wrong the
+     moment the card becomes a link. The dashboard measured 20 such controls at
+     Goal 4: every renewal row, every attention row, every branch tile and half
+     the cards on the page.
+
+     ORDER MATTERS: `.pw-card` sets the `border` SHORTHAND, which resets
+     border-color, so this rule must come after it — placed before, it applied
+     and was silently overridden, and the measurement still read 1.20:1.
+
+     Scoped by ELEMENT, not by a new class, so a card cannot become clickable and
+     silently keep a decorative edge — the thing that made this 20 failures
+     rather than one. Non-interactive `.pw-card` surfaces keep `--pw-border`;
+     1.4.11 does not govern them and darkening every edge in the product to fix a
+     control problem is how you end up with a heavier product. */
+  :where(a, button, [role="button"]).pw-card,
+  .pw-control-boundary {
+    border-color: var(--pw-border-control);
+  }
+
+
   .pw-pill {
     @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest;
     border: 1px solid var(--pw-border);
