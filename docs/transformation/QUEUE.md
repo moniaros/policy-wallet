@@ -157,7 +157,25 @@ template passed while the service still emitted `0`.
 - [ ] `ProtectionScoreCard`'s `scoreColor` gains a text equivalent or goes (WCAG 1.4.1)
 - [ ] guard demonstrated failing first; probe recorded
 
-### P1-02 — No all-clear in outbound where the check never ran · `todo`
+### P1-02 — No all-clear in outbound where the check never ran · `todo` — **RESCOPED after P1-01**
+
+P1-01 removed every product caller of `provisionalProtectionScore`, so **the predicate change is
+moot** — it is now dead code, not a live defect. Do NOT change it and do NOT delete it
+(§12.4 / D-006); logged for a later dead-code sweep.
+
+What remains is real, and was never really about the score:
+
+- [ ] **`lib/email/templates/engagement-drip.ts:111`** renders
+      `background: ${stats!.gapCount > 0 ? '#FEF3C7' : '#F0FDF4'}` — amber vs **green**, no text
+      equivalent. Two invariants in one element: WCAG 1.4.1 (colour as sole carrier) and §2.3,
+      because the green fires when `gapCount === 0`, which includes *nothing was analysed*.
+- [ ] The tile must state its basis. "0 gaps found" and "nothing analysed yet" must not render
+      identically.
+- [ ] **`tests/unit/all-clear-honesty.test.ts` is a unit test of `monitorRisk`, not a guard** — it
+      imports one function and asserts on its output, so it structurally cannot see an email
+      template. Give the defect class an arm that covers outbound. D-005's universe rule, third
+      application, and the reason this sat in email while four in-product surfaces were guarded
+      against exactly it.
 owner: Implementation (Fable 5) · blocked_by: P1-01
 file_boundary: `lib/services/gap-engine/protection-score.ts`, `lib/email/templates/engagement-drip.ts`, `tests/unit/all-clear-honesty.test.ts`
 
