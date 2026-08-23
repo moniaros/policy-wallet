@@ -46,13 +46,13 @@ owner: Mechanical sweep (Haiku 4.5) · file_boundary: `docs/transformation/SURFA
 - [ ] Per surface: path, component-tree root, landing vs subpage, tier gating, reaching states
 - [ ] Cross-check against the running app: routes unreachable in code, destinations that 404
 
-### T-011 — Consolidate the harness · `in_progress`
+### T-011 — Consolidate the harness · `done`
 owner: Evidence (Sonnet 5) · file_boundary: `tests/measure/**`
 - [ ] `policy-detail.ts` → `metrics.ts`; update importers; no behaviour change
 - [ ] Reconcile `clippedContent` / `clippedLabels` into ONE truncation definition (D-003)
 - [ ] Re-run an existing baseline and prove numbers are byte-identical to `data/current/`
 
-### T-012 — Extend the fixture matrix with missing degraded conditions · `todo`
+### T-012 — Extend the fixture matrix with missing degraded conditions · `in_progress`
 owner: Evidence (Sonnet 5) · blocked_by: T-011 · file_boundary: `tests/measure/fixtures.ts`
 Existing set already covers empty/single/typical/heavy/all-expired/pro-tier + 3 degraded.
 Missing, per §5.3 — each must be able to PRODUCE its defect:

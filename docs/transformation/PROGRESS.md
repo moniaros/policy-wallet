@@ -177,7 +177,63 @@ attribute scan AND value scan until coverage lands, with the value scan authorit
 
 ---
 
+## Checkpoint 3 — Phase 0, five items complete
+
+**Phase status:** Phase 0 open. Done: T-000, T-001, T-010, T-011, T-016 (string inventory half).
+In flight: chrome audit (Sonnet), T-012 degraded fixtures (Sonnet). Advanced: T-013 enumeration
+half, T-014 at 16 candidates. Not started: T-015 baselines (blocked on T-012), LEDGER (3 of 20
+surfaces).
+**Halts open: 1** — H-001, blocking only the score's final disposition, not Phase 1's removals.
+**Ledger delta:** Ειδοποιήσεις enumerated, 10 rows, 2 removals both of delivery metadata.
+**Guards added: 2** — outbound dispatch stub (3 failure proofs), metrics equivalence (36
+assertions). Suite 5054 → **5090**, all green.
+
+### The three findings that changed the plan
+
+1. **The score reaches customers through five outbound sites, not one.** The fifth is the emitter,
+   `lib/notifications/risk-events.ts:176-190`, which produces the exact string the brief quotes. A
+   fix confined to templates leaves it running.
+2. **Three of the four broken portfolio states email a perfect score.** `provisionalProtectionScore`
+   implements "nothing to score" as `policyCount === 0`, so never-analysed, all-expired and
+   analysis-failed all return **100** with a green zero-gaps tile. H-001 raised with all four states.
+3. **Guards pass while their invariant is violated, because their UNIVERSE is too small.** Three
+   separate instances now: `score-containment` scans `components/`+`app/` and cannot see `lib/`
+   (D-005); the equivalence guard was written into a directory CI never runs (D-009); and
+   `NON_LIVE_POLICY_STATUSES` was adopted by three of five call sites (D-007). Every §11.2 guard
+   must state and justify its universe against `SURFACES.md`.
+
+### Two subagent results were wrong and were caught
+
+- **809 missing Greek keys — refuted (D-008).** Key parity is compiler-enforced: `en` is typed
+  `typeof el`, deleting a key yields TS2741, and type-check is green. Believing it would have
+  queued a fabricated 800-key translation project. **A mechanical sweep's findings are evidence;
+  its totals are a claim about its own parser.**
+- **A guard outside the CI path (D-009)** — flagged by the agent that wrote it, fixed by moving it.
+
+### One process failure of mine (D-010)
+
+Commit `61dd4297` contains a zero-byte rename its message never mentions. A subagent's `git mv`
+stages into the shared index and `git commit` takes the index, not the paths I `git add`ed. All
+seven run commits audited; that is the only stray and no parallel session's work was captured.
+Standing practice now: print `git diff --cached --name-only` before every commit. This matters
+because several other sessions are live in this same working tree.
+
+### What a cold start should do next
+
+1. Wait for / re-dispatch **T-012** (degraded fixtures) — it is the critical path; T-015 baselines
+   and every Phase 1 verification depend on it.
+2. **T-013 metric half** — now unblocked by T-011's pure predicates
+   (`findInternalTokens`, `findLatinSentences` in `tests/measure/metrics.ts`). Run them against
+   rendered template TEXT, not the DOM.
+3. **Finish the LEDGER** — 17 of 20 surfaces remain; format and worked example are in `LEDGER.md`.
+
+Phase 1 is queued with seven evidence-backed items (P1-01…P1-07) but is **gated** on Phase 0
+(§5.6), which is not yet met: baselines are missing for every surface.
+
+---
+
 ## Next three actions
+
 
 1. **Finish T-011** (in flight) — then unblock T-013, which needs its pure text predicates to run
    leakage and locale metrics against rendered template strings.
