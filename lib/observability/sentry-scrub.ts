@@ -113,3 +113,36 @@ export function resolveSentryDsn(raw: string | undefined): string | undefined {
     if (/your-sentry-dsn|project-id|<[^>]+>|example\.com/i.test(dsn)) return undefined
     return dsn
 }
+
+/**
+ * The `environment` tag, derived identically on every runtime.
+ *
+ * It was not. The server runtimes let the SDK derive it — which yields
+ * `vercel-preview` / `vercel-production` from `VERCEL_ENV` — while the client
+ * hardcoded `process.env.NODE_ENV`. NODE_ENV is `"production"` for a PREVIEW
+ * build too, so every client-side error from a preview deployment arrived
+ * tagged `production` and was indistinguishable from a real one.
+ *
+ * That is not a cosmetic mismatch. It is why Sentry POLICYWALLET-6 read as a
+ * production incident on 2026-08-22: the client copy said `production`, the
+ * server copy of the SAME request said `vercel-preview`, and only the raw
+ * deployment hostname in the URL gave it away. A filter on `environment` — the
+ * obvious way to ask "is this affecting customers?" — returned the wrong answer
+ * in both directions.
+ *
+ * Precedence matches the SDK's own: an explicit override, then the Vercel
+ * environment, then the build mode.
+ */
+export function resolveSentryEnvironment(env: {
+    sentryEnvironment?: string
+    vercelEnv?: string
+    nodeEnv?: string
+}): string {
+    const explicit = (env.sentryEnvironment || "").trim()
+    if (explicit) return explicit
+
+    const vercel = (env.vercelEnv || "").trim()
+    if (vercel) return `vercel-${vercel}`
+
+    return (env.nodeEnv || "").trim() || "development"
+}

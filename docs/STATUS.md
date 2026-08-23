@@ -71,6 +71,30 @@ production URL cannot be copied across from here. **Action: add
 Production). Until then preview deployments contend with `prisma migrate deploy`
 and local tooling for the same 15 session-mode slots.
 
+### FIXED — the monitoring that made this triage hard in the first place
+Two defects in the Sentry setup, both found while triaging the above:
+
+**1. The client and server disagreed about what "production" means.** The server
+runtimes let the SDK derive `environment` from `VERCEL_ENV` (`vercel-preview` /
+`vercel-production`); the client hardcoded `process.env.NODE_ENV`, which is
+`"production"` on a PREVIEW build too. So POLICYWALLET-6 arrived tagged
+`production` while POLICYWALLET-5 — its server-side twin, same request, same
+deployment — was tagged `vercel-preview`. Filtering on `environment` to ask "is
+this hitting customers?" answered wrong in both directions, and the only thing
+that gave it away was a raw deployment hostname in the URL. All runtimes now
+derive it through one `resolveSentryEnvironment()`.
+
+**2. The server runtimes shipped localhost errors to the shared project.** The
+client has had `enabled: NODE_ENV === "production"` all along; the server and edge
+runtimes never got it. A few hours of local work on 2026-08-23 put 30+ events into
+the production stream — including a `ReferenceError` from a half-finished edit that
+had to be manually proven *not* to be a production regression before this session
+could trust anything else it saw. Both runtimes now carry the same gate.
+
+Guard: `sentry-environment-consistency.test.ts` enumerates the init files from the
+FILESYSTEM (any file calling `Sentry.init`, including one added later), and turns
+red on both defects when reverted.
+
 ### Deliberately NOT changed
 `ensurePoolerCompatibility` identifies a transaction pooler by hostname OR port, so
 it adds `pgbouncer=true` to the 5432 SESSION pooler too — disabling prepared

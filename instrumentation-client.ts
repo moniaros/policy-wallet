@@ -10,13 +10,20 @@
 // never applied.
 
 import * as Sentry from "@sentry/nextjs";
-import { scrubEvent, resolveSentryDsn } from "./lib/observability/sentry-scrub";
+import { scrubEvent, resolveSentryDsn, resolveSentryEnvironment } from "./lib/observability/sentry-scrub";
 
 Sentry.init({
   dsn: resolveSentryDsn(process.env.NEXT_PUBLIC_SENTRY_DSN)
     || "https://7f85e67c475b91e81dc9de9214b36cd4@o4510750648303616.ingest.de.sentry.io/4510750671634512",
 
-  environment: process.env.NODE_ENV || "development",
+  // Must match what the SERVER runtimes report for the same deployment, or a
+  // filter on `environment` cannot answer "is this affecting customers?".
+  // NODE_ENV is "production" on a preview build too — see resolveSentryEnvironment.
+  environment: resolveSentryEnvironment({
+    sentryEnvironment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+    vercelEnv: process.env.NEXT_PUBLIC_VERCEL_ENV,
+    nodeEnv: process.env.NODE_ENV,
+  }),
 
   // A developer's own broken branch is not a production incident. Reporting it
   // to the shared project buries the real ones.
