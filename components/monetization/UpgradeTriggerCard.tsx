@@ -143,7 +143,16 @@ export function UpgradeTriggerCard({
                     <button
                         type="button"
                         onClick={openModal}
-                        className="pw-primary-button min-h-9"
+                        // NOT `pw-primary-button`. The dashboard styles exactly
+                        // one control as its primary action, and on a page about
+                        // whether you are insured that action is not "buy the
+                        // upgrade". Three of the four primaries measured at
+                        // Goal 2 were upgrade buttons, so the page's strongest
+                        // visual signal was used mostly to sell — the reader had
+                        // to work out which of four equally-loud controls was the
+                        // thing to do. The offer still renders, and still reads
+                        // as a button.
+                        className="pw-secondary-button min-h-9"
                     >
                         <Crown className="h-3.5 w-3.5" />
                         {copy.primaryCta}

@@ -19,7 +19,7 @@ import { mkdirSync, writeFileSync, readFileSync } from "fs"
 import path from "path"
 import { dismissCookieBanner } from "../helpers/ui"
 import { PORTFOLIO_STATES, applyPortfolioState, policiesFor, type PortfolioState } from "./dashboard-fixtures"
-import { clippedContent, countConsistency, duplicateBlocks, internalTokenLeaks } from "./dashboard"
+import { callsToAction, clippedContent, countConsistency, duplicateBlocks, gapSurfaces, internalTokenLeaks } from "./dashboard"
 import {
     WIDTHS,
     settle,
@@ -152,6 +152,10 @@ async function capture(page: Page, label: string, width: number, extra: Record<s
         countConsistency: await countConsistency(page),
         duplicateBlocks: await duplicateBlocks(page),
         internalTokenLeaks: await internalTokenLeaks(page),
+        // Goal 2: how many things the page asks the reader to do, and how many
+        // separate places it talks about the same coverage findings.
+        ctas: await callsToAction(page),
+        gapSurfaces: await gapSurfaces(page),
         probes: {
             clippedLabels: await clippedLabels(page),
             // What the shared probe structurally cannot see on this surface:
@@ -174,7 +178,9 @@ async function capture(page: Page, label: string, width: number, extra: Record<s
         `${data.sections.count} sections, ${data.containers.count} containers (depth ${data.containers.maxDepth}), ` +
         `${data.tapTargets.length} sub-44, ${data.countConsistency.failures} count-consistency, ` +
         `${data.duplicateBlocks.length} duplicate blocks, ${data.internalTokenLeaks.length} token leaks, ` +
-        `${data.contrast.text.length}/${data.contrast.nonText.length} contrast (1.4.3/1.4.11)`
+        `${data.contrast.text.length}/${data.contrast.nonText.length} contrast, ` +
+        `${data.ctas.length} CTAs (${data.ctas.filter((c: any) => c.kind === "primary").length} primary), ` +
+        `${data.gapSurfaces.length} gap surfaces`
     )
     return data
 }

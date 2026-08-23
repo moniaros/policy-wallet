@@ -294,3 +294,106 @@ export async function clippedContent(page: Page): Promise<string[]> {
         return Array.from(new Set(out))
     })
 }
+
+/**
+ * EVERY CALL TO ACTION, WITH ITS DESTINATION.
+ *
+ * Goal 0's ledger enumerated by SECTION and explicitly left this outstanding:
+ * "needed before Goal 2 can claim one primary CTA". A count of sections cannot
+ * answer "how many things is this page asking the reader to do", because a
+ * single card can carry three.
+ *
+ * `primary` is by APPEARANCE, not intent — a control styled as the page's main
+ * action is one, whatever its author meant. Two primaries is the defect: it
+ * makes the reader choose which of two things is the thing to do.
+ */
+export interface CtaRecord {
+    label: string
+    href: string | null
+    kind: "primary" | "secondary" | "inline" | "card"
+    where: string
+}
+
+export async function callsToAction(page: Page): Promise<CtaRecord[]> {
+    return page.evaluate(() => {
+        const out: CtaRecord[] = []
+        const shell = document.querySelector(".pw-page-shell") || document.body
+        shell.querySelectorAll<HTMLElement>("a[href], button").forEach((el) => {
+            const cs = getComputedStyle(el)
+            if (cs.display === "none" || cs.visibility === "hidden") return
+            const r = el.getBoundingClientRect()
+            if (r.width === 0 || r.height === 0) return
+            if (r.right <= 0 || r.left >= document.documentElement.clientWidth) return
+            const label = (el.textContent || "").replace(/\s+/g, " ").trim()
+            if (!label) return
+            const cls = String(el.className || "")
+            const kind = /pw-primary-button/.test(cls)
+                ? "primary"
+                : /pw-secondary-button/.test(cls)
+                    ? "secondary"
+                    : /pw-inline-action/.test(cls)
+                        ? "inline"
+                        : "card"
+            const section = el.closest("section, article, [class*='pw-card']")
+            const heading = section?.querySelector("h1,h2,h3,.pw-kicker")
+            out.push({
+                label: label.slice(0, 60),
+                href: el.getAttribute("href"),
+                kind: kind as CtaRecord["kind"],
+                where: (heading?.textContent || section?.tagName || "?").replace(/\s+/g, " ").trim().slice(0, 40),
+            })
+        })
+        return out
+    })
+}
+
+/**
+ * HOW MANY TIMES THE PAGE TALKS ABOUT COVERAGE GAPS.
+ *
+ * The brief calls this the "three-way gap duplication": the same findings reach
+ * the reader as an attention list, as severity chips, and again inside the
+ * protection plan. Each is a different SHAPE of the same underlying set, and
+ * none of them says it is the same set — so a reader counting them believes
+ * they have three separate problems to work through.
+ *
+ * Counted by the containers that render gap-derived content, not by words.
+ */
+export async function gapSurfaces(page: Page): Promise<string[]> {
+    return page.evaluate(() => {
+        const shell = document.querySelector(".pw-page-shell") || document.body
+        const matches: HTMLElement[] = []
+        shell.querySelectorAll<HTMLElement>("section, article, [class*='pw-card']").forEach((el) => {
+            const cs = getComputedStyle(el)
+            if (cs.display === "none" || el.getBoundingClientRect().height === 0) return
+            // innerText, NOT textContent. textContent includes the contents of a
+            // CLOSED <details>, so the hero counted as a gap surface on the
+            // strength of a delta the reader cannot see until they open the
+            // score disclosure. The question is where findings are RENDERED.
+            const text = (el.innerText || "").replace(/\s+/g, " ")
+            // Gap-derived vocabulary: the severity ladder, the gaps kicker, and
+            // the attention framing all describe findings from the same engine.
+            // RENDERS findings, not merely LINKS to them. «Ελέγξτε τα κενά
+            // κάλυψης» is a setup step pointing at the gaps page; it does not
+            // restate a single finding, and counting it made the plan look like
+            // a third copy of the list when it was a signpost. A surface that
+            // renders findings carries the severity ladder or the attention
+            // framing with them.
+            if (!/υψηλ[ήής]|μέτρι[αοη]|χαμηλ[άήό]|προτεραιότητα|χρειάζεται την προσοχή/i.test(text)) return
+            matches.push(el)
+        })
+
+        // INNERMOST ONLY. Goal 2 grouped the page into `section[id]` blocks, and
+        // a section that WRAPS a gap surface matched too — so the restructure
+        // read as 4 surfaces becoming 5 when nothing had been added. An ancestor
+        // of a match is the same surface seen from further out, not another one.
+        const innermost = matches.filter((el) => !matches.some((other) => other !== el && el.contains(other)))
+
+        const hits: string[] = []
+        for (const el of innermost) {
+            const heading = el.querySelector("h1,h2,h3,.pw-kicker")
+            const name = (heading?.textContent || "").replace(/\s+/g, " ").trim().slice(0, 44)
+            if (name && !hits.includes(name)) hits.push(name)
+        }
+        return hits
+    })
+}

@@ -461,7 +461,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         activeRecommendationIds: activeRecommendations.map((rec) => rec.id),
         handledRecommendationCount,
     })
-    const recTitleById = new Map(activeRecommendations.map((rec) => [rec.id, rec.title[lang] || rec.title.en]))
     const setupStepCopy: Record<string, { title: string; description: string }> = {
         upload: { title: home.planStepUploadTitle, description: home.planStepUploadBody },
         analysis: { title: home.planStepAnalysisTitle, description: home.planStepAnalysisBody },
@@ -469,10 +468,25 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         agent: { title: home.planStepAgentTitle, description: home.planStepAgentBody },
         notifications: { title: home.planStepNotificationsTitle, description: home.planStepNotificationsBody },
     }
-    const MAX_RECOMMENDATION_STEPS = 3
-    let shownRecommendationSteps = 0
+    /**
+     * THE PLAN IS SETUP ONLY. Coverage findings are not plan steps.
+     *
+     * `buildProtectionPlan` returns two kinds in one list — `setup` (upload a
+     * policy, run an analysis, connect an advisor: finite, five of them, and
+     * genuinely completable) and `recommendation` (coverage findings: unbounded,
+     * and "completing" one means buying or changing cover, which is a different
+     * act entirely). They shared one list and one progress bar, so «11 από 22»
+     * told the customer they were half-way through something that has no end,
+     * and the denominator moved whenever the engine found another finding.
+     *
+     * The findings are not lost: they are what «Χρειάζεται την προσοχή σας»
+     * renders, from the same recommendation rows, one section up. Showing them
+     * again here as plan steps was the third of the page's three gap surfaces.
+     */
+    const setupSteps = plan.steps.filter((step) => step.kind === "setup")
+    const setupCompleted = setupSteps.filter((step) => step.state === "done").length
     const planStepViews: ProtectionPlanStepView[] = []
-    for (const step of plan.steps) {
+    for (const step of setupSteps) {
         if (step.kind === "setup") {
             const copy = setupStepCopy[step.id]
             planStepViews.push({
@@ -485,23 +499,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             })
             continue
         }
-        if (shownRecommendationSteps >= MAX_RECOMMENDATION_STEPS) continue
-        shownRecommendationSteps += 1
-        planStepViews.push({
-            id: step.id,
-            kind: step.kind,
-            state: step.state,
-            href: step.href,
-            title: recTitleById.get(step.id.replace(/^recommendation:/, "")) ?? "",
-            description: null,
-        })
     }
-    const hiddenRecommendationSteps =
-        plan.steps.filter((step) => step.kind === "recommendation").length - shownRecommendationSteps
+    // Open findings live in the attention section; the plan links there rather
+    // than restating them.
+    const openFindingCount = plan.steps.filter(
+        (step) => step.kind === "recommendation" && step.state === "open"
+    ).length
     const planMoreOpenLabel =
-        hiddenRecommendationSteps > 0
-            ? home.planMoreOpen.replace('{count}', String(hiddenRecommendationSteps))
-            : null
+        openFindingCount > 0 ? home.planMoreOpen.replace('{count}', String(openFindingCount)) : null
 
     // The standing watch — computed only for entitled accounts (the capability
     // is what the non-entitled card sells; rendering fabricated signals under a
@@ -540,6 +545,27 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             monitorSignals = null
         }
     }
+    /**
+     * AT MOST ONE UPGRADE OFFER ON THE PAGE.
+     *
+     * Three rendered independently — the policy-cap meter, the monitoring
+     * placeholder, and the multi-insurer teaser — and each styled its button as
+     * the page's primary action, so 3 of the 4 primaries measured at Goal 2 were
+     * upgrade buttons. The monitoring one is a SUBSTITUTION (it occupies the
+     * monitor slot and explains what monitoring is), so it does not add a card;
+     * the other two do. When the substitution is showing, the standalone offers
+     * stand down.
+     */
+    const monitorPlaceholderShown = !monitorEntitled
+    const standaloneUpgrade: "policy_upload_limit" | "multi_insurer_insights" | null =
+        !isFreeTier || monitorPlaceholderShown
+            ? null
+            : policies.length >= 2
+                ? "policy_upload_limit"
+                : insurerCount >= 2
+                    ? "multi_insurer_insights"
+                    : null
+
     const monitorLastCheckedLabel = cachedScore
         ? home.monitorLastChecked.replace('{date}', formatDate(cachedScore.computedAt, lang))
         : null
@@ -669,15 +695,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     const planCard = (
         <ProtectionPlanCard
             steps={planStepViews}
-            completed={plan.completed}
-            total={plan.total}
-            allDone={plan.allDone}
+            completed={setupCompleted}
+            total={setupSteps.length}
+            allDone={setupCompleted === setupSteps.length}
             moreOpenLabel={planMoreOpenLabel}
             labels={{
                 kicker: home.planKicker,
                 progress: home.planProgress
-                    .replace('{done}', String(plan.completed))
-                    .replace('{total}', String(plan.total)),
+                    .replace('{done}', String(setupCompleted))
+                    .replace('{total}', String(setupSteps.length)),
                 upToDate: home.planUpToDate,
             }}
         />
@@ -686,6 +712,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-4xl px-4 py-6 pb-28 sm:px-6 lg:pb-6">
+                {/* SIX SECTIONS, each a `section[id]`.
+                    Thirteen top-level cards measured at Goal 2, every one of
+                    them a separate bordered box competing for the same
+                    attention. Grouping them says which things belong together —
+                    and the grouping is not cosmetic: the attention list, the
+                    severity tally and the renewals timeline are three SHAPES of
+                    "what needs doing", and presenting them as three peers made
+                    the reader count three problems where there is one list. */}
+                <section id="overview" aria-label={home.heroKicker} className="space-y-4">
                 <div className="mb-5">
                     <p className="pw-kicker">{t.nav.home}</p>
                     <h1 className="mt-1.5 text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
@@ -712,7 +747,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </div>
                 )}
 
-                <div className="space-y-4">
                     <ProtectionStatusHero
                         state={heroState}
                         score={healthScore}
@@ -748,25 +782,16 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     {/* Signup-selected plan continuity (never activated → offer checkout) */}
                     {carriedPlan && <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />}
+                </section>
 
-                    {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
-                        The meter counts every stored policy — that is what checkPolicyLimit
-                        blocks on. Metering only the in-force ones would promise headroom the
-                        next upload does not actually have. */}
-                    {isFreeTier && policies.length >= 2 && (
-                        <UpgradeTriggerCard
-                            featureKey="policy_upload_limit"
-                            triggerSource="home_usage_banner"
-                            returnTo="/dashboard"
-                            dismissible
-                            meter={{
-                                label: home.freePlanPolicies,
-                                used: policies.length,
-                                limit: FREE_POLICY_LIMIT,
-                                hint: home.freePlanHint,
-                            }}
-                        />
-                    )}
+                {/* ── What needs doing, in one place ───────────────────────
+                    The attention list, the severity tally and the renewals
+                    timeline all answer "what should I deal with". The timeline
+                    used to sit at ~70% page depth, below the plan and the
+                    portfolio, so the only items on the page with a DEADLINE
+                    were the hardest to reach. */}
+                <section id="attention" aria-label={home.attentionKicker} className="space-y-4">
+
 
                     {/* What needs my attention + the severity tally beside it */}
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -801,6 +826,25 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         />
                     </div>
 
+                    <RenewalsTimelineCard
+                        items={renewalItems}
+                        hasPolicies={policies.length > 0}
+                        showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
+                        labels={{
+                            kicker: home.renewalTimeline,
+                            policiesSuffix: home.policiesSuffix,
+                            trackExpirationsTitle: home.trackExpirationsTitle,
+                            trackExpirationsBody: home.trackExpirationsBody,
+                            addPolicy: home.addPolicy,
+                            noExpirationsTitle: home.noExpirationsTitle,
+                            noExpirationsBody: home.noExpirationsBody,
+                        }}
+                    />
+                </section>
+
+                {/* ── The plan, and the standing watch beside it ─────────── */}
+                <section id="plan" aria-label={home.planKicker} className="space-y-4">
+
                     {/* The plan, and the standing watch beside it. Non-entitled
                         accounts see what monitoring IS — future tense, no
                         fabricated signals. */}
@@ -829,6 +873,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         </div>
                     )}
 
+                </section>
+
+                {/* ── What the wallet covers, by branch ─────────────────── */}
+                <section id="coverage" aria-label={home.coverageMapKicker} className="space-y-4">
                     {/* Something changed? — the way into life-event reassessment */}
                     <LifeEventPromptCard
                         chips={lifeEventChips}
@@ -845,20 +893,30 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
                     />
 
-                    <RenewalsTimelineCard
-                        items={renewalItems}
-                        hasPolicies={policies.length > 0}
-                        showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
-                        labels={{
-                            kicker: home.renewalTimeline,
-                            policiesSuffix: home.policiesSuffix,
-                            trackExpirationsTitle: home.trackExpirationsTitle,
-                            trackExpirationsBody: home.trackExpirationsBody,
-                            addPolicy: home.addPolicy,
-                            noExpirationsTitle: home.noExpirationsTitle,
-                            noExpirationsBody: home.noExpirationsBody,
-                        }}
-                    />
+
+                </section>
+
+                {/* ── The portfolio itself ──────────────────────────────── */}
+                <section id="portfolio" aria-label={home.portfolioKicker} className="space-y-4">
+
+                    {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
+                        The meter counts every stored policy — that is what checkPolicyLimit
+                        blocks on. Metering only the in-force ones would promise headroom the
+                        next upload does not actually have. */}
+                    {standaloneUpgrade === "policy_upload_limit" && (
+                        <UpgradeTriggerCard
+                            featureKey="policy_upload_limit"
+                            triggerSource="home_usage_banner"
+                            returnTo="/dashboard"
+                            dismissible
+                            meter={{
+                                label: home.freePlanPolicies,
+                                used: policies.length,
+                                limit: FREE_POLICY_LIMIT,
+                                hint: home.freePlanHint,
+                            }}
+                        />
+                    )}
 
                     {/* Portfolio: premium footprint + documents + upload entry */}
                     <PortfolioSummaryCard
@@ -880,7 +938,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     />
 
                     {/* Trigger G: multi-insurer portfolio insight for free tier */}
-                    {isFreeTier && insurerCount >= 2 && (
+                    {standaloneUpgrade === "multi_insurer_insights" && (
                         <UpgradeTriggerCard
                             featureKey="multi_insurer_insights"
                             triggerSource="home_multi_insurer"
@@ -889,6 +947,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         />
                     )}
 
+                </section>
+
+                {/* ── History and the people who can help ───────────────── */}
+                <section id="activity" aria-label={home.recentChangesKicker} className="space-y-4">
                     {/* What changed lately + advisor + help */}
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                         <RecentChangesWidget
@@ -912,7 +974,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             }}
                         />
                     </div>
-                </div>
+                </section>
             </div>
 
             <Link
