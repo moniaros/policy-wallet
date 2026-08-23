@@ -30,10 +30,10 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] Αναλύσεις `/coverage-insights`
 - [x] Σύμβουλος `/agent`
 - [x] Ρυθμίσεις `/account` + 5 subpages
-- [ ] app shell *(chrome audit in flight)*
-- [ ] upload flow `/wallet/add`, `/wallet/[id]/edit`
-- [ ] the remaining 7: `/help`, `/help/article/[slug]`, `/benefits`, `/consent/ai`, `/activity`, `/insights/risk-profile`, `/upgrade`
-- [ ] 7 overlays
+- [x] app shell
+- [x] upload flow `/wallet/add`, `/wallet/[id]/edit`
+- [x] the remaining 7: `/help`, `/help/article/[slug]`, `/benefits`, `/consent/ai`, `/activity`, `/insights/risk-profile`, `/upgrade`
+- [x] 7 overlays
 
 ---
 
@@ -265,3 +265,83 @@ as the design intent; the subpages are audited as first-class surfaces per §4.4
 R-09 and R-10 are recorded as ledger rows despite not existing, because §9.5 requires them and
 Phase 4 cannot ship a cadence-controlled mechanic without them. A missing capability that a later
 phase depends on is exactly what this ledger is for.
+
+
+---
+
+## App shell — every authenticated B2C screen
+
+Source: `components/shell/AppShell.tsx` + `MainNav`, `UserMenu`, `RoleSwitcher`, `ThemeToggle`,
+`LocaleToggle`, `InstallPrompt`. Evidence: `evidence/CHROME-AUDIT.md` (18 CONFIRMED, 4 NEEDS CAPTURE).
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| SH-01 | Bottom tab bar, 5 B2C destinations | action | **KEEP** | all 5 targets already ≥44px; labels already Greek | — |
+| SH-02 | Header + notification bell → `/notifications` | action | **KEEP** | — | — |
+| SH-03 | Mobile drawer (`role="dialog" aria-modal`) | action | **KEEP, FIX** | scrim must cover the bottom nav — today five tab targets stay undimmed and clickable inside a declared modal | P1-08 |
+| SH-04 | Desktop sidebar + user menu | action | **KEEP** | `hidden lg:block`; not a mobile surface at all | — |
+| SH-05 | Skip link | action | **KEEP** | — | — |
+| SH-06 | Theme toggle | action | **KEEP** | bypasses the translation bundle with an inline literal pair | P1-06 |
+| SH-07 | Locale toggle | action | **KEEP, FIX** | "group" variant ≈30×40, missing the `min-h-11` its "plain" sibling has | P1-08 |
+| SH-08 | PWA install prompt | action | **KEEP, FIX** | `fixed bottom-24 z-40`, zero safe-area compensation, overlaps the nav ≈18px on a notched device | P1-08 |
+| SH-09 | `NotificationBell` in the shell | — | **REMOVE — dead** | its only mount point (`UserMenu`'s `compact` branch) is never invoked | P1-08 |
+
+**Nothing here is a per-page defect.** All nine are fixed once in the shell, which is why §6.1.11
+makes this one item rather than seven.
+
+---
+
+## Upload flow — `/wallet/add`, `/wallet/[id]/edit`
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| U-01 | Upload a policy document | action | **KEEP** | — | — |
+| U-02 | Give AI-processing consent before upload | action | **KEEP — DO NOT TOUCH** | `AddPolicyClient.tsx:59-62` captures consent **before** the form submits, because analysis starts in the background immediately after `createPolicy`. Consent surface = §12.2 halt | — |
+| U-03 | Bulk upload (`BatchUploadModal`) | action | **KEEP** | shares the extract path, which must check consent before reading the body | — |
+| U-04 | Pick insurer and policy type | action | **KEEP** | insurer list is the 27-record reference catalogue | — |
+| U-05 | See a coverage/plan limit modal | fact | **KEEP** | quota block is KEEP-AND-INFORM — the upload stays and the wallet says why | — |
+| U-06 | Edit an extracted policy | action | **KEEP** | this is where a customer corrects an unreadable value | — |
+
+**This is where extraction placeholders originate** (§4.4.7), so U-06 is the counterpart to the
+unreadable-value work: a value that could not be read must link here.
+
+---
+
+## Remaining surfaces and overlays
+
+| surface | capabilities | disposition |
+|---|---|---|
+| `/help`, `/help/article/[slug]` | browse and read help articles | **KEEP** — low risk, all roles |
+| `/benefits` | partner offers, paid tier | **KEEP** — permanently empty in prod until offers exist; must render an honest empty state, not a teaser |
+| `/consent/ai` | give AI-processing consent | **DO NOT TOUCH** — §12.2 |
+| `/activity` | activity feed | **KEEP, FIX** — English internal prose falls through for every event type except `policy_analyzed` (P1-05) |
+| `/insights/risk-profile` | view and complete the risk profile | **KEEP** — B2C, reads the caller's own `policyholderProfile` |
+| `/upgrade`, `/upgrade/success` | plan purchase | **KEEP** — pricing/entitlements are §12.4 out of scope; display only |
+| `/coverage`, `/home` | legacy redirects | **KEEP** — no capability |
+
+| overlay | disposition |
+|---|---|
+| AI Consent Modal | **DO NOT TOUCH** — §12.2 |
+| Batch Upload Modal | KEEP |
+| Policy Comparison | KEEP |
+| Delete Policy Dialog | KEEP — destructive, must not outrank ordinary actions |
+| Change Password Modal | KEEP — auth surface, §12.2 |
+| Confirm Dialog (generic) | KEEP — the shared destructive-confirm primitive |
+| Coverage Limit Modal | KEEP — quota is KEEP-AND-INFORM, never a deletion |
+
+---
+
+## LEDGER STATUS: **20 of 20 surfaces + 7 overlays enumerated.**
+
+Counts are provisional until T-015 baselines confirm what actually renders per state — an
+enumeration from source cannot see a capability that only appears on a paid tier or a degraded
+fixture, which is exactly the gap the policy-detail baseline already documented about itself.
+
+| | count | note |
+|---|---|---|
+| capabilities enumerated | **89** | across 7 detailed surfaces + shell + upload + summarised remainder |
+| removals proposed | **6** | N-04, N-05, N-09, P-04, P-17 (2 of 3 nav systems), SH-09 |
+| removals that are pure delivery/dev metadata | **3** | N-04, N-05, SH-09 — no customer capability lost |
+| contingent on H-001 | **4** | D-02, D-04, A-01, A-04 |
+| DO NOT TOUCH (§12.2) | **4** | W-15, U-02, R-03, `/consent/ai` + Change Password |
+| monetization surfaces | **5** | dashboard ×2, wallet ×2, analyses ×1 |
