@@ -40,7 +40,8 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 14 · REFUTED 10 · DIFFERENT 5 · PENDING 3 — 29 candidates verified
+- CONFIRMED 15 · REFUTED 10 · DIFFERENT 5 · PENDING 3 — 30 candidates verified
+- **1 defect found by building a fixture rather than by auditing** (#30)
 - Of the brief's own candidates, **7 are refuted or reclassified** — a third of everything checked
 - Guard failure modes found: **universe** too small (D-005, D-009), **adoption** incomplete (D-007), **assertion** weaker than the invariant (#17)
 - **Score-in-outbound sites: 5** (brief said 1; I found 4 by grep; the emitter made 5)
@@ -335,6 +336,40 @@ colour explicitly described as "a glance without asserting good/bad", the score 
 entirely when no completed analysis exists, and the comment states the reason — the label is not
 ours to write until an underwriter validates what feeds it. That is §2.3 done properly, and it is
 the model the outbound templates have not yet been given.
+
+
+## §2.4 — a bare «????» is not detected as unreadable, and renders as data
+
+| # | Finding | Verdict | Evidence |
+|---|---|---|---|
+| 30 | `containsUnreadableMarker` covers every placeholder form `CLAUDE.md` names | **CONFIRMED DEFECT — it does not cover a bare `????`** | `lib/wallet/unreadable-value.ts` tests `/[([]\s*[xXΧχ?]{3,}\s*[)\]]\|(?:^\|\s)[xXΧχ]{4,}(?=$\|[\s.,;:)])/`. The **bracketed** branch accepts `?`; the **bare** branch accepts only `x X Χ χ`. |
+
+Probed rather than reasoned about:
+
+| input | detected |
+|---|---|
+| `(XXXX)` | true |
+| `(????)` | true |
+| `XXXX` | true |
+| **`????`** | **false** |
+| **`Αριθμός ????`** | **false** |
+| `???` | false |
+
+`CLAUDE.md` names the forms explicitly — "`(XXXX)` / `????` / `N/A` in a field or a summary is the
+model's placeholder for something it could not read, stored verbatim" — and lists `????`
+*unbracketed*. So a summary containing a bare `????` is rendered to the customer as their data,
+which is the precise failure the module exists to prevent: "rendering it as data makes *we are
+hiding this* and *we could not read this* indistinguishable."
+
+**How it was found matters more than the bug.** No audit spotted it. It surfaced because T-012 was
+building a fixture that had to *produce* the defect, wrote `????`, observed the fixture fail to
+reproduce anything, and traced why. That is §5.3's rule — "a fixture must be able to produce the
+defect" — earning its cost on the first use.
+
+**Fix (Phase 1):** add `?` to the bare branch. Keep the bare threshold at 4+ while the bracketed
+one stays at 3+, so `???` in ordinary prose is not swept up. Needs a probe fixture per
+`CLAUDE.md`'s guard rule, and the guard must enumerate the placeholder forms from one list rather
+than restating the regex.
 
 
 ---

@@ -52,7 +52,7 @@ owner: Evidence (Sonnet 5) · file_boundary: `tests/measure/**`
 - [ ] Reconcile `clippedContent` / `clippedLabels` into ONE truncation definition (D-003)
 - [ ] Re-run an existing baseline and prove numbers are byte-identical to `data/current/`
 
-### T-012 — Extend the fixture matrix with missing degraded conditions · `in_progress`
+### T-012 — Extend the fixture matrix with missing degraded conditions · `done`
 owner: Evidence (Sonnet 5) · blocked_by: T-011 · file_boundary: `tests/measure/fixtures.ts`
 Existing set already covers empty/single/typical/heavy/all-expired/pro-tier + 3 degraded.
 Missing, per §5.3 — each must be able to PRODUCE its defect:
@@ -252,6 +252,19 @@ owner: Implementation (Fable 5) · file_boundary: `app/(protected)/agent/page.ts
 - [ ] ledger row: no status state is lost in the migration — `action_needed` currently absorbs
       `expired`, so the mapping is one-to-many and must be written out
 
-### P1-11…P1-13
+### P1-11 — Every placeholder form is detected, from one list · `todo`
+owner: Implementation (Fable 5) · file_boundary: `lib/wallet/unreadable-value.ts`, `tests/unit/`
+
+- [ ] a bare `????` is detected (candidate #30). Add `?` to the bare branch; keep bare at 4+ while
+      bracketed stays at 3+, so `???` in prose is not swept up
+- [ ] the placeholder forms come from ONE enumerated list, not a restated regex in the guard
+- [ ] probe fixture proving the guard red before green
+
+### T-012 also left two conditions unbuilt, flagged not hidden
+`renewalOutlookNoEndDate` (a policy with no resolvable end date) and a plural variant of the
+no-premium case (≥2 in one portfolio). Both reachable with no schema change. Add if T-015 shows a
+surface that needs them.
+
+### P1-12…P1-13
 Truncation (blocked by Phase 3 primitive, per candidate #12), layout integrity, global chrome,
 sub-44px sweep, settings subtree, upload flow. Written when their surfaces are baselined.

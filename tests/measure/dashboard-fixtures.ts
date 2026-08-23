@@ -383,3 +383,164 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
 
     return created
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// T-012 additions — degraded conditions the portfolio-state matrix above could
+// not produce, because they are properties of the ACCOUNT rather than of any
+// one policy: notification delivery rows, and the advisor relationship.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const PROD_GUARD =
+    /cquudefwfwrmvpftuhyl/.test(process.env.DATABASE_URL || "") || /cquudefwfwrmvpftuhyl/.test(process.env.DIRECT_URL || "")
+
+/**
+ * Channel-duplicated notifications, for the dedup grouping fix.
+ *
+ * `emit()` (lib/notifications/dispatch.ts:322) writes ONE ROW PER CHANNEL, all
+ * sharing the SAME `dedupeKey` — by the time it runs, the orchestrator has
+ * already appended the recipient kind (`${base}:${recipient.kind}`,
+ * lib/notifications/orchestrator.ts:354), so the value stored here is that
+ * FINAL key, not the base. `@@unique([userId, dedupeKey, channel])` is what
+ * makes one-row-per-channel possible without collision.
+ *
+ * Two conditions, both required:
+ *
+ *  (a) email + push rows sharing ONE final dedupeKey — a single renewal-
+ *      reminder event delivered on two channels. A grouping fix must collapse
+ *      these into one card.
+ *  (b) two in_app rows with `dedupeKey: null`, for TWO DIFFERENT events. Null
+ *      is the shape of every row written before dedupeKey existed, and of any
+ *      emitter that sends none today. A fix that groups on a GUESS (same
+ *      channel, close timestamps, same eventType-family) rather than strictly
+ *      on a non-null dedupeKey match would wrongly merge these two unrelated
+ *      rows — this is the fixture that catches that guess.
+ *
+ * Idempotent: each row is looked up by its own identifying tuple before
+ * create, since a null dedupeKey is not constrained by the unique index
+ * (Postgres treats every NULL as distinct) and would otherwise duplicate on a
+ * second run.
+ */
+export async function applyNotificationDuplicateFixture(db: any, ownerEmail: string): Promise<void> {
+    if (PROD_GUARD) {
+        throw new Error("applyNotificationDuplicateFixture: refusing to run against the PRODUCTION database")
+    }
+    const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
+    if (!owner) throw new Error(`applyNotificationDuplicateFixture: ${ownerEmail} not provisioned — run global-setup first`)
+
+    const sharedDedupeKey = "e2e-fixture-renewal-reminder:pol-fixture:owner"
+
+    const rows: Array<{
+        eventType: string
+        channel: string
+        dedupeKey: string | null
+        title: string
+        message: string
+    }> = [
+        {
+            eventType: "policy_renewal_reminder",
+            channel: "email",
+            dedupeKey: sharedDedupeKey,
+            title: "Η ανανέωση του συμβολαίου σας πλησιάζει",
+            message: "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        },
+        {
+            eventType: "policy_renewal_reminder",
+            channel: "push",
+            dedupeKey: sharedDedupeKey,
+            title: "Η ανανέωση του συμβολαίου σας πλησιάζει",
+            message: "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        },
+        // Unkeyed, and each a DIFFERENT event — deliberately similar enough
+        // (same channel, same recency) that a heuristic grouping fix could be
+        // tempted to merge them; only an exact non-null dedupeKey match may.
+        {
+            eventType: "document_requested",
+            channel: "in_app",
+            dedupeKey: null,
+            title: "Ο σύμβουλός σας ζήτησε ένα έγγραφο",
+            message: "Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας.",
+        },
+        {
+            eventType: "questionnaire_sent",
+            channel: "in_app",
+            dedupeKey: null,
+            title: "Νέο ερωτηματολόγιο από τον σύμβουλό σας",
+            message: "Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας.",
+        },
+    ]
+
+    for (const row of rows) {
+        const existing = await db.notificationEvent.findFirst({
+            where: { userId: owner.id, eventType: row.eventType, channel: row.channel, dedupeKey: row.dedupeKey },
+            select: { id: true },
+        })
+        if (existing) continue
+        await db.notificationEvent.create({
+            data: {
+                userId: owner.id,
+                eventType: row.eventType,
+                channel: row.channel,
+                status: "sent",
+                priority: "normal",
+                title: row.title,
+                message: row.message,
+                dedupeKey: row.dedupeKey,
+                sentAt: new Date(),
+            },
+        })
+    }
+}
+
+/** The advisor's display name (`User.name`) is the fixture — see below. */
+const LONG_ADVISOR_EMAIL = "e2e-advisor-longname@policywallet.test"
+const LONG_ADVISOR_NAME = "Παναγιώτης-Ευστράτιος Οικονομόπουλος-Παπαδημητρίου"
+
+/**
+ * A very long advisor display name, connected to the dashboard account via an
+ * ACTIVE `CustomerRelationship`.
+ *
+ * `PolicyholderHome.tsx` renders `customerRelationship.agent.name ||
+ * .agent.email` verbatim as the advisor's name (line 657) inside
+ * `AdvisorSupportRow` — a sentence-level interpolation with no truncation of
+ * its own, on the same page as the D7 long-insurer-name fixture above. The
+ * query that finds the relationship (line 128) requires literal
+ * `status: "active"` — not "pending_activation", the column's default — so
+ * that is what this writes.
+ *
+ * No `AgentProfile` row: nothing on this render path reads one. Idempotent:
+ * upserts the advisor by email, then the relationship by its unique
+ * (agentUserId, policyholderUserId) pair.
+ */
+export async function applyLongAdvisorFixture(db: any, ownerEmail: string): Promise<void> {
+    if (PROD_GUARD) {
+        throw new Error("applyLongAdvisorFixture: refusing to run against the PRODUCTION database")
+    }
+    const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
+    if (!owner) throw new Error(`applyLongAdvisorFixture: ${ownerEmail} not provisioned — run global-setup first`)
+
+    const advisor = await db.user.upsert({
+        where: { email: LONG_ADVISOR_EMAIL },
+        update: { name: LONG_ADVISOR_NAME, roles: "agent" },
+        create: {
+            email: LONG_ADVISOR_EMAIL,
+            name: LONG_ADVISOR_NAME,
+            roles: "agent",
+            preferredLanguage: "el",
+        },
+        select: { id: true },
+    })
+
+    const existingRelationship = await db.customerRelationship.findFirst({
+        where: { agentUserId: advisor.id, policyholderUserId: owner.id },
+        select: { id: true },
+    })
+    if (existingRelationship) {
+        // Idempotent no-op on a re-run where it is already "active"; harmless
+        // to write the same value again.
+        await db.customerRelationship.update({ where: { id: existingRelationship.id }, data: { status: "active" } })
+    } else {
+        await db.customerRelationship.create({
+            data: { agentUserId: advisor.id, policyholderUserId: owner.id, status: "active" },
+        })
+    }
+}

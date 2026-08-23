@@ -22,7 +22,8 @@ export interface FixtureSpec {
     lineOfBusiness: "motor" | "health"
     state: "active" | "expiring" | "expired"
     insurerName: string
-    premiumAmount: number
+    /** `null` reproduces T-012 item 7: a policy the extractor never priced, against pages that total premiums. */
+    premiumAmount: number | null
     /** slugs of ACTIVE authored gap definitions to attach as open instances */
     gapSlugs: string[]
     /**
@@ -39,10 +40,47 @@ export interface FixtureSpec {
      *                        AND embedded in the composed summary sentence.
      *  - `failedLatestRun` → B5: a completed run followed by a FAILED one, with
      *                        the processingError the page reads.
+     *
+     * T-012 additions — degraded conditions the matrix could not yet produce:
+     *
+     *  - `unmappedGapSlug`     → a GapInstance attached to a GapDefinition whose
+     *                            slug is not one the 29 authored rows use and does
+     *                            not normalize to a `GAP_CONTENT_MAP` key —
+     *                            the shape of an AI-minted definition
+     *                            (`lib/gaps/authored-catalogue.ts`'s "the clarity
+     *                            pipeline still emits slug VARIANTS that never
+     *                            become rows"). Exercises `resolveGapContent`'s
+     *                            unmapped-slug fallback (`lib/wallet/gap-report.ts`).
+     *  - `placeholderIdentity` → BOTH identity columns hold the extractor's own
+     *                            sentinels (`__PENDING_EXTRACTION__`,
+     *                            `PENDING-<epoch>`) on a run that completed
+     *                            successfully, AND the composed summary embeds
+     *                            an unreadable-value marker of its own. See
+     *                            `lib/wallet/policy-identity.ts` and
+     *                            `lib/wallet/unreadable-value.ts` — two separate
+     *                            modules, deliberately exercised together.
+     *  - `rawEnumLimitBasis`   → a coverage limit's `basis` set to a value
+     *                            outside `LIMIT_BASES`
+     *                            (lib/schemas/acord-data.ts). Unlike
+     *                            `StructuredCoverageTable`'s `statusLabel`
+     *                            (which falls back to `null`), `basisLabel`
+     *                            falls back to the RAW string
+     *                            (`map[basis] ?? basis`) — this is the fixture
+     *                            for that leak.
+     *  - `noDocuments`         → an analysed policy with zero `PolicyDocument`
+     *                            rows (every other fixture attaches exactly
+     *                            one) — an unspecified empty state.
+     *
+     * `premiumAmount: null` on a spec (see the field above) is the other T-012
+     * empty state: a policy the extractor never priced.
      */
     englishSummary?: boolean
     unreadableValues?: boolean
     failedLatestRun?: boolean
+    unmappedGapSlug?: boolean
+    placeholderIdentity?: boolean
+    rawEnumLimitBasis?: boolean
+    noDocuments?: boolean
 }
 
 export const FIXTURE_SPECS: FixtureSpec[] = [
@@ -90,6 +128,75 @@ export const DEFECT_SPECS: FixtureSpec[] = [
         gapSlugs: [],
         failedLatestRun: true,
     },
+    // ── T-012 additions ──────────────────────────────────────────────────
+    {
+        key: "defect-unmapped-gap",
+        policyNumber: "ΣΥΜΒ-2025-DEF-UG",
+        lineOfBusiness: "motor",
+        state: "active",
+        insurerName: "Interamerican",
+        premiumAmount: 301.0,
+        // One ordinary authored gap alongside the rogue one, so the card is
+        // not alone on the page — a single-gap policy proves nothing about
+        // whether the unmapped one reads differently from its neighbours.
+        gapSlugs: ["no_own_damage_cover"],
+        unmappedGapSlug: true,
+    },
+    {
+        key: "defect-placeholder-identity",
+        // The identity column ITSELF is the fixture — see policyIdentity below.
+        policyNumber: "PENDING-1700000000000",
+        lineOfBusiness: "motor",
+        state: "active",
+        insurerName: "__PENDING_EXTRACTION__",
+        premiumAmount: 250.0,
+        gapSlugs: [],
+        placeholderIdentity: true,
+    },
+    {
+        key: "defect-raw-enum-basis",
+        policyNumber: "ΣΥΜΒ-2025-DEF-RE",
+        lineOfBusiness: "motor",
+        state: "active",
+        insurerName: "Interamerican",
+        premiumAmount: 275.0,
+        gapSlugs: ["no_own_damage_cover"],
+        rawEnumLimitBasis: true,
+    },
+    {
+        key: "defect-no-premium",
+        policyNumber: "ΣΥΜΒ-2025-DEF-NP",
+        lineOfBusiness: "motor",
+        state: "active",
+        insurerName: "Interamerican",
+        premiumAmount: null,
+        gapSlugs: ["no_own_damage_cover"],
+    },
+    {
+        key: "defect-no-documents",
+        policyNumber: "ΣΥΜΒ-2025-DEF-ND",
+        lineOfBusiness: "health",
+        state: "active",
+        insurerName: "Εθνική Ασφαλιστική",
+        premiumAmount: 500.0,
+        gapSlugs: ["no_direct_billing"],
+        noDocuments: true,
+    },
+    {
+        key: "defect-long-insurer",
+        lineOfBusiness: "motor",
+        state: "active",
+        // The longest REAL registered insurer legal name in the reference
+        // catalogue (prisma/greek-insurers.json, id `deuteros-allilasfalistikos`,
+        // 134 chars) — longer even than dashboard-fixtures.ts's LONG_INSURER,
+        // because the policy-detail header renders the name at a narrower
+        // column than the dashboard's policy row.
+        insurerName:
+            "Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε.",
+        policyNumber: "ΣΥΜΒ-2025-DEF-LI",
+        premiumAmount: 340.0,
+        gapSlugs: ["no_own_damage_cover", "no_glass_breakage_cover"],
+    },
 ]
 
 const DAY = 86_400_000
@@ -120,7 +227,11 @@ function motorAcord(spec: FixtureSpec, start: Date, end: Date) {
             expirationDate: iso(end),
             renewalDate: iso(end),
             issueDate: iso(start),
-            premium: { amount: spec.premiumAmount, currency: "EUR" },
+            // null premiumAmount (defect-no-premium) means "not recorded", not
+            // zero — omit the field entirely rather than writing amount: null,
+            // matching how dashboard-fixtures.ts's applyPortfolioState handles
+            // the same case.
+            premium: spec.premiumAmount == null ? {} : { amount: spec.premiumAmount, currency: "EUR" },
             premiumFrequency: "annual",
         },
         vehicle: {
@@ -236,7 +347,11 @@ function healthAcord(spec: FixtureSpec, start: Date, end: Date) {
             expirationDate: iso(end),
             renewalDate: iso(end),
             issueDate: iso(start),
-            premium: { amount: spec.premiumAmount, currency: "EUR" },
+            // null premiumAmount (defect-no-premium) means "not recorded", not
+            // zero — omit the field entirely rather than writing amount: null,
+            // matching how dashboard-fixtures.ts's applyPortfolioState handles
+            // the same case.
+            premium: spec.premiumAmount == null ? {} : { amount: spec.premiumAmount, currency: "EUR" },
             premiumFrequency: "annual",
         },
         health: {
@@ -333,6 +448,24 @@ const ENGLISH_SUMMARY =
 /** B10 reproduction: an extractor placeholder embedded in the model's sentence. */
 const UNREADABLE_SUMMARY =
     "Το συμβόλαιο αφορά την ασφάλιση του οχήματος με αριθμό κυκλοφορίας (XXXX) για την περίοδο 2025-2026. Καλύπτει αστική ευθύνη προς τρίτους, πυρκαγιά και φυσικά φαινόμενα."
+
+/**
+ * T-012 item 3 reproduction: both identity columns hold a sentinel (see
+ * `placeholderIdentity` on the spec) AND the composed summary embeds its own
+ * unreadable-value marker — the "(????)" shape, distinct from B10's "(XXXX)"
+ * above.
+ *
+ * MUST be bracketed. Verified directly against
+ * `containsUnreadableMarker` (lib/wallet/unreadable-value.ts): its embedded-
+ * marker regex only matches a bracketed run of `x`/`X`/`Χ`/`χ`/`?`
+ * (`[([]...[)\]]`) OR a BARE run of 4+ `x`/`X`/`Χ`/`χ` — bare `?` runs are
+ * excluded from the unbracketed branch, so a mid-sentence "????" with no
+ * parentheses is invisible to it (`containsUnreadableMarker("... ???? ...")`
+ * === false, confirmed). `(????)` matches; a bare run would silently fail to
+ * reproduce the defect at all.
+ */
+const IDENTITY_PLACEHOLDER_SUMMARY =
+    "Το συμβόλαιο αφορά ασφάλιση οχήματος με αριθμό κυκλοφορίας (????) για την περίοδο 2025-2026. Καλύπτει αστική ευθύνη τρίτων και πυρκαγιά."
 
 const SUMMARY: Record<string, string> = {
     motor:
@@ -477,6 +610,24 @@ export async function provisionMatrixFixtures(
                 occurredAt: new Date(now.getTime() - 3 * 86_400_000).toISOString(),
             }
         }
+        if (spec.placeholderIdentity) {
+            // insurerName/policyNumber are already the sentinels — set directly
+            // on the spec (see DEFECT_SPECS) — this half just embeds a SECOND,
+            // independent placeholder in the composed summary sentence, the
+            // same "two placeholders, two modules" shape as `unreadableValues`
+            // above (lib/wallet/policy-identity.ts vs lib/wallet/unreadable-value.ts).
+            summary = IDENTITY_PLACEHOLDER_SUMMARY
+        }
+        if (spec.rawEnumLimitBasis) {
+            // A `basis` value StructuredCoverageTable's map does not know.
+            // Unlike `statusLabel` (falls back to null, hides the field),
+            // `basisLabel` falls back to the RAW string — `map[basis] ?? basis`
+            // — so this reaches the customer verbatim instead of a translated
+            // label ("per_incident" instead of "Ανά περιστατικό").
+            if (acord.coverages?.[0]?.limits?.[0]) {
+                acord.coverages[0].limits[0].basis = "per_incident"
+            }
+        }
 
         const data = {
             insurerName: spec.insurerName,
@@ -504,22 +655,34 @@ export async function provisionMatrixFixtures(
         }
         ids[spec.key] = policy.id
 
-        // One generated-label document row (same rule as production labels).
-        const label = `Ασφαλιστήριο ${spec.lineOfBusiness === "motor" ? "Αυτοκίνητο" : "Υγεία"} · ${spec.policyNumber}`
-        const doc = await db.policyDocument.findFirst({ where: { policyId: policy.id, fileName: label }, select: { id: true } })
-        if (!doc) {
-            await db.policyDocument.create({
-                data: {
-                    policyId: policy.id,
-                    fileUrl: "/e2e-fixtures/e2e-document.pdf",
-                    fileName: label,
-                    mimeType: "application/pdf",
-                    fileSize: 24_576,
-                    source: "policyholder",
-                    processingStatus: "completed",
-                    uploadedByUserId: owner.id,
-                },
-            })
+        // One generated-label document row (same rule as production labels) —
+        // UNLESS this spec is `noDocuments` (T-012 item 7): an analysed policy
+        // with zero uploaded documents, an unspecified empty state every other
+        // fixture papers over by always attaching exactly one.
+        if (!spec.noDocuments) {
+            const label = `Ασφαλιστήριο ${spec.lineOfBusiness === "motor" ? "Αυτοκίνητο" : "Υγεία"} · ${spec.policyNumber}`
+            const doc = await db.policyDocument.findFirst({ where: { policyId: policy.id, fileName: label }, select: { id: true } })
+            if (!doc) {
+                await db.policyDocument.create({
+                    data: {
+                        policyId: policy.id,
+                        fileUrl: "/e2e-fixtures/e2e-document.pdf",
+                        fileName: label,
+                        mimeType: "application/pdf",
+                        fileSize: 24_576,
+                        source: "policyholder",
+                        processingStatus: "completed",
+                        uploadedByUserId: owner.id,
+                    },
+                })
+            }
+        } else {
+            // Idempotency for a spec that FLIPS to noDocuments after already
+            // having provisioned one (defensive; this key has never had the
+            // flag off, but a future edit could reorder fields) — clean up any
+            // document a previous run attached under the generated label.
+            const label = `Ασφαλιστήριο ${spec.lineOfBusiness === "motor" ? "Αυτοκίνητο" : "Υγεία"} · ${spec.policyNumber}`
+            await db.policyDocument.deleteMany({ where: { policyId: policy.id, fileName: label } })
         }
 
         // One COMPLETED analysis run so the coverage/analysis sections render
@@ -613,6 +776,95 @@ export async function provisionMatrixFixtures(
                     // fixture is satisfied either way.
                     if (error?.code !== "P2002") throw error
                 })
+            }
+        }
+
+        if (spec.unmappedGapSlug) {
+            // A GapDefinition the authored catalogue never wrote — the shape of
+            // an AI-minted row (lib/gaps/authored-catalogue.ts's "the clarity
+            // pipeline still emits slug VARIANTS that never become rows"; the
+            // Aug-2026 production incident CLAUDE.md records: 41 rows with
+            // `rule_id` `ai_*` and `detectionLogic: { source:
+            // "ai_clarity_pipeline" }`). This is a TEST FIXTURE reproducing
+            // that unauthored state — never sourced from authored-catalogue.ts,
+            // and never written by application code.
+            //
+            // Slug chosen to survive `normalizeGapSlug` (lib/wallet/gap-report.ts:
+            // underscores → hyphens) into "no-glass-cover-variant", confirmed
+            // NOT a GAP_CONTENT_MAP key. "no-glass-coverage" (the variant named
+            // in the T-012 brief) was checked directly against GAP_CONTENT_MAP
+            // and already aliases to the authored "glass-breakage" concept —
+            // using it would not reproduce this defect at all.
+            const rogueSlug = "no_glass_cover_variant"
+            let rogueDef = await db.gapDefinition.findFirst({
+                where: { slug: rogueSlug },
+                select: { id: true, severity: true, ruleId: true },
+            })
+            if (!rogueDef) {
+                rogueDef = await db.gapDefinition
+                    .create({
+                        data: {
+                            slug: rogueSlug,
+                            name: "AI-minted glass cover variant (fixture)",
+                            title: "Θραύση κρυστάλλων — παραλλαγή όρου (fixture)",
+                            description:
+                                "Fixture-only definition mirroring an unauthored, AI-minted slug variant — never sourced from lib/gaps/authored-catalogue.ts.",
+                            lineOfBusiness: spec.lineOfBusiness,
+                            severity: "medium",
+                            defaultSeverity: "medium",
+                            ruleId: "ai_clarity_pipeline",
+                            detectionLogic: { source: "ai_clarity_pipeline" },
+                            isActive: true,
+                        },
+                        select: { id: true, severity: true, ruleId: true },
+                    })
+                    .catch(async (error: any) => {
+                        // Another worker/run created it first (slug is @unique).
+                        if (error?.code !== "P2002") throw error
+                        const found = await db.gapDefinition.findFirst({
+                            where: { slug: rogueSlug },
+                            select: { id: true, severity: true, ruleId: true },
+                        })
+                        if (!found) throw error
+                        return found
+                    })
+            }
+
+            const existingRogue = await db.gapInstance.findFirst({
+                where: { policyId: policy.id, gapDefinitionId: rogueDef.id },
+                select: { id: true },
+            })
+            if (!existingRogue) {
+                await db.gapInstance
+                    .create({
+                        data: {
+                            policyId: policy.id,
+                            userId: owner.id,
+                            gapDefinitionId: rogueDef.id,
+                            severity: rogueDef.severity,
+                            status: "detected",
+                            validationState: "probable",
+                            ruleId: rogueDef.ruleId,
+                            engineVersion: "fixture",
+                            ruleInputs: { fixture: true },
+                            // The model's own prose — what `resolveGapContent`
+                            // used to promote into the card's HEADING for an
+                            // unmapped slug, before the fix moved unmapped
+                            // titles to a generic label and kept the prose as
+                            // BODY text. Shown here as body only; the fixture's
+                            // job is to make the unmapped path reachable, not
+                            // to assert which rendering behaviour is current.
+                            aiExplanationEl:
+                                "Το ασφαλιστήριο δεν αναφέρει ρητά κάλυψη θραύσης κρυστάλλων για αυτή την παραλλαγή όρου — πιθανή έλλειψη.",
+                            aiExplanation:
+                                "The policy does not explicitly state glass-breakage cover for this clause variant — a possible gap.",
+                            aiSuggestionEl: "Ζητήστε από τον ασφαλιστή σας διευκρίνιση για αυτή τη ρήτρα.",
+                            aiSuggestion: "Ask your insurer to clarify this clause.",
+                        },
+                    })
+                    .catch((error: any) => {
+                        if (error?.code !== "P2002") throw error
+                    })
             }
         }
     }
