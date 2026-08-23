@@ -1,5 +1,25 @@
 # PolicyWallet — Project Status
 
+## DEPLOYED — 2026-08-23, `640f0fd2` live in production
+
+Two commits shipped back to back, both CI-green → Vercel production success.
+
+| check | result |
+|---|---|
+| `244d7366` CI → deploy | ✅ success |
+| `640f0fd2` CI → deploy | ✅ success |
+| public routes render real Greek content | ✅ 6/6 |
+| no fixture identifier / UUID in customer-facing copy | ✅ |
+| `/dashboard`, `/wallet` redirect rather than 500 | ✅ 307 |
+| **new Sentry errors on either release** | **✅ none** |
+
+Rollback candidate: `b7206c74`.
+
+**Still open, needs the owner:** `POOLED_DATABASE_URL` on the Vercel **Preview**
+scope — see the session wrap below.
+
+---
+
 ## Session wrap — 2026-08-23c (Production error triage: the two that actually mattered)
 
 Started from the one unexplained production error left after the last deploy. It
