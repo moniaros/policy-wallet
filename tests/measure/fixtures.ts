@@ -381,6 +381,59 @@ export const FREE_SPECS: FixtureSpec[] = [
  * Idempotent provisioning. Prisma client is injected (the spec loads it the
  * same way global-setup does). Refuses the production project outright.
  */
+/**
+ * Realistic Greek gap prose, varied per instance.
+ *
+ * These used to be one string ending «(δοκιμαστικό περιεχόμενο)», applied to
+ * EVERY gap. Two consequences, both of which surfaced in review as product
+ * defects: placeholder text rendered in the customer-facing attention list, and
+ * every attention item read identically except for its severity chip — which
+ * looked like severity carrying no information when it was the fixture giving
+ * every gap the same words.
+ *
+ * A fixture that ships placeholder text cannot be used to prove placeholder
+ * text never renders, and a fixture that makes every row identical cannot
+ * distinguish a real duplicate-rendering defect from itself.
+ */
+const FIXTURE_GAP_PROSE: Array<{ el: string; en: string; suggestionEl: string; suggestionEn: string }> = [
+    {
+        el: "Στο ασφαλιστήριο δεν εντοπίστηκε κάλυψη για αυτό το ενδεχόμενο.",
+        en: "The policy does not appear to cover this event.",
+        suggestionEl: "Ζητήστε από τον ασφαλιστή σας γραπτή επιβεβαίωση του ορίου.",
+        suggestionEn: "Ask your insurer to confirm the limit in writing.",
+    },
+    {
+        el: "Το όριο που αναγράφεται είναι χαμηλότερο από το σύνηθες για αντίστοιχα συμβόλαια.",
+        en: "The stated limit is lower than is usual for comparable policies.",
+        suggestionEl: "Συγκρίνετε το όριο με την τρέχουσα αξία που θέλετε να προστατεύσετε.",
+        suggestionEn: "Compare the limit against the value you want protected.",
+    },
+    {
+        el: "Η κάλυψη ισχύει με προϋποθέσεις που περιορίζουν πότε μπορείτε να την επικαλεστείτε.",
+        en: "Cover applies under conditions that limit when you can rely on it.",
+        suggestionEl: "Διαβάστε τους όρους εξαίρεσης πριν από την ανανέωση.",
+        suggestionEn: "Read the exclusion terms before renewal.",
+    },
+    {
+        el: "Προβλέπεται συμμετοχή δική σας στα έξοδα για κάθε περιστατικό.",
+        en: "You contribute to the cost of each incident.",
+        suggestionEl: "Υπολογίστε τη συμμετοχή σε ένα ρεαλιστικό σενάριο ζημιάς.",
+        suggestionEn: "Work out that contribution against a realistic claim.",
+    },
+    {
+        el: "Η περίοδος αναμονής καθυστερεί την έναρξη αυτής της παροχής.",
+        en: "A waiting period delays when this benefit starts.",
+        suggestionEl: "Σημειώστε την ημερομηνία από την οποία ισχύει η παροχή.",
+        suggestionEn: "Note the date from which the benefit applies.",
+    },
+    {
+        el: "Δεν καταγράφεται στο έγγραφο το στοιχείο που χρειάζεται για να επιβεβαιωθεί η κάλυψη.",
+        en: "The document does not record the detail needed to confirm this cover.",
+        suggestionEl: "Ζητήστε αντίγραφο του πίνακα παροχών από τον ασφαλιστή σας.",
+        suggestionEn: "Request the benefits schedule from your insurer.",
+    },
+]
+
 export async function provisionMatrixFixtures(
     db: any,
     ownerEmail: string,
@@ -510,11 +563,25 @@ export async function provisionMatrixFixtures(
         // copied from the definition — the same value the rule engine writes;
         // no severity is invented here (fixture mirrors decideGapsForPolicy's
         // write shape, it does not re-decide anything).
-        for (const slug of spec.gapSlugs) {
+        for (const [gapIndex, slug] of spec.gapSlugs.entries()) {
             const def = await db.gapDefinition.findFirst({ where: { slug, isActive: true }, select: { id: true, severity: true, ruleId: true } })
             if (!def) continue
             const existing = await db.gapInstance.findFirst({ where: { policyId: policy.id, gapDefinitionId: def.id }, select: { id: true } })
-            if (!existing) {
+            if (existing) {
+                // REFRESH the prose on a row that already exists. The original
+                // `if (!existing)` skip meant a fixture-text change never reached
+                // an already-seeded account — which is why the placeholder string
+                // kept rendering on `e2e-ph` long after the fixture was corrected.
+                await db.gapInstance.update({
+                    where: { id: existing.id },
+                    data: {
+                        aiExplanationEl: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].el,
+                        aiExplanation: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].en,
+                        aiSuggestionEl: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEl,
+                        aiSuggestion: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEn,
+                    },
+                })
+            } else {
                 await db.gapInstance.create({
                     data: {
                         policyId: policy.id,
@@ -526,10 +593,10 @@ export async function provisionMatrixFixtures(
                         ruleId: def.ruleId,
                         engineVersion: "fixture",
                         ruleInputs: { fixture: true },
-                        aiExplanationEl: "Σημείο για έλεγχο βάσει των στοιχείων του εγγράφου (δοκιμαστικό περιεχόμενο).",
-                        aiExplanation: "Fixture explanation for layout measurement.",
-                        aiSuggestionEl: "Συζητήστε το με τον ασφαλιστικό σας σύμβουλο (δοκιμαστικό περιεχόμενο).",
-                        aiSuggestion: "Fixture suggestion for layout measurement.",
+                        aiExplanationEl: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].el,
+                        aiExplanation: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].en,
+                        aiSuggestionEl: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEl,
+                        aiSuggestion: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEn,
                     },
                 })
             }

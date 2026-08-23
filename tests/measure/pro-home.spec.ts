@@ -16,8 +16,13 @@ import { dismissCookieBanner } from "../helpers/ui"
 import { clippedContent, countConsistency, duplicateBlocks, internalTokenLeaks } from "./dashboard"
 import { settle, scrollHeight, sectionCount, containerCount, smallTapTargets, nonTextContrastFailures } from "./policy-detail"
 
-const DATA = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile", "data", "baseline")
-const SHOTS = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile", "screenshots", "baseline")
+// Same run-labelling rule as dashboard-baseline.spec.ts: a run must be NAMED to
+// overwrite anything, and an unnamed one writes to `current`. This spec kept
+// writing to `baseline/` after that spec stopped, which silently replaced one
+// file of the reference set on the next run.
+const RUN = process.env.MEASURE_RUN || "current"
+const DATA = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile", "data", RUN)
+const SHOTS = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile", "screenshots", RUN)
 
 test("baseline: dashboard on a Pro account", async ({ page }) => {
     test.setTimeout(8 * 60_000)

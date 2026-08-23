@@ -187,6 +187,59 @@ const SUMMARY_EL =
  * touch a policy another fixture set owns. Gap instances and analysis runs
  * cascade from the policy delete.
  */
+/**
+ * Realistic Greek gap prose, varied per instance.
+ *
+ * These used to be one string ending «(δοκιμαστικό περιεχόμενο)», applied to
+ * EVERY gap. Two consequences, both of which surfaced in review as product
+ * defects: placeholder text rendered in the customer-facing attention list, and
+ * every attention item read identically except for its severity chip — which
+ * looked like severity carrying no information when it was the fixture giving
+ * every gap the same words.
+ *
+ * A fixture that ships placeholder text cannot be used to prove placeholder
+ * text never renders, and a fixture that makes every row identical cannot
+ * distinguish a real duplicate-rendering defect from itself.
+ */
+const FIXTURE_GAP_PROSE: Array<{ el: string; en: string; suggestionEl: string; suggestionEn: string }> = [
+    {
+        el: "Στο ασφαλιστήριο δεν εντοπίστηκε κάλυψη για αυτό το ενδεχόμενο.",
+        en: "The policy does not appear to cover this event.",
+        suggestionEl: "Ζητήστε από τον ασφαλιστή σας γραπτή επιβεβαίωση του ορίου.",
+        suggestionEn: "Ask your insurer to confirm the limit in writing.",
+    },
+    {
+        el: "Το όριο που αναγράφεται είναι χαμηλότερο από το σύνηθες για αντίστοιχα συμβόλαια.",
+        en: "The stated limit is lower than is usual for comparable policies.",
+        suggestionEl: "Συγκρίνετε το όριο με την τρέχουσα αξία που θέλετε να προστατεύσετε.",
+        suggestionEn: "Compare the limit against the value you want protected.",
+    },
+    {
+        el: "Η κάλυψη ισχύει με προϋποθέσεις που περιορίζουν πότε μπορείτε να την επικαλεστείτε.",
+        en: "Cover applies under conditions that limit when you can rely on it.",
+        suggestionEl: "Διαβάστε τους όρους εξαίρεσης πριν από την ανανέωση.",
+        suggestionEn: "Read the exclusion terms before renewal.",
+    },
+    {
+        el: "Προβλέπεται συμμετοχή δική σας στα έξοδα για κάθε περιστατικό.",
+        en: "You contribute to the cost of each incident.",
+        suggestionEl: "Υπολογίστε τη συμμετοχή σε ένα ρεαλιστικό σενάριο ζημιάς.",
+        suggestionEn: "Work out that contribution against a realistic claim.",
+    },
+    {
+        el: "Η περίοδος αναμονής καθυστερεί την έναρξη αυτής της παροχής.",
+        en: "A waiting period delays when this benefit starts.",
+        suggestionEl: "Σημειώστε την ημερομηνία από την οποία ισχύει η παροχή.",
+        suggestionEn: "Note the date from which the benefit applies.",
+    },
+    {
+        el: "Δεν καταγράφεται στο έγγραφο το στοιχείο που χρειάζεται για να επιβεβαιωθεί η κάλυψη.",
+        en: "The document does not record the detail needed to confirm this cover.",
+        suggestionEl: "Ζητήστε αντίγραφο του πίνακα παροχών από τον ασφαλιστή σας.",
+        suggestionEn: "Request the benefits schedule from your insurer.",
+    },
+]
+
 export async function applyPortfolioState(db: any, ownerEmail: string, state: PortfolioState): Promise<string[]> {
     if (/cquudefwfwrmvpftuhyl/.test(process.env.DATABASE_URL || "") || /cquudefwfwrmvpftuhyl/.test(process.env.DIRECT_URL || "")) {
         throw new Error("applyPortfolioState: refusing to run against the PRODUCTION database")
@@ -294,7 +347,7 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
                 take: spec.gaps,
                 select: { id: true, severity: true, ruleId: true },
             })
-            for (const def of defs) {
+            for (const [gapIndex, def] of defs.entries()) {
                 await db.gapInstance.create({
                     data: {
                         policyId: policy.id,
@@ -306,8 +359,10 @@ export async function applyPortfolioState(db: any, ownerEmail: string, state: Po
                         ruleId: def.ruleId,
                         engineVersion: "fixture",
                         ruleInputs: { fixture: true },
-                        aiExplanationEl: "Σημείο για έλεγχο βάσει των στοιχείων του εγγράφου (δοκιμαστικό περιεχόμενο).",
-                        aiSuggestionEl: "Συζητήστε το με τον ασφαλιστικό σας σύμβουλο (δοκιμαστικό περιεχόμενο).",
+                        aiExplanationEl: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].el,
+                        aiExplanation: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].en,
+                        aiSuggestionEl: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEl,
+                        aiSuggestion: FIXTURE_GAP_PROSE[gapIndex % FIXTURE_GAP_PROSE.length].suggestionEn,
                     },
                 })
             }

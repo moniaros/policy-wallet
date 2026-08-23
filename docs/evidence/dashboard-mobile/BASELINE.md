@@ -275,3 +275,123 @@ figure, without a verdict the inputs cannot support. **Not my decision** — log
 touched. No app code changed in Goal 0 — including no `data-count` attributes.
 
 **STOP: Goal 1 not started, per the brief.**
+
+---
+
+# §1-R.0 — Corrective baseline (2026-08-23)
+
+**Runs compared.** Three, each now named for what it is. The spec used to write to a fixed
+`baseline/` directory, so re-running it overwrote its own reference — which is what happened in
+`f23ee784`. A run must now be NAMED (`MEASURE_RUN=…`) to overwrite anything; an unnamed one writes
+to `current/`.
+
+| run | what it is | provenance |
+|---|---|---|
+| `goal0-prechange/` | the Goal 0 baseline, **before** the score change | recovered from git `8439899f`; matches this file's own §0a table on every spot-check |
+| `postchange-f23ee784/` | the state the screenshot review was conducted on | was misleadingly called `baseline/` |
+| `current/` | today's tree | 19 captures |
+
+## Did anything regress? No.
+
+@320px, `pre / post / now`:
+
+| capture | sections | containers | scroll | count-fail |
+|---|---|---|---|---|
+| empty | 9/9/9 | 45/45/45 | 3311/3311/3311 | 0/0/0 |
+| single | 9/9/9 | 46/46/46 | 3524/3384/3384 | 0/0/0 |
+| typical | 13/13/13 | 63/64/64 | 5027/4882/4882 | 1/1/1 |
+| heavy | 13/13/13 | 79/80/80 | 6263/6173/6173 | 1/1/1 |
+| all-expired | 11/11/11 | 52/52/52 | 4022/3901/3901 | 1/1/1 |
+| heavy-never-analysed | 13/13/13 | 79/79/79 | 6301/6244/6244 | 2/2/2 |
+
+Scroll height fell slightly; containers +1 on two captures; section count did not move (13 on
+`heavy`, confirming the review's observation). **No metric is worse than pre-change.**
+
+## Attribution of the six reported regressions
+
+| | verdict | evidence |
+|---|---|---|
+| **R1** score in the changes feed | **PRE-EXISTING**, not a regression | The identical sentence is in the `goal0-prechange` capture. `f23ee784` never touched `lib/services/timeline/diff.ts`. Removing the donut did not move the score there — it made an existing violation the most prominent thing on the page. **The fix still stands.** |
+| **R2** orphaned derivative | **CONFIRMED — mine** | `ProtectionStatusHero.tsx:162`. The score went behind a disclosure; `keyReason` stayed in the open. |
+| **R3** placeholder in the attention slot | **Fixture text — but it exposed a real defect** | see below |
+| **R4** count contradiction | **CONFIRMED, and it is labelling** | `expiringSoon` counts `resolvePolicyLifecycle` status `expiring_soon`; `ProtectionMonitorCard` uses a 45-day window. Two different windows, neither labelled. |
+| **R5** four broken Greek strings | **REFUTED — all four are correct Greek** | verbatim below |
+| **R6** denominator 16 → 22 | **DATA DRIFT, not code** | «11 από 22» is present in the `goal0-prechange` capture. It was already 22 before the change. |
+
+### R5, verbatim from `current/pro-tier-320.json`
+
+> ΤΙ ΑΛΛΑΞΕ ΠΡΟΣΦΑΤΑ · Έκλεισε **ένας κίνδυνος** · **Μπορούμε** να εξηγήσουμε γιατί · Η κάλυψη
+> Υγεία άρχισε να **απαντά** σε έναν κίνδυνο · **Το** σκορ προστασίας έπεσε στο 74**-9**
+
+| reported | actually rendered | |
+|---|---|---|
+| «Έκλεισε ένα κίνδυνο» | «Έκλεισε ένας κίνδυνος» | correct nominative |
+| «Μπορούσε να εξηγήσουμε γιατί» | «Μπορούμε να εξηγήσουμε γιατί» | correct |
+| «…άρχισε να απαιτά σε έναν κίνδυνο» | «…άρχισε να **απαντά** σε έναν κίνδυνο» | correct — *responds to*, not *demands* |
+| «Ο σκορ» | «**Το** σκορ προστασίας» | correct article |
+
+One real defect **is** in that string: **`74-9`** — the score and its delta are concatenated with
+no separator. Carried into 1-R.1 as part of R1.
+
+## R3 — what it really is, and it is worse than reported
+
+The placeholder text was **fixture text** (`tests/measure/*fixtures.ts`), now replaced with six
+varied realistic Greek explanations. No app path emits «δοκιμαστικό». But chasing it found the
+mechanism underneath, which is a genuine product defect:
+
+**The attention list renders `recommendation_instances`, and the gap title is DENORMALISED into
+`recommendation_instances.title` at creation time.** When a slug is absent from `GAP_CONTENT_MAP`,
+`resolveGapContent` titles it with `firstSentence(aiExplanationEl, 80)` — and the recommendation
+engine then **freezes that model prose into the database**. Authoring the slug later does not fix
+the row.
+
+Confirmed in production. All 32 `policy_gap:*` recommendations are `dismissed`, so **nothing
+defective is rendering today**, but the historical record shows both failure modes:
+
+- **3 prose-shaped titles**, e.g. `policy_gap:motor:own-damage-gap` →
+  «Υπάρχει κενό στην κάλυψη ζημιών που μπορεί να προκληθούν στο όχημα **FIAT 500X** απ…» — the
+  80-character truncation is the `firstSentence(…, 80)` signature, and it puts the customer's
+  vehicle model in a heading.
+- **18 of 32 have `el` identical to `en` and contain no Greek letter at all** — Title-Cased slugs
+  sitting in the Greek field: «Restrictive Hospital Definition», «Mental Health Exclusion»,
+  «Usa Hospitalization Cost», «Own Vehicle Damage», «Maternity-Exclusion»…
+
+### And the supply of unmapped slugs is large
+
+**18 of the 29 authored, ACTIVE catalogue rules have no `GAP_CONTENT_MAP` entry.** Five lines of
+business have none at all:
+
+| line of business | rules | unmapped |
+|---|---|---|
+| health | 4 | 0 |
+| motor | 6 | 1 |
+| home | 5 | **4** |
+| pet | 3 | **2** |
+| life | 1 | **1** |
+| group_health | 3 | **3** |
+| motorbike | 4 | **4** |
+| travel | 3 | **3** |
+
+Includes `insured_value_above_declared` / `insured_value_below_rebuild_cost` — the pair CLAUDE.md
+calls the reference implementation for new deterministic checks. All 18 currently have **zero gap
+instances in production**, so this is latent, not live: the moment one fires on a motorbike,
+travel, life, home or group-health policy, its finding is titled with model prose and that prose is
+frozen into a recommendation row.
+
+## Fixture changes made in 1-R.0 (no app code touched)
+
+- Placeholder prose replaced by six varied realistic Greek explanations, in both fixture files.
+  Uniform text had made every attention item read identically — which is what "severity carries no
+  information" looked like.
+- `provisionMatrixFixtures` now **refreshes** prose on an existing row; the old `if (!existing)`
+  skip meant a fixture-text fix never reached an already-seeded account.
+- Run labelling (`MEASURE_RUN`) in both measurement specs, so a re-run cannot destroy its reference.
+- Dev fixture rows repaired: 23 gap instances + 4 recommendations.
+
+The `heavy` fixture already contains `home`, `life` and `pet` policies with gaps, so it **already**
+reproduces the unmapped-slug path — the uniform placeholder prose had simply masked it. The
+attention item now reads «Στο ασφαλιστήριο δεν εντοπίστηκε κάλυψη για αυτό το ενδεχόμενο.» — model
+prose as a heading, which is exactly the condition 1-R.1 must eliminate.
+
+**Placeholder/test markers in rendered output: 0.** Fixture-shaped identifiers on `pro-tier`: 6
+(D5, carried forward).

@@ -35,8 +35,22 @@ import {
 } from "./policy-detail"
 
 const EVIDENCE = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile")
-const SHOTS = path.join(EVIDENCE, "screenshots", "baseline")
-const DATA = path.join(EVIDENCE, "data", "baseline")
+/**
+ * Which RUN this is. Defaults to `current`, never `baseline`.
+ *
+ * The spec used to write to a fixed `baseline/` directory, so re-running it
+ * OVERWROTE the reference it was supposed to be compared against — which is
+ * exactly what happened in `f23ee784`: the Goal 0 captures were replaced by
+ * post-change ones while BASELINE.md's prose table still described the old
+ * numbers, leaving the evidence directory internally contradictory. The true
+ * pre-change data had to be recovered from git.
+ *
+ * A run now has to be NAMED to overwrite anything, and the name a careless run
+ * gets is `current`.
+ */
+const RUN = process.env.MEASURE_RUN || "current"
+const SHOTS = path.join(EVIDENCE, "screenshots", RUN)
+const DATA = path.join(EVIDENCE, "data", RUN)
 const HEIGHT: Record<number, number> = { 320: 720, 390: 844, 430: 932 }
 
 const DASH_EMAIL = "e2e-ph-dash@policywallet.test"
