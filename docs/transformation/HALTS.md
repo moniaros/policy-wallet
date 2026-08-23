@@ -41,11 +41,14 @@ Two independent reasons, both structural rather than incidental:
    *analysed*". The empty portfolio is caught; the unanalysed one — which every new customer
    passes through — is not.
 2. **The all-expired case cannot be caught by that filter even in principle.**
-   `engagement-drip.service.ts:151` selects `where: { status: "active" }`, and **nothing in the
+   `engagement-drip.service.ts:152` selects `where: { status: "active" }`, and **nothing in the
    codebase ever writes `status: 'expired'`** — expiry is derived at render time by
    `resolvePolicyLifecycle`. So the column reads "active" forever and an entirely lapsed portfolio
-   counts as fully covered. This also violates `CLAUDE.md`'s standing rule that status, expiry and
-   any countdown come from that one call.
+   counts as fully covered. `lib/policy-status.ts:3-17` already documents this exact class and
+   prescribes `NON_LIVE_POLICY_STATUSES`; the fix reached three services and missed this one —
+   see D-007. Note it is wrong in *both* directions: it also drops in-force policies stored as
+   `expiring_soon`, so the denominator is understated at the same time as expired cover is
+   counted as live.
 
 A related inconsistency: `openGaps` is queried across **all** the user's policies while
 `policyCount` counts only "active" ones, so the numerator and denominator disagree about which
@@ -86,8 +89,8 @@ needing a basis-tracking rewrite it has never had.
 
 **Whichever is chosen, three things are Phase 1 and proceed now without this answer:**
 the score leaves all five outbound sites; the green/amber gap tile gets a text equivalent
-(WCAG 1.4.1) whatever colours it keeps; and the `status: "active"` column read is replaced with
-`resolvePolicyLifecycle`, because "expired policies count as active cover" is wrong under every
-option above.
+(WCAG 1.4.1) whatever colours it keeps; and the two missed `status: "active"` reads adopt
+`NON_LIVE_POLICY_STATUSES` (D-007), because "expired policies count as live cover, and
+expiring-soon ones do not count at all" is wrong under every option above.
 
 answer: *(awaiting)*

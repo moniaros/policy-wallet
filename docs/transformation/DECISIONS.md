@@ -152,21 +152,52 @@ will need updating in the same commit.
 
 ---
 
-## D-007 — `status: "active"` is not an expiry check, anywhere
+## D-007 — "How many policies does this person have" has three answers in outbound
 
-date: 2026-08-23
+date: 2026-08-23 · revised same day after reading `lib/policy-status.ts`
 raised_by: Orchestrator
-decision: Every read of `Policy.status` used to mean "in force" is replaced by
-`resolvePolicyLifecycle`. First known offender: `lib/services/engagement-drip.service.ts:151`.
+decision: Every Policy query meaning "does this owner hold this policy" uses
+`status: { notIn: [...NON_LIVE_POLICY_STATUSES] }`. Lifecycle verdicts continue to come from
+`resolvePolicyLifecycle`. These are two different questions and must not be conflated.
 
-**Nothing in the codebase ever writes `status: 'expired'`** — verified by grep. The column is a
-stored value that never expires; in-force-ness is derived at render time on the Athens calendar by
-`resolvePolicyLifecycle` (`lib/policy-status.ts`), which `CLAUDE.md` already names as the single
-source for status, expiry and every countdown.
+**Correcting my first framing of this.** I initially wrote that `status: "active"` should be
+replaced by `resolvePolicyLifecycle`. That is wrong, and the repo already says so. `lib/policy-status.ts:3-17`
+documents the class and prescribes the fix:
 
-So `where: { status: "active" }` reads as "not cancelled", not "in force". In the drip service that
-makes an entirely lapsed portfolio score 100 — see H-001.
+> `status: "active"` … is a recurring bug: the stored status is an ingestion state nothing
+> recomputes, so 'active' silently excludes in-force policies stored under the other live states —
+> a policy marked "expiring_soon" was dropped from the renewal reminders, the weekly digest, and
+> the churn win-back count until this single list replaced three hand-copied ones.
 
-This is a *class*, not one bug. Any query filtering on `status: "active"` to decide whether cover
-exists is wrong the same way. Enumerating those call sites is a Phase 0 sweep, and the guard that
-falls out of it belongs in §11.2 alongside the lifecycle rule.
+So `status: "active"` is wrong in **both** directions at once:
+- it **excludes** in-force policies stored as `expiring_soon` / `action_needed` / `incomplete`;
+- it **includes** policies whose cover has ended, because nothing ever writes `'expired'`.
+
+`resolvePolicyLifecycle` answers a different question — is it in force *today*, and when does it
+end — and is the right tool for display and countdowns, not for a "do they hold it" filter.
+
+### The fix landed on three of five call sites
+
+| site | filter | verdict |
+|---|---|---|
+| `lib/services/renewal.service.ts` | `NON_LIVE_POLICY_STATUSES` | correct |
+| `lib/services/churn-prevention.service.ts:148` | `NON_LIVE_POLICY_STATUSES` | correct |
+| `lib/services/weekly-digest.service.ts:104` (renewals) | `NON_LIVE_POLICY_STATUSES` | correct |
+| `lib/services/weekly-digest.service.ts:166` (score denominator) | **no filter at all** | counts deleted, analyzing and cancelled policies |
+| `lib/services/engagement-drip.service.ts:152` | **`status: "active"`** | the original bug, missed |
+| `lib/services/engagement-scoring.ts:167` | **`status: "active"`** | the original bug, missed |
+
+So the same customer is described by **three different policy counts** depending on which email
+reaches them, and the digest's own file uses two different definitions eleven lines apart — the
+correct one for the renewals list, none at all for the score denominator.
+
+That is a §2.6 count-consistency failure that crosses channels rather than surfaces, and no
+count-consistency metric currently looks at outbound at all.
+
+### Why it was missed
+
+The same shape as D-005. A real fix was applied where the symptom had been observed — three
+services whose bug reports existed — and the two that had never been reported kept the defect.
+The single shared constant was created, which is the right move, and then not adopted everywhere.
+`NON_LIVE_POLICY_STATUSES` needs a guard asserting that no Policy query filters on a bare
+`status: "active"`, or the next service written will make it four of six.
