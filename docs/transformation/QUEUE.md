@@ -340,8 +340,18 @@ rounded up. Six of the seven conditions in §5.6 hold.
 | Instrumentation plan agreed | MET |
 | Adversarial Reviewer confirms all of the above | **cannot** — condition 1 fails |
 
-### T-016b — Close the five uncaptured targets · `todo`
-owner: Evidence (Sonnet 5) · blocks: the Phase 0 gate, and therefore all of Phase 1
+### T-016b — Close the five uncaptured targets · `partial` — 4 of 5 done
+owner: Evidence (Sonnet 5) · blocks: the Phase 0 gate
+
+**Done:** `/wallet/[id]/edit` (BASELINE + 3 captures) · four overlays, captured as five states
+(`policy-comparison` splits into picker and table) · the genuine paid "no advisor" empty state.
+**Outstanding:** `/consent/ai` content. `tests/measure/consent-ai-content-baseline.spec.ts` is
+written but never ran — the agent ended while waiting on a background run. Only the old
+reachability probe exists.
+
+**Deliberately not run yet:** P1-01 is concurrently editing the score out of `lib/` and
+`components/`, so the dev server is recompiling partially-removed code. A capture taken now would
+measure a transient build, not the product. Run the consent spec once P1-01 lands.
 - [ ] `/wallet/[id]/edit` — never captured. It is where a customer corrects an unreadable value
       (ledger U-06), so it is not optional
 - [ ] `/consent/ai` — reachability only; content uncaptured. **Read-only measurement**: it is a

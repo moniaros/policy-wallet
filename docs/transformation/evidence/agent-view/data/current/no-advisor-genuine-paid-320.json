@@ -1,0 +1,83 @@
+{
+  "capture": "no-advisor-genuine-paid",
+  "width": 320,
+  "url": "http://localhost:3000/agent",
+  "scrollHeight": 1072,
+  "viewportsOfContent": 1.5,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 14,
+    "maxDepth": 4,
+    "deepestChain": [
+      "div.flex flex-col items-center rounded-2xl b",
+      "div.relative mt-7 w-full max-w-sm rounded-2x",
+      "div.flex items-center gap-3 rounded-xl bg-wh",
+      "div.grid h-10 w-10 flex-shrink-0 place-items"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "input",
+      "text": "",
+      "w": 34,
+      "h": 45,
+      "chain": "div < div < div < div"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <button> \"Αποστολή πρόσκλησης\" boundary 2.74:1 (needs 3) inside=#7ea49c outside=#ffffff",
+      "[1.4.11:control] <a> \"Σύμβουλος\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.min-w-0.flex-1",
+        "text": "Γιώργος Π. — Ασφαλιστικός σύμβουλοςΠιστοποιημένος συνεργάτης",
+        "scrollWidth": 24,
+        "clientWidth": 1,
+        "reason": "overflow"
+      },
+      {
+        "selector": "p.truncate.text-body-sm",
+        "text": "Γιώργος Π. — Ασφαλιστικός σύμβουλος",
+        "scrollWidth": 248,
+        "clientWidth": 1,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ο ΣΥΜΒΟΥΛΟΣ ΜΟΥ Συνδεθείτε με τον ασφαλιστικό σας σύμβουλο Μοιραστείτε μόνο ό,τι επιλέγετε και αποκτήστε επαγγελματική ματιά στα κενά κάλυψής σας. ΠΑΡΑΔΕΙΓΜΑ Γ Γιώργος Π. — Ασφαλιστικός σύμβουλος Πιστοποιημένος συνεργάτης ΣΥΝΔΕΔΕΜΕΝΟΣ Εσείς ελέγχετε την πρόσβαση — μπορείτε να την ανακαλέσετε ανά πάσα στιγμή ΤΟ EMAIL ΤΟΥ ΣΥΜΒΟΥΛΟΥ ΣΑΣ Αποστολή πρόσκλησης Έχετε κωδικό πρόσκλησης; Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "state": "2-relationship(s)-terminated-for-capture"
+}

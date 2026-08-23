@@ -114,3 +114,30 @@ only, absent at 390/430 (the input presumably grows past 44px once its container
   was not opened and measured.
 - The actual "connect an adviser" FLOW (clicking «Αποστολή πρόσκλησης» and completing it) — only the
   landing state of the free account's empty view was captured.
+
+---
+
+## Second pass (T-016b) — the genuine paid "no advisor" empty state
+
+§5.3 requires the empty state, and the shared fixture account could not produce it: it carries a
+pre-existing `CustomerRelationship`, so `/agent` never rendered its empty case at paid tier. A
+genuine no-relationship paid fixture now exists.
+
+| capture | scroll @320 | sections | containers/depth | sub-44 | truncation | leaks |
+|---|---|---|---|---|---|---|
+| `no-advisor-genuine-paid` | 1072 | 0* | 14/4 | 1 | 0 | 0 |
+| `no-advisor-fixture-paid` (relationship deactivated) | 1191 | 0* | 18/4 | 0 | 0 | 0 |
+| `no-advisor-fixture-free` | 1072 | 0* | 14/4 | 1 | 0 | 0 |
+
+`*` the known no-`section[id]` artifact on this surface.
+
+**The finding is the first two rows disagreeing.** A genuinely absent relationship (1072px, 14
+containers) and a *deactivated* one (1191px, 18 containers) render differently — 4 extra containers
+and 119px. So "no advisor" has **two distinct renderings**, and only one of them was ever measured
+before.
+
+That matters beyond a metric: `genuine-paid` is byte-identical in size to `free`, meaning the paid
+tier shows the free tier's empty state, while the deactivated-relationship path shows something
+else again. Which of the three a customer sees depends on *how* they came to have no advisor, which
+is exactly the kind of state-dependent divergence §4.4.3 ("one empty state per component") exists to
+eliminate. Flagged for the Phase 2 spec rather than fixed here.

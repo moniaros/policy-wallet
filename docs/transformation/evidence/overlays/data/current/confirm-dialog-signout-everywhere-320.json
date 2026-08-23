@@ -1,0 +1,81 @@
+{
+  "capture": "confirm-dialog-signout-everywhere",
+  "width": 320,
+  "url": "http://localhost:3000/account/security",
+  "scrollHeight": 1552,
+  "viewportsOfContent": 2.2,
+  "headingCounts": {
+    "h1": 2,
+    "mainLandmark": 2
+  },
+  "sections": {
+    "count": 1,
+    "ids": [
+      "<div> Κωδικός πρόσβασης"
+    ]
+  },
+  "containers": {
+    "count": 16,
+    "maxDepth": 3,
+    "deepestChain": [
+      "section.pw-card pw-pad  ",
+      "div.flex min-h-11 flex-col gap-2 py-3.5 sm:f",
+      "button.pw-secondary-button pw-btn-sm disabled:o"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Αποσύνδεση\" boundary 1.01:1 (needs 3) inside=#939393 outside=#929293 — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Αποσύνδεση\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#e6e8eb",
+      "[1.4.11:surface] <section> \"Συνδεδεμένες συσκευέςΑν χρησιμοποι\" boundary 2.86:1 (needs 3) inside=#989898 outside=#fdfefe",
+      "[1.4.11:shell] <a> \"9+Ρυθμίσεις\" boundary 1.23:1 (needs 3) inside=#77807f outside=#8d908f",
+      "[1.4.11:unmeasured] <button> \"Ακύρωση\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.rounded-2xl.bg-red-50",
+        "text": "",
+        "scrollWidth": 36,
+        "clientWidth": 34,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Αποσύνδεση από παντού",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <button>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ρυθμίσεις Ασφάλεια Κωδικός πρόσβασης και συσκευές Κωδικός πρόσβασης Χρησιμοποιήστε έναν κωδικό που δεν έχετε αλλού. Κωδικός •••••••••• Τουλάχιστον 8 χαρακτήρες. Αλλαγή κωδικού Δεν θυμάστε τον τρέχοντα κωδικό σας; Επαναφορά μέσω email Συνδεδεμένες συσκευές Αν χρησιμοποιήσατε το PolicyWallet σε συσκευή που δεν έχετε πια, τερματίστε τη σύνδεση. Αποσύνδεση από τις άλλες συσκευές Παραμένετε συνδεδεμένος εδώ. Παντού αλλού θα ζητηθεί νέα σύνδεση. Αποσύνδεση Αποσύνδεση από παντού Τερματίζει και τη σύνδεσή σας σε αυτή τη συσκευή. Αποσύνδεση Πρόσφατη δραστηριότητα ασφαλείας Συνδέσεις και αλλαγές στα στοιχεία σύνδεσής σας. Καμία δραστηριότητα ακόμη Μόλις συνδεθείτε ή αλλάξετε τα στοιχεία σύνδεσής σας, θα το δείτε εδώ. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις Αποσύνδεση από παντού; Θα χρειαστεί να συνδεθείτε ξανά σε κάθε συσκευή, μαζί και σε αυτή. Ακύρωση Αποσύνδεση από παντού"
+  },
+  "tier": "paid",
+  "trigger": "/account/security sign-out-everywhere button"
+}

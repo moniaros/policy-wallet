@@ -1,0 +1,81 @@
+{
+  "capture": "ai-consent-modal",
+  "width": 320,
+  "url": "http://localhost:3000/wallet/add",
+  "scrollHeight": 1652,
+  "viewportsOfContent": 2.3,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 21,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.min-h-screen bg-background pb-20",
+      "div.bg-card rounded-3xl p-6 md:p-8 shadow-xl",
+      "span.text-kicker font-medium text-muted-foreg"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "button",
+      "text": "Πίσω",
+      "w": 36,
+      "h": 44,
+      "chain": "div < div < div < div"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <select> \"Επιλέξτε ή αφήστε κενό2ος Αλληλασφ\" boundary 1.21:1 (needs 3) inside=#929293 outside=#828386",
+      "[1.4.11:control] <input> \"\" boundary 2.57:1 (needs 3) inside=#fbfcfc outside=#999da5",
+      "[1.4.11:subpixel] <input> \"\" boundary 1.59:1 (needs 3) inside=#cfd3d9 outside=#ffffff — declared 3.35:1, rendered across two device rows",
+      "[1.4.11:subpixel] <input> \"\" boundary 1.74:1 (needs 3) inside=#c9cdd4 outside=#ffffff — declared 3.35:1, rendered across two device rows",
+      "[1.4.11:control] <button> \"Προσθήκη στο πορτοφόλι\" boundary 1.92:1 (needs 3) inside=#ffffff outside=#b5bcc5",
+      "[1.4.11:control] <a> \"Πορτοφόλι\" boundary 1.07:1 (needs 3) inside=#7c8281 outside=#858786",
+      "[1.4.11:unmeasured] <button> \"Όχι τώρα\" boundary 1.49:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <header> \"PolicyWallet9+\" boundary 2.88:1 (needs 3) inside=#989898 outside=#ffffff"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.rounded-2xl.bg-primary-soft",
+        "text": "",
+        "scrollWidth": 36,
+        "clientWidth": 26,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Προσθήκη ασφαλιστηρίου Μεταφόρτωση εγγράφου Πατήστε για μεταφόρτωση PDF ή σύρετε τα αρχεία σας εδώ policy.pdf 0.00 MB Η AI θα εξαγάγει αυτόματα τα στοιχεία. Λεπτομέρειες ασφάλισης ΕΙΔΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ * Επιλέξτε τύπο Αυτοκίνητο Μοτοσικλέτα Οδική Βοήθεια Κατοικία Υγεία Ζωή Προστασία Εισοδήματος Προσωπικό Ατύχημα Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Αστική ευθύνη Νομική Προστασία Σκάφος Σκάφος — Ίδιες Ζημιές Σκάφος — Αστική Ευθύνη Έργα Τέχνης & Τιμαλφή Επιχείρηση Επαγγελματική Αστική Ευθύνη Ευθύνη Εργοδότη Μεταφορές Σκάφη & Πλοία (Επαγγελματικά) Μεταφορές Εμπορευμάτων Πληρώματα Πλοίων Χρήματα Εμπιστοσύνη Υπαλλήλων Ομαδική Υγεία Ομαδική Ζωή Ομαδική Σύνταξη Άλλο ΑΣΦΑΛΙΣΤΙΚΟΣ ΠΑΡΟΧΟΣ Προαιρετικό Επιλέξτε ή αφήστε κενό 2ος Αλληλασφαλιστικός Συνεταιρισμός AIG Ελλάδος Allianz Ευρωπαϊκή Πίστη Anytime ERGO Ασφαλιστική EUROINS — Υποκατάστημα Ελλάδας Eurolife FFH Generali Hellas Groupama Ασφαλιστική Hellas Direct Interamerican INTERASCO INTERLIFE Ασφαλιστική NN Hellas NP Insurance — Νέος Ποσειδών Personal Insurance Prime Insurance Ατλαντική Ένωσις Γενική Πανελλαδική Συν.Π.Ε. ΔΥΝΑΜΙΣ Ασφαλιστική Εθνική Ασφαλιστική ΕΥΡΩΠΗ Ασφαλιστική ΙΝΤΕΡΣΑΛΟΝΙΚΑ ΜΙΝΕΤΤΑ Ασφαλιστική ΟΡΙΖΩΝ Ασφαλιστική Συνεταιριστική Ασφαλιστική ΥΔΡΟΓΕΙΟΣ Ασφαλιστική ΑΡΙΘΜΟΣ ΑΣΦΑΛΙΣΤΗΡΙΟΥ Προαιρετικό ΗΜΕΡΟΜΗΝΙΑ ΕΝΑΡΞΗΣ ΗΜΕΡΟΜΗΝΙΑ ΛΗΞΗΣ ΠΡΟΣΘΗΚΗ ΣΤΟ ΠΟΡΤΟΦΟΛΙ Τα δεδομένα σας είναι κρυπτογραφημένα και ασφαλή. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις Συγκατάθεση για ανάλυση με AI Για να αναλύσουμε τα ασφαλιστήριά σας, το περιεχόμενο των εγγράφων σας — που ενδέχεται να περιλαμβάνει δεδομένα υγείας — αποστέλλεται σε πάροχο τεχνητής νοημοσύνης για επεξεργασία. Η συγκατάθεσή σας καταγράφεται και μπορείτε να την ανακαλέσετε ανά πάσα στιγμή από τις ρυθμίσεις απορρήτου. Όχι τώρα Συναινώ στην επεξεργασία με AI"
+  },
+  "tier": "paid",
+  "trigger": "/wallet/add submit, no prior consent"
+}

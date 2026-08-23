@@ -1,0 +1,67 @@
+{
+  "capture": "edit-motor-active-paid",
+  "width": 390,
+  "url": "http://localhost:3000/wallet/cmt5jyvgp0001uer6hrgvk4gw/edit",
+  "scrollHeight": 1045,
+  "viewportsOfContent": 1.2,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 2
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 17,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.min-h-screen bg-background pb-20",
+      "div.flex items-center gap-3 pt-4 border-t bo",
+      "button.flex-1 h-10 px-4 py-2 bg-card border bor"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "a",
+      "text": "Πίσω",
+      "w": 36,
+      "h": 36,
+      "chain": "div < div < div < main#main-content"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Ακύρωση\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <a> \"Πορτοφόλι\" boundary 1.24:1 (needs 3) inside=#dfe8e7 outside=#fefefe"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Επεξεργασία ασφαλιστηρίου Ασφαλιστική εταιρεία Αριθμός ασφαλιστηρίου Τύπος Επιλέξτε τύπο Αυτοκίνητο Μοτοσικλέτα Κατοικία Υγεία Ζωή Προστασία Εισοδήματος Προσωπικό Ατύχημα Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Αστική ευθύνη Νομική Προστασία Οδική Βοήθεια Σκάφος Σκάφος — Ίδιες Ζημιές Σκάφος — Αστική Ευθύνη Έργα Τέχνης & Τιμαλφή Επιχείρηση Επαγγελματική Αστική Ευθύνη Ευθύνη Εργοδότη Μεταφορές Σκάφη & Πλοία (Επαγγελματικά) Μεταφορές Εμπορευμάτων Πληρώματα Πλοίων Χρήματα Εμπιστοσύνη Υπαλλήλων Ομαδική Υγεία Ομαδική Ζωή Ομαδική Σύνταξη Άλλο Έναρξη Λήξη Ποσό ασφαλίστρου (EUR) Σύνοψη Ακύρωση Αποθήκευση Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid"
+}

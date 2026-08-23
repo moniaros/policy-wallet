@@ -76,3 +76,46 @@ on top of the page underneath.
   for destructive actions (password reset, data export, etc.); not captured as its own baseline —
   only the Change Password Modal, one specific instance, was.
 - Free tier — none of the three captured overlays were re-measured on the free account in this pass.
+
+---
+
+## Second pass (T-016b) — the four remaining overlays, +1
+
+Captured 2026-08-23, same settle procedure, 320/390/430, locale `el`, paid tier.
+`policy-comparison` splits into two states because the picker and the rendered table are different
+surfaces to a reader.
+
+| overlay | scroll | sections | containers/depth | sub-44 (raw) | **sub-44 (overlay only)** | truncation | leaks |
+|---|---|---|---|---|---|---|---|
+| ai-consent-modal | 1652 | 0* | 21/3 | 1 | **1** | 0 | 0 |
+| coverage-limit-modal | 1652 | 0* | 28/3 | 2 | **2** | 0 | 0 |
+| confirm-dialog (sign-out-everywhere) | 1552 | 1 | 16/3 | 0 | **0** | 0 | 0 |
+| policy-comparison-picker | 5703 | 12 | 197/3 | 88 | **1** | 0 | 0 |
+| policy-comparison-table | 5703 | 12 | 186/3 | 88 | **1** | 0 | 0 |
+
+`*` sections 0 is the known metric-definition artifact — these overlays carry no `section[id]` and
+no `.pw-page-shell`. Not an empty surface.
+
+### READ THE "raw" COLUMN WITH CARE — it is mostly not the overlay
+
+An overlay renders **over its host page**, and the host page's DOM is still there, so a capture
+taken with the overlay open counts the host's controls too. `policy-comparison-*` shows
+`scrollHeight 5703`, which is the **wallet list's** height, not the dialog's.
+
+87 of those 88 sub-44 targets are the wallet list's own defect, already recorded as **W1** in
+`evidence/wallet-list/BASELINE.md`: three per-row quick-action buttons at **36×44** (width fails by
+8px), × 29 rows on the 15-policy paid wallet = 87. Exactly reproduced here, from a different capture
+path, which is a useful independent confirmation of W1 — and a trap.
+
+**Do not count these 87 against the overlays.** They are one defect on one surface, and adding the
+overlay captures to the wallet-list captures would report it three times. This is the
+duplicate-fact problem (§2.6) occurring in the *evidence* rather than in the product: the same
+finding rendered by three measurements, which is how a remediation target gets inflated and then
+"fixed" by deleting a measurement rather than a defect.
+
+The **overlay-only** column above is the number Phase 5 should be held to.
+
+### Coverage status
+Six of seven overlays now have a baseline: AI Consent, Batch Upload, Coverage Limit, Confirm Dialog,
+Policy Comparison (×2 states), Delete Policy, Change Password. That is in fact **seven distinct
+captures across the seven catalogued overlays** — `SURFACES.md`'s list is now fully measured.
