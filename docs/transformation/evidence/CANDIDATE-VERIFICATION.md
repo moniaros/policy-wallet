@@ -40,7 +40,7 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 10 · REFUTED 7 · DIFFERENT 5 · PENDING 3 — 22 candidates verified
+- CONFIRMED 11 · REFUTED 8 · DIFFERENT 5 · PENDING 3 — 24 candidates verified
 - Of the brief's own candidates, **7 are refuted or reclassified** — a third of everything checked
 - Guard failure modes found: **universe** too small (D-005, D-009), **adoption** incomplete (D-007), **assertion** weaker than the invariant (#17)
 - **Score-in-outbound sites: 5** (brief said 1; I found 4 by grep; the emitter made 5)
@@ -217,6 +217,41 @@ reachable, while five tab targets remain operable. That is a correctness defect,
 chrome — header controls and all five tab targets — is uniformly compliant. So this is one
 neglected region, not a systemic shell failure, and the `LocaleToggle` case is another
 partial-adoption instance in the D-007 family.
+
+
+## §4.4.6 settings subtree — "never audited". Audited.
+
+| # | Candidate | Verdict | Evidence |
+|---|---|---|---|
+| 23 | Privacy & data claims export and deletion workflows "whose executors were unconfirmed" | **REFUTED — both executors are real** | Export: `PrivacySection.tsx:54` calls `POST /api/v1/me/data-export`; the route exists, is `withApiGuard`-wrapped with a rate-limit key, finalises an export and returns a tokenised `download_url` (`route.ts:8,14,61`). Deletion: `deleteAccount()` from `account/actions`, and the UI is honest about what it does — `PrivacySection.tsx:76` comments "Nothing is deleted yet — the request enters a review queue", which is what §2.3 asks of any claim. |
+| 24 | Notification preferences can honour the §9 cadence controls | **CONFIRMED GAP — three of four controls missing** | Present: per-group toggles (`NotificationsSection.tsx:57-66`) and quiet hours (`:113-115`). |
+
+### What §9.5 requires versus what exists
+
+§9.5: *"at most one perk or obligation prompt per session; a small monthly ceiling,
+user-configurable, with a global off switch honoured everywhere including outbound."*
+
+| control | state |
+|---|---|
+| quiet hours | **exists** (`QuietHours`) |
+| per-group opt-out | **exists**, but see below |
+| user-configurable monthly ceiling | **absent** — no frequency or cap control anywhere on the screen |
+| global off switch | **absent** — only per-group toggles |
+
+And the per-group toggle is narrower than it appears: `NotificationsSection.tsx:44` reads
+preferences with `if (pref.channel === "email")` and `:66` writes with
+`toggleNotificationPreference(eventType, "email", next)`. **The screen controls email only.** Push
+preferences cannot be set from it at all, while `push` is an implemented channel
+(`lib/notifications/channels/index.ts:121` lists `["in_app", "email", "push"]`).
+
+So a customer who turns a group "off" here has turned off email and left push on, with nothing on
+screen saying so. That is both a §9.5 readiness gap and, today, a control that does less than its
+label implies.
+
+**Consequence:** Phase 4 cannot ship any cadence-controlled mechanic until this screen can express
+a ceiling and a global off across every channel. Recorded as a Phase 4 precondition rather than a
+Phase 1 defect — except the email-only scoping, which is a mislabelled control now and belongs in
+Phase 1.
 
 
 ---

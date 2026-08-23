@@ -194,6 +194,19 @@ DevTools badge. Do not "fix" it. These are the real ones:
 - [ ] `ThemeToggle` bypasses the translation bundle with an inline literal pair
 - [ ] `NotificationBell` is dead in the shell — its only mount point is never invoked. Remove with a ledger row.
 
-### P1-09…P1-13
+### P1-09 — Notification preferences control every channel, not just email · `todo`
+owner: Implementation (Fable 5) · file_boundary: `components/settings/sections/NotificationsSection.tsx`, `app/(protected)/account/actions.ts`
+
+`NotificationsSection.tsx:44,66` reads and writes `channel === "email"` only, while `push` is an
+implemented channel. A customer who switches a group off turns off email and leaves push on, and
+nothing says so.
+- [ ] the toggle governs every implemented channel, or the label states which channel it governs
+- [ ] guard: no preference UI may write a single hardcoded channel
+
+**Phase 4 precondition (not Phase 1):** §9.5 also needs a user-configurable monthly ceiling and a
+global off switch honoured in outbound. Neither exists. Phase 4 cannot ship a cadence-controlled
+mechanic until they do — recorded here so the dependency is not discovered during Phase 4.
+
+### P1-10…P1-13
 Truncation (blocked by Phase 3 primitive, per candidate #12), layout integrity, global chrome,
 sub-44px sweep, settings subtree, upload flow. Written when their surfaces are baselined.
