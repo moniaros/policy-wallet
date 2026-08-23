@@ -1838,6 +1838,7 @@ export const en: TranslationKeys = {
             portfolioKicker: 'Insurance portfolio',
             totalAnnualPremium: 'Total annual premium',
             renewalTimeline: 'Renewal timeline',
+            policiesSuffixOne: 'policy renewing soon',
             policiesSuffix: 'policies renewing soon',
             trackExpirationsTitle: 'We track your expirations for you',
             trackExpirationsBody: 'Add policies and we will alert you 90 days before every renewal.',

@@ -81,8 +81,8 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
         detail:
             expired.length > 0
                 ? {
-                      en: `${expired.length} ${expired.length === 1 ? "policy has" : "policies have"} already ended${lapsing.length > 0 ? `, and ${lapsing.length} more end within 45 days` : ""}.`,
-                      el: `${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}${lapsing.length > 0 ? ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες` : ""}.`,
+                      en: `${expired.length} ${expired.length === 1 ? "policy has" : "policies have"} already ended${lapsing.length > 0 ? (lapsing.length === 1 ? ", and 1 more ends within 45 days" : `, and ${lapsing.length} more end within 45 days`) : ""}.`,
+                      el: `${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}${lapsing.length > 0 ? (lapsing.length === 1 ? " και άλλο 1 λήγει μέσα σε 45 ημέρες" : ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`) : ""}.`,
                   }
                 : lapsing.length > 0
                 ? {

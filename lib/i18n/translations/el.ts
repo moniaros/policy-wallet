@@ -1862,6 +1862,7 @@ export const el = {
             portfolioKicker: 'Χαρτοφυλάκιο ασφαλίσεων',
             totalAnnualPremium: 'Συνολικό ετήσιο ασφάλιστρο',
             renewalTimeline: 'Χρονοδιάγραμμα ανανεώσεων',
+            policiesSuffixOne: 'ασφαλιστήριο με επερχόμενη ανανέωση',
             policiesSuffix: 'ασφαλιστήρια με επερχόμενη ανανέωση',
             trackExpirationsTitle: 'Παρακολουθούμε τις λήξεις για εσάς',
             trackExpirationsBody: 'Προσθέστε ασφαλιστήρια και θα σας ειδοποιούμε 90 ημέρες πριν από κάθε ανανέωση.',

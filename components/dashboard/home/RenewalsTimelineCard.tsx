@@ -41,6 +41,7 @@ export function RenewalsTimelineCard({
     showUpgradeTeaser: boolean
     labels: {
         kicker: string
+        policiesSuffixOne: string
         policiesSuffix: string
         trackExpirationsTitle: string
         trackExpirationsBody: string
@@ -60,7 +61,7 @@ export function RenewalsTimelineCard({
                             is what makes the difference checkable instead of
                             arguable. */}
                         <span data-count="renewals.upcoming">{items.length}</span>{" "}
-                        {labels.policiesSuffix}
+                        {items.length === 1 ? labels.policiesSuffixOne : labels.policiesSuffix}
                     </p>
                 )}
             </div>

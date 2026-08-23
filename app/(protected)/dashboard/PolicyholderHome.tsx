@@ -834,6 +834,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
                         labels={{
                             kicker: home.renewalTimeline,
+                            policiesSuffixOne: home.policiesSuffixOne,
                             policiesSuffix: home.policiesSuffix,
                             trackExpirationsTitle: home.trackExpirationsTitle,
                             trackExpirationsBody: home.trackExpirationsBody,

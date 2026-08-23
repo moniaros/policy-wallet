@@ -48,7 +48,9 @@ describe("the lapse watch never calls an expired portfolio clear", () => {
     it("counts the expired ones AND the ones about to go", () => {
         const signal = lapse(base([policy("a", -20), policy("b", 10)]))
         expect(signal.detail?.el).toMatch(/1 ασφαλιστήριο έχει ήδη λήξει/)
-        expect(signal.detail?.el).toMatch(/άλλα 1 λήγουν μέσα σε 45 ημέρες/)
+        // Was `άλλα 1 λήγουν` — this assertion pinned the agreement bug that
+        // production later showed. Fixed with the string it was guarding.
+        expect(signal.detail?.el).toMatch(/και άλλο 1 λήγει μέσα σε 45 ημέρες/)
     })
 
     it("still reports `action` for cover that is merely about to lapse", () => {
@@ -64,5 +66,26 @@ describe("the lapse watch never calls an expired portfolio clear", () => {
 
     it("is `clear` on an empty wallet, which the hero handles separately", () => {
         expect(lapse(base([])).verdict).toBe("clear")
+    })
+})
+
+/**
+ * Same slip, same cause: the fixtures never reached a count of one.
+ *
+ * Production rendered «1 ασφαλιστήριο έχει ήδη λήξει και άλλα 1 λήγουν μέσα σε
+ * 45 ημέρες» — the first clause inflected, the second did not.
+ */
+describe("the lapse detail agrees with its counts", () => {
+    it("uses the singular for one more policy about to lapse", () => {
+        const s = lapse(base([policy("a", -20), policy("b", 10)]))
+        expect(s.detail?.el).toContain("και άλλο 1 λήγει")
+        expect(s.detail?.el).not.toContain("άλλα 1 λήγουν")
+        expect(s.detail?.en).toContain("1 more ends within")
+    })
+
+    it("uses the plural for two or more", () => {
+        const s = lapse(base([policy("a", -20), policy("b", 10), policy("c", 20)]))
+        expect(s.detail?.el).toContain("άλλα 2 λήγουν")
+        expect(s.detail?.en).toContain("2 more end within")
     })
 })
