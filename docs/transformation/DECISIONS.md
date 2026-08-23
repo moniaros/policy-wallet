@@ -34,6 +34,42 @@ orphan. Recorded so a later pass does not re-raise it as a halt.
 ---
 
 ## D-002 — A stable, channel-independent notification event id already exists
+### ⚠️ CORRECTED 2026-08-24 — the MECHANISM below is wrong. The conclusion survives; the instruction did not.
+
+I wrote that `dedupeKey` is `${base}:${channel}` and that stripping the channel suffix yields the
+event id. **Both halves are wrong**, and I repeated the error as a flat instruction in the P1-04
+brief ("Strip the `:${channel}` suffix").
+
+What the code actually does:
+- `orchestrator.ts:354` appends **`recipient.kind`** (`owner` / `counterparty`) — not the channel.
+  Its own comment says so: *"One copy per recipient… the customer and their advisor each get told
+  once."*
+- `dispatch.ts:349` writes `dedupeKey: params.dedupeKey ?? null` — **verbatim**, no channel appended.
+- `prisma/schema.prisma:1030` — `@@unique([userId, dedupeKey, channel])`. **Channel is a separate
+  column.** That index is precisely what lets one key exist on several channel rows.
+
+**Following my instruction would have shipped a defect.** Stripping the last `:segment` merges keys
+whose final segment is meaningful:
+
+| key shape | what stripping merges |
+|---|---|
+| `renewal:<policyId>:30d` / `:7d` | the 30-day and 7-day reminders become one |
+| `churn:${tier}:${runDay}` | every run day for a tier collapses |
+| `evt:${eventId}:admin` / `evt:${eventId}:${notificationEvent}` | **an admin mirror merges into a customer notification** |
+
+The implementing agent checked the storage layer instead of obeying, found the suffix was recipient
+kind, and grouped on an **exact match of the stored key per user** — which is what D-002's
+*conclusion* ("a stable, channel-independent identifier already exists") always meant. No heuristic,
+no §12.2 halt, no schema change. A test pins it: *"matches the stored key EXACTLY — no suffix
+surgery."*
+
+**Lesson, and it is the third time this run:** a decision recorded as *settled* is not thereby
+correct. D-002 quoted `recipient.kind` accurately in its own evidence and then described it as "the
+channel suffix" two lines later — the error was in my prose, sitting directly beneath the code that
+contradicted it. Settled means "do not re-litigate the conclusion", never "do not check the
+mechanism".
+
+
 
 date: 2026-08-23
 raised_by: Orchestrator (run-start verification)

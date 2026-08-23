@@ -1,0 +1,9 @@
+// PROBE: a customer-facing notification list reading every channel with no
+// grouping — the exact shape P1-04 fixed. The scanner must flag this.
+export async function getHistory(db: any, userId: string) {
+    return db.notificationEvent.findMany({
+        where: { userId, channel: { not: "analytics" } },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+    })
+}

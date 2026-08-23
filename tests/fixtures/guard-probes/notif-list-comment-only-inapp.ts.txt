@@ -1,0 +1,10 @@
+// PROBE: the where is unscoped and nothing groups, but a COMMENT mentions the
+// compliant filter. A guard once passed on a mention inside a comment; this
+// probe exists to prove this one does not.
+export async function getHistory(db: any, userId: string) {
+    // channel: 'in_app' — we should probably scope this like the bell does
+    return db.notificationEvent.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+    })
+}

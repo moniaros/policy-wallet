@@ -234,7 +234,7 @@ file_boundary: `lib/services/engagement-drip.service.ts`, `lib/services/engageme
 - [ ] new guard: **no Policy query filters on a bare `status: "active"`**, universe = `lib/` + `app/`,
       enumerated from the filesystem. Demonstrated failing first.
 
-### P1-04 — One event, one row · `todo`
+### P1-04 — One event, one row · `done` — REVIEW PASSED
 owner: Implementation (Fable 5) · blocked_by: T-012 (needs the keyed+unkeyed fixture)
 file_boundary: `app/(protected)/notifications/actions.ts`, `components/notifications/**`
 
@@ -633,3 +633,35 @@ invented claim. That last choice is the §2.3 rule applied to a migration.
 **What still relies on discipline, stated rather than glossed:** an emitter could hand-write English
 inside an `el:` arm. The type forces bilingual *shape*, not bilingual *content*. Recorded as the
 residual risk.
+
+
+---
+
+## P1-04 — Adversarial review: **PASS**, and it corrected D-002
+
+| check | result |
+|---|---|
+| Grouping is exact-match, no suffix surgery | `const key = row.dedupeKey && row.dedupeKey.length > 0 ? row.dedupeKey : null` — no `split`/`slice`/`lastIndexOf` anywhere in `event-grouping.ts` |
+| Channel chip gone | `page.tsx` and `NotificationsClient.tsx` contain the word `channel` **only in comments explaining its removal**. The `in_app` raw-enum leak dies with it |
+| Unkeyed rows never merged | nulls map to `null` and render individually; the T-012 fixture's two deliberately-similar unkeyed rows survive through both `getNotificationData` and the v1 API |
+| Guard fails first | **proven by me.** Bypassing `groupNotificationEventRows` turned **6 tests red** — behaviourally (4 rows rendering as 4 not 3, channel back in the payload, read state wrong) *and* statically (call-site scan). Reverted → 23/23 |
+| CI | tsc · lint · i18n · utf8 clean; **5128/5128** (+23 = exactly the new guard) |
+
+**It refused my instruction, and was right to.** See the correction at the top of D-002: I told it to
+strip a `:${channel}` suffix that does not exist. The suffix is `recipient.kind`; the channel is a
+separate column in `@@unique([userId, dedupeKey, channel])`. Stripping the last segment would have
+merged `renewal:…:30d` with `:7d`, collapsed `churn:${tier}:${runDay}` across days, and — worst —
+merged `evt:${id}:admin` into `evt:${id}:${notificationEvent}`.
+
+**Read state has one home**, which is the decision I asked for and did not specify: the in-app arm's
+`readAt`. An event with no in-app arm has no read state and never renders unread — otherwise the
+badge could never be cleared, since `markAllNotificationsRead` is in-app-only. `markNotificationRead`
+now scopes to `channel: "in_app"` so single and bulk mark-read finally agree.
+
+**The guard contains its own flow-through test** — one case is literally named *"flow-through: the
+query still spans real channels (grouping, not an in_app filter that would drop email-only
+events)"*. That is the check I have had to run manually on every prior item, built in.
+
+**Two limits reported rather than hidden:** v1 cursor pagination can show an event once per page if
+its rows straddle a boundary (milliseconds wide; a real fix needs an event table, i.e. §12.2), and
+groups whose arms are all `skipped` still render — pre-existing, not worsened.

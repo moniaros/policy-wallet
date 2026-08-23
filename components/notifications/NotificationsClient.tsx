@@ -1,55 +1,35 @@
 "use client"
 
-import { useCallback, useMemo, useState, type ComponentType } from "react"
+import { useCallback, useMemo, useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { BellRing, CheckCheck, Mail, MessageCircle, Settings2, Smartphone } from "lucide-react"
+import { BellRing, CheckCheck, Settings2 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 
-interface NotificationEvent {
-    channel: "email" | "push" | "whatsapp" | "viber"
-}
-
+// Each history item is one EVENT, grouped server-side from its per-channel
+// delivery rows (§2.7). There is deliberately no `channel` here: which pipe
+// carried a notification is operator bookkeeping, not customer-facing — the
+// old channel chip both duplicated every multi-channel event and leaked the
+// raw enum `in_app` (BASELINE.md, N1). `unread` is a server decision too: it
+// reflects the event's in-app arm alone, so an event delivered only by email
+// can never show an unread badge that "mark all as read" cannot clear.
 interface NotificationsClientProps {
     initialData: {
         history: Array<{
             event_id: string
             event_type: string
-            channel: string
             subject: string | null
             message: string | null
             created_at: string
-            read_at?: string | null
+            unread: boolean
             related_policy_id?: string | null
             related_policy_name?: string | null
         }>
         user: { id?: string; user_id?: string }
     }
     userLanguage?: string
-}
-
-const channelMeta: Record<
-    NotificationEvent["channel"],
-    { icon: ComponentType<{ className?: string }>; label: { el: string; en: string } }
-> = {
-    email: {
-        icon: Mail,
-        label: { el: "Email", en: "Email" },
-    },
-    push: {
-        icon: Smartphone,
-        label: { el: "Push", en: "Push" },
-    },
-    whatsapp: {
-        icon: MessageCircle,
-        label: { el: "WhatsApp", en: "WhatsApp" },
-    },
-    viber: {
-        icon: MessageCircle,
-        label: { el: "Viber", en: "Viber" },
-    },
 }
 
 /**
@@ -72,7 +52,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
     const [readIds, setReadIds] = useState<Set<string>>(() => {
         const set = new Set<string>()
         for (const item of initialData.history) {
-            if (item.read_at) set.add(item.event_id)
+            if (!item.unread) set.add(item.event_id)
         }
         return set
     })
@@ -180,13 +160,6 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                         </div>
                     ) : (
                         historyItems.map((event) => {
-                            const channelInfo = channelMeta[event.channel as NotificationEvent["channel"]]
-                            const ChannelIcon = channelInfo?.icon || MessageCircle
-                            const channelLabel = channelInfo
-                                ? isGreek
-                                    ? channelInfo.label.el
-                                    : channelInfo.label.en
-                                : event.channel
                             const createdAtDate = new Date(event.created_at)
                             const createdAtText = Number.isNaN(createdAtDate.getTime())
                                 ? event.created_at
@@ -241,10 +214,10 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                             <p className="mt-1 line-clamp-3 text-sm text-black/65 dark:text-white/70">
                                                 {fixMojibakeText(event.message || "")}
                                             </p>
-                                            <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-black/5 px-2 py-0.5 text-xs font-medium text-black/70 dark:bg-white/10 dark:text-white/75">
-                                                <ChannelIcon aria-hidden="true" className="h-3 w-3" />
-                                                <span>{channelLabel}</span>
-                                            </div>
+                                            {/* No channel chip. One card is one EVENT; which
+                                                pipe delivered it (email, push, in-app) is not
+                                                customer-facing information — and the chip's
+                                                fallback leaked the raw enum `in_app`. */}
                                         </div>
                                         <p className="shrink-0 whitespace-nowrap text-xs font-medium text-black/60 dark:text-white/60">
                                             {createdAtText}

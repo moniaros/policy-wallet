@@ -1,0 +1,10 @@
+// PROBE: compliant — reads every real channel but collapses delivery rows to
+// events through the sanctioned helper. The scanner must accept this.
+import { groupNotificationEventRows } from "@/lib/notifications/event-grouping"
+export async function getHistory(db: any, userId: string) {
+    const rows = await db.notificationEvent.findMany({
+        where: { userId, channel: { not: "analytics" } },
+        orderBy: { createdAt: "desc" },
+    })
+    return groupNotificationEventRows(rows)
+}

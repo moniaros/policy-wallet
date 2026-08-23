@@ -1,0 +1,8 @@
+// PROBE: compliant — the where pins channel to in_app, so one row IS one
+// event (for events with an in-app arm). The scanner must accept this.
+export async function getFeed(db: any, userId: string) {
+    return db.notificationEvent.findMany({
+        where: { userId, channel: "in_app" },
+        orderBy: { createdAt: "desc" },
+    })
+}

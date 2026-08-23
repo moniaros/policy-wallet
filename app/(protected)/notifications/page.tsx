@@ -23,14 +23,16 @@ export default async function NotificationsPage() {
     return (
         <NotificationsClient
             initialData={{
+                // One entry per EVENT, no channel: delivery records are
+                // grouped server-side (see getNotificationData) and which
+                // pipe carried a notification is not customer-facing.
                 history: data.history.map(e => ({
                     event_id: e.event_id,
                     event_type: e.event_type,
-                    channel: e.channel,
                     subject: e.subject,
                     message: e.message,
                     created_at: e.created_at,
-                    read_at: e.read_at || null,
+                    unread: e.unread,
                     related_policy_id: e.related_policy_id,
                     related_policy_name: e.related_policy_name,
                 })),

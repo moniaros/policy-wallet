@@ -1,0 +1,9 @@
+// PROBE: compliant — the bell route's shape: the pin lives in a spread local
+// whose declaration is in the same file. The scanner must follow the spread.
+export async function getBellFeed(db: any, userId: string, unreadOnly: boolean) {
+    const scope = { userId, channel: "in_app" as const }
+    return db.notificationEvent.findMany({
+        where: { ...scope, ...(unreadOnly ? { readAt: null } : {}) },
+        orderBy: { createdAt: "desc" },
+    })
+}
