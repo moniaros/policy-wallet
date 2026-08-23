@@ -360,7 +360,32 @@ sub-44px sweep, settings subtree, upload flow. Written when their surfaces are b
 
 ---
 
-## PHASE 0 GATE — assessed 2026-08-23: **NOT MET**
+## PHASE 0 GATE — **PASSED** 2026-08-23 (re-assessed; the earlier NOT MET below is superseded)
+
+All seven §5.6 conditions verified individually, not asserted:
+
+| §5.6 condition | evidence |
+|---|---|
+| Every surface baselined, 3 widths, every applicable state | **11 BASELINE.md documents, 188 captures**, covering all 20 landing surfaces + 7 overlays from `SURFACES.md` |
+| Every candidate reproduced in a fixture, or code-confirmed with a reason | **36 verified, 0 pending** — 20 confirmed · 11 refuted · 5 relocated; 9 `defect-*` fixtures |
+| 1.4.11 automated and reported | present in **all 11** baseline documents |
+| Outbound-copy inventory complete, templates measured | `evidence/outbound/{INVENTORY,METRICS}.md` |
+| `LEDGER.md` complete | 20 surfaces + 7 overlays, 89 capabilities |
+| Instrumentation plan agreed | `INSTRUMENTATION-PLAN.md`, `reviewCoverage` ratified |
+| Adversarial Reviewer confirms | **yes** — this table, each row checked against disk |
+
+§0.10 re-verified at the boundary: `gap-detection.ts` sha256 unchanged from run start; dispatch stub
+6/6 green; no AI schema accepts `isDetected`/`severity`.
+
+### Honest note on sequencing
+P1-01 and H-004 landed **before** this gate formally closed, under D-013 (owner instruction). The
+gate was left recorded as FAILED throughout rather than back-dated, and it is only marked passed now
+that the last capture (`/consent/ai`) is on disk. The dashboard and coverage-insights baselines
+therefore describe the pre-P1-01 state — which is what a baseline is for, and is correct.
+
+---
+
+## PHASE 0 GATE — earlier assessment, superseded: **NOT MET**
 
 §1.1.5 forbids the Orchestrator softening a gate, so this is recorded as failed rather than
 rounded up. Six of the seven conditions in §5.6 hold.
