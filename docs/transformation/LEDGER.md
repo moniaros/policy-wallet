@@ -25,7 +25,7 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 
 - [x] Ειδοποιήσεις `/notifications`
 - [x] Αρχική `/dashboard`
-- [ ] Πορτοφόλι `/wallet`
+- [x] Πορτοφόλι `/wallet`
 - [ ] Ασφαλιστήριο `/wallet/[id]`
 - [ ] Αναλύσεις `/coverage-insights`
 - [ ] Σύμβουλος `/agent`
@@ -104,3 +104,45 @@ the dashboard's count has not been measured on current code.
 **Nothing on this surface is currently slated for removal** except D-02/D-04, which are contingent
 on H-001. That is worth stating plainly: the dashboard is the one B2C surface where Phase 5's job
 is mostly reordering (Phase 2 spec), not reduction.
+
+
+---
+
+## Πορτοφόλι — `/wallet`
+
+Source: `app/(protected)/wallet/page.tsx` → `PolicyWalletClient.tsx` → `PolicyWallet.tsx`,
+`StatusSummary.tsx`, `ImportantNotices.tsx`, `PolicyTable.tsx`, `PolicyCard.tsx`.
+
+**This surface faces the largest structural change in the run** — §7.3 makes the insured ASSET the
+primary object, with policies nested under it. Every row below must survive that reframe, so this
+ledger is the contract for it.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| W-01 | See every policy the customer holds | fact | **KEEP, RESTRUCTURED** | becomes assets with policies nested (§7.3) | Phase 5 |
+| W-02 | Identify which policy a row is about | fact | **KEEP, STRENGTHENED** | asset rows identify by plate/address/person, not policy number | Phase 5 |
+| W-03 | See active / expiring / attention counts | fact | **KEEP** | already derived via `getPolicyStatusView` — expiry-aware and canonical | — |
+| W-04 | See the completion ring (active / total) | fact | **KEEP** | renders its own denominator; the only gauge on the screen | — |
+| W-05 | See total premium, with three exclusions stated | fact | **KEEP** | unreadable end date / other currency / no amount, each said out loud | — |
+| W-06 | Search policies by text | action | **KEEP** | must survive grouping — searching a grouped list is a different query | Phase 5 |
+| W-07 | Filter by status | action | **KEEP** | — | Phase 5 |
+| W-08 | Toggle grid / list view (persisted) | action | **KEEP or DEFER** | if the asset reframe makes one view redundant, DEFER with a follow-up — do not drop silently | Phase 5 |
+| W-09 | See important notices, with show-more | fact | **KEEP, REFRAMED** | §7.5 wants «+8 ακόμη» replaced with something actionable; note it is already an expand toggle, not a dead end | Phase 5 |
+| W-10 | Open a policy's detail | action | **KEEP** | — | — |
+| W-11 | Add a policy (FAB) | action | **KEEP** | one primary action on the surface | — |
+| W-12 | Bulk-upload policies (`BatchUploadModal`) | action | **KEEP** | consent-gated — the extract path must check consent BEFORE reading the body | — |
+| W-13 | Delete a policy (`DeletePolicyDialog`) | action | **KEEP** | destructive; must not outrank ordinary actions (§7.5's Σύμβουλος lesson) | Phase 5 |
+| W-14 | Compare policies (`PolicyComparison`) | action | **KEEP** | — | Phase 5 |
+| W-15 | Give AI processing consent (`AiConsentModal`) | action | **KEEP — DO NOT TOUCH** | consent surface, §12.2 halt if it would change | — |
+| W-16 | See an upgrade trigger / modal | action | **KEEP** | monetization surface ×2 (`UpgradeTriggerCard`, `UpgradeModal`) | — |
+| W-17 | See the greeting «Καλώς ήρθατε πίσω, {name}» | fact | **KEEP, SCRUBBED** | name goes through identity scrubbing — this is where `E2E` leaked | P1-07 |
+
+**Ledger note on W-01/W-02.** The asset reframe is the one change in this run that can *lose*
+capability invisibly: if one car with three policies becomes one row, the three policies must still
+each be reachable and individually identifiable. Phase 2's spec must show that explicitly, and
+Phase 5 must not merge rows until it does. If the reframe needs a schema change it is a §12.2 halt
+(§7.3 says so); the presentation-layer grouping key must be documented if it does not.
+
+**Ledger note on W-03.** Worth recording because it contradicts the brief: these counts come from
+`getPolicyStatusView`, which is expiry-aware, so the wallet is NOT the source of the count
+contradiction. The outbound services are (D-007).
