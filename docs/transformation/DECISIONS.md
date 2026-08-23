@@ -1,0 +1,96 @@
+# DECISIONS — PW-MOBILE-TRANSFORM-01
+
+Append-only. Every Opus-vs-Fable adjudication, every metric-definition change, every candidate
+defect refuted in Phase 0, every design question resolved. Nothing here is relitigated.
+
+---
+
+## D-001 — `GapResult.isDetected` is a dead legacy type, not a model-facing schema
+
+date: 2026-08-23
+raised_by: Orchestrator (run-start §0.10 verification)
+decision: **No halt.** The AI contract is clean.
+
+`lib/services/gap-analysis.service.ts:58` declares `isDetected: boolean` on `GapResult`, which on
+its face looks like a §0.10 violation ("No AI provider schema accepts either").
+
+Evidence that it is not model-facing:
+- `lib/services/ai/ai-service.interface.ts:67` — "This interface used to carry `isDetected:
+  boolean`" — removed from the actual AI service contract.
+- `lib/services/ai/ai-service.interface.ts:180` — `severity` removed for the same reason.
+- `lib/services/ai/prompts.ts:158-160` — the instruction was deliberately deleted, not merely
+  unused.
+- `gap-analysis.service.ts` itself records that `analyzePolicy()` — the third gap pipeline that
+  consumed this type — was removed in Aug 2026.
+- `app/(protected)/wallet/actions.ts:1192` confirms no component ever read it.
+
+Consequence: the type is vestigial dead code on a decommissioned pipeline. Removing it is
+cleanup outside this run's scope. The §11.2 engine-ownership guard asserts on the *AI schemas*
+(`ai-service.interface.ts`, `prompts.ts`) and on the `lib/gap-detection.ts` hash — not on this
+orphan. Recorded so a later pass does not re-raise it as a halt.
+
+`lib/gap-detection.ts` run-start baseline: sha256 `69d2c946aaefc309a1c09f0a72b13baebddc173811e33f4de0b592ca1259b859` (commit `7f6990b7`).
+
+---
+
+## D-002 — A stable, channel-independent notification event id already exists
+
+date: 2026-08-23
+raised_by: Orchestrator (run-start verification)
+decision: **§6.1 item 6's halt does not fire.** Dedup is presentation-layer. No schema change.
+
+`lib/notifications/orchestrator.ts:354-355` builds the persisted key as
+`dedupeKey = ${params.dedupeKey}:${recipient.kind}`. The channel is a *suffix* on a
+channel-independent base (`gap:v<n>`, `risk_change:v<n>`, `score:v<n>`, `escalation:<id>` —
+see `risk-events.ts:127,157,191` and `retry.ts:120`).
+
+So "one event, one row" (§2.7) groups on the base key with the `:${channel}` suffix stripped.
+That is a stable identifier, not the title-plus-timestamp heuristic §6.1 forbids.
+
+**Caveat carried into the fix:** `dedupeKey` is optional (`dispatch.ts:68`,
+`orchestrator.ts:267`). Rows emitted without one cannot be grouped by it and must fall back to
+rendering ungrouped rather than being merged on a guess. The Phase 0 fixture set must contain
+both a keyed duplicate pair and an unkeyed row, or the fix ships untested on half its input.
+
+---
+
+## D-003 — Reuse and rename the existing harness; do not build a second one
+
+date: 2026-08-23
+raised_by: Orchestrator
+decision: Reuse `tests/measure/`; rename `policy-detail.ts` → `metrics.ts`.
+
+§5.1 says build ONE harness with definitions in a single module. One already exists and already
+honours that rule: `tests/measure/policy-detail.ts` holds the shared definitions and
+`tests/measure/dashboard.ts` imports them, with a header comment explicitly stating that this is
+to stop definitions forking between surfaces.
+
+The defect is housing, not duplication: shared definitions living in a file named after one
+surface will not survive ten surfaces. Rename to `metrics.ts`.
+
+One genuine drift to reconcile before reuse: `dashboard.ts:clippedContent` (scans `.pw-page-shell`
+for CSS truncation classes) and `policy-detail.ts:clippedLabels` (scans nav/headings for
+`scrollWidth > clientWidth`) are two different truncation metrics. §5.2 defines one. They merge
+into a single definition before either is used for a baseline.
+
+---
+
+## D-004 — The contract's evidence for Αρχική is stale; re-derive from HEAD
+
+date: 2026-08-23
+raised_by: Orchestrator
+decision: Re-verify every candidate defect against HEAD before queueing any fix.
+
+§4.3 describes the dashboard as 12 sections with nine-plus CTAs and none primary. `docs/STATUS.md`
+records that the dashboard mobile series (Goals 0–5) shipped on `dd815b3d`: 6 sections in every
+state, 1 primary CTA, 0 sub-44px targets, 0 count-consistency failures, 0 1.4.11 failures, scroll
+−13.6% across all 19 captures.
+
+The contract describes the pre-Goal-0 dashboard. §5.4 requires refuting honestly in both
+directions and explicitly warns against "fixing" what was never broken, so the whole candidate
+list is treated as unverified until re-measured — not just the dashboard's.
+
+First likely refutation, recorded now: §4.3 cites `AI Insights` in English in the tab bar.
+`lib/i18n/translations/el.ts:99` has `insightsShort: 'Αναλύσεις'`, and `AppShell.tsx:81` renders
+that key. The English string is in `en.ts` only. The adjacent real defect is `el.ts:1193`
+`aiInsights: 'AI Αναλύσεις'` — mixed-script, not untranslated. Reclassify rather than "fix".

@@ -29,6 +29,8 @@ import {
     randomBytes,
 } from "node:crypto"
 
+import { outboundDispatchAllowed } from "@/lib/outbound/dispatch-guard"
+
 /** RFC 8188 record size we advertise. */
 const RECORD_SIZE = 4096
 /**
@@ -160,6 +162,16 @@ export async function sendWebPush(
     message: WebPushMessage,
     options: { ttlSeconds?: number; urgency?: "very-low" | "low" | "normal" | "high" } = {}
 ): Promise<WebPushResult> {
+    // Same rule as email: the ENVIRONMENT decides whether a push leaves this
+    // process, not whether VAPID keys happen to be configured. VAPID is unset
+    // locally today, which means push is currently blocked by accident rather
+    // than by design — and an accident is not a stub.
+    // See lib/outbound/dispatch-guard.ts.
+    const dispatch = outboundDispatchAllowed("push", new URL(sub.endpoint).host)
+    if (!dispatch.allowed) {
+        return { ok: false, gone: false, error: `outbound blocked: ${dispatch.reason}`, retryable: false }
+    }
+
     try {
         let json = Buffer.from(JSON.stringify(message), "utf-8")
         if (json.length > MAX_PLAINTEXT) {

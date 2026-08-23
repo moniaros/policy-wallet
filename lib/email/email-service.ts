@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/nextjs"
 import { emailDomain, emailFingerprint, redactEmails } from "@/lib/observability/pii"
+import { outboundDispatchAllowed } from "@/lib/outbound/dispatch-guard"
 
 export interface EmailOptions {
     to: string
@@ -48,17 +49,22 @@ function stripHtml(html: string): string {
  * All transactional and operational emails must go through Brevo.
  */
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
+    // ENVIRONMENT decides whether mail leaves this process — not whether a
+    // credential happens to be present. The previous guard was `if (!apiKey)`,
+    // and BREVO_API_KEY is set in `.env.local`, so it never fired locally: this
+    // function reached Brevo and mailed real people from a developer's machine
+    // and from any test that walked a send path. See lib/outbound/dispatch-guard.ts.
+    const dispatch = outboundDispatchAllowed("email", emailFingerprint(options.to))
+    if (!dispatch.allowed) {
+        console.log(`[email:dev] not sent - ${dispatch.reason}`)
+        console.log(`[email:dev] To: ${redactEmails(options.to)}`)
+        console.log(`[email:dev] Subject: ${options.subject}`)
+        return { success: true, messageId: "dev-outbound-blocked" }
+    }
+
     const apiKey = process.env.BREVO_API_KEY
 
     if (!apiKey) {
-        if (process.env.NODE_ENV !== "production") {
-            // Local development fallback keeps UX flows testable without external calls.
-            console.log("[email:dev] BREVO_API_KEY missing - email not sent")
-            console.log(`[email:dev] To: ${options.to}`)
-            console.log(`[email:dev] Subject: ${options.subject}`)
-            return { success: true, messageId: "dev-no-brevo-key" }
-        }
-
         const errorMessage = "BREVO_API_KEY is missing in production environment."
         Sentry.captureMessage(errorMessage, { level: "error" })
         return { success: false, error: errorMessage }

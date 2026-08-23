@@ -1,5 +1,6 @@
 import { createSign, createPrivateKey } from "crypto"
 import { logger } from "../logger"
+import { outboundDispatchAllowed } from "@/lib/outbound/dispatch-guard"
 
 /**
  * Web Push Notification Service via Firebase Cloud Messaging HTTP v1 API.
@@ -122,6 +123,17 @@ export async function sendPushNotification(payload: PushPayload): Promise<PushRe
 
     if (!token) {
         return { success: false, error: "No push token" }
+    }
+
+    // ENVIRONMENT decides, before any credential check. The `!projectId` branch
+    // below is the same credential-presence pattern that let `sendEmail` mail
+    // real people from a laptop: it stops dispatch only while FCM happens to be
+    // unconfigured, and says nothing about whether dispatch is ALLOWED.
+    // See lib/outbound/dispatch-guard.ts.
+    const dispatch = outboundDispatchAllowed("push", `fcm:${token.slice(0, 8)}`)
+    if (!dispatch.allowed) {
+        logger("info", `[Push/dev] not sent - ${dispatch.reason}: ${title}`)
+        return { success: true }
     }
 
     const projectId = process.env.FCM_PROJECT_ID

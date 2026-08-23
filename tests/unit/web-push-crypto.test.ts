@@ -8,6 +8,8 @@ import {
     randomBytes,
 } from "node:crypto"
 
+import { withStubbedOutboundTransport } from "@/lib/outbound/dispatch-guard"
+
 /**
  * The Web Push stack is hand-rolled on node:crypto (RFC 8291 message
  * encryption, RFC 8188 aes128gcm, RFC 8292 VAPID), matching how the existing
@@ -100,14 +102,14 @@ describe("Web Push encryption is actually decryptable by a subscriber", () => {
     it("a subscriber can decrypt the payload we send it", async () => {
         const subscriber = makeSubscriberKeys()
 
-        const result = await sendWebPush(
+        const result = await withStubbedOutboundTransport(() => sendWebPush(
             {
                 endpoint: "https://push.example.com/send/abc123",
                 p256dh: b64url(subscriber.publicKey),
                 auth: b64url(subscriber.authSecret),
             },
             { title: "Η πληρωμή σας απέτυχε", body: "Ενημερώστε τον τρόπο πληρωμής σας.", url: "/account" }
-        )
+        ))
 
         expect(result.ok).toBe(true)
         expect(captured).not.toBeNull()
@@ -127,9 +129,9 @@ describe("Web Push encryption is actually decryptable by a subscriber", () => {
             auth: b64url(subscriber.authSecret),
         }
 
-        await sendWebPush(sub, { title: "one", body: "one" })
+        await withStubbedOutboundTransport(() => sendWebPush(sub, { title: "one", body: "one" }))
         const first = captured!.body
-        await sendWebPush(sub, { title: "one", body: "one" })
+        await withStubbedOutboundTransport(() => sendWebPush(sub, { title: "one", body: "one" }))
         const second = captured!.body
 
         // Identical plaintext must not produce identical ciphertext, or the
@@ -141,14 +143,14 @@ describe("Web Push encryption is actually decryptable by a subscriber", () => {
 
     it("sends a well-formed aes128gcm header", async () => {
         const subscriber = makeSubscriberKeys()
-        await sendWebPush(
+        await withStubbedOutboundTransport(() => sendWebPush(
             {
                 endpoint: "https://push.example.com/send/abc123",
                 p256dh: b64url(subscriber.publicKey),
                 auth: b64url(subscriber.authSecret),
             },
             { title: "t", body: "b" }
-        )
+        ))
 
         const body = captured!.body
         expect(body.readUInt32BE(16)).toBe(4096) // declared record size
@@ -159,14 +161,14 @@ describe("Web Push encryption is actually decryptable by a subscriber", () => {
 
     it("signs a VAPID JWT that verifies against the advertised public key", async () => {
         const subscriber = makeSubscriberKeys()
-        await sendWebPush(
+        await withStubbedOutboundTransport(() => sendWebPush(
             {
                 endpoint: "https://push.example.com/send/abc123",
                 p256dh: b64url(subscriber.publicKey),
                 auth: b64url(subscriber.authSecret),
             },
             { title: "t", body: "b" }
-        )
+        ))
 
         const authorization = captured!.headers.Authorization
         const [, token] = authorization.match(/vapid t=([^,]+)/)!
@@ -209,14 +211,14 @@ describe("Web Push encryption is actually decryptable by a subscriber", () => {
         globalThis.fetch = (async () => new Response("gone", { status: 410 })) as typeof fetch
         const subscriber = makeSubscriberKeys()
 
-        const result = await sendWebPush(
+        const result = await withStubbedOutboundTransport(() => sendWebPush(
             {
                 endpoint: "https://push.example.com/send/dead",
                 p256dh: b64url(subscriber.publicKey),
                 auth: b64url(subscriber.authSecret),
             },
             { title: "t", body: "b" }
-        )
+        ))
 
         expect(result.ok).toBe(false)
         expect(result.ok === false && "gone" in result && result.gone).toBe(true)
