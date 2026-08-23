@@ -26,7 +26,7 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] Ειδοποιήσεις `/notifications`
 - [x] Αρχική `/dashboard`
 - [x] Πορτοφόλι `/wallet`
-- [ ] Ασφαλιστήριο `/wallet/[id]`
+- [x] Ασφαλιστήριο `/wallet/[id]`
 - [ ] Αναλύσεις `/coverage-insights`
 - [ ] Σύμβουλος `/agent`
 - [ ] Ρυθμίσεις `/account` + 5 subpages
@@ -146,3 +146,54 @@ Phase 5 must not merge rows until it does. If the reframe needs a schema change 
 **Ledger note on W-03.** Worth recording because it contradicts the brief: these counts come from
 `getPolicyStatusView`, which is expiry-aware, so the wallet is NOT the source of the count
 contradiction. The outbound services are (D-007).
+
+
+---
+
+## Ασφαλιστήριο — `/wallet/[id]`
+
+Source: `components/wallet/PolicyDetailsClientView.tsx` + 17 components in
+`components/wallet/policy-detail/`.
+
+**Unlike the dashboard, the brief is ACCURATE about this surface.** The committed Goal 0 baseline
+(`docs/evidence/policy-detail-mobile/BASELINE.md`, 2026-08-22, 18 captures) measures **20 sections,
+187–189 containers, max depth 3, 13,428px scroll at 320px = 18.6 screens.** D-004's staleness
+finding applies to Αρχική and does not transfer here.
+
+Reusable, with two caveats recorded for T-015:
+1. **Free-tier paths are unmeasured.** That baseline carries its own correction: the fixture
+   account holds an ACTIVE `ph-pro` subscription, so the locked gap report, the €3 unlock CTA, the
+   PDF-preview lock and the upgrade banner were never captured. §5.3 requires both tiers.
+2. **1.4.11 was not automated in that pass** and is explicitly recorded there as a gap.
+   `tests/measure/nontext-contrast.spec.ts` exists now, so T-015 must re-run with it — §5.6 makes
+   1.4.11 mandatory, not deferred.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| P-01 | Identify the policy (insurer, number, line) | fact | **KEEP** | through `policy-identity.ts` only | — |
+| P-02 | See status, end date and days remaining | fact | **KEEP, STATED ONCE** | §7.5: dates currently render in three places; one survives | Phase 5 |
+| P-03 | Read the plain-Greek summary (`SummaryCard`) | fact | **KEEP** | must pass `summary-language.ts`; English-with-no-tag must not render | P1-05 |
+| P-04 | See the per-policy health signal + `healthLevels` verdict | fact | **REMOVE the verdict** | «Σε καλή κατάσταση» over a 110-day-expired policy is §2.2 + §2.3 | P1-04 |
+| P-05 | See coverages with limits (`coverage`) | fact | **KEEP** | separated from claims contact — two different jobs (§7.5) | Phase 5 |
+| P-06 | Read exclusions / ψιλά γράμματα (`ExclusionsCard`) | fact | **KEEP, PROMOTED** | the most differentiating content in the product; currently furthest down | Phase 2 |
+| P-07 | Read notable conditions | fact | **KEEP** | a condition that can VOID cover belongs in the review register, not the perk register (§9.4) | Phase 4 |
+| P-08 | See perks (`PerksCard`) | fact | **KEEP** | feeds §9.4 perk prompts; each needs a clause link or it does not render | Phase 4 |
+| P-09 | Claims guidance + phone (`ClaimsGuidanceCard`) | action | **KEEP, PROMOTED** | §7.1 question 3; phones become real `tel:` targets | Phase 5 |
+| P-10 | Key dates + renewal outlook + reminders | fact | **KEEP, CONSOLIDATED** | three date locations collapse to one | Phase 5 |
+| P-11 | See insured people (`InsuredPeopleCard`) | fact | **KEEP** | may carry Art. 9 data — minimise, never widen | — |
+| P-12 | See / open documents (`DocumentsCard`) | action | **KEEP** | an unreadable value links here as its source | — |
+| P-13 | Ask the AI about the policy (`policy-qa`) | action | **KEEP, CONSOLIDATED** | six AI entry points → at most two (§7.5) | Phase 5 |
+| P-14 | See recommendations | fact | **KEEP** | gap findings render once; this links rather than repeats | Phase 5 |
+| P-15 | See branch guidance / actions | fact | **KEEP** | — | Phase 5 |
+| P-16 | Reach the adviser (`agent`) | action | **KEEP** | — | — |
+| P-17 | Section navigation (14-pill strip) | action | **REMOVE two of three** | §4.4: ONE in-page navigation system. The pill strip, the in-card tab pair and the coverage toggle currently coexist | Phase 5 |
+| P-18 | Policy header menu (edit, delete, share) | action | **KEEP** | — | Phase 5 |
+
+**Ledger note on P-17.** This is the largest single reduction available on the surface and the one
+most likely to be argued about, so the criterion is written down now: the survivor is whichever
+system can address all sections after the §7.5 reduction to ≤8, at 320px, without clipping. The
+14-pill strip must use `.pw-scroll-strip` if it survives — that primitive exists precisely because
+the global `min-width: 0` rule collapsed it into slivers.
+
+**Doc debt found:** `BASELINE.md` cites `tests/measure/policy-detail.ts`, renamed to `metrics.ts` in
+T-011. Harmless but it should be corrected when T-015 republishes.
