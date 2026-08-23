@@ -344,3 +344,49 @@ Confirmed twice in a real browser: the correct content is silently substituted b
 becomes `/coverage-insights`. `SURFACES.md` reported zero broken destinations because the
 enumeration checked that routes EXIST, not that redirects actually redirect — a route-level check
 cannot see a runtime behaviour, which is the same universe lesson as D-005.
+
+---
+
+## Phase 1 execution order — SERIAL, and why
+
+§3.7: *"Implementation agents may run in parallel across surfaces only after Phase 1 completes and
+the design system exists. Before that, parallel work on a broken foundation multiplies rework."*
+
+So Phase 1 runs **one item at a time**, each fully reviewed and committed before the next starts.
+With eleven items that is slower than it looks tempting to make it — but the two prior runs that
+produced regressions both shipped concurrent partial work, and §0.6 makes a partly-done phase worth
+zero.
+
+### Order, with the reasoning
+
+| # | item | why here |
+|---|---|---|
+| 1 | **P1-01** score removed everywhere | Highest exposure. Also the largest, and H-001 just doubled its scope. Everything else is smaller once this lands. |
+| 2 | **P1-02** no all-clear where the check never ran | Touches `provisionalProtectionScore`, which P1-01 has just stopped rendering — doing it second means the blast radius is already understood. |
+| 3 | **P1-03** one definition of "policies this person has" | Same files as P1-02 (`engagement-drip`, `weekly-digest` services). Adjacent, so it goes next to avoid re-reading them cold. |
+| 4 | **P1-05** English internal prose | Independent; unblocks the locale guard the later items lean on. |
+| 5 | **P1-04** one event, one row | Needs T-012's keyed+unkeyed fixture, which exists. Carries the comment-rewrite instruction. |
+| 6 | **P1-06** dead verdict keys + freeze the UNION | Must come **after** P1-01, or it would delete strings P1-01 is still removing callers for. |
+| 7 | **P1-07** identity values never render raw | Independent. |
+| 8 | **P1-09** preferences control every channel | Prerequisite for P1-09b. |
+| 9 | **P1-09b** the three §9.5 cadence controls | Committed dependency of H-002 = B. |
+| 10 | **P1-10** one status vocabulary | Cross-surface; safer once the surfaces above have settled. |
+| 11 | **P1-11** every placeholder form detected | Small, self-contained. |
+| 12 | **P1-08** app shell defects | Last of the code items — it touches chrome present on every screen, so it lands when nothing else is in flight. |
+
+### Deferred out of Phase 1 by dependency, not by choice
+
+- **Truncation (§6.1.9)** — candidate #12 established the real fix is a `policy-identity` primitive
+  that does not break at all, which is a **Phase 3** deliverable. A `globals.css` edit here would be
+  the surface-local override §3.8 calls a review failure. Deferred to Phase 3 with a ledger note.
+- **T-016d `/coverage` redirect** — a real defect but a one-line routing fix with no measurement
+  dependency; it rides along with whichever item is open when the gate passes.
+
+### Standing rules for every Phase 1 item
+1. Instrument what you touch, per `INSTRUMENTATION-PLAN.md`. Instrumentation added at the end does
+   not happen.
+2. Extend an existing guard; never write a second one for a defect class that has one (§11.1).
+3. Every guard states **what it walks** and **what it claims** — the two questions D-005 and #17
+   established are different.
+4. Demonstrate the guard failing first. Record both outcomes in the item's queue entry.
+5. Ship the whole item or requeue it. No partial merges.
