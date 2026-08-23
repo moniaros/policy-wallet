@@ -339,3 +339,59 @@ mandatory, capture free tier, reuse rather than recapture where fixtures are unc
 
 **T-015 is the last item before the Phase 0 gate.** When it lands: check §5.6 in full, tag
 `pw-transform-phase-0-complete`, then Phase 1 opens with P1-01…P1-11 already queued.
+
+---
+
+## Checkpoint 5 — Phase 0 measured. Gate FAILED on one condition, deliberately not rounded up.
+
+**Done:** T-000, T-001, T-010, T-011, T-012, T-013, T-014 (36 candidates, none pending), T-016
+(string inventory · instrumentation plan · chrome audit · LEDGER 20/20).
+**T-015 partial:** 10 baseline documents, 151 captures, 320/390/430, both tiers, 1.4.11 on every one.
+**In flight:** T-016b (5 uncaptured targets) + T-016c (`/wallet/[id]` expanded).
+**Halts open: 1** (H-001). Suite **5090** green. 26 run commits.
+
+### Phase 0 gate: 6 of 7 conditions MET. The seventh is not, and §1.1.5 forbids softening it.
+
+Missing: `/wallet/[id]/edit`, `/consent/ai` content, 4 of 7 overlays, and a paid-tier "no advisor"
+empty state. T-016b is closing them. **Phase 1 does not open until it does.**
+
+### The finding that changes how this run measures anything
+
+**Collapsing content is not reducing it (D-011).** `PolicySection` unmounts closed sections and all
+default closed, so `/wallet/[id]`'s apparent fall from 13,428px to 4,930px is largely a fold:
+expanded it measures **12,399px**, within 8% of the original. Every structural metric in this run —
+and §10.2's "≤50% of baseline" criterion — could be satisfied by defaulting sections closed.
+Ceilings are now evaluated **expanded**, and both states are always published.
+
+Its published tap-target, truncation and 1.4.11 numbers are **floors for the visible heads**, not
+the page. T-016c is re-measuring.
+
+### An error of mine, recorded because it nearly propagated (D-012)
+
+My T-015 brief told the agent to reuse `docs/evidence/dashboard-mobile/data/current/`. That
+directory is named `current` and holds pre-Goal-2 numbers — 13 sections against a shipped 6.
+Following it would have published a baseline for a page that does not exist and measured Phase 1
+against it: **D-004 committed inside the instruction warning about D-004.** The agent verified with
+a live capture instead of obeying. "Unchanged fixtures and code" is itself a claim that needs
+checking.
+
+### Priorities changed by measurement
+
+`/coverage-insights` is confirmed the densest surface — **13,454px, 192 containers at 320px**, 2.7×
+the policy page's default view, with no accordion softening it. Every earlier assumption in this run
+treated policy detail as the worst surface. It is not.
+
+### Guard-failure taxonomy — now four forms
+
+| form | instances |
+|---|---|
+| universe too small | `score-containment` never walks `lib/` (D-005); equivalence guard outside the CI path (D-009) |
+| adoption incomplete | `NON_LIVE_POLICY_STATUSES` 3 of 5 (D-007); `LocaleToggle` missed `min-h-11` |
+| assertion weaker than the invariant | score allowlist permits two locations, §2.2 permits one (#17) |
+| **check cannot see the behaviour** | `SURFACES.md` verified routes EXIST; `/coverage` exists and silently fails to redirect (#35) |
+
+### Cold start
+1. Finish **T-016b/c**, then re-check §5.6 in full and tag `pw-transform-phase-0-complete`.
+2. Phase 1 opens with **P1-01…P1-11** queued, evidence-backed, in §6.1 exposure order.
+3. **H-001 needs a human.** It blocks only the score's final disposition; every Phase 1 removal
+   proceeds without it.
