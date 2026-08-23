@@ -35,6 +35,21 @@ return Math.max(0, Math.min(100, 100 - penalty))
 
 **Three of the four broken states return the same number, and it is the best possible one.**
 
+### What that actually renders — measured, not reasoned
+
+`tests/measure/outbound-inventory.test.ts` renders each template to text in `el` for a portfolio of
+three policies with nothing analysed. Verbatim output:
+
+> **drip, day 7** — «3 Ασφαλιστήρια · **100% Βαθμολογία προστασίας** · Προσωρινή εκτίμηση · **0
+> Κενά κάλυψης**»
+>
+> **weekly digest** — «Ακολουθεί η σύνοψη της εβδομάδας σας. **100% Βαθμολογία προστασίας** ·
+> Προσωρινή εκτίμηση»
+
+Three policies, a perfect score, zero gaps — to someone whose documents have never been read. The
+«Προσωρινή εκτίμηση» qualifier is present and does not help: it says the number is provisional, not
+that **no analysis has happened at all**, which is the fact that matters.
+
 Two independent reasons, both structural rather than incidental:
 
 1. **"Nothing to score" is implemented as `policyCount === 0`.** The honest predicate is "nothing

@@ -61,7 +61,7 @@ Missing, per §5.3 — each must be able to PRODUCE its defect:
       unkeyed, per D-002) · out-of-map enum · policy with no premium · policy with no documents
 - [ ] Longest real Greek strings from the string inventory
 
-### T-013 — Outbound-copy inventory · `todo`
+### T-013 — Outbound-copy inventory · `done`
 owner: Evidence (Sonnet 5) · blocked_by: T-001 · file_boundary: `docs/transformation/evidence/outbound/**`
 Highest-exposure surface in the run and invisible from the UI.
 - [ ] Every email and push template rendered TO TEXT via render functions, never the transport
