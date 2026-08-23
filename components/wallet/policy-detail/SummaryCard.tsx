@@ -23,8 +23,6 @@ interface SummaryCardProps {
         summaryTitle: string
         summaryAiChip: string
         healthTitle: string
-        /** Retained for callers that still show a level; NOT rendered here. */
-        healthLevels: Record<string, string>
         /** Neutral scale note that replaced the verdict label, e.g. «στα 100». */
         healthScale: string
         /** Shown INSTEAD of the summary when the stored one is wrong-language. */

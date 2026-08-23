@@ -269,7 +269,7 @@ file_boundary: `lib/events/catalog.ts`, `lib/notifications/registry.ts`, `app/(p
       time
 - [ ] locale-purity guard extended to stored notification rows, not only rendered DOM
 
-### P1-06 — Delete the dead verdict keys, and freeze the UNION · `todo`
+### P1-06 — Delete the dead verdict keys, and freeze the UNION · `done` — REVIEW PASSED
 owner: Implementation (Fable 5) · file_boundary: `lib/i18n/translations/{el,en}.ts`, `tests/unit/`
 - [ ] `scoreGood`, `scoreNeedsImprovement`, `scoreNeedsAttention` deleted (zero references; §2.2-prohibited copy sitting in the bundle awaiting a caller)
 - [ ] string-inventory freeze covers deletions as well as additions
@@ -665,3 +665,56 @@ events)"*. That is the check I have had to run manually on every prior item, bui
 **Two limits reported rather than hidden:** v1 cursor pagination can show an event once per page if
 its rows straddle a boundary (milliseconds wide; a real fix needs an event table, i.e. §12.2), and
 groups whose arms are all `skipped` still render — pre-existing, not worsened.
+
+
+---
+
+## P1-06 — Adversarial review: **PASS**. Scope expansion RATIFIED.
+
+| check | result |
+|---|---|
+| `healthLevels` strings **and wiring** gone | **0 occurrences** repo-wide. Strings, the `SummaryCard.tsx:27` type field (whose own comment admitted "NOT rendered here"), and the `PolicyDetailsClientView.tsx:834` pass-through. `tsc` clean, so a hidden consumer would have failed to compile |
+| Freeze fails on addition | **proven by me.** Adding one bundle string turned it red with `+ bundle zzReviewerProbe "ΔΟΚΙΜΗ ΑΝΑΘΕΩΡΗΤΗ"` — the diff *names the string*, which is the reviewability property I asked for. Reverted → 7/7, inventory unchanged at 7,215 lines |
+| Deletions fail too | asserted by the agent in both bundle and inline form, so prohibited copy cannot be quietly re-removed |
+| Extraction is AST, not regex | handles all 7 shapes found in the wild; composed templates freeze their **shape** (`` `Λήγει σε ${d} ημέρες` ``), so recomposition trips too |
+| CI | tsc · lint · i18n · utf8 clean; **5135/5135** (+7 = the new guard) |
+
+### The scope expansion is RATIFIED, and my brief was wrong
+
+I scoped the inline walk to `app/` + `components/`. It added **`lib/`** and flagged it for review.
+Measured independently:
+
+| root | files with inline Greek |
+|---|---|
+| `app/` | 53 |
+| `components/` | 39 |
+| **`lib/`** | **124** |
+
+`lib/` alone holds more than the two roots I specified combined — guides 439 pairs, glossary 278,
+risk-catalogue 245, notification registry 132, public pricing copy 117. A freeze on my universe would
+have certified "no unreviewed Greek shipped" while **87% of the inline surface floated free.**
+
+That is D-005 applied to my own instruction, by the implementer, unprompted. Ratified. Enumerating
+`app/(public)` read-only is also correct — public marketing copy is where an unreviewed claim does
+most damage, and §12.4 restricts *editing*, not *reading*.
+
+My "85 files" estimate was close for the briefed roots (real: 78 files / 569 pairs, AgentClient.tsx
+at 56 exactly as predicted) and beside the point, because the roots were wrong.
+
+### It caught a false green in its own probe harness
+
+Probe D's first attempt was a no-op: the plant script's `count()==1` assertion matched a substring,
+and the revert half inserted a duplicate key which left the guard legitimately green. **It noticed
+via an anomalous `git diff --stat`, removed the stray line, and redid the probe line-based to a
+genuine red.** That is the exact failure mode I hit three times in this run, self-caught and
+self-reported rather than shipped as a passing proof.
+
+### Residual gap it reported — needs its own item
+Greek **not** shaped as `{ el, en }` — locale ternaries in `.ts` files such as `lib/i18n/role-copy.ts`
+and `lib/agent/format.ts` — is frozen by neither this guard nor `lint:i18n-changed` (which only sees
+`.tsx`). Genuinely unfrozen and unlinted. Queued below.
+
+### P1-14 — Freeze locale-ternary Greek in `.ts` files · `todo`
+Third form of Greek in this codebase, covered by nothing. `lint:i18n-changed` scans `.tsx`; the P1-06
+freeze matches `{ el, en }` object pairs. A `lang === 'el' ? '…' : '…'` in a `.ts` file is invisible
+to both.

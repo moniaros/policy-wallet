@@ -1,0 +1,47 @@
+// PROBE FIXTURE for tests/unit/greek-string-inventory.test.ts — DO NOT DELETE.
+//
+// This file is the committed proof that the inline {el, en} extractor really
+// sees every shape that exists in the codebase (survey of 2026-08-24: plain
+// string literals, template expressions, conditionals, property access,
+// arrays, nested objects, identifier references) plus the shapes that could
+// appear tomorrow (shorthand, quoted keys, extra sibling properties,
+// duplicates). The guard asserts the EXACT multiset extracted from this file;
+// if the extractor regresses on any shape, that assertion — not production
+// copy — goes red first. A guard without a red-capable probe is not a guard.
+//
+// It is .txt so nothing compiles it; the guard parses it with the same
+// TypeScript AST walk it applies to app/, components/ and lib/.
+
+declare const el: string
+declare const en: string
+declare const cond: boolean
+declare const someVar: string
+
+export const probeCopy = {
+    plain: { el: 'Δοκιμαστικό αντίγραφο', en: 'Probe copy' },
+    quotedKeys: { 'el': "Με εισαγωγικά κλειδιά", "en": "Quoted keys" },
+    template: { el: `Γεια σου ${someVar}`, en: `Hello ${someVar}` },
+    noSubTemplate: { el: `Χωρίς παρεμβολή`, en: `No interpolation` },
+    multiline: {
+        el: `Πρώτη γραμμή
+             δεύτερη γραμμή`,
+        en: `First line
+             second line`,
+    },
+    array: { el: ['Πρώτο στοιχείο', 'Δεύτερο στοιχείο'], en: ['First', 'Second'] },
+    nested: {
+        el: { title: 'Τίτλος ενότητας', hint: 'Υπόδειξη' },
+        en: { title: 'Section title', hint: 'Hint' },
+    },
+    conditional: { el: cond ? 'Ναι' : 'Όχι', en: cond ? 'Yes' : 'No' },
+    reference: { el: someVar, en: someVar },
+    shorthand: { el, en },
+    extraProps: { id: 7, el: 'Με έξτρα ιδιότητες', en: 'With extra props', tone: 'info' },
+    duplicated: { el: 'Διπλότυπο κείμενο', en: 'dup' },
+    duplicatedAgain: { el: 'Διπλότυπο κείμενο', en: 'dup' },
+
+    // NON-pairs — the extractor must NOT report these:
+    elOnly: { el: 'Μόνο ελληνικά χωρίς en' },
+    enOnly: { en: 'English only, no el' },
+    unrelated: { elevation: 'ψηλά', enabled: true },
+}

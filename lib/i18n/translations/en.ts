@@ -718,12 +718,6 @@ export const en: TranslationKeys = {
             // Agent section
             agentSectionTitle: 'Advisor notes & collaboration',
             agentLockedHint: 'Collaboration with your advisor is available on Plus and Pro.',
-            // Per-policy health signal (summary card donut)
-            healthLevels: {
-                good: 'Looking good',
-                moderate: 'Worth a look',
-                attention: 'Needs attention',
-            },
             // Renewal data extracted from the policy or tracked by the reminder cron
             renewalDateLabel: 'Renewal date',
             premiumLabel: 'Premium',

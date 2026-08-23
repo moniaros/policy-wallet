@@ -721,12 +721,6 @@ export const el = {
             // Agent section
             agentSectionTitle: 'Σημειώσεις συμβούλου & συνεργασία',
             agentLockedHint: 'Η συνεργασία με τον σύμβουλό σας είναι διαθέσιμη στα Plus και Pro.',
-            // Per-policy health signal (summary card donut)
-            healthLevels: {
-                good: 'Σε καλή κατάσταση',
-                moderate: 'Θέλει μια ματιά',
-                attention: 'Χρειάζεται προσοχή',
-            },
             // Renewal data extracted from the policy or tracked by the reminder cron
             renewalDateLabel: 'Ημερομηνία ανανέωσης',
             premiumLabel: 'Ασφάλιστρα',

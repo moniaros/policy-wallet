@@ -831,7 +831,6 @@ export function PolicyDetailsClient({
                             summaryTitle: detailsCopy.summaryTitle,
                             summaryAiChip: detailsCopy.summaryAiChip,
                             healthTitle: t.wallet.healthScore.title,
-                            healthLevels: detailsCopy.healthLevels,
                             healthScale: detailsCopy.healthScale,
                             summaryLanguageMismatch: detailsCopy.summaryLanguageMismatch,
                             summaryLanguageMismatchCta: detailsCopy.summaryLanguageMismatchCta,
