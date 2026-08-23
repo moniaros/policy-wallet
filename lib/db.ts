@@ -108,6 +108,61 @@ export function assessConnectionStrategy(env: {
     }
 }
 
+/**
+ * Cap the pool when a deployed instance is stuck on the SESSION pooler.
+ *
+ * `assessConnectionStrategy` already WARNS about this fallback. The warning goes
+ * to `console.warn`, nobody read it, and POLICYWALLET-5 went from 37 events to
+ * 51 with the diagnosis sitting in this file the whole time. A warning nobody
+ * acts on is not a control, so the fallback is made SAFE as well as announced.
+ *
+ * Session mode gives every client its own backend for the life of the
+ * connection and Supabase caps that at `pool_size: 15`. Prisma's default pool is
+ * `cores * 2 + 1` — 7 on the 3-CPU box Vercel actually scheduled these renders
+ * on — so THREE warm instances exceed the ceiling between them and the next
+ * query dies with `(EMAXCONNSESSION) max clients reached in session mode`: a
+ * database-shaped error with a configuration-shaped cause.
+ *
+ * Two is chosen rather than tuned. It keeps a realistic number of concurrent
+ * instances inside 15 while leaving slots for the session-mode consumers that
+ * CANNOT be capped from here — `prisma migrate deploy` and local tooling, which
+ * contend for the same 15 and are the ones you least want starved, because they
+ * fail while you are already trying to fix something else.
+ *
+ * This is the deployed twin of the local rule in CLAUDE.md
+ * (`?connection_limit=5&pool_timeout=20` on `DIRECT_URL`), for the same reason.
+ * It is a floor under a misconfiguration, NOT a substitute for
+ * `POOLED_DATABASE_URL`: transaction pooling is what actually supports
+ * serverless concurrency. An explicit `connection_limit` already on the URL is
+ * always left alone, because whoever set one meant it.
+ */
+export function capFallbackPool(
+    url: string | undefined,
+    source: "pooled" | "direct" | "database" | "none",
+    isDeployed: boolean
+): string | undefined {
+    if (!url || !isDeployed || source === "pooled" || source === "none") return url
+    if (!/^postgres(ql)?:\/\//i.test(url)) return url
+
+    try {
+        const parsed = new URL(url)
+        // Transaction mode hands the backend back after every transaction, so it
+        // has no per-client ceiling to run into. Detected by PORT, not hostname:
+        // the session pooler lives on `*.pooler.supabase.com` too, and only the
+        // port tells the two apart.
+        if (parsed.port === "6543") return url
+        if (parsed.searchParams.has("connection_limit")) return url
+
+        parsed.searchParams.set("connection_limit", "2")
+        if (!parsed.searchParams.has("pool_timeout")) parsed.searchParams.set("pool_timeout", "20")
+        return parsed.toString()
+    } catch {
+        // Unparseable: hand it back and let Prisma report the real problem,
+        // exactly as ensurePoolerCompatibility does.
+        return url
+    }
+}
+
 const connection = assessConnectionStrategy({
     pooled: process.env.POOLED_DATABASE_URL,
     direct: process.env.DIRECT_URL,
@@ -120,6 +175,12 @@ if (connection.warning) {
     console.warn(connection.warning)
 }
 
+/**
+ * The URL the client is actually built with: pooler-compatible, and capped if
+ * this deployment fell back to session mode.
+ */
+const effectiveDbUrl = capFallbackPool(dbUrl, connection.source, Boolean(process.env.VERCEL))
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
@@ -127,7 +188,7 @@ const globalForPrisma = globalThis as unknown as {
 export const db =
   globalForPrisma.prisma ??
   new PrismaClient({
-    datasourceUrl: dbUrl,
+    datasourceUrl: effectiveDbUrl,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
     // Prisma's default interactive-transaction timeout is 5000ms — too tight for
     // the analysis-finalize tx (policy update + gap deleteMany + a per-gap

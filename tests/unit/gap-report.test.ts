@@ -381,3 +381,87 @@ describe('computeReportUnlocked', () => {
         expect(FREE_GAP_PREVIEW_COUNT).toBe(3)
     })
 })
+
+/**
+ * Every slug the clarity pipeline has ACTUALLY emitted in production is authored.
+ *
+ * The universe here is not invented: it is the full set of `slug` tag values on
+ * Sentry POLICYWALLET-7 over its lifetime (first seen 2026-07-14, 114 events,
+ * 13 distinct slugs as of 2026-08-23). Enumerating from what the model really
+ * produced is the point — a list of slugs someone imagined it might produce
+ * would guard nothing.
+ *
+ * Why an unauthored slug matters, precisely: `resolveGapContent` titles an
+ * unknown gap with `firstSentence(aiExplanationEl, 80)`. The authored generic
+ * ("Σημείο προσοχής στην κάλυψη") is only reached when there is no AI text at
+ * all — so in practice an unauthored slug puts the MODEL's prose in a heading in
+ * the customer's wallet. That is the defect, not the missing map entry.
+ *
+ * Growing this list is the correct response to a new POLICYWALLET-7 tag value.
+ */
+describe('the slugs production actually emits are all authored', () => {
+    const OBSERVED_IN_PRODUCTION = [
+        // Motor
+        'own-damage-gap',
+        'no-own-damage-cover',
+        'no-collision-coverage',
+        'no-glass-breakage',
+        'no-glass-breakage-cover',
+        'no-glass-coverage',
+        'no-roadside-assistance',
+        'missing-accident-declaration-phone',
+        // Health
+        'no-annual-checkup',
+        'preventive-care-gap',
+        'no-direct-billing',
+        'maternity-coverage',
+        'missing-hospital-class',
+    ]
+
+    it.each(OBSERVED_IN_PRODUCTION)('%s resolves to authored content', (slug) => {
+        expect(resolveGapContent(slug).known).toBe(true)
+    })
+
+    it('none of them can be titled with model prose', () => {
+        // The failure mode stated as a test: pass AI text alongside each slug and
+        // require the heading to stay the authored one.
+        const aiText = 'ΑΥΤΟ ΕΙΝΑΙ ΚΕΙΜΕΝΟ ΤΟΥ ΜΟΝΤΕΛΟΥ ΠΟΥ ΔΕΝ ΠΡΕΠΕΙ ΝΑ ΓΙΝΕΙ ΤΙΤΛΟΣ.'
+        for (const slug of OBSERVED_IN_PRODUCTION) {
+            const content = resolveGapContent(slug, {
+                aiExplanationEl: aiText,
+                aiExplanation: 'This is model text that must not become a title.',
+            })
+            expect(content.titleEl, slug).not.toContain('ΜΟΝΤΕΛΟΥ')
+            expect(content.titleEn, slug).not.toContain('model text')
+        }
+    })
+
+    it('reports nothing to Sentry for any of them', () => {
+        captureMessage.mockClear()
+        OBSERVED_IN_PRODUCTION.forEach((s) => resolveGapContent(s))
+        expect(captureMessage).not.toHaveBeenCalled()
+    })
+
+    it('the spelling variants still collapse to one finding', () => {
+        // Authoring three spellings must not turn one gap into three cards.
+        expect(new Set(['no-glass-breakage', 'no-glass-breakage-cover', 'no-glass-coverage']
+            .map((s) => resolveGapContent(s).concept)).size).toBe(1)
+        expect(new Set(['own-damage-gap', 'no-own-damage-cover', 'no-collision-coverage']
+            .map((s) => resolveGapContent(s).concept)).size).toBe(1)
+        expect(new Set(['no-annual-checkup', 'preventive-care-gap']
+            .map((s) => resolveGapContent(s).concept)).size).toBe(1)
+    })
+
+    it('a "missing" finding says NOT RECORDED, never not covered', () => {
+        // CLAUDE.md: the `missing` class fires on SILENCE — the document does not
+        // state a value. Wording it as absent cover would be a claim the evidence
+        // does not support.
+        for (const slug of ['missing-hospital-class', 'missing-accident-declaration-phone']) {
+            const { titleEl, titleEn } = resolveGapContent(slug)
+            expect(titleEl, slug).toContain('Δεν καταγράφεται')
+            expect(titleEl, slug).not.toMatch(/έλλειψη|δεν καλύπτεται/i)
+            expect(titleEn, slug).toMatch(/not recorded/i)
+            expect(titleEn, slug).not.toMatch(/missing cover|not covered/i)
+        }
+    })
+})

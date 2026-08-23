@@ -232,6 +232,24 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "exclusion",
         coverageArea: "vehicle",
     },
+
+    // The clarity pipeline's third spelling of the same finding (Sentry
+    // POLICYWALLET-7). Same concept, so dedupeGaps collapses it with the others.
+    "no-glass-breakage-cover": {
+        concept: "glass-breakage",
+        titleEl: "Πιθανή έλλειψη κάλυψης θραύσης κρυστάλλων",
+        titleEn: "Possible missing glass breakage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+
+    "no-glass-coverage": {
+        concept: "glass-breakage",
+        titleEl: "Πιθανή έλλειψη κάλυψης θραύσης κρυστάλλων",
+        titleEn: "Possible missing glass breakage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
     "own-damage": {
         concept: "own-damage",
         titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
@@ -249,6 +267,23 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
     // Same story as no-glass-breakage: DB-only slug, third spelling of the
     // own-damage finding.
     "own-damage-gap": {
+        concept: "own-damage",
+        titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
+        titleEn: "Possible missing own-damage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+
+    "no-own-damage-cover": {
+        concept: "own-damage",
+        titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
+        titleEn: "Possible missing own-damage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+
+    // Collision IS own damage in Greek motor cover (ίδιες ζημιές / μικτή).
+    "no-collision-coverage": {
         concept: "own-damage",
         titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
         titleEn: "Possible missing own-damage coverage",
@@ -298,6 +333,14 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         coverageArea: "vehicle",
     },
     "roadside-assistance": {
+        concept: "roadside-assistance",
+        titleEl: "Πιθανή έλλειψη οδικής βοήθειας",
+        titleEn: "Possible missing roadside assistance",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+
+    "no-roadside-assistance": {
         concept: "roadside-assistance",
         titleEl: "Πιθανή έλλειψη οδικής βοήθειας",
         titleEn: "Possible missing roadside assistance",
@@ -364,6 +407,15 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "exclusion",
         coverageArea: "outpatient",
     },
+
+    // An annual check-up IS preventive care — same concept, the model's other word.
+    "no-annual-checkup": {
+        concept: "preventive-care",
+        titleEl: "Πιθανή έλλειψη κάλυψης προληπτικών εξετάσεων",
+        titleEn: "Possible missing preventive care coverage",
+        mechanic: "exclusion",
+        coverageArea: "outpatient",
+    },
     "home-earthquake": {
         concept: "earthquake",
         titleEl: "Πιθανή έλλειψη κάλυψης σεισμού",
@@ -423,6 +475,16 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         coverageArea: "maternity_mental",
     },
     "pregnancy-exclusion": {
+        concept: "maternity-exclusion",
+        titleEl: "Εξαίρεση/περιορισμός παροχών μητρότητας",
+        titleEn: "Maternity benefits exclusion",
+        mechanic: "exclusion",
+        coverageArea: "maternity_mental",
+    },
+
+    // The model states this one as the cover rather than the exclusion; it is
+    // the same finding, so it takes the same concept and collapses with it.
+    "maternity-coverage": {
         concept: "maternity-exclusion",
         titleEl: "Εξαίρεση/περιορισμός παροχών μητρότητας",
         titleEn: "Maternity benefits exclusion",
@@ -648,6 +710,39 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         concept: "missing-policy-details",
         titleEl: "Ελλιπή στοιχεία ασφαλιστηρίου",
         titleEn: "Missing policy details",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+
+    /**
+     * Concepts the map did not have, taken from the slugs the clarity pipeline
+     * actually emitted in production (Sentry POLICYWALLET-7). Until a slug is
+     * authored here, `resolveGapContent` titles the card with the MODEL's first
+     * sentence — so an unauthored slug is not a cosmetic gap, it is AI prose
+     * rendered as a heading in the customer's wallet.
+     *
+     * The two `missing-*` entries are worded "δεν καταγράφεται" — NOT RECORDED,
+     * never "not covered". They report that the document does not state a value,
+     * which is silence about the policy, not evidence the cover is absent.
+     */
+    "no-direct-billing": {
+        concept: "direct-billing",
+        titleEl: "Πιθανή έλλειψη απευθείας εξόφλησης νοσηλείας",
+        titleEn: "Possible missing direct billing",
+        mechanic: "other",
+        coverageArea: "hospital",
+    },
+    "missing-hospital-class": {
+        concept: "missing-hospital-class",
+        titleEl: "Δεν καταγράφεται η θέση νοσηλείας",
+        titleEn: "Hospital class not recorded",
+        mechanic: "other",
+        coverageArea: "hospital",
+    },
+    "missing-accident-declaration-phone": {
+        concept: "missing-accident-declaration-phone",
+        titleEl: "Δεν καταγράφεται τηλέφωνο αναγγελίας ατυχήματος",
+        titleEn: "Accident declaration phone not recorded",
         mechanic: "other",
         coverageArea: "general",
     },

@@ -200,12 +200,22 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
   slug (ids survive, so `gap_instances` survive) and DEACTIVATING anything active
   that nobody authored, rather than deleting it. Compare two environments by
   running the verifier against each and comparing the printed fingerprint — no
-  rows have to leave either one. Inactive rows legitimately differ: production
-  carries 41 definitions the AI minted for itself at runtime (`rule_id` `ai_*`,
+  rows have to leave either one. Inactive rows may legitimately differ, so the
+  check compares CONTENT of the active set, never row counts: production once
+  carried 41 definitions the AI minted for itself at runtime (`rule_id` `ai_*`,
   `detectionLogic` `{ source: "ai_clarity_pipeline" }`, one per analysis run
-  between 2026-07-13 and 2026-08-09) which dev has never had, so the check
-  compares CONTENT of the active set, never row counts. This is the third table
-  to drift after migrations and plan rows.
+  between 2026-07-13 and 2026-08-09) which dev never had. **Verified 2026-08-23:
+  both databases are now 29 active / 0 inactive on the same fingerprint
+  `2df9d0fd4b581caa` — the minted rows are gone.** Keep the content-not-counts
+  rule anyway; the pipeline can mint again. This is the third table to drift
+  after migrations and plan rows.
+
+  Minting is not the only way this surfaces. The clarity pipeline still emits
+  slug VARIANTS that never become rows (`no-glass-coverage` for the authored
+  `glass-breakage`), and an unauthored slug is not cosmetic: `resolveGapContent`
+  titles the card with the model's first sentence, so the customer reads AI prose
+  as a heading. Sentry POLICYWALLET-7 tags each one; author it in
+  `GAP_CONTENT_MAP` with the sibling's `concept` so the variants still collapse.
 - **Env precedence: exactly one `DATABASE_URL` and one `DIRECT_URL`, both dev.** dotenv
   keeps the LAST occurrence within a file, so a duplicate further down silently wins —
   that is how local tooling was pointed at production twice. `lib/db.ts` resolves

@@ -1,5 +1,86 @@
 # PolicyWallet — Project Status
 
+## Session wrap — 2026-08-23c (Production error triage: the two that actually mattered)
+
+Started from the one unexplained production error left after the last deploy. It
+turned out not to be a bug of its own, and the two issues above it by volume were
+both real and both fixable.
+
+### What the `/wallet` error actually was
+`POLICYWALLET-6` ("An error occurred in the Server Components render", digest
+only, no stack) is the CLIENT-side redacted twin of `POLICYWALLET-5`, not an
+independent fault — same deployment, same release, same session. `onRequestError`
+was wired correctly all along and had captured the real one:
+
+```
+PrismaClientInitializationError: Error querying the database:
+FATAL: (EMAXCONNSESSION) max clients reached in session mode
+       - max clients are limited to pool_size: 15
+```
+
+### FIXED — the session-pool exhaustion class (`POLICYWALLET-5`, 51 events since 2026-07-11)
+`lib/db.ts` already diagnosed this in a comment AND warned about it at runtime.
+The warning went to `console.warn`, nobody read it, and the issue grew from the 37
+events quoted in that comment to 51 with the diagnosis sitting in the file. A
+warning nobody acts on is not a control.
+
+`capFallbackPool()` now makes the fallback SAFE as well as announced: a **deployed**
+instance that has fallen back to the session pooler gets `connection_limit=2` and
+`pool_timeout=20`. Detection is by PORT, not hostname — both poolers live on
+`*.pooler.supabase.com` and only `:6543` vs `:5432` tells them apart. An explicit
+`connection_limit` is always left alone. This is the deployed twin of the local
+rule in CLAUDE.md, and it is a floor under a misconfiguration, **not** a substitute
+for `POOLED_DATABASE_URL`.
+
+Probe: 6 of the 12 new tests go red against the pre-fix pass-through; 29/29 green
+with the fix.
+
+### FIXED — AI prose rendered as gap headings (`POLICYWALLET-7`, 114 events since 2026-07-14)
+Not a "grow the map" TODO. `resolveGapContent` titles an unknown slug with
+`firstSentence(aiExplanationEl, 80)` — the authored generic is only reached when
+there is no AI text at all — so every unauthored slug put the **model's own prose
+in a heading in the customer's wallet**. This is the policy-detail **B6 / dashboard
+D3** defect, confirmed live with volume.
+
+Enumerated the universe from Sentry's `slug` tag rather than guessing: 13 distinct
+slugs over the issue's lifetime, clustering into 6 concepts as spelling variants.
+All 13 are now authored. Four alias onto concepts the map already had, three are
+new, and **three more (`no-collision-coverage`, `no-glass-coverage`,
+`maternity-coverage`) were caught by the guard after I had assumed they were
+covered** — which is the whole argument for enumerating.
+
+The two `missing-*` entries are worded «Δεν καταγράφεται» — NOT RECORDED, never
+"not covered" — per the `missing`-operator rule.
+
+### Verified, both databases
+`29 active / 0 inactive`, identical fingerprint `2df9d0fd4b581caa`, repo-authored
+set matching. CLAUDE.md + AGENTS.md corrected: the 41 AI-minted inactive
+definitions they describe as present in production **are gone**. The
+content-not-counts rule is kept anyway, because the pipeline can mint again.
+
+### BLOCKED — needs the owner, cannot be done from here
+**`POOLED_DATABASE_URL` is set on the Production scope only.** Preview has just
+`DIRECT_URL` + `DATABASE_URL`, so every preview deployment falls back to the
+SESSION pooler — against the production database, which preview already writes to.
+That is the root cause of `POLICYWALLET-5`, and the cap above only makes it
+survivable.
+
+`vercel env pull` returns `[SENSITIVE]` placeholders rather than values, so the
+production URL cannot be copied across from here. **Action: add
+`POOLED_DATABASE_URL` to the Preview scope in the Vercel dashboard** (same value as
+Production). Until then preview deployments contend with `prisma migrate deploy`
+and local tooling for the same 15 session-mode slots.
+
+### Deliberately NOT changed
+`ensurePoolerCompatibility` identifies a transaction pooler by hostname OR port, so
+it adds `pgbouncer=true` to the 5432 SESSION pooler too — disabling prepared
+statements on a connection where its own comment says they should be kept. Benign
+(a modest perf loss, no correctness risk) and changing prepared-statement behaviour
+on production connections to fix a comment mismatch is not worth the risk today.
+Logged here rather than fixed.
+
+---
+
 ## DEPLOYED — 2026-08-23, `f23ee784` live in production
 
 CI green → Vercel production success. Verified after the deploy:

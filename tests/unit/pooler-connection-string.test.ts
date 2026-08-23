@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest"
-import { __ensurePoolerCompatibility as ensure, assessConnectionStrategy as assess } from "@/lib/db"
+import {
+    __ensurePoolerCompatibility as ensure,
+    assessConnectionStrategy as assess,
+    capFallbackPool as cap,
+} from "@/lib/db"
 
 /**
  * Production incident, 2026-08-10.
@@ -160,5 +164,97 @@ describe("a deployed instance says so when it is not on the pooled connection", 
         const { warning } = assess({ direct: secret, isDeployed: true })
         expect(warning).not.toContain("sup3rs3cr3t")
         expect(warning).not.toContain("postgres.abc")
+    })
+})
+
+/**
+ * The other half of POLICYWALLET-5 — the half that was missing for six weeks.
+ *
+ * The warning above was already in place and already correct. It fired into
+ * `console.warn` on every cold start of every Preview deployment, and the issue
+ * went from 37 events to 51 anyway, because a deployment that announces it is
+ * about to exhaust the session pool still exhausts the session pool.
+ *
+ * So the fallback is capped as well as announced. This does not make session
+ * mode the right answer — `POOLED_DATABASE_URL` is still the fix — it makes the
+ * WRONG answer survivable, which is what you want from a path that is reached
+ * only by misconfiguration and only in the environments nobody is watching.
+ */
+/** The connection Preview actually fell back to: Supavisor in SESSION mode. */
+const SESSION = "postgresql://u:p@aws-1-eu-west-3.pooler.supabase.com:5432/postgres"
+
+describe("a deployed fallback to session mode is capped, not just announced", () => {
+    it("caps the pool when a deployment falls back to DIRECT_URL", () => {
+        const out = cap(SESSION, "direct", true)!
+        expect(out).toContain("connection_limit=2")
+    })
+
+    it("also sets a pool_timeout, so a capped pool queues instead of failing fast", () => {
+        expect(cap(SESSION, "direct", true)!).toContain("pool_timeout=20")
+    })
+
+    it("caps a DATABASE_URL fallback too — the same ceiling applies", () => {
+        expect(cap(SESSION, "database", true)!).toContain("connection_limit=2")
+    })
+
+    it("keeps the credentials, host, port and database intact", () => {
+        const out = cap("postgresql://postgres.abc:s3cr3t@aws-1-eu-west-3.pooler.supabase.com:5432/postgres", "direct", true)!
+        expect(out).toContain("postgres.abc:s3cr3t@")
+        expect(out).toContain("aws-1-eu-west-3.pooler.supabase.com:5432")
+        expect(out).toContain("/postgres")
+    })
+
+    it("preserves parameters that are already there", () => {
+        const out = cap(SESSION + "?schema=public&sslmode=require", "direct", true)!
+        expect(out).toContain("schema=public")
+        expect(out).toContain("sslmode=require")
+        expect(out).toContain("connection_limit=2")
+    })
+
+    it("is idempotent", () => {
+        const once = cap(SESSION, "direct", true)!
+        expect(cap(once, "direct", true)).toBe(once)
+        expect(once.match(/connection_limit=/g)).toHaveLength(1)
+    })
+})
+
+describe("the cap never overrides a deliberate choice", () => {
+    it("leaves the pooled connection alone — transaction mode has no such ceiling", () => {
+        const pooled = "postgresql://u:p@aws-1-eu-west-3.pooler.supabase.com:6543/postgres?pgbouncer=true"
+        expect(cap(pooled, "pooled", true)).toBe(pooled)
+    })
+
+    it("tells the two poolers apart by PORT, not hostname", () => {
+        // Both live on *.pooler.supabase.com. Only the port distinguishes session
+        // mode (5432, capped at 15 clients) from transaction mode (6543), so a
+        // hostname test would wrongly exempt the connection that needs capping.
+        const txn = "postgresql://u:p@aws-1-eu-west-3.pooler.supabase.com:6543/postgres"
+        expect(cap(txn, "direct", true)).toBe(txn)
+        expect(cap("postgresql://u:p@aws-1-eu-west-3.pooler.supabase.com:5432/postgres", "direct", true))
+            .toContain("connection_limit=2")
+    })
+
+    it("respects an explicit connection_limit that someone set on purpose", () => {
+        const explicit = "postgresql://u:p@host:5432/postgres?connection_limit=9"
+        expect(cap(explicit, "direct", true)).toBe(explicit)
+    })
+
+    it("does nothing locally, where one process holds a handful of connections", () => {
+        expect(cap(SESSION, "direct", false)).toBe(SESSION)
+    })
+
+    it("does nothing when there is no connection string to cap", () => {
+        expect(cap(undefined, "none", true)).toBeUndefined()
+        expect(cap(SESSION, "none", true)).toBe(SESSION)
+    })
+
+    it("leaves a non-postgres URL untouched", () => {
+        const accelerate = "prisma://accelerate.prisma-data.net/?api_key=abc"
+        expect(cap(accelerate, "database", true)).toBe(accelerate)
+    })
+
+    it("returns an unparseable string untouched", () => {
+        const junk = "postgresql://this is not a url"
+        expect(cap(junk, "direct", true)).toBe(junk)
     })
 })
