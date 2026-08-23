@@ -40,7 +40,7 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 13 · REFUTED 8 · DIFFERENT 5 · PENDING 3 — 26 candidates verified
+- CONFIRMED 14 · REFUTED 10 · DIFFERENT 5 · PENDING 3 — 29 candidates verified
 - Of the brief's own candidates, **7 are refuted or reclassified** — a third of everything checked
 - Guard failure modes found: **universe** too small (D-005, D-009), **adoption** incomplete (D-007), **assertion** weaker than the invariant (#17)
 - **Score-in-outbound sites: 5** (brief said 1; I found 4 by grep; the emitter made 5)
@@ -309,6 +309,32 @@ passes. So nothing currently flags them, and nothing would.
 
 Recommend the second. It also means the freeze guard states its universe explicitly, per D-005 —
 which is now the third time that rule has changed a design decision in this run.
+
+
+## §2.3 in-product — both cited examples are already fixed, and the dead wiring is the finding
+
+| # | Candidate | Verdict | Evidence |
+|---|---|---|---|
+| 27 | «100 · Σε καλή κατάσταση» rendered when the analysis run failed | **REFUTED — fixed** | `SummaryCard.tsx:140` gates the donut on `!isAnalyzing && health.available`, and the block carries the reasoning: "the score is a subtraction from 100, so *nothing looked* and *nothing wrong* produce the same number". |
+| 28 | «71 · Σε καλή κατάσταση» on a policy 110 days expired | **REFUTED — fixed, same change** | Same gate. The comment names this exact case. |
+| 29 | The verdict WORDS are gone | **CONFIRMED — they are not, and they are still wired** | `healthLevels` (`good: «Σε καλή κατάσταση»`, `moderate`, `attention` — `el.ts:726-728`) is still **passed as a prop** from `PolicyDetailsClientView.tsx:834` into `SummaryCard`, typed at `:27`, and **never rendered**. |
+
+#29 is the second instance of the same shape as the dead `scoreGood` keys (candidate #5), and it is
+worse here: those were merely unreferenced strings in a bundle, whereas this is prohibited copy
+**threaded through the component tree** to a consumer that has stopped using it. A future change
+that reintroduces a label has the prop already in hand and typed — the path of least resistance
+leads straight back to the defect.
+
+So there is a pattern worth naming for Phase 1: **this codebase fixes the render and leaves the
+wiring.** The remediation is honest, well-commented and correct at the render site, and the
+mechanism that produced the defect is left in place one layer up. P1-06 covers the strings; it must
+also cover the props and the imports, or the "fix" is a render-site fix again.
+
+**Credit where due:** the surviving treatment is good. The donut renders a bare number with a muted
+colour explicitly described as "a glance without asserting good/bad", the score is suppressed
+entirely when no completed analysis exists, and the comment states the reason — the label is not
+ours to write until an underwriter validates what feeds it. That is §2.3 done properly, and it is
+the model the outbound templates have not yet been given.
 
 
 ---

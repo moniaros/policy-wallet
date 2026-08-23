@@ -172,6 +172,11 @@ owner: Implementation (Fable 5) · file_boundary: `lib/i18n/translations/{el,en}
       strings (candidate #26). These are not lint violations: a well-formed `{ el, en }` object is
       the approved escape from `lint:i18n-changed`, so nothing flags them today
 - [ ] guard states its universe explicitly and is demonstrated failing on a newly added inline pair
+- [ ] **remove the WIRING, not just the strings.** `healthLevels` is still passed from
+      `PolicyDetailsClientView.tsx:834` into `SummaryCard` (typed at `:27`) and never rendered
+      (candidate #29). Prohibited copy threaded to a consumer that stopped using it is a shorter
+      path back to the defect than an unreferenced bundle key. Delete the prop, the type and the
+      import with the strings
 
 ### P1-07 — Identity values never render raw · `todo`
 owner: Implementation (Fable 5)
