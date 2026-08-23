@@ -379,3 +379,55 @@ stale artefact because it looks authoritative — committed by me, in the instru
 The agent verified with a live capture instead of obeying, found the discrepancy, and corrected the
 files. Correct call. Recorded so the lesson survives: "unchanged fixtures and code" is itself a
 claim that needs checking, and a directory called `current` is not evidence of currency.
+
+---
+
+## D-013 — Phase 1 opened before the Phase 0 gate passed, on the owner's instruction
+
+date: 2026-08-23
+raised_by: Orchestrator, recording an owner directive
+decision: P1-01 starts now. The gate stays formally **FAILED** in `QUEUE.md` until T-016b lands —
+it is not retroactively marked passed.
+
+§1.1.5 forbids the Orchestrator softening a gate, and I have not: the owner directed the run to
+continue into Phase 1, which is their call to make and not mine. Recorded as a deviation rather
+than absorbed silently, so the gate's status stays honest.
+
+**Why the risk is low in substance.** The gate exists so changes are measurable. P1-01's surfaces
+are all fully baselined:
+- `/dashboard` and `/coverage-insights` — published baselines, both states
+- all outbound templates — `evidence/outbound/METRICS.md`, measured
+
+The four uncaptured targets (`/wallet/[id]/edit`, `/consent/ai` content, four overlays, the paid
+"no advisor" state) render no score and are touched by no P1-01 file. So P1-01 is measurable today.
+
+**What this does NOT authorise:** starting any item whose own surface is unbaselined. P1-08 (app
+shell) and anything touching the overlays wait for T-016b regardless.
+
+---
+
+## D-014 — The score's outbound footprint is 7 sites, not 5
+
+date: 2026-08-23
+raised_by: Orchestrator, mapping P1-01's call sites
+
+The count has grown every time it was looked at properly, which is itself the finding:
+
+| # | site | kind |
+|---|---|---|
+| 1 | `lib/notifications/risk-events.ts:177` | emitter |
+| 2 | `lib/events/decision-engine.ts:313` | **second emitter** — `notify("protection_score_changed", …)` |
+| 3 | `lib/notifications/registry.ts:481` | event-type declaration |
+| 4 | `lib/notifications/templates.ts:57` | var declaration |
+| 5 | `lib/email/templates/weekly-digest.ts:118-126` | renders the value |
+| 6 | `lib/email/templates/engagement-drip.ts:115-118` | renders the value |
+| 7 | `lib/email/templates/churn-prevention.ts:91,97` | advertises it as a feature |
+
+Plus two producers that compute it for outbound (`weekly-digest.service.ts:154-218`,
+`engagement-drip.service.ts:167-180`) and a registry *comment* at `registry.ts:194` that cites the
+event as a live design rationale — that comment needs rewriting, not deleting, or it will justify
+recreating the emitter.
+
+The brief said one. Grep found four. Reading the emitter found five. Mapping call sites for the
+actual fix found seven. **This is why §6.1 says to grep for the value rather than inspect
+components, and why the guard must enumerate rather than carry a list.**
