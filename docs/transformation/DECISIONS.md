@@ -283,6 +283,18 @@ history is explained rather than silently wrong.
 **Standing practice from now on:** `git diff --cached --name-only` before each commit, and prefer
 `git commit -- <explicit paths>` when a subagent has been active.
 
+**Failed again 2026-08-23, same day** (`0121a394`): I staged `docs/transformation/` wholesale while
+T-016c was actively writing captures into `docs/transformation/evidence/wallet-detail/`, and swept
+ten of its in-progress files into an H-001 decision commit. I *did* print the staged list, as this
+entry instructs — and committed anyway without reading it. Printing is not checking.
+
+The files are legitimate run output so nothing is lost or wrong, but a partial write could have been
+captured mid-flight.
+
+**Revised practice, which removes the judgement call:** while any subagent is live, stage only
+explicit file paths — never a directory. `git add <path> <path>`, never `git add <dir>/`. The
+directory form is what makes a concurrent writer's work invisible to the staging step.
+
 ---
 
 ## D-011 — Collapsing content is not reducing it. Every structural metric records BOTH states.
