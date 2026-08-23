@@ -1,4 +1,5 @@
 import { db } from "../db"
+import { NON_LIVE_POLICY_STATUSES } from "../policy-status"
 
 /**
  * Engagement scoring algorithm for PolicyWallet users.
@@ -164,7 +165,14 @@ export async function calculateEngagementScoresBatch(
         }),
         db.policy.groupBy({
             by: ["ownerUserId"],
-            where: { ownerUserId: { in: ids }, status: "active" },
+            // Policy.status is an ingestion state nothing recomputes, so
+            // requiring exactly 'active' scored a user with three in-force
+            // policies stored as 'expiring_soon' / 'action_needed' as having
+            // none — and the churn win-back flow keyed off that score.
+            where: {
+                ownerUserId: { in: ids },
+                status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
+            },
             _count: { _all: true },
         }),
         db.policyAnalysisRun.groupBy({

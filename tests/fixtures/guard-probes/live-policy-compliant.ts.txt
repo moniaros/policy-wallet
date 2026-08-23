@@ -1,0 +1,44 @@
+// PROBE FIXTURE for tests/unit/live-policy-status-filter.test.ts.
+// Everything in here is LEGITIMATE and the guard must flag NONE of it.
+// This is the honesty half of the probe pair: `status: 'active'` on models
+// that are not Policy (Subscription, CustomerRelationship, PolicyAnalysisRun)
+// is correct and common — a guard that flags these is crying wolf.
+import { db } from "@/lib/db"
+import { NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
+
+export async function probeCompliant(userId: string, policyId: string) {
+    // The sanctioned shape for "policies this person has".
+    const livePolicies = await db.policy.findMany({
+        where: {
+            ownerUserId: userId,
+            status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
+        },
+    })
+
+    // 'active' on a SUBSCRIPTION is a subscription lifecycle state — correct.
+    const subscription = await db.subscription.findFirst({
+        where: { userId, status: "active" },
+    })
+
+    // 'active' on a RELATIONSHIP is a relationship state — correct.
+    const relationship = await db.customerRelationship.findFirst({
+        where: { policyholderUserId: userId, status: "active" },
+    })
+
+    // A unique-record lookup answers "may I touch THIS row", not "what does
+    // this person hold" — status filtering is getPolicyAccess's business.
+    const one = await db.policy.findUnique({ where: { id: policyId } })
+
+    // An include/select mentioning ownerUserId is a projection, not a query.
+    const gaps = await db.gapInstance.findMany({
+        where: { userId, status: { in: ["open", "detected"] } },
+        include: { policy: { select: { ownerUserId: true, status: true } } },
+    })
+
+    // An explicit, deliberate status filter that is not exactly-'active'.
+    const notDeleted = await db.policy.count({
+        where: { ownerUserId: userId, status: { not: "deleted" } },
+    })
+
+    return { livePolicies, subscription, relationship, one, gaps, notDeleted }
+}

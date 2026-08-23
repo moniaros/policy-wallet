@@ -1,0 +1,13 @@
+// PROBE FIXTURE for tests/unit/live-policy-status-filter.test.ts.
+// The relation form of the bare-'active' bug: another model's query reaching
+// the Policy table through `policy: { … }` and requiring exactly 'active'.
+import { db } from "@/lib/db"
+
+export async function probeBareActiveRelation(userId: string) {
+    return db.gapInstance.count({
+        where: {
+            policy: { ownerUserId: userId, status: "active" },
+            status: { in: ["open", "detected"] },
+        },
+    })
+}

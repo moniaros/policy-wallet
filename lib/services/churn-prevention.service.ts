@@ -149,9 +149,15 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                         endDate: { gte: startOfAthensDay(now), lte: thirtyDaysOut },
                     },
                 })
+                // Same universe as expiringPolicies above — this email quotes
+                // both figures, and a gap on a cancelled or deleted policy
+                // would make the two numbers describe different portfolios.
                 const openGaps = await db.gapInstance.count({
                     where: {
-                        policy: { ownerUserId: user.id },
+                        policy: {
+                            ownerUserId: user.id,
+                            status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
+                        },
                         status: { in: ["open", "detected"] },
                     },
                 })

@@ -206,7 +206,7 @@ are. Do not "tidy" it away.
       must not render green for "0 gaps" when nothing was analysed
 - [ ] `all-clear-honesty.test.ts` universe extended to outbound templates
 
-### P1-03 — One definition of "policies this person has" · `todo`
+### P1-03 — One definition of "policies this person has" · `done` — REVIEW PASSED
 
 **Call sites re-verified 2026-08-23 after P1-01** (line numbers had moved; P1-01 did NOT introduce
 any of these — checked against `27acb200^`):
@@ -573,3 +573,32 @@ time the guard even imports the enumeration helper it declines to use.
 
 So P1-03's primary deliverable is **converting that list into a real enumeration** over `lib/` +
 `app/`, with the three fixes falling out of it.
+
+
+---
+
+## P1-03 — Adversarial review: **PASS**
+
+| check | result |
+|---|---|
+| Guard truly enumerates | **proven by me.** I created `lib/services/zz-reviewer-probe.service.ts` — a file the guard had never seen — with one bare-active Policy query. Red, naming file, line and snippet. Deleted → 10/10 green. A hardcoded list cannot do that. |
+| No false positives on other models | proven by the pass itself: the repo is full of legitimate `status: 'active'` queries on Subscription / CustomerRelationship / PolicyAnalysisRun, and the guard is green |
+| Universe floors asserted | 812 files, 125 Policy call sites, both asserted so an empty glob fails loudly rather than passing vacuously — the D-015 lesson applied by the implementer without being told |
+| 43 exemptions across 29 files | **acceptable, because they are exact-count and ratchet BOTH ways**: "Stale exemption: … ratchet the entry down (or delete it) so the fix cannot regress". An exempted file cannot silently absorb a new violation, and fixing one forces the entry down. That is an inventory of known state, not a blanket pass. |
+| CI | tsc · lint · i18n · utf8 clean; **5096/5096** (+6 = the old guard's 4 tests replaced by 10) |
+
+**It found a fourth offender and a fifth.** Fourth, fixed: `churn-prevention.service.ts:154` — the
+win-back email quotes a NON_LIVE-filtered `expiringPolicies` count beside an unfiltered `openGaps`
+count *in the same message*. Fifth, correctly **not** fixed: `app/(protected)/admin/actions.ts:64`
+runs a bare-active `db.policy.count` in the platform-stats tile, under-counting live policies. Admin
+is §12.4, so it is exempted with a DEBT reason naming this run. **That is precisely the finding the
+old hardcoded list could never have produced**, and it is the argument for D-005 in one example.
+
+**It corrected my brief.** I asserted `weekly-digest.service.ts` had an unfiltered `db.policy.count`.
+It has no such call — the unfiltered Policy-ownership query is the `newGaps` count's
+`policy: { ownerUserId }` relation. Same defect, different shape; my line reference was wrong and it
+said so rather than fixing something adjacent and calling it done.
+
+**Five entries are marked DEBT** rather than quietly exempted: the admin tile, portfolio-gap-view,
+coverage-insights, both branches pages, and the wallet overlap scan. Enumerated and deferred, which
+is the honest form.

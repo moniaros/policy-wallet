@@ -1,0 +1,22 @@
+// PROBE FIXTURE for tests/unit/live-policy-status-filter.test.ts.
+// The other half of the bug class: an ownership SET query with no status
+// filter at all, so soft-deleted / cancelled / still-analyzing rows count as
+// "policies this person has". Both the direct and the relation form.
+import { db } from "@/lib/db"
+
+export async function probeUnfilteredOwnership(userId: string) {
+    // Direct: counts every stored row as a held policy.
+    const policyCount = await db.policy.count({
+        where: { ownerUserId: userId },
+    })
+
+    // Relation: gaps on non-live policies counted against a live portfolio.
+    const gapCount = await db.gapInstance.count({
+        where: {
+            policy: { ownerUserId: userId },
+            status: { in: ["open", "detected"] },
+        },
+    })
+
+    return { policyCount, gapCount }
+}

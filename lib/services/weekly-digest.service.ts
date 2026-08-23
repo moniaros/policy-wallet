@@ -125,9 +125,15 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             })
 
             const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+            // Same universe as the renewals list above: a gap on a deleted or
+            // cancelled policy is not a gap in this portfolio, and one digest
+            // must not quote two different definitions of "your policies".
             const newGaps = await db.gapInstance.count({
                 where: {
-                    policy: { ownerUserId: user.id },
+                    policy: {
+                        ownerUserId: user.id,
+                        status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
+                    },
                     status: { in: ["open", "detected"] },
                     detectedAt: { gte: oneWeekAgo },
                 },

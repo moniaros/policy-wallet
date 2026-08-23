@@ -95,9 +95,16 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
         })
         if (alreadySent) continue
 
-        // Only send if user has NO policies
+        // Only send if user has NO policies — by the same definition of "has"
+        // as the day-7 snapshot below and every other outbound surface:
+        // soft-deleted / cancelled / still-analyzing rows are not a policy the
+        // user holds. Unfiltered, a user whose only upload was deleted counted
+        // as "has policies" and never got the nudge.
         const policyCount = await db.policy.count({
-            where: { ownerUserId: user.id },
+            where: {
+                ownerUserId: user.id,
+                status: { notIn: [...NON_LIVE_POLICY_STATUSES] },
+            },
         })
         if (policyCount > 0) continue
 
