@@ -173,6 +173,27 @@ owner: Implementation (Fable 5)
       (candidate #6 — not an i18n defect; the string is clean)
 - [ ] `__PENDING_EXTRACTION__` / `PENDING-<epoch>` / `E2E-*` unrenderable, dev-time assertion throws
 
-### P1-08…P1-13
+### P1-08 — App shell defects · `todo`
+owner: Implementation (Fable 5) · file_boundary: `components/shell/AppShell.tsx`,
+`components/pwa/InstallPrompt.tsx`, `components/ui/LocaleToggle.tsx`, `components/ui/ThemeToggle.tsx`
+
+Evidence: `evidence/CHROME-AUDIT.md`. **The brief's headline shell defect is refuted** — the
+floating avatar is `hidden lg:block` and has no box below 1024px; what was seen is the Next.js
+DevTools badge. Do not "fix" it. These are the real ones:
+
+- [ ] **Drawer scrim must cover the bottom nav** (`AppShell.tsx:360` vs `:381`, same `z-40`,
+      scrim ordered first). Today a `role="dialog" aria-modal` drawer leaves five tab targets
+      operable and undimmed — assistive tech is told they are unreachable while they are not.
+      Correctness, not polish.
+- [ ] **`InstallPrompt` safe-area** (`InstallPrompt.tsx:128`): `fixed bottom-24 z-40` with zero
+      `safe-area-inset-bottom`, overlapping the nav by ≈18px on a notched device
+- [ ] 7 sub-44px controls, all in the drawer footer / `InstallPrompt`. `LocaleToggle`'s "group"
+      variant is missing the `min-h-11` its "plain" sibling already has — another partial adoption
+- [ ] `InstallPrompt` dismiss is ≈16×16 with no padding
+- [ ] stale comment `AppShell.tsx:59-61` still says the locale toggle renders "GR"/"EN"; it renders «ΕΛ»/"EN"
+- [ ] `ThemeToggle` bypasses the translation bundle with an inline literal pair
+- [ ] `NotificationBell` is dead in the shell — its only mount point is never invoked. Remove with a ledger row.
+
+### P1-09…P1-13
 Truncation (blocked by Phase 3 primitive, per candidate #12), layout integrity, global chrome,
 sub-44px sweep, settings subtree, upload flow. Written when their surfaces are baselined.

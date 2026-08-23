@@ -40,7 +40,8 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 8 · REFUTED 4 · DIFFERENT 5 · PENDING 3 — 17 candidates verified
+- CONFIRMED 10 · REFUTED 7 · DIFFERENT 5 · PENDING 3 — 22 candidates verified
+- Of the brief's own candidates, **7 are refuted or reclassified** — a third of everything checked
 - Guard failure modes found: **universe** too small (D-005, D-009), **adoption** incomplete (D-007), **assertion** weaker than the invariant (#17)
 - **Score-in-outbound sites: 5** (brief said 1; I found 4 by grep; the emitter made 5)
 
@@ -176,6 +177,46 @@ value, so the colour is a verdict. Its own source comment says "A 0–100 figure
 verdict and no stated method is exactly…" — the method is now stated, but the colour verdict
 remains, and §2.1 requires colour never be the sole carrier of meaning (WCAG 1.4.1). Whatever
 H-001 decides, the colour needs a text equivalent or must go.
+
+
+## §4.3 app shell — two brief-listed defects refuted, two new ones found
+
+Full audit in [`CHROME-AUDIT.md`](./CHROME-AUDIT.md): 18 CONFIRMED, 4 NEEDS CAPTURE. The three
+load-bearing verdicts were re-verified independently against the source.
+
+| # | Candidate | Verdict | Evidence |
+|---|---|---|---|
+| 18 | Floating «Ν» avatar clipped at the left edge, overlapping content on dashboard, notifications, settings and adviser — "shell chrome overlapping content on every screen, not a per-page bug" | **REFUTED** | The shell's only initials avatar (`UserMenu.tsx:99-101`) is mounted inside `className="hidden lg:block"` at `AppShell.tsx:347`. Below 1024px it is `display:none` — **it has no box in the DOM at 320/390/430**, so it cannot clip or overlap there. |
+| 19 | Bottom bar occludes content | **REFUTED — genuinely reserved, not a capture artifact talked away** | `app/globals.css:490` sets `--pw-bottom-nav-h: 5rem`; `:493` sets `.pw-bottom-nav-reserve { padding-bottom: calc(var(--pw-bottom-nav-h) + env(safe-area-inset-bottom, 0px)) }`. The bar's own footprint uses the identical safe-area term, so reservation ≥ bar height. |
+| 20 | `AI Insights` in English in the tab bar | **REFUTED** | `t.nav.insightsShort` = «Αναλύσεις», `t.nav.agentShort` = «Σύμβουλος» (`el.ts:99,93`). The whole bottom bar is Greek in both roles. |
+
+**Why #18 matters beyond one bug.** The brief presents it as proof that shell chrome overlaps
+content on *every* screen. It reproduces on four screens because it is not app chrome at all: the
+dashboard baseline (`docs/evidence/dashboard-mobile/BASELINE.md:106-111`) already recorded it as
+DOES NOT REPRODUCE, and commit `fbe845ed` identified a **Next.js DevTools badge** — a dev-only
+circular overlay — as the thing being seen. A dev overlay appears identically on every screen,
+which is exactly the evidence that made it look like a shell-wide defect. §5.1's settle procedure
+hides `nextjs-portal` for precisely this reason.
+
+### Two defects the brief does not contain, both provable from source
+
+| # | Finding | Evidence |
+|---|---|---|
+| 21 | **`InstallPrompt` paints over the bottom nav on any notched device** | `components/pwa/InstallPrompt.tsx:128` is `fixed bottom-24 … z-40`, and the file contains **zero** occurrences of `safe-area-inset-bottom` (verified by count). `bottom-24` is 96px; the nav occupies `5rem + env(safe-area-inset-bottom)` ≈ 114px on a notched phone. Same `z-40`, later in DOM, so it wins. Overlap ≈18px. |
+| 22 | **The drawer scrim does not cover the bottom nav, so a declared modal has live controls behind it** | The scrim (`AppShell.tsx:360`) is DOM-ordered *before* the bottom nav (`:381`) at the same `z-40`. The tab bar therefore stays undimmed **and clickable** while the drawer is open with `role="dialog" aria-modal`. Asymmetric with the header, which is correctly dimmed. |
+
+#22 is the more serious: `aria-modal` tells assistive technology nothing outside the dialog is
+reachable, while five tab targets remain operable. That is a correctness defect, not a polish one.
+
+### Tap targets — the failures are all in one place
+
+7 of 12 audited shell controls are under 44×44, and **every one is in the mobile drawer footer or
+`InstallPrompt`** — drawer close ≈36×36, logo link ≈40 tall, logout ≈40 tall, `LocaleToggle`
+"group" variant ≈30×40 (its sibling "plain" variant already got `min-h-11`; this one was missed),
+`ThemeToggle` ≈36×36, `InstallPrompt` dismiss ≈16×16 with no padding at all. The always-visible
+chrome — header controls and all five tab targets — is uniformly compliant. So this is one
+neglected region, not a systemic shell failure, and the `LocaleToggle` case is another
+partial-adoption instance in the D-007 family.
 
 
 ---
