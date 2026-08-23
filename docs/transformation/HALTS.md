@@ -3,7 +3,7 @@
 Questions only the human may answer (§12.1) and items blocked under §12.2.
 A halt blocks the listed items, not the run, unless marked `blocks: RUN`.
 
-**Open: 1** (H-002). **Answered: 1** (H-001).
+**Open: 0.** **Answered: 2** (H-001 = C, H-002 = B). H-003 is not yet raisable — it needs the Phase 2 specs.
 
 ---
 
@@ -154,9 +154,8 @@ than absorbed quietly.
 
 date: 2026-08-23
 raised_by: Product-Truth (Opus 5)
-blocks: nothing currently queued. Phase 1 only **removes**; this decides what, if anything, is
-added back. It must be answered before Phase 4 designs any outbound mechanic.
-status: **open**
+blocks: nothing currently queued.
+status: **ANSWERED 2026-08-23 — option B**
 
 ### Why now
 §12.1.2 reserves this for a human and said it needs the outbound-copy inventory. That inventory now
@@ -202,4 +201,44 @@ changed" rule is the part that must survive whichever option is chosen.
 no monthly ceiling, no global off switch, and the preferences screen currently writes `email` only
 while push is live (P1-09). Choosing B or C commits to building those first.
 
-answer: *(awaiting)*
+answer: **B — renewals and lapses, plus a monthly digest sent only when something actually changed.**
+Given by the owner, 2026-08-23.
+
+### What B commits to
+
+**Outbound is reduced to two kinds of message.**
+
+1. **Deadline-bearing events** — a renewal approaching, a policy lapsing, cover lost on a risk.
+   These earn an outbound message because they have a date and a consequence, which is exactly the
+   test §9.5 sets: "a prompt earns an outbound message only where it has a real, dated deadline."
+2. **A monthly digest of the customer's own data — sent only when something changed.** The weekly
+   cadence is retired. §9.1's argument is the reason: an insurance wallet has no weekly event
+   stream, and manufacturing one is what produced the score email this run is deleting.
+
+**«Τίποτα δεν άλλαξε» is not sent.** §9.3 says that message is trust-building *in-product*, where
+the customer chose to look. As an email it is an interruption reporting nothing, which is the
+failure mode B exists to avoid. **Silence is the correct outbound behaviour for a quiet month.**
+
+### What this makes mandatory rather than optional
+
+B depends on the §9.5 cadence controls, and **none of the three exist**:
+- a user-configurable monthly ceiling — absent
+- a global off switch honoured in outbound — absent
+- per-channel preference control — the settings screen writes `channel: "email"` only, while
+  `push` is a live channel (candidate #24, queued P1-09)
+
+So B is not merely a content decision; it commits the run to building those controls. They move
+from "Phase 4 precondition" to **a Phase 1 dependency of the send-side change**, because a monthly
+digest with no ceiling and no off switch is a worse product than the weekly one it replaces.
+
+### Sequencing consequence
+The digest cadence change does **not** ship before the controls do. Phase 1 removes the score from
+the existing templates (already queued, no dependency); the cadence change and the monthly digest
+land only after P1-09 and the ceiling/off-switch work. Recorded so a later pass cannot ship the
+cadence half alone and call B done.
+
+### Out of scope, unchanged
+§12.4 puts notification **dispatch** logic — whether a message fires, to which channel, at what
+cadence — out of scope for this run. B decides the *policy*; implementing the dispatch-side cadence
+change is a separate piece of work that this run specifies rather than performs. Phase 1 still only
+removes.

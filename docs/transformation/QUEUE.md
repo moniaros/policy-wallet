@@ -253,9 +253,27 @@ nothing says so.
 - [ ] the toggle governs every implemented channel, or the label states which channel it governs
 - [ ] guard: no preference UI may write a single hardcoded channel
 
-**Phase 4 precondition (not Phase 1):** §9.5 also needs a user-configurable monthly ceiling and a
-global off switch honoured in outbound. Neither exists. Phase 4 cannot ship a cadence-controlled
-mechanic until they do — recorded here so the dependency is not discovered during Phase 4.
+**Elevated by H-002 = B (2026-08-23): no longer a Phase 4 precondition, now a committed
+dependency of the send-side change.** §9.5 needs a user-configurable monthly ceiling and a global
+off switch honoured in outbound. Neither exists. A monthly digest with no ceiling and no off switch
+is a worse product than the weekly one it replaces, so the controls ship first. See P1-09b.
+
+### P1-09b — The three §9.5 cadence controls · `todo`
+owner: Implementation (Fable 5) · blocked_by: P1-09
+file_boundary: `components/settings/sections/NotificationsSection.tsx`, `app/(protected)/account/actions.ts`, `lib/notifications/settings.ts`
+
+- [ ] user-configurable **monthly ceiling** on non-deadline outbound
+- [ ] a **global off switch**, honoured in outbound and not only in-app
+- [ ] both readable by the send path, not merely stored — a preference nothing consults is a
+      dark pattern with a checkbox
+- [ ] guard: no outbound send path may ignore the global off switch. Universe enumerated from the
+      filesystem across `lib/notifications/**` and `lib/email/**`, per D-005
+
+**BOUNDARY — read before starting.** §12.4 puts notification **dispatch** logic (whether a message
+fires, to which channel, at what cadence) **out of scope for this run.** H-002 decides the *policy*;
+this run specifies it and builds the *controls*, and does not itself change the cron cadence or the
+send triggers. If an item appears to require editing dispatch scheduling, stop and report — that is
+the §12.4 line, and B does not move it.
 
 ### P1-10 — One status vocabulary across every B2C surface · `todo`
 owner: Implementation (Fable 5) · file_boundary: `app/(protected)/agent/page.tsx`, `lib/wallet/map-policy-card-status.ts`
