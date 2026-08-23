@@ -395,3 +395,42 @@ treated policy detail as the worst surface. It is not.
 2. Phase 1 opens with **P1-01…P1-11** queued, evidence-backed, in §6.1 exposure order.
 3. **H-001 needs a human.** It blocks only the score's final disposition; every Phase 1 removal
    proceeds without it.
+
+---
+
+## Both answerable halts answered — 2026-08-23
+
+**H-001 = C.** The protection score is removed from the product entirely — both in-product render
+sites (`ProtectionStatusHero`, `ProtectionScoreCard`), not only outbound. Replaced by the factual
+composition the dashboard already ships. Six ledger rows move to REMOVE; candidate #17 resolves by
+deletion because the sanctioned count goes from two to **zero**, which makes
+`score-containment.test.ts`'s assertion simpler and stronger than the allowlist it replaces.
+
+*Boundary held:* the **arithmetic** is not deleted. `calculateProtectionScore` /
+`provisionalProtectionScore` may have agent-side callers, and agent surfaces are §12.4 out of
+scope. Removal is by render site; dead-code removal only after a sweep proves no caller remains.
+`provisionalProtectionScore`'s honesty bug is still fixed in P1-02 — out-of-scope callers are not
+immune to it.
+
+**H-002 = B.** Outbound reduces to deadline-bearing events plus a monthly digest sent **only when
+something changed**. The weekly cadence retires. «Τίποτα δεν άλλαξε» is not sent by email — §9.3
+makes it trust-building *in-product*, where the customer chose to look; as an interruption
+reporting nothing it is the failure B exists to avoid. **Silence is the correct outbound behaviour
+for a quiet month.**
+
+*Consequence that changes the plan:* B depends on three §9.5 controls and **none exist** — no
+monthly ceiling, no global off switch, and the preferences screen writes `channel: "email"` only
+while push is live. These move from Phase 4 precondition to a **committed Phase 1 dependency**
+(P1-09b), and the cadence change does not ship before them.
+
+*Boundary held:* §12.4 puts notification **dispatch** logic out of scope. B decides the policy and
+this run builds the controls; it does not edit cron cadence or send triggers.
+
+**H-003 remains unraised** — the compliance boundary on renewal price intelligence genuinely needs
+the Phase 2 specs, which do not exist. It will also need the DPO and underwriter tracks, not just
+the owner.
+
+### State
+Halts open: **0**. Suite 5090 green. 30 run commits. Phase 0 gate still failed on its one
+condition; T-016b/c in flight to close it. Phase 1 opens the moment it passes, with P1-01 now
+carrying the expanded in-product scope.
