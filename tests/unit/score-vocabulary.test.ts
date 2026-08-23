@@ -4,10 +4,11 @@ import { en } from '@/lib/i18n/translations/en'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 
 /**
- * The product carries three different 0-100 numbers, all colour-coded, all
+ * The product carried three different 0-100 numbers, all colour-coded, all
  * shown to the same people:
  *
- *   - the portfolio protection score (gap engine, category-weighted)
+ *   - the portfolio protection score — REMOVED from the product Aug 2026
+ *     (PW-MOBILE-TRANSFORM-01, halt H-001)
  *   - the per-policy check on the detail page
  *   - the agent's relationship index (a book-management signal)
  *
@@ -20,9 +21,11 @@ import { getRoleCopy } from '@/lib/i18n/role-copy'
  * One name each, and none of them says «υγεία».
  */
 describe('each score has one name, and none borrows a line of business', () => {
+    // The portfolio protection score's label (el.dashboard.home.protectionScore)
+    // was in this list until the score was removed from the product in Aug 2026
+    // (PW-MOBILE-TRANSFORM-01, halt H-001) — the key is gone with the surface.
     const labels = () => [
         el.wallet.healthScore.title,
-        el.dashboard.home.protectionScore,
         el.agentUi.healthScore,
         el.clientOverview.healthScore,
         getRoleCopy('el').customerList.tableHealth,
@@ -37,7 +40,6 @@ describe('each score has one name, and none borrows a line of business', () => {
     it('no English label calls itself Health', () => {
         for (const label of [
             en.wallet.healthScore.title,
-            en.dashboard.home.protectionScore,
             en.agentUi.healthScore,
             en.clientOverview.healthScore,
             getRoleCopy('en').customerList.tableHealth,
@@ -49,15 +51,16 @@ describe('each score has one name, and none borrows a line of business', () => {
     it('the three metrics are named distinctly', () => {
         const names = [
             el.wallet.healthScore.title,      // per-policy
-            el.dashboard.home.protectionScore,     // portfolio
             el.agentUi.healthScore,           // agent relationship
         ]
-        expect(new Set(names).size).toBe(3)
+        expect(new Set(names).size).toBe(2)
     })
 
-    it('the portfolio one keeps the name the whole product uses for it', () => {
-        expect(el.dashboard.home.protectionScore).toBe('Βαθμολογία προστασίας')
-        expect(en.dashboard.home.protectionScore).toBe('Protection score')
+    it('the portfolio score label does not come back', () => {
+        // The key was removed with the score itself; a translation entry named
+        // for it is the first step of a quiet reintroduction.
+        expect('protectionScore' in el.dashboard.home).toBe(false)
+        expect('protectionScore' in en.dashboard.home).toBe(false)
     })
 
     it('the per-policy one no longer lists exclusions as an input', () => {

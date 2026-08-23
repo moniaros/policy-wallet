@@ -3,7 +3,7 @@
 Questions only the human may answer (§12.1) and items blocked under §12.2.
 A halt blocks the listed items, not the run, unless marked `blocks: RUN`.
 
-**Open: 0.** **Answered: 2** (H-001 = C, H-002 = B). H-003 is not yet raisable — it needs the Phase 2 specs.
+**Open: 1** (H-004). **Answered: 2** (H-001 = C, H-002 = B). H-003 is not yet raisable — it needs the Phase 2 specs.
 
 ---
 
@@ -242,3 +242,51 @@ cadence half alone and call B done.
 cadence — out of scope for this run. B decides the *policy*; implementing the dispatch-side cadence
 change is a separate piece of work that this run specifies rather than performs. Phase 1 still only
 removes.
+
+---
+
+## H-004 — Public content now advertises a feature that no longer exists
+
+date: 2026-08-23
+raised_by: Adversarial Reviewer, from P1-01's out-of-scope findings
+blocks: nothing in the queue. Raised because fixing it means crossing a §12.4 boundary, and
+because `CLAUDE.md` lists "publishing a public claim the code does not support" under
+**Never, regardless of instruction**.
+status: **open**
+
+P1-01 removed the protection score from the product. Three files still describe it to the public:
+
+| file | claim |
+|---|---|
+| `lib/guides/content.ts` | 4 mentions, including "calculates your Protection Score" presented as a **Family-plan feature** |
+| `lib/glossary/content.ts` | a whole entry, «Τι είναι το Σκορ Προστασίας;» |
+| `lib/legal/legal-content.ts:641` | "protection scores" inside the AI disclaimer |
+
+These are **prose**, not value renders, so `score-containment` cannot see them — it matches
+identifiers and interpolations, and correctly so. A guard that also matched prose would fire on
+every legitimate discussion of the concept.
+
+**Why this is a halt rather than an item.** §12.4 puts the public marketing site out of scope and
+says to stop and report rather than reach across the boundary. But the standing rule against
+publishing unsupported public claims is absolute, and the guides entry is worse than stale copy: it
+advertises the score as a **reason to buy the Family plan**. That is a purchase inducement for a
+feature that no longer exists.
+
+The legal one cuts the other way and should NOT simply be deleted: an AI disclaimer that mentions
+scores is over-disclosure, not mis-selling, and removing wording from a compliance surface is a
+§12.2 legal-surface change regardless of scope.
+
+### Options
+- **A — fix all three now**, treating it as a defect the run created. Crosses §12.4.
+- **B — fix the guides plan-claim only** (the purchase inducement), leave glossary and legal for
+  their own tracks. Smallest crossing, addresses the part that is actually a false claim to a buyer.
+- **C — file all three to `docs/STATUS.md` as launch-blocking debt** and touch nothing.
+
+**Recommendation: B**, with the legal wording routed to the DPO track and the glossary entry
+rewritten rather than deleted (the concept still deserves an explanation; the product just no longer
+computes it).
+
+**This is time-sensitive in a way the other halts are not** — the guides and glossary are live
+public pages, and the pricing surface reads from them.
+
+answer: *(awaiting)*

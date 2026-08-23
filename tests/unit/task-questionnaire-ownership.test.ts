@@ -121,11 +121,13 @@ describe('submitQuestionnaireResponse — only the recipient may answer', () => 
         const res = await submitQuestionnaireResponse('inst-1', {} as any)
 
         // profileFieldsUpdated is [] here: the template asks nothing that maps
-        // to a risk-profile field, so the score is refreshed but cannot move.
+        // to a risk-profile field, so the assessment is refreshed but cannot
+        // move. No score VALUE comes back — the protection score was removed
+        // from the product (Aug 2026, PW-MOBILE-TRANSFORM-01 H-001) and the
+        // success screen states facts, not verdicts.
         expect(res).toEqual({
             success: true,
             responseId: 'r-1',
-            protectionScore: 72,
             profileFieldsUpdated: [],
         })
         // The agent who sent it is notified (no longer a silent handoff), deep-linked
@@ -155,7 +157,6 @@ describe('submitQuestionnaireResponse — only the recipient may answer', () => 
         expect(res).toEqual({
             success: true,
             responseId: 'r-1',
-            protectionScore: null,
             profileFieldsUpdated: [],
         })
     })

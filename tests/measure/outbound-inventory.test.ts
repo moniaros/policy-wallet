@@ -68,11 +68,14 @@ function findScoreRenders(text: string): string[] {
 }
 
 /**
- * The state that matters: policies exist, nothing has been analysed. `openGaps`
- * is empty so `provisionalProtectionScore` returns 100 and gapCount is 0. This is
- * the fixture the brief says must exist — one that can PRODUCE the defect.
+ * The state that matters: policies exist, nothing has been analysed. Before
+ * P1-01 this fixture carried `healthScore: 100` — the exact value
+ * `provisionalProtectionScore` produced for an unread portfolio, and the one
+ * these templates mailed out. The score fields no longer exist on the template
+ * contracts; the fixture keeps the same portfolio state so the metric keeps
+ * measuring the same situation.
  */
-const NEVER_ANALYSED = { policyCount: 3, healthScore: 100, gapCount: 0 }
+const NEVER_ANALYSED = { policyCount: 3, gapCount: 0 }
 
 const TEMPLATES: { name: string; render: () => { subject: string; html: string } }[] = [
     {
@@ -82,8 +85,6 @@ const TEMPLATES: { name: string; render: () => { subject: string; html: string }
                 renewingSoon: [],
                 newGaps: 0,
                 unreadMessages: 0,
-                healthScore: 100,
-                scoreIsProvisional: true,
             }),
     },
     { name: "drip: welcome", render: () => getWelcomeEmail("el", "Νίκος") },

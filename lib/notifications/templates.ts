@@ -54,7 +54,6 @@ export const EVENT_VARIABLES: Record<string, readonly string[]> = {
     renewal_milestone: ["policyNumber", "insurerName", "customerName", "daysUntilExpiry"],
     GAP_DETECTED: ["gapName", "gapCount"],
     risk_level_changed: ["riskName", "changeCount"],
-    protection_score_changed: ["previousScore", "currentScore", "scoreDelta"],
     recommendation_generated: ["recommendationCount"],
     life_event_recorded: ["lifeEventLabel"],
     payment_failed: [],

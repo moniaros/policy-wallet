@@ -310,7 +310,13 @@ export const DECISION_RULES: Record<string, DecisionRule> = {
         const delta = num(ctx.payload, "delta") ?? 0
         const current = num(ctx.payload, "currentScore")
         return [
-            notify("protection_score_changed", "The score moved materially"),
+            // NO CUSTOMER NOTIFICATION. `protection_score_changed` emitted here
+            // until Aug 2026, when the protection score was removed from the
+            // product (PW-MOBILE-TRANSFORM-01, halt H-001): a breadth average
+            // presented as a protection verdict, with unvalidated severities.
+            // The event itself still fires — the ADVISOR routing below is a
+            // book-management signal, not a customer-facing score render.
+            //
             // A sustained fall into the bottom band is a different thing from
             // drift, and is the honest trigger for human contact.
             ...(delta < 0 && current !== null && current < ctx.thresholds.protectionScoreLowBand

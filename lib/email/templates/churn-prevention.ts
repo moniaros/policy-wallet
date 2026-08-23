@@ -83,18 +83,20 @@ export function getChurnDay14Email(data: ChurnPreventionEmailData): { subject: s
         ? '✨ Νέες λειτουργίες που χάνετε'
         : '✨ New features you\'re missing'
 
+    // The fourth bullet advertised a real-time coverage score. The protection
+    // score was removed from the product in Aug 2026 (PW-MOBILE-TRANSFORM-01,
+    // halt H-001), so listing it here would be a false claim in a win-back
+    // email — the worst place to make one.
     const features = isGreek
         ? [
             '🤖 Βελτιωμένη AI ανάλυση κάλυψης',
             '📊 Εβδομαδιαία σύνοψη email',
             '💬 Ενσωματωμένα μηνύματα με τον σύμβουλό σας',
-            '🎯 Σκορ υγείας κάλυψης σε πραγματικό χρόνο',
         ]
         : [
             '🤖 Improved AI coverage analysis',
             '📊 Weekly email digest',
             '💬 Inline messaging with your advisor',
-            '🎯 Real-time coverage health score',
         ]
 
     const content = `

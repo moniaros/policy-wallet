@@ -29,7 +29,6 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
     const [submitError, setSubmitError] = useState(false)
-    const [protectionScore, setProtectionScore] = useState<number | null>(null)
     const router = useRouter()
 
     // Restore any autosaved progress so "Save for later" (and an accidental
@@ -63,13 +62,12 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
         setIsSubmitting(true)
         setSubmitError(false)
         try {
-            const result = await submitQuestionnaireResponse(instanceId, answers)
+            await submitQuestionnaireResponse(instanceId, answers)
             try {
                 localStorage.removeItem(draftKey)
             } catch {
                 // ignore
             }
-            setProtectionScore(result?.protectionScore ?? null)
             setIsSuccess(true)
         } catch (error) {
             console.error(error)
@@ -88,17 +86,14 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                 <h2 className="mb-2 text-2xl font-bold text-foreground">
                     {t.tasks.responsesSentToAdvisor}
                 </h2>
-                {protectionScore !== null ? (
-                    <p className="mb-1 text-muted-foreground">
-                        {t.tasks.yourProtectionScore}:{" "}
-                        <span className="font-bold text-foreground">{protectionScore}%</span>
-                    </p>
-                ) : (
-                    <p className="mb-1 text-muted-foreground">{t.agentUi.responsesSubmitted}</p>
-                )}
-                <p className="mb-8 max-w-sm text-sm text-muted-foreground">{t.tasks.improveScoreHint}</p>
+                {/* The protection score rendered here until Aug 2026 («Το σκορ
+                    προστασίας σας: 72%») — removed from the product
+                    (PW-MOBILE-TRANSFORM-01, H-001). What the customer did is a
+                    fact; what it "scores" was a verdict. */}
+                <p className="mb-8 text-muted-foreground">{t.agentUi.responsesSubmitted}</p>
                 <Link
                     href="/coverage-insights"
+                    data-action="reviewCoverage"
                     className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-white dark:text-[#1A2420] transition-transform hover:-translate-y-0.5"
                 >
                     {t.tasks.viewCoverageInsights}

@@ -263,10 +263,13 @@ export const BUSINESS_EVENTS: Record<string, EventDefinition> = {
         aggregate: "protection_score",
         kind: "derived",
         priority: "P2",
-        description: "The protection score moved materially",
+        description: "The stored breadth figure moved materially",
         trigger: "Version delta clears the materiality threshold",
         payloadFields: ["previousScore", "currentScore", "delta", "direction", "cause"],
-        actions: ["in_app", "email", "advisor_notification", "analytics"],
+        // Advisor + analytics ONLY. `in_app` and `email` were removed with the
+        // protection score itself (Aug 2026, PW-MOBILE-TRANSFORM-01 H-001):
+        // this event may never again produce a customer-facing message.
+        actions: ["advisor_notification", "analytics"],
         status: "live",
     }),
 

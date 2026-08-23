@@ -151,19 +151,19 @@ export async function recordRiskProfileVersion(
 
         // A material change just landed, so this is where the risk
         // notifications belong — one seam, after the row is committed. The
-        // whole family (new gaps, risk-level movement, score movement) derives
-        // from the same diff the timeline uses, so an alert cannot contradict
-        // the history it links to. `emit` never throws, and the outer catch
-        // here means versioning still cannot fail an upload or a cron batch.
+        // whole family (new gaps, risk-level movement) derives from the same
+        // diff the timeline uses, so an alert cannot contradict the history it
+        // links to. `emit` never throws, and the outer catch here means
+        // versioning still cannot fail an upload or a cron batch. (The score
+        // fields are still WRITTEN to the version row above — history keeps
+        // them — but no score notification exists any more: the protection
+        // score was removed from the product in Aug 2026, PW-MOBILE-TRANSFORM-01
+        // halt H-001.)
         const { emitRiskEvents } = await import("@/lib/notifications/risk-events")
         await emitRiskEvents({
             userId,
             current: risks,
             previous: latest ? parseSnapshot(latest.risks) : null,
-            overallScore: score.overallScore,
-            previousScore: latest?.overallScore ?? null,
-            indeterminate: score.indeterminate ?? false,
-            previousIndeterminate: latest?.indeterminate ?? false,
             version,
         })
 

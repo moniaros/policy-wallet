@@ -3,24 +3,34 @@ import { readFileSync, readdirSync, statSync } from "fs"
 import path from "path"
 
 /**
- * THE PROTECTION SCORE RENDERS IN ONE KIND OF PLACE, AND NEVER IN A FEED.
+ * THE PROTECTION SCORE VALUE RENDERS NOWHERE. Not "in one kind of place" —
+ * nowhere.
  *
- * The score is a weighted average over risk CATEGORIES — it measures the breadth
- * of someone's cover, not how protected they are. Rendered without that
- * qualifier it is read as a grade, and rendered in a list of things that
- * happened it is read as an event: «Το σκορ προστασίας έπεσε στο 74» in the
- * dashboard's changes feed claims something befell the customer, which is a
- * stronger claim than the donut it replaced ever made.
+ * The score was a weighted average of coverage BREADTH presented as a
+ * protection verdict, its severities unvalidated pending underwriter review,
+ * and its provisional fallback returned 100 for a portfolio nothing had ever
+ * analysed — which was then EMAILED as a perfect score to people whose
+ * documents nobody had read. It was removed from the product in Aug 2026
+ * (run PW-MOBILE-TRANSFORM-01, halt H-001, owner decision).
  *
- * Two rules, both enumerated from the filesystem so a new component is covered
- * the day it is written:
+ * History of this guard, kept because it explains its shape:
  *
- *  1. A file that renders the score VALUE must be on the sanctioned list.
- *  2. No timeline/feed title may interpolate the score value at all.
+ *  1. It began as a containment list — two sanctioned surfaces, everything
+ *     else refused. The list is now EMPTY, and re-adding an entry means
+ *     reversing an owner decision, not fixing a test.
+ *  2. Its universe was components/ + app/, which is exactly how the weekly
+ *     digest's `${data.healthScore}%` tile survived a guard named "score
+ *     containment": email templates live in lib/. The universe is now
+ *     enumerated from disk across components/, app/ AND lib/.
+ *  3. It matched only JSX interpolation; the email leak was a template
+ *     literal. Both shapes are matched now, and committed probe fixtures
+ *     (tests/fixtures/guard-probes/score-*) prove each matcher red and the
+ *     internal-use shape green.
  *
- * Sanctioned means the surface carries the qualifier and does not present the
- * number as a verdict — see ProtectionStatusHero's disclosure and
- * ScoreMethodology. Adding a file here is a deliberate act with a reason.
+ * What stays legal: computing, storing, hashing and comparing the figure
+ * (the engine and the version history are producers, and agent-side surfaces
+ * are out of this guard's jurisdiction — they enumerate under /agent/ and
+ * /admin/ paths, which B2C policy explicitly does not cover).
  */
 const ROOT = process.cwd()
 
@@ -34,35 +44,74 @@ function walk(dir: string, out: string[] = []): string[] {
     return out
 }
 
-/** Every customer-facing source file. The universe, from disk. */
-const FILES = [path.join(ROOT, "components"), path.join(ROOT, "app")]
+/**
+ * Every customer-facing source file — components, pages, AND lib (services,
+ * email templates, notification emitters). The universe, from disk.
+ */
+const FILES = [path.join(ROOT, "components"), path.join(ROOT, "app"), path.join(ROOT, "lib")]
     .filter((d) => { try { return statSync(d).isDirectory() } catch { return false } })
     .flatMap((d) => walk(d))
     .filter((f) => !/\/(admin|agent)\//.test(f))
 
 /**
- * Files allowed to render the portfolio score value to a policyholder.
- * Each carries the qualifier at the point of use.
+ * EMPTY, deliberately, and asserted empty below. Two surfaces used to be
+ * sanctioned (ProtectionStatusHero's disclosure and the ProtectionScoreCard);
+ * both renders were removed with the score itself. Adding a file here is not
+ * a test fix — it is reversing halt H-001, which is the owner's call.
  */
-const SANCTIONED = new Set([
-    "components/dashboard/home/ProtectionStatusHero.tsx", // behind a disclosure, no verdict
-    "components/coverage/ProtectionScoreCard.tsx",        // the dedicated score surface
-])
+const SANCTIONED = new Set<string>([])
 
-describe("the protection score value is contained", () => {
+/** The identifiers that carry the portfolio score value through the code. */
+const IDS = "(?:overallScore|healthScore|protectionScore|previousScore|currentScore)"
+
+/**
+ * JSX interpolation of the score value. The negative lookahead `(?!\s*[.:])`
+ * keeps property paths out: `t.wallet.healthScore.title` is a translation KEY
+ * (the per-policy indicator's copy, a different metric), not the value.
+ */
+const JSX_RENDER = new RegExp(
+    `\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])[^}\\n]*\\}\\s*<|>\\s*\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])`
+)
+
+/**
+ * Template-literal interpolation of the score value into rendered text — the
+ * email shape. Two nets:
+ *   - the value immediately dressed as a percentage: `${…healthScore…}%`
+ *   - the value interpolated within sight of a score label in either language
+ * Internal uses (hash inputs, comparisons) match neither.
+ */
+const TPL_PERCENT = new RegExp(`\\$\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])[^}\\n]*\\}\\s*%`)
+const TPL_ANY = new RegExp(`\\$\\{[^}\\n]*\\b${IDS}\\b(?!\\s*[.:])[^}\\n]*\\}`, "g")
+const SCORE_LABEL = /Βαθμολογία προστασίας|σκορ προστασίας|[Pp]rotection [Ss]core/
+
+function rendersScoreValue(src: string): boolean {
+    if (JSX_RENDER.test(src)) return true
+    if (TPL_PERCENT.test(src)) return true
+    for (const m of src.matchAll(TPL_ANY)) {
+        const at = m.index ?? 0
+        const window = src.slice(Math.max(0, at - 120), at + m[0].length + 120)
+        if (SCORE_LABEL.test(window)) return true
+    }
+    return false
+}
+
+describe("the protection score value renders nowhere", () => {
     it("enumerates a real universe (a moved directory must not empty this guard)", () => {
-        expect(FILES.length).toBeGreaterThan(200)
+        expect(FILES.length).toBeGreaterThan(400)
+        // lib/ must genuinely be inside the universe — its absence is the
+        // exact hole the email leak lived in.
+        expect(FILES.some((f) => f.includes(`${path.sep}lib${path.sep}`))).toBe(true)
     })
 
-    it("renders the score value only where it is sanctioned", () => {
-        // `overallScore` is the portfolio figure. A file that interpolates it
-        // into JSX is rendering it; a file that merely passes it through props
-        // or types is not, so we look for it inside braces next to markup.
+    it("has no sanctioned surfaces left, and never regrows them silently", () => {
+        expect(SANCTIONED.size).toBe(0)
+    })
+
+    it("no customer-facing file renders the score value — JSX or template literal", () => {
         const offenders = FILES.filter((f) => {
             const rel = path.relative(ROOT, f)
             if (SANCTIONED.has(rel)) return false
-            const src = readFileSync(f, "utf8")
-            return /\{[^}\n]*\boverallScore\b[^}\n]*\}\s*</.test(src) || />\s*\{[^}\n]*\boverallScore\b/.test(src)
+            return rendersScoreValue(readFileSync(f, "utf8"))
         }).map((f) => path.relative(ROOT, f))
         expect(offenders).toEqual([])
     })
@@ -82,5 +131,27 @@ describe("the protection score value is contained", () => {
         // a number the reader cannot check, and it disagreed with the hero's.
         const src = readFileSync(path.join(ROOT, "components/dashboard/home/RecentChangesWidget.tsx"), "utf8")
         expect(src).not.toMatch(/\{change\.delta\}/)
+    })
+})
+
+/**
+ * The guard's own eyes, proven against committed probes. A guard whose matcher
+ * was never shown red is not a guard (repo rule: "Guards must enumerate, not
+ * assume" — and ship with a probe proven to turn them red).
+ */
+describe("the matcher itself is proven against committed probes", () => {
+    const probe = (name: string) =>
+        readFileSync(path.join(ROOT, "tests/fixtures/guard-probes", name), "utf8")
+
+    it("flags the JSX render probe (the deleted ProtectionScoreCard's shape)", () => {
+        expect(rendersScoreValue(probe("score-render-jsx.tsx.txt"))).toBe(true)
+    })
+
+    it("flags the email template probe (the weekly-digest leak's shape)", () => {
+        expect(rendersScoreValue(probe("score-render-email.ts.txt"))).toBe(true)
+    })
+
+    it("passes the internal-use probe — hashing and key paths are not renders", () => {
+        expect(rendersScoreValue(probe("score-internal-use.ts.txt"))).toBe(false)
     })
 })

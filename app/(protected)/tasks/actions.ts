@@ -214,22 +214,21 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
         relatedObjectId: instance.sentToUserId,
     })
 
-    // Recompute the protection score against the profile just written. Answers
-    // that map to risk fields now MOVE this number — before F-01 they reached
+    // Recompute the risk assessment against the profile just written. Answers
+    // that map to risk fields MOVE the assessment — before F-01 they reached
     // nothing, so an advisor could send a questionnaire, get it back, and watch
-    // the score sit exactly where it was.
-    let protectionScore: number | null = null
+    // the assessment sit exactly where it was. The recompute is kept; the score
+    // VALUE is no longer returned, because no customer surface may render it
+    // (removed Aug 2026 — PW-MOBILE-TRANSFORM-01, H-001).
     try {
-        const refreshed = await refreshProtectionScore(userId)
-        protectionScore = refreshed.protectionScore.overallScore
+        await refreshProtectionScore(userId)
     } catch {
-        // ignore — score refresh must not fail the submission
+        // ignore — the recompute must not fail the submission
     }
 
     return {
         success: true,
         responseId,
-        protectionScore,
         /** Risk-profile fields this submission updated; [] when none mapped. */
         profileFieldsUpdated: appliedProfileFields,
     }

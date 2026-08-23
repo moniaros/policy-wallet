@@ -12,12 +12,10 @@ import { getCachedProtectionScore, getActiveRecommendations } from "@/lib/servic
 import { getOpenReview } from "@/lib/services/risk-review/service"
 import { getReviewPolicy } from "@/lib/services/risk-review/policy"
 import { RiskReviewCard } from "@/components/risk/RiskReviewCard"
-import { provisionalProtectionScore, SCORE_CATEGORIES } from "@/lib/services/gap-engine/protection-score"
-import { categoryMovements } from "@/lib/services/gap-engine/score-trend"
 import { getTimeline } from "@/lib/services/timeline/service"
 import { assembleWatch } from "@/lib/services/risk-dna/service"
 import { buildProtectionPlan } from "@/lib/services/protection-plan"
-import { portfolioFacts, scoreSupport } from "@/lib/dashboard/portfolio-summary"
+import { portfolioFacts } from "@/lib/dashboard/portfolio-summary"
 import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
@@ -274,63 +272,27 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         gapsByPolicy.set(gap.policyId, (gapsByPolicy.get(gap.policyId) ?? 0) + 1)
     }
 
-    // Analysis runs, grouped once: completed => the engine has read something;
-    // queued/running => the hero says so instead of leaving a silent gap.
+    // Analysis runs, grouped once: completed => the engine has read something.
     const runCount = (statuses: string[]) =>
         analysisRunGroups
             .filter((group) => statuses.includes(group.status))
             .reduce((sum, group) => sum + group._count._all, 0)
     const hasCompletedAnalysis = runCount(["completed", "completed_with_warnings"]) > 0
-    const analyzingCount = runCount(["queued", "running"])
 
-    /* Protection score.
+    /**
+     * THE FACTS, which replaced the protection score outright.
      *
-     * Four states, because the score has four honest answers:
-     *
-     *  - No policies at all -> NO score. It used to render `0` with the red
-     *    "Χρειάζεται προσοχή" verdict, which tells someone who has simply not
-     *    uploaded anything yet that they are badly protected.
-     *  - Engine score present and determinate -> the real, weighted figure.
-     *  - Engine score present but indeterminate -> a verdict on our own
-     *    ignorance, not on their cover: no number renders.
-     *  - Engine score absent but policies exist -> a DIFFERENT formula (flat
-     *    penalties per gap severity), labelled a provisional estimate.
+     * The score was a weighted average of coverage BREADTH presented as a
+     * protection verdict — `healthScore >= 70 ? «Καλή κάλυψη» : …` — rendered
+     * over portfolios the measure could not describe: one never-analysed policy
+     * scored «Καλή κάλυψη», a wallet where every policy had expired scored
+     * «Χρειάζεται βελτίωση», and its fallback returned 100 for a portfolio
+     * nothing had ever read. Removed from the product Aug 2026 (run
+     * PW-MOBILE-TRANSFORM-01, halt H-001); see
+     * docs/evidence/dashboard-mobile/BASELINE.md D1 and
+     * tests/unit/score-containment.test.ts.
      */
     const hasPolicies = policies.length > 0
-    const isProvisionalScore = hasPolicies && !cachedScore
-    const healthScore: number | null = cachedScore
-        ? cachedScore.indeterminate
-            ? null
-            : cachedScore.overallScore
-        : provisionalProtectionScore(policies.length, openGaps.map(g => g.severity))
-
-    const heroState: "empty" | "provisional" | "indeterminate" | "scored" = !hasPolicies
-        ? "empty"
-        : cachedScore
-            ? cachedScore.indeterminate
-                ? "indeterminate"
-                : "scored"
-            : "provisional"
-
-    // Ring colour and verdict sentence derive from ONE conditional so they can
-    // never disagree about what the number means.
-    const ringToneClass =
-        healthScore === null
-            ? ""
-            : healthScore >= 70
-                ? "stroke-primary dark:stroke-mint"
-                : healthScore >= 40
-                    ? "stroke-amber-500"
-                    : "stroke-red-500"
-    /**
-     * THE FACTS, which replaced the verdict.
-     *
-     * The verdict was `healthScore >= 70 ? «Καλή κάλυψη» : …` — a grade derived
-     * from a BREADTH measure, rendered over portfolios the measure could not
-     * describe: one never-analysed policy scored «Καλή κάλυψη», and a wallet
-     * where every policy had expired scored «Χρειάζεται βελτίωση». See
-     * docs/evidence/dashboard-mobile/BASELINE.md D1.
-     */
     const portfolioInput = {
         total: policies.length,
         expired: policies.filter((p) => resolvePolicyLifecycle(p, now).status === "expired").length,
@@ -357,74 +319,16 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         return { kind, count, label: count === 1 ? one : many.replace('{count}', String(count)) }
     })
 
-    const support = scoreSupport(portfolioInput)
-    const scoreUnsupportedReason = support.supported
-        ? null
-        : support.reason === "nothing_analysed"
-            ? home.scoreUnsupportedNothingAnalysed
-            : support.reason === "no_active_cover"
-                ? home.scoreUnsupportedNoCover
-                : null
+    // The monitor still needs the newest assessment version (for its risks
+    // snapshot) — the score value it carries is never rendered.
+    const [newestVersion] = recentVersions
 
-    // Movement since the previous assessment. Needs two determinate versions —
-    // most accounts have fewer, and "no delta" is a first-class state, never a
-    // fabricated "±0".
-    const [newestVersion, previousVersion] = recentVersions
-    const scoreDelta =
-        heroState === "scored" && newestVersion && previousVersion &&
-        !newestVersion.indeterminate && !previousVersion.indeterminate
-            ? newestVersion.overallScore - previousVersion.overallScore
-            : null
-    const deltaLabel =
-        scoreDelta !== null && scoreDelta !== 0
-            ? home.heroDeltaSince
-                  .replace('{delta}', scoreDelta > 0 ? `+${scoreDelta}` : String(scoreDelta))
-                  .replace('{date}', formatDate(previousVersion!.computedAt, lang))
-            : null
-    const deltaDirection = scoreDelta === null || scoreDelta === 0 ? null : scoreDelta > 0 ? "up" : "down"
-
-    // The biggest factor behind the score: the largest category movement when
-    // history exists, else the top open recommendation, else nothing.
-    let keyReason: string | null = null
-    if (heroState === "scored") {
-        const movement = categoryMovements(
-            recentVersions.map((v) => ({ categoryScores: v.categoryScores, computedAt: v.computedAt }))
-        )[0]
-        if (movement) {
-            const category = SCORE_CATEGORIES.find((c) => c.key === movement.key)
-            if (category) {
-                keyReason = (movement.delta < 0 ? home.heroReasonFell : home.heroReasonRose)
-                    .replace('{category}', category.label[lang])
-                    .replace('{points}', String(Math.abs(movement.delta)))
-            }
-        }
-        if (!keyReason && activeRecommendations.length > 0) {
-            keyReason = activeRecommendations[0].title[lang] || activeRecommendations[0].title.en
-        }
-    }
-
-    const areasLine =
-        heroState === "scored" || heroState === "provisional"
-            ? activeRecommendations.length === 0
-                ? null
-                : activeRecommendations.length === 1
-                    ? home.heroAreasOne
-                    : home.heroAreasMany.replace('{count}', String(activeRecommendations.length))
-            : null
-
-    const policyLine = hasPolicies
-        ? [
-              policies.length === 1
-                  ? home.heroPoliciesOne
-                  : home.heroPoliciesMany.replace('{count}', String(policies.length)),
-              analyzingCount === 0
-                  ? null
-                  : analyzingCount === 1
-                      ? home.heroAnalyzingOne
-                      : home.heroAnalyzingMany.replace('{count}', String(analyzingCount)),
-          ]
-              .filter(Boolean)
-              .join(' · ')
+    const areasLine = hasPolicies
+        ? activeRecommendations.length === 0
+            ? null
+            : activeRecommendations.length === 1
+                ? home.heroAreasOne
+                : home.heroAreasMany.replace('{count}', String(activeRecommendations.length))
         : null
 
     // What needs my attention: the top findings as risk → why → next step.
@@ -748,36 +652,17 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 )}
 
                     <ProtectionStatusHero
-                        state={heroState}
-                        score={healthScore}
-                        ringToneClass={ringToneClass}
+                        hasPolicies={hasPolicies}
                         facts={facts}
-                        scoreUnsupportedReason={scoreUnsupportedReason}
-                        deltaLabel={deltaLabel}
-                        deltaDirection={deltaDirection}
-                        keyReason={keyReason}
                         areasLine={areasLine}
-                        policyLine={policyLine}
+                        openRecommendationCount={activeRecommendations.length}
                         language={lang}
                         labels={{
                             kicker: home.heroKicker,
                             cta: home.heroCta,
-                            reasonKicker: home.heroReasonKicker,
-                            provisionalBadge: home.scoreProvisional,
-                            provisionalHint: home.scoreProvisionalHint,
                             emptyTitle: home.heroEmptyTitle,
                             emptyBody: home.heroEmptyBody,
                             emptyCta: home.heroEmptyCta,
-                            indeterminateTitle: home.heroIndeterminateTitle,
-                            indeterminateBody: home.heroIndeterminateBody,
-                            indeterminateCta: home.heroIndeterminateCta,
-                            methodologyTitle: home.scoreMethodologyTitle,
-                            methodologyBody: home.scoreMethodologyBody,
-                            methodologyLimits: home.scoreMethodologyLimits,
-                            methodologyNotAdvice: home.scoreMethodologyNotAdvice,
-                            scoreDisclosureOpen: home.scoreDisclosureOpen,
-                            scoreDisclosureLabel: home.scoreDisclosureLabel,
-                            scoreRingLabel: home.scoreRingLabel,
                         }}
                     />
 

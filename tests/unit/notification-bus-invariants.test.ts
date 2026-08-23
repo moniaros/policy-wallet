@@ -248,8 +248,8 @@ describe("risk notifications cannot be lost or skipped", () => {
     it("the risk-profile version write is awaited, not floated", () => {
         // It used to be `void import(...).then(recordRiskProfileVersion)`, which
         // was defensible while versioning was pure observability. It stopped
-        // being defensible when GAP_DETECTED, protection_score_changed and
-        // risk_level_changed were hung off it: a floating promise in a
+        // being defensible when GAP_DETECTED and risk_level_changed were hung
+        // off it: a floating promise in a
         // serverless function may be terminated when the response returns, so
         // the customer-facing consequence of an upload could never fire.
         expect(ENGINE).not.toMatch(/void\s+import\([^)]*risk-profile-version/)

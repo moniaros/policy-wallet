@@ -1,5 +1,4 @@
 import { calendarDaysUntil, startOfAthensDay, athensWeekday, NON_LIVE_POLICY_STATUSES } from "@/lib/policy-status"
-import { provisionalProtectionScore } from "./gap-engine/protection-score"
 import { db } from "../db"
 import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
@@ -143,32 +142,11 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 },
             })
 
-            // Health score — prefer cached protection score from gap engine
-            const cachedScore = await db.protectionScore.findUnique({
-                where: { userId: user.id },
-                select: { overallScore: true },
-            }).catch(() => null)
-
-            // Provisional whenever it did not come from the gap engine — the two
-            // are different measures and the email has to say which one it is.
-            let healthScore: number | null
-            const scoreIsProvisional = !cachedScore
-            if (cachedScore) {
-                healthScore = cachedScore.overallScore
-            } else {
-                const openGaps = await db.gapInstance.findMany({
-                    where: {
-                        policy: { ownerUserId: user.id },
-                        status: { in: ["open", "detected", "acknowledged"] },
-                    },
-                    select: { severity: true },
-                })
-                const policyCount = await db.policy.count({ where: { ownerUserId: user.id } })
-                healthScore = provisionalProtectionScore(
-                    policyCount,
-                    openGaps.map((g) => g.severity)
-                )
-            }
+            // No score is computed for this email. The digest carried the
+            // protection score until Aug 2026 — including a provisional
+            // fallback that mailed 100% to portfolios nobody had analysed —
+            // and the score was removed from the product outright
+            // (PW-MOBILE-TRANSFORM-01, halt H-001).
 
             // Top recommendations for behavioral nudge
             const lang = user.preferredLanguage === "el" ? "el" as const : "en" as const
@@ -215,8 +193,6 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 })),
                 newGaps,
                 unreadMessages,
-                healthScore,
-                scoreIsProvisional,
                 topRecommendations,
                 profileCompleteness,
             })
@@ -229,7 +205,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 event: "weekly_digest",
                 userId: user.id,
                 title: subject,
-                message: `Weekly digest: ${renewals.length} renewals, ${newGaps} new gaps, score ${healthScore === null ? 'n/a' : `${healthScore}%`}`,
+                message: `Weekly digest: ${renewals.length} renewals, ${newGaps} new gaps`,
                 // One digest per user per ISO week, however often the cron runs.
                 dedupeKey: `weekly_digest:${isoWeekKey(now)}`,
                 content: { email: { subject, html } },

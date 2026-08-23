@@ -1,7 +1,6 @@
 import { db } from "../db"
 import { emit, isChannelSuppressed } from "../notifications/dispatch"
 import { getWelcomeEmail, getDay3Email, getDay7Email } from "../email/templates/engagement-drip"
-import { provisionalProtectionScore } from "./gap-engine/protection-score"
 
 type EngagementDripSummary = {
     welcomeEmailsSent: number
@@ -162,22 +161,21 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
             select: { severity: true },
         })
         const gapCount = openGaps.length
-        // The shared provisional estimate — null with no policies, and always
-        // provisional here because this path never consults the gap engine.
-        const healthScore = provisionalProtectionScore(policyCount, openGaps.map((g) => g.severity))
+        // No score. This email carried the provisional estimate until Aug 2026
+        // — 100% for a portfolio nothing had analysed — and the protection
+        // score was removed from the product (PW-MOBILE-TRANSFORM-01, H-001).
 
         try {
             const lang = user.preferredLanguage === "el" ? "el" as const : "en" as const
             const { subject, html } = getDay7Email(lang, user.name || undefined, {
                 policyCount,
-                healthScore,
                 gapCount,
             })
             const result = await emit({
                 event: "engagement_day7",
                 userId: user.id,
                 title: subject,
-                message: `Coverage snapshot: ${policyCount} policies, ${healthScore === null ? 'n/a' : `${healthScore}%`} provisional score, ${gapCount} gaps`,
+                message: `Coverage snapshot: ${policyCount} policies, ${gapCount} gaps`,
                 dedupeKey: "engagement_day7",
                 content: { email: { subject, html } },
             })

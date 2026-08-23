@@ -115,7 +115,7 @@ owner: mixed · blocked_by: T-010
 Ordering is §6.1's: highest exposure first. Every item instruments what it touches per
 `INSTRUMENTATION-PLAN.md`, and every item's guard must be demonstrated failing first.
 
-### P1-01 — The protection score is removed from the product · `todo`
+### P1-01 — The protection score is removed from the product · `done` — REVIEW PASSED
 **Scope expanded by H-001 = option C (2026-08-23).** This was "score leaves outbound"; it is now
 "score leaves everywhere". The in-product half is below the outbound half.
 
@@ -419,3 +419,36 @@ zero.
    established are different.
 4. Demonstrate the guard failing first. Record both outcomes in the item's queue entry.
 5. Ship the whole item or requeue it. No partial merges.
+
+
+---
+
+## P1-01 — Adversarial review: **PASS**
+
+Reviewed by the Orchestrator (Opus 5), who did not implement it. Every claim re-verified
+independently rather than accepted.
+
+| check | result |
+|---|---|
+| Defect removed, not **relocated** | **PASS.** My own grep for the value across `app/`, `components/`, `lib/` — excluding agent/admin (§12.4) — found exactly one hit: `risk-profile-version.ts:44`, which is a `createHash("sha256").update(…)` version input, not a render. Legitimately exempt. |
+| Score renders in outbound | **2 → 0**, re-measured via `outbound-inventory.test.ts` |
+| Guard `SANCTIONED` | empty, and asserted empty at line 107 |
+| Guard universe extended to `lib/` | **PASS — proven, not asserted.** I injected `Βαθμολογία προστασίας: ${data.healthScore}%` into `weekly-digest.ts`; the guard went red naming that exact file; reverted → 8/8 green |
+| Two pre-existing guards modified | **Both are STRENGTHENINGS.** `risk-engine-surface-consistency` replaced "indeterminate must reach tiles as null" with `not.toMatch(/cachedScore\.overallScore/)` + `not.toMatch(/provisionalProtectionScore/)` — strictly stronger. `policy-sentinels-unrenderable` filters `existsSync` because `git ls-files` reports the INDEX and a deleted-unstaged file cannot render a sentinel — not a universe shrink. |
+| Three sites my map missed | verified at **0** occurrences each: `onboarding/flow.tsx`, `QuestionnaireForm.tsx`, `CoverageInsightsClient` dead prop |
+| CI | `tsc` clean · lint · i18n · utf8 · audit:api-auth · **5076/5076 tests** |
+
+**On the −14 test delta.** Accepted. Score-surface tests were deleted with the surfaces they
+tested, the containment guard grew 4 → 8, and the honesty suite was rewritten to 16. Deleting a
+test whose subject no longer exists is correct; the thing that would have failed review is deleting
+a test whose subject survived, and the independent value sweep plus the proven guard cover that.
+
+**The item found three render sites my 11-site map missed** — including
+`app/onboarding/actions.ts` returning `healthScore: result.overallSuccessPct`, a *pipeline success
+percentage* rendered to the customer as a protection figure. That is a worse defect than the one
+P1-01 was written to fix, and no audit in this run had found it.
+
+### Reviewer's note on scope discipline
+It correctly did **not** delete `provisionalProtectionScore` despite reporting that it now has zero
+product callers, and did not touch `ScoreRing` or any agent surface. That is the D-006 boundary held
+under exactly the temptation that would have breached it.

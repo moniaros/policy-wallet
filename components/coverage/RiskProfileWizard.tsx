@@ -878,7 +878,7 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
                         <ShieldCheck className="h-4 w-4" />
                         {loading
                             ? t("Αποθήκευση...", "Saving...")
-                            : t("Αποθήκευση & Ανανέωση βαθμολογίας", "Save & Update Protection Score")}
+                            : t("Αποθήκευση & Ανανέωση ανάλυσης", "Save & Update Analysis")}
                     </button>
                 </div>
             </form>

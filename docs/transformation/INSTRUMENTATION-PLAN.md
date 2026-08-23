@@ -64,7 +64,12 @@ restate.
 
 `upload` · `analyse` · `viewPolicy` · `viewGap` · `renew` · `contactAdvisor` · `callClaims` ·
 `share` · `revokeShare` · `upgrade` · `deletePolicy` · `editPolicy` · `downloadDocument` ·
-`dismiss` · `confirmObligation`
+`dismiss` · `confirmObligation` · `reviewCoverage`
+
+**`reviewCoverage` added 2026-08-23** (Orchestrator adjudication, P1-01). No listed verb fitted a
+navigate-to-insights CTA, and the implementation agent flagged it rather than silently coining one
+or leaving the control uninstrumented. Flagging was the right call: an unlisted verb that nobody
+ratifies is how the namespace forks.
 
 `data-action` measures a *different* defect from `data-fact`: one quote CTA rendered three times
 is one duplicated action, not three duplicated facts, and the fix is different (consolidate the

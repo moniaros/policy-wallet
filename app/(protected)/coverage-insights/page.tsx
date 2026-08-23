@@ -5,7 +5,6 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { CoverageInsightsClient } from "@/components/coverage/CoverageInsightsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
-import { ProtectionScoreCard } from "@/components/coverage/ProtectionScoreCard"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { LifeEventsPanel } from "@/components/coverage/LifeEventsPanel"
 import { declarableLifeEvents, getLifeEvent, magnitudePrompt } from "@/lib/services/life-events/registry"
@@ -128,26 +127,12 @@ export default async function CoverageInsightsPage() {
     const mediumGaps = gapInstances.filter(g => g.severity === 'medium').length
     const lowGaps = gapInstances.filter(g => g.severity === 'low').length
 
-    // Coverage-completeness score (profile-based). No misleading "100 = Strong"
-    // fallback when the engine errors — an unknown score must never read as strong.
-    const healthScore = engineResult ? engineResult.protectionScore.overallScore : 0
-
     // Verdict gating signals (Concept B = policy gaps): distinguish
     // "analyzed & clean" from "never deep-analyzed", and whether deep analysis
     // is available (Plus) at all. lastAnalyzedAt is set only by the deep pipeline.
     const hasPolicies = policies.length > 0
     const hasDeepAnalysis = policies.some((p) => (p as any).lastAnalyzedAt != null)
     const isDeepAnalysisLocked = entitlements.tier !== 'pro'
-
-    // Freshness anchor for the protection score: the most recent deep-analysis
-    // across the portfolio. Null when nothing has been deep-analyzed yet, so the
-    // score claims no "as of" date it cannot back up.
-    const latestAnalyzedAt = policies.reduce<string | null>((latest, p) => {
-        const at = (p as any).lastAnalyzedAt as Date | null
-        if (!at) return latest
-        const iso = at.toISOString()
-        return latest === null || iso > latest ? iso : latest
-    }, null)
 
     const userLanguage = (dbUser.preferredLanguage || 'en') as 'en' | 'el'
     const t = getTranslations(userLanguage)
@@ -157,9 +142,8 @@ export default async function CoverageInsightsPage() {
         // wrap in `.pw-page-shell` (min-h-screen), stacking to ~3 viewports tall
         // with large empty gaps between them.
         <div className="pw-page-shell">
-            {/* Ordering: what to DO comes before how you SCORE — the
-                recommendations and the reviewed findings lead, the passive
-                score and the profile wizard follow. */}
+            {/* Ordering: what to DO leads — the recommendations and the
+                reviewed findings first, the profile wizard after. */}
             {engineResult && (
                 <div>
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 lg:pt-10 space-y-6">
@@ -208,7 +192,6 @@ export default async function CoverageInsightsPage() {
                         high: highGaps,
                         medium: mediumGaps,
                         low: lowGaps,
-                        healthScore,
                         totalGaps: gapInstances.length,
                         totalPolicies: policies.length,
                         totalCoverage: 0
@@ -321,23 +304,14 @@ export default async function CoverageInsightsPage() {
                             </Link>
                         </div>
 
-                        {/* The protection score only makes sense once there is a
-                            policy to score — with none it read "0 / Critical",
-                            which is noise, not a verdict. */}
-                        {hasPolicies && (
-                            <ProtectionScoreCard
-                                overallScore={engineResult.protectionScore.overallScore}
-                                tier={engineResult.scoreTier}
-                                categoryScores={engineResult.protectionScore.categoryScores as any}
-                                gapCount={engineResult.protectionScore.gapCount}
-                                expectedLines={engineResult.protectionScore.expectedLines}
-                                actualLines={engineResult.protectionScore.actualLines}
-                                profileCompleteness={engineResult.profileCompleteness}
-                                indeterminate={engineResult.protectionScore.indeterminate ?? false}
-                                language={userLanguage}
-                                analyzedAt={latestAnalyzedAt}
-                            />
-                        )}
+                        {/* The ProtectionScoreCard rendered here until Aug 2026.
+                            The score was a breadth average presented as a
+                            protection verdict, with unvalidated severities —
+                            removed from the product (run PW-MOBILE-TRANSFORM-01,
+                            halt H-001). The reviewed findings and the
+                            recommendations above ARE this page's verdict-free
+                            answer; do not reintroduce a score here
+                            (tests/unit/score-containment.test.ts). */}
                     </div>
                 </div>
             )}

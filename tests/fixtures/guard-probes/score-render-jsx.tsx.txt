@@ -1,0 +1,15 @@
+// RED PROBE for tests/unit/score-containment.test.ts.
+//
+// A minimal reproduction of the in-product render this guard exists to refuse:
+// the portfolio score value interpolated into JSX (the shape of the deleted
+// ProtectionScoreCard and the onboarding flow's `{analysisResult.healthScore}%`).
+// The guard's matcher MUST flag this file; if it stops doing so, the guard has
+// gone blind and its self-test fails.
+export function ScoreProbe({ overallScore }: { overallScore: number }) {
+    return (
+        <div className="pw-card">
+            <span className="text-3xl font-bold">{overallScore}</span>
+            <p>{"Protection score"}</p>
+        </div>
+    )
+}

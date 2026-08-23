@@ -5,7 +5,6 @@ import { db } from "@/lib/db"
 import { PolicyService } from "@/lib/services/policy.service"
 import { revalidatePath } from "next/cache"
 import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
-import { provisionalProtectionScore } from "@/lib/services/gap-engine/protection-score"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
     "policy_expiring",
@@ -302,9 +301,6 @@ export async function redeemInviteCode(code: string) {
 export async function triggerOnboardingAnalysis(policyId: string): Promise<{
     success: boolean
     status: "completed" | "running" | "queued" | "failed"
-    healthScore?: number | null
-    /** The score above is the provisional estimate, never the gap engine's. */
-    healthScoreIsProvisional?: boolean
     gapCount?: number
     runId?: string
     error?: string
@@ -331,17 +327,14 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
             where: { policyId, status: { in: ["open", "detected", "acknowledged"] } },
             select: { severity: true },
         })
-        // Always provisional: this is the lightweight estimate, computed from one
-        // freshly-analysed policy, not the gap engine's category-weighted score.
-        // The number the user sees on the dashboard a minute later is a different
-        // measure and can differ materially — so this one has to say what it is.
-        const score = provisionalProtectionScore(1, gaps.map(g => g.severity))
-
+        // No score here. The provisional protection score rendered on this
+        // screen until Aug 2026 — it returned 100 for a portfolio with no
+        // detected gaps whether or not anything had really been read, and the
+        // score is now removed from the product (run PW-MOBILE-TRANSFORM-01,
+        // halt H-001). The gap count is a recorded fact; that renders.
         return {
             success: true,
             status: "completed",
-            healthScore: score,
-            healthScoreIsProvisional: true,
             gapCount: gaps.length,
         }
     }
@@ -387,10 +380,11 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
         if (result) {
             const isComplete = result.status === "completed" || result.status === "completed_with_warnings"
             const isFailed = result.status === "failed" || result.status === "blocked"
+            // `overallSuccessPct` used to be returned as `healthScore` here —
+            // a pipeline success percentage dressed up as a protection figure.
             return {
                 success: !isFailed,
                 status: isComplete ? "completed" : isFailed ? "failed" : "running",
-                healthScore: result.overallSuccessPct ?? undefined,
             }
         }
 

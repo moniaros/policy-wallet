@@ -515,8 +515,8 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     // `void import(...).then(...).catch(() => {})` on the reasoning that
     // versioning is observability and must never block an upload. That was true
     // when the only consumer was the timeline. It stopped being true when the
-    // risk NOTIFICATIONS — GAP_DETECTED, protection_score_changed,
-    // risk_level_changed — were hung off `recordRiskProfileVersion`: a floating
+    // risk NOTIFICATIONS — GAP_DETECTED, risk_level_changed — were hung off
+    // `recordRiskProfileVersion`: a floating
     // promise in a serverless function may be terminated when the response
     // returns, so the customer-facing consequence of an upload could simply
     // never fire. Awaiting costs one write on the path that just ran an AI

@@ -57,37 +57,11 @@ describe('one provisional score, computed in one place', () => {
 })
 
 /**
- * Anything rendering the estimate owes the reader the word "provisional" — the
- * dashboard has always said so, and the two email surfaces and onboarding did
- * not.
+ * No surface renders the estimate any more. The describe block that stood
+ * here required every rendering surface (digest, drip, onboarding, dashboard)
+ * to label the figure "provisional"; all four renders were removed with the
+ * protection score itself in Aug 2026 (PW-MOBILE-TRANSFORM-01, halt H-001).
+ * tests/unit/score-containment.test.ts now asserts the stronger thing — the
+ * value renders NOWHERE — while the arithmetic above stays single-source for
+ * the non-rendering consumers that survive it.
  */
-describe('every surface says which measure it is showing', () => {
-    it('the weekly digest labels it', () => {
-        const t = read('lib/email/templates/weekly-digest.ts')
-        expect(t).toMatch(/scoreIsProvisional/)
-        expect(t).toMatch(/Προσωρινή εκτίμηση/)
-        expect(t).toMatch(/Provisional estimate/)
-    })
-
-    it('the digest service knows when it is provisional', () => {
-        expect(read('lib/services/weekly-digest.service.ts')).toMatch(/scoreIsProvisional = !cachedScore/)
-    })
-
-    it('the day-7 drip labels it — that path never consults the gap engine', () => {
-        const t = read('lib/email/templates/engagement-drip.ts')
-        expect(t).toMatch(/Προσωρινή εκτίμηση/)
-        expect(t).toMatch(/Provisional estimate/)
-    })
-
-    it('onboarding labels it and calls the metric what the app calls it', () => {
-        const flow = read('app/onboarding/flow.tsx')
-        expect(flow).toMatch(/healthScoreIsProvisional/)
-        expect(flow).toMatch(/Βαθμολογία προστασίας/)
-        expect(flow).not.toMatch(/Σκορ ανάλυσης|Analysis score/)
-        expect(read('app/onboarding/actions.ts')).toMatch(/healthScoreIsProvisional: true/)
-    })
-
-    it('the dashboard still labels it, as it always did', () => {
-        expect(read('app/(protected)/dashboard/PolicyholderHome.tsx')).toMatch(/isProvisionalScore/)
-    })
-})

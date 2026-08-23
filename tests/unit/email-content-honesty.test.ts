@@ -63,35 +63,25 @@ describe('the fallback score returns nothing to score, not a score of nothing', 
 })
 
 /**
- * The app distinguishes "no data yet" from a real score — «Δεν υπάρχουν ακόμη
- * δεδομένα». The digest collapsed both to "0%", which reads as a verdict on a
- * portfolio the product has never seen.
+ * The digest carries NO protection score at all. It used to render a score
+ * tile — and its provisional fallback mailed "100%" to portfolios nobody had
+ * ever analysed. The score was removed from the product in Aug 2026
+ * (PW-MOBILE-TRANSFORM-01, halt H-001); the deeper sweep lives in
+ * tests/unit/score-containment.test.ts, this is the outbound-facing assertion
+ * against the rendered artifact itself.
  */
-describe('the digest reports no score rather than a score of zero', () => {
+describe('the digest reports no score at all', () => {
     const base = {
         renewingSoon: [],
         newGaps: 0,
         unreadMessages: 0,
     }
 
-    it('renders a dash and an explanation when there is nothing to score', () => {
-        const { html } = getWeeklyDigestEmail('el', 'Μαρία', { ...base, healthScore: null })
-        expect(html).not.toMatch(/>0%</)
-        expect(html).toMatch(/Προσθέστε ένα ασφαλιστήριο/)
-    })
-
-    it('still renders a real score', () => {
-        const { html } = getWeeklyDigestEmail('el', 'Μαρία', { ...base, healthScore: 72 })
-        expect(html).toMatch(/72%/)
-    })
-
-    it('calls it what the app calls it', () => {
-        const { html } = getWeeklyDigestEmail('el', undefined, { ...base, healthScore: 72 })
-        expect(html).toMatch(/Βαθμολογία προστασίας/)
-        expect(html).not.toMatch(/Υγεία Κάλυψης/)
-        const en = getWeeklyDigestEmail('en', undefined, { ...base, healthScore: 72 }).html
-        expect(en).toMatch(/Protection score/)
-        expect(en).not.toMatch(/Coverage Health|Health Score/)
+    it('renders neither the label nor a percentage tile', () => {
+        const { html } = getWeeklyDigestEmail('el', 'Μαρία', base)
+        expect(html).not.toMatch(/Βαθμολογία προστασίας|σκορ προστασίας/)
+        const en = getWeeklyDigestEmail('en', 'Μαρία', base).html
+        expect(en).not.toMatch(/[Pp]rotection [Ss]core/)
     })
 })
 

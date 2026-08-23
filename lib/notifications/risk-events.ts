@@ -11,34 +11,25 @@
  *
  * What this closes:
  *
- * - `protection-score-refresh` recomputed every active user's score daily and
- *   notified nobody, so "your protection changed" — the sentence the product is
- *   for — was never actually said.
  * - `GAP_DETECTED` fired only on the upload path, so a gap the daily engine
  *   found was silent. A gap is a gap whether a PDF arrived that morning or not.
+ *
+ * What is deliberately ABSENT: `protection_score_changed`. A score-movement
+ * notification emitted from here until Aug 2026, when the protection score was
+ * removed from the product (run PW-MOBILE-TRANSFORM-01, halt H-001): the score
+ * was a breadth average presented as a protection verdict, with unvalidated
+ * severities. The movements that matter — a gap opening, cover lost on a
+ * risk — already have their own events below; do not reintroduce a score one.
  *
  * Nothing here throws: `emit` swallows its own failures, and versioning is
  * observability that must not take down an upload or a cron batch.
  */
 
 import { emit } from "./dispatch"
-import { getNotificationConfig, scoreMateriality } from "./config"
+import { getNotificationConfig } from "./config"
 import { settingValue } from "./settings"
 import { getRisk } from "@/lib/services/gap-engine/risk-catalog"
 import { diffVersions, type RiskSnapshot, type RiskTransition } from "@/lib/services/timeline/diff"
-
-/**
- * How far the score must move before it is worth telling someone.
- *
- * A one-point drift is arithmetic, not news, and a product that pings about it
- * teaches people to ignore the pings that matter. Five points is roughly one
- * risk opening or closing.
- *
- * This is the DEFAULT. The live value is `threshold.scoreMateriality`, tunable
- * from the admin console — the right number is an editorial judgement about how
- * often a customer should hear from us, and that should not need a deploy.
- */
-export const SCORE_MATERIALITY = 5
 
 export interface RiskEventInput {
     userId: string
@@ -46,11 +37,6 @@ export interface RiskEventInput {
     current: RiskSnapshot[]
     /** The previous version's snapshot, or null when this is the first. */
     previous: RiskSnapshot[] | null
-    overallScore: number
-    previousScore: number | null
-    /** True when the score is not a number the customer was shown. */
-    indeterminate: boolean
-    previousIndeterminate: boolean
     version: number
 }
 
@@ -80,9 +66,8 @@ export function partitionTransitions(transitions: RiskTransition[]): {
  * Call AFTER the version row is committed.
  */
 export async function emitRiskEvents(input: RiskEventInput): Promise<void> {
-    // Admin-tunable thresholds. Never throws: falls back to the constants above.
+    // Admin-tunable thresholds. Never throws: falls back to the defaults.
     const config = await getNotificationConfig()
-    const materiality = scoreMateriality(config)
     const maxNamed = settingValue<number>(config.settings, "threshold.maxGapsPerNotification")
     const riskChangeEnabled = settingValue<boolean>(config.settings, "threshold.riskChangeNotifyEnabled")
 
@@ -158,38 +143,5 @@ export async function emitRiskEvents(input: RiskEventInput): Promise<void> {
         })
     }
 
-    // ── Protection score ─────────────────────────────────────────────────────
-    //
-    // An indeterminate score is not a number the customer was ever shown, so a
-    // delta against it describes a movement that never happened — the same rule
-    // getRiskProfileHistory already applies to its own deltas.
-    if (
-        input.previousScore !== null &&
-        !input.indeterminate &&
-        !input.previousIndeterminate &&
-        Number.isFinite(input.overallScore) &&
-        Number.isFinite(input.previousScore)
-    ) {
-        const delta = input.overallScore - input.previousScore
-        if (Math.abs(delta) >= materiality) {
-            const up = delta > 0
-            await emit({
-                event: "protection_score_changed",
-                userId: input.userId,
-                title: up
-                    ? { el: "Η προστασία σας βελτιώθηκε", en: "Your protection improved" }
-                    : { el: "Η προστασία σας μειώθηκε", en: "Your protection dropped" },
-                message: {
-                    el: `Το σκορ προστασίας σας πήγε από ${input.previousScore}% σε ${input.overallScore}%.`,
-                    en: `Your protection score moved from ${input.previousScore}% to ${input.overallScore}%.`,
-                },
-                vars: {
-                    previousScore: input.previousScore,
-                    currentScore: input.overallScore,
-                    scoreDelta: delta,
-                },
-                dedupeKey: `score:v${input.version}`,
-            })
-        }
-    }
 }
+

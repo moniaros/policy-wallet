@@ -11,7 +11,7 @@ the state in which `provisionalProtectionScore` returns 100.
 
 | metric | count |
 |---|---|
-| score renders in outbound | **2** |
+| score renders in outbound | **0** |
 | internal-token leaks | **1** |
 | Latin-script sentences in `el` output | **1** |
 
@@ -22,9 +22,8 @@ Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
 ### weekly-digest (never-analysed portfolio)
 
 - subject: «Η εβδομαδιαία σας σύνοψη PolicyWallet»
-- rendered length: 383 chars
-- **score renders: 1**
-  - 100% — "allet Εβδομαδιαία σύνοψη Αγαπητέ/ή Νίκος, Ακολουθεί η σύνοψη της εβδομάδας σας. 100% Βαθμολογία προστασίας Προσωρινή εκτίμηση Άνοιγμα πίνακα ελέγχου Λαμβάνετε α"
+- rendered length: 337 chars
+- **score renders: 0**
 - **internal tokens: 0**
 - **Latin-script sentences: 0**
 
@@ -47,9 +46,8 @@ Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
 ### drip: day 7 (never-analysed portfolio)
 
 - subject: «📊 Η εβδομαδιαία σύνοψη κάλυψης»
-- rendered length: 405 chars
-- **score renders: 1**
-  - 100% — "εράσει μία εβδομάδα από την εγγραφή σας. Ας δούμε πού βρίσκεστε: 3 Ασφαλιστήρια 100% Βαθμολογία προστασίας Προσωρινή εκτίμηση 0 Κενά κάλυψης Άνοιγμα πίνακα ελέγ"
+- rendered length: 359 chars
+- **score renders: 0**
 - **internal tokens: 0**
 - **Latin-script sentences: 0**
 
@@ -64,7 +62,7 @@ Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
 ### churn: day 14
 
 - subject: «✨ Νέες λειτουργίες που χάνετε»
-- rendered length: 453 chars
+- rendered length: 410 chars
 - **score renders: 0**
 - **internal tokens: 0**
 - **Latin-script sentences: 0**

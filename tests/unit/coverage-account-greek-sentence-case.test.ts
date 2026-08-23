@@ -14,7 +14,6 @@ const RESTARTS = ['.', '!', '?', ':', '·', '|', '—', '–', '&', ',', ';']
 const PROPER = new Set(['Tokens', 'Token', 'PolicyWallet', 'AI', 'PDF', 'Πορτοφόλι', 'Πορτοφολιού'])
 
 const FILES = [
-    'components/coverage/ProtectionScoreCard.tsx',
     'components/coverage/RecommendationCards.tsx',
     'components/coverage/RiskProfileWizard.tsx',
     'components/account/TokenUsageCard.tsx',

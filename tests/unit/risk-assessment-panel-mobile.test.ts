@@ -17,7 +17,6 @@ import { readFileSync } from "node:fs"
  * later edit cannot quietly reintroduce them between sweeps.
  */
 
-const SCORE_CARD = readFileSync("components/coverage/ProtectionScoreCard.tsx", "utf-8")
 const WIZARD = readFileSync("components/coverage/RiskProfileWizard.tsx", "utf-8")
 const GRAPH = readFileSync("components/coverage/RiskGraphPanel.tsx", "utf-8")
 
@@ -99,27 +98,9 @@ describe("the risk graph panel is mobile-first", () => {
     })
 })
 
-describe("the score card survives the longest Greek category labels", () => {
-    it("does not truncate the category name", () => {
-        // «Προστασία Εισοδήματος» and «Ζωή & Εισόδημα» both truncated to
-        // near-identical stubs in the old two-column grid, making two of six
-        // categories indistinguishable in the product's default language.
-        const block = SCORE_CARD.slice(
-            SCORE_CARD.indexOf("Category breakdown"),
-            SCORE_CARD.indexOf("Category breakdown") + 2500
-        )
-        const labelLine = block
-            .split("\n")
-            .find((l) => l.includes("cat.label[lang]") || l.includes("{cat.label"))
-        expect(labelLine).toBeTruthy()
-        const labelSpan = block.slice(0, block.indexOf("{cat.label")).split("<span").pop() ?? ""
-        expect(labelSpan).not.toMatch(/\btruncate\b/)
-    })
-
-    it("starts at one column and only widens with the viewport", () => {
-        expect(SCORE_CARD).toMatch(/grid-cols-1 min-\[400px\]:grid-cols-2 sm:grid-cols-3/)
-    })
-})
+// (A describe block guarding the ProtectionScoreCard's category grid lived
+// here. The card — and the portfolio protection score — were removed from the
+// product in Aug 2026, PW-MOBILE-TRANSFORM-01 halt H-001.)
 
 describe("the risk wizard stays single-column on a phone", () => {
     it("never renders three or more ungated columns", () => {

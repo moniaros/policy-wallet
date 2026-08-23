@@ -28,7 +28,6 @@ interface CoverageInsightsClientProps {
         high: number
         medium: number
         low: number
-        healthScore: number
         totalGaps: number
         totalPolicies: number
         totalCoverage: number
@@ -127,8 +126,8 @@ export function CoverageInsightsClient({
     // Concept B — policy-gap verdict. The SINGLE source for the headline + the
     // top tile, gated on whether deep analysis actually ran so "0 gaps" never
     // masquerades as "clean" when the Plus-gated pipeline never ran. (The
-    // profile protection-SCORE verdict is a separate concept — it lives only in
-    // the ProtectionScoreCard and no longer drives this headline.)
+    // profile protection SCORE was removed from the product in Aug 2026 and
+    // no longer exists on any policyholder surface.)
     const gapVerdict = !hasDeepAnalysis
         ? {
             label: { el: 'Εκκρεμεί', en: 'Pending' },

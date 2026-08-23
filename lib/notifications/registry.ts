@@ -191,7 +191,7 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         expiresAfterHours: 14 * DAY,
         audit: "notification_event",
         status: "planned",
-        note: "Deliberately NOT wired. A profile, household or asset edit already produces the notification that matters — the RISK consequence, via protection_score_changed / GAP_DETECTED / risk_level_changed off the same recalculation. A second 'you changed something' ping for an edit the customer made ten seconds ago is noise, and noise is what makes people switch the useful ones off. The case that WOULD justify it is an ADVISOR editing a customer's profile, which is a security signal rather than a confirmation; that needs the advisor-edit path identified first, and inventing an emitter before then would fire it on the wrong half of the cases.",
+        note: "Deliberately NOT wired. A profile, household or asset edit already produces the notification that matters — the RISK consequence, via GAP_DETECTED / risk_level_changed off the same recalculation. (protection_score_changed was once part of that list; the protection score was removed from the product in Aug 2026 and that event no longer exists.) A second 'you changed something' ping for an edit the customer made ten seconds ago is noise, and noise is what makes people switch the useful ones off. The case that WOULD justify it is an ADVISOR editing a customer's profile, which is a security signal rather than a confirmation; that needs the advisor-edit path identified first, and inventing an emitter before then would fire it on the wrong half of the cases.",
     },
 
     questionnaire_completed: {
@@ -478,23 +478,12 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         note: "SCREAMING_CASE is the one inconsistency kept deliberately: it is the key persisted in NotificationPreference rows and read by the settings screen, and renaming it would silently re-enable the stream for everyone who switched it off.",
     },
 
-    protection_score_changed: {
-        businessEvent: "The customer's protection score moved materially",
-        triggerCondition: "recordRiskProfileVersion() writes a version whose score delta clears the materiality threshold",
-        category: "risk",
-        priority: "normal",
-        channels: EMAIL_LED,
-        recipients: ["owner"],
-        transactional: false,
-        requiredAction: "review_what_changed",
-        escalation: null,
-        retry: STANDARD_RETRY,
-        expiresAfterHours: 14 * DAY,
-        audit: "notification_event",
-        status: "live",
-        emittedBy: "lib/notifications/risk-events.ts",
-        note: "Hangs off the version writer, which already fires only on a MATERIAL change (contextHash). Deriving it anywhere else would let the notification disagree with the timeline about the same movement.",
-    },
+    // `protection_score_changed` lived here until Aug 2026. It told customers
+    // "Η προστασία σας μειώθηκε" off a breadth average with unvalidated
+    // severities, and the protection score was removed from the product
+    // outright (run PW-MOBILE-TRANSFORM-01, halt H-001). The movements that
+    // are real events — a gap opening, cover lost on a risk — have their own
+    // entries (GAP_DETECTED, risk_level_changed). Do not re-register it.
 
     risk_level_changed: {
         businessEvent: "A specific risk changed status",

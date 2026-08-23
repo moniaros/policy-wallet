@@ -1,0 +1,15 @@
+// RED PROBE for tests/unit/score-containment.test.ts.
+//
+// A minimal reproduction of the OUTBOUND leak the original guard missed: the
+// score value interpolated into an email template literal under lib/. This is
+// the exact shape of the weekly digest's `${data.healthScore}%` tile, which a
+// guard named "score containment" never saw because its universe stopped at
+// components/ + app/. The matcher MUST flag this file.
+export function scoreEmailProbe(data: { healthScore: number | null }): string {
+    return `
+        <td>
+            <p style="font-size: 32px;">${data.healthScore}%</p>
+            <p>Protection score</p>
+        </td>
+    `
+}

@@ -15,22 +15,6 @@ interface WeeklyDigestData {
     renewingSoon: { insurerName: string; lineOfBusiness: string; daysUntilExpiry: number }[]
     newGaps: number
     unreadMessages: number
-    /**
-     * The protection score, or null when there is nothing to score yet.
-     *
-     * This was a plain number, and the service passed 0 for a user with no
-     * policies — so the email asserted "0%" where the app itself says «Δεν
-     * υπάρχουν ακόμη δεδομένα». Zero is a verdict; no data is the truth.
-     */
-    healthScore: number | null
-    /**
-     * True when the score came from the lightweight estimate rather than the gap
-     * engine. The two are different measures (see provisionalProtectionScore),
-     * and the dashboard has always said so — the email did not, so the same
-     * portfolio could read one number here and another on screen with nothing
-     * to explain the gap.
-     */
-    scoreIsProvisional?: boolean
     /** Top 3 active recommendations for behavioral nudge */
     topRecommendations?: TopRecommendation[]
     /** Profile completeness 0-100 */
@@ -72,15 +56,12 @@ export function getWeeklyDigestEmail(
         `
         : ''
 
-    // There is no trend line here on purpose.
-    //
-    // The email rendered one from `healthScoreChange`, which the service passed
-    // as a literal `0` behind a TODO — so every digest, every week, told the
-    // reader their protection score was "Σταθερό / Stable", including the weeks
-    // it had fallen because a policy lapsed. ProtectionScore is keyed
-    // `@unique userId` and keeps no history, so week-over-week genuinely cannot
-    // be computed today: restoring this needs a stored prior score, not a
-    // default value.
+    // There is no protection score here — and no trend line. The score tile
+    // ("Βαθμολογία προστασίας: N%") emailed a perfect 100 to portfolios nobody
+    // had ever analysed, because the provisional fallback deducted from 100
+    // per DETECTED gap and an unread portfolio has none. The score was removed
+    // from the product in Aug 2026 (PW-MOBILE-TRANSFORM-01, halt H-001); this
+    // digest states counts of things that happened, which cannot be a verdict.
 
     // Alerts section
     const alertItems: string[] = []
@@ -110,27 +91,6 @@ export function getWeeklyDigestEmail(
             ? 'Ακολουθεί η σύνοψη της εβδομάδας σας.'
             : 'Here\'s your weekly overview.'
         }</p>
-
-        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
-            <tr>
-                <td style="text-align: center; padding: 16px; background: #F0FDF4; border-radius: 8px;">
-                    <p style="font-size: 32px; font-weight: bold; margin: 0; color: #111827;">${
-                        data.healthScore === null
-                            ? (isGreek ? '—' : '—')
-                            : `${data.healthScore}%`
-                    }</p>
-                    <p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${isGreek ? 'Βαθμολογία προστασίας' : 'Protection score'}</p>
-                    ${data.healthScore !== null && data.scoreIsProvisional ? `<p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${
-                        isGreek ? 'Προσωρινή εκτίμηση' : 'Provisional estimate'
-                    }</p>` : ''}
-                    ${data.healthScore === null ? `<p style="font-size: 12px; color: #6B7280; margin: 4px 0 0;">${
-                        isGreek
-                            ? 'Προσθέστε ένα ασφαλιστήριο για να υπολογιστεί.'
-                            : 'Add a policy so it can be calculated.'
-                    }</p>` : ''}
-                </td>
-            </tr>
-        </table>
 
         ${alertsHtml}
         ${renewalsHtml}

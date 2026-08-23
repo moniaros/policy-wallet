@@ -52,18 +52,22 @@ describe("the dashboard does not render a verdict it does not have", () => {
     const ENGINE = readFileSync("lib/services/gap-engine/index.ts", "utf-8")
 
     it("the cached score carries whether it is determinate", () => {
-        // The insights page was taught to say "not enough information"; the
-        // dashboard — the more-visited surface — kept rendering the raw cached
-        // number, because the cached shape had no way to express the difference.
+        // The cached shape still records determinacy — the version history and
+        // any non-rendering consumer need to know whether the figure meant
+        // anything. (No policyholder surface renders it any more; see below.)
         expect(ENGINE).toMatch(/indeterminate: cached\.assessmentCoverage != null/)
         expect(ENGINE).toMatch(/assessmentCoverage: score\.assessmentCoverage/)
     })
 
-    it("an indeterminate score reaches StatTiles as null, not as a number", () => {
-        expect(HOME).toMatch(/cachedScore\.indeterminate/)
-        // StatTiles already renders `null` as "score unavailable" with the right
-        // copy — the fix is to give it null, not to invent a second empty state.
-        expect(HOME).toMatch(/\? null/)
+    it("the dashboard renders no score at all — determinate or otherwise", () => {
+        // This assertion used to require the indeterminate figure to reach the
+        // tiles as null rather than a number. The stronger fix landed in Aug
+        // 2026: the protection score was removed from the product
+        // (PW-MOBILE-TRANSFORM-01, halt H-001), so the dashboard may not read
+        // the cached VALUE for rendering at all. `computedAt` / `expectedLines`
+        // stay legal — they are facts about the assessment, not the verdict.
+        expect(HOME).not.toMatch(/cachedScore\.overallScore/)
+        expect(HOME).not.toMatch(/provisionalProtectionScore/)
     })
 })
 

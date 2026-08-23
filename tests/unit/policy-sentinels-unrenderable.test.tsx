@@ -22,7 +22,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import path from 'node:path'
 
@@ -289,6 +289,12 @@ describe('centrality — no file re-implements the check', () => {
         )
             .split('\n')
             .filter((f) => /\.(ts|tsx)$/.test(f))
+            // `git ls-files` reports the INDEX, which still lists a file after
+            // it is deleted from disk and before the deletion is staged. A file
+            // that no longer exists cannot render a sentinel; skipping it keeps
+            // this guard runnable mid-refactor (first hit: ProtectionScoreCard's
+            // deletion in P1-01).
+            .filter((f) => existsSync(path.join(REPO_ROOT, f)))
 
         const offenders: string[] = []
         for (const file of tracked) {

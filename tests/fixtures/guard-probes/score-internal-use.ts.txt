@@ -1,0 +1,18 @@
+// NEGATIVE PROBE for tests/unit/score-containment.test.ts.
+//
+// Internal, non-rendered uses of the score value that the guard must NOT flag:
+// the engine may compute, store, hash and compare the figure — what it may not
+// do is put it in front of a customer. This is the shape of the version
+// writer's contextHash and of translation-namespace property access
+// (`t.wallet.healthScore.title` is a KEY PATH, not the value).
+import { createHash } from "node:crypto"
+
+export function fingerprint(score: { overallScore: number; indeterminate: boolean }): string {
+    return createHash("sha256")
+        .update(`${score.overallScore}::${score.indeterminate ? 1 : 0}`)
+        .digest("hex")
+}
+
+export function walletCopy(t: { wallet: { healthScore: { title: string } } }) {
+    return <h3>{t.wallet.healthScore.title}</h3>
+}
