@@ -76,9 +76,16 @@ export const PATCH = withApiGuard(
             userId,
             title:
                 parsed.data.action === "dismiss"
-                    ? "Recommendation dismissed"
-                    : "Recommendation actioned",
-            message: parsed.data.reason || parsed.data.action,
+                    ? { el: "Απορρίψατε μια πρόταση", en: "You dismissed a recommendation" }
+                    : { el: "Προχωρήσατε μια πρόταση", en: "You actioned a recommendation" },
+            // The reason is the customer's own words when they gave one; a
+            // human's words are not translated. The fallback is the action
+            // verb, stated in each language.
+            message: parsed.data.reason
+                ? { el: parsed.data.reason, en: parsed.data.reason }
+                : parsed.data.action === "dismiss"
+                  ? { el: "Η πρόταση απορρίφθηκε.", en: "The recommendation was dismissed." }
+                  : { el: "Η πρόταση δρομολογήθηκε.", en: "The recommendation was actioned." },
             relatedObjectType: "recommendation",
             relatedObjectId: recommendationId,
             // `result.count === 0` already blocks a repeat, so the key only has

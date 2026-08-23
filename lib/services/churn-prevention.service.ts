@@ -128,6 +128,15 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
             const lang = user.preferredLanguage === "el" ? "el" as const : "en" as const
             let subject: string
             let html: string
+            /**
+             * The email subject in BOTH languages, for the stored row. The
+             * builders are pure, so rendering the other language costs one
+             * call. The row used to store `subject` (one language) as the
+             * title and "Churn prevention day7 email sent (N days inactive)"
+             * — an internal English log line — as the message.
+             */
+            let subjectEl: string
+            let subjectEn: string
 
             if (tier === "day7") {
                 // Get policy data for context
@@ -169,11 +178,15 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 })
                 subject = email.subject
                 html = email.html
+                subjectEl = getChurnDay7Email({ name: user.name || undefined, language: "el", expiringPolicies, openGaps }).subject
+                subjectEn = getChurnDay7Email({ name: user.name || undefined, language: "en", expiringPolicies, openGaps }).subject
                 summary.day7Sent++
             } else if (tier === "day14") {
                 const email = getChurnDay14Email({ name: user.name || undefined, language: lang })
                 subject = email.subject
                 html = email.html
+                subjectEl = getChurnDay14Email({ name: user.name || undefined, language: "el" }).subject
+                subjectEn = getChurnDay14Email({ name: user.name || undefined, language: "en" }).subject
                 summary.day14Sent++
             } else if (tier === "day30") {
                 const email = getChurnDay30Email({
@@ -183,6 +196,8 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 })
                 subject = email.subject
                 html = email.html
+                subjectEl = getChurnDay30Email({ name: user.name || undefined, language: "el", bonusTokens: BONUS_TOKENS }).subject
+                subjectEn = getChurnDay30Email({ name: user.name || undefined, language: "en", bonusTokens: BONUS_TOKENS }).subject
 
                 // Record the bonus token grant (integrate with actual billing/token system)
                 await emit({
@@ -205,14 +220,19 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 const email = getChurnDay60Email({ name: user.name || undefined, language: lang })
                 subject = email.subject
                 html = email.html
+                subjectEl = getChurnDay60Email({ name: user.name || undefined, language: "el" }).subject
+                subjectEn = getChurnDay60Email({ name: user.name || undefined, language: "en" }).subject
                 summary.day60Sent++
             }
 
             await emit({
                 event: "churn_prevention",
                 userId: user.id,
-                title: subject,
-                message: `Churn prevention ${tier} email sent (${daysSinceActive} days inactive)`,
+                title: { el: subjectEl, en: subjectEn },
+                message: {
+                    el: "Σας στείλαμε ένα email για να συνεχίσετε από εκεί που μείνατε.",
+                    en: "We sent you an email to pick up where you left off.",
+                },
                 dedupeKey: `churn:${tier}:${runDay}`,
                 content: { email: { subject, html } },
             })

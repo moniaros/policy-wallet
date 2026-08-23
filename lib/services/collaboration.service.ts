@@ -401,7 +401,9 @@ export class CollaborationService {
             userId: params.recipientId,
             eventType: params.eventType,
             title: params.title,
-            message: params.message,
+            // User-typed content quoted back — there is no translation of a
+            // human's own words, so both arms carry the same text.
+            message: { el: params.message, en: params.message },
             channels: ["email", "in_app"],
             relatedObjectType: "customer",
             relatedObjectId: params.relatedObjectId,

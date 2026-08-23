@@ -198,8 +198,14 @@ export async function inviteTeamMember(
     await sendNotification({
         userId: invitee.id,
         eventType: "team_invite",
-        title: `Team invite from ${membership.tenant.name}`,
-        message: `You've been invited to join ${membership.tenant.name} as ${role}`,
+        title: {
+            el: `Πρόσκληση στην ομάδα ${membership.tenant.name}`,
+            en: `Team invite from ${membership.tenant.name}`,
+        },
+        message: {
+            el: `Σας προσκάλεσαν να συμμετάσχετε στην ομάδα ${membership.tenant.name} με ρόλο ${role}`,
+            en: `You've been invited to join ${membership.tenant.name} as ${role}`,
+        },
     })
 
     return newMembership
@@ -228,8 +234,11 @@ export async function acceptTeamInvite(userId: string) {
         await sendNotification({
             userId: membership.invitedBy,
             eventType: "team_invite_accepted",
-            title: "Team invite accepted",
-            message: `${user?.name || "A user"} has joined ${membership.tenant.name}`,
+            title: { el: "Η πρόσκληση έγινε δεκτή", en: "Team invite accepted" },
+            message: {
+                el: `Ο χρήστης ${user?.name || "ένας χρήστης"} εντάχθηκε στην ομάδα ${membership.tenant.name}`,
+                en: `${user?.name || "A user"} has joined ${membership.tenant.name}`,
+            },
         })
     }
 
@@ -385,16 +394,22 @@ export async function transferCustomer(
     await sendNotification({
         userId: newAgentUserId,
         eventType: "customer_transferred",
-        title: "Customer transferred to you",
-        message: `${relationship.customer?.name || "A customer"} has been transferred to you`,
+        title: { el: "Πελάτης μεταφέρθηκε σε εσάς", en: "Customer transferred to you" },
+        message: {
+            el: `Ο πελάτης ${relationship.customer?.name || "ένας πελάτης"} μεταφέρθηκε σε εσάς`,
+            en: `${relationship.customer?.name || "A customer"} has been transferred to you`,
+        },
     })
 
     // Notify previous agent
     await sendNotification({
         userId: previousAgent,
         eventType: "customer_transferred",
-        title: "Customer transferred",
-        message: `${relationship.customer?.name || "A customer"} has been transferred to another agent`,
+        title: { el: "Μεταφορά πελάτη", en: "Customer transferred" },
+        message: {
+            el: `Ο πελάτης ${relationship.customer?.name || "ένας πελάτης"} μεταφέρθηκε σε άλλον σύμβουλο`,
+            en: `${relationship.customer?.name || "A customer"} has been transferred to another agent`,
+        },
     })
 
     return { success: true }

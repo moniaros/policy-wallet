@@ -46,7 +46,15 @@ import { deliver, isTransportConfigured, type ChannelContent, type DeliveryOutco
 
 export type { ChannelContent }
 
-export type LocalizedText = string | { el: string; en: string }
+/**
+ * Notification content is bilingual BY TYPE. This used to admit a bare
+ * `string`, which is how internal English documentation ("AI extraction
+ * finished and the policy is readable") ended up stored verbatim in
+ * customer-visible columns and rendered identically in both languages. The
+ * bus resolves the recipient's language exactly once, at the store/deliver
+ * seam — so the caller's job is to supply both arms, never to pre-resolve.
+ */
+export type LocalizedText = { el: string; en: string }
 
 import type { RelatedObjectType } from "./links"
 export type { RelatedObjectType }
@@ -111,6 +119,8 @@ export interface EmitResult {
 const EMPTY: EmitResult = { written: 0, delivered: [], deferred: [], skipped: [], failed: [], deduped: false }
 
 function resolveLocalized(text: LocalizedText, lang: "el" | "en"): string {
+    // The `string` arm no longer exists in the type; the runtime branch stays
+    // as a backstop for an untyped caller, so a cast cannot crash delivery.
     return typeof text === "string" ? text : text[lang]
 }
 

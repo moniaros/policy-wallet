@@ -278,11 +278,26 @@ export async function sendTestNotification(formData: FormData) {
         throw new Error("Test sends are switched off in settings.")
     }
 
+    // Test sends carry the event's REAL customer copy, prefixed so the
+    // operator can tell it apart — that is what a test is for: seeing what a
+    // customer would see. `businessEvent` is internal documentation and no
+    // longer allowed in a stored title. Analytics mirrors have no copy; the
+    // machine name is the honest label for those.
     const result = await emit({
         event: eventType,
         userId: admin.id,
-        title: `[TEST] ${def.businessEvent}`,
-        message: `This is a test notification for ${eventType}, sent to you from the admin console.`,
+        title: {
+            el: `[ΔΟΚΙΜΗ] ${def.copy?.title.el ?? eventType}`,
+            en: `[TEST] ${def.copy?.title.en ?? eventType}`,
+        },
+        message: {
+            el: def.copy
+                ? `${def.copy.message.el} — δοκιμαστική αποστολή για το συμβάν ${eventType} από την κονσόλα διαχείρισης.`
+                : `Δοκιμαστική αποστολή για το συμβάν ${eventType} από την κονσόλα διαχείρισης.`,
+            en: def.copy
+                ? `${def.copy.message.en} — test send for event ${eventType} from the admin console.`
+                : `Test send for event ${eventType} from the admin console.`,
+        },
         // A dedupe key including the minute, so an operator can send again to
         // check a change without waiting, but a double-click does not send twice.
         dedupeKey: `admin_test:${eventType}:${new Date().toISOString().slice(0, 16)}`,

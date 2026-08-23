@@ -52,13 +52,19 @@ export async function recordConversionEvent(
     const event = `conv_${type}`
     try {
         const def = getEventDefinition(event)
+        // The registry's businessEvent is a readable sentence, so even the
+        // analytics rows stop being machine codes in the admin funnel view.
+        // Same text in both arms: these rows live on the `analytics` channel,
+        // which every customer notification surface filters out — the only
+        // reader is the admin funnel, and there is nothing to translate about
+        // a machine mirror.
+        const readable = def?.businessEvent ?? event
+        const payload = JSON.stringify(details)
         await emit({
             event,
             userId,
-            // The registry's businessEvent is a readable sentence, so even the
-            // analytics rows stop being machine codes in the admin funnel view.
-            title: def?.businessEvent ?? event,
-            message: JSON.stringify(details),
+            title: { el: readable, en: readable },
+            message: { el: payload, en: payload },
             // relatedObject* is deliberately NOT set from `details.source`.
             // `relatedObjectType` is a closed vocabulary the UI switches on to
             // build a deep link, and stuffing "upgrade_modal" into it produced

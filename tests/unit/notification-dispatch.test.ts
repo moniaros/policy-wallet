@@ -39,8 +39,8 @@ describe("the dispatcher", () => {
         const result = await emit({
             event: "policy_analyzed",
             userId: "u1",
-            title: "Analysis complete",
-            message: "Your policy was analysed.",
+            title: { el: "Analysis complete", en: "Analysis complete" },
+            message: { el: "Your policy was analysed.", en: "Your policy was analysed." },
         })
 
         // push is declared but unconfigured here, so it is not attempted and
@@ -58,8 +58,8 @@ describe("the dispatcher", () => {
         await emit({
             event: "policy_analyzed",
             userId: "u1",
-            title: "Analysis complete",
-            message: "Your policy was analysed.",
+            title: { el: "Analysis complete", en: "Analysis complete" },
+            message: { el: "Your policy was analysed.", en: "Your policy was analysed." },
         })
 
         expect(rowFor("email").status).toBe("skipped")
@@ -78,8 +78,8 @@ describe("the dispatcher", () => {
         await emit({
             event: "payment_failed",
             userId: "u1",
-            title: "Payment failed",
-            message: "Update your card.",
+            title: { el: "Payment failed", en: "Payment failed" },
+            message: { el: "Update your card.", en: "Update your card." },
         })
 
         // Nobody consents away from being told their card failed.
@@ -93,8 +93,8 @@ describe("the dispatcher", () => {
         const result = await emit({
             event: "policy_expiring",
             userId: "u1",
-            title: "Expiring",
-            message: "Soon",
+            title: { el: "Expiring", en: "Expiring" },
+            message: { el: "Soon", en: "Soon" },
             dedupeKey: "renewal:pol-1:30",
         })
 
@@ -106,8 +106,8 @@ describe("the dispatcher", () => {
         await emit({
             event: "policy_expiring",
             userId: "u1",
-            title: "Expiring",
-            message: "Soon",
+            title: { el: "Expiring", en: "Expiring" },
+            message: { el: "Soon", en: "Soon" },
         })
 
         const def = NOTIFICATION_EVENTS.policy_expiring
@@ -125,8 +125,8 @@ describe("the dispatcher", () => {
         const result = await emit({
             event: "policy_analyzed",
             userId: "u1",
-            title: "Analysis complete",
-            message: "Your policy was analysed.",
+            title: { el: "Analysis complete", en: "Analysis complete" },
+            message: { el: "Your policy was analysed.", en: "Your policy was analysed." },
         })
 
         const row = rowFor("email")
@@ -163,8 +163,8 @@ describe("the dispatcher", () => {
         const result = await emit({
             event: "policy_analyzed",
             userId: "ghost",
-            title: "t",
-            message: "m",
+            title: { el: "t", en: "t" },
+            message: { el: "m", en: "m" },
         })
 
         expect(result.written).toBe(0)
@@ -177,7 +177,7 @@ describe("the dispatcher", () => {
         // A notification is a consequence of an action, never a precondition of
         // it: this must not roll back the upload that caused it.
         await expect(
-            emit({ event: "policy_analyzed", userId: "u1", title: "t", message: "m" })
+            emit({ event: "policy_analyzed", userId: "u1", title: { el: "t", en: "t" }, message: { el: "m", en: "m" } })
         ).resolves.toMatchObject({ written: 0 })
     })
 
@@ -185,8 +185,8 @@ describe("the dispatcher", () => {
         const result = await emit({
             event: "claim_opened",
             userId: "u1",
-            title: "t",
-            message: "m",
+            title: { el: "t", en: "t" },
+            message: { el: "m", en: "m" },
         })
 
         expect(result.written).toBe(0)
@@ -197,8 +197,8 @@ describe("the dispatcher", () => {
         await emit({
             event: "conv_checkout_started",
             userId: "u1",
-            title: "Checkout was started",
-            message: "{}",
+            title: { el: "Checkout was started", en: "Checkout was started" },
+            message: { el: "{}", en: "{}" },
         })
 
         expect(rows().map((r: any) => r.channel)).toEqual(["analytics"])
@@ -215,7 +215,7 @@ describe("the dispatcher", () => {
               expiresAfterHours: null, notes: null },
         ] as never)
 
-        await emit({ event: "policy_analyzed", userId: "u1", title: "t", message: "m" })
+        await emit({ event: "policy_analyzed", userId: "u1", title: { el: "t", en: "t" }, message: { el: "m", en: "m" } })
 
         // "We deliberately did not send this, and here is why" is exactly what an
         // audit needs — and what tells a paused system apart from a broken one.
@@ -233,7 +233,7 @@ describe("the dispatcher", () => {
             { key: "automation.paused", value: true },
         ] as never)
 
-        await emit({ event: "payment_failed", userId: "u1", title: "t", message: "m" })
+        await emit({ event: "payment_failed", userId: "u1", title: { el: "t", en: "t" }, message: { el: "m", en: "m" } })
 
         const rows = dbMock.notificationEvent.create.mock.calls.map((c: any[]) => c[0].data)
         // Even a transactional, critical event: a pause is a pause, and the
@@ -247,7 +247,7 @@ describe("the dispatcher", () => {
             { key: "channel.email.enabled", value: false },
         ] as never)
 
-        await emit({ event: "policy_analyzed", userId: "u1", title: "t", message: "m" })
+        await emit({ event: "policy_analyzed", userId: "u1", title: { el: "t", en: "t" }, message: { el: "m", en: "m" } })
 
         // `channel_disabled` means an operator switched it off;
         // `transport_not_configured` means it was never built. Collapsing the two
@@ -264,7 +264,7 @@ describe("the dispatcher", () => {
               expiresAfterHours: 6, notes: null },
         ] as never)
 
-        await emit({ event: "policy_analyzed", userId: "u1", title: "t", message: "m" })
+        await emit({ event: "policy_analyzed", userId: "u1", title: { el: "t", en: "t" }, message: { el: "m", en: "m" } })
 
         const row = rowFor("in_app")
         expect(row.priority).toBe("low")
@@ -286,8 +286,8 @@ describe("the dispatcher", () => {
         await emit({
             event: "policy_analyzed",
             userId: "u1",
-            title: "caller title",
-            message: "caller message",
+            title: { el: "caller title", en: "caller title" },
+            message: { el: "caller message", en: "caller message" },
             vars: { policyNumber: "POL-9", insurerName: "Interamerican" },
         })
 
@@ -308,7 +308,7 @@ describe("the dispatcher", () => {
               subject: null, title: "templated", body: "templated body" },
         ] as never)
 
-        await emit({ event: "policy_analyzed", userId: "u1", title: "caller title", message: "caller message" })
+        await emit({ event: "policy_analyzed", userId: "u1", title: { el: "caller title", en: "caller title" }, message: { el: "caller message", en: "caller message" } })
 
         // The safety switch if a template goes wrong in production.
         expect(rowFor("in_app").title).toBe("caller title")
@@ -317,7 +317,7 @@ describe("the dispatcher", () => {
     it("still sends on registry defaults when the config table is unreadable", async () => {
         dbMock.notificationRuleOverride.findMany.mockRejectedValue(new Error("db down") as never)
 
-        const result = await emit({ event: "policy_analyzed", userId: "u1", title: "t", message: "m" })
+        const result = await emit({ event: "policy_analyzed", userId: "u1", title: { el: "t", en: "t" }, message: { el: "m", en: "m" } })
 
         // The whole point of an override layer is that it is optional.
         expect(result.delivered).toContain("in_app")

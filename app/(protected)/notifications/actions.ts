@@ -4,6 +4,7 @@ import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import type { RecentNotification } from "@/lib/notifications/watcher"
+import { resolveStoredNotification } from "@/lib/notifications/stored-content"
 
 export async function getNotificationData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -71,15 +72,22 @@ export async function getNotificationData() {
         created_at: user.createdAt.toISOString()
     }
 
-    const uiEvents = history.map(e => ({
+    // Stored content is presented, never rendered raw: legacy rows can carry
+    // internal English documentation ("AI extraction read the policy
+    // successfully"), which the shared presenter substitutes with the event's
+    // canonical bilingual copy, resolved to this reader's language.
+    const readerLang = uiUser.preferred_language === "el" ? "el" as const : "en" as const
+    const uiEvents = history.map(e => {
+        const presented = resolveStoredNotification(e.eventType, e.title, e.message, readerLang)
+        return ({
         event_id: e.id,
         user_id: e.userId,
         event_type: e.eventType,
         event_category: 'system_confirmation' as 'system_confirmation' | 'reminder' | 'intelligence' | 'agent_action',
         channel: e.channel as 'email' | 'push' | 'whatsapp' | 'viber',
         status: e.status as 'sent' | 'failed' | 'queued',
-        subject: e.title,
-        message: e.message,
+        subject: presented.title,
+        message: presented.message,
         related_policy_id: (e.relatedObjectId && e.relatedObjectType === 'policy' ? e.relatedObjectId : null) as string | null,
         related_policy_name: null as string | null,
         related_customer_relationship_id: (e.relatedObjectId && e.relatedObjectType === 'customer' ? e.relatedObjectId : null) as string | null,
@@ -87,7 +95,7 @@ export async function getNotificationData() {
         sent_at: e.sentAt?.toISOString() || null,
         read_at: e.readAt?.toISOString() || null,
         created_at: e.createdAt.toISOString()
-    }))
+    })})
 
     // Enrich event names
     uiEvents.forEach(e => {
@@ -156,16 +164,19 @@ export async function getRecentNotifications(limit = 10): Promise<{ items: Recen
         },
     })
 
-    const items: RecentNotification[] = events.map((e) => ({
+    const readerLang = authResult.dbUser.preferredLanguage === "en" ? "en" as const : "el" as const
+    const items: RecentNotification[] = events.map((e) => {
+        const presented = resolveStoredNotification(e.eventType, e.title, e.message, readerLang)
+        return ({
         id: e.id,
         eventType: e.eventType,
-        title: e.title,
-        message: e.message,
+        title: presented.title,
+        message: presented.message,
         relatedObjectType: e.relatedObjectType,
         relatedObjectId: e.relatedObjectId,
         read: Boolean(e.readAt),
         createdAt: e.createdAt.toISOString(),
-    }))
+    })})
 
     return { items }
 }

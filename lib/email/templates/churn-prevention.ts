@@ -129,8 +129,12 @@ export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: s
     const isGreek = language === 'el'
     const hello = greeting(name, isGreek)
 
+    // The Greek subject must not END on the Latin loanword: rendered text
+    // concatenates subject + the brand header, and "credits PolicyWallet
+    // PolicyWallet" is a three-word Latin run — exactly what the locale-purity
+    // metric (findLatinSentences) flags in `el` output.
     const subject = isGreek
-        ? `🎁 Μας λείπετε — πάρτε ${bonusTokens} δωρεάν credits`
+        ? `🎁 Μας λείπετε — ${bonusTokens} δωρεάν credits σας περιμένουν`
         : `🎁 We miss you — get ${bonusTokens} free credits`
 
     const content = `

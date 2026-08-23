@@ -13,7 +13,7 @@ the state in which `provisionalProtectionScore` returns 100.
 |---|---|
 | score renders in outbound | **0** |
 | internal-token leaks | **1** |
-| Latin-script sentences in `el` output | **1** |
+| Latin-script sentences in `el` output | **0** |
 
 Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
 
@@ -69,12 +69,11 @@ Target after Phase 1 (P1-01, P1-02, P1-05): **0 / 0 / 0**.
 
 ### churn: day 30
 
-- subject: «🎁 Μας λείπετε — πάρτε 500 δωρεάν credits»
-- rendered length: 444 chars
+- subject: «🎁 Μας λείπετε — 500 δωρεάν credits σας περιμένουν»
+- rendered length: 453 chars
 - **score renders: 0**
 - **internal tokens: 0**
-- **Latin-script sentences: 1**
-  - "🎁 Μας λείπετε — πάρτε 500 δωρεάν credits PolicyWallet PolicyWallet Μας λείπετε! Αγαπητέ/ή Νίκος, Ως ένδειξη εκτίμησης, σας δωρίζουμε 500 δω"
+- **Latin-script sentences: 0**
 
 ### churn: day 60
 

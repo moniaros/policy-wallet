@@ -162,7 +162,11 @@ describe('the gap notification is an insurance message, not a security one', () 
         // the reader sees rather than on the local's name — the first version of
         // this test checked for `seriousGaps` and survived a rename straight back
         // to `criticalGaps`.
-        const start = ROUTE.indexOf('const findings =')
+        // Anchored on the count, not a local's name — `findings` became the
+        // bilingual pair findingsEl/findingsEn when notification content went
+        // { el, en } (P1-05), and an anchor on the exact old name would have
+        // gone stale the same way `seriousGaps` nearly did.
+        const start = ROUTE.indexOf('const n = seriousGaps.length')
         const end = ROUTE.indexOf('channels:', start)
         expect(start).toBeGreaterThan(-1)
         const readerFacing = ROUTE.slice(start, end)
@@ -171,8 +175,12 @@ describe('the gap notification is an insurance message, not a security one', () 
         expect(readerFacing).not.toMatch(/critical|κρίσιμ/i)
     })
 
-    it('speaks the owner language and agrees with its own count', () => {
-        expect(ROUTE).toMatch(/preferredLanguage/)
+    it('speaks BOTH product languages and agrees with its own count', () => {
+        // The route used to resolve preferredLanguage itself and compose one
+        // language. Since P1-05 notification content is bilingual by type and
+        // the dispatcher resolves the recipient's language — so the assertion
+        // is that both arms exist and each pluralises correctly.
+        expect(ROUTE).toMatch(/title: \{ el: 'Εντοπίστηκε πιθανό κενό κάλυψης', en: 'Possible coverage gap found' \}/)
         expect(ROUTE).toMatch(/n === 1 \? 'σημαντικό εύρημα' : 'σημαντικά ευρήματα'/)
         expect(ROUTE).toMatch(/n === 1 \? 'finding' : 'findings'/)
     })

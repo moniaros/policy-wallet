@@ -86,8 +86,8 @@ describe('notifyCounterparty', () => {
         await notifyCounterparty({
             userId: 'cust-3',
             eventType: 'renewal_outcome',
-            title: 'Renewal update',
-            message: 'Renewed',
+            title: { el: 'Renewal update', en: 'Renewal update' },
+            message: { el: 'Renewed', en: 'Renewed' },
         })
 
         // `renewal_outcome` is declared in_app + email, so both are attempted.
@@ -112,8 +112,8 @@ describe('notifyCounterparty', () => {
         await notifyCounterparty({
             userId: 'cust-5',
             eventType: 'proposal_received',
-            title: 'Proposal',
-            message: 'A proposal arrived',
+            title: { el: 'Proposal', en: 'Proposal' },
+            message: { el: 'A proposal arrived', en: 'A proposal arrived' },
         })
 
         const rows = dbMock.notificationEvent.create.mock.calls.map((c: any[]) => c[0].data)
@@ -132,8 +132,8 @@ describe('notifyCounterparty', () => {
             notifyCounterparty({
                 userId: 'cust-4',
                 eventType: 'document_uploaded',
-                title: 'x',
-                message: 'y',
+                title: { el: 'x', en: 'x' },
+                message: { el: 'y', en: 'y' },
             })
         ).resolves.toBeUndefined()
         expect(dbMock.notificationEvent.create).not.toHaveBeenCalled()

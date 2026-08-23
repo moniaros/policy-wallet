@@ -58,11 +58,22 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
         try {
             const lang = user.preferredLanguage === "el" ? "el" as const : "en" as const
             const { subject, html } = getWelcomeEmail(lang, user.name || undefined)
+            // Title/message are the bell-facing record and must exist in BOTH
+            // languages; the templates are pure, so rendering the other
+            // language's subject costs nothing. "Welcome email sent" used to
+            // be stored here — an internal English log line in a customer
+            // column.
             const result = await emit({
                 event: "engagement_welcome",
                 userId: user.id,
-                title: subject,
-                message: "Welcome email sent",
+                title: {
+                    el: getWelcomeEmail("el", user.name || undefined).subject,
+                    en: getWelcomeEmail("en", user.name || undefined).subject,
+                },
+                message: {
+                    el: "Σας στείλαμε ένα email καλωσορίσματος με τα πρώτα βήματα.",
+                    en: "We sent you a welcome email with the first steps.",
+                },
                 dedupeKey: "engagement_welcome",
                 content: { email: { subject, html } },
             })
@@ -117,8 +128,14 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
             const result = await emit({
                 event: "engagement_day3",
                 userId: user.id,
-                title: subject,
-                message: "Day 3 follow-up sent",
+                title: {
+                    el: getDay3Email("el", user.name || undefined).subject,
+                    en: getDay3Email("en", user.name || undefined).subject,
+                },
+                message: {
+                    el: "Σας στείλαμε ένα email με το επόμενο βήμα: το πρώτο σας ασφαλιστήριο.",
+                    en: "We sent you an email with the next step: your first policy.",
+                },
                 dedupeKey: "engagement_day3",
                 content: { email: { subject, html } },
             })
@@ -195,11 +212,18 @@ export async function runEngagementDripJobs(): Promise<EngagementDripSummary> {
                 gapCount,
                 analysedPolicyCount,
             })
+            const snapshot = { policyCount, gapCount, analysedPolicyCount }
             const result = await emit({
                 event: "engagement_day7",
                 userId: user.id,
-                title: subject,
-                message: `Coverage snapshot: ${policyCount} policies, ${analysedPolicyCount} analysed, ${gapCount} gaps`,
+                title: {
+                    el: getDay7Email("el", user.name || undefined, snapshot).subject,
+                    en: getDay7Email("en", user.name || undefined, snapshot).subject,
+                },
+                message: {
+                    el: `Η εικόνα σας μετά την πρώτη εβδομάδα: ${policyCount} ασφαλιστήρια, ${analysedPolicyCount} αναλυμένα, ${gapCount} ευρήματα.`,
+                    en: `Your picture after the first week: ${policyCount} policies, ${analysedPolicyCount} analysed, ${gapCount} findings.`,
+                },
                 dedupeKey: "engagement_day7",
                 content: { email: { subject, html } },
             })

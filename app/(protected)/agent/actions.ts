@@ -1686,11 +1686,18 @@ export async function requestAiConsent(policyId: string) {
 
     const hasAccount = Boolean(owner.emailVerified || owner.lastActiveAt)
     if (hasAccount) {
+        // Both language arms, from the same translation bundle — the bus
+        // resolves the recipient's language once, at the store/deliver seam.
+        const tEl = getTranslations("el")
+        const tEn = getTranslations("en")
         await emit({
             event: "ai_consent_request",
             userId: owner.id,
-            title: t.common.aiConsentRequestTitle,
-            message: `${agentName}: ${t.common.aiConsentRequestMessage}`,
+            title: { el: tEl.common.aiConsentRequestTitle, en: tEn.common.aiConsentRequestTitle },
+            message: {
+                el: `${agentName}: ${tEl.common.aiConsentRequestMessage}`,
+                en: `${agentName}: ${tEn.common.aiConsentRequestMessage}`,
+            },
             relatedObjectType: "policy",
             relatedObjectId: policy.id,
             // One standing consent request per policy: an advisor clicking twice

@@ -35,12 +35,24 @@ export async function POST(req: Request) {
         await emit({
             event: type === "nps" ? "feedback_nps" : "feedback_article",
             userId: user.id,
+            // Worded to be distinguishable from the pre-cutover English-only
+            // composer ("NPS Score: 7", "Score: 7 — ..."), which the
+            // stored-content presenter treats as legacy internal prose.
             title: type === "nps"
-                ? `NPS Score: ${score}`
-                : `Article feedback: ${articleTitle || articleId}`,
+                ? { el: `Η βαθμολογία σας: ${score}/10`, en: `Your rating: ${score}/10` }
+                : {
+                      el: `Η αξιολόγησή σας: ${articleTitle || articleId}`,
+                      en: `Your feedback on: ${articleTitle || articleId}`,
+                  },
             message: type === "nps"
-                ? `Score: ${score}${comment ? ` — ${comment}` : ""}`
-                : `${helpful ? "👍 Helpful" : "👎 Not helpful"}${comment ? ` — ${comment}` : ""}`,
+                ? {
+                      el: `Ευχαριστούμε — καταγράψαμε βαθμολογία ${score}/10${comment ? ` και το σχόλιό σας: ${comment}` : ""}.`,
+                      en: `Thank you — we recorded a rating of ${score}/10${comment ? ` and your comment: ${comment}` : ""}.`,
+                  }
+                : {
+                      el: `${helpful ? "Βρήκατε το άρθρο χρήσιμο" : "Δεν βρήκατε το άρθρο χρήσιμο"}${comment ? ` — ${comment}` : ""}.`,
+                      en: `${helpful ? "You found the article helpful" : "You did not find the article helpful"}${comment ? ` — ${comment}` : ""}.`,
+                  },
             relatedObjectType: "feedback",
             relatedObjectId: type === "nps" ? String(score) : articleId || "unknown",
         })

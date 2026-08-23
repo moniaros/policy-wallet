@@ -187,7 +187,7 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             ].filter(Boolean).length : 0
             const profileCompleteness = profile ? Math.round((filledProfileFields / 11) * 100) : 0
 
-            const { subject, html } = getWeeklyDigestEmail(lang, user.name || undefined, {
+            const digestData = {
                 renewingSoon: renewals.map(r => ({
                     insurerName: r.insurerName,
                     lineOfBusiness: r.lineOfBusiness,
@@ -201,7 +201,8 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 unreadMessages,
                 topRecommendations,
                 profileCompleteness,
-            })
+            }
+            const { subject, html } = getWeeklyDigestEmail(lang, user.name || undefined, digestData)
 
             // Through the bus, with the digest's own HTML as the email content.
             // It used to sendEmail() directly and then log a row claiming
@@ -210,8 +211,18 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
             const result = await emit({
                 event: "weekly_digest",
                 userId: user.id,
-                title: subject,
-                message: `Weekly digest: ${renewals.length} renewals, ${newGaps} new gaps`,
+                // The subject is week-invariant per language, so the other arm
+                // is one more pure render. The message used to be "Weekly
+                // digest: N renewals, M new gaps" — an internal English log
+                // line stored in a customer-visible column.
+                title: {
+                    el: getWeeklyDigestEmail("el", user.name || undefined, digestData).subject,
+                    en: getWeeklyDigestEmail("en", user.name || undefined, digestData).subject,
+                },
+                message: {
+                    el: `Η εβδομαδιαία σύνοψή σας: ${renewals.length} ανανεώσεις, ${newGaps} νέα ευρήματα.`,
+                    en: `Your weekly summary: ${renewals.length} renewals, ${newGaps} new findings.`,
+                },
                 // One digest per user per ISO week, however often the cron runs.
                 dedupeKey: `weekly_digest:${isoWeekKey(now)}`,
                 content: { email: { subject, html } },

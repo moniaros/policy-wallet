@@ -5,6 +5,7 @@ import { opportunityStatusLabel } from '@/lib/opportunity/status-labels'
 import { db as prisma } from '@/lib/db'
 import { presentCustomerIdentity } from '@/lib/agent-consent'
 import { getVisiblePolicyCountsByOwner } from '@/lib/agent-visibility'
+import { presentStoredNotification } from '@/lib/notifications/stored-content'
 
 export type ActivityCategory = 'policy' | 'customer' | 'opportunity' | 'system'
 
@@ -122,28 +123,21 @@ export async function getActivityFeed(limit = 50): Promise<ActivityEvent[]> {
         else if (n.eventType.startsWith('customer_')) category = 'customer'
         else if (n.eventType.startsWith('opportunity_')) category = 'opportunity'
 
+        // Stored title/message are whatever the WRITER of the day put there.
+        // Since the Aug 2026 composition cutover every writer supplies
+        // bilingual copy (dispatch.ts types it), so new rows pass through in
+        // the recipient's language. LEGACY rows that stored internal English
+        // documentation ("AI extraction finished and the policy is readable")
+        // are substituted with the event's canonical bilingual copy by the
+        // shared presenter — derived from the registry, not a hand-written
+        // per-event map here, so all event types are covered.
+        const presented = presentStoredNotification(n.eventType, n.title, n.message)
         activities.push({
             id: `notif_${n.id}`,
             type: n.eventType,
             category,
-            // Stored title/message are whatever the WRITER of the day put
-            // there. Rows from before the dispatch pipeline localized carry the
-            // registry's internal English prose ("AI extraction finished and
-            // the policy is readable") — documentation text, not customer copy,
-            // and it rendered verbatim in an otherwise-Greek feed. For event
-            // types we know, the copy comes from here and the stored text is
-            // only a fallback for types added before this map learns them.
-            title:
-                n.eventType === 'policy_analyzed'
-                    ? { en: 'Analysis complete', el: 'Η ανάλυση ολοκληρώθηκε' }
-                    : { en: n.title, el: n.title },
-            description:
-                n.eventType === 'policy_analyzed'
-                    ? {
-                          en: 'The policy was read and analysed successfully.',
-                          el: 'Το ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.',
-                      }
-                    : { en: n.message, el: n.message },
+            title: presented.title,
+            description: presented.message,
             timestamp: n.createdAt,
             policyId: n.relatedObjectType === 'policy' ? n.relatedObjectId || undefined : undefined,
             customerId: n.relatedObjectType === 'customer' ? n.relatedObjectId || undefined : undefined,

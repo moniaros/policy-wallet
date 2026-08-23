@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { resolveStoredNotification } from "@/lib/notifications/stored-content"
 
 /**
  * The bell dropdown's feed.
@@ -38,17 +39,23 @@ export async function GET(request: NextRequest) {
         db.notificationEvent.count({ where: { ...scope, readAt: null } }),
     ])
 
+    // Presented, never raw: legacy rows can carry internal English
+    // documentation, which the shared presenter substitutes with the event's
+    // canonical bilingual copy in this reader's language.
+    const readerLang = authResult.dbUser.preferredLanguage === "en" ? "en" as const : "el" as const
     return NextResponse.json({
-        notifications: notifications.map(n => ({
+        notifications: notifications.map(n => {
+            const presented = resolveStoredNotification(n.eventType, n.title, n.message, readerLang)
+            return ({
             id: n.id,
             eventType: n.eventType,
-            title: n.title,
-            message: n.message,
+            title: presented.title,
+            message: presented.message,
             relatedObjectType: n.relatedObjectType,
             relatedObjectId: n.relatedObjectId,
             isRead: n.readAt !== null,
             createdAt: n.createdAt.toISOString()
-        })),
+        })}),
         unreadCount
     })
 }

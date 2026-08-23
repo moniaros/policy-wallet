@@ -104,8 +104,14 @@ export async function runNotificationRetrySweep(now = new Date()): Promise<Retry
             const result = await emit({
                 event: rule.event,
                 userId: admin.id,
-                title: `Escalation: ${row.eventType}`,
-                message: `${row.attempts} failed delivery attempts of "${row.title}" for user ${row.userId}.`,
+                title: { el: `Κλιμάκωση: ${row.eventType}`, en: `Escalation: ${row.eventType}` },
+                // Worded to be distinguishable from the pre-cutover composer
+                // ("N failed delivery attempts of ..."), which the stored-content
+                // presenter treats as legacy internal prose.
+                message: {
+                    el: `${row.attempts} αποτυχημένες προσπάθειες παράδοσης της ειδοποίησης «${row.title}» για τον χρήστη ${row.userId}.`,
+                    en: `Delivery of "${row.title}" failed ${row.attempts} times for user ${row.userId}.`,
+                },
                 // ONE escalation per failed notification, ever.
                 //
                 // The key used to carry the date, so a permanently failed row —

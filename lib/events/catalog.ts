@@ -82,6 +82,14 @@ export interface EventDefinition {
     aggregate: Aggregate
     kind: EventKind
     priority: EventPriority
+    /**
+     * INTERNAL DOCUMENTATION — a sentence for operators and developers,
+     * English by convention. It must never be rendered to a user or stored in
+     * a notification's title/message: until Aug 2026 the generic executor fed
+     * it straight into `orchestrate`, which is how "AI extraction read the
+     * policy successfully" reached Greek customers verbatim. Customer-facing
+     * text lives in the notification registry's bilingual `copy`.
+     */
     description: string
     /** What causes it, naming the code seam so the claim stays checkable. */
     trigger: string

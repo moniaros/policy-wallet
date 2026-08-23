@@ -60,6 +60,17 @@ async function executeNotification(
     const definition = getNotificationDefinition(notificationEvent)
     if (!definition) return skip(action.type, "unknown_notification_event")
 
+    // The registry's bilingual customer copy is the ONLY content this generic
+    // path may send. Until Aug 2026 it used `definition.businessEvent` and the
+    // catalog's `description` here — internal English documentation — which the
+    // bus then stored verbatim in customer-visible columns ("AI extraction
+    // finished and the policy is readable" in an otherwise Greek feed). Both
+    // fields are documentation for operators; `copy` is for people. An event
+    // without copy (an `analytics` mirror) has no reader, so there is nothing
+    // to send.
+    const copy = definition.copy
+    if (!copy) return skip(action.type, "no_customer_copy")
+
     // Through the ORCHESTRATOR, not straight to `emit`. It resolves the
     // registry's declared recipients — so one business event reaches the
     // customer AND their advisor where the event says it should — and applies
@@ -69,10 +80,8 @@ async function executeNotification(
     const outcomes = await orchestrate({
         event: notificationEvent,
         subjectUserId: ctx.subjectUserId,
-        // The catalog's description is a readable sentence, so an event with no
-        // template still says something meaningful rather than a machine code.
-        title: definition.businessEvent,
-        message: ctx.definition.description,
+        title: copy.title,
+        message: copy.message,
         vars: (action.params?.vars ?? ctx.payload) as Record<string, string | number | null | undefined>,
         // One notification per business event per notification-type per
         // recipient, so a replayed or retried delivery cannot tell anyone twice.
@@ -175,8 +184,15 @@ async function executeAdminNotification(
         event: "admin_dunning_exhausted",
         subjectUserId: ctx.subjectUserId,
         only: ["admin"],
-        title: `Escalation: ${ctx.name}`,
-        message: `${ctx.definition.description} — ${action.reason}`,
+        // The machine event name, not the catalog's `description` — that field
+        // is internal documentation and this row still lands in the same
+        // customer-visible columns as every other notification. An operator
+        // reading an escalation wants the exact event name anyway.
+        title: { el: `Κλιμάκωση: ${ctx.name}`, en: `Escalation: ${ctx.name}` },
+        message: {
+            el: `Το συμβάν ${ctx.name} κλιμακώθηκε — ${action.reason}`,
+            en: `Event ${ctx.name} escalated — ${action.reason}`,
+        },
         dedupeKey: `evt:${ctx.eventId}:admin`,
     })
     if (outcomes.length === 0) return skip(action.type, "no_admins")

@@ -9,6 +9,12 @@ import {
     type NotificationEventDefinition,
 } from "@/lib/notifications/registry"
 import { IMPLEMENTED_CHANNELS } from "@/lib/notifications/channels"
+import { BUSINESS_EVENTS } from "@/lib/events/catalog"
+import { presentStoredNotification } from "@/lib/notifications/stored-content"
+// The SHARED locale-purity definitions (T-011) — one meaning of "Latin
+// sentence" / "internal token" across surface baselines, outbound inventory
+// and this guard.
+import { findLatinSentences, findInternalTokens } from "../measure/metrics"
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "")
 
@@ -124,9 +130,12 @@ describe("every event carries a complete rule", () => {
         "retry",
         "audit",
         "status",
+        // `copy` may be null (analytics mirrors) but must be STATED —
+        // the locale-purity block below decides when null is legal.
+        "copy",
     ]
 
-    it("declares all ten required fields", () => {
+    it("declares all required fields", () => {
         for (const [key, def] of Object.entries(NOTIFICATION_EVENTS)) {
             for (const field of REQUIRED) {
                 expect(def[field], `${key} is missing ${String(field)}`).not.toBeUndefined()
@@ -270,5 +279,201 @@ describe("risk notifications cannot be lost or skipped", () => {
         // `lifeEventId` — the link the timeline uses to say "this risk opened
         // because you declared a mortgage on the 14th".
         expect(ENGINE).toMatch(/lifeEventId: opts\?\.lifeEventId/)
+    })
+})
+
+/**
+ * ── Stored notification content is customer copy — bilingual, Greek-pure ────
+ *
+ * P1-05: internal English documentation reached Greek customers because the
+ * generic executor composed notifications from `businessEvent` and the events
+ * catalog's `description`, and the bus stored whatever it was given. The fix
+ * is at COMPOSITION: `LocalizedText` no longer admits a bare string (tsc, a
+ * blocking CI check, enforces that on every caller), the registry carries the
+ * bilingual `copy` the executor composes from, and legacy rows are presented
+ * through lib/notifications/stored-content.ts. This block guards each seam,
+ * enumerating events from the registry module and call sites from the
+ * filesystem — never from a hand-kept list.
+ *
+ * Locale-purity definitions are the SHARED ones (tests/measure/metrics.ts) so
+ * a "Latin sentence" means the same thing here as in the outbound inventory
+ * and the surface baselines.
+ */
+describe("stored notification content is bilingual customer copy", () => {
+    const GREEK = /[Ͱ-Ͽἀ-῿]/
+
+    /** Internal documentation strings, enumerated from the declaring modules. */
+    const INTERNAL_DOCS = (() => {
+        const docs = new Set<string>()
+        for (const def of Object.values(NOTIFICATION_EVENTS)) {
+            docs.add(def.businessEvent)
+            docs.add(def.triggerCondition)
+        }
+        for (const def of Object.values(BUSINESS_EVENTS)) {
+            docs.add(def.description)
+            docs.add(def.trigger)
+        }
+        return docs
+    })()
+
+    it("every readable event declares bilingual copy; analytics mirrors declare null", () => {
+        for (const [key, def] of Object.entries(NOTIFICATION_EVENTS)) {
+            if (def.category === "analytics") {
+                // Machine rows every surface filters out. Prose here would
+                // claim a readership that does not exist.
+                expect(def.copy, `${key} is an analytics mirror and must declare copy: null`).toBeNull()
+                continue
+            }
+            expect(def.copy, `${key} has no customer copy — a person can read this event`).not.toBeNull()
+            for (const arm of ["title", "message"] as const) {
+                for (const lang of ["el", "en"] as const) {
+                    const text = def.copy?.[arm][lang]
+                    expect(
+                        Boolean(text && text.trim().length > 0),
+                        `${key} copy.${arm}.${lang} is empty`
+                    ).toBe(true)
+                }
+            }
+        }
+    })
+
+    it("the Greek arm of every copy is Greek — no Latin sentences, no internal tokens", () => {
+        const offenders: string[] = []
+        for (const [key, def] of Object.entries(NOTIFICATION_EVENTS)) {
+            if (!def.copy) continue
+            for (const arm of ["title", "message"] as const) {
+                const el = def.copy[arm].el
+                if (!GREEK.test(el)) offenders.push(`${key} copy.${arm}.el has no Greek script: "${el}"`)
+                for (const hit of findLatinSentences(el)) {
+                    offenders.push(`${key} copy.${arm}.el reads as English: "${hit}"`)
+                }
+                for (const hit of findInternalTokens(el)) {
+                    offenders.push(`${key} copy.${arm}.el carries internal token (${hit}): "${el}"`)
+                }
+            }
+        }
+        expect(offenders, offenders.join("\n")).toEqual([])
+    })
+
+    it("no copy arm is an internal documentation string", () => {
+        // Satisfying the `copy` requirement by pasting the businessEvent in
+        // would reintroduce the defect with the field that exists to end it.
+        const offenders: string[] = []
+        for (const [key, def] of Object.entries(NOTIFICATION_EVENTS)) {
+            if (!def.copy) continue
+            for (const arm of ["title", "message"] as const) {
+                for (const lang of ["el", "en"] as const) {
+                    if (INTERNAL_DOCS.has(def.copy[arm][lang])) {
+                        offenders.push(`${key} copy.${arm}.${lang} is an internal doc string`)
+                    }
+                }
+            }
+        }
+        expect(offenders, offenders.join("\n")).toEqual([])
+    })
+
+    it("no emit/orchestrate call site wires internal documentation into title or message", () => {
+        // The executor did exactly this (`title: definition.businessEvent`,
+        // `message: ctx.definition.description`) until Aug 2026. SOURCES is the
+        // full lib/app tree, so a new caller anywhere goes red. The type system
+        // is the deeper defence — LocalizedText has no string arm — but a
+        // bilingual object built FROM a doc field would type-check, which is
+        // what this scan exists to catch.
+        // Scoped to the bus entry points — `businessEvent` legitimately
+        // appears in operator-facing admin validation messages, and the
+        // catalog description in advisor TASK rows, neither of which is
+        // notification content. The window is generous enough to cover any
+        // params object these calls actually build; a call so large it
+        // overflows it has bigger problems than this guard.
+        const offenders: string[] = []
+        const ENTRY = /\b(?:emit|orchestrate|sendNotification|notifyCounterparty)\(\{/g
+        const DOC_WIRED = /(?:title|message):[^,\n]*\b(?:businessEvent|definition\s*\.\s*description|triggerCondition)\b/
+        for (const f of SOURCES) {
+            const src = strip(readFileSync(f, "utf-8"))
+            for (const call of src.matchAll(ENTRY)) {
+                const window = src.slice(call.index, call.index + 1500)
+                const m = window.match(DOC_WIRED)
+                if (m) offenders.push(`${f}: ${m[0].trim().slice(0, 90)}`)
+            }
+        }
+        expect(
+            offenders,
+            `internal documentation wired into notification content:\n${offenders.join("\n")}`
+        ).toEqual([])
+    })
+
+    it("a legacy row storing internal prose is substituted with the event's copy, for EVERY event", () => {
+        for (const [key, def] of Object.entries(NOTIFICATION_EVENTS)) {
+            if (!def.copy) continue
+            const presented = presentStoredNotification(key, def.businessEvent, def.businessEvent)
+            expect(presented.sanitized, `${key}: internal prose passed through unsanitized`).toBe(true)
+            for (const lang of ["el", "en"] as const) {
+                expect(presented.title[lang], `${key}: internal prose survived in title.${lang}`)
+                    .not.toBe(def.businessEvent)
+            }
+            expect(presented.title).toEqual(def.copy.title)
+            expect(presented.message).toEqual(def.copy.message)
+        }
+    })
+
+    it("the two production strings from the defect report are caught", () => {
+        // registry.ts businessEvent + lib/events/catalog.ts description for
+        // policy_analyzed — both found stored verbatim in the dev database.
+        const presented = presentStoredNotification(
+            "policy_analyzed",
+            "AI extraction finished and the policy is readable",
+            "AI extraction read the policy successfully"
+        )
+        expect(presented.sanitized).toBe(true)
+        expect(presented.title.el).toBe("Η ανάλυση ολοκληρώθηκε")
+        expect(presented.message.el).toBe("Το ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.")
+    })
+
+    it("emitter-composed content passes through untouched", () => {
+        const presented = presentStoredNotification(
+            "GAP_DETECTED",
+            "Εντοπίσαμε 2 κενά κάλυψης",
+            "Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη."
+        )
+        expect(presented.sanitized).toBe(false)
+        expect(presented.title.el).toBe("Εντοπίσαμε 2 κενά κάλυψης")
+        expect(presented.message.el).toBe("Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη.")
+    })
+
+    it("internal prose on an event that no longer exists degrades to the truthful generic", () => {
+        // e.g. rows whose eventType was renamed away. The stored prose must
+        // not render; nothing may be invented about what happened either.
+        const stored = "AI extraction finished and the policy is readable"
+        const presented = presentStoredNotification("some_event_renamed_away", stored, stored)
+        expect(presented.sanitized).toBe(true)
+        expect(presented.title.el).toBe("Ειδοποίηση")
+        expect(presented.title.en).toBe("Notification")
+        expect(presented.message.el).not.toContain("AI extraction")
+        expect(presented.message.en).not.toContain("AI extraction")
+    })
+
+    it("every non-admin display surface reading notification rows presents through stored-content", () => {
+        // Enumerated from the filesystem: any file under app/ that queries
+        // notificationEvent.findMany AND serves title/message to a client must
+        // import the presenter. The admin console is exempt — operators
+        // inspect the raw delivery log there, and dressing it up would hide
+        // exactly what an audit needs to see.
+        const offenders: string[] = []
+        for (const f of SOURCES) {
+            if (!f.startsWith("app/")) continue
+            if (f.startsWith("app/(protected)/admin/")) continue
+            const src = strip(readFileSync(f, "utf-8"))
+            if (!/\bnotificationEvent\s*\.\s*findMany\b/.test(src)) continue
+            // Reads that never render (dedupe lookups etc.) select neither
+            // title nor message into a response; displaying code does.
+            if (!/\btitle\b/.test(src)) continue
+            if (!/StoredNotification\b/.test(src)) {
+                offenders.push(f)
+            }
+        }
+        expect(
+            offenders,
+            `these surfaces render stored notification rows without the presenter:\n${offenders.join("\n")}`
+        ).toEqual([])
     })
 })

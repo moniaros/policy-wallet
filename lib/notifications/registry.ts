@@ -90,11 +90,54 @@ export interface EscalationRule {
     event: string
 }
 
+/** One sentence in each product language. Both arms are always present. */
+export interface LocalizedCopy {
+    el: string
+    en: string
+}
+
+/**
+ * The customer-facing default copy for an event — what a reader sees when the
+ * emitter has nothing more specific to say.
+ *
+ * This is the field that makes "internal English never reaches a customer"
+ * structural rather than disciplined: the generic executor
+ * (lib/events/executor.ts) composes notifications from HERE, in both
+ * languages, and an event cannot be declared without it. Before this existed,
+ * the executor used `businessEvent` as the title and the events catalog's
+ * `description` as the body — internal documentation strings, stored verbatim
+ * in customer-visible columns ("AI extraction finished and the policy is
+ * readable" in an otherwise Greek feed).
+ *
+ * An emitter that knows more (a count, a name, a figure) passes its own
+ * bilingual copy to `emit` and this field is not consulted. It is also what
+ * `lib/notifications/stored-content.ts` substitutes when a LEGACY row is found
+ * still carrying internal prose.
+ */
+export interface NotificationCopy {
+    title: LocalizedCopy
+    message: LocalizedCopy
+}
+
 export interface NotificationEventDefinition {
-    /** What happened, in the language of the business. */
+    /**
+     * What happened, in the language of the business. INTERNAL DOCUMENTATION —
+     * English by convention, for operators and developers. It must never be
+     * rendered to a user or stored in a notification row's title/message;
+     * customer-facing text lives in `copy`.
+     */
     businessEvent: string
-    /** The condition that fires it, naming the code seam so it stays checkable. */
+    /**
+     * The condition that fires it, naming the code seam so it stays checkable.
+     * INTERNAL DOCUMENTATION — same rule as `businessEvent`.
+     */
     triggerCondition: string
+    /**
+     * Bilingual customer-facing default copy. Required for every event a
+     * person can read; `null` is allowed ONLY for `analytics` mirrors, which
+     * are machine rows every notification surface filters out.
+     */
+    copy: NotificationCopy | null
     category: NotificationCategory
     priority: NotificationPriority
     /**
@@ -161,6 +204,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     life_event_recorded: {
         businessEvent: "The customer told us their life changed",
+        copy: {
+            title: { el: "Καταγράψαμε την αλλαγή σας", en: "We recorded your update" },
+            message: { el: "Η αλλαγή στη ζωή σας καταγράφηκε και θα ληφθεί υπόψη στην εικόνα της κάλυψής σας.", en: "Your life change was recorded and will be reflected in your coverage picture." },
+        },
         triggerCondition: "declareLifeEvent() commits a LifeEventInstance",
         category: "risk",
         priority: "normal",
@@ -179,6 +226,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     profile_updated: {
         businessEvent: "The customer changed their profile, household or assets",
+        copy: {
+            title: { el: "Το προφίλ σας ενημερώθηκε", en: "Your profile was updated" },
+            message: { el: "Οι αλλαγές στο προφίλ σας αποθηκεύτηκαν.", en: "The changes to your profile were saved." },
+        },
         triggerCondition: "A profile write path commits and the risk fingerprint moves",
         category: "risk",
         priority: "low",
@@ -196,6 +247,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     questionnaire_completed: {
         businessEvent: "The customer finished a questionnaire",
+        copy: {
+            title: { el: "Ο πελάτης σας ολοκλήρωσε ένα ερωτηματολόγιο", en: "Your client completed a questionnaire" },
+            message: { el: "Δείτε τις απαντήσεις για να συνεχίσετε την αξιολόγηση.", en: "Review the answers to continue the assessment." },
+        },
         triggerCondition: "QuestionnaireInstance transitions to completed",
         category: "advisory",
         priority: "normal",
@@ -213,6 +268,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     questionnaire_received: {
         businessEvent: "An advisor sent the customer a questionnaire",
+        copy: {
+            title: { el: "Νέο ερωτηματολόγιο από τον σύμβουλό σας", en: "A new questionnaire from your advisor" },
+            message: { el: "Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας.", en: "Answer it so we can spot gaps in your cover." },
+        },
         triggerCondition: "An advisor dispatches a QuestionnaireInstance",
         category: "advisory",
         priority: "normal",
@@ -232,6 +291,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_added: {
         businessEvent: "A policy was added to the wallet",
+        copy: {
+            title: { el: "Προστέθηκε νέο ασφαλιστήριο", en: "A new policy was added" },
+            message: { el: "Ένα ασφαλιστήριο προστέθηκε στο πορτοφόλι σας.", en: "A policy was added to your wallet." },
+        },
         triggerCondition: "Policy row created by upload, advisor or onboarding",
         category: "policy",
         priority: "normal",
@@ -249,6 +312,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_updated: {
         businessEvent: "A policy's terms changed",
+        copy: {
+            title: { el: "Ένα ασφαλιστήριό σας ενημερώθηκε", en: "One of your policies was updated" },
+            message: { el: "Τα στοιχεία ενός ασφαλιστηρίου σας άλλαξαν. Ρίξτε μια ματιά.", en: "The details of one of your policies changed. Take a look." },
+        },
         triggerCondition: "Policy update commits a change to cover, dates or premium",
         category: "policy",
         priority: "normal",
@@ -266,6 +333,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_removed: {
         businessEvent: "A policy was removed from the wallet",
+        copy: {
+            title: { el: "Ένα ασφαλιστήριο αφαιρέθηκε", en: "A policy was removed" },
+            message: { el: "Ένα ασφαλιστήριο αφαιρέθηκε από το πορτοφόλι σας. Αν δεν το κάνατε εσείς, επικοινωνήστε μαζί μας.", en: "A policy was removed from your wallet. If this wasn't you, contact us." },
+        },
         triggerCondition: "deletePolicy() commits",
         category: "policy",
         priority: "high",
@@ -284,6 +355,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_shared: {
         businessEvent: "A policy was shared with an advisor",
+        copy: {
+            title: { el: "Ένα ασφαλιστήριο κοινοποιήθηκε μαζί σας", en: "A policy was shared with you" },
+            message: { el: "Αποκτήσατε πρόσβαση σε ένα ασφαλιστήριο πελάτη.", en: "You were given access to a client's policy." },
+        },
         triggerCondition: "An AccessGrant is created over a policy",
         category: "policy",
         priority: "normal",
@@ -301,6 +376,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_merged: {
         businessEvent: "Two records of one policy were merged",
+        copy: {
+            title: { el: "Τα ασφαλιστήρια συγχωνεύτηκαν", en: "Policies merged" },
+            message: { el: "Δύο εγγραφές του ίδιου ασφαλιστηρίου έγιναν μία.", en: "Two records of the same policy became one." },
+        },
         triggerCondition: "A PolicyMergeRequest is approved and applied",
         category: "policy",
         priority: "normal",
@@ -318,6 +397,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_merge_requested: {
         businessEvent: "Someone proposed merging two policy records",
+        copy: {
+            title: { el: "Εντοπίστηκε διπλό ασφαλιστήριο", en: "Duplicate policy detected" },
+            message: { el: "Προτείναμε τη συγχώνευση δύο εγγραφών που μοιάζουν να είναι το ίδιο ασφαλιστήριο.", en: "We proposed merging two records that look like the same policy." },
+        },
         triggerCondition: "PolicyMergeRequest created",
         category: "policy",
         priority: "normal",
@@ -335,6 +418,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_merge_rejected: {
         businessEvent: "A proposed merge was rejected",
+        copy: {
+            title: { el: "Η συγχώνευση απορρίφθηκε", en: "Merge declined" },
+            message: { el: "Το διπλό ασφαλιστήριο παραμένει ως ξεχωριστή εγγραφή.", en: "The duplicate policy stays as a separate record." },
+        },
         triggerCondition: "PolicyMergeRequest transitions to rejected",
         category: "policy",
         priority: "normal",
@@ -352,6 +439,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     document_uploaded: {
         businessEvent: "A document was uploaded against a request",
+        copy: {
+            title: { el: "Ανέβηκε ένα έγγραφο", en: "A document was uploaded" },
+            message: { el: "Ο πελάτης σας ανέβασε το έγγραφο που ζητήσατε.", en: "Your client uploaded the document you requested." },
+        },
         triggerCondition: "DocumentRequest receives a PolicyDocument",
         category: "advisory",
         priority: "normal",
@@ -369,6 +460,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     document_requested: {
         businessEvent: "An advisor asked for a document",
+        copy: {
+            title: { el: "Ο σύμβουλός σας ζήτησε ένα έγγραφο", en: "Your advisor requested a document" },
+            message: { el: "Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας.", en: "Upload the document so your advisor can continue." },
+        },
         triggerCondition: "DocumentRequest created",
         category: "advisory",
         priority: "normal",
@@ -388,6 +483,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_analyzed: {
         businessEvent: "AI extraction finished and the policy is readable",
+        copy: {
+            title: { el: "Η ανάλυση ολοκληρώθηκε", en: "Analysis complete" },
+            message: { el: "Το ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.", en: "The policy was read and analysed successfully." },
+        },
         triggerCondition: "PolicyAnalysisRun completes successfully",
         category: "risk",
         priority: "high",
@@ -406,6 +505,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_analysis_failed: {
         businessEvent: "AI extraction failed",
+        copy: {
+            title: { el: "Η ανάλυση δεν ολοκληρώθηκε", en: "Analysis not completed" },
+            message: { el: "Δεν μπορέσαμε να διαβάσουμε το ασφαλιστήριο. Δοκιμάστε ξανά ή ανεβάστε ένα καθαρότερο αρχείο.", en: "We could not read the policy. Try again or upload a clearer file." },
+        },
         triggerCondition: "PolicyAnalysisRun terminates in failed",
         category: "risk",
         priority: "high",
@@ -424,6 +527,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     extraction_flagged: {
         businessEvent: "Extraction succeeded but confidence was too low to trust",
+        copy: {
+            title: { el: "Η αυτόματη ανάγνωση χρειάζεται έλεγχο", en: "The automatic read needs review" },
+            message: { el: "Η αυτόματη ανάγνωση του εγγράφου δεν ήταν αρκετά αξιόπιστη και χρειάζεται ανθρώπινη ματιά.", en: "The automatic read of the document was not confident enough and needs a human look." },
+        },
         triggerCondition: "An extracted field lands below the confidence floor",
         category: "risk",
         priority: "high",
@@ -442,6 +549,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     ai_consent_request: {
         businessEvent: "An advisor asked to run AI analysis on the customer's documents",
+        copy: {
+            title: { el: "Αίτημα συγκατάθεσης για ανάλυση", en: "Consent request for analysis" },
+            message: { el: "Ο σύμβουλός σας ζητά τη συγκατάθεσή σας για ανάλυση των εγγράφων σας.", en: "Your advisor asks for your consent to analyse your documents." },
+        },
         triggerCondition: "An advisor requests AI processing consent",
         category: "advisory",
         priority: "high",
@@ -462,6 +573,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     GAP_DETECTED: {
         businessEvent: "A coverage gap was found",
+        copy: {
+            title: { el: "Εντοπίσαμε κενό κάλυψης", en: "We found a coverage gap" },
+            message: { el: "Ένα πιθανό κενό στην κάλυψή σας χρειάζεται τη ματιά σας.", en: "A possible gap in your cover needs your attention." },
+        },
         triggerCondition: "A risk transitions into protection_gap between two RiskProfileVersions",
         category: "risk",
         priority: "high",
@@ -487,6 +602,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     risk_level_changed: {
         businessEvent: "A specific risk changed status",
+        copy: {
+            title: { el: "Άλλαξε η εικόνα κινδύνου σας", en: "Your risk picture changed" },
+            message: { el: "Ένας κίνδυνος στην εικόνα σας άλλαξε κατάσταση.", en: "A risk in your picture changed status." },
+        },
         triggerCondition: "diffVersions() reports a transition other than into protection_gap",
         category: "risk",
         priority: "normal",
@@ -505,6 +624,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     recommendation_generated: {
         businessEvent: "New recommendations were produced",
+        copy: {
+            title: { el: "Νέες προτάσεις για εσάς", en: "New recommendations for you" },
+            message: { el: "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.", en: "Based on what we know about your life and your policies." },
+        },
         triggerCondition: "syncRecommendations() reports created > 0",
         category: "risk",
         priority: "normal",
@@ -523,6 +646,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     recommendation_dismissed: {
         businessEvent: "The customer dismissed a recommendation",
+        copy: {
+            title: { el: "Απορρίψατε μια πρόταση", en: "You dismissed a recommendation" },
+            message: { el: "Η πρόταση δεν θα εμφανίζεται πλέον στη λίστα σας.", en: "The recommendation will no longer appear in your list." },
+        },
         triggerCondition: "PATCH /api/v1/recommendations/[id] with action=dismiss",
         category: "risk",
         priority: "low",
@@ -542,6 +669,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     recommendation_accepted: {
         businessEvent: "The customer acted on a recommendation",
+        copy: {
+            title: { el: "Προχωρήσατε μια πρόταση", en: "You actioned a recommendation" },
+            message: { el: "Η πρόταση σημειώθηκε ως δρομολογημένη.", en: "The recommendation was marked as actioned." },
+        },
         triggerCondition: "PATCH /api/v1/recommendations/[id] with action=actioned",
         category: "risk",
         priority: "normal",
@@ -562,6 +693,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     policy_expiring: {
         businessEvent: "A policy is approaching its renewal date",
+        copy: {
+            title: { el: "Ένα ασφαλιστήριο λήγει σύντομα", en: "A policy expires soon" },
+            message: { el: "Πλησιάζει η ημερομηνία ανανέωσης ενός ασφαλιστηρίου σας.", en: "One of your policies is approaching its renewal date." },
+        },
         triggerCondition: "renewal-check cron finds a policy inside a reminder milestone",
         category: "policy",
         priority: "high",
@@ -581,6 +716,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     renewal_overdue: {
         businessEvent: "A policy passed its end date without being renewed",
+        copy: {
+            title: { el: "Ένα ασφαλιστήριο έληξε χωρίς ανανέωση", en: "A policy lapsed without renewal" },
+            message: { el: "Η ημερομηνία λήξης πέρασε χωρίς ανανέωση — ίσως μένετε χωρίς κάλυψη.", en: "The end date passed without a renewal — you may be without cover." },
+        },
         triggerCondition: "renewal-check cron finds endDate in the past and no successor policy",
         category: "policy",
         priority: "critical",
@@ -599,6 +738,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     renewal_milestone: {
         businessEvent: "An advisor's client has a renewal approaching",
+        copy: {
+            title: { el: "Πλησιάζει ανανέωση πελάτη", en: "A client renewal is approaching" },
+            message: { el: "Ένας πελάτης σας έχει ανανέωση που πλησιάζει.", en: "One of your clients has a renewal coming up." },
+        },
         triggerCondition: "renewal-check cron, for policies with an advisor relationship",
         category: "advisory",
         priority: "normal",
@@ -616,6 +759,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     renewal_quote_requested: {
         businessEvent: "The customer asked for a renewal quote",
+        copy: {
+            title: { el: "Ζητήθηκε προσφορά ανανέωσης", en: "Renewal quote requested" },
+            message: { el: "Ζητήθηκε προσφορά για την ανανέωση ενός ασφαλιστηρίου.", en: "A quote was requested for a policy renewal." },
+        },
         triggerCondition: "A renewal quote request is submitted",
         category: "advisory",
         priority: "high",
@@ -633,6 +780,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     renewal_outcome: {
         businessEvent: "A renewal was resolved",
+        copy: {
+            title: { el: "Αποτέλεσμα ανανέωσης", en: "Renewal outcome" },
+            message: { el: "Μια εκκρεμότητα ανανέωσης έκλεισε. Δείτε το αποτέλεσμα.", en: "A pending renewal was resolved. See the outcome." },
+        },
         triggerCondition: "PolicyRenewal reaches a terminal state",
         category: "policy",
         priority: "normal",
@@ -650,6 +801,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     perk_reminder: {
         businessEvent: "A partner perk is about to expire",
+        copy: {
+            title: { el: "Ένα προνόμιο λήγει σύντομα", en: "A perk expires soon" },
+            message: { el: "Ένα προνόμιο συνεργάτη λήγει σύντομα — προλάβετε να το χρησιμοποιήσετε.", en: "A partner perk expires soon — use it while it lasts." },
+        },
         triggerCondition: "perk-reminders cron finds a perk inside its reminder window",
         category: "engagement",
         priority: "low",
@@ -685,6 +840,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
      */
     obligation_due: {
         businessEvent: "A policy condition the customer must keep is coming due",
+        copy: {
+            title: { el: "Προϋπόθεση κάλυψης προς έλεγχο", en: "A condition of cover to check" },
+            message: { el: "Μια υποχρέωση του ασφαλιστηρίου σας πλησιάζει στην προθεσμία της.", en: "An obligation on your policy is approaching its deadline." },
+        },
         triggerCondition:
             "a compliance scan finds an acordData.conditions entry with a recurrence inside its reminder window",
         category: "policy",
@@ -710,6 +869,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     claim_opened: {
         businessEvent: "A claim was opened",
+        copy: {
+            title: { el: "Η δήλωση ζημιάς καταχωρήθηκε", en: "Your claim was opened" },
+            message: { el: "Η δήλωση ζημιάς σας καταχωρήθηκε και θα σας ενημερώνουμε για την πορεία της.", en: "Your claim was opened and we will keep you posted on its progress." },
+        },
         triggerCondition: "No source exists — the product has no claims model",
         category: "policy",
         priority: "critical",
@@ -727,6 +890,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     claim_status_changed: {
         businessEvent: "A claim changed status",
+        copy: {
+            title: { el: "Η δήλωση ζημιάς σας ενημερώθηκε", en: "Your claim was updated" },
+            message: { el: "Η κατάσταση της δήλωσης ζημιάς σας άλλαξε.", en: "The status of your claim changed." },
+        },
         triggerCondition: "No source exists — the product has no claims model",
         category: "policy",
         priority: "high",
@@ -746,6 +913,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     collaboration_message: {
         businessEvent: "A message was sent in an advisory thread",
+        copy: {
+            title: { el: "Νέο μήνυμα", en: "New message" },
+            message: { el: "Έχετε νέο μήνυμα στη συνεργασία σας.", en: "You have a new message in your collaboration." },
+        },
         triggerCondition: "CollaborationMessage created",
         category: "advisory",
         priority: "high",
@@ -763,6 +934,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     collaboration_thread_assigned: {
         businessEvent: "An advisory thread was assigned",
+        copy: {
+            title: { el: "Σας ανατέθηκε μια συζήτηση", en: "A thread was assigned to you" },
+            message: { el: "Μια συζήτηση συνεργασίας ανατέθηκε σε εσάς.", en: "A collaboration thread was assigned to you." },
+        },
         triggerCondition: "CollaborationThread assignee changes",
         category: "advisory",
         priority: "normal",
@@ -780,6 +955,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     collaboration_action_assigned: {
         businessEvent: "An action was assigned in a thread",
+        copy: {
+            title: { el: "Σας ανατέθηκε μια ενέργεια", en: "An action was assigned to you" },
+            message: { el: "Μια ενέργεια σε συζήτηση συνεργασίας περιμένει από εσάς.", en: "An action in a collaboration thread is waiting on you." },
+        },
         triggerCondition: "CollaborationAction created with an assignee",
         category: "advisory",
         priority: "normal",
@@ -797,6 +976,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     collaboration_action_overdue: {
         businessEvent: "An assigned action passed its due date",
+        copy: {
+            title: { el: "Μια ενέργεια καθυστερεί", en: "An action is overdue" },
+            message: { el: "Μια ανατεθειμένη ενέργεια πέρασε την προθεσμία της.", en: "An assigned action passed its due date." },
+        },
         triggerCondition: "collaboration-reminders cron finds an open action past due",
         category: "advisory",
         priority: "high",
@@ -814,6 +997,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     collaboration_unread_followup: {
         businessEvent: "A message went unread long enough to chase",
+        copy: {
+            title: { el: "Έχετε αδιάβαστο μήνυμα", en: "You have an unread message" },
+            message: { el: "Ένα μήνυμα περιμένει την απάντησή σας εδώ και μέρες.", en: "A message has been waiting for your reply for days." },
+        },
         triggerCondition: "collaboration-reminders cron finds an unread message past the follow-up window",
         category: "advisory",
         priority: "normal",
@@ -831,6 +1018,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     collaboration_daily_digest: {
         businessEvent: "A day's advisory activity, summarised",
+        copy: {
+            title: { el: "Καθημερινή σύνοψη", en: "Daily digest" },
+            message: { el: "Η σύνοψη της ημέρας από τις συνεργασίες σας.", en: "The day's summary from your collaborations." },
+        },
         triggerCondition: "collaboration-reminders cron, once daily per participant with activity",
         category: "advisory",
         priority: "low",
@@ -848,6 +1039,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     advisor_assigned: {
         businessEvent: "An advisor and a customer were connected",
+        copy: {
+            title: { el: "Συνδεθήκατε με σύμβουλο", en: "You are connected with an advisor" },
+            message: { el: "Η σύνδεση συμβούλου και πελάτη ενεργοποιήθηκε.", en: "The advisor and client connection is now active." },
+        },
         triggerCondition: "CustomerRelationship becomes active",
         category: "advisory",
         priority: "high",
@@ -866,6 +1061,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     customer_transferred: {
         businessEvent: "A customer was moved between advisors",
+        copy: {
+            title: { el: "Αλλαγή συμβούλου", en: "Advisor change" },
+            message: { el: "Η συνεργασία μεταφέρθηκε σε άλλον σύμβουλο.", en: "The relationship was transferred to another advisor." },
+        },
         triggerCondition: "CustomerRelationship agentUserId changes",
         category: "advisory",
         priority: "high",
@@ -883,6 +1082,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     proposal_received: {
         businessEvent: "An advisor sent a proposal",
+        copy: {
+            title: { el: "Νέα πρόταση από τον σύμβουλό σας", en: "A new proposal from your advisor" },
+            message: { el: "Ο σύμβουλός σας σάς έστειλε μια πρόταση για αξιολόγηση.", en: "Your advisor sent you a proposal to review." },
+        },
         triggerCondition: "Proposal created",
         category: "advisory",
         priority: "high",
@@ -900,6 +1103,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     proposal_accepted: {
         businessEvent: "A proposal was accepted",
+        copy: {
+            title: { el: "Η πρόταση έγινε δεκτή", en: "Proposal accepted" },
+            message: { el: "Ο πελάτης σας αποδέχθηκε την πρόταση.", en: "Your client accepted the proposal." },
+        },
         triggerCondition: "Proposal transitions to accepted",
         category: "advisory",
         priority: "high",
@@ -917,6 +1124,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     proposal_declined: {
         businessEvent: "A proposal was declined",
+        copy: {
+            title: { el: "Η πρόταση απορρίφθηκε", en: "Proposal declined" },
+            message: { el: "Ο πελάτης σας απέρριψε την πρόταση.", en: "Your client declined the proposal." },
+        },
         triggerCondition: "Proposal transitions to declined",
         category: "advisory",
         priority: "normal",
@@ -934,6 +1145,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     proposal_counter_offer: {
         businessEvent: "A counter-offer was made on a proposal",
+        copy: {
+            title: { el: "Αντιπρόταση στην πρότασή σας", en: "A counter-offer on your proposal" },
+            message: { el: "Έγινε αντιπρόταση — δείτε τους νέους όρους.", en: "A counter-offer was made — see the new terms." },
+        },
         triggerCondition: "Proposal receives a counter-offer",
         category: "advisory",
         priority: "high",
@@ -951,6 +1166,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     opportunity_created: {
         businessEvent: "An advisory opportunity was opened",
+        copy: {
+            title: { el: "Νέα ευκαιρία", en: "New opportunity" },
+            message: { el: "Άνοιξε μια νέα συμβουλευτική ευκαιρία για πελάτη σας.", en: "A new advisory opportunity opened for one of your clients." },
+        },
         triggerCondition: "Opportunity created",
         category: "advisory",
         priority: "normal",
@@ -968,6 +1187,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     team_invite: {
         businessEvent: "Someone was invited to an advisory team",
+        copy: {
+            title: { el: "Πρόσκληση σε ομάδα", en: "Team invitation" },
+            message: { el: "Σας προσκάλεσαν σε μια συμβουλευτική ομάδα.", en: "You were invited to an advisory team." },
+        },
         triggerCondition: "TenantMembership invite issued",
         category: "advisory",
         priority: "high",
@@ -985,6 +1208,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     team_invite_accepted: {
         businessEvent: "A team invitation was accepted",
+        copy: {
+            title: { el: "Η πρόσκληση έγινε δεκτή", en: "Invitation accepted" },
+            message: { el: "Η πρόσκληση στην ομάδα σας έγινε δεκτή.", en: "Your team invitation was accepted." },
+        },
         triggerCondition: "TenantMembership transitions to active",
         category: "advisory",
         priority: "normal",
@@ -1004,6 +1231,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     payment_failed: {
         businessEvent: "A subscription payment failed",
+        copy: {
+            title: { el: "Η πληρωμή σας απέτυχε", en: "Your payment failed" },
+            message: { el: "Η πληρωμή της συνδρομής σας δεν ολοκληρώθηκε. Ενημερώστε τον τρόπο πληρωμής σας.", en: "Your subscription payment did not go through. Update your payment method." },
+        },
         triggerCondition: "Stripe invoice.payment_failed marks the subscription past_due",
         category: "billing",
         priority: "critical",
@@ -1022,6 +1253,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     subscription_expired: {
         businessEvent: "A subscription ended",
+        copy: {
+            title: { el: "Η συνδρομή σας έληξε", en: "Your subscription has ended" },
+            message: { el: "Η συνδρομή σας ολοκληρώθηκε. Μπορείτε να την ανανεώσετε όποτε θελήσετε.", en: "Your subscription ended. You can renew whenever you like." },
+        },
         triggerCondition: "Stripe customer.subscription.deleted, or the period lapses unrenewed",
         category: "billing",
         priority: "critical",
@@ -1039,6 +1274,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     subscription_upgraded: {
         businessEvent: "The customer changed plan",
+        copy: {
+            title: { el: "Το πλάνο σας άλλαξε", en: "Your plan changed" },
+            message: { el: "Η αλλαγή του πλάνου σας ολοκληρώθηκε.", en: "Your plan change is complete." },
+        },
         triggerCondition: "Subscription plan changes on a Stripe lifecycle event",
         category: "billing",
         priority: "high",
@@ -1056,6 +1295,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     bonus_credits_granted: {
         businessEvent: "Credits were granted to the account",
+        copy: {
+            title: { el: "Προστέθηκαν credits", en: "Credits added" },
+            message: { el: "Πιστώθηκαν επιπλέον credits στον λογαριασμό σας.", en: "Bonus credits were added to your account." },
+        },
         triggerCondition: "A credit grant commits",
         category: "billing",
         priority: "normal",
@@ -1075,6 +1318,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     weekly_digest: {
         businessEvent: "The week's activity, summarised",
+        copy: {
+            title: { el: "Η εβδομάδα σας στο PolicyWallet", en: "Your week at PolicyWallet" },
+            message: { el: "Η εβδομαδιαία σύνοψη του χαρτοφυλακίου σας.", en: "Your weekly portfolio summary." },
+        },
         triggerCondition: "weekly-digest cron, for users with something to report",
         category: "engagement",
         priority: "low",
@@ -1092,6 +1339,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     churn_prevention: {
         businessEvent: "An at-risk customer needs re-engaging",
+        copy: {
+            title: { el: "Συνεχίστε από εκεί που μείνατε", en: "Pick up where you left off" },
+            message: { el: "Σας στείλαμε ένα email για να συνεχίσετε από εκεί που μείνατε.", en: "We sent you an email to pick up where you left off." },
+        },
         triggerCondition: "churn-prevention cron scores a user as at risk",
         category: "engagement",
         priority: "low",
@@ -1109,6 +1360,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     engagement_welcome: {
         businessEvent: "A new customer joined",
+        copy: {
+            title: { el: "Καλώς ήρθατε στο PolicyWallet", en: "Welcome to PolicyWallet" },
+            message: { el: "Σας στείλαμε ένα email καλωσορίσματος με τα πρώτα βήματα.", en: "We sent you a welcome email with the first steps." },
+        },
         triggerCondition: "engagement-drip cron, day 0",
         category: "engagement",
         priority: "low",
@@ -1126,6 +1381,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     engagement_day3: {
         businessEvent: "A customer is three days in",
+        copy: {
+            title: { el: "Το επόμενο βήμα σας", en: "Your next step" },
+            message: { el: "Σας στείλαμε ένα email με το επόμενο βήμα: το πρώτο σας ασφαλιστήριο.", en: "We sent you an email with the next step: your first policy." },
+        },
         triggerCondition: "engagement-drip cron, day 3, still not activated",
         category: "engagement",
         priority: "low",
@@ -1143,6 +1402,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     engagement_day7: {
         businessEvent: "A customer is a week in",
+        copy: {
+            title: { el: "Η πρώτη σας εβδομάδα", en: "Your first week" },
+            message: { el: "Σας στείλαμε μια εικόνα της κάλυψής σας μετά την πρώτη εβδομάδα.", en: "We sent you a picture of your cover after your first week." },
+        },
         triggerCondition: "engagement-drip cron, day 7, still not activated",
         category: "engagement",
         priority: "low",
@@ -1160,6 +1423,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     achievement_unlocked: {
         businessEvent: "The customer unlocked an achievement",
+        copy: {
+            title: { el: "Νέο επίτευγμα", en: "Achievement unlocked" },
+            message: { el: "Ξεκλειδώσατε ένα νέο επίτευγμα.", en: "You unlocked a new achievement." },
+        },
         triggerCondition: "An achievement's condition is first satisfied",
         category: "engagement",
         priority: "low",
@@ -1178,6 +1445,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     feedback_nps: {
         businessEvent: "The customer left an NPS score",
+        copy: {
+            title: { el: "Λάβαμε την αξιολόγησή σας", en: "We received your rating" },
+            message: { el: "Ευχαριστούμε — η γνώμη σας καταγράφηκε.", en: "Thank you — your feedback was recorded." },
+        },
         triggerCondition: "POST /api/v1/feedback with type=nps",
         category: "engagement",
         priority: "low",
@@ -1196,6 +1467,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     feedback_article: {
         businessEvent: "The customer rated a help article",
+        copy: {
+            title: { el: "Λάβαμε την αξιολόγηση του άρθρου", en: "We received your article rating" },
+            message: { el: "Ευχαριστούμε — η αξιολόγησή σας καταγράφηκε.", en: "Thank you — your rating was recorded." },
+        },
         triggerCondition: "POST /api/v1/feedback with type=article",
         category: "engagement",
         priority: "low",
@@ -1216,6 +1491,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     login_success: {
         businessEvent: "A sign-in happened",
+        copy: {
+            title: { el: "Νέα σύνδεση στον λογαριασμό σας", en: "New sign-in to your account" },
+            message: { el: "Έγινε σύνδεση στον λογαριασμό σας. Αν δεν ήσασταν εσείς, αλλάξτε κωδικό.", en: "Your account was signed in to. If this wasn't you, change your password." },
+        },
         triggerCondition: "A session is established",
         category: "security",
         priority: "low",
@@ -1233,6 +1512,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     password_change: {
         businessEvent: "The account password changed",
+        copy: {
+            title: { el: "Ο κωδικός σας άλλαξε", en: "Your password changed" },
+            message: { el: "Ο κωδικός του λογαριασμού σας άλλαξε. Αν δεν το κάνατε εσείς, επικοινωνήστε μαζί μας αμέσως.", en: "Your account password changed. If this wasn't you, contact us immediately." },
+        },
         triggerCondition: "A password update commits",
         category: "security",
         priority: "critical",
@@ -1251,6 +1534,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     email_change: {
         businessEvent: "The account email changed",
+        copy: {
+            title: { el: "Το email σας άλλαξε", en: "Your email changed" },
+            message: { el: "Το email του λογαριασμού σας άλλαξε. Αν δεν το κάνατε εσείς, επικοινωνήστε μαζί μας αμέσως.", en: "Your account email changed. If this wasn't you, contact us immediately." },
+        },
         triggerCondition: "An email update commits",
         category: "security",
         priority: "critical",
@@ -1270,6 +1557,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     admin_action_on_account: {
         businessEvent: "An administrator acted on a customer's account",
+        copy: {
+            title: { el: "Ενέργεια διαχειριστή στον λογαριασμό", en: "Administrator action on the account" },
+            message: { el: "Ένας διαχειριστής έκανε ενέργεια σε λογαριασμό πελάτη.", en: "An administrator acted on a customer's account." },
+        },
         triggerCondition: "An ActivityLog entry is written with a targetUserId",
         category: "admin",
         priority: "high",
@@ -1287,6 +1578,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     admin_dunning_exhausted: {
         businessEvent: "A customer's payments failed repeatedly",
+        copy: {
+            title: { el: "Επαναλαμβανόμενες αποτυχίες πληρωμής", en: "Repeated payment failures" },
+            message: { el: "Οι πληρωμές ενός πελάτη αποτυγχάνουν επανειλημμένα και χρειάζονται ανθρώπινη ματιά.", en: "A customer's payments keep failing and need a human look." },
+        },
         triggerCondition: "payment_failed escalation threshold crossed",
         category: "admin",
         priority: "high",
@@ -1304,6 +1599,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     admin_analysis_failure_spike: {
         businessEvent: "Analysis is failing repeatedly for one customer",
+        copy: {
+            title: { el: "Επαναλαμβανόμενες αποτυχίες ανάλυσης", en: "Repeated analysis failures" },
+            message: { el: "Η ανάλυση αποτυγχάνει επανειλημμένα για έναν πελάτη.", en: "Analysis is failing repeatedly for one customer." },
+        },
         triggerCondition: "policy_analysis_failed escalation threshold crossed",
         category: "admin",
         priority: "high",
@@ -1321,6 +1620,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     admin_unanswered_quote: {
         businessEvent: "A quote request went unanswered",
+        copy: {
+            title: { el: "Αναπάντητο αίτημα προσφοράς", en: "Unanswered quote request" },
+            message: { el: "Ένα αίτημα προσφοράς πελάτη έμεινε αναπάντητο.", en: "A customer's quote request went unanswered." },
+        },
         triggerCondition: "renewal_quote_requested escalation threshold crossed",
         category: "admin",
         priority: "normal",
@@ -1338,6 +1641,10 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
 
     scheduled_review_due: {
         businessEvent: "A periodic cover review is due",
+        copy: {
+            title: { el: "Ώρα για έλεγχο της κάλυψής σας", en: "Time for a cover review" },
+            message: { el: "Ένας περιοδικός έλεγχος της κάλυψής σας είναι έτοιμος να ξεκινήσει.", en: "A periodic review of your cover is due." },
+        },
         triggerCondition: "No emitter yet — needs a review cadence per customer",
         category: "advisory",
         priority: "normal",
@@ -1376,6 +1683,10 @@ function analyticsEvent(businessEvent: string): NotificationEventDefinition {
     return {
         businessEvent,
         triggerCondition: "recordConversionEvent() — server-side funnel mirror",
+        // Machine mirror — every notification surface filters `analytics`
+        // rows out, so there is no reader to write copy for. `null` is only
+        // legal here; the bus-invariants guard enforces that.
+        copy: null,
         category: "analytics",
         priority: "low",
         channels: ["analytics"],

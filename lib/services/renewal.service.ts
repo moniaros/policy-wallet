@@ -417,13 +417,14 @@ async function sendPolicyholderReminder(
     // toLocaleDateString resolves against the RUNTIME zone — UTC on Vercel — so a
     // policy ending at Athens midnight was emailed as the previous day while the
     // wallet showed the correct one.
-    const expiryDate = formatDate(policy.endDate, isEl ? "el" : "en")
-    const title = isEl
-        ? `Η ασφάλισή σας ${daysLeftPhrase(daysUntilExpiry, true)}`
-        : `Your policy ${daysLeftPhrase(daysUntilExpiry, false)}`
-    const message = isEl
-        ? `Το ασφαλιστήριο ${policy.insurerName} (${policy.policyNumber}) λήγει στις ${expiryDate}. Ελέγξτε τις επιλογές ανανέωσής σας.`
-        : `Your ${policy.insurerName} policy (${policy.policyNumber}) expires on ${expiryDate}. Review your renewal options.`
+    const title = {
+        el: `Η ασφάλισή σας ${daysLeftPhrase(daysUntilExpiry, true)}`,
+        en: `Your policy ${daysLeftPhrase(daysUntilExpiry, false)}`,
+    }
+    const message = {
+        el: `Το ασφαλιστήριο ${policy.insurerName} (${policy.policyNumber}) λήγει στις ${formatDate(policy.endDate, "el")}. Ελέγξτε τις επιλογές ανανέωσής σας.`,
+        en: `Your ${policy.insurerName} policy (${policy.policyNumber}) expires on ${formatDate(policy.endDate, "en")}. Review your renewal options.`,
+    }
 
     await sendNotification({
         userId: policy.owner.id,
@@ -461,14 +462,22 @@ async function sendAgentRenewalNotification(
     renewalId: string
 ) {
     const customerName = policy.owner.name || "Customer"
-    const expiryDate = formatDate(policy.endDate, "en")
-    const title = agentRenewalEmailTitle(customerName, policy.lineOfBusiness)
     // Real days remaining, not the milestone rung — the agent TASK created in the
     // same iteration already quotes daysUntilExpiry, so the two disagreed about
     // the same policy in the same run.
     const away =
         daysUntilExpiry <= 0 ? "today" : daysUntilExpiry === 1 ? "tomorrow" : `${daysUntilExpiry} days away`
-    const message = `${customerName}'s ${policy.insurerName} policy (${policy.policyNumber}) expires on ${expiryDate} — ${away}. Take action now.`
+    const awayEl =
+        daysUntilExpiry <= 0 ? "σήμερα" : daysUntilExpiry === 1 ? "αύριο" : `σε ${daysUntilExpiry} ημέρες`
+    const branchLabel = normalizeBranch(policy.lineOfBusiness).label
+    const title = {
+        el: `Ειδοποίηση ανανέωσης: ${customerName} — ${branchLabel.el}`,
+        en: agentRenewalEmailTitle(customerName, policy.lineOfBusiness),
+    }
+    const message = {
+        el: `Το ασφαλιστήριο ${policy.insurerName} (${policy.policyNumber}) του πελάτη ${customerName} λήγει στις ${formatDate(policy.endDate, "el")} — ${awayEl}. Χρειάζεται ενέργεια.`,
+        en: `${customerName}'s ${policy.insurerName} policy (${policy.policyNumber}) expires on ${formatDate(policy.endDate, "en")} — ${away}. Take action now.`,
+    }
 
     await sendNotification({
         userId: agentUserId,

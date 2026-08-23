@@ -169,7 +169,9 @@ describe('the agent renewal task ages with the policy', () => {
 describe('renewal emails date policies in the same zone the app does', () => {
     it('uses the shared formatter', () => {
         expect(SERVICE).toMatch(/import \{ formatDate \} from "@\/lib\/i18n\/format"/)
-        expect(SERVICE).toMatch(/formatDate\(policy\.endDate, isEl \? "el" : "en"\)/)
+        // Bilingual since P1-05: each arm formats in its own locale, so the
+        // date agrees with the wallet in BOTH languages.
+        expect(SERVICE).toMatch(/formatDate\(policy\.endDate, "el"\)/)
         expect(SERVICE).toMatch(/formatDate\(policy\.endDate, "en"\)/)
     })
 

@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { requireApiUser } from "@/lib/api-auth"
+import { resolveStoredNotification } from "@/lib/notifications/stored-content"
 import { z } from "zod"
 
 const notificationsQuerySchema = z.object({
@@ -40,19 +41,25 @@ export async function GET(req: Request) {
             nextCursor = nextItem!.id
         }
 
+        // Presented, never raw: legacy rows can carry internal English
+        // documentation, which the shared presenter substitutes with the
+        // event's canonical bilingual copy in this reader's language.
+        const readerLang = authResult.dbUser.preferredLanguage === "en" ? "en" as const : "el" as const
         return createApiResponse({
-            notifications: notifications.map((n: any) => ({
+            notifications: notifications.map((n: any) => {
+                const presented = resolveStoredNotification(n.eventType, n.title, n.message, readerLang)
+                return ({
                 id: n.id,
                 event_type: n.eventType,
                 channel: n.channel,
                 status: n.status,
-                title: n.title,
-                message: n.message,
+                title: presented.title,
+                message: presented.message,
                 related_object_type: n.relatedObjectType,
                 related_object_id: n.relatedObjectId,
                 created_at: n.createdAt,
                 sent_at: n.sentAt
-            })),
+            })}),
             pagination: {
                 next_cursor: nextCursor,
                 has_more: !!nextCursor

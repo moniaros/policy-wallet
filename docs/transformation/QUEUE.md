@@ -245,7 +245,7 @@ file_boundary: `app/(protected)/notifications/actions.ts`, `components/notificat
       otherwise justify reverting this
 - [ ] reconcile with the second consumer at `actions.ts:140-144`, which filters `channel: "in_app"`
 
-### P1-05 — English internal prose cannot reach a customer · `todo`
+### P1-05 — English internal prose cannot reach a customer · `done` — REVIEW PASSED
 
 **Recon 2026-08-23 — the ratio is the finding.** `lib/notifications/registry.ts` declares **63
 event types**. The interception map at `app/(protected)/activity/actions.ts:136-147` handles
@@ -602,3 +602,34 @@ said so rather than fixing something adjacent and calling it done.
 **Five entries are marked DEBT** rather than quietly exempted: the admin tile, portfolio-gap-view,
 coverage-insights, both branches pages, and the wallet overlap scan. Enumerated and deferred, which
 is the honest form.
+
+
+---
+
+## P1-05 — Adversarial review: **PASS**, and the strongest fix in the run so far
+
+| check | result |
+|---|---|
+| Structural, not detective | **proven by me.** `LocalizedText = { el: string; en: string }` — the `string` arm is gone. I compiled `const t: LocalizedText = "AI extraction finished and the policy is readable"` (the literal original defect) and got **`TS2322: Type 'string' is not assignable to type 'LocalizedText'`**. `type-check` is a blocking CI gate, so the bug can no longer be *written*, not merely caught. |
+| Three modified pre-existing tests | **all strengthenings.** `gap-rule-integrity` went from "speaks the owner language" to "speaks BOTH product languages" and re-anchored on a count rather than a local's name (the old anchor would have gone stale); `renewal-reminder-days` replaced one ternary assertion with **two** — `"el"` and `"en"` asserted separately at lines 174-175. |
+| Guard extended, not duplicated | `notification-bus-invariants.test.ts` +9, using the **shared** `findLatinSentences`/`findInternalTokens` from `metrics.ts` — the §5.1 single-definition rule honoured across a third consumer |
+| CI | tsc · lint · i18n · utf8 · audit:api-auth clean; **5105/5105** |
+| Outbound | Latin-script sentences **1 → 0** (churn day-30's "credits" subject); score stays 0 |
+
+**My "63 event types" was stale — it is 74.** 66 readable events now carry authored bilingual copy;
+8 `conv_*` analytics mirrors declare `copy: null` and are filtered from every surface by channel.
+Verified two ways, runtime enumeration and a guard that fails on any event violating either rule.
+
+**The Ειδοποιήσεις surface had no interception at all** — confirmed, not assumed. My earlier note
+recorded that as suspected; it was true. Four read surfaces are now wired through one presenter
+(`lib/notifications/stored-content.ts`) instead of one hand-written two-entry map.
+
+**Legacy rows were handled honestly.** 52 non-analytics rows in the dev DB, run through the
+presenter: 4 sanitized (2× `policy_analyzed`, 2× `renewal_overdue` storing `businessEvent` as both
+title and message), 48 pass through untouched. A row whose event no longer exists degrades to
+«Ειδοποίηση / Η αρχική διατύπωση… δεν είναι διαθέσιμη» — never the internal prose, and never an
+invented claim. That last choice is the §2.3 rule applied to a migration.
+
+**What still relies on discipline, stated rather than glossed:** an emitter could hand-write English
+inside an `el:` arm. The type forces bilingual *shape*, not bilingual *content*. Recorded as the
+residual risk.

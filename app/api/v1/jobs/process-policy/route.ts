@@ -94,18 +94,17 @@ export async function POST(req: Request) {
             // "1 critical gaps".
             const seriousGaps = newGaps.filter(g => g.severity === 'critical' || g.severity === 'high')
             if (seriousGaps.length > 0) {
-                const isEl = (authResult.dbUser.preferredLanguage ?? 'el') !== 'en'
                 const n = seriousGaps.length
-                const findings = isEl
-                    ? `${n} ${n === 1 ? 'σημαντικό εύρημα' : 'σημαντικά ευρήματα'}`
-                    : `${n} significant ${n === 1 ? 'finding' : 'findings'}`
+                const findingsEl = `${n} ${n === 1 ? 'σημαντικό εύρημα' : 'σημαντικά ευρήματα'}`
+                const findingsEn = `${n} significant ${n === 1 ? 'finding' : 'findings'}`
                 await sendNotification({
                     userId: authResult.dbUser.id,
                     eventType: 'GAP_DETECTED',
-                    title: isEl ? 'Εντοπίστηκε πιθανό κενό κάλυψης' : 'Possible coverage gap found',
-                    message: isEl
-                        ? `Η ανάλυση εντόπισε ${findings} στο ασφαλιστήριο ${policy.insurerName}.`
-                        : `The analysis found ${findings} in your ${policy.insurerName} policy.`,
+                    title: { el: 'Εντοπίστηκε πιθανό κενό κάλυψης', en: 'Possible coverage gap found' },
+                    message: {
+                        el: `Η ανάλυση εντόπισε ${findingsEl} στο ασφαλιστήριο ${policy.insurerName}.`,
+                        en: `The analysis found ${findingsEn} in your ${policy.insurerName} policy.`,
+                    },
                     relatedObjectType: 'policy',
                     relatedObjectId: policy.id,
                     channels: ['email', 'push']

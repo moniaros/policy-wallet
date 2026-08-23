@@ -317,13 +317,14 @@ export async function sendBatchRenewalReminder(renewalIds: string[]): Promise<{
         // in the runtime zone — UTC on Vercel — so a policy ending at Athens
         // midnight was reminded as the PREVIOUS day, disagreeing with both the
         // wallet and the automated reminder for the very same policy.
-        const expiryDate = formatDate(renewal.policy.endDate, isEl ? "el" : "en")
-        const title = isEl
-            ? `Υπενθύμιση ανανέωσης: ${renewal.policy.insurerName}`
-            : `Renewal reminder: ${renewal.policy.insurerName}`
-        const message = isEl
-            ? `Το ασφαλιστήριο ${renewal.policy.policyNumber} λήγει στις ${expiryDate}. Ο ασφαλιστικός σας σύμβουλος θα ήθελε να συζητήσετε τις επιλογές ανανέωσης.`
-            : `Your policy ${renewal.policy.policyNumber} expires on ${expiryDate}. Your insurance advisor would like to discuss renewal options.`
+        const title = {
+            el: `Υπενθύμιση ανανέωσης: ${renewal.policy.insurerName}`,
+            en: `Renewal reminder: ${renewal.policy.insurerName}`,
+        }
+        const message = {
+            el: `Το ασφαλιστήριο ${renewal.policy.policyNumber} λήγει στις ${formatDate(renewal.policy.endDate, "el")}. Ο ασφαλιστικός σας σύμβουλος θα ήθελε να συζητήσετε τις επιλογές ανανέωσης.`,
+            en: `Your policy ${renewal.policy.policyNumber} expires on ${formatDate(renewal.policy.endDate, "en")}. Your insurance advisor would like to discuss renewal options.`,
+        }
 
         await sendNotification({
             userId: renewal.policy.owner.id,

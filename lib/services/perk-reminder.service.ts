@@ -122,9 +122,14 @@ export async function runPerkReminderScan(): Promise<{
             })
             const lang = (user?.preferredLanguage === "en" ? "en" : "el") as "en" | "el"
 
-            const title = lang === "el"
-                ? `💡 Μην ξεχάσετε: ${perk.perkName.el}`
-                : `💡 Don't forget: ${perk.perkName.en}`
+            const localizedTitle = {
+                el: `💡 Μην ξεχάσετε: ${perk.perkName.el}`,
+                en: `💡 Don't forget: ${perk.perkName.en}`,
+            }
+            // The dedupe set below is built from STORED rows, whose title was
+            // resolved to the recipient's language at dispatch — so the key
+            // must use the same arm.
+            const title = localizedTitle[lang]
 
             // Check if already reminded using title prefix + policyId
             const dedupKey = `${perk.userId}:${perk.policyId}:${title.slice(0, 30)}`
@@ -133,14 +138,15 @@ export async function runPerkReminderScan(): Promise<{
             try {
                 const phoneNote = perk.contactPhone ? ` ${perk.contactPhone}` : ""
 
-                const message = lang === "el"
-                    ? `Το ασφαλιστήριο ${perk.insurerName} (${perk.policyNumber}) περιλαμβάνει: ${perk.perkDescription.el}${phoneNote}`
-                    : `Your ${perk.insurerName} policy (${perk.policyNumber}) includes: ${perk.perkDescription.en}${phoneNote}`
+                const message = {
+                    el: `Το ασφαλιστήριο ${perk.insurerName} (${perk.policyNumber}) περιλαμβάνει: ${perk.perkDescription.el}${phoneNote}`,
+                    en: `Your ${perk.insurerName} policy (${perk.policyNumber}) includes: ${perk.perkDescription.en}${phoneNote}`,
+                }
 
                 await sendNotification({
                     userId: perk.userId,
                     eventType: "perk_reminder",
-                    title,
+                    title: localizedTitle,
                     message,
                     relatedObjectType: "policy",
                     relatedObjectId: perk.policyId,
