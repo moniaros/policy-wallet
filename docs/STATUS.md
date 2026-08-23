@@ -1,5 +1,52 @@
 # PolicyWallet — Project Status
 
+## Current phase — dashboard mobile series COMPLETE (Goals 0–5), deploying
+
+`/dashboard` reworked end to end. Evidence: `docs/evidence/dashboard-mobile/RESULT.md`,
+19 fixture captures per run in `data/goal0-prechange/` vs `data/goal5/`.
+
+| | target | Goal 0 | now |
+|---|---|---|---|
+| sections | ≤7 | 9–13 | **6 in every state** |
+| primary CTAs | 1 | 4 | **1** |
+| sub-44 tap targets | 0 | 5–6 per capture | **0** |
+| 1.4.11 interactive controls | 0 | 20 on `heavy` alone | **0 across all 19** |
+| placeholder / fixture content | 0 | 6–11 | **0** |
+| count-consistency | 0 | 1–3 per capture | **0** |
+| duplicate blocks | ≤1 | 2 | **0** |
+| scroll height | must not regress | — | **all 19 shorter, −13.6%** |
+
+### Done
+- **Goal 1-R** — six reported regressions adjudicated before any code changed (two pre-existing, one
+  refuted entirely, one data drift, one fixture text, one genuinely mine); ten open items closed.
+  The finding that mattered was not on the list: `resolveGapContent` titled unauthored slugs with the
+  model's prose and `recommendation-generator` **persisted it to the database**. 18 of 29 authored
+  catalogue rules had no content entry; five lines of business had none at all. All 29 now resolve.
+- **Goal 2** — 13 top-level cards → six `section[id]` landmarks. Three of four primary CTAs were
+  upgrade buttons. The protection plan counted five finite setup steps and an unbounded stream of
+  findings under one bar («11 από 22»); now «3 από 5».
+- **Goal 3** — both dashboard widgets migrated to `describeSeverity()` (severity debt 11 → 9);
+  accessible names for the score ring and the severity chips.
+- **Goal 4** — interactive-control boundaries 1.14–1.70:1 → ≥3:1, scoped by element; all tap targets
+  44px.
+- **Goal 5** — `RESULT.md`.
+
+### Top risks
+1. **The dashboard is authenticated, so production verification is indirect.** `prod-smoke` asserts
+   public routes and that `/dashboard` redirects rather than 500s; the rendered dashboard itself is
+   verified by Sentry silence and by 19 local fixture captures, not by a production assertion.
+2. The Prisma model does not declare the unique index the database enforces on
+   `(policy_id, gap_definition_id)` — `upsert` cannot address it. Needs a migration.
+3. The dashboard fixtures cannot produce recommendation steps, so the plan-mixing fix was verified
+   on the Pro account instead. A fixture that cannot produce a defect cannot confirm its fix.
+
+### Next 3 actions
+1. Watch Sentry for `/dashboard` render errors after this deploy.
+2. Declare the missing `@@unique([policyId, gapDefinitionId])` and migrate.
+3. Give the dashboard fixture matrix a state that generates recommendation steps.
+
+---
+
 ## DEPLOYED — 2026-08-23, `640f0fd2` live in production
 
 Two commits shipped back to back, both CI-green → Vercel production success.
