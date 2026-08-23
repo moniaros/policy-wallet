@@ -14,7 +14,7 @@ import { mkdirSync, writeFileSync } from "fs"
 import path from "path"
 import { dismissCookieBanner } from "../helpers/ui"
 import { clippedContent, countConsistency, duplicateBlocks, internalTokenLeaks } from "./dashboard"
-import { settle, scrollHeight, sectionCount, containerCount, smallTapTargets, nonTextContrastFailures } from "./policy-detail"
+import { settle, scrollHeight, sectionCount, containerCount, smallTapTargets, nonTextContrastFailures } from "./metrics"
 
 // Same run-labelling rule as dashboard-baseline.spec.ts: a run must be NAMED to
 // overwrite anything, and an unnamed one writes to `current`. This spec kept

@@ -27,7 +27,7 @@ import { readFileSync } from "fs"
 import path from "path"
 import { dismissCookieBanner } from "../helpers/ui"
 import { FIXTURE_SPECS, fixtureDates, provisionMatrixFixtures } from "./fixtures"
-import { WIDTHS, settle, nonTelPhoneNumbers, clippedLabels } from "./policy-detail"
+import { WIDTHS, settle, nonTelPhoneNumbers, clippedLabels } from "./metrics"
 
 const HEIGHT: Record<number, number> = { 320: 720, 390: 844, 430: 932 }
 

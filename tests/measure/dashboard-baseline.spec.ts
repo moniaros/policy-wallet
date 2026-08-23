@@ -4,7 +4,7 @@
  * 15 matrix captures (5 portfolio states × 320/390/430) + 3 analysis-state
  * captures at 320px on `heavy` + 1 Pro-tier capture. Locale `el`.
  *
- * Every shared metric is imported from ./policy-detail UNCHANGED, so the two
+ * Every shared metric is imported from ./metrics UNCHANGED, so the two
  * surfaces' numbers are comparable and a definition cannot fork. Only the two
  * dashboard-specific metrics live in ./dashboard.
  *
@@ -32,7 +32,7 @@ import {
     repeatedStrings,
     contrastFailures,
     nonTextContrastFailures,
-} from "./policy-detail"
+} from "./metrics"
 
 const EVIDENCE = path.join(process.cwd(), "docs", "evidence", "dashboard-mobile")
 /**

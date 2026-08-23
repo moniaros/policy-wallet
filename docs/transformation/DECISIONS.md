@@ -201,3 +201,84 @@ services whose bug reports existed — and the two that had never been reported 
 The single shared constant was created, which is the right move, and then not adopted everywhere.
 `NON_LIVE_POLICY_STATUSES` needs a guard asserting that no Policy query filters on a bare
 `status: "active"`, or the next service written will make it four of six.
+
+---
+
+## D-008 — The «809 missing Greek keys» finding is refuted; i18n key parity is compiler-enforced
+
+date: 2026-08-23
+raised_by: Orchestrator, reviewing the T-016 string inventory
+decision: **Retracted, not actioned.** There are zero missing keys in either direction.
+
+The mechanical string sweep reported 809 keys present in `en` but missing from `el`, and 814 the
+other way — which would have been the largest single defect in the run and would have queued a
+fabricated 800-key translation project.
+
+The near-symmetry was the tell: two bundles cannot each be missing ~800 of the other's keys unless
+the parser is mis-walking the nesting.
+
+**Key parity cannot drift in this codebase.** `el.ts:3318` declares
+`export type TranslationKeys = typeof el`; `en.ts:4` declares `export const en: TranslationKeys = {…}`.
+A missing key is a type error and an extra key is an excess-property error.
+
+Proven by running it rather than reasoning about it — deleting one key from `en.ts` yields:
+
+```
+en.ts(91,5): error TS2741: Property 'insightsShort' is missing in type … but required in type …
+```
+
+`npm run type-check` is green on HEAD, so the key sets are identical.
+
+**The general rule this run adopts:** a mechanical sweep's *findings* are evidence; its *totals* are
+a claim about its own parser and must be checked against something independent before they are
+believed. Here the independent check already existed and is run by CI on every commit. The
+inventory's substantive sections — Latin contamination, placeholder tokens, longest strings,
+interpolation mismatches, duplicates — were spot-checked and stand; only the gap counts are
+retracted, in a correction box at the top of the document rather than by silently editing the
+number, so the retraction is visible to anyone who read the original.
+
+## D-009 — A guard that CI does not run is not a guard
+
+date: 2026-08-23
+raised_by: Adversarial Reviewer (T-011 review)
+decision: `metrics-pure.equivalence.test.ts` moved `tests/measure/` → `tests/unit/measure-metrics-equivalence.test.ts`.
+
+T-011 wrote a 36-assertion equivalence guard proving the extracted pure predicates behave
+identically to the inline originals, and correctly flagged that it sat outside the CI path. CI runs
+`vitest --run tests/unit`; the file was in `tests/measure/`, so it would have passed forever without
+ever executing. Same family as D-005 — the *universe* a check runs in is part of the check. Moved,
+import path rewritten, 36/36 green inside `tests/unit`.
+
+---
+
+## D-010 — A subagent's `git mv` stages into MY index; verify the index, not the intent
+
+date: 2026-08-23
+raised_by: Orchestrator (self-audit)
+decision: Before every commit, print `git diff --cached --name-only` and confirm it matches the
+item's `file_boundary`. Staging discipline alone is insufficient.
+
+Commit `61dd4297` (a docs-only T-014 commit) contains
+`tests/measure/{policy-detail.ts => metrics.ts}` with a zero-byte diff, which its message does not
+mention.
+
+Cause: I staged narrowly every time — `git add docs/transformation/` — but the T-011 subagent ran
+`git mv`, and **`git mv` writes to the index immediately**. `git commit` then commits the whole
+index, not the paths I added. Narrow `git add` does not protect against a concurrent actor who
+stages on their own.
+
+This matters beyond tidiness because other sessions are live in this working tree
+(`marketing-site-remediation`, `full-app-assessment`, and others). The same mechanism could have
+swept a different session's work into a commit of mine, which is the specific hazard recorded in
+this project's memory.
+
+**Audited all seven run commits.** The zero-byte rename is the only unintended file; no foreign
+work was captured; `AGENTS.md`, `CLAUDE.md` and `tests/CLAUDE.md` remain unstaged throughout, which
+is correct — they belong to another session.
+
+Not reverting the rename: it is legitimate T-011 work that this run would have committed anyway,
+its content diff is empty, and rewriting shared history is prohibited. Recorded here instead so the
+history is explained rather than silently wrong.
+
+**Standing practice from now on:** `git diff --cached --name-only` before each commit, and prefer
+`git commit -- <explicit paths>` when a subagent has been active.

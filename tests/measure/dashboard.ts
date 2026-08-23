@@ -1,12 +1,22 @@
 /**
- * The TWO metrics this surface adds. Everything else — scroll height, sections,
- * containers, duplicate facts, tap targets, clipped labels, Latin sentences,
- * 1.4.3 and 1.4.11 — is imported from `./policy-detail` unchanged, so a metric
- * definition can never fork between the two surfaces and make their numbers
- * incomparable.
+ * The metrics this surface adds. Most of what a dashboard capture records —
+ * scroll height, sections, containers, duplicate facts, tap targets, clipped
+ * labels, Latin sentences, 1.4.3 and 1.4.11 — is imported from `./metrics`
+ * (renamed from `./policy-detail`, T-011) unchanged, so a metric definition
+ * can never fork between surfaces and make their numbers incomparable.
+ *
+ * `internalTokenLeaks` / `findInternalTokens` used to be DEFINED here, but the
+ * pure predicate (leakage detection over a bare string, no DOM) needs to be
+ * importable by more than this one surface — T-013's outbound-copy inventory
+ * runs it against rendered email/push template strings, which never touch a
+ * page. Same shared-definition argument as the file rename: it now lives in
+ * `./metrics` and is re-exported here so existing callers of
+ * `import { internalTokenLeaks } from "./dashboard"` need no changes.
  */
 
 import type { Page } from "@playwright/test"
+
+export { internalTokenLeaks, findInternalTokens } from "./metrics"
 
 /**
  * COUNT-CONSISTENCY FAILURES.
@@ -208,55 +218,18 @@ export async function duplicateBlocks(
 }
 
 /**
- * Internal identifiers that must never reach a customer (D5, invariant 3).
- *
- * Deliberately narrow so it cannot cry wolf: fixture-shaped identifiers, raw
- * UUIDs, and snake_case enum tokens standing alone as content. A brand name or
- * an acronym is not a leak.
- */
-export async function internalTokenLeaks(page: Page): Promise<string[]> {
-    return page.evaluate(() => {
-        const out: string[] = []
-        const shell = document.querySelector(".pw-page-shell") || document.body
-        const walker = document.createTreeWalker(shell, NodeFilter.SHOW_TEXT)
-        let n: Node | null
-        while ((n = walker.nextNode())) {
-            const el = n.parentElement
-            if (!el) continue
-            const cs = getComputedStyle(el)
-            if (cs.display === "none" || cs.visibility === "hidden") continue
-            if (el.getBoundingClientRect().width === 0) continue
-            const text = (n.textContent || "").trim()
-            if (!text) continue
-            const hits: string[] = []
-            if (/\bE2E[-\s]/i.test(text)) hits.push("E2E fixture identifier")
-            // PLACEHOLDER / DRAFT / TEST content must never reach a customer.
-            // Extended here rather than in a second probe so one definition
-            // covers both classes: a fixture identifier and a fixture STRING are
-            // the same failure — internal material rendered as product.
-            if (/δοκιμαστικ\w*|υπόδειγμα|placeholder|lorem ipsum|\bTODO\b|\bFIXME\b/i.test(text)) {
-                hits.push("placeholder/draft content")
-            }
-            if (/\bPENDING-|__[A-Z_]+__/.test(text)) hits.push("pending/sentinel marker")
-            // A standalone English word like "sample"/"draft"/"test" is too
-            // common to match blindly; require it to be labelling the content.
-            if (/\((?:sample|draft|test|dummy)[^)]*\)/i.test(text)) hits.push("content marked as sample/draft")
-            if (/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(text)) hits.push("UUID")
-            if (/\b(?:c[a-z0-9]{24})\b/.test(text)) hits.push("cuid")
-            // A bare snake_case token as content — the raw-enum class.
-            if (/(?:^|\s)[a-z]+(?:_[a-z]+){1,3}(?:\s|$)/.test(text) && !/https?:|@/.test(text)) {
-                hits.push("snake_case enum token")
-            }
-            if (hits.length) out.push(`${hits.join("+")}: "${text.slice(0, 80)}"`)
-        }
-        return Array.from(new Set(out))
-    })
-}
-
-/**
  * CLIPPED TEXT — the dashboard's own elements.
  *
- * `clippedLabels` in ./policy-detail is imported and used unchanged, but its
+ * @deprecated Reconciled into `truncationFailures()` in `./metrics` (T-011),
+ * which is the UNION of this function and `clippedLabels` — every element
+ * this one catches (a CSS truncation class whose content is actually
+ * clipped), plus the generic `scrollWidth > clientWidth` scan the other one
+ * ran on a narrower selector list. Kept here, unchanged, only because
+ * existing baseline captures under docs/evidence/dashboard-mobile/ record a
+ * `clippedContent` field and re-running the baseline spec must keep producing
+ * it for continuity. New callers should use `truncationFailures()` instead.
+ *
+ * `clippedLabels` in ./metrics is imported and used unchanged, but its
  * selector list was written for that surface (nav links, headings, `dt`, `th`,
  * `.pw-kicker`). The dashboard truncates in `<p>` and `<span>` carrying
  * `truncate` / `line-clamp-*`, which that list does not reach — so it reported

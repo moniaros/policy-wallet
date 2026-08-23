@@ -1,10 +1,18 @@
 /**
- * Measurement definitions for the policy-detail mobile series
- * (docs/evidence/policy-detail-mobile). ONE implementation, used verbatim by
- * the BASELINE pass (Goal 0) and the RESULT pass (Goal 5) — if these
- * definitions drift between passes the before/after comparison is worthless,
- * so nothing in here may be edited between the two runs except to fix a bug,
- * and any such fix invalidates the baseline and forces a re-run.
+ * SHARED measurement definitions — imported by every surface's own spec/module
+ * (originally just the policy-detail mobile series, now also dashboard.ts and
+ * pro-home.spec.ts; a third surface is expected next). This file is the ONE
+ * place these definitions live — renamed from policy-detail.ts (T-011) so a
+ * shared definition stops living inside a file named after a single surface,
+ * which is how definitions fork when the next surface arrives.
+ *
+ * Evidence use: for the policy-detail mobile series
+ * (docs/evidence/policy-detail-mobile), the five core metrics below are ONE
+ * implementation used verbatim by the BASELINE pass (Goal 0) and the RESULT
+ * pass (Goal 5) — if these definitions drift between passes the before/after
+ * comparison is worthless, so nothing in here may be edited between the two
+ * runs except to fix a bug, and any such fix invalidates the baseline and
+ * forces a re-run.
  *
  * Metrics (from the goal series brief):
  *   1. Scroll height       — documentElement.scrollHeight after settle()
@@ -688,10 +696,45 @@ export async function nonTextContrastFailures(page: Page): Promise<string[]> {
 // Diagnostic probes (candidate defects; not pass/fail metrics)
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Latin-script sentence scan for the el locale (B2 / untranslated strings). */
+/**
+ * Brand names / acronyms that are Latin script by nature and must not be
+ * flagged as untranslated English. Read verbatim out of the pre-T-011
+ * `latinSentences` implementation — do not add to this without checking who
+ * else now imports it (T-013's outbound-copy inventory runs the same list
+ * against email/push template strings, which have no DOM to scope the check).
+ */
+const LATIN_SENTENCE_ALLOWLIST =
+    /^(PolicyWallet|Interamerican|Generali|AXA|NN|Eurolife|ERGO|Allianz|MAPFRE|AIG|Groupama|AI|PDF|OK|FAQ|IBAN|GDPR|SSL|USD|EUR|API|Q&A|VIP|CO2|GPS|SOS|24\/7|e-mail|email|Mercedes|Toyota|BMW|Audi|Ford|Opel|AW P&C SA|AFFIDEA)$/i
+
+/**
+ * PURE — Latin-script sentence detector for `el` (Greek) output (B2 /
+ * untranslated strings). Operates on a single string; returns `[text.slice(0,
+ * 140)]` when it contains a run of ≥3 consecutive Latin words of ≥3 letters
+ * not covered by the brand/acronym allowlist, else `[]`.
+ *
+ * Extracted from the DOM-walking `latinSentences(page)` below so the SAME
+ * locale-purity definition can run against a string that never touched a
+ * browser — a rendered email or push template, for instance — not just page
+ * text. No detection logic changed in the extraction; this is the exact
+ * per-node check the old implementation ran inline, unindented.
+ */
+export function findLatinSentences(text: string): string[] {
+    const trimmed = text.trim()
+    if (trimmed.length < 12) return []
+    // ≥3 consecutive Latin words of ≥3 letters = sentence-like English.
+    const m = trimmed.match(/\b[A-Za-z][a-z]{2,}(?:\s+[A-Za-z(][A-Za-z0-9().,'%€-]{2,}){2,}/)
+    if (!m) return []
+    if (LATIN_SENTENCE_ALLOWLIST.test(m[0].trim())) return []
+    return [trimmed.slice(0, 140)]
+}
+
+/**
+ * DOM WRAPPER — unchanged behaviour. Extracts every visible text node's
+ * trimmed content in-browser (identical visibility filter to before), then
+ * runs the pure predicate above over each string outside the page context.
+ */
 export async function latinSentences(page: Page): Promise<string[]> {
-    return page.evaluate(() => {
-        const ALLOW = /^(PolicyWallet|Interamerican|Generali|AXA|NN|Eurolife|ERGO|Allianz|MAPFRE|AIG|Groupama|AI|PDF|OK|FAQ|IBAN|GDPR|SSL|USD|EUR|API|Q&A|VIP|CO2|GPS|SOS|24\/7|e-mail|email|Mercedes|Toyota|BMW|Audi|Ford|Opel|AW P&C SA|AFFIDEA)$/i
+    const texts = await page.evaluate(() => {
         const out: string[] = []
         const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
         let n: Node | null
@@ -704,15 +747,15 @@ export async function latinSentences(page: Page): Promise<string[]> {
             if (r.width === 0 || r.height === 0) continue
             if (r.right <= 0 || r.bottom <= 0 || r.left >= document.documentElement.clientWidth) continue
             const text = (n.textContent || "").trim()
-            if (text.length < 12) continue
-            // ≥3 consecutive Latin words of ≥3 letters = sentence-like English.
-            const m = text.match(/\b[A-Za-z][a-z]{2,}(?:\s+[A-Za-z(][A-Za-z0-9().,'%€-]{2,}){2,}/)
-            if (!m) continue
-            if (ALLOW.test(m[0].trim())) continue
-            out.push(text.slice(0, 140))
+            if (text) out.push(text)
         }
-        return Array.from(new Set(out))
+        return out
     })
+    const out = new Set<string>()
+    for (const text of texts) {
+        for (const hit of findLatinSentences(text)) out.add(hit)
+    }
+    return Array.from(out)
 }
 
 /** Text-y phone numbers not wrapped in tel: (B9). */
@@ -742,7 +785,18 @@ export async function nonTelPhoneNumbers(page: Page): Promise<string[]> {
     })
 }
 
-/** Clipped labels: scrollWidth > clientWidth on nav/tab/label elements (B3). */
+/**
+ * Clipped labels: scrollWidth > clientWidth on nav/tab/label elements (B3).
+ *
+ * @deprecated Reconciled into `truncationFailures()` below (T-011), the UNION
+ * of this function and dashboard.ts's `clippedContent` — the run contract
+ * defines exactly one truncation-failures metric. Kept here, unchanged,
+ * because `policy-detail-goal1.spec.ts`'s B3/B6 assertions and several
+ * baseline specs' committed JSON output (`docs/evidence/.../data/current/*
+ * .json`, field `clippedLabels`) depend on this EXACT selector list and
+ * output shape; changing it would silently change what a passing test means.
+ * New callers should use `truncationFailures()` instead.
+ */
 export async function clippedLabels(page: Page): Promise<string[]> {
     return page.evaluate(() => {
         const out: string[] = []
@@ -815,5 +869,198 @@ export async function repeatedStrings(page: Page): Promise<{ text: string; count
         return Array.from(byText.entries())
             .filter(([, w]) => w.length > 1)
             .map(([text, where]) => ({ text: text.slice(0, 80), count: where.length, where }))
+    })
+}
+
+/**
+ * PURE — internal-identifier / placeholder-content leak detector (D5,
+ * invariant 3): a string that must never reach a customer. Deliberately
+ * narrow so it cannot cry wolf: fixture-shaped identifiers, raw UUIDs/cuids,
+ * and snake_case enum tokens standing alone as content; a brand name or an
+ * acronym is not a leak. Returns the REASON tags that matched (joined by the
+ * caller), not a formatted string, so a caller with no DOM — T-013's
+ * outbound-copy inventory, running this against rendered email/push template
+ * strings — gets the same classification a page-scan gets.
+ *
+ * Moved here from dashboard.ts (T-011): the predicate is not
+ * dashboard-specific, and a shared leakage/locale-purity definition living
+ * inside one surface's file is exactly how definitions fork when the next
+ * surface needs it — the same argument that renamed policy-detail.ts. No
+ * detection regex changed in the move.
+ */
+export function findInternalTokens(text: string): string[] {
+    const hits: string[] = []
+    if (!text) return hits
+    if (/\bE2E[-\s]/i.test(text)) hits.push("E2E fixture identifier")
+    // PLACEHOLDER / DRAFT / TEST content must never reach a customer.
+    // Extended here rather than in a second probe so one definition
+    // covers both classes: a fixture identifier and a fixture STRING are
+    // the same failure — internal material rendered as product.
+    if (/δοκιμαστικ\w*|υπόδειγμα|placeholder|lorem ipsum|\bTODO\b|\bFIXME\b/i.test(text)) {
+        hits.push("placeholder/draft content")
+    }
+    if (/\bPENDING-|__[A-Z_]+__/.test(text)) hits.push("pending/sentinel marker")
+    // A standalone English word like "sample"/"draft"/"test" is too
+    // common to match blindly; require it to be labelling the content.
+    if (/\((?:sample|draft|test|dummy)[^)]*\)/i.test(text)) hits.push("content marked as sample/draft")
+    if (/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(text)) hits.push("UUID")
+    if (/\b(?:c[a-z0-9]{24})\b/.test(text)) hits.push("cuid")
+    // A bare snake_case token as content — the raw-enum class.
+    if (/(?:^|\s)[a-z]+(?:_[a-z]+){1,3}(?:\s|$)/.test(text) && !/https?:|@/.test(text)) {
+        hits.push("snake_case enum token")
+    }
+    return hits
+}
+
+/**
+ * DOM WRAPPER — unchanged behaviour, still scoped to `.pw-page-shell` (the
+ * page's own content, not the app shell around it) exactly as before.
+ * Extracts each visible text node's trimmed content in-browser, then runs the
+ * pure predicate above outside the page context and reassembles the same
+ * `"reason+reason: \"text\""` format the old inline version produced.
+ */
+export async function internalTokenLeaks(page: Page): Promise<string[]> {
+    const texts = await page.evaluate(() => {
+        const out: string[] = []
+        const shell = document.querySelector(".pw-page-shell") || document.body
+        const walker = document.createTreeWalker(shell, NodeFilter.SHOW_TEXT)
+        let n: Node | null
+        while ((n = walker.nextNode())) {
+            const el = n.parentElement
+            if (!el) continue
+            const cs = getComputedStyle(el)
+            if (cs.display === "none" || cs.visibility === "hidden") continue
+            if (el.getBoundingClientRect().width === 0) continue
+            const text = (n.textContent || "").trim()
+            if (text) out.push(text)
+        }
+        return out
+    })
+    const out = new Set<string>()
+    for (const text of texts) {
+        const hits = findInternalTokens(text)
+        if (hits.length) out.add(`${hits.join("+")}: "${text.slice(0, 80)}"`)
+    }
+    return Array.from(out)
+}
+
+/**
+ * TRUNCATION FAILURES — the ONE definition the run contract specifies:
+ *
+ *   "elements sourced from the `el` bundle where scrollWidth > clientWidth,
+ *   plus any server-side string slicing on Greek content, plus mid-word
+ *   breaks on brand names."
+ *
+ * (The latter two clauses are not DOM-observable — a truncated server-side
+ * slice and a rendered-short ellipsis look identical in the browser — and are
+ * out of scope for this function; they need a source-vs-rendered text diff,
+ * which belongs to whatever probe reads the extraction payload, not this one.)
+ *
+ * This is the UNION of the two definitions this repo grew independently
+ * before the contract was written down:
+ *   - `clippedLabels` (deprecated, above): a fixed selector list
+ *     (nav/heading/dt/th/`.pw-kicker`), generic `scrollWidth > clientWidth`.
+ *   - dashboard.ts's `clippedContent` (deprecated): any element carrying a
+ *     CSS truncation class, checked in both dimensions.
+ * Neither alone is the metric — `clippedLabels`'s selector list misses a
+ * truncated `<p>` insurer name (the defect `clippedContent` was written to
+ * catch); `clippedContent`'s CSS-class gate misses a heading that overflows
+ * its box with no truncation class at all (a sideways scrollbar the reader
+ * never finds, which `clippedLabels` was written to catch).
+ *
+ *   (a) ANY visible element, anywhere in the page, whose content overflows
+ *       its box horizontally (`scrollWidth > clientWidth + 1`) —
+ *       reason "overflow". This is `clippedLabels`'s check, widened from its
+ *       selector list to every element, per the brief.
+ *   (b) ANY visible element carrying a CSS truncation class (`truncate`,
+ *       `line-clamp-*`, `text-overflow: ellipsis`, or `overflow: hidden` +
+ *       `white-space: nowrap`) whose content is ACTUALLY being clipped, in
+ *       EITHER dimension — reason "css-truncation". Vertical clipping
+ *       (`line-clamp`) is invisible to (a), which only ever looks sideways;
+ *       `clientHeight`/`scrollHeight` are reported alongside for that case
+ *       so the record still tells the truth about which axis clipped.
+ *
+ * An element already recorded under (a) is not recorded again under (b) even
+ * if it also carries a truncation class — one element, one record.
+ */
+export interface TruncationFailure {
+    selector: string
+    text: string
+    scrollWidth: number
+    clientWidth: number
+    reason: "overflow" | "css-truncation"
+    /** Present only when a css-truncation record clipped vertically (line-clamp). */
+    scrollHeight?: number
+    clientHeight?: number
+}
+
+export async function truncationFailures(page: Page): Promise<TruncationFailure[]> {
+    return page.evaluate(() => {
+        const visible = (el: HTMLElement) => {
+            const cs = getComputedStyle(el)
+            if (cs.display === "none" || cs.visibility === "hidden") return false
+            const r = el.getBoundingClientRect()
+            if (r.width === 0 || r.height === 0) return false
+            if (r.right <= 0 || r.bottom <= 0 || r.left >= document.documentElement.clientWidth) return false
+            return true
+        }
+        const selectorOf = (el: HTMLElement): string => {
+            const id = el.id ? `#${el.id}` : ""
+            const cls = el.classList.length ? "." + Array.from(el.classList).slice(0, 2).join(".") : ""
+            return `${el.tagName.toLowerCase()}${id}${cls}`
+        }
+
+        const out: {
+            selector: string
+            text: string
+            scrollWidth: number
+            clientWidth: number
+            reason: "overflow" | "css-truncation"
+            scrollHeight?: number
+            clientHeight?: number
+        }[] = []
+        const seen = new Set<Element>()
+
+        // (a) generic horizontal overflow, any element.
+        document.querySelectorAll<HTMLElement>("body *").forEach((el) => {
+            if (!visible(el)) return
+            if (el.scrollWidth > el.clientWidth + 1) {
+                seen.add(el)
+                out.push({
+                    selector: selectorOf(el),
+                    text: (el.textContent || "").trim().slice(0, 80),
+                    scrollWidth: el.scrollWidth,
+                    clientWidth: el.clientWidth,
+                    reason: "overflow",
+                })
+            }
+        })
+
+        // (b) CSS-truncation-class elements actually clipping, not already counted.
+        document.querySelectorAll<HTMLElement>("body *").forEach((el) => {
+            if (seen.has(el)) return
+            if (!visible(el)) return
+            const cs = getComputedStyle(el)
+            const cls = String(el.className || "")
+            const truncating =
+                /\btruncate\b|\bline-clamp-\d+\b/.test(cls) ||
+                cs.textOverflow === "ellipsis" ||
+                cs.webkitLineClamp !== "none" ||
+                (cs.overflow === "hidden" && cs.whiteSpace === "nowrap")
+            if (!truncating) return
+            const clippedH = el.scrollWidth > el.clientWidth + 1
+            const clippedV = el.scrollHeight > el.clientHeight + 1
+            if (!clippedH && !clippedV) return
+            out.push({
+                selector: selectorOf(el),
+                text: (el.textContent || "").trim().slice(0, 80),
+                scrollWidth: el.scrollWidth,
+                clientWidth: el.clientWidth,
+                reason: "css-truncation",
+                ...(clippedV ? { scrollHeight: el.scrollHeight, clientHeight: el.clientHeight } : {}),
+            })
+        })
+
+        return out
     })
 }

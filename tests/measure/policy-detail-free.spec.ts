@@ -29,7 +29,7 @@ import {
     smallTapTargets,
     clippedLabels,
     repeatedStrings,
-} from "./policy-detail"
+} from "./metrics"
 
 const EVIDENCE = path.join(process.cwd(), "docs", "evidence", "policy-detail-mobile")
 const SHOTS = path.join(EVIDENCE, "screenshots", "free")

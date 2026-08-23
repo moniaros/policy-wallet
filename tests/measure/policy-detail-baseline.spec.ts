@@ -3,7 +3,7 @@
  *
  * Runs the 18-capture evidence matrix (motor/health × active/expiring/expired
  * × 320/390/430, locale el) with the shared metric definitions in
- * ./policy-detail.ts, saves full-page screenshots and per-capture JSON under
+ * ./metrics.ts, saves full-page screenshots and per-capture JSON under
  * docs/evidence/policy-detail-mobile/, and takes candidate-defect probes.
  *
  * Also captures the REAL analysed policy already on the E2E account
@@ -34,7 +34,7 @@ import {
     dateFacts,
     repeatedStrings,
     type FactSpec,
-} from "./policy-detail"
+} from "./metrics"
 
 const EVIDENCE = path.join(process.cwd(), "docs", "evidence", "policy-detail-mobile")
 /**
