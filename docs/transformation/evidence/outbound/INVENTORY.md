@@ -1,0 +1,93 @@
+# Outbound copy inventory (T-013, enumeration half)
+
+§5.5.4: "This is where §2.2's worst violation lives and it is invisible from the UI."
+
+This document is the **structural** enumeration — which template renders what, from which
+producer. The metric run (leakage, locale purity against rendered text) is the second half and is
+blocked on T-011's pure text predicates, because §5.1 forbids copying a metric definition to get
+there sooner.
+
+Dispatch is safe to render against: T-001 made the stub structural, so a render cannot send.
+
+## Templates
+
+| template | functions | B2C? | renders the score? | other findings |
+|---|---|---|---|---|
+| `lib/email/templates/weekly-digest.ts` | `getWeeklyDigestEmail` | yes | **YES** — `${healthScore}%` under «Βαθμολογία προστασίας», line 118 | trend claim already removed and guarded |
+| `lib/email/templates/engagement-drip.ts` | `getWelcomeEmail`, `getDay3Email`, `getDay7Email` | yes | **YES** — `${healthScore}%`, line 115 | **green/amber gap tile, line 123** — see below |
+| `lib/email/templates/churn-prevention.ts` | `getChurnDay7/14/30/60Email` | yes | advertises it — «🎯 Σκορ υγείας κάλυψης σε πραγματικό χρόνο», line 91 | a marketing claim about the metric, not the customer's value |
+| `lib/email/templates/dsr-emails.ts` | 4 fns | yes | no | clean on this axis |
+| `lib/email/templates/agent-emails.ts` | 3 fns | **no — B2B** | no | out of scope; confirm it shares no template with a B2C path before touching `base-template.ts` |
+| `lib/mail-templates.ts` | `buildNotificationEmail` | yes | no | the shared branded shell every non-prerendered notification uses |
+| `lib/notifications/templates.ts` | var registry | yes | **declares** `protection_score_changed: [previousScore, currentScore, scoreDelta]`, line 57 | |
+| `lib/notifications/risk-events.ts` | `emit(...)` | yes | **YES — the emitter**, lines 176-190 | produces the exact string the brief quotes |
+
+**Score-in-outbound sites: 5.** The brief named 1.
+
+---
+
+## The finding that is worse than the one the brief describes
+
+The brief's §2.2 example is a 42-point swing emailed to a policyholder. Real, and confirmed. But
+the same emails carry a §2.3 violation that nothing in the repo guards, and it fires on the state
+most new customers are in.
+
+`lib/services/engagement-drip.service.ts:164-167`:
+
+```
+const gapCount  = openGaps.length
+const healthScore = provisionalProtectionScore(policyCount, openGaps.map(g => g.severity))
+```
+
+`lib/services/gap-engine/protection-score.ts`:
+
+```
+if (policyCount === 0) return null
+const penalty = gapSeverities.reduce(...)   // [] → 0
+return Math.max(0, Math.min(100, 100 - penalty))   // → 100
+```
+
+So for a customer whose policies exist but have **never been analysed**, `openGaps` is empty and:
+
+- `healthScore` → **100**, rendered as «Βαθμολογία προστασίας 100%»
+- `gapCount` → **0**, rendered in a tile whose background is
+  `stats.gapCount > 0 ? '#FEF3C7' : '#F0FDF4'` — **green**
+
+We email a perfect protection score and a green all-clear to someone whose documents nobody has
+read. Zero findings because the engine never looked, rendered as reassurance, in an outbound
+channel the customer cannot argue with.
+
+**The root cause is a definition, not a bug.** `provisionalProtectionScore` implements "nothing to
+score" as `policyCount === 0`. The honest predicate is "nothing *analysed*" — which is a different
+question, and the one §2.3 exists to force. The `policyCount === 0` guard catches the empty
+portfolio, which is the case somebody thought of, and misses the unanalysed portfolio, which is
+the case every new customer passes through on their way in.
+
+Three invariants in one render:
+- **§2.2** — the score is in an email at all.
+- **§2.3** — an all-clear derived from a check that never ran.
+- **WCAG 1.4.1 / §2.1** — green versus amber is the sole carrier of "this is fine".
+
+### Why no guard caught it
+
+- `score-containment.test.ts` — universe is `components/` + `app/`; cannot see `lib/` (D-005).
+- `email-content-honesty.test.ts` — scans these very templates, but asserts only that no score
+  *trend* is claimed. It explicitly permits the value, and says nothing about the value's basis.
+- `all-clear-honesty.test.ts` / `protection-score-honesty.test.tsx` — in-product surfaces.
+
+The honesty rule has been applied to four in-product surfaces and to none of the outbound ones.
+
+---
+
+## Phase 1 consequences
+
+1. Removing the score from templates is **not sufficient** — `risk-events.ts` emits an entire
+   event type built on it, and `engagement-drip.service.ts` computes it before any template is
+   involved. Fix at the producer, per `email-content-honesty.test.ts`'s own precedent: it already
+   learned this lesson once, when guarding the template passed while the service still emitted 0.
+2. `provisionalProtectionScore`'s "nothing to score" predicate is wrong independently of outbound,
+   and it is imported elsewhere — changing it needs its own blast-radius check. Its *arithmetic* is
+   out of scope per §0.10; the **basis on which it returns a number at all** is not arithmetic, it
+   is the honesty rule, and it is in scope.
+3. The green/amber tile is a WCAG 1.4.1 failure on its own and must carry a text equivalent
+   regardless of what happens to the score.

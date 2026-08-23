@@ -121,3 +121,52 @@ root is still an assumption, and it is a harder one to spot because the guard lo
 Consequence for Phase 1 item 1: extend the existing guard (§11.1 forbids a second), with outbound
 templates FORBIDDEN rather than sanctionable — a sanctioned surface is one that carries the
 qualifier at the point of use, and an email cannot carry a disclosure the reader can open.
+
+---
+
+## D-006 — The score's BASIS is in scope; only its arithmetic is not
+
+date: 2026-08-23
+raised_by: Product-Truth (Opus 5)
+decision: Changing when `provisionalProtectionScore` returns a number **at all** is in scope.
+Changing the weighted-average computation is not.
+
+§0.10 and §12.4 put "protection score arithmetic" out of scope and rendering in scope. The
+unanalysed/all-expired finding sits on the line, so the line is drawn here rather than argued
+about later.
+
+- **Out of scope (arithmetic):** the severity weights `{critical: 25, high: 15, medium: 8, low: 3}`,
+  the 0-100 clamp, category weighting in `calculateProtectionScore`.
+- **In scope (basis / rendering):** the `if (policyCount === 0) return null` predicate — it decides
+  whether a number may be produced, which is the honesty rule, not a calculation. A function that
+  returns 100 for a portfolio nobody analysed is not computing wrongly; it is answering a question
+  nobody could answer.
+
+This is the same distinction `scoreSupport()` and the §2.3 guards already draw elsewhere in the
+repo, applied to the producer instead of the render site.
+
+Blast-radius note for whoever implements it: `provisionalProtectionScore` is imported by
+`engagement-drip.service.ts`, `weekly-digest.service.ts` and `tests/unit/email-content-honesty.test.ts`
+at minimum. Enumerate before changing; the existing guard asserts its current null-behaviour and
+will need updating in the same commit.
+
+---
+
+## D-007 — `status: "active"` is not an expiry check, anywhere
+
+date: 2026-08-23
+raised_by: Orchestrator
+decision: Every read of `Policy.status` used to mean "in force" is replaced by
+`resolvePolicyLifecycle`. First known offender: `lib/services/engagement-drip.service.ts:151`.
+
+**Nothing in the codebase ever writes `status: 'expired'`** — verified by grep. The column is a
+stored value that never expires; in-force-ness is derived at render time on the Athens calendar by
+`resolvePolicyLifecycle` (`lib/policy-status.ts`), which `CLAUDE.md` already names as the single
+source for status, expiry and every countdown.
+
+So `where: { status: "active" }` reads as "not cancelled", not "in force". In the drip service that
+makes an entirely lapsed portfolio score 100 — see H-001.
+
+This is a *class*, not one bug. Any query filtering on `status: "active"` to decide whether cover
+exists is wrong the same way. Enumerating those call sites is a Phase 0 sweep, and the guard that
+falls out of it belongs in §11.2 alongside the lifecycle rule.
