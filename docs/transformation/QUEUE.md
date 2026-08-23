@@ -76,7 +76,7 @@ owner: Orchestrator (Opus 5) · blocked_by: T-010
 Per D-004 the contract's evidence is partly stale. Record reproduces / does not reproduce /
 reproduces differently, with width, state, tier, root cause file:line, and fixture-vs-code-confirmed.
 
-### T-015 — Baseline every surface · `todo` — THE ONLY THING LEFT BEFORE THE PHASE 0 GATE
+### T-015 — Baseline every surface · `in_progress` — THE ONLY THING LEFT BEFORE THE PHASE 0 GATE
 owner: Evidence (Sonnet 5) · blocked_by: T-012 only (T-011 done)
 
 **Ready to run:** a dev server is live on `:3000`, `playwright.config.ts` has a `measure` project,

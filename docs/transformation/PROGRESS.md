@@ -307,3 +307,35 @@ baselines do not yet satisfy.
    confirm is 5 score sites, not 4.
 3. **T-012** — degraded fixtures. Nothing in Phase 1 can be verified without them, and the
    channel-duplicated notification fixture must include both a keyed and an unkeyed row (D-002).
+
+
+---
+
+## Phase-boundary verification (§0.10) — 2026-08-23, approaching the Phase 0 gate
+
+Re-verified rather than assumed, as §0.10 requires at every phase boundary:
+
+| constraint | result |
+|---|---|
+| `lib/gap-detection.ts` untouched | sha256 `69d2c946aaefc309a1c09f0a72b13baebddc173811e33f4de0b592ca1259b859` — **identical to the run-start baseline** |
+| No AI provider schema accepts `isDetected` or `severity` | clean — `ai-service.interface.ts` carries only the historical comments recording their removal |
+| Dispatch stub holds | 6/6 green, all three transports guarded |
+
+## T-012 closed · T-015 dispatched
+
+`T-012` added 9 `defect-*` fixtures and 2 dashboard fixture functions, all provisioned against the
+local dev DB and inspected with Prisma. Prod guard pre-existed and was reused.
+
+It also found a **product defect by building a fixture** — `containsUnreadableMarker` does not
+detect a bare `????`, only a bracketed one, so a summary containing the exact form `CLAUDE.md`
+names renders to the customer as data. Queued P1-11. Nothing audited it; the fixture had to produce
+the defect, failed to, and the trace found the gap. That is §5.3 paying for itself on first use.
+
+`T-015` is now running: baselines for all 20 surfaces × 320/390/430 × states, publishing in §4.5
+priority order so a partial set is still useful. It carries five instructions that are easy to get
+wrong — record BOTH scans (the attribute scan is vacuous at 8 attributes product-wide), 1.4.11 is
+mandatory, capture free tier, reuse rather than recapture where fixtures are unchanged, and hide
+`nextjs-portal` (the badge a prior audit reported as a floating app avatar on four screens).
+
+**T-015 is the last item before the Phase 0 gate.** When it lands: check §5.6 in full, tag
+`pw-transform-phase-0-complete`, then Phase 1 opens with P1-01…P1-11 already queued.
