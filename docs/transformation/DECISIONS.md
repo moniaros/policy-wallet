@@ -94,3 +94,30 @@ First likely refutation, recorded now: §4.3 cites `AI Insights` in English in t
 `lib/i18n/translations/el.ts:99` has `insightsShort: 'Αναλύσεις'`, and `AppShell.tsx:81` renders
 that key. The English string is in `en.ts` only. The adjacent real defect is `el.ts:1193`
 `aiInsights: 'AI Αναλύσεις'` — mixed-script, not untranslated. Reclassify rather than "fix".
+
+---
+
+## D-005 — A guard's universe is part of the guard, and is stated explicitly
+
+date: 2026-08-23
+raised_by: Orchestrator (T-014 verification)
+decision: Extend `score-containment.test.ts` to `lib/`; never write a second score guard.
+Every guard in §11.2 states and justifies its universe against `SURFACES.md`.
+
+The score reaches customers by email (four sites) while a well-written, filesystem-enumerating
+`tests/unit/score-containment.test.ts` passes. It passes because its universe is `components/` +
+`app/` and every outbound template is in `lib/`. A second guard, `email-content-honesty.test.ts`,
+*does* scan `lib/email/templates/` but asserts only that no score **trend** is claimed — it
+deliberately permits the **value**.
+
+Right invariant, wrong universe; right universe, narrower invariant. The sentence §2.2 actually
+cares about — "never enters email, push, or any outbound channel" — is asserted by neither.
+
+`CLAUDE.md` already says a guard scoped to known locations guards those locations rather than the
+invariant. This adds the corollary the repo did not yet have: **that applies to the DIRECTORY the
+guard walks, not only to the patterns it matches.** Enumerating exhaustively within too small a
+root is still an assumption, and it is a harder one to spot because the guard looks rigorous.
+
+Consequence for Phase 1 item 1: extend the existing guard (§11.1 forbids a second), with outbound
+templates FORBIDDEN rather than sanctionable — a sanctioned surface is one that carries the
+qualifier at the point of use, and an email cannot carry a disclosure the reader can open.

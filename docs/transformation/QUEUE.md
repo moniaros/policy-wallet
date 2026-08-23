@@ -38,7 +38,7 @@ Failure proofs recorded in `PROGRESS.md`.
 
 ## Phase 0 — Evidence (no product code)
 
-### T-010 — Enumerate every B2C surface · `todo`
+### T-010 — Enumerate every B2C surface · `done`
 owner: Mechanical sweep (Haiku 4.5) · file_boundary: `docs/transformation/SURFACES.md`
 `app/(protected)/` mixes B2C, agent and admin routes, so classification is the work.
 - [ ] Every route file, dynamic segment, route group, parallel/intercepted route
@@ -46,7 +46,7 @@ owner: Mechanical sweep (Haiku 4.5) · file_boundary: `docs/transformation/SURFA
 - [ ] Per surface: path, component-tree root, landing vs subpage, tier gating, reaching states
 - [ ] Cross-check against the running app: routes unreachable in code, destinations that 404
 
-### T-011 — Consolidate the harness · `todo`
+### T-011 — Consolidate the harness · `in_progress`
 owner: Evidence (Sonnet 5) · file_boundary: `tests/measure/**`
 - [ ] `policy-detail.ts` → `metrics.ts`; update importers; no behaviour change
 - [ ] Reconcile `clippedContent` / `clippedLabels` into ONE truncation definition (D-003)
