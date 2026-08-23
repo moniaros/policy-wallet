@@ -1,6 +1,46 @@
 # PolicyWallet — Project Status
 
-## Current phase — dashboard mobile series COMPLETE (Goals 0–5), deploying
+## DEPLOYED — 2026-08-23, `dd815b3d` live in production
+
+Five commits: the corrective baseline, Goal 1-R, Goal 2, Goals 3–5, and this status.
+CI green → Vercel production success. Rollback candidate: `f4f87d1a`.
+
+| check | result |
+|---|---|
+| CI (`audit:api-auth`, lint, i18n, utf8, type-check, 5044 unit tests, build) | ✅ |
+| Vercel production deploy | ✅ |
+| public routes render real Greek content | ✅ 6/6 |
+| no fixture identifier / UUID in customer copy | ✅ |
+| `/dashboard`, `/wallet` redirect rather than 500 | ✅ 307 |
+| Sentry errors on this release | ✅ none |
+| Vercel runtime status codes, 30 min post-deploy | ✅ 133×200, 2×307, no 5xx |
+
+### The dashboard itself is NOT verified in production, and that should be said plainly
+Every changed surface is behind auth. `prod-smoke` can assert that `/dashboard` redirects rather
+than erroring; it cannot see the page. There are **no E2E accounts in the production database**
+(checked) and no production credentials available to this session, so nobody has rendered the new
+dashboard in production yet. "No Sentry errors" therefore means no authenticated traffic, not a
+working page — which is the same shape as the invariant this series just added to CLAUDE.md:
+absence of a detected problem is not evidence of no problem.
+
+What the confidence actually rests on: 19 fixture captures of the rendered page on this exact code,
+5044 unit tests, a clean production build, and no 5xx in the 30 minutes after deploy.
+
+**First authenticated visit is the real test.** Watch Sentry for `/dashboard` Server Components
+render errors.
+
+### Blast radius beyond the dashboard
+Two changes are not confined to `/dashboard`:
+- `resolveGapContent` no longer titles an unknown slug with the model's prose — this also feeds the
+  **wallet** and the **recommendation generator**.
+- The interactive-card boundary rule in `app/globals.css` applies to **every** clickable `.pw-card`
+  in the product.
+
+Both are improvements; neither was measured outside this surface.
+
+---
+
+## Current phase — dashboard mobile series COMPLETE (Goals 0–5), deployed
 
 `/dashboard` reworked end to end. Evidence: `docs/evidence/dashboard-mobile/RESULT.md`,
 19 fixture captures per run in `data/goal0-prechange/` vs `data/goal5/`.
