@@ -123,11 +123,65 @@ no capability lost; guard proven red before green in all three halves.
 
 ---
 
+---
+
+## Checkpoint 2 — Phase 0 partial
+
+**Phase status:** Phase 0 open. T-010 done, T-011 in flight (Sonnet 5), T-014 substantially
+advanced. T-012/T-013/T-015/T-016 not started.
+**Halts open:** 0. **Ledger delta:** none.
+
+### T-010 — B2C surface enumeration · DONE (Haiku 4.5)
+`docs/transformation/SURFACES.md`, 430 lines. **24 B2C routes · 7 overlays · 19 agent · 43 admin
+· 86 protected total. Zero broken navigation destinations.** Three routes unreachable from default
+nav, all intentionally gated.
+
+Three classifications spot-checked against source rather than trusted, all correct:
+`/wallet/[id]/review` is agent-only (`isAgentRole` → `notFound()` at line 24);
+`/insights/risk-profile` is B2C (reads the caller's own `policyholderProfile`); dashboard hrefs all
+resolve.
+
+### T-014 — candidate verification · 15 of the brief's candidates closed
+Full detail in `docs/transformation/evidence/CANDIDATE-VERIFICATION.md`.
+**CONFIRMED 7 · REFUTED 4 · DIFFERENT 4 · PENDING 2.**
+
+The single most important number in this run so far: **the protection score reaches customers
+through 5 outbound sites, not 1.** The brief named one symptom; grep found four templates; reading
+`lib/notifications/risk-events.ts:176-190` found the **emitter** that produces the exact string the
+brief quotes. Any fix that stops at the templates leaves the emitter running.
+
+Four candidates were refuted and would have caused wrong work if taken at face value:
+«ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ» is already renamed to «Συνολικό ετήσιο ασφάλιστρο»; the dashboard verdict
+label is already gone; gap notifications carry no severity; and `NotificationPriority` is delivery
+ranking, not gap severity — migrating it would have been a large, wrong change across ~15 registry
+entries.
+
+Two more were reclassified in ways that move the fix: «Καλώς ήρθατε πίσω, E2E!» is a clean Greek
+string with a fixture display-name leaking through it (identity scrubbing, not i18n), and the
+English notification bodies are already intercepted — but only for `policy_analyzed`, by name,
+falling back to raw stored text for every other event type.
+
+### D-005 — the finding that generalises
+`tests/unit/score-containment.test.ts` enumerates its universe from the filesystem exactly as
+`CLAUDE.md` demands, and still cannot see the worst violation in the product, because its universe
+is `components/` + `app/` and every outbound template is in `lib/`. A second guard scans the
+templates but asserts only that no score *trend* is claimed. Right invariant, wrong universe;
+right universe, narrower invariant. **A guard's universe is part of the guard.** Fix is to extend
+the existing guard (§11.1 forbids a second), not to add one.
+
+### Instrumentation reality check
+`data-fact` appears 8 times in the entire product, all on policy-detail; `data-count` 3 times;
+`data-action` zero. An attribute scan today returns a vacuous zero on 22 of 24 surfaces.
+`docs/transformation/INSTRUMENTATION-PLAN.md` now specifies the full key set; baselines must record
+attribute scan AND value scan until coverage lands, with the value scan authoritative meanwhile.
+
+---
+
 ## Next three actions
 
-1. **T-010** — enumerate every B2C surface (Haiku 4.5). `app/(protected)/` mixes B2C, agent and
-   admin, so classification is the actual work, not listing.
-2. **T-011** — rename `tests/measure/policy-detail.ts` → `metrics.ts` and reconcile the two
-   truncation metrics into one, proving an existing baseline reproduces byte-identically.
-3. **T-013** — outbound-copy inventory. Now unblocked by T-001, and it is where the
-   highest-exposure defect in the application lives.
+1. **Finish T-011** (in flight) — then unblock T-013, which needs its pure text predicates to run
+   leakage and locale metrics against rendered template strings.
+2. **T-013 outbound-copy inventory** — now the highest-value item in the run, and the count to
+   confirm is 5 score sites, not 4.
+3. **T-012** — degraded fixtures. Nothing in Phase 1 can be verified without them, and the
+   channel-duplicated notification fixture must include both a keyed and an unkeyed row (D-002).
