@@ -232,7 +232,73 @@ Phase 1 is queued with seven evidence-backed items (P1-01…P1-07) but is **gate
 
 ---
 
+## Checkpoint 4 — Phase 0 substantially complete except baselines
+
+**Done:** T-000, T-001, T-010, T-011, T-013, T-016 (string inventory · instrumentation plan ·
+chrome audit · LEDGER 7 of 20). **T-014: 26 candidates verified.**
+**In flight:** T-012 degraded fixtures (Sonnet).
+**Blocked:** T-015 baselines — needs T-012. This is the only thing standing between here and the
+Phase 0 gate.
+**Halts open: 1** (H-001). **Guards: 2 added**, suite 5054 → **5090**, all green.
+**A dev server is live on :3000 and `playwright.config.ts` has a `measure` project, so T-015 is
+runnable the moment fixtures land.**
+
+### Verification scoreboard — a third of the brief is wrong
+
+**CONFIRMED 13 · REFUTED 8 · DIFFERENT 5 · PENDING 3.**
+
+Eight of the brief's candidates do not exist, and five are real but not for the stated reason,
+which moves where the fix goes. Acting on the brief unverified would have produced wrong work in
+at least six places. The largest:
+
+- **The floating «Ν» avatar** — presented as proof that shell chrome overlaps content on every
+  screen. It is `hidden lg:block`: no box below 1024px. What was seen is the Next.js DevTools badge,
+  which appears on every screen because a dev overlay does.
+- **809 missing Greek keys** — impossible; `en` is typed `typeof el`, so parity is compiler-enforced.
+- **«ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ»** — already renamed to «Συνολικό ετήσιο ασφάλιστρο».
+- **The dashboard** — 6 sections and one CTA, not 12 and nine.
+- **`NotificationPriority`** — delivery ranking, not gap severity; migrating it would have been a
+  large wrong change across ~15 registry entries.
+- **Privacy export/deletion** — both executors are real and the UI is honest about the review queue.
+
+### The one thing that is worse than the brief says
+
+The score reaches customers through **five** outbound sites, and in three of the four broken
+portfolio states it emails **100**. Measured, not inferred — the day-7 drip renders «3 Ασφαλιστήρια
+· 100% Βαθμολογία προστασίας · Προσωρινή εκτίμηση · 0 Κενά κάλυψης» to someone whose documents have
+never been read.
+
+### The pattern this run found
+
+**Guards here pass while their invariant is violated, and there are three distinct reasons:**
+
+| failure mode | instances |
+|---|---|
+| **universe too small** | `score-containment` never walks `lib/` (D-005); the equivalence guard sat outside the CI path (D-009) |
+| **adoption incomplete** | `NON_LIVE_POLICY_STATUSES` reached 3 of 5 call sites (D-007); `LocaleToggle`'s "group" variant missed the `min-h-11` its sibling got |
+| **assertion weaker than the invariant** | `score-containment`'s allowlist permits two score locations; §2.2 permits one (#17) |
+
+It also applies to processes, not just tests: the planned string freeze would cover 2,733 bundle
+keys and miss **85 files** of inline `{ el, en }` copy — 56 of them on one tab-bar surface (#26).
+
+So every §11.2 guard must state **what it walks** and **what it claims**, and both must be checked
+against `SURFACES.md`. That is now the single most load-bearing lesson of this run.
+
+### Cold start: do these three, in order
+
+1. **T-012** — degraded fixtures. Re-dispatch if it did not finish. Critical path.
+2. **T-015** — baseline all 20 surfaces × 320/390/430 × states, in §4.5 order. Dev server on :3000,
+   `--project=measure`, system Chrome via `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`. Two known gaps to
+   close: the policy-detail baseline never captured **free tier**, and never automated **1.4.11**.
+3. **LEDGER** — 13 surfaces remain; format and six worked examples are in `LEDGER.md`.
+
+Phase 1 is queued with ten evidence-backed items (P1-01…P1-10) and **gated** on §5.6, which
+baselines do not yet satisfy.
+
+---
+
 ## Next three actions
+
 
 
 1. **Finish T-011** (in flight) — then unblock T-013, which needs its pure text predicates to run
