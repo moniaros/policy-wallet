@@ -27,9 +27,9 @@ From `SURFACES.md`: 20 distinct B2C landing surfaces + 7 overlays. In §4.5 prio
 - [x] Αρχική `/dashboard`
 - [x] Πορτοφόλι `/wallet`
 - [x] Ασφαλιστήριο `/wallet/[id]`
-- [ ] Αναλύσεις `/coverage-insights`
-- [ ] Σύμβουλος `/agent`
-- [ ] Ρυθμίσεις `/account` + 5 subpages
+- [x] Αναλύσεις `/coverage-insights`
+- [x] Σύμβουλος `/agent`
+- [x] Ρυθμίσεις `/account` + 5 subpages
 - [ ] app shell *(chrome audit in flight)*
 - [ ] upload flow `/wallet/add`, `/wallet/[id]/edit`
 - [ ] the remaining 7: `/help`, `/help/article/[slug]`, `/benefits`, `/consent/ai`, `/activity`, `/insights/risk-profile`, `/upgrade`
@@ -197,3 +197,71 @@ the global `min-width: 0` rule collapsed it into slivers.
 
 **Doc debt found:** `BASELINE.md` cites `tests/measure/policy-detail.ts`, renamed to `metrics.ts` in
 T-011. Harmless but it should be corrected when T-015 republishes.
+
+
+---
+
+## Αναλύσεις — `/coverage-insights`
+
+Source: `app/(protected)/coverage-insights/page.tsx` → `CoverageInsightsClient`, `ProtectionScoreCard`,
+`RecommendationCards`, `LifeEventsPanel`, `RiskProfileWizard`, `RefreshAnalysisButton`, `UpgradeTriggerCard`.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| A-01 | See the protection score as a dedicated card | fact | **PENDING H-001 — and it is the SECOND sanctioned location** | §2.2 permits one; `score-containment.test.ts` currently sanctions this and `ProtectionStatusHero` (candidate #17) | P1-01 |
+| A-02 | See the score's colour verdict (`scoreColor`) | fact | **REMOVE or add a text equivalent** | colour as sole carrier, WCAG 1.4.1 | P1-01 |
+| A-03 | Read the freshness stamp ("computed from data as of…") | fact | **KEEP** | good practice — it stops the score reading as timeless | — |
+| A-04 | Read methodology / limits / not-advice | fact | **KEEP** | moves with A-01 | H-001 |
+| A-05 | See recommendations (`RecommendationCards`) | fact | **KEEP** | titles must not be AI prose from an unauthored slug | — |
+| A-06 | Declare life events (`LifeEventsPanel`) | action | **KEEP** | duplicates the dashboard's `LifeEventPromptCard` — one must link to the other (§7.5 renders once) | Phase 5 |
+| A-07 | Complete the risk-profile wizard | action | **KEEP** | the long form; §7.5 says it is not the first thing on the surface | Phase 2 |
+| A-08 | Refresh the analysis | action | **KEEP** | consent-gated path | — |
+| A-09 | Upgrade trigger | action | **KEEP** | monetization surface | — |
+
+**§7.5 calls this "the densest surface in the app" and wants the most aggressive reduction.** That
+claim is **unmeasured on current code** — no baseline exists for it. T-015 measures it before Phase
+2 sets a ceiling, because the dashboard's numbers turned out stale and this one may too.
+
+---
+
+## Σύμβουλος — `/agent`
+
+Source: `app/(protected)/agent/page.tsx` → `AgentClient.tsx`.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| S-01 | See the adviser's name, firm, phone, email | fact | **KEEP** | identity must not truncate (§2.5 cites «Νίκος Παπαδό…») | Phase 3 |
+| S-02 | Four tabs: overview · messages · documents · proposals | action | **KEEP, all four must render at 320px** | §4.3 records the fourth clipped | Phase 5 |
+| S-03 | See which policies are shared, and by whom | fact | **KEEP** | full policy identity, no truncation | Phase 5 |
+| S-04 | Revoke a share (`revokeShare`) | action | **KEEP** | real agency, §9.1 names this as one of three control surfaces worth surfacing | — |
+| S-05 | Invite an adviser by email | action | **KEEP** | — | — |
+| S-06 | Disconnect from the adviser | action | **KEEP, DEMOTED** | §7.5: a rare destructive action currently gets a full dashed-red card and outranks the two things customers actually do here | Phase 5 |
+| S-07 | See policy status per shared policy | fact | **KEEP, UNIFIED** | uses `mapPolicyCardStatus`, which has no `expired` state — candidate #25 | P1-10 |
+| S-08 | 56 inline `{ el, en }` copy pairs | — | **ENUMERATE** | not migrated, but must enter the frozen inventory's universe (candidate #26) | P1-06 |
+
+---
+
+## Ρυθμίσεις — `/account` + 5 subpages
+
+Source: `app/(protected)/account/page.tsx`, `SettingsNav`, and
+`components/settings/sections/{Profile,Security,Privacy,Plan,Notifications}Section.tsx`.
+
+**§7.5: "closest to correct in the app — preserve it. Use it as the density reference."** Confirmed
+as the design intent; the subpages are audited as first-class surfaces per §4.4.6.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| R-01 | Settings nav rail to 5 subpages | action | **KEEP** | the density reference — do not disturb | — |
+| R-02 | Profile: view and edit personal details | action | **KEEP** | — | — |
+| R-03 | Security: password, sessions | action | **KEEP** | auth surface — §12.2 halt if behaviour would change | — |
+| R-04 | Privacy: export my data | action | **KEEP** | executor confirmed real: `POST /api/v1/me/data-export`, guarded, rate-limited, tokenised download (candidate #23) | — |
+| R-05 | Privacy: request account deletion | action | **KEEP** | executor real; UI honestly says it enters a review queue rather than deleting | — |
+| R-06 | Plan: see plan and usage | fact | **KEEP** | pricing/entitlements are §12.4 out of scope — display only | — |
+| R-07 | Notifications: per-group toggles | action | **KEEP, FIX SCOPE** | writes `channel: "email"` only while `push` is implemented — the control does less than its label (candidate #24) | P1-09 |
+| R-08 | Notifications: quiet hours | action | **KEEP** | one of the four §9.5 controls that already exists | — |
+| R-09 | *(absent)* user-configurable monthly ceiling | — | **MISSING** | Phase 4 precondition, not a Phase 1 defect | Phase 4 |
+| R-10 | *(absent)* global off switch honoured in outbound | — | **MISSING** | Phase 4 precondition | Phase 4 |
+
+R-09 and R-10 are recorded as ledger rows despite not existing, because §9.5 requires them and
+Phase 4 cannot ship a cadence-controlled mechanic without them. A missing capability that a later
+phase depends on is exactly what this ledger is for.
