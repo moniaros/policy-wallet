@@ -111,6 +111,11 @@ template passed while the service still emitted `0`.
 - [ ] the two services stop computing `healthScore` for outbound at all
 - [ ] **extend** `score-containment.test.ts`'s universe to `lib/` with outbound FORBIDDEN — do not
       write a second guard (§11.1, D-005)
+- [ ] **reduce `SANCTIONED` from two entries to at most one** (candidate #17). The guard currently
+      authorises both `ProtectionStatusHero.tsx` and `ProtectionScoreCard.tsx`; §2.2 permits one.
+      Which one survives is H-001's call — but the guard must stop blessing two either way, and the
+      "dedicated score surface" comment is rewritten with it
+- [ ] `ProtectionScoreCard`'s `scoreColor` gains a text equivalent or goes (WCAG 1.4.1)
 - [ ] guard demonstrated failing first; probe recorded
 
 ### P1-02 — No all-clear in outbound where the check never ran · `todo`

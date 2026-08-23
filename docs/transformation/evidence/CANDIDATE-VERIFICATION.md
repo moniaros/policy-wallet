@@ -40,7 +40,8 @@ fixture capture to close, per §5.4. Nothing here is a fixture reproduction yet.
 
 ## Running tally
 
-- CONFIRMED 7 · REFUTED 4 · DIFFERENT 5 · PENDING 3 — 16 of the brief's candidates verified
+- CONFIRMED 8 · REFUTED 4 · DIFFERENT 5 · PENDING 3 — 17 candidates verified
+- Guard failure modes found: **universe** too small (D-005, D-009), **adoption** incomplete (D-007), **assertion** weaker than the invariant (#17)
 - **Score-in-outbound sites: 5** (brief said 1; I found 4 by grep; the emitter made 5)
 
 Two of the four refutations/reclassifications would have produced wasted or wrong work if the
@@ -146,6 +147,35 @@ proving or disproving this, not a wallet code change.
 **Still PENDING a fixture capture.** Everything above is code-confirmed. Whether the rendered
 numbers agree across surfaces on one portfolio is exactly the question a capture answers and
 reading cannot.
+
+
+## §2.2 again — the score renders in TWO sanctioned in-product locations, and a guard blesses it
+
+| # | Candidate | Verdict | Evidence |
+|---|---|---|---|
+| 17 | "at most one sanctioned in-product location" | **CONFIRMED VIOLATION — and it is *authorised* by the guard** | `tests/unit/score-containment.test.ts` defines `SANCTIONED` as **two** files: `components/dashboard/home/ProtectionStatusHero.tsx` and `components/coverage/ProtectionScoreCard.tsx`. Both render the value — the hero across four honest states behind a disclosure, the card as the "dedicated score surface" with a freshness stamp and methodology. §2.2 says **at most one**. |
+
+This is a **different failure mode from D-005** and worth separating, because the fix is different.
+
+- D-005 was a **universe** gap: the guard's assertion was right, but it walked the wrong directory.
+- This is an **assertion** gap: the universe is correct and the guard runs, but what it asserts —
+  "the score renders only in files on this list" — is weaker than the invariant, because the list
+  has two entries and the invariant permits one.
+
+Neither is a bug in the guard's code. A guard can be well written, run on every commit, enumerate
+its universe from the filesystem, and still authorise the thing it is named after. So the Phase 1
+review of every §11.2 guard asks **two** questions, not one: *what does it walk*, and *what does it
+actually claim*.
+
+Note the sanctioning was deliberate — the comment calls `ProtectionScoreCard` "the dedicated score
+surface" — so this is a decision made before this run's invariant existed, not an oversight. It is
+therefore a **reversal** like §2.7's, and the comment must be rewritten with the code.
+
+**Secondary finding in the same file:** `ProtectionScoreCard` computes a `scoreColor` from the
+value, so the colour is a verdict. Its own source comment says "A 0–100 figure with a colour
+verdict and no stated method is exactly…" — the method is now stated, but the colour verdict
+remains, and §2.1 requires colour never be the sole carrier of meaning (WCAG 1.4.1). Whatever
+H-001 decides, the colour needs a text equivalent or must go.
 
 
 ---
