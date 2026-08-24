@@ -321,6 +321,39 @@ Gate after: tsc, lint, i18n, utf8 clean; 5076/5076 tests.
 
 ---
 
+## H-005 — the ACCESSIBILITY half is fixed. The product question is still open, and I did not answer it.
+
+**2026-08-25.** V2-P1-03 and V2-P1-08 were queued together as "remove the verdict «Καλή εικόνα» and
+fix the amber label failing at 3.20:1". They are not the same kind of thing, so they are no longer
+queued together.
+
+**Fixed, because it is not a decision.** `BAND_TONE.fair` was `text-amber-600` — **3.20:1 on white,
+measured on /insights/risk-profile at all three widths**. The tone is worn by two elements: the
+`text-3xl font-bold` index, which is large text at a 3:1 floor and passed, and the `text-sm`
+band label beside it, which is normal text at 4.5:1 and did not. `amber-700` is 5.03:1 and clears
+both. Whatever H-005 decides, a rendered label has to be readable. I checked **every** band rather
+than the one the fixture happened to hit: strong (`--primary`) 6.51:1, thin (red-600) 4.77:1,
+unknown (muted) already guarded. Only `fair` failed. Pinned in `solid-panel-contrast.test.ts`.
+
+**NOT done, and deliberately.** I did not remove «Καλή εικόνα». Two reasons:
+
+1. **The wording is defensible as written.** All four labels — «Καλή / Μερική / Περιορισμένη εικόνα»,
+   «Άγνωστη» — describe *how complete our picture of you is*, under a kicker that says exactly that:
+   «Πόσο καλά σας γνωρίζουμε». That is a description of data completeness, not a risk verdict about
+   the customer's protection, and the never-assessed case already lands on «Άγνωστη» rather than on a
+   reassurance. It is not the §2.1 shape.
+2. **Removing the word would not settle §2.4 anyway.** The objection in §2.4 is that a *second score*
+   exists beside the protection score. Deleting the label while keeping the number leaves two scores
+   and answers nothing.
+
+So H-005 stays open as what it actually is: **should this metric exist at all.** That is a product
+decision, H-001's precedent covers score #1 and not this one, and choosing for you would be choosing
+the irreversible direction. Nothing is blocked on it — the surface is honest and legible today.
+
+---
+
+### Original halt as raised
+
 ## H-005 — Should the second score («Πόσο καλά σας γνωρίζουμε») exist?
 
 date: 2026-08-24 · raised_by: Product-Truth (Opus 5)

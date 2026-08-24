@@ -99,7 +99,14 @@ export interface RiskIntelligenceViewProps {
 
 const BAND_TONE: Record<string, string> = {
     strong: "text-primary dark:text-mint",
-    fair: "text-amber-600 dark:text-amber-400",
+    // amber-700, not amber-600. This tone is worn by BOTH the 3xl index (large
+    // text, 3:1) and the text-sm band label beside it (normal text, 4.5:1).
+    // amber-600 is 3.20:1 on white — measured on /insights/risk-profile at
+    // 320/390/430 — so the label failed while the number passed. amber-700 is
+    // 5.03:1 and clears both. Checked every band, not just the one the fixture
+    // hit: thin/red-600 is 4.77:1, strong/--primary and unknown/muted are
+    // already guarded.
+    fair: "text-amber-700 dark:text-amber-400",
     thin: "text-red-600 dark:text-red-400",
     unknown: "text-muted-foreground",
 }

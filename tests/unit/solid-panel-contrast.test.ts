@@ -56,6 +56,7 @@ const PALETTE: Record<string, string> = {
     "amber-500": "#fd9a00",
     "amber-600": "#e17100",
     "amber-700": "#bb4d00",
+    "amber-400": "#ffb900",
     "green-500": "#00c951",
     "neutral-900": "#171717",
     "slate-900": "#0f172b",
@@ -173,5 +174,52 @@ describe("a panel that names its own foreground and background is readable", () 
                 `${f} no longer has a failing pair — delete its OUT_OF_SCOPE_B2B entry`
             ).toBe(true)
         }
+    })
+})
+
+/**
+ * A tone worn by two text sizes is bound by the SMALLER one.
+ *
+ * `BAND_TONE` on the risk profile colours both a `text-3xl font-bold` index and
+ * the `text-sm font-semibold` band label beside it. `text-amber-600` is 3.20:1
+ * on white: fine for the number, which is large text at a 3:1 floor, and a
+ * failure for the label, which is normal text at 4.5:1. The browser measured
+ * exactly that on «Μερική εικόνα» at 320/390/430.
+ *
+ * Every band is checked, not just the one the fixture happened to render — a
+ * verdict bug hides in the states nobody generated.
+ */
+describe("risk-profile band tones are legible at the smallest size that wears them", () => {
+    const src = readFileSync("components/risk-dna/RiskIntelligenceView.tsx", "utf-8")
+    const block = src.slice(src.indexOf("const BAND_TONE"), src.indexOf("export function RiskIntelligenceView"))
+
+    it("finds the tones it claims to check", () => {
+        for (const band of ["strong", "fair", "thin", "unknown"]) {
+            // Plain includes, not a template-literal RegExp: `\b` inside a
+            // template literal is a BACKSPACE character, not a word boundary.
+            expect(block.includes(`${band}:`), `BAND_TONE lost its ${band} entry`).toBe(true)
+        }
+    })
+
+    it("every light-mode tone clears 4.5:1 on white", () => {
+        const SURFACE = "#ffffff"
+        // Resolved values: the two CSS custom properties come from globals.css,
+        // the Tailwind ones from PALETTE.
+        const RESOLVED: Record<string, string> = {
+            "text-primary": "#29685B",
+            "text-muted-foreground": "#5b6a7a",
+        }
+        const bad: string[] = []
+        for (const m of block.matchAll(/(\w+):\s*"([^"]*)"/g)) {
+            const band = m[1]
+            // Light-mode class only; the dark variant pairs with a dark surface.
+            const light = m[2].split(/\s+/).find((c) => c.startsWith("text-") && !c.startsWith("dark:"))
+            if (!light) continue
+            const hex = RESOLVED[light] ?? PALETTE[light.replace("text-", "")]
+            expect(hex, `no resolved colour for ${light} — add it rather than skipping`).toBeTruthy()
+            const r = ratio(hex, SURFACE)
+            if (r < 4.5) bad.push(`${band}: ${light} = ${r.toFixed(2)}:1`)
+        }
+        expect(bad).toEqual([])
     })
 })
