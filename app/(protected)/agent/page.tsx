@@ -7,7 +7,6 @@ import type { Policy } from "@/components/wallet/types"
 import { redirect } from "next/navigation"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
-import { mapPolicyCardStatus } from '@/lib/wallet/map-policy-card-status'
 import { isAgentVerified } from "@/lib/agent/verification"
 
 export default async function AgentPage() {
@@ -128,7 +127,14 @@ export default async function AgentPage() {
         insurerName: p.insurerName,
         insurerLogo: null,
         lineOfBusiness: p.lineOfBusiness as any,
-        status: mapPolicyCardStatus(p.status, p.endDate),
+        // Pass the RAW stored status — the same contract as the wallet page.
+        // Anything that renders these derives the displayed status through
+        // getPolicyStatusView / resolvePolicyLifecycle (the single pipeline).
+        // The second pipeline this page used to call (mapPolicyCardStatus, now
+        // deleted) had no 'expired' state, so a lapsed policy left here as
+        // 'action_needed' — «Απαιτείται ενέργεια» on Σύμβουλος while the wallet
+        // said «Ληγμένο» about the same policy on the same day.
+        status: p.status as Policy['status'],
         startDate: p.startDate.toISOString(),
         endDate: p.endDate.toISOString(),
         lastUpdated: p.updatedAt.toISOString(),

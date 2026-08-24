@@ -1,0 +1,14 @@
+// PROBE: the MobilePolicyCard `getStatusConfig` shape — a local status→label/colour
+// map that reads whatever key it is handed and falls back to green. This is the
+// second of the two shapes that multiplied before lib/wallet/policy-status-view.ts
+// existed. The display-single-source guard must flag it.
+const STATUS_CONFIG = {
+    active: { label: 'Ενεργό', className: 'bg-green-100 text-green-700' },
+    expiring_soon: { label: 'Λήγει σύντομα', className: 'bg-amber-100 text-amber-700' },
+    expired: { label: 'Έληξε', className: 'bg-red-100 text-red-700' },
+}
+
+export function StatusBadge({ status }: { status: string }) {
+    const config = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.active
+    return <span className={config.className}>{config.label}</span>
+}

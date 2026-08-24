@@ -1,0 +1,33 @@
+// PROBE: a compliant surface, deliberately full of near-miss shapes the scanner
+// must NOT flag:
+//   - status literals in COMPARISONS (=== / case), never produced
+//   - a ternary whose else-branch starts the next line with `:` after `copy.expired`
+//   - Tailwind's `active:` variant inside a className string
+//   - calendarDaysUntil used for a COUNTDOWN, with no status literal produced
+//   - this comment block itself, which names return 'expired' and
+//     status: 'action_needed' — mentions in prose must not trip the matcher
+import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
+import { calendarDaysUntil } from '@/lib/policy-status'
+
+export function CompliantCard({ policy, t, copy }: any) {
+    const view = getPolicyStatusView(policy, t)
+    const headline =
+        view.key === 'expired' ? copy.expired
+            : view.key === 'expiring_soon' ? copy.expiringSoon
+                : copy.everythingFine
+
+    switch (view.key) {
+        case 'expired':
+            break
+        default:
+            break
+    }
+
+    const daysLeft = view.endDate ? calendarDaysUntil(view.endDate, new Date()) : null
+
+    return (
+        <button className="rounded-full active:scale-95 hover:bg-primary">
+            {headline} {daysLeft}
+        </button>
+    )
+}

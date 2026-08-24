@@ -753,3 +753,39 @@ class and catches a phrase list.
 
 **Pairs with D-022.** That entry records how an exemption earns its keep; this one records when a
 guard should not be written at all. Both are about a guard stating precisely what it covers.
+
+
+---
+
+## D-024 — I confirmed a defect from the data path without checking the render path
+
+date: 2026-08-24
+raised_by: P1-10, correcting the Orchestrator
+decision: A defect is not confirmed as *customer-facing* until a render site is identified. Data-path
+reasoning establishes that a value is **wrong**, not that anyone **sees** it.
+
+I briefed P1-10 as: *"one policy, on one day, reads «Χρειάζεται προσοχή» on Σύμβουλος and «Έληξε» on
+Πορτοφόλι."* Verified: **no pixel on `/agent` renders a per-policy status at all.** `AgentClient.tsx`
+takes `policies` as a prop and never reads it — the only other occurrences of the word are inside
+i18n copy, and there are zero `StatusPill` / `getPolicyStatusView` / `policyStatus` references in
+879 lines.
+
+The defect was real but **latent**: `page.tsx` serialized a wrongly-collapsed status into
+`Policy['status']`, so the contract was wrong and would mis-render the moment anything consumed it.
+Deleting the second pipeline was still right — it was the drift hazard, and the file's own comment
+records it having already drifted once. But my description of the symptom was fiction.
+
+I also got the string wrong: the vocabulary renders **«ΛΗΓΜΕΝΟ»**, and «Έληξε» does not exist in it.
+
+**The error mode, which is new to the taxonomy.** D-020 recorded a *refutation* that left live code
+unexplained. This is the inverse: a *confirmation* that never checked whether the value reaches a
+screen. Both come from reasoning about one layer and asserting about another.
+
+**Practical rule:** before calling a defect customer-facing, name the component that renders it. If
+the answer is "the data would be wrong if something rendered it", say exactly that — it is still
+worth fixing, and it is a different claim.
+
+### A finding that falls out of it
+`/agent` serializes every one of the customer's policies to the client and uses none of them. Dead
+prop, wasted payload. Out of P1-10's file boundary; recorded for the Phase 2 spec, which redesigns
+that surface anyway.

@@ -843,7 +843,7 @@ Rewrite line 199. Emotional leverage on an unvalidated finding.
 `__PENDING_EXTRACTION__` rendering as a policy name.
 
 ### Carried from v1, still open
-**P1-10** one status vocabulary (delete `mapPolicyCardStatus`) · **P1-08** app shell (last) ·
+**P1-10** ✓ done · **P1-08** app shell (last) ·
 **P1-14** locale-ternary Greek in `.ts`.
 
 ## Halts to raise
@@ -1227,3 +1227,40 @@ pass forever while implying coverage of the class.
 **Greek freeze:** 8 entries, every one accounted for — two moral clauses dropped, three singular
 branches split out, and a comment relocated out of a frozen initializer so the entry stays pure copy.
 Zero occurrences of the four tombstoned phrases remain.
+
+
+---
+
+## P1-10 — Adversarial review: **PASS**, and it corrected my premise
+
+`mapPolicyCardStatus` is deleted; `/agent` adopts the wallet's contract. Every old state has an
+explicit home, and three things fell out that the brief did not anticipate:
+
+| old state | new home |
+|---|---|
+| `action_needed` (days < 0) | **`expired`** — the briefed defect |
+| `action_needed` (stored cancelled) | **`cancelled`** — regains its own state, «ΑΚΥΡΩΜΕΝΟ» |
+| `incomplete` | **never produced** — declared in the type, no code path returned it. Dead vocabulary |
+| exactly 30 days | was `active`, now `expiring_soon` — the canonical ≤30 window wins. Boundary change, stated |
+
+**It corrected my premise (D-024).** I claimed one policy reads «Χρειάζεται προσοχή» on Σύμβουλος and
+«Έληξε» on Πορτοφόλι. Nothing on `/agent` renders a per-policy status — `AgentClient` takes
+`policies` and never reads it. The defect was **latent in the serialized contract**, not visible.
+Still worth fixing: the contract was wrong and the second pipeline was the drift hazard. But the
+symptom I described did not exist, and «Έληξε» is not in the vocabulary — it renders «ΛΗΓΜΕΝΟ».
+
+**Guard: new file, and the §11.1 call is argued rather than assumed.**
+`live-policy-status-filter.test.ts` guards which *rows* a query admits; this guards which *words* a
+surface may mint — different universe, matcher and exemption semantics. It is the sibling of
+`gap-severity-display-single-source.test.ts`, which is the right precedent.
+
+**Proven by me:** a brand-new file reviving the deleted pipeline — day arithmetic plus minted status
+literals — turned it red naming that file. Reverted → 8/8.
+
+**Its first enumeration found two DEBT items and correctly cleared two non-offenders:**
+`ClientPoliciesTab.tsx` (§12.4, hand-rolled labels but a lifecycle-derived key — vocabulary
+duplication, not a truth defect) and `branches/[branch]/page.tsx` (compliant derivation, duplicated
+i18n bridge). Cleared: a DSR export status and Green Card validity — a document fact the lifecycle
+does not model.
+
+**No B2C surface derives a policy lifecycle status independently any more.**
