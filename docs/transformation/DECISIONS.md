@@ -618,3 +618,34 @@ honest refutation.
 
 Same family as D-005 and D-016: the searcher's assumption was about *form* rather than *location*.
 A rendered string is not a source string, and CSS is part of the rendering.
+
+
+---
+
+## D-020 — A refutation that leaves live code unexplained is incomplete
+
+date: 2026-08-24
+raised_by: Adversarial Reviewer, checking a fixture agent's refutation
+decision: A "does not reproduce" verdict must account for every branch that renders the disputed
+output. If a rendering path exists that the test did not exercise, the verdict is *not yet reached*.
+
+The fixture agent reported v2's «Οδήγηση χωρίς υποχρεωτική κάλυψη · ΑΓΝΩΣΤΟ» as not reproducing,
+citing `bindRisksToGraph` (`protection.ts:504`), which drops any risk whose
+`applicability !== "applicable"` before the graph is built. That reasoning is correct, precise, and
+verified against the real database.
+
+It was also the wrong axis. «Άγνωστο» hangs off `state`, not `applicability`, and
+`protection.ts:373` produces it for an **applicable, covered** risk whose adequacy checks are all
+`unevaluable`. The fixture blanked the profile, which yields `needs_review` — a path the graph
+legitimately drops — so it tested a different scenario from the one the owner observed.
+
+**The tell was in the component.** `RiskGraphPanel.tsx:73` renders «Άγνωστο» for `state: "unknown"`.
+A branch exists, so something must reach it. A refutation that cannot say what reaches a live branch
+has not finished.
+
+This nearly closed a real defect the owner had seen with their own eyes — the most expensive
+possible error in a phase whose value is honest refutation. It sits alongside D-019 (the searcher's
+assumption about *form*) and D-005 (about *location*): here the assumption was about *which axis*.
+
+**Practical rule:** when refuting, grep for the disputed **rendered string** and account for every
+branch that emits it, before reasoning about the data path that feeds it.

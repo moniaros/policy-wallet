@@ -18,6 +18,8 @@
  * Local-dev database only; refuses the production project by ref.
  */
 
+import { Prisma } from "@prisma/client"
+
 export type PortfolioState = "empty" | "single" | "typical" | "heavy" | "all-expired"
 
 export const PORTFOLIO_STATES: PortfolioState[] = ["empty", "single", "typical", "heavy", "all-expired"]
@@ -543,4 +545,180 @@ export async function applyLongAdvisorFixture(db: any, ownerEmail: string): Prom
             data: { agentUserId: advisor.id, policyholderUserId: owner.id, status: "active" },
         })
     }
+}
+
+/** Policy-number prefix, deliberately NOT `ΣΥΜΒ-2026-` — see the doc comment below. */
+const UNKNOWN_HOUSEHOLD_PREFIX = "E2E-DASH-UNK-MOT-"
+
+/**
+ * V2-P0-FIX addition: a household with unknown income and unknown
+ * dependants, holding real motor cover.
+ *
+ * Reproduces the `/insights/risk-profile` zero-information state — the
+ * health index reads `index: null, band: "unknown"` — for an account that
+ * is not empty at all: it holds `count` (default 22, matching the reported
+ * production shape) active, analysed motor policies. The mismatch is the
+ * point: `toLifeContext`/`assessRisks` (lib/services/gap-engine/
+ * life-context.ts, risk-assessment.ts) decide what the customer's life
+ * looks like from `PolicyholderProfile` ALONE — by design, per
+ * lib/services/risk-graph/projection.ts's header comment ("what a person
+ * owns must not be inferred from what they bought") — so a wallet full of
+ * motor policies is not evidence of anything to the profile-driven engine
+ * if nobody ever answered "do you have a vehicle".
+ *
+ * Real field names, read from prisma/schema.prisma's `PolicyholderProfile`
+ * and confirmed against lib/services/gap-engine/profile-gap-rules.ts's
+ * `ProfileFields`: `dependentsCount` (Int, default 0) and `annualIncome`
+ * (Decimal?, default null) are the two the brief named; `vehiclesCount`
+ * (Int, default 0), `employmentStatus`, `hasPets`, `cyberExposure` are
+ * reset alongside them so the profile is genuinely a never-onboarded row,
+ * not a row with two fields blank and the rest coincidentally answered.
+ * `answeredFields` is explicitly nulled (`Prisma.JsonNull`, matching
+ * lib/services/gdpr-erasure.service.ts's convention for this same nullable
+ * Json column) rather than merely left at Prisma's create default, so a
+ * second run over a row a DIFFERENT fixture had touched still ends up
+ * genuinely blank — required for the "provision twice, row counts match"
+ * idempotence rule, since a stale `answeredFields` array would silently
+ * change which factors `isFactorKnown` reports as known.
+ *
+ * VERIFIED 2026-08-24 by calling the real functions directly against this
+ * exact shape (blank profile + 22 active motor policies, no acordData) —
+ * not assumed:
+ *
+ *   assessRisks(ctx, policies).find(r => r.riskId === "motor_liability")
+ *     → { applicability: "needs_review", status: "needs_review" }
+ *
+ *   assembleRiskGraph(profile, policies).views
+ *     → ONLY `health_access_delay` (unprotected). `motor_liability` is
+ *       ABSENT — `bindRisksToGraph` drops every non-`applicable` risk
+ *       before the graph is built, so the reported
+ *       "Οδήγηση χωρίς υποχρεωτική κάλυψη · ΑΓΝΩΣΤΟ" row does NOT
+ *       reproduce as a rendered RiskGraphPanel row on this page in the
+ *       current code — an honest refutation of that specific symptom,
+ *       not a confirmation. What DOES reproduce, below, is the
+ *       zero-information health state the same brief calls out.
+ *
+ *   calculateScoreFromAssessments(...) → overallScore: 94,
+ *     indeterminate: true, expectedLines: ["health"] — NOT a literal 0;
+ *     "zero-score" is more precisely "indeterminate", flagged rather than
+ *     defaulted to a number that would look confident.
+ *
+ *   customerHealthIndex(...) → { index: null, band: "unknown" }, copy
+ *     "We know too little about your life for this to mean anything yet."
+ *     — THIS is the zero/blank state the brief's "zero-score" refers to,
+ *     and it reproduces exactly, even though the wallet holds 22 real,
+ *     active, analysed motor policies.
+ *
+ *   buildBranchOverview(...) → motor tile: `covered`, policyCount 22 — the
+ *     /branches surface is unaffected; it reads held policies directly,
+ *     never the profile-driven risk assessment.
+ *
+ * ISOLATION NOTE for whoever wires the capture spec: this function only
+ * touches `PolicyholderProfile` and its own `E2E-DASH-UNK-MOT-`-prefixed
+ * policies — it never deletes another prefix. `applyPortfolioState`'s
+ * rebuild only clears `ΣΥΜΒ-2026-*`, so the two compose safely on the same
+ * account in either order, but a `PortfolioState` capture run AFTER this
+ * fixture will show this account's policy count plus this fixture's 22,
+ * not the portfolio state's count alone. Use a dedicated account, or call
+ * `applyPortfolioState(db, email, "empty")` immediately before capturing
+ * this fixture's state, if that matters to the capture.
+ */
+export async function applyUnknownHouseholdFixture(db: any, ownerEmail: string, count = 22): Promise<string[]> {
+    if (PROD_GUARD) {
+        throw new Error("applyUnknownHouseholdFixture: refusing to run against the PRODUCTION database")
+    }
+    const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
+    if (!owner) throw new Error(`applyUnknownHouseholdFixture: ${ownerEmail} not provisioned — run global-setup first`)
+
+    // The profile half — reset to genuinely UNANSWERED, not merely "no":
+    // every risk factor at its column default AND absent from
+    // `answeredFields`, so `isFactorKnown` resolves every factor to false.
+    const blankProfile = {
+        dependentsCount: 0,
+        childrenCount: 0,
+        employmentStatus: null,
+        annualIncome: null,
+        hasPets: false,
+        petsCount: null,
+        vehiclesCount: 0,
+        cyberExposure: null,
+        answeredFields: Prisma.JsonNull,
+    }
+    const existingProfile = await db.policyholderProfile.findUnique({ where: { userId: owner.id }, select: { id: true } })
+    if (existingProfile) {
+        await db.policyholderProfile.update({ where: { userId: owner.id }, data: blankProfile })
+    } else {
+        await db.policyholderProfile.create({ data: { userId: owner.id, ...blankProfile } })
+    }
+
+    // The wallet half — `count` real, active, analysed motor policies,
+    // never read by the profile-driven assessment above. That gap is the
+    // fixture.
+    const created: string[] = []
+    for (let i = 1; i <= count; i++) {
+        const policyNumber = `${UNKNOWN_HOUSEHOLD_PREFIX}${String(i).padStart(3, "0")}`
+        const end = utcMidnight(200 + i)
+        const start = utcMidnight(200 + i - 365)
+        const analyzedAt = new Date(Date.now() - 5 * DAY)
+        const premiumAmount = 250 + i
+
+        const data = {
+            ownerUserId: owner.id,
+            createdByUserId: owner.id,
+            policyNumber,
+            insurerName: "Interamerican",
+            lineOfBusiness: "motor",
+            status: "active",
+            startDate: start,
+            endDate: end,
+            coverageEndDate: end,
+            premiumAmount,
+            premiumCurrency: "EUR",
+            coverageSummary: SUMMARY_EL,
+            lastAnalyzedAt: analyzedAt,
+            acordData: {
+                _version: 3,
+                policy: {
+                    insurerName: "Interamerican",
+                    policyNumber,
+                    lineOfBusiness: "motor",
+                    effectiveDate: start.toISOString().slice(0, 10),
+                    expirationDate: end.toISOString().slice(0, 10),
+                    premium: { amount: premiumAmount, currency: "EUR" },
+                },
+                extraction: {
+                    source: "fixture",
+                    extractedAt: new Date().toISOString(),
+                    reviewState: "unconfirmed",
+                    summaryLanguage: "el",
+                },
+            },
+        }
+
+        let policy = await db.policy.findFirst({ where: { ownerUserId: owner.id, policyNumber }, select: { id: true } })
+        if (policy) {
+            await db.policy.update({ where: { id: policy.id }, data })
+        } else {
+            policy = await db.policy.create({ data, select: { id: true } })
+        }
+        created.push(policy.id)
+
+        const run = await db.policyAnalysisRun.findFirst({ where: { policyId: policy.id }, select: { id: true } })
+        if (!run) {
+            await db.policyAnalysisRun.create({
+                data: {
+                    policyId: policy.id,
+                    userId: owner.id,
+                    provider: "fixture",
+                    model: "fixture",
+                    status: "completed",
+                    overallSuccessPct: 100,
+                    startedAt: analyzedAt,
+                    finishedAt: analyzedAt,
+                },
+            })
+        }
+    }
+
+    return created
 }

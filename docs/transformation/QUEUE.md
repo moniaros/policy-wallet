@@ -795,7 +795,7 @@ v1's instruction is superseded; its committed work is inherited (D-018). Everyth
 
 ## Phase 0 extension — blocks v2 Phase 1
 
-### V2-P0-FIX — two new degraded fixtures · `in_progress`
+### V2-P0-FIX — two new degraded fixtures · `done` (fixture 1) / `requeued` (fixture 2)
 owner: Evidence (Sonnet 5) · file_boundary: `tests/measure/fixtures.ts`, `dashboard-fixtures.ts`
 Blocks V2-P0-BASE, because a fixture must be able to produce the defect.
 - [ ] a portfolio holding some lines and demonstrably **not** holding others (§2.2)
@@ -849,3 +849,32 @@ Rewrite line 199. Emotional leverage on an unvalidated finding.
 ## Halts to raise
 **H-005** — should the second score exist? **H-006** — the AI advisor's advice boundary (IDD Art. 20).
 **H-007** — Art. 9 consent for the interview.
+
+
+---
+
+## V2-P0-FIX — review: fixture 1 PASS, fixture 2 REQUEUED
+
+**Fixture 1 — unowned lines: PASS, and §2.2 is confirmed reproducing.** Verified by calling the
+real `assembleRiskGraph()` and `buildBranchOverview()` against DB-read data, not assumed. With 29
+policies covering only motor and health, three lines the customer holds **zero** policies in render
+as findings: `cyber_fraud`, `life_dependents`, `pet_costs` → «Απροστάτευτο» on the risk graph, and
+life / pet / cyber → «Πιθανό κενό» on `/branches` (`el.ts:1541`). A fourth, `home_contents_tenant`,
+appears incidentally from a pre-existing `residenceType: "rented"`.
+
+It also caught something by testing rather than assuming: `childrenCount` had to be seeded because
+`life_dependents.requires` lists both `dependents` and `children`, and omitting it left the risk
+**silently absent** rather than unprotected — a fixture that would have under-reported the defect.
+
+**Fixture 2 — unknown household: REQUEUED. Right result, wrong path** (D-020).
+
+The health-index unknown state reproduces exactly (`index: null`, `band: "unknown"`, even with 22
+motor policies). But its refutation of the «ΑΓΝΩΣΤΟ» row tested `applicability: needs_review`, which
+`bindRisksToGraph` legitimately drops. «Άγνωστο» hangs off **`state`**, produced by
+`protection.ts:373` when an *applicable, covered* risk has all-`unevaluable` adequacy.
+
+Requeue with the corrected target: **policies present · risk applicable · adequacy unevaluable.**
+
+One result worth keeping from it regardless: `protectionScore` returned **94 with
+`indeterminate: true`** for a household the product knows nothing about. That is §2.5 territory and
+feeds H-005.

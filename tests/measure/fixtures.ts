@@ -870,3 +870,111 @@ export async function provisionMatrixFixtures(
     }
     return ids
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2-P0-FIX addition — a degraded PROFILE, not a degraded policy. Every
+// fixture above varies what one policy's own data looks like; the risk
+// graph and the /branches gap tiles also read `PolicyholderProfile`, which
+// nothing above ever touches. Without it, invariant §2.2 cannot be
+// reproduced on this account at all — see the verification note below.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Invariant §2.2 reproduction: "the product claims exposure for products a
+ * customer does not own."
+ *
+ * Confirmed rendering sources:
+ *   - components/coverage/RiskGraphPanel.tsx:71 — RiskState "unprotected"
+ *     renders «Απροστάτευτο» (CSS-uppercased).
+ *   - lib/i18n/translations/el.ts:1541 — `t.branches.statusGap` is
+ *     «Πιθανό κενό», painted by /branches for a `deriveBranchState` "gap"
+ *     tile (lib/insurance/branch-page.ts).
+ *
+ * WHY THIS NEEDS A DECLARED PROFILE, NOT JUST AN INCOMPLETE WALLET.
+ * lib/services/gap-engine/risk-catalog.ts gates `pet_costs` on
+ * `ctx.hasPets`, `cyber_fraud` on `ctx.cyberExposure === "moderate" |
+ * "high"`, and `life_dependents` on `totalDependents(ctx) > 0 &&
+ * isEarning(ctx)` — and every one of those deciding factors must also be
+ * KNOWN (lib/services/gap-engine/life-context.ts's `known` map) before the
+ * risk counts as `applicable`. A risk whose facts are unknown resolves to
+ * `needs_review`, and `bindRisksToGraph`
+ * (lib/services/risk-graph/protection.ts:504, `if (assessment.applicability
+ * !== "applicable") continue`) drops it before it ever reaches the graph —
+ * so a wallet simply missing pet/cyber/life policies, against a profile
+ * that has never answered those questions, renders NOTHING for those
+ * lines, not a false "unprotected". Reproducing §2.2 needs a profile that
+ * has ANSWERED yes to an exposure it holds no matching policy for. This
+ * account (`e2e-ph@policywallet.test`) already holds only motor and health
+ * from `provisionMatrixFixtures`'s FIXTURE_SPECS/DEFECT_SPECS — this
+ * function supplies the profile half so pet, cyber and life are genuinely
+ * unowned lines with a genuinely declared exposure behind each.
+ *
+ * `childrenCount` is deliberately in `answeredFields` alongside
+ * `dependentsCount`: `life_dependents.requires` lists BOTH `dependents` AND
+ * `children`, and every listed factor must be known for the risk to become
+ * `applicable` — omitting `childrenCount` (checked directly) left
+ * `life_dependents` silently absent from the graph rather than merely
+ * unprotected, which would have been a second, quieter way to fail to
+ * reproduce the invariant.
+ *
+ * VERIFIED 2026-08-24 by calling the real render-layer functions directly
+ * against this exact shape (this profile + one active motor policy + one
+ * active health policy, no acordData) — not assumed:
+ *
+ *   assembleRiskGraph(profile, policies).views:
+ *     cyber_fraud     (cyber)  → unprotected
+ *     life_dependents (life)   → unprotected
+ *     pet_costs       (pet)    → unprotected
+ *     motor_liability (motor)  → unknown   (HELD line — see note below)
+ *     health_access_delay (health) → unknown
+ *
+ *   buildBranchOverview(policies, calculateScoreFromAssessments(...).expectedLines):
+ *     motor: covered · health: covered · pet: gap · cyber: gap · life: gap
+ *
+ * §2.2 CONFIRMED REPRODUCING on both surfaces: three lines the customer
+ * holds no policy for (pet, cyber, life) render "Απροστάτευτο" on the risk
+ * graph and "Πιθανό κενό" on /branches, driven by a profile that told the
+ * engine it has pets, moderate cyber exposure and dependants.
+ *
+ * INCIDENTAL FINDING, not this invariant, left alone here: even the HELD
+ * motor line renders `unknown` rather than `protected`, because a fixture
+ * policy's `acordData` carries no readable perils or sum insured, so every
+ * dimension `bindRisksToGraph` can evaluate comes back `unevaluable`. That
+ * is the honest behaviour of unreadable extraction, not an unowned-line
+ * claim about a line the customer does hold.
+ */
+export async function applyUnownedLinesProfileFixture(db: any, ownerEmail: string): Promise<void> {
+    if (/cquudefwfwrmvpftuhyl/.test(process.env.DATABASE_URL || "") || /cquudefwfwrmvpftuhyl/.test(process.env.DIRECT_URL || "")) {
+        throw new Error("applyUnownedLinesProfileFixture: refusing to run against the PRODUCTION database")
+    }
+    const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
+    if (!owner) throw new Error(`applyUnownedLinesProfileFixture: owner ${ownerEmail} not provisioned — run global-setup first`)
+
+    const data = {
+        dependentsCount: 2,
+        childrenCount: 0,
+        employmentStatus: "employed",
+        hasPets: true,
+        petsCount: 2,
+        cyberExposure: "moderate",
+        vehiclesCount: 1,
+        annualIncome: 32000,
+        answeredFields: [
+            "dependentsCount",
+            "childrenCount",
+            "employmentStatus",
+            "hasPets",
+            "petsCount",
+            "cyberExposure",
+            "vehiclesCount",
+            "annualIncome",
+        ],
+    }
+
+    const existing = await db.policyholderProfile.findUnique({ where: { userId: owner.id }, select: { id: true } })
+    if (existing) {
+        await db.policyholderProfile.update({ where: { userId: owner.id }, data })
+    } else {
+        await db.policyholderProfile.create({ data: { userId: owner.id, ...data } })
+    }
+}

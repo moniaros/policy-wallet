@@ -477,3 +477,50 @@ excluding, so a prefix match cannot express the rule.
 **This is a routing bug, not a navigation bug** — and it means `/insights/risk-profile` has been
 unreachable for policyholders, which is itself why nobody baselined it. Its defects are real but
 have never been seen in production by a customer through the menu.
+
+
+## v2-7 — «Οδήγηση χωρίς υποχρεωτική κάλυψη · ΑΓΝΩΣΤΟ»: the refutation was partial
+
+The fixture agent reported this as **not reproducing**, with a precise mechanism:
+`bindRisksToGraph` (`lib/services/risk-graph/protection.ts:504`) drops every risk whose
+`applicability !== "applicable"` before the graph is built, so a `needs_review` risk never reaches
+`RiskGraphPanel`. That is **correct for the path it tested** — it blanked the profile, which
+produces `applicability: needs_review`.
+
+**But `state` and `applicability` are different axes, and «Άγνωστο» hangs off `state`.**
+
+`RiskGraphPanel.tsx:64-74` maps four `RiskState` values, and `unknown` is one of them. What
+produces it is `protection.ts:373`:
+
+```ts
+if (adequacy.every((d) => d.verdict === "unevaluable")) return "unknown"
+```
+
+So a risk that **is** applicable and **is** covered by real policies, but whose adequacy checks are
+all unevaluable, renders «Άγνωστο». That is precisely v2's reported scenario — 22 motor policies
+held, and the motor risk showing ΑΓΝΩΣΤΟ.
+
+**Verdict: CONFIRMED, reachable, wrong fixture path.** The fixture must produce *applicable risk +
+policies present + adequacy unevaluable*, not a blank profile.
+
+### And the defect is the label, not the state
+
+Worth separating, because it changes the fix. «Άγνωστο» on its own is **honest** — it is §2.5 done
+right: the check could not run, so the product says so instead of claiming protection.
+
+The defect is the pairing. The risk is named «Οδήγηση χωρίς υποχρεωτική κάλυψη» — *driving without
+mandatory cover* — so the rendered row reads, to a customer holding 22 motor policies, as "we are
+not sure whether you are driving uninsured." The state is honest; the label makes it alarming. A
+risk label phrased as an accusation cannot be paired with an unknown state without implying the
+accusation might be true.
+
+Fix direction for Phase 1: the label describes the **risk** («Υποχρεωτική κάλυψη αυτοκινήτου»), not
+the failure mode, so that an unevaluated state reads as *we could not check this* rather than *you
+may be committing an offence*. §2.2's rule — never the visual or verbal language of a finding where
+cover demonstrably exists — applies to the wording as much as the chip.
+
+**Reviewer's note.** I nearly accepted this refutation. It was precise, mechanically correct, and
+cited a real line — and it closed a defect the owner had seen with their own eyes. The tell was that
+`RiskGraphPanel.tsx:73` renders «Άγνωστο» at all: a branch exists for a state something must
+produce. **A refutation that leaves live code unexplained is incomplete**, however good its
+mechanism.
