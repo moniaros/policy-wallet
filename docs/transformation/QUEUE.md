@@ -962,7 +962,7 @@ surface) — this page had never been measured because policyholders could not r
 
 ### New Phase 1 items from this baseline
 
-### V2-P1-07 — `readCoverageFacts` never reads `vehicle.insuredValue` · `todo` — **HIGHEST PRIORITY**
+### V2-P1-07 — `readCoverageFacts` never reads `vehicle.insuredValue` · `done` — REVIEW PASSED
 owner: Implementation (Fable 5) · file_boundary: `lib/services/risk-graph/service.ts`, `tests/unit/`
 
 `readCoverageFacts` resolves a sum insured from `coverage.sumInsured ?? property.insuredValue ??
@@ -1041,3 +1041,57 @@ on H-005) · **V2-P1-04**+**09** (guilt copy + agreement, same file) · **V2-P1-
 **V2-P1-05** (timeline leakage) · plus v1's carried **P1-10**, **P1-08**, **P1-14**.
 
 Phase 1 remains **serial** (§1).
+
+
+---
+
+## V2-P1-07 — Adversarial review: **PASS**. The audit found far more than the motor field.
+
+### Six of nine spellings were phantoms
+
+I verified the central claim: **`AcordDataSchema` defines no top-level `coverage` object at all.**
+It defines `coverages` (plural) and per-line objects — `motor`, `home`, `health`, `life`,
+`lifeAndInvestment`, `marineVessel`, `pet`. So five reads against `acord.coverage?.*` were against a
+key that has never existed, and a sixth (`home.perils`) likewise.
+
+| fact | before | after |
+|---|---|---|
+| `sumInsured` | 1 phantom + 2 property spellings | **10 real carriers wired**, canonical-per-line → fallback → generic → legacy |
+| `perils` | **3 phantoms, all of them** | still unwired — **no schema path carries a peril list**; the fact lives in per-line booleans, and mapping flags → peril tokens is a taxonomy decision, not a spelling. 19-entry reasoned exemption list |
+| `territories` | **3 phantoms** | still unwired — the carrier `territorialScope.includes` holds free text *in the document's language*, and `assessTerritory` compares English tokens. Wiring it raw would fail every Greek policy naming Greece as «Ελλάδα» — a new false downgrade |
+
+Those two non-wirings are the right call and the reasons are recorded rather than the work quietly
+skipped.
+
+### The state after the fix is correct, not merely different — which is what I checked hardest
+
+| case | result |
+|---|---|
+| motor with `vehicle.insuredValue` | `limit: satisfied`, `peril: unevaluable` → **`partially_protected`** — *not* `protected`. "A sum insured alone does not confirm the compulsory liability cover." |
+| motor, envelope only | **stays `unknown`** — «Άγνωστο» preserved where nothing is genuinely readable. P1-02's principle intact |
+| home 10k insured against a 180k mortgage | `limit: failed` → `partially_protected`. **Readability did not become protection** |
+| life, 5k death benefit vs 40k loan | `failed`; 60k vs 40k → `protected` |
+
+### Guard
+
+`COVERAGE_FACT_SOURCES` is exported and is what `readCoverageFacts` actually iterates — one table,
+load-bearing twice. The guard walks the **Zod schema itself** (100+ leaves, vacuity-checked),
+asserts every declared path exists with the right type, every legacy path does **not**, and every
+fact-bearing field is read or exempted with a written reason. Stale exemptions fail too.
+
+**Proven by me:** removing the `vehicle.insuredValue` row turned **5 tests red** across both halves —
+the schema audit naming the field, *and* the real reader losing the value, *and* the end-to-end state
+regressing. Reverted → 88/88.
+
+### Honest consequence it flagged rather than buried
+Health, pet and travel policies carrying `policy.sumInsured` now reach `protected` on a recorded
+limit alone, because no peril expectations exist for those lines. That is `protection.ts`'s existing
+roll-up now fed by production data, identical to home-without-mortgage. If those lines want a floor,
+that is a `requiredMinimum` extension — a separate item, not a silent widening here.
+
+**No Greek copy changed**, so the string freeze needed no regeneration.
+
+### Reviewer's own error, fifth of its kind
+My first probe asserted on a 2,000-character window rather than counting occurrences, so the file
+was never written and the green was meaningless. Caught because the assertion threw. Re-run with a
+before/after count.

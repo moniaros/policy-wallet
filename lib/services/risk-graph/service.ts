@@ -33,52 +33,149 @@ export interface RiskGraphResult {
 }
 
 /**
- * Pull the perils and sum insured out of extraction data.
+ * Where each coverage fact lives inside `acordData`, by name.
  *
- * Both live in `acordData`, a JSON column with no schema, so this reaches
- * through several spellings and gives up cleanly. **Giving up returns null, not
+ * `schemaPaths` are dot-paths that exist in `AcordDataSchema`
+ * ([lib/schemas/acord-data.ts]) — the shape the extractor is actually
+ * instructed to write. `legacyPaths` are spellings the schema does NOT define,
+ * kept because older stored rows and hand-built fixtures carry them.
+ *
+ * The table is exported because it is load-bearing twice: `readCoverageFacts`
+ * iterates it, and `tests/unit/risk-graph-coverage-facts-schema.test.ts` checks
+ * it against the schema — every `schemaPaths` entry must exist there, every
+ * `legacyPaths` entry must NOT, and every schema field that carries one of
+ * these facts must be either read here or exempted in that test with a written
+ * reason. The defect this replaces (V2-P1-07) was a hand-kept list that read
+ * two property spellings and no motor one, so `vehicle.insuredValue` sat
+ * unread in the column while every insured motorist rolled up as «Άγνωστο».
+ */
+export const COVERAGE_FACT_SOURCES = {
+    /**
+     * No schema path carries a peril LIST. The schema records perils as
+     * per-line flags (`property.fireCoverageIncluded`,
+     * `home.catastropheCoverage.*`, `vehicle.ownVehicleDamage`) and as the
+     * free-text `coverages[]` names; mapping those onto the peril tokens
+     * `assessPeril` expects is a semantic decision, not a spelling, and it has
+     * not been made. Until it is, the peril dimension is fed by legacy rows
+     * only, and the guard test holds every flag field in a reasoned exemption
+     * list so the mapping cannot be forgotten silently.
+     */
+    perils: {
+        schemaPaths: [],
+        legacyPaths: ["coverage.perils", "coverage.coveredPerils", "home.perils"],
+    },
+    /**
+     * The schema's carrier is `territorialScope.includes`, but it holds free
+     * text in the document's own language («Ελλάδα», "Worldwide excl. USA & Canada")
+     * while `assessTerritory` compares against fixed lowercase English tokens —
+     * wiring it raw would fail every Greek policy that names Greece in Greek.
+     * It stays unread until a name normalizer exists; the guard test pins that
+     * decision next to the field so it cannot rot into an accidental omission.
+     */
+    territories: {
+        schemaPaths: [],
+        legacyPaths: ["coverage.territories", "coverage.territorialLimits", "policy.territories"],
+    },
+    /**
+     * Ordered: each line's canonical field first (the schema's own note on
+     * `policy.sumInsured` names `vehicle.insuredValue` and
+     * `property.insuredValue` as the motor and property carriers), then the
+     * fallback spellings `deriveSumInsured` (lib/wallet/policy-review.ts)
+     * already accepts for the wallet's sum-insured display — the two surfaces
+     * must read the same figure — then the generic envelope, then legacy.
+     */
+    sumInsured: {
+        schemaPaths: [
+            "vehicle.insuredValue", // motor own-damage sum insured — the V2-P1-07 field
+            "property.insuredValue",
+            "property.replacementValue",
+            "home.insuredValue",
+            "home.replacementValue",
+            "health.annualLimit",
+            "lifeAndInvestment.deathBenefit",
+            "pet.annualLimit",
+            "pet.annualLimitTotal",
+            "policy.sumInsured",
+        ],
+        legacyPaths: ["coverage.sumInsured"],
+    },
+} as const
+
+/** The shape of the table above, loosened so a probe can pass a mutated copy. */
+export type CoverageFactSources = {
+    [K in keyof typeof COVERAGE_FACT_SOURCES]: {
+        schemaPaths: readonly string[]
+        legacyPaths: readonly string[]
+    }
+}
+
+/** Follow a dot-path into unknown JSON; undefined on any miss. */
+function readPath(root: Record<string, any>, path: string): unknown {
+    let current: any = root
+    for (const segment of path.split(".")) {
+        if (current === null || typeof current !== "object") return undefined
+        current = current[segment]
+    }
+    return current
+}
+
+/**
+ * Pull the perils, territories and sum insured out of extraction data.
+ *
+ * All three live in `acordData`, a JSON column, so this reads every spelling in
+ * `COVERAGE_FACT_SOURCES` and gives up cleanly. **Giving up returns null, not
  * zero** — an unreadable sum insured must reach the limit dimension as
  * "unevaluable", because a zero would read as a declaration that the policy pays
  * nothing.
+ *
+ * Exported, with the sources injectable, so the guard test can prove the table
+ * is load-bearing: remove a path from a copy and the same payload stops
+ * reading. `sources` must never be passed in production code.
  */
-function readCoverageFacts(acordData: unknown): {
+export function readCoverageFacts(
+    acordData: unknown,
+    sources: CoverageFactSources = COVERAGE_FACT_SOURCES
+): {
     perils: string[] | null
     territories: string[] | null
     sumInsured: number | null
 } {
     const acord = (acordData ?? null) as Record<string, any> | null
-    if (!acord) return { perils: null, territories: null, sumInsured: null }
+    if (!acord || typeof acord !== "object") {
+        return { perils: null, territories: null, sumInsured: null }
+    }
 
-    const rawPerils =
-        acord.coverage?.perils ?? acord.coverage?.coveredPerils ?? acord.home?.perils ?? null
-    const perils = Array.isArray(rawPerils)
-        ? rawPerils.filter((p): p is string => typeof p === "string")
-        : null
+    // First path holding an array decides; junk in an earlier spelling does not
+    // block a readable later one. An empty (or all-junk) array is still "we
+    // could not read perils", never "no perils".
+    const firstStringArray = (paths: readonly string[]): string[] | null => {
+        for (const path of paths) {
+            const value = readPath(acord, path)
+            if (!Array.isArray(value)) continue
+            const strings = value.filter((x): x is string => typeof x === "string")
+            return strings.length > 0 ? strings : null
+        }
+        return null
+    }
 
-    // Read leniently even though no extractor writes these yet. A field the
-    // service cannot populate is a code path production can never enter — the
-    // territory dimension would be reachable only from a test, which is a worse
-    // state than not having it.
-    const rawTerritories =
-        acord.coverage?.territories ??
-        acord.coverage?.territorialLimits ??
-        acord.policy?.territories ??
-        null
-    const territories = Array.isArray(rawTerritories)
-        ? rawTerritories.filter((t): t is string => typeof t === "string")
-        : null
-
-    const rawSum =
-        acord.coverage?.sumInsured ??
-        acord.property?.insuredValue ??
-        acord.home?.insuredValue ??
-        null
-    const sumInsured = typeof rawSum === "number" && Number.isFinite(rawSum) ? rawSum : null
+    const firstFiniteNumber = (paths: readonly string[]): number | null => {
+        for (const path of paths) {
+            const value = readPath(acord, path)
+            if (typeof value === "number" && Number.isFinite(value)) return value
+        }
+        return null
+    }
 
     return {
-        perils: perils && perils.length > 0 ? perils : null,
-        territories: territories && territories.length > 0 ? territories : null,
-        sumInsured,
+        perils: firstStringArray([...sources.perils.schemaPaths, ...sources.perils.legacyPaths]),
+        territories: firstStringArray([
+            ...sources.territories.schemaPaths,
+            ...sources.territories.legacyPaths,
+        ]),
+        sumInsured: firstFiniteNumber([
+            ...sources.sumInsured.schemaPaths,
+            ...sources.sumInsured.legacyPaths,
+        ]),
     }
 }
 

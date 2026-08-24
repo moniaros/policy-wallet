@@ -773,10 +773,13 @@ describe("one answer per risk, across the whole page", () => {
 })
 
 describe("the service reads what the dimensions need", () => {
-    it("reaches perils, territories and the sum insured through the real entry point", () => {
-        // Every dimension has to be reachable from production data, not only
-        // from a hand-built fixture — a field the service never reads makes its
-        // code path enterable by tests alone, which is worse than not having it.
+    it("still reads the pre-schema `coverage.*` spellings older rows carry", () => {
+        // CAUTION: this payload is the LEGACY shape — AcordDataSchema defines
+        // no `coverage` object at all, and no extractor has ever written one.
+        // This very test once claimed to prove "every dimension is reachable
+        // from production data" while exercising a spelling production never
+        // produces; the schema-shaped tests below are that proof now
+        // (V2-P1-07). This one only pins that old stored rows keep working.
         const result = assembleRiskGraph(profile({ vehiclesCount: 1 }), [
             {
                 id: "m",
@@ -813,6 +816,99 @@ describe("the service reads what the dimensions need", () => {
         const home = result.risks.find((r) => r.riskId === "home_building_damage")!
         expect(home.state).toBe("unknown")
         expect(home.protectedBy).toEqual(["h"])
+    })
+
+    it("reads the motor sum insured from the field the schema actually defines", () => {
+        // V2-P1-07. `vehicle.insuredValue` is the schema's own motor field
+        // (acord-data.ts) — the authored value_drift rules and the renewal
+        // differential both read it — but readCoverageFacts resolved the sum
+        // insured from two property spellings and a phantom, so every insured
+        // motorist rolled up as «Άγνωστο» while the figure sat in the column.
+        const result = assembleRiskGraph(profile({ vehiclesCount: 1 }), [
+            {
+                id: "m",
+                lineOfBusiness: "motor",
+                status: "active",
+                insurerName: "ΕΘΝΙΚΗ",
+                endDate: new Date("2027-01-01"),
+                acordData: {
+                    _version: 3,
+                    vehicle: { insuredValue: 14500, estimatedMarketValue: 15000 },
+                    policy: { lineOfBusiness: "motor" },
+                },
+            },
+        ])
+        const motor = result.risks.find((r) => r.riskId === "motor_liability")!
+        // The limit dimension can finally run on real extraction data…
+        expect(motor.dimensions.find((d) => d.dimension === "limit")?.verdict).toBe("satisfied")
+        // …but the perils are still genuinely unreadable (no schema field
+        // carries a peril list — see COVERAGE_FACT_SOURCES), so the honest
+        // roll-up is partial: no longer «Άγνωστο», and NOT `protected` —
+        // a sum insured alone does not confirm the compulsory liability cover.
+        expect(motor.dimensions.find((d) => d.dimension === "peril")?.verdict).toBe("unevaluable")
+        expect(motor.state).toBe("partially_protected")
+    })
+
+    it("keeps «Άγνωστο» for a motor policy whose extraction holds nothing readable", () => {
+        // The unknown-household fixture's exact shape: a policy envelope with
+        // dates and premium, no vehicle section. `unknown` is CORRECT there —
+        // the fix must widen what can be read, never manufacture a figure.
+        const result = assembleRiskGraph(profile({ vehiclesCount: 1 }), [
+            {
+                id: "m",
+                lineOfBusiness: "motor",
+                status: "active",
+                insurerName: "Interamerican",
+                endDate: new Date("2027-01-01"),
+                acordData: {
+                    _version: 3,
+                    policy: { lineOfBusiness: "motor", premium: { amount: 250 } },
+                },
+            },
+        ])
+        expect(result.risks.find((r) => r.riskId === "motor_liability")?.state).toBe("unknown")
+    })
+
+    it("an underinsured home read from real extraction data still fails the limit", () => {
+        // The guard's own trap: after widening the read, a policy that is
+        // genuinely too small must not surface as protected merely because the
+        // number became readable.
+        const result = assembleRiskGraph(
+            profile({ residenceType: "owned", propertiesOwned: 1, mortgageAmount: 180000 }),
+            [
+                {
+                    id: "h",
+                    lineOfBusiness: "home",
+                    status: "active",
+                    insurerName: null,
+                    endDate: new Date("2027-01-01"),
+                    acordData: { _version: 3, property: { insuredValue: 10000 } },
+                },
+            ]
+        )
+        const home = result.risks.find((r) => r.riskId === "home_building_damage")!
+        expect(home.dimensions.find((d) => d.dimension === "limit")?.verdict).toBe("failed")
+        expect(home.state).toBe("partially_protected")
+    })
+
+    it("compares the death benefit the schema defines against the debt behind it", () => {
+        // Same defect class as motor: the life_debt floor comparison existed
+        // and was reachable only from hand-built fixtures, because
+        // `lifeAndInvestment.deathBenefit` — the wallet's own sum-insured field
+        // for life (deriveSumInsured) — was never read from acordData.
+        const result = assembleRiskGraph(profile({ hasLoans: true, loanAmount: 40000 }), [
+            {
+                id: "l",
+                lineOfBusiness: "life",
+                status: "active",
+                insurerName: null,
+                endDate: new Date("2027-01-01"),
+                acordData: { _version: 3, lifeAndInvestment: { deathBenefit: 5000 } },
+            },
+        ])
+        const debt = result.risks.find((r) => r.riskId === "life_debt")!
+        expect(debt.dimensions.find((d) => d.dimension === "limit")?.verdict).toBe("failed")
+        expect(debt.state).toBe("partially_protected")
     })
 })
 
