@@ -649,3 +649,38 @@ assumption about *form*) and D-005 (about *location*): here the assumption was a
 
 **Practical rule:** when refuting, grep for the disputed **rendered string** and account for every
 branch that emits it, before reasoning about the data path that feeds it.
+
+
+---
+
+## D-021 — "No file knows the literals" is not "identity renders through the primitive"
+
+date: 2026-08-24
+raised_by: Adversarial Reviewer, from the `/timeline` baseline
+decision: `policy-sentinels-unrenderable.test.tsx` gains a second assertion — every **read** of an
+identity field outside the primitive must route through it. Knowing the literals is not the only way
+to render one.
+
+`CLAUDE.md` states the invariant as: *"Display only through `lib/wallet/policy-identity.ts`
+(`displayInsurerName` / `policyLabel` / `scrubPolicyIdentity`) — that module is the only file allowed
+to know the literals, and `tests/unit/policy-sentinels-unrenderable.test.tsx` fails CI if another
+file learns them."*
+
+The guard implements the **second half** of that sentence and not the first. Its filesystem-
+enumerating assertion is `it('only the primitive and the writers know the literal strings')` — it
+walks `git ls-files app components lib scripts hooks contexts`, which is the right universe, and
+flags any file **containing** `__PENDING_EXTRACTION__` / `PENDING-` / `Unknown Insurer`.
+
+`lib/services/timeline/build.ts:202` contains none of them. It reads `policy.insurerName?.trim()`
+and `LifeTimeline.tsx` renders the result verbatim — so a sentinel reaches the customer as a policy
+name, with the guard green, because the file never learned a literal. It only learned a **field**.
+
+**Third instance of the assertion-gap failure mode** (after v1's score allowlist permitting two
+locations where §2.2 permits one, and the all-clear unit test that could not see a template). The
+universe was right, the guard ran on every commit, and what it *claimed* was narrower than the
+invariant it was named for.
+
+**Generalisation worth keeping:** a guard that forbids a *spelling* does not enforce a *routing
+rule*. Wherever the invariant is "all X goes through Y", the guard must enumerate reads of X, not
+occurrences of X's known bad values — because the bad values are data, and data does not appear in
+source.

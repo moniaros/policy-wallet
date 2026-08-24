@@ -1,0 +1,98 @@
+{
+  "capture": "branches-unowned-lines-paid",
+  "width": 430,
+  "url": "http://localhost:3000/branches",
+  "scrollHeight": 1959,
+  "viewportsOfContent": 2.1,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 0,
+    "ids": []
+  },
+  "containers": {
+    "count": 31,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
+      "span.absolute right-1.5 top-1.5 flex h-4 min-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:subpixel] <a> \"Δεν έχει αξιολογηθείΚατοικίαΤο σπί\" boundary 2.43:1 (needs 3) inside=#fdfdfd outside=#f5f8f9 — declared 3.32:1, rendered across two device rows",
+      "[1.4.11:subpixel] <a> \"Δεν έχει αξιολογηθείΣύνταξη & Αποτ\" boundary 2.50:1 (needs 3) inside=#fefefe outside=#fbfcfd — declared 3.34:1, rendered across two device rows",
+      "[1.4.11:subpixel] <a> \"Δεν έχει αξιολογηθείΤαξιδιωτικήΠρι\" boundary 2.50:1 (needs 3) inside=#fefefe outside=#fcfdfe — declared 3.34:1, rendered across two device rows",
+      "[1.4.11:unmeasured] <a> \"Δεν έχει αξιολογηθείΕπιχείρησηΣτέγ\" boundary 2.52:1 (needs 3) inside=#fefefe outside=#fdfdfe — inside and outside identical: no edge crossed, reading discarded"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι ",
+        "scrollWidth": 356,
+        "clientWidth": 356,
+        "reason": "css-truncation",
+        "scrollHeight": 59,
+        "clientHeight": 39
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Σιγουρέψου ότι το συμβόλαιο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σ",
+        "scrollWidth": 356,
+        "clientWidth": 356,
+        "reason": "css-truncation",
+        "scrollHeight": 59,
+        "clientHeight": 39
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Χρειάζεται προσοχή",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Δεν έχει αξιολογηθεί",
+        "count": 4,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 21 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Κλάδοι ασφάλισης Δες ανά κλάδο τι έχεις, τι φαίνεται να λείπει και πώς να αξιοποιήσεις όσα ήδη πληρώνεις. Χρειάζεται προσοχή Αυτοκίνητο Καταλάβετε τι πραγματικά καλύπτει το συμβόλαιο του αυτοκινήτου σας — πριν το χρειαστείτε. 22 ασφαλιστήρια Δεν έχει αξιολογηθεί Κατοικία Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι πραγματικά προστατεύει το συμβόλαιό σας. Χρειάζεται προσοχή Υγεία Μάθετε τι πληρώνετε εσείς και τι ο ασφαλιστής σας — πριν βρεθείτε στο νοσοκομείο. 7 ασφαλιστήρια Πιθανό κενό Ζωή Σιγουρέψου ότι το συμβόλαιο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σωστό κεφάλαιο και τους σωστούς δικαιούχους. Δεν έχει αξιολογηθεί Σύνταξη & Αποταμίευση Δείτε πού πηγαίνουν οι εισφορές σας, τι κοστίζει το πρόγραμμα και πότε ωριμάζει. Δεν έχει αξιολογηθεί Ταξιδιωτική Πριν φύγετε, μάθετε τι καλύπτει η ταξιδιωτική σας — προορισμός, ιατρικά, αποσκευές, ακύρωση. Πιθανό κενό Κατοικίδιο Κτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το συμβόλαιο του κατοικιδίου σας — και με ποιες αναμονές. Πιθανό κενό Cyber Οι online συναλλαγές σας έχουν κινδύνους — δείτε τι από αυτά καλύπτει το συμβόλαιό σας. Δεν έχει αξιολογηθεί Επιχείρηση Στέγη, εξοπλισμός, εμπορεύματα, ευθύνη: δείτε αν οι καλύψεις της επιχείρησής σας ταιριάζουν με τη δραστηριότητά της. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "state": "unowned-lines-profile (pet/cyber/life declared, zero policies)"
+}

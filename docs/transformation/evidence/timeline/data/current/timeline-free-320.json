@@ -1,0 +1,72 @@
+{
+  "capture": "timeline-free",
+  "width": 320,
+  "url": "http://localhost:3000/timeline",
+  "scrollHeight": 864,
+  "viewportsOfContent": 1.2,
+  "headingCounts": {
+    "h1": 0,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 2,
+    "ids": [
+      "<div> Το χρονολόγιό σας",
+      "<h2> Το χρονολόγιό σας"
+    ]
+  },
+  "containers": {
+    "count": 7,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
+      "span.absolute right-1.5 top-1.5 flex h-4 min-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:surface] <div> \"Το χρονολόγιό σαςΤι άλλαξε στη ζωή\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "2",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "top: 23/08/2026 — \"23/08/2026\""
+      ],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Ασφαλιστήρια",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το χρονολόγιό σας Τι άλλαξε στη ζωή σας, τι κάναμε γι' αυτό, και γιατί. 23/08/2026·ΑΣΦΑΛΙΣΤΗΡΙΑ Προστέθηκε ασφαλιστήριο Υγεία — Εθνική Ασφαλιστική Άνοιγμα 23/08/2026·ΑΣΦΑΛΙΣΤΗΡΙΑ Προστέθηκε ασφαλιστήριο Αυτοκίνητο — Interamerican Άνοιγμα Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+  },
+  "tier": "free",
+  "state": "natural 2-policy account, no defect fixtures"
+}

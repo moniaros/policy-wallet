@@ -802,7 +802,7 @@ Blocks V2-P0-BASE, because a fixture must be able to produce the defect.
 - [ ] a household with income and dependants genuinely unset, with motor cover present (§2.4 zero-scores)
 - [ ] each verified by calling the real render functions, not assumed
 
-### V2-P0-BASE — baseline three unmeasured surfaces · `todo`
+### V2-P0-BASE — baseline three unmeasured surfaces · `2 of 3 done`
 owner: Evidence (Sonnet 5) · blocked_by: V2-P0-FIX
 `/branches` · `/insights/risk-profile` · `/timeline`, at 320/390/430, every applicable state.
 **Note for `/insights/risk-profile`:** it is currently unreachable for policyholders (v2-6) — the
@@ -909,3 +909,44 @@ The guard could not classify a route the document never mentioned, and said so. 
 afterwards: of 37 menu hrefs, exactly one was absent — the v1 sweep was 36/37, not unreliable, but
 the miss is a top-level menu destination. Corrected, with the lesson recorded: that document is no
 longer a report, it is **load-bearing**, and a gap in it is now a hole in a guard.
+
+
+---
+
+## V2-P0-BASE(a) — `/branches` and `/timeline` baselined. Review: **PASS**
+
+| surface | scroll @320 | sections | containers/depth | sub-44 | truncation | leaks |
+|---|---|---|---|---|---|---|
+| `/branches` (both tiers) | 1,981 | 0* | 31 / 2 | 0 | **9** | 0 |
+| `/timeline` paid | 9,539 | 5 | 68 / 2 | 0 | 2 | **1** |
+| `/timeline` free | 864 | 2 | 7 / 2 | 0 | 1 | 0 |
+
+`*` no `section[id]` on the page — the documented metric artifact, captured with `minSections: 0`.
+
+**Confirmed:** §2.2 «Πιθανό κενό» on life / pet / cyber with **zero policies each** · 8 of 9 branch
+taglines clip mid-word at 320px (`line-clamp-2`), falling to 4/9 at 390 and 2/9 at 430 ·
+`__PENDING_EXTRACTION__` on `/timeline` · 18 of 60 rows share one title.
+
+**Refuted:** the floating avatar over «Ζωή». No avatar exists below 1024px (`AppShell.tsx:347`,
+`hidden lg:block`); the only overlap in the full-page capture is the fixed bottom nav at a
+scroll-stitch boundary, over the *Health* card, and the page reserves space for it. A re-crop at
+Ζωή's real position is clean. Second refutation of this claim, on a second surface.
+
+**Two findings nobody listed:**
+1. `/branches` reads a **cached** protection-score row that no GET recomputes — the capture needed
+   `GET /api/v1/protection-score?fresh=true` first. A surface rendering «Πιθανό κενό» off a stale
+   cache is a §2.5 question in its own right.
+2. The nine cards include `business` because it is `contentTier: 'rich'` with **no B2C/B2B filter** —
+   possibly unintended on a consumer surface.
+
+**It caught its own measurement artifact**, which is the part worth naming. Chip counts drifted
+mid-run (free timeline 2 → 12 entries between widths). It traced this to *its own* parallel
+Playwright workers — `branches-*.spec.ts` force-refreshing the shared account's score while
+`timeline-*.spec.ts` was capturing, because `describe.configure({mode:"serial"})` serialises within
+a file, not across files. §0.5 forbids comparing captures whose data moved; it found itself doing
+that and said so rather than publishing the numbers.
+
+### V2-P1-06 — `/timeline` identity bypass · `todo`
+`lib/services/timeline/build.ts:202` reads `policy.insurerName?.trim()` directly; `LifeTimeline.tsx`
+renders it verbatim. Route through `lib/wallet/policy-identity.ts`, and close the guard gap in
+D-021 — the sentinel guard cannot see this because the file never contains a literal.

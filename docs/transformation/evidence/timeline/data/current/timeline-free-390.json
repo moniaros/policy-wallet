@@ -1,0 +1,88 @@
+{
+  "capture": "timeline-free",
+  "width": 390,
+  "url": "http://localhost:3000/timeline",
+  "scrollHeight": 2011,
+  "viewportsOfContent": 2.4,
+  "headingCounts": {
+    "h1": 0,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 6,
+    "ids": [
+      "<div> Το χρονολόγιό σας",
+      "<h2> Το χρονολόγιό σας",
+      "<button> Όλα12",
+      "<button> Προτάσεις9",
+      "<button> Ασφαλιστήρια2",
+      "<button> Σκορ1"
+    ]
+  },
+  "containers": {
+    "count": 21,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
+      "span.absolute right-1.5 top-1.5 flex h-4 min-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Προτάσεις9\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ασφαλιστήρια2\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Σκορ1\" boundary 1.00:1 (needs 3) inside=#fafbfd outside=#fafbfd — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Το χρονολόγιό σαςΤι άλλαξε στη ζωή\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fbfd"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.-mx-1.mb-4",
+        "text": "Όλα12Προτάσεις9Ασφαλιστήρια2Σκορ1",
+        "scrollWidth": 397,
+        "clientWidth": 332,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "3",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "top: 24/08/2026 — \"24/08/2026\"",
+        "top: 23/08/2026 — \"23/08/2026\""
+      ],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Ασφαλιστήρια",
+        "count": 3,
+        "where": [
+          "top <button>",
+          "top <p>",
+          "top <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 3 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 3 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το χρονολόγιό σας Τι άλλαξε στη ζωή σας, τι κάναμε γι' αυτό, και γιατί. Όλα 12 Προτάσεις 9 Ασφαλιστήρια 2 Σκορ 1 24/08/2026·ΣΚΟΡ Ανεπαρκή στοιχεία για βαθμολόγηση Πρόκειται για την πρώτη αξιολόγηση της προστασίας σας, μετά από μια μεταβολή στο πορτοφόλι σας. Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Δεν καταγράφεται τηλέφωνο αναγγελίας ατυχήματος Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Πιθανή έλλειψη κάλυψης προληπτικών εξετάσεων Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Δεν καταγράφεται η θέση νοσηλείας Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Πιθανή έλλειψη οδικής βοήθειας Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Η Πράσινη Κάρτα φαίνεται να λήγει σύντομα Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Πιθανή έλλειψη κάλυψης θραύσης κρυστάλλων Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Δεν εντοπίστηκε κέντρο συντονισμού Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Πιθανή έλλειψη απευθείας εξόφλησης νοσηλείας Άνοιγμα 24/08/2026·ΠΡΟΤΑΣΕΙΣ Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή) Άνοιγμα 23/08/2026·ΑΣΦΑΛΙΣΤΗΡΙΑ Προστέθηκε ασφαλιστήριο Υγεία — Εθνική Ασφαλιστική Άνοιγμα 23/08/2026·ΑΣΦΑΛΙΣΤΗΡΙΑ Προστέθηκε ασφαλιστήριο Αυτοκίνητο — Interamerican Άνοιγμα Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 3 Ρυθμίσεις"
+  },
+  "tier": "free",
+  "state": "natural 2-policy account, no defect fixtures"
+}
