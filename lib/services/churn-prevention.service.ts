@@ -9,7 +9,6 @@ import {
     getChurnDay60Email,
 } from "../email/templates/churn-prevention"
 
-const BONUS_TOKENS = 500
 
 type ChurnPreventionSummary = {
     processed: number
@@ -189,32 +188,16 @@ export async function runChurnPreventionJob(): Promise<ChurnPreventionSummary> {
                 subjectEn = getChurnDay14Email({ name: user.name || undefined, language: "en" }).subject
                 summary.day14Sent++
             } else if (tier === "day30") {
-                const email = getChurnDay30Email({
-                    name: user.name || undefined,
-                    language: lang,
-                    bonusTokens: BONUS_TOKENS,
-                })
+                const email = getChurnDay30Email({ name: user.name || undefined, language: lang })
                 subject = email.subject
                 html = email.html
-                subjectEl = getChurnDay30Email({ name: user.name || undefined, language: "el", bonusTokens: BONUS_TOKENS }).subject
-                subjectEn = getChurnDay30Email({ name: user.name || undefined, language: "en", bonusTokens: BONUS_TOKENS }).subject
+                subjectEl = getChurnDay30Email({ name: user.name || undefined, language: "el" }).subject
+                subjectEn = getChurnDay30Email({ name: user.name || undefined, language: "en" }).subject
 
-                // Record the bonus token grant (integrate with actual billing/token system)
-                await emit({
-                    event: "bonus_credits_granted",
-                    userId: user.id,
-                    title: {
-                        el: `${BONUS_TOKENS} επιπλέον credits AI`,
-                        en: `${BONUS_TOKENS} bonus AI credits`,
-                    },
-                    message: {
-                        el: `Μπόνους επανασύνδεσης: ${BONUS_TOKENS} credits προστέθηκαν, λήγουν σε 30 ημέρες`,
-                        en: `Re-engagement bonus: ${BONUS_TOKENS} credits added, expires in 30 days`,
-                    },
-                    // The grant happens once per re-engagement cycle; the key
-                    // stops a re-run of the cron granting it twice.
-                    dedupeKey: `churn_bonus:${tier}:${runDay}`,
-                })
+                // No bonus-credit emission here. It announced a grant that never
+                // happened — see getChurnDay30Email for the full account. The
+                // registry entry stays as `planned` for the day a real grant
+                // exists to emit it.
                 summary.day30Sent++
             } else {
                 const email = getChurnDay60Email({ name: user.name || undefined, language: lang })

@@ -1310,8 +1310,8 @@ export const NOTIFICATION_EVENTS: Record<string, NotificationEventDefinition> = 
         retry: NO_RETRY,
         expiresAfterHours: 30 * DAY,
         audit: "notification_event",
-        status: "live",
-        emittedBy: "lib/services/churn-prevention.service.ts",
+        status: "planned",
+        note: "Was `live`, and the clearest case in this registry of a declared trigger that never fired. Its only emitter was the day-30 churn email, which granted nothing: the sole code path that moves a credit balance is the admin `grantTokens` action. So a daily cron wrote «Πιστώθηκαν επιπλέον credits στον λογαριασμό σας» into the customer's notification list, past tense, for a credit that did not exist. Wiring is one emitter at the point a grant COMMITS — never at the point one is announced.",
     },
 
     // ── Engagement ───────────────────────────────────────────────────────────

@@ -505,3 +505,41 @@ skipped). Settled means do not relitigate the *conclusion*; it never means do no
    longer «ΑΓΝΩΣΤΟ».
 2. **V2-P1-02** (unowned lines, including the email path at `mail-templates.ts:132`).
 3. **V2-P1-06** + the D-021 guard gap, together — the fix and the reason it was invisible.
+
+## §6 diff — the phase-completion test, run against the instruction (2026-08-25)
+
+Per D-025, Phase 1 closes against **§6's fifteen items**, not `QUEUE.md`. Verified, not recalled:
+
+| § | item | state |
+|---|---|---|
+| 6.1 | score containment | **done** — 9 sites, `score-containment` |
+| 6.2 | the second score (§2.4) | **blocked** — H-005 |
+| 6.3 | outbound copy | **done** — 0 score / 0 tokens / 0 Latin |
+| 6.4 | token / fixture / placeholder leakage | **done** |
+| 6.5 | unowned-line claims (§2.2) | **done** — `unowned-lines-not-held` |
+| 6.6 | absence-is-not-reassurance | **done** — `all-clear-honesty` |
+| 6.7 | **count consistency** | **open — V2-P1-11 in flight** |
+| 6.8 | notification deduplication | **done** |
+| 6.9 | **severity framing** | **open — partial** |
+| 6.10 | Greek string sweep | **done** — union freeze |
+| 6.11 | truncation | deferred to Phase 3 (primitive), recorded |
+| 6.12 | **layout integrity** | **open — partial** |
+| 6.13 | guilt register (§2.13) | **done** — `finding-copy-register` |
+| 6.14 | unusable / meaningless controls | **partial** — shell done (P1-08) |
+| 6.15 | settings subtree, upload flow, timeline | **partial** |
+
+### Why 6.9 and 6.12 read "partial" rather than done
+
+Both have a guard whose **universe is one surface**, which is D-005's failure mode:
+
+- `gap-severity-framing.test.tsx` renders **`CoverageGapsWidget` and nothing else**. §6.9 is
+  product-wide, and `gap-severity-display-single-source` still carries a **9-entry bypass ceiling** —
+  nine surfaces render severity without `describeSeverity()`. A guard over one widget plus a debt
+  list of nine is not the invariant.
+- 6.12 was covered incidentally by P1-08's shell work and never verified as an item.
+
+### The measurement that made 6.7 visible
+
+**4 `data-count`, 8 `data-fact`, 3 `data-action`** across the entire product, against a key set
+agreed in Phase 0 for this exact item. Every attribute-based scan this run has therefore returned a
+**vacuous zero** — passing for want of anything to check. The value scans carried the load alone.

@@ -432,6 +432,28 @@ answer: *(awaiting)*
 
 ---
 
+## H-008 — RESOLVED IN PART (2026-08-25). The false claim is gone; the commercial question stands.
+
+**Acted under standing authority, because the honesty half was not a decision.** CLAUDE.md forbids
+"publishing a public claim the code does not support" *regardless of instruction*, and this one was
+shipping daily to production. Waiting for an answer meant continuing to send it.
+
+**What was done (V2-P1-12):** the day-30 churn email no longer mentions credits — no gift box, no
+48px «500», no «AI Credits προστέθηκαν στον λογαριασμό σας». The `bonus_credits_granted` emission is
+deleted from `churn-prevention.service.ts`; the registry entry moved `live → planned` and no longer
+names an emitter. Seven Greek claims left the copy freeze; four neutral lines replaced them. The
+email still goes out and still re-engages.
+
+**What was NOT decided, and is still yours:** whether returning customers *should* get credits.
+Granting them is the billing system, which §12.4 puts out of scope, and "should we spend money to win
+back lapsed users" is a commercial call. The three options are unchanged — grant them for real, drop
+the incentive permanently, or design a claimable offer. **Nothing now blocks on this**; the product is
+honest either way, and the registry entry is wired to receive a real grant the day one exists.
+
+---
+
+### Original halt as raised
+
 ## H-008 — A daily production cron tells customers it granted 500 credits. Nothing grants them.
 
 date: 2026-08-24 · raised_by: P1-14, escalated by the Adversarial Reviewer

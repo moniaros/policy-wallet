@@ -16,8 +16,8 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2785
-# inline entries: 4427 across 208 files
-# ternary entries: 298 across 45 files
+# inline entries: 4425 across 208 files
+# ternary entries: 297 across 45 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -6319,8 +6319,6 @@ inline	lib/services/billing/stripe-lifecycle.ts	"Η συνδρομή σας έλ
 inline	lib/services/billing/stripe-lifecycle.ts	"Ο λογαριασμός σας επέστρεψε στο δωρεάν πλάνο. Τα ασφαλιστήριά σας και τα δεδομένα σας παραμένουν στη θέση τους."
 inline	lib/services/billing/stripe-lifecycle.ts	"Το πλάνο σας άλλαξε"
 inline	lib/services/churn-prevention.service.ts	"Σας στείλαμε ένα email για να συνεχίσετε από εκεί που μείνατε."
-inline	lib/services/churn-prevention.service.ts	`${BONUS_TOKENS} επιπλέον credits AI`
-inline	lib/services/churn-prevention.service.ts	`Μπόνους επανασύνδεσης: ${BONUS_TOKENS} credits προστέθηκαν, λήγουν σε 30 ημέρες`
 inline	lib/services/churn-prevention.service.ts	subjectEl
 inline	lib/services/collaboration-reminders.service.ts	"Εκπρόθεσμη ενέργεια"
 inline	lib/services/collaboration-reminders.service.ts	"Καθημερινή σύνοψη"
@@ -7272,8 +7270,9 @@ ternary	lib/email/invite-emails.ts	{ subject: "Αίτημα συγκατάθεσ
 ternary	lib/email/invite-emails.ts	{ subject: "Κοινοποιήθηκε ένα ασφαλιστήριο μαζί σας", title: "Κοινοποιήθηκε ένα ασφαλιστήριο στο πορτοφόλι σας", body: `${inviter} κοινοποίησε ${label} στο πορτοφόλι σας. Συνδεθείτε για να δείτε τα στοιχεία του κοινοποιημένου ασφαλιστηρίου.`, action: "Άνοιγμα πορτοφολιού", }
 ternary	lib/email/invite-emails.ts	{ subject: "Πρόσκληση από το PolicyWallet", title: "Έχετε προσκληθεί για συνεργασία", body: `${inviter} σας προσκάλεσε να αποκτήσετε πρόσβαση σε ${label} στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο πρόσκλησης για να αποδεχτείτε την πρόσβαση.`, action: "Άνοιγμα πρόσκλησης", }
 ternary	lib/email/invite-emails.ts	{ subject: `${inviter} σας προσκαλεί ως σύμβουλό του στο PolicyWallet`, title: "Προσκληθήκατε ως σύμβουλος", body: `${inviter} θέλει να σας συνδέσει ως ασφαλιστικό σύμβουλό του στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο για να δημιουργήσετε λογαριασμό συμβούλου ή να συνδεθείτε — θα συνδεθείτε αυτόματα.`, action: "Αποδοχή πρόσκλησης", }
-ternary	lib/email/templates/churn-prevention.ts	'AI Credits προστέθηκαν στον λογαριασμό σας'
 ternary	lib/email/templates/churn-prevention.ts	'Άνοιγμα πίνακα ελέγχου'
+ternary	lib/email/templates/churn-prevention.ts	'Άνοιγμα του φακέλου μου'
+ternary	lib/email/templates/churn-prevention.ts	'Έχει περάσει καιρός από την τελευταία σας επίσκεψη. Τα ασφαλιστήριά σας είναι αποθηκευμένα με ασφάλεια και σας περιμένουν.'
 ternary	lib/email/templates/churn-prevention.ts	'Έχουμε προσθέσει νέες δυνατότητες στο PolicyWallet:'
 ternary	lib/email/templates/churn-prevention.ts	'Αν δεν θέλετε να λαμβάνετε αυτά τα email, μπορείτε να τα απενεργοποιήσετε στις Ρυθμίσεις.'
 ternary	lib/email/templates/churn-prevention.ts	'Δείτε τι νέο υπάρχει!'
@@ -7286,18 +7285,16 @@ ternary	lib/email/templates/churn-prevention.ts	'Η ασφαλιστική σα�
 ternary	lib/email/templates/churn-prevention.ts	'Η ασφαλιστική σας κάλυψη σας περιμένει'
 ternary	lib/email/templates/churn-prevention.ts	'Η κάλυψή σας μπορεί να κινδυνεύει'
 ternary	lib/email/templates/churn-prevention.ts	'Μας λείπετε!'
-ternary	lib/email/templates/churn-prevention.ts	'Τα credits λήγουν σε 30 ημέρες.'
+ternary	lib/email/templates/churn-prevention.ts	'Μπείτε ξανά όποτε θέλετε — όλα είναι εκεί που τα αφήσατε.'
+ternary	lib/email/templates/churn-prevention.ts	'Ο ασφαλιστικός σας φάκελος σας περιμένει'
 ternary	lib/email/templates/churn-prevention.ts	'Το χαρτοφυλάκιό σας χρειάζεται προσοχή'
 ternary	lib/email/templates/churn-prevention.ts	'Το χαρτοφυλάκιό σας χρειάζεται προσοχή'
-ternary	lib/email/templates/churn-prevention.ts	'Χρησιμοποιήστε τα τώρα'
 ternary	lib/email/templates/churn-prevention.ts	'✨ Νέες λειτουργίες που χάνετε'
 ternary	lib/email/templates/churn-prevention.ts	'🔒 Η κάλυψή σας μπορεί να κινδυνεύει'
 ternary	lib/email/templates/churn-prevention.ts	[ '🤖 Βελτιωμένη AI ανάλυση κάλυψης', '📊 Εβδομαδιαία σύνοψη email', '💬 Ενσωματωμένα μηνύματα με τον σύμβουλό σας', ]
 ternary	lib/email/templates/churn-prevention.ts	` <div style="background: #FEF2F2; border-radius: 12px; padding: 16px; margin: 20px 0;"> <p style="margin: 0; font-size: 14px; color: #991B1B; font-weight: bold;"> ${isGreek ? counted(expiringPolicies, 'ασφαλιστήριο λήγει σύντομα', 'ασφαλιστήρια λήγουν σύντομα') : counted(expiringPolicies, 'policy expiring soon', 'policies expiring soon')} </p> </div> `
 ternary	lib/email/templates/churn-prevention.ts	` <div style="background: #FFFBEB; border-radius: 12px; padding: 16px; margin: 20px 0;"> <p style="margin: 0; font-size: 14px; color: #92400E; font-weight: bold;"> ${isGreek ? counted(openGaps, 'κενό κάλυψης χρειάζεται αντιμετώπιση', 'κενά κάλυψης χρειάζονται αντιμετώπιση') : counted(openGaps, 'coverage gap needs attention', 'coverage gaps need attention')} </p> </div> `
 ternary	lib/email/templates/churn-prevention.ts	`<p>${isGreek ? 'Δεν εντοπίσαμε κάτι που να απαιτεί ενέργεια αυτή τη στιγμή — αξίζει όμως μια ματιά στο χαρτοφυλάκιό σας.' : 'We found nothing that needs action right now — but your portfolio is worth a look.' }</p>`
-ternary	lib/email/templates/churn-prevention.ts	`Ως ένδειξη εκτίμησης, σας δωρίζουμε <strong>${bonusTokens} δωρεάν AI credits</strong> για να εξερευνήσετε τη νέα μας ανάλυση κάλυψης.`
-ternary	lib/email/templates/churn-prevention.ts	`🎁 Μας λείπετε — ${bonusTokens} δωρεάν credits σας περιμένουν`
 ternary	lib/email/templates/churn-prevention.ts	counted(expiringPolicies, 'ασφαλιστήριο λήγει σύντομα', 'ασφαλιστήρια λήγουν σύντομα')
 ternary	lib/email/templates/churn-prevention.ts	counted(openGaps, 'κενό κάλυψης χρειάζεται αντιμετώπιση', 'κενά κάλυψης χρειάζονται αντιμετώπιση')
 ternary	lib/email/templates/engagement-drip.ts	'1. Ανεβάστε ένα PDF ή βγάλτε φωτογραφία'

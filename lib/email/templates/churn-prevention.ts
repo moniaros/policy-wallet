@@ -8,7 +8,6 @@ interface ChurnPreventionEmailData {
     language: 'el' | 'en'
     expiringPolicies?: number
     openGaps?: number
-    bonusTokens?: number
 }
 
 /**
@@ -122,42 +121,43 @@ export function getChurnDay14Email(data: ChurnPreventionEmailData): { subject: s
 }
 
 /**
- * Day 30 inactive — "We miss you" + bonus tokens
+ * Day 30 inactive — "We miss you"
+ *
+ * This email used to open with a gift box and the line "500 AI credits added
+ * to your account", in the PAST TENSE, above a 48px green number. Nothing in
+ * the codebase ever added them: the only code that moves a credit balance is
+ * the admin `grantTokens` action, and the churn path does not call it. The
+ * service carried the admission in a comment — "integrate with actual
+ * billing/token system" — while a daily cron told customers the integration
+ * had already run.
+ *
+ * Whether PolicyWallet SHOULD give returning customers credits is a commercial
+ * decision and is still open (H-008). Claiming it did is not a decision; it is
+ * a false statement, so the claim is gone and the re-engagement email stands on
+ * what is true: the wallet is still there, and so are their policies.
  */
 export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: string; html: string } {
-    const { name, language, bonusTokens = 500 } = data
+    const { name, language } = data
     const isGreek = language === 'el'
     const hello = greeting(name, isGreek)
 
-    // The Greek subject must not END on the Latin loanword: rendered text
-    // concatenates subject + the brand header, and "credits PolicyWallet
-    // PolicyWallet" is a three-word Latin run — exactly what the locale-purity
-    // metric (findLatinSentences) flags in `el` output.
     const subject = isGreek
-        ? `🎁 Μας λείπετε — ${bonusTokens} δωρεάν credits σας περιμένουν`
-        : `🎁 We miss you — get ${bonusTokens} free credits`
+        ? 'Ο ασφαλιστικός σας φάκελος σας περιμένει'
+        : 'Your insurance wallet is waiting for you'
 
     const content = `
         <h2>${isGreek ? 'Μας λείπετε!' : 'We miss you!'}</h2>
         <p>${hello}</p>
         <p>${isGreek
-            ? `Ως ένδειξη εκτίμησης, σας δωρίζουμε <strong>${bonusTokens} δωρεάν AI credits</strong> για να εξερευνήσετε τη νέα μας ανάλυση κάλυψης.`
-            : `As a token of appreciation, we're gifting you <strong>${bonusTokens} free AI credits</strong> to explore our new coverage analysis.`
+            ? 'Έχει περάσει καιρός από την τελευταία σας επίσκεψη. Τα ασφαλιστήριά σας είναι αποθηκευμένα με ασφάλεια και σας περιμένουν.'
+            : "It has been a while since your last visit. Your policies are stored securely and they are waiting for you."
+        }</p>
+        <p>${isGreek
+            ? 'Μπείτε ξανά όποτε θέλετε — όλα είναι εκεί που τα αφήσατε.'
+            : 'Sign back in whenever you like — everything is where you left it.'
         }</p>
 
-        <div style="text-align: center; margin: 24px 0; padding: 24px; background: linear-gradient(135deg, #F0FDF4, #ECFDF5); border-radius: 16px;">
-            <p style="font-size: 48px; font-weight: 900; color: #059669; margin: 0;">${bonusTokens}</p>
-            <p style="font-size: 14px; color: #065F46; margin: 4px 0 0; font-weight: 600;">
-                ${isGreek ? 'AI Credits προστέθηκαν στον λογαριασμό σας' : 'AI Credits added to your account'}
-            </p>
-        </div>
-
-        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Χρησιμοποιήστε τα τώρα' : 'Use them now'}</a>
-
-        <div class="divider"></div>
-        <p style="color: #9CA3AF; font-size: 12px;">
-            ${isGreek ? 'Τα credits λήγουν σε 30 ημέρες.' : 'Credits expire in 30 days.'}
-        </p>
+        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Άνοιγμα του φακέλου μου' : 'Open my wallet'}</a>
     `
 
     return { subject, html: getBaseEmailTemplate(content, language) }

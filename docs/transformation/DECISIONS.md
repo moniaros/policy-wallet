@@ -789,3 +789,38 @@ worth fixing, and it is a different claim.
 `/agent` serializes every one of the customer's policies to the client and uses none of them. Dead
 prop, wasted payload. Out of P1-10's file boundary; recorded for the Phase 2 spec, which redesigns
 that surface anyway.
+
+## D-025 — I nearly closed Phase 1 against my own queue instead of the spec's list
+
+**Date:** 2026-08-25 · **Raised by:** Orchestrator, self-caught
+
+After V2-P1-08 (app shell) landed I stated Phase 1 was "not closed, blocked on H-005" and prepared
+to exit under §13 — *every remaining item is blocked*. That was wrong, and the error is the same
+one this run has documented five times in guards, turned on the run's own bookkeeping.
+
+`QUEUE.md` is a list I built. **§6 is a list the instruction built** — fifteen ordered items. I had
+been tracking mine and never diffed it against the spec's. Diffing them found three §6 items with no
+queue row at all:
+
+| §6 item | state before the diff |
+|---|---|
+| **6.7** count consistency | untouched — and it is v2's headline defect (§2.8, five surfaces) |
+| **6.9** severity framing | untouched — the bypass debt list still sits at ≤9 |
+| **6.12** layout integrity | partially covered by P1-08's shell work, never verified as an item |
+
+Instrumentation measured the gap precisely: **4 `data-count`, 8 `data-fact`, 3 `data-action`** in the
+entire product, against a key set agreed in Phase 0 specifically so §6.7 would have a vocabulary.
+Effectively nothing was instrumented, which means the attribute-based scans have been returning a
+**vacuous zero** all run — passing because they found nothing to check, not because nothing was wrong.
+The value scans carried the whole load and nobody noticed the other half was inert.
+
+**Decision.** Phase 1's completion test is the §6 list, not `QUEUE.md`. Queue rows for 6.7, 6.9 and
+6.12 added and worked. `QUEUE.md` is a working aid; where the two disagree the instruction wins.
+
+**Why this is the guard failure mode again.** *Universe too small* (D-005) — a check that enumerates
+from a list someone maintained by hand verifies that list, not the invariant. The fix is the same as
+for every guard here: derive the universe from the authoritative source. For guards that is the
+filesystem or the schema. For phase completion it is §6.
+
+**Standing change:** before declaring any phase complete or blocked, diff the phase's spec section
+against the queue and paste the diff into `PROGRESS.md`. A phase is closed against the instruction.

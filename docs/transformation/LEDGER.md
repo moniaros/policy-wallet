@@ -439,3 +439,24 @@ default because of an unread field. The surface is not mis-designed; it is starv
 | monetization surfaces | 5 | **5** | 0 — none of the three new surfaces carries one |
 
 **§10.1 ceiling holds.** Three surfaces added, no upgrade surface among them.
+
+## Removal — V2-P1-12 (H-008): the bonus-credit grant, day-30 churn
+
+| capability | surface | disposition | destination |
+|---|---|---|---|
+| «500 δωρεάν AI credits» announced as granted | day-30 churn email | **REMOVED** | none — it never existed |
+| «Πιστώθηκαν επιπλέον credits» notification | in-app notification list | **REMOVED** | registry entry retained, `status: "planned"` |
+| re-engagement contact at day 30 | day-30 churn email | **RETAINED** | same email, credit claim excised |
+
+**This is not a capability the customer loses, because they never had it.** Nothing in the codebase
+has ever moved a credit balance on this path — the only writer is the admin `grantTokens` action.
+What is removed is the *statement* that it happened, in the past tense, on two channels, daily.
+
+The **contact** is retained: the day-30 email still goes, still re-engages, and no longer bribes.
+Total capability count is unchanged at **109** — a false claim was never a capability. Monetization
+surfaces **5 → 5**: the gift box was not an upgrade surface, and removing it opens no room for one.
+
+The registry entry survives as `planned` rather than being deleted, so the day a real grant exists
+there is a defined event to emit — at the point the grant **commits**, never at the point one is
+announced. `tests/unit/claimed-benefit-is-conferred.test.ts` fails if it goes `live` without an
+emitter that touches `creditTransaction`.
