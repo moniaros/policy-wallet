@@ -543,3 +543,32 @@ Both have a guard whose **universe is one surface**, which is D-005's failure mo
 **4 `data-count`, 8 `data-fact`, 3 `data-action`** across the entire product, against a key set
 agreed in Phase 0 for this exact item. Every attribute-based scan this run has therefore returned a
 **vacuous zero** — passing for want of anything to check. The value scans carried the load alone.
+
+### §6.15 re-verified 2026-08-25 — closed, and I had it marked "partial" on no evidence
+
+All three surfaces checked against the code, not against my notes:
+
+- **Settings subtree.** Phase 0 confirmed a real defect here: the group toggles wrote
+  `channel: "email"` and nothing else, so switching a stream "off" silenced email while push kept
+  firing, with nothing on screen saying so. **Closed by P1-09b** — the channel dimension moved
+  entirely server-side (`setNotificationStreamPreference` fans out, `data.streams` folds back), the
+  component never names a channel, and a guard holds it there. The two §9.5 controls Phase 0 recorded
+  as absent — a **global outbound off switch** and a **user-configurable monthly ceiling** — now both
+  render via `CadenceControls`, alongside quiet hours.
+- **Timeline.** `lib/services/timeline/build.ts:208` resolves the insurer through
+  `displayInsurerName`, with the comment explaining why the raw column is never used. The
+  `__PENDING_EXTRACTION__` leak §2.6 cited cannot render from this path.
+- **Upload flow.** The invariant that matters at Phase 1 is consent ordering, and it holds:
+  `app/api/policies/extract/route.ts` reads `aiProcessingConsentVersion` at **:127** and refuses at
+  **:129**, before `req.formData()` at **:147**. A refusal never touches the document.
+
+**6.15 → done.** Worth naming the process error: it sat at "partial" because I had not looked, not
+because anything was outstanding. That is the same defect as D-025 in miniature — a status derived
+from my own bookkeeping rather than from the code.
+
+### The §6 table, corrected
+
+6.15 done. **6.12 and 6.14 remain open** and are now one item, V2-P1-14, because both need the same
+measurement pass — the page-level overflow probe the harness has never had, and fresh tap-target
+numbers to replace August 23's. **6.7 (V2-P1-11) and 6.9 (V2-P1-13) are in flight.** 6.2 stays
+blocked on H-005.
