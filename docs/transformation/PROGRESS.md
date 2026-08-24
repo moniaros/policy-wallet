@@ -572,3 +572,58 @@ from my own bookkeeping rather than from the code.
 measurement pass — the page-level overflow probe the harness has never had, and fresh tap-target
 numbers to replace August 23's. **6.7 (V2-P1-11) and 6.9 (V2-P1-13) are in flight.** 6.2 stays
 blocked on H-005.
+
+## Phase 1 close-out — the §6 list, item by item (2026-08-25)
+
+Closed against **§6**, not against `QUEUE.md` (D-025).
+
+| § | item | state |
+|---|---|---|
+| 6.1 | score containment | done |
+| 6.2 | the second score | **accessibility fixed; the product question is H-005 and is not a defect** |
+| 6.3 | outbound copy | done — and reopened once, for the day-60 email |
+| 6.4 | token / fixture / placeholder leakage | done |
+| 6.5 | unowned-line claims | done |
+| 6.6 | absence-is-not-reassurance | done |
+| 6.7 | count consistency | done (V2-P1-11) |
+| 6.8 | notification deduplication | done |
+| 6.9 | severity framing | done (V2-P1-13), after review found the guard's own hole |
+| 6.10 | Greek string sweep | done — freeze now 16 entries lighter, all dead |
+| 6.11 | truncation | **deferred to Phase 3** by design: it is a primitive, not a patch |
+| 6.12 | layout integrity | done (V2-P1-14) — probe built, 0px everywhere measured |
+| 6.13 | guilt register | done |
+| 6.14 | unusable / meaningless controls | done (V2-P1-14) |
+| 6.15 | settings, upload, timeline | done — verified, had been marked partial on no evidence |
+
+### What this stretch actually found
+
+Four defects nobody had asked for, each surfaced by a different instrument:
+
+- **A daily cron telling customers we credited them 500 AI credits.** Nothing granted them; the
+  service admitted it in a comment two lines above the emission.
+- **The day-60 email manufacturing a coverage risk** from inactivity alone — absence-is-not-evidence
+  pointed the other way, which is worse, because fear built from missing data is a lever.
+- **Two WCAG failures**, one found by the browser and one by arithmetic. On `bg-red-500` even pure
+  white is 3.81:1, so «Η ενέργεια είναι οριστική» — the sentence saying a deletion cannot be undone —
+  could not be made legible without changing the background.
+- **87 sub-44 controls on /wallet**, which were one primitive rendered 29 times.
+
+And three defects **in the guards themselves**, which is the pattern worth keeping:
+
+- the severity guard could not catch a regression in the files it had just fixed (D-027);
+- the caveat requirement was satisfiable by an empty string;
+- the harness measures contrast and tap targets and **nothing gated on either** — six contrast
+  failures and 1,277 tap-target offenders were sitting in evidence files, measured and unread.
+
+### Open, and not blocking
+
+**H-005** — should the second score exist. A product decision. **H-006 / H-007** — the IDD Art. 20
+advice boundary and Art. 9 consent, both Phase 2b preconditions. **H-008's commercial half** —
+whether returning customers should actually get credits.
+
+### Carried out of scope, named not fixed
+
+`isPolicyCoverageActive` does not exclude `status='deleted'` while its `coveredPolicyWhere` twin does.
+Real, latent, and its caller is the frozen `lib/gap-detection.ts:203` — changing which policies gap
+detection sees is gap-detection logic. Six agent/admin surfaces carry failing contrast pairs, asserted
+still-failing so the exemption cannot outlive them.
