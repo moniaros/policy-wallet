@@ -784,3 +784,68 @@ means changing dispatch semantics across five readers: §12.4.
 escape. Valid UTF-8, so `lint:utf8` passed — but grep, ripgrep and git treat the file as **binary and
 skip it**. A source file invisible to every command-line text tool, with all gates green. Fixed at the
 source and in `check-utf8.js`, proven red on a planted NUL.
+
+
+---
+---
+
+# PW-MOBILE-TRANSFORM-02 — v2 queue
+
+v1's instruction is superseded; its committed work is inherited (D-018). Everything below is new.
+
+## Phase 0 extension — blocks v2 Phase 1
+
+### V2-P0-FIX — two new degraded fixtures · `in_progress`
+owner: Evidence (Sonnet 5) · file_boundary: `tests/measure/fixtures.ts`, `dashboard-fixtures.ts`
+Blocks V2-P0-BASE, because a fixture must be able to produce the defect.
+- [ ] a portfolio holding some lines and demonstrably **not** holding others (§2.2)
+- [ ] a household with income and dependants genuinely unset, with motor cover present (§2.4 zero-scores)
+- [ ] each verified by calling the real render functions, not assumed
+
+### V2-P0-BASE — baseline three unmeasured surfaces · `todo`
+owner: Evidence (Sonnet 5) · blocked_by: V2-P0-FIX
+`/branches` · `/insights/risk-profile` · `/timeline`, at 320/390/430, every applicable state.
+**Note for `/insights/risk-profile`:** it is currently unreachable for policyholders (v2-6) — the
+capture must bypass the proxy bounce or the fix must land first.
+
+### V2-P0-VERIFY — candidate verification · `done`
+Six v2 candidates verified case-insensitively. **5 confirmed, 1 refuted.** Recorded in
+`evidence/CANDIDATE-VERIFICATION.md`.
+
+## Phase 1 additions (v2)
+
+### V2-P1-01 — the misroute is a proxy prefix collision · `todo`
+owner: Implementation (Fable 5) · file_boundary: `proxy.ts`, `tests/unit/`
+`proxy.ts:223` lists `"/insights"` in `agentRoutes` and matches with `startsWith`, so the B2C
+`/insights/risk-profile` is classified agent-only and policyholders are bounced to `/dashboard`.
+- [ ] `/insights` and `/insights/book` stay agent; `/insights/risk-profile` is B2C
+- [ ] a prefix match cannot express "all children except one" — fix the rule, not the symptom
+- [ ] guard: every route in `SURFACES.md` is reachable by the role that owns it. **Enumerate from
+      `SURFACES.md`**, do not hand-list. The file's own comment already warns about this collision
+      class for `/dashboard`; the guard must catch the next one too
+- [ ] demonstrate failing first, with the probe proven to exercise the routing decision
+
+### V2-P1-02 — unowned lines are not findings (§2.2) · `todo`
+owner: Implementation (Fable 5) · blocked_by: V2-P0-FIX
+`RiskGraphPanel.tsx:71` «Απροστάτευτο» · `lib/wallet/gap-report.ts:592,599` «Πιθανό κενό» ·
+**`lib/mail-templates.ts:132` puts «Πιθανό κενό» in email.** Unowned lines render as *not held*,
+neutrally, never in the visual language of a finding, never a red chip.
+
+### V2-P1-03 — the second score's verdict (§2.4) · `todo`
+owner: Implementation (Fable 5) · blocked_by: H-005
+Remove «Καλή εικόνα» from `RiskIntelligenceView.tsx:106`. Whether the **metric** survives is H-005.
+
+### V2-P1-04 — the guilt register (§2.13) · `todo`
+owner: Product-Truth (copy) + Implementation · file_boundary: `lib/services/risk-dna/health-index.ts`
+Rewrite line 199. Emotional leverage on an unvalidated finding.
+
+### V2-P1-05 — `/timeline` leakage (§2.6) · `todo`
+`__PENDING_EXTRACTION__` rendering as a policy name.
+
+### Carried from v1, still open
+**P1-10** one status vocabulary (delete `mapPolicyCardStatus`) · **P1-08** app shell (last) ·
+**P1-14** locale-ternary Greek in `.ts`.
+
+## Halts to raise
+**H-005** — should the second score exist? **H-006** — the AI advisor's advice boundary (IDD Art. 20).
+**H-007** — Art. 9 consent for the interview.

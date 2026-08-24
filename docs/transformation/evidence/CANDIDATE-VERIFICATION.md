@@ -432,3 +432,48 @@ as much a part of it as its assertion.** Both of these guards would pass forever
 invariant they exist to protect is violated in a directory neither was pointed at. Every guard in
 §11.2 gets its universe stated explicitly and justified against `SURFACES.md`, not inherited from
 whichever surface it was written for.
+
+
+---
+
+# v2 candidates — verified against HEAD (2026-08-24)
+
+Searched **case-insensitively** per D-019: v2 cites rendered strings, and two of them are
+CSS-uppercased in source. A literal grep would have refuted real defects.
+
+| # | v2 candidate | Verdict | Evidence |
+|---|---|---|---|
+| v2-1 | §2.4 second score «ΠΟΣΟ ΚΑΛΑ ΣΑΣ ΓΝΩΡΙΖΟΥΜΕ 96 · Καλή εικόνα» | **CONFIRMED** | `components/risk-dna/RiskIntelligenceView.tsx:106` renders the verdict `t("Καλή εικόνα", "Well understood")`; `:123` the kicker «Πόσο καλά σας γνωρίζουμε» under `.pw-kicker`, which `globals.css` uppercases |
+| v2-2 | §2.13 guilt register | **CONFIRMED, verbatim** | `lib/services/risk-dna/health-index.ts:199`: `` `${dependantCount} άτομα εξαρτώνται από αυτή την προστασία. Ένα κενό εδώ δεν είναι μόνο δικό σας πρόβλημα.` `` — emotional leverage attached to an unvalidated finding, exactly as §2.13 describes |
+| v2-3 | §2.2 «Απροστάτευτο» on unowned exposures | **CONFIRMED** | `components/coverage/RiskGraphPanel.tsx:71` |
+| v2-4 | §2.2 «Πιθανό κενό» | **CONFIRMED, and it reaches outbound** | `lib/wallet/gap-report.ts:592,599`, and `lib/mail-templates.ts:132` puts it in **email**: `` `Πιθανό κενό κάλυψης στο ${data.policyName}` `` |
+| v2-5 | §10 «0 / Απεριόριστες αναλύσεις» beside an upgrade CTA | **REFUTED — already fixed** | `app/(protected)/wallet/[id]/AIUsageWidget.tsx` now returns `null` when the allowance is unlimited, with the reasoning in-file: a meter for an unlimited allowance measures nothing, and the upsell argued from `reason=ai_analysis_limit`, a constraint pricing v2 removed. v2 lists it as live; it is not. |
+| v2-6 | «Οι κίνδυνοί σας» misroutes to `/dashboard` | **CONFIRMED — root cause found** | See below |
+
+## v2-6 — the misroute is a `startsWith` prefix collision in the proxy
+
+The nav item is **correct**: `app/(protected)/layout.tsx:88` points at `/insights/risk-profile`.
+
+The bounce happens in `proxy.ts`:
+
+```
+:223  const agentRoutes = ["/dashboard/agent", "/customers", …, "/insights", "/team"]
+      const isAgentRoute = agentRoutes.some(r => nextUrl.pathname.startsWith(r))
+```
+
+`/insights/risk-profile` **starts with `/insights`**, so a B2C surface is classified as agent-only
+and the policyholder is bounced to their own home — `/dashboard`. Precisely the reported symptom.
+
+**The file already warns about this exact hazard, three lines further down**, for a different route:
+
+> *"`/dashboard` is deliberately NOT in this array — `startsWith` would also match `/dashboard/agent`
+> and bounce agents off their own home in a loop."*
+
+They identified the collision for `/dashboard` and missed the identical one for `/insights`.
+`/insights` and `/insights/book` are agent surfaces; `/insights/risk-profile` is B2C — T-010
+classified it so because it reads the caller's own `policyholderProfile`. One child of three needs
+excluding, so a prefix match cannot express the rule.
+
+**This is a routing bug, not a navigation bug** — and it means `/insights/risk-profile` has been
+unreachable for policyholders, which is itself why nobody baselined it. Its defects are real but
+have never been seen in production by a customer through the menu.
