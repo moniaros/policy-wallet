@@ -1,0 +1,47 @@
+/**
+ * Red/green probe for tests/unit/count-copy-agreement.test.ts.
+ *
+ * p1–p3 are VERBATIM pre-fix defects this repo shipped (health-index.ts
+ * nextAction, compute.ts confidenceLimit, role-copy.ts itemsAttention EL):
+ * a `=== 1` ternary that inflects only the noun while the clause's verbs
+ * stay outside it and render plural against a singular subject. The guard
+ * must flag every one of them, and must flag them from the RENDERED n=1
+ * clause, not from the raw source text.
+ *
+ * p4–p8 are adversarial NEGATIVES — correct copy shaped to trip a naive
+ * detector. The guard must flag none of them:
+ *   p4  whole clause inside the ternary; second count behind a boundary
+ *       (monitoring.ts post-11ec4987, verbatim)
+ *   p5  "have" belongs to the pronoun subject, not the count
+ *   p6  plural verb behind «για να» agrees with its own subject
+ *   p7  singular «εξαρτάται» must not trip the «-νται» plural net
+ *   p8  the `!== 1` form: branches are swapped, n=1 is whenFalse
+ */
+
+export const p1 = (shared: { length: number }) => ({
+    en: `${shared.length} ${shared.length === 1 ? "area" : "areas"} that reach the whole household are still open.`,
+    el: `${shared.length} ${shared.length === 1 ? "περιοχή" : "περιοχές"} που αφορούν όλο το νοικοκυριό παραμένουν ανοιχτές.`,
+})
+
+export const p2 = (unanswered: { size: number }) => ({
+    en: `${unanswered.size} ${unanswered.size === 1 ? "question" : "questions"} about your life are still unanswered here.`,
+    el: `${unanswered.size} ${unanswered.size === 1 ? "ερώτηση" : "ερωτήσεις"} για τη ζωή σας παραμένουν αναπάντητες εδώ.`,
+})
+
+export const p3 = (n: number) => `${n} ${n === 1 ? "στοιχείο" : "στοιχεία"} που χρειάζονται προσοχή.`
+
+export const p4 = (expired: { length: number }, lapsing: { length: number }) => ({
+    en: `${expired.length} ${expired.length === 1 ? "policy has" : "policies have"} already ended${lapsing.length > 0 ? (lapsing.length === 1 ? ", and 1 more ends within 45 days" : `, and ${lapsing.length} more end within 45 days`) : ""}.`,
+    el: `${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}${lapsing.length > 0 ? (lapsing.length === 1 ? " και άλλο 1 λήγει μέσα σε 45 ημέρες" : ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`) : ""}.`,
+})
+
+export const p5 = (activeCount: number) =>
+    `You have ${activeCount} active ${activeCount === 1 ? "policy" : "policies"} in your wallet and no connected insurance advisor.`
+
+export const p6 = (n: number) =>
+    `${n} ${n === 1 ? "αίτημα εκκρεμεί" : "αιτήματα εκκρεμούν"} για να δοθούν συμβουλές.`
+
+export const p7 = (dependantCount: number) =>
+    `${dependantCount} ${dependantCount === 1 ? "άτομο εξαρτάται" : "άτομα εξαρτώνται"} από αυτή την προστασία.`
+
+export const p8 = (n: number) => `${n} ${n !== 1 ? "φάκελοι εκκρεμούν" : "φάκελος εκκρεμεί"} εδώ.`

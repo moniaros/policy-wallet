@@ -212,14 +212,22 @@ export function bookOverview(
                   }
                 : null,
         whyItMatters: {
-            en: `${peopleCovered} people depend on this book. ${urgentHouseholds} ${urgentHouseholds === 1 ? "household carries" : "households carry"} an exposure that should not be left open.`,
-            el: `${peopleCovered} άτομα εξαρτώνται από αυτό το χαρτοφυλάκιο. ${urgentHouseholds} ${urgentHouseholds === 1 ? "νοικοκυριό φέρει" : "νοικοκυριά φέρουν"} έκθεση που δεν πρέπει να μείνει ανοιχτή.`,
+            // peopleCovered inflects too — a book covering exactly one person
+            // is not "1 people depend" (count-copy-agreement.test.ts).
+            en: `${peopleCovered} ${peopleCovered === 1 ? "person depends" : "people depend"} on this book. ${urgentHouseholds} ${urgentHouseholds === 1 ? "household carries" : "households carry"} an exposure that should not be left open.`,
+            el: `${peopleCovered} ${peopleCovered === 1 ? "άτομο εξαρτάται" : "άτομα εξαρτώνται"} από αυτό το χαρτοφυλάκιο. ${urgentHouseholds} ${urgentHouseholds === 1 ? "νοικοκυριό φέρει" : "νοικοκυριά φέρουν"} έκθεση που δεν πρέπει να μείνει ανοιχτή.`,
         },
         nextAction:
             unknownHouseholds > 0
                 ? {
                       en: `${unknownHouseholds} ${unknownHouseholds === 1 ? "household is" : "households are"} too thinly known to advise on. That is the first constraint, not the gaps.`,
-                      el: `${unknownHouseholds} ${unknownHouseholds === 1 ? "νοικοκυριό είναι" : "νοικοκυριά είναι"} πολύ ελλιπώς γνωστά για να δοθούν συμβουλές. Αυτός είναι ο πρώτος περιορισμός, όχι τα κενά.`,
+                      // «γνωστό» at one — the adjective agrees with the count
+                      // even though «είναι» is number-neutral, so the whole
+                      // clause splits (count-copy-agreement.test.ts).
+                      el:
+                          unknownHouseholds === 1
+                              ? "1 νοικοκυριό είναι πολύ ελλιπώς γνωστό για να δοθούν συμβουλές. Αυτός είναι ο πρώτος περιορισμός, όχι τα κενά."
+                              : `${unknownHouseholds} νοικοκυριά είναι πολύ ελλιπώς γνωστά για να δοθούν συμβουλές. Αυτός είναι ο πρώτος περιορισμός, όχι τα κενά.`,
                   }
                 : {
                       en: "Work the list in order of advisory impact.",

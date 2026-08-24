@@ -388,10 +388,17 @@ function confidenceLimit(
 
     const unanswered = new Set(applicable.flatMap((a) => a.missingFactors))
     if (unanswered.size > 0) {
-        return {
-            en: `${unanswered.size} ${unanswered.size === 1 ? "question" : "questions"} about your life are still unanswered here.`,
-            el: `${unanswered.size} ${unanswered.size === 1 ? "ερώτηση" : "ερωτήσεις"} για τη ζωή σας παραμένουν αναπάντητες εδώ.`,
-        }
+        // The whole clause inflects at one, not just the noun — the verbs and
+        // the adjective agree too (count-copy-agreement.test.ts).
+        return unanswered.size === 1
+            ? {
+                  en: "1 question about your life is still unanswered here.",
+                  el: "1 ερώτηση για τη ζωή σας παραμένει αναπάντητη εδώ.",
+              }
+            : {
+                  en: `${unanswered.size} questions about your life are still unanswered here.`,
+                  el: `${unanswered.size} ερωτήσεις για τη ζωή σας παραμένουν αναπάντητες εδώ.`,
+              }
     }
     return {
         en: "Some of the cover involved could not be read in full.",

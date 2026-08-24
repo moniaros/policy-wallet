@@ -719,3 +719,37 @@ in-memory dedup key.
 
 **Added to the taxonomy** in `PROGRESS.md`: alongside the five ways a guard fails, this is the first
 recorded way an exemption succeeds.
+
+
+---
+
+## D-023 — Declining to build a guard, and saying exactly what shipped instead
+
+date: 2026-08-24
+raised_by: V2-P1-04, accepted by the Adversarial Reviewer
+decision: The guilt register (§2.13) is **not reliably automatable as a class**. Behavioural pins
+and tombstones ship instead, claiming only what they cover. New-instance detection stays with review.
+
+I asked for a guard and gave explicit permission to fail honestly. The refusal is correct and the
+reasoning is worth keeping:
+
+- A blame/burden **lexicon** is escaped by paraphrase.
+- The register lives in the **pairing** of a judgement with an unvalidated finding, not in any word.
+  *"This is your responsibility"* is fine on a consent form and prohibited on a gap card — same
+  words, opposite verdicts.
+- **Structural heuristics false-positive on legitimate copy, including the honesty rule's own
+  phrasing** — a rule that flags "second sentence after a count-fact" would flag §2.5's own
+  disclosures.
+
+What shipped instead is narrower and honest about it: `whyItMatters` must **equal** the fact-only
+copy at n = 0/1/2 in both languages, plus **four tombstones** asserting the removed sentences do not
+reappear anywhere under the three roots. That extends to English what the Greek freeze already does
+for deletions.
+
+**Why this is the right outcome.** A lexicon guard would have passed forever while implying coverage
+it did not have — the assertion-gap failure mode (D-021, and v1's score allowlist), manufactured
+deliberately. A guard that claims less and delivers all of it is worth more than one that claims the
+class and catches a phrase list.
+
+**Pairs with D-022.** That entry records how an exemption earns its keep; this one records when a
+guard should not be written at all. Both are about a guard stating precisely what it covers.

@@ -188,23 +188,36 @@ export function householdOverview(
         assetCount,
         obligationCount,
         sharedExposures: shared,
+        // The fact (who depends on this cover) comes from the customer's own
+        // profile and stays. The moral (whose problem a gap is) does not ship:
+        // §2.13 prohibits emotional leverage on an unvalidated finding, in
+        // either direction — see tests/unit/finding-copy-register.test.ts.
         whyItMatters:
             dependantCount === 0
                 ? {
-                      en: "Nobody else depends on your cover, so every gap here is yours alone to carry.",
-                      el: "Κανείς άλλος δεν εξαρτάται από την κάλυψή σας, οπότε κάθε κενό εδώ το φέρετε μόνος σας.",
+                      en: "Nobody else depends on your cover.",
+                      el: "Κανείς άλλος δεν εξαρτάται από την κάλυψή σας.",
                   }
                 : {
-                      en: `${dependantCount} ${dependantCount === 1 ? "person depends" : "people depend"} on this protection. A gap here is not only your problem.`,
-                      el: `${dependantCount} ${dependantCount === 1 ? "άτομο εξαρτάται" : "άτομα εξαρτώνται"} από αυτή την προστασία. Ένα κενό εδώ δεν είναι μόνο δικό σας πρόβλημα.`,
+                      en: `${dependantCount} ${dependantCount === 1 ? "person depends" : "people depend"} on this protection.`,
+                      el: `${dependantCount} ${dependantCount === 1 ? "άτομο εξαρτάται" : "άτομα εξαρτώνται"} από αυτή την προστασία.`,
                   },
+        // At one, the WHOLE clause inflects — verbs and adjectives, not just
+        // the noun. A ternary that swaps only the noun leaves «αφορούν …
+        // παραμένουν ανοιχτές» plural against a singular subject (and "reach …
+        // are" in English) — tests/unit/count-copy-agreement.test.ts.
         nextAction:
             shared.length === 0
                 ? null
-                : {
-                      en: `${shared.length} ${shared.length === 1 ? "area" : "areas"} that reach the whole household are still open.`,
-                      el: `${shared.length} ${shared.length === 1 ? "περιοχή" : "περιοχές"} που αφορούν όλο το νοικοκυριό παραμένουν ανοιχτές.`,
-                  },
+                : shared.length === 1
+                  ? {
+                        en: "1 area that reaches the whole household is still open.",
+                        el: "1 περιοχή που αφορά όλο το νοικοκυριό παραμένει ανοιχτή.",
+                    }
+                  : {
+                        en: `${shared.length} areas that reach the whole household are still open.`,
+                        el: `${shared.length} περιοχές που αφορούν όλο το νοικοκυριό παραμένουν ανοιχτές.`,
+                    },
     }
 }
 

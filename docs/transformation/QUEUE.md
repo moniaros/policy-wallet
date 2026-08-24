@@ -835,7 +835,7 @@ neutrally, never in the visual language of a finding, never a red chip.
 owner: Implementation (Fable 5) · blocked_by: H-005
 Remove «Καλή εικόνα» from `RiskIntelligenceView.tsx:106`. Whether the **metric** survives is H-005.
 
-### V2-P1-04 — the guilt register (§2.13) · `todo`
+### V2-P1-04 — the guilt register (§2.13) · `done` — REVIEW PASSED
 owner: Product-Truth (copy) + Implementation · file_boundary: `lib/services/risk-dna/health-index.ts`
 Rewrite line 199. Emotional leverage on an unvalidated finding.
 
@@ -985,7 +985,7 @@ where motor cover is compulsory.
 «Μερική εικόνα» measures **3.20:1** against 4.5:1 (WCAG 1.4.3). Merge into V2-P1-03 if H-005 removes
 the verdict — deleting it resolves this too.
 
-### V2-P1-09 — singular/plural agreement, `health-index.ts:206` · `todo`
+### V2-P1-09 — singular/plural agreement, `health-index.ts:206` · `done` — REVIEW PASSED
 «1 περιοχή που **αφορούν** … **παραμένουν** ανοιχτές». **The same class `11ec4987` fixed** — the
 commit this run is based on. Fix with V2-P1-04 (guilt copy), same file.
 
@@ -1186,3 +1186,44 @@ I separately probed the *exemption* rather than the fix — see D-022.
 as the sentinel on a placeholder. Both gone.
 
 **Outbound stays 0 / 0 / 0.**
+
+
+---
+
+## V2-P1-04 + V2-P1-09 — Adversarial review: **PASS**
+
+Copy implemented exactly as authored. Verified at n = 0/1/2 in both languages, asserted with
+`toEqual` on the objects the view renders verbatim.
+
+### The agreement class was five sites, not one
+
+The briefed defect was `health-index.ts`. The new guard found **two more**, and a manual sweep of
+the guard's own documented blind spots found **two more again**:
+
+| site | defect |
+|---|---|
+| `health-index.ts:206` | briefed — «1 περιοχή που **αφορούν** … **παραμένουν ανοιχτές**» |
+| `compute.ts:392` | **both languages, unreported** — "1 question … **are** still unanswered" / «παραμένουν αναπάντητες» |
+| `role-copy.ts:281` | «1 στοιχείο που **χρειάζονται** προσοχή» |
+| `advisory-impact.ts` | **no ternary at all** → "1 people depend on this book" |
+| `advisory-impact.ts` (el) | «1 νοικοκυριό είναι πολύ ελλιπώς **γνωστά**» — plural adjective over the number-neutral «είναι» |
+
+`11ec4987` — the commit this run is based on — fixed this class and its message says *"found on
+production, not in the fixtures."* It was still shipping in five places.
+
+The guard **partially evaluates each template at n = 1** and runs agreement markers on the
+**rendered clause**, segment-windowed at clause boundaries. It tests output, not source, which is
+why the no-ternary case (`advisory-impact`) was findable at all. Its blind spots are documented in
+its own header rather than silently claimed.
+
+**Proven by me:** restoring plural verbs on the singular branch turned it red quoting the exact
+rendered string — `"1 περιοχή που αφορούν όλο το νοικοκυριό παραμένουν ανοιχτές."` Reverted → 11/11.
+
+### The guilt register: an honest refusal — see D-023
+Declared not reliably automatable, with reasoning. Behavioural pins plus four tombstones shipped
+instead, claiming exactly what they cover. That is a better outcome than a lexicon guard that would
+pass forever while implying coverage of the class.
+
+**Greek freeze:** 8 entries, every one accounted for — two moral clauses dropped, three singular
+branches split out, and a comment relocated out of a frozen initializer so the entry stays pure copy.
+Zero occurrences of the four tombstoned phrases remain.

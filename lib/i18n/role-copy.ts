@@ -278,7 +278,10 @@ const roleCopy: Record<Language, RoleCopy> = {
             workspace: "Χώρος Εργασίας",
             brandAgent: "Σύμβουλος",
             briefing: "Η σημερινή σας ενημέρωση. Έχετε",
-            itemsAttention: (n: number) => `${n} ${n === 1 ? "στοιχείο" : "στοιχεία"} που χρειάζονται προσοχή.`,
+            // The relative clause inflects with the count — «που χρειάζεται» at
+            // one, «που χρειάζονται» beyond (count-copy-agreement.test.ts).
+            itemsAttention: (n: number) =>
+                n === 1 ? "1 στοιχείο που χρειάζεται προσοχή." : `${n} στοιχεία που χρειάζονται προσοχή.`,
             totalClients: "Σύνολο Πελατών",
             activePolicies: "Ενεργά Συμβόλαια",
             pendingActions: "Εκκρεμείς Ενέργειες",
