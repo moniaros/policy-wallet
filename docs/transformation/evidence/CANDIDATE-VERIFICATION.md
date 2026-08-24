@@ -612,3 +612,49 @@ strings match and the reviewer had recorded them as in scope.
 
 The general rule, and it applies to every remaining §2 item: **a grep finds a spelling; an invariant
 is about a condition.** Before queueing a site, confirm the condition holds there.
+
+
+---
+
+## v2-8 — the 45 vs 30 day expiry windows: **REFUTED as a §2.8 violation**, carried to Phase 2
+
+The `/insights/risk-profile` baseline proved, in one session against one database state, that the
+risk profile said «3 λήγουν μέσα σε 45 ημέρες» while the dashboard said «2 λήγουν μέσα σε 30 ημέρες»,
+naming the causing policy. The measurement is sound. The **classification** was wrong, and I made it.
+
+§2.8 reads: *"Every counted quantity agrees, **or is labelled so the difference is legible**."*
+
+Both sentences state their own window:
+- `monitoring.ts:89` — «{n} λήγουν μέσα σε **45** ημέρες»
+- `el.ts:1820` — «{count} λήγουν μέσα σε **30** ημέρες»
+
+And they answer **different questions**:
+
+| source | question | window |
+|---|---|---|
+| `lib/policy-status.ts:192` | is this policy's *lifecycle status* `expiring_soon`? | 30 days |
+| `lib/services/risk-dna/monitoring.ts:69` | should we raise a *watch signal* for lapse? | 45 days |
+
+The watch window is deliberately **wider than** the status window, so the customer gets warning
+*before* the status flips. That is good design, not drift — a 45-day watch that fired at 30 would be
+useless, arriving exactly when the status already said the same thing.
+
+**So the invariant is satisfied and no Phase 1 work is warranted.** Two numbers, two windows, both
+labelled, answering two questions.
+
+### But it becomes a real problem in Phase 2, and that is where it goes
+
+§4.2 absorbs `/insights/risk-profile` into «Η προστασία μου». **On one surface, two "expiring"
+windows stop being legible and start being contradictory** — the labels that reconcile them across
+two screens will sit inches apart, and no reader distinguishes "lifecycle status" from "watch
+signal".
+
+Carried to the Phase 2 spec as a design decision: one window on the merged surface, or one number
+with the second expressed as something other than a count. Not a defect today; a defect the
+consolidation would create if nobody decided it.
+
+**Reviewer's note.** I queued this as a Phase 1 item on the strength of a confirmed *measurement*
+without re-checking the *invariant's own escape clause*. §2.8 permits difference when it is labelled,
+and it was. That is the mirror of the §2.2 over-scoping error: there I treated a matching string as a
+violation; here I treated a genuine discrepancy as one. **A confirmed measurement is not a confirmed
+violation** — the invariant still has to be read to the end.

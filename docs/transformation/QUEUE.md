@@ -839,7 +839,7 @@ Remove «Καλή εικόνα» from `RiskIntelligenceView.tsx:106`. Whether th
 owner: Product-Truth (copy) + Implementation · file_boundary: `lib/services/risk-dna/health-index.ts`
 Rewrite line 199. Emotional leverage on an unvalidated finding.
 
-### V2-P1-05 — `/timeline` leakage (§2.6) · `todo`
+### V2-P1-05 — `/timeline` leakage (§2.6) · `done` — ABSORBED INTO V2-P1-06
 `__PENDING_EXTRACTION__` rendering as a policy name.
 
 ### Carried from v1, still open
@@ -989,7 +989,7 @@ the verdict — deleting it resolves this too.
 «1 περιοχή που **αφορούν** … **παραμένουν** ανοιχτές». **The same class `11ec4987` fixed** — the
 commit this run is based on. Fix with V2-P1-04 (guilt copy), same file.
 
-### V2-P1-10 — one expiry window, or two visible labels · `todo`
+### V2-P1-10 — one expiry window, or two visible labels · `refuted` — NOT a §2.8 violation; carried to Phase 2
 `/insights/risk-profile` says «3 λήγουν μέσα σε 45 ημέρες» (`risk-dna/monitoring.ts:69`);
 `/dashboard` says «2 λήγουν μέσα σε 30 ημέρες» (`lib/policy-status.ts:192`). Proved in one session
 against one database state, with the causing policy identified. Both correct for their own window —
