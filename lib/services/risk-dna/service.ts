@@ -10,7 +10,7 @@
 
 import { db } from "@/lib/db"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
-import { coverageEngineStatus, isPolicyCoverageActive } from "@/lib/policy-status"
+import { coverageEngineStatus, isPolicyCoverageActive, resolvePolicyLifecycle } from "@/lib/policy-status"
 import { assembleRiskGraph, type RiskGraphPolicyInput } from "@/lib/services/risk-graph/service"
 import { parseRisks } from "@/lib/services/timeline/diff"
 import { calculateScoreFromAssessments } from "@/lib/services/gap-engine/protection-score"
@@ -112,6 +112,48 @@ function assembleDimensionPicture(
     return { ctx, graph, activeLines, previous, dimensions }
 }
 
+/**
+ * The lapse watch's policy universe — ONE mapping, used by both assemblers.
+ *
+ * Two rules, both learned from §2.8's «1 έχει ήδη λήξει» beside the
+ * dashboard's «5 έχουν λήξει» (the same wallet, the same day):
+ *
+ * 1. **The end date is the LIFECYCLE's, never the stored column.** The
+ *    `endDate` column is placeholder-prone (sentinel dates from failed
+ *    extractions); `resolvePolicyLifecycle` resolves the real one from the
+ *    extracted document. Feeding the raw column into `monitorRisk` made the
+ *    watch count a different portfolio from the dashboard hero.
+ * 2. **Only policies the owner holds, in states the calendar can judge.** A
+ *    soft-deleted row is not held; a cancelled policy's end date is not a
+ *    lapse (the dashboard's `expiredCount` excludes it via the lifecycle, so
+ *    the watch must too, or the two disagree by exactly the cancelled rows).
+ *
+ * After this mapping, the watch's "already ended" count is definitionally the
+ * portfolio's `expiredCount`: lifecycle end date in the past, not cancelled.
+ */
+function toWatchPolicies(
+    policies: Array<{
+        id: string
+        lineOfBusiness: string | null
+        status?: string | null
+        policyNumber?: string | null
+        insurerName?: string | null
+        endDate?: Date | string | null
+        acordData?: unknown
+    }>,
+    now: Date
+): Array<{ id: string; endDate: Date | null; lineOfBusiness: string | null }> {
+    return policies
+        .filter((policy) => String(policy.status || "").toLowerCase() !== "deleted")
+        .map((policy) => ({ policy, lifecycle: resolvePolicyLifecycle(policy, now) }))
+        .filter(({ lifecycle }) => lifecycle.status !== "cancelled")
+        .map(({ policy, lifecycle }) => ({
+            id: policy.id,
+            endDate: lifecycle.endDate,
+            lineOfBusiness: policy.lineOfBusiness,
+        }))
+}
+
 export interface WatchAssemblyInputs {
     /** The policyholderProfile row, or null when none exists. */
     profile: unknown
@@ -144,11 +186,7 @@ export function assembleWatch(inputs: WatchAssemblyInputs): WatchSignal[] {
         ctx,
         dimensions,
         lastAssessedAt: inputs.lastAssessedAt,
-        policies: inputs.policies.map((p) => ({
-            id: p.id,
-            endDate: p.endDate ?? null,
-            lineOfBusiness: p.lineOfBusiness,
-        })),
+        policies: toWatchPolicies(inputs.policies, now),
         now,
     })
 }
@@ -157,7 +195,9 @@ export async function getRiskIntelligence(userId: string, now: Date = new Date()
     const [profile, policies, versions] = await Promise.all([
         db.policyholderProfile.findUnique({ where: { userId } }),
         db.policy.findMany({
-            where: { ownerUserId: userId },
+            // A soft-deleted row is not a policy the owner holds — it must not
+            // feed the graph's heldInLine, the dimensions, or the lapse watch.
+            where: { ownerUserId: userId, status: { not: "deleted" } },
             select: {
                 id: true,
                 lineOfBusiness: true,
@@ -204,11 +244,7 @@ export async function getRiskIntelligence(userId: string, now: Date = new Date()
             ctx,
             dimensions,
             lastAssessedAt: previous?.at ?? null,
-            policies: policies.map((p) => ({
-                id: p.id,
-                endDate: p.endDate,
-                lineOfBusiness: p.lineOfBusiness,
-            })),
+            policies: toWatchPolicies(policies, now),
             now,
         }),
         predictions: openPredictionHooks(ctx, dimensions),

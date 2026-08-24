@@ -15,6 +15,7 @@ import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard
 import { getGapEngineSnapshot, type GapEngineSnapshot } from "@/lib/services/gap-engine"
 import { getTranslations } from "@/lib/i18n"
 import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status"
+import { gapsOnActiveCoverage } from "@/lib/gaps/gap-universe"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 
@@ -94,7 +95,10 @@ export default async function CoverageInsightsPage() {
     // 4. Get user's policies
     const allPolicies = await db.policy.findMany({
         where: {
-            ownerUserId: dbUser.id
+            ownerUserId: dbUser.id,
+            // Same held-policy predicate as the wallet and the dashboard: a
+            // soft-deleted row must not count as coverage nor carry findings.
+            status: { not: 'deleted' }
         },
         select: {
             id: true,
@@ -117,8 +121,10 @@ export default async function CoverageInsightsPage() {
     const policies = allPolicies.filter((policy) => isPolicyCoverageActive(policy))
     const expiredPolicies = allPolicies.filter((policy) => !isPolicyCoverageActive(policy)
         && effectivePolicyStatus(policy) === 'expired')
-    const livePolicyIds = new Set(policies.map((policy) => policy.id))
-    const gapInstances = allGapInstances.filter((gap) => !gap.policyId || livePolicyIds.has(gap.policyId))
+    // The shared predicate (gapsOnActiveCoverage) — the dashboard's severity
+    // tally filters through the same helper, so the two surfaces count one
+    // gap universe (§2.8: 43 vs 33 was this filter existing on one side only).
+    const gapInstances = gapsOnActiveCoverage(allGapInstances, allPolicies)
 
 
     // 5. Calculate statistics
@@ -174,6 +180,7 @@ export default async function CoverageInsightsPage() {
                                 ...r,
                                 createdAt: r.createdAt.toISOString(),
                             }))}
+                            countKey="recommendation.openCount"
                             language={userLanguage}
                             profileIncomplete={engineResult.profileCompleteness < 80}
                             smartContent={engineResult.smartContent}

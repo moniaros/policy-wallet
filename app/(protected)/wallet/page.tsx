@@ -31,7 +31,12 @@ export default async function WalletPage() {
 
     let policies = await db.policy.findMany({
         where: {
-            ownerUserId: dbUser.id
+            ownerUserId: dbUser.id,
+            // The API's DELETE path soft-deletes (status 'deleted'). Such a row
+            // is not a policy the owner holds: it must neither render as a card
+            // nor count in the tiles — the dashboard applies the same predicate,
+            // so portfolio.policyCount agrees across the two surfaces.
+            status: { not: 'deleted' }
         },
         include: {
             documents: true,
@@ -65,7 +70,7 @@ export default async function WalletPage() {
             })
             if (reaped > 0) {
                 policies = await db.policy.findMany({
-                    where: { ownerUserId: dbUser.id },
+                    where: { ownerUserId: dbUser.id, status: { not: 'deleted' } },
                     include: {
                         documents: true,
                         _count: {

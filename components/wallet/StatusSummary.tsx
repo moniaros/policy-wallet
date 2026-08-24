@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { AlertTriangle, Clock, Euro, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { StatTile, StatGrid } from "@/components/ui/StatTile"
+import { premiumExclusionParts } from '@/lib/wallet/premium-exclusion-note'
 
 interface StatusSummaryProps {
     activeCount: number
@@ -80,42 +81,39 @@ export function StatusSummary({
         maximumFractionDigits: 0,
     }).format(totalPremium)
 
-    const excludedNote =
-        unknownDurationCount > 0
-            ? (unknownDurationCount === 1
-                ? t.status.premiumExcludesUnknown
-                : t.status.premiumExcludesUnknownPlural
-            ).replace('{count}', String(unknownDurationCount))
-            : undefined
-
-    // A policy can be missing from the total for two different reasons: no
-    // readable end date (excluded from "in force" entirely) or no premium
-    // recorded (counted as cover, contributes 0). Both mean the figure understates
-    // reality, so both are said out loud.
-    const otherCurrencyNote =
-        otherCurrencyCount > 0
-            ? (otherCurrencyCount === 1
-                ? t.status.premiumExcludesOtherCurrency
-                : t.status.premiumExcludesOtherCurrencyPlural
-            ).replace('{count}', String(otherCurrencyCount))
-            : undefined
-
-    const noAmountNote =
-        unknownPremiumCount > 0
-            ? (unknownPremiumCount === 1
-                ? t.status.premiumExcludesNoAmount
-                : t.status.premiumExcludesNoAmountPlural
-            ).replace('{count}', String(unknownPremiumCount))
-            : undefined
+    // A policy can be missing from the total for three different reasons: no
+    // readable end date (excluded from "in force" entirely), no premium
+    // recorded (counted as cover, contributes 0), or another currency. All mean
+    // the figure understates reality, so all are said out loud — through the
+    // SAME parts helper the dashboard's portfolio card uses, one clause per
+    // count, each carrying its data-count key.
+    const excludedParts = premiumExclusionParts(
+        { otherCurrencyCount, unknownPremiumCount, unknownDurationCount },
+        t.status
+    )
 
     // 4-up only from xl. At lg the sidebar takes ~240px, leaving ~170px per tile,
     // which truncated every hint ("1/1 προστε…"). Two-up reads properly there.
     return (
         <StatGrid className="mb-5">
+            {/* «Ενεργά» is the STRICT lifecycle state (in force, >30 days out,
+                identity complete) — NOT the same fact as coverage-insights'
+                «Σε ισχύ σήμερα», which also counts expiring/unreadable cover.
+                Separate keys, and each label says which it is. NOTE the five
+                dashboard hero facts are not a partition of the total: «29 − 5
+                ληγμένα − 5 λήγουν − 2 μη αναλυμένα» is not this number (§2.8) —
+                the analysis facts overlap the lifecycle ones freely. */}
             <StatTile
                 label={t.status.activePolicies}
-                value={activeCount}
-                hint={`${activeCount}/${totalPolicies} ${t.status.added}`}
+                value={<span data-count="portfolio.activeCount">{activeCount}</span>}
+                hint={
+                    <>
+                        <span data-count="portfolio.activeCount">{activeCount}</span>
+                        /
+                        <span data-count="portfolio.policyCount">{totalPolicies}</span>
+                        {` ${t.status.added}`}
+                    </>
+                }
                 icon={ShieldCheck}
                 accent="positive"
                 visual={
@@ -126,9 +124,12 @@ export function StatusSummary({
                 }
             />
 
+            {/* The 30-day window, stated in the hint — the same fact and the
+                same window as the dashboard hero's «λήγουν μέσα σε 30 ημέρες»;
+                the risk watch's 45-day look-ahead is a DIFFERENT key. */}
             <StatTile
                 label={t.policyStatus.expiringSoon}
-                value={expiringCount}
+                value={<span data-count="portfolio.expiringCount">{expiringCount}</span>}
                 hint={t.status.within30Days}
                 icon={Clock}
                 accent="warning"
@@ -136,7 +137,7 @@ export function StatusSummary({
 
             <StatTile
                 label={t.status.attentionNeeded}
-                value={attentionCount}
+                value={<span data-count="portfolio.attentionCount">{attentionCount}</span>}
                 hint={t.status.needsReview}
                 icon={AlertTriangle}
                 accent="critical"
@@ -144,8 +145,19 @@ export function StatusSummary({
 
             <StatTile
                 label={t.status.totalPremium}
-                value={premiumLabel}
-                hint={[excludedNote, noAmountNote, otherCurrencyNote].filter(Boolean).join(' · ') || undefined}
+                value={<span data-fact="portfolio.totalAnnualPremium">{premiumLabel}</span>}
+                hint={
+                    excludedParts.length > 0 ? (
+                        <>
+                            {excludedParts.map((part, i) => (
+                                <span key={part.countKey}>
+                                    {i > 0 && <span aria-hidden> · </span>}
+                                    <span data-count={part.countKey}>{part.label}</span>
+                                </span>
+                            ))}
+                        </>
+                    ) : undefined
+                }
                 icon={Euro}
                 accent="brand"
             />

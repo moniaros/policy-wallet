@@ -1407,3 +1407,45 @@ rather than from August 23. Whatever survives re-measurement is the §6.14 fix l
 and is not one — `decision-engine.ts:322` uses it to open an **advisor task**, a book-management
 signal, never a customer render. The code says so at the branch. Admin is also outside §12.4's B2C
 scope. No action.
+
+### V2-P1-13 (§6.9) — severity guard universe. Done, after review found the guard's own hole.
+
+The agent's substance was right and the two hits were real customer surfaces, both invisible to a
+guard that walked only `app` and `components`:
+
+- **`lib/services/reports/savings-report.ts`** — the Pro downloadable / agent-branded report, which is
+  literally the "printable report with a red CRITICAL badge" the primitive's own doc comment names.
+  Its local `{el,en}` map is gone; the badge resolves `describeSeverity().labelKey` and the gaps
+  section carries the caveat sentence.
+- **`lib/email/templates/weekly-digest.ts`** — outbound, D-005's exact worry. Colour-only, so no
+  caveat is owed, but its map was severity-keyed; it is now keyed by the primitive's `tone`, and junk
+  urgency normalises to moderate instead of a call-site grey.
+
+`lib/wallet/gap-report.ts` was checked and is clean — it holds only `GAP_SEVERITY_RANK`, ordering,
+never a word or a colour. **`KNOWN_BYPASSES` stayed at 9.** Both offenders were fixed, not listed.
+
+**Review found a hole in the guard itself — see D-027.** Its escape hatch was
+`source.includes("severity-display")`, so any file could leave the guard's universe by importing the
+primitive or naming it in a comment. Rebuilt: path-based exemptions for the primitive and
+`severity-tone.ts`, the map matcher always applies, and the colour matcher is excused only by an
+actual `describeSeverity(` call. The decision is now an extracted `isSeverityOffender()` with six
+probes; the old line reinstated turns exactly two red.
+
+Also closed a vacuity hole the agent left: `SEVERITY_CAVEAT_KEY` was asserted to be a *string*, not a
+non-empty one — and `toContain("")` is true of every document, so an empty caveat would have
+satisfied both that check and the report's caveat assertion. Emptying `recPriorityNote` now turns the
+guard red; before, it did not. **12 → 26 tests.**
+
+### V2-P1-14 half 1 (§6.12) — the page-overflow probe exists and is proven
+
+`pageOverflow()` in `tests/measure/metrics.ts`, wired into `captureSurface` so every future capture
+carries it. Committed self-test `tests/measure/page-overflow-probe.spec.ts`, 3 cases, all passing:
+a clean page reports 0 **non-vacuously** (`documentScrollWidth > 0`); a 2000px element is detected and
+named; and an `overflow-x:auto` strip with a 2000px child is **correctly not flagged** — the strip
+scrolls, the page does not, which is the whole distinction `.pw-scroll-strip` exists to preserve.
+
+First real numbers: **`/timeline` is clean at 320/390/430** (`overflow=0px`).
+
+**Harness note:** the `measure` projects depend on `setup`, which re-runs UI login and dies when the
+bundled Playwright browser is absent — the normal state here, since everything runs on system Chrome.
+Run with `--no-deps` and reuse `playwright/.auth/*.json`. Saved to memory.

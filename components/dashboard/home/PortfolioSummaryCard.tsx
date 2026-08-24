@@ -2,6 +2,7 @@ import Link from "next/link"
 import { FileText, Upload } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
+import type { PremiumExclusionPart } from '@/lib/wallet/premium-exclusion-note'
 
 export interface LobChip {
     id: string
@@ -28,7 +29,7 @@ export function PortfolioSummaryCard({
     chips,
     recentDocuments,
     labels,
-    excludedNote,
+    excludedParts = [],
 }: {
     /** Null hides the premium block (nothing measurable yet) but keeps documents. */
     totalLabel: string | null
@@ -41,8 +42,12 @@ export function PortfolioSummaryCard({
         noDocuments: string
         addNewPolicy: string
     }
-    /** Says which policies the total could not count. Omitted when none. */
-    excludedNote?: string
+    /**
+     * Which policies the total could not count — one part per non-zero count
+     * (premiumExclusionParts), so each number carries its own data-count
+     * instead of three counts hiding in one string.
+     */
+    excludedParts?: PremiumExclusionPart[]
 }) {
     return (
         <div className="pw-card pw-pad">
@@ -60,10 +65,17 @@ export function PortfolioSummaryCard({
             {totalLabel && (
                 <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <p className="text-3xl font-semibold text-black dark:text-white">{totalLabel}</p>
+                        <p className="text-3xl font-semibold text-black dark:text-white" data-fact="portfolio.totalAnnualPremium">{totalLabel}</p>
                         <p className="mt-1 text-xs text-muted-foreground">{labels.totalAnnualPremium}</p>
-                        {excludedNote && (
-                            <p className="mt-1 text-kicker text-muted-foreground">{excludedNote}</p>
+                        {excludedParts.length > 0 && (
+                            <p className="mt-1 text-kicker text-muted-foreground">
+                                {excludedParts.map((part, i) => (
+                                    <span key={part.countKey}>
+                                        {i > 0 && <span aria-hidden> · </span>}
+                                        <span data-count={part.countKey}>{part.label}</span>
+                                    </span>
+                                ))}
+                            </p>
                         )}
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -71,7 +83,7 @@ export function PortfolioSummaryCard({
                             <div key={chip.id} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
                                 <chip.icon className="h-3.5 w-3.5 text-primary dark:text-mint" aria-hidden />
                                 <span className="text-xs text-black/60 dark:text-white/60">{chip.branchLabel}</span>
-                                <span className="text-xs font-bold text-black/70 dark:text-white/75">{chip.amountLabel}</span>
+                                <span className="text-xs font-bold text-black/70 dark:text-white/75" data-fact="portfolio.branchPremium" data-fact-subject={chip.id}>{chip.amountLabel}</span>
                             </div>
                         ))}
                     </div>

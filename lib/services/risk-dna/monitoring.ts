@@ -27,15 +27,46 @@ import type { DimensionResult } from "./compute"
 
 export type WatchVerdict = "clear" | "attention" | "action"
 
+/**
+ * One segment of a signal's detail line. A detail that states a quantity
+ * carries it as its own part so the renderer can mark the element with
+ * `data-count` / `data-fact` (§6.7 — a count inside opaque prose is invisible
+ * to the count-consistency scan). Parts joined with "" reproduce `detail`
+ * exactly; connective text is a part with no key.
+ */
+export interface WatchDetailPart {
+    text: Bilingual
+    /** Registered count key (lib/instrumentation/count-keys.ts), when this part IS a count. */
+    countKey?: string
+    countValue?: number
+    /** Registered fact key, when this part states a non-cardinal quantity. */
+    factKey?: string
+    factValue?: number
+}
+
 export interface WatchSignal {
     id: string
     label: Bilingual
     verdict: WatchVerdict
     /** What changed — null when this signal has nothing to report. */
     detail: Bilingual | null
+    /**
+     * `detail`, segmented for instrumentation. Present exactly when the detail
+     * states at least one quantity; joining the parts' text with "" yields
+     * `detail` verbatim, so the two can never say different things.
+     */
+    detailParts: WatchDetailPart[] | null
     /** What should happen next. */
     action: Bilingual | null
     confidence: "high" | "medium" | "low"
+}
+
+/** Join segmented detail back into the single Bilingual line. */
+function joinParts(parts: WatchDetailPart[]): Bilingual {
+    return {
+        en: parts.map((part) => part.text.en).join(""),
+        el: parts.map((part) => part.text.el).join(""),
+    }
 }
 
 export interface MonitoringInputs {
@@ -74,22 +105,54 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
     // said so as reassurance. Absence of a detected problem is not evidence of
     // no problem.
     const expired = dated.filter((p) => p.days < 0)
+    // Segmented so each count is its own part (instrumentable), joined back
+    // into the one detail line so the copy cannot fork. The 45-day window is
+    // DELIBERATELY not the dashboard's 30-day `expiringCount` — a forward
+    // watch looks further than a renewal chip — so its count carries its own
+    // key (`portfolio.expiringWithin45Count`) and its copy states the window.
+    const lapseParts: WatchDetailPart[] =
+        expired.length > 0
+            ? [
+                  {
+                      text: {
+                          en: `${expired.length} ${expired.length === 1 ? "policy has" : "policies have"} already ended`,
+                          el: `${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}`,
+                      },
+                      countKey: "portfolio.expiredCount",
+                      countValue: expired.length,
+                  },
+                  ...(lapsing.length > 0
+                      ? [
+                            {
+                                text: {
+                                    en: lapsing.length === 1 ? ", and 1 more ends within 45 days" : `, and ${lapsing.length} more end within 45 days`,
+                                    el: lapsing.length === 1 ? " και άλλο 1 λήγει μέσα σε 45 ημέρες" : ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`,
+                                },
+                                countKey: "portfolio.expiringWithin45Count",
+                                countValue: lapsing.length,
+                            } satisfies WatchDetailPart,
+                        ]
+                      : []),
+                  { text: { en: ".", el: "." } },
+              ]
+            : lapsing.length > 0
+              ? [
+                    {
+                        text: {
+                            en: `${lapsing.length} ${lapsing.length === 1 ? "policy ends" : "policies end"} within 45 days.`,
+                            el: `${lapsing.length} ${lapsing.length === 1 ? "ασφαλιστήριο λήγει" : "ασφαλιστήρια λήγουν"} μέσα σε 45 ημέρες.`,
+                        },
+                        countKey: "portfolio.expiringWithin45Count",
+                        countValue: lapsing.length,
+                    },
+                ]
+              : []
     signals.push({
         id: "cover_lapsing",
         label: { en: "Cover about to lapse", el: "Κάλυψη που λήγει" },
         verdict: expired.length > 0 || lapsing.length > 0 ? "action" : "clear",
-        detail:
-            expired.length > 0
-                ? {
-                      en: `${expired.length} ${expired.length === 1 ? "policy has" : "policies have"} already ended${lapsing.length > 0 ? (lapsing.length === 1 ? ", and 1 more ends within 45 days" : `, and ${lapsing.length} more end within 45 days`) : ""}.`,
-                      el: `${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}${lapsing.length > 0 ? (lapsing.length === 1 ? " και άλλο 1 λήγει μέσα σε 45 ημέρες" : ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`) : ""}.`,
-                  }
-                : lapsing.length > 0
-                ? {
-                      en: `${lapsing.length} ${lapsing.length === 1 ? "policy ends" : "policies end"} within 45 days.`,
-                      el: `${lapsing.length} ${lapsing.length === 1 ? "ασφαλιστήριο λήγει" : "ασφαλιστήρια λήγουν"} μέσα σε 45 ημέρες.`,
-                  }
-                : null,
+        detail: lapseParts.length > 0 ? joinParts(lapseParts) : null,
+        detailParts: lapseParts.length > 0 ? lapseParts : null,
         action:
             expired.length > 0
                 ? { en: "Renew or replace the cover that has ended.", el: "Ανανεώστε ή αντικαταστήστε την κάλυψη που έληξε." }
@@ -112,6 +175,7 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
                       el: `${worsening.map((d) => d.label.el).join(", ")}: πτώση από τον προηγούμενο έλεγχο.`,
                   }
                 : null,
+        detailParts: null,
         action:
             worsening.length > 0
                 ? { en: "Look at what moved on your timeline.", el: "Δείτε τι μετακινήθηκε στο χρονολόγιό σας." }
@@ -124,6 +188,25 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
     // 3. A picture going stale. Not an alarm — a statement about us, not them.
     const staleDays =
         lastAssessedAt && readable(lastAssessedAt) ? -calendarDaysUntil(lastAssessedAt, now) : null
+    const staleParts: WatchDetailPart[] | null =
+        staleDays !== null && staleDays > 180
+            ? [
+                  {
+                      text: {
+                          en: `Last assessed ${staleDays} days ago.`,
+                          el: `Τελευταία αξιολόγηση πριν ${staleDays} ημέρες.`,
+                      },
+                      factKey: "profile.daysSinceAssessment",
+                      factValue: staleDays,
+                  },
+                  {
+                      text: {
+                          en: " Lives change faster than that.",
+                          el: " Οι ζωές αλλάζουν ταχύτερα.",
+                      },
+                  },
+              ]
+            : null
     signals.push({
         id: "picture_stale",
         label: { en: "How current this is", el: "Πότε έγινε ο τελευταίος έλεγχος" },
@@ -131,12 +214,10 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
         detail:
             staleDays === null
                 ? { en: "We have not assessed your position yet.", el: "Δεν έχουμε αξιολογήσει ακόμη τη θέση σας." }
-                : staleDays > 180
-                  ? {
-                        en: `Last assessed ${staleDays} days ago. Lives change faster than that.`,
-                        el: `Τελευταία αξιολόγηση πριν ${staleDays} ημέρες. Οι ζωές αλλάζουν ταχύτερα.`,
-                    }
+                : staleParts
+                  ? joinParts(staleParts)
                   : null,
+        detailParts: staleParts,
         action:
             staleDays === null || staleDays > 180
                 ? { en: "Tell us about anything that has changed.", el: "Πείτε μας για οτιδήποτε άλλαξε." }
@@ -157,6 +238,7 @@ export function monitorRisk(inputs: MonitoringInputs): WatchSignal[] {
                       el: `${critical.map((d) => d.label.el).join(", ")}: έκθεση που δεν θα αφήναμε ανοιχτή.`,
                   }
                 : null,
+        detailParts: null,
         action: critical.length > 0 ? { en: "Start with these.", el: "Ξεκινήστε από αυτά." } : null,
         confidence: "high",
     })
@@ -185,6 +267,12 @@ export interface PredictionSignal {
     suggestsEvent: string | null
     /** What would change if it happened. */
     wouldOpen: string[]
+    /**
+     * When the detail states a count, its registered key + value so the
+     * renderer can instrument the element (§6.7). Absent otherwise.
+     */
+    countKey?: string
+    countValue?: number
 }
 
 /**
@@ -242,6 +330,8 @@ export function openPredictionHooks(ctx: LifeContext, dimensions: DimensionResul
             probability: null,
             suggestsEvent: null,
             wouldOpen: [],
+            countKey: "profile.lowConfidenceDimensionCount",
+            countValue: thin.length,
         })
     }
 

@@ -74,8 +74,11 @@ describe('the wallet shows the currency it actually summed', () => {
     })
 
     it('discloses what the total leaves out, alongside the existing reasons', () => {
-        expect(SUMMARY).toMatch(/otherCurrencyNote/)
-        expect(SUMMARY).toMatch(/\[excludedNote, noAmountNote, otherCurrencyNote\]/)
+        // The three inline notes became the SHARED parts helper (V2-P1-11):
+        // one clause per non-zero count, each carrying its data-count key —
+        // the dashboard's portfolio card renders the same parts.
+        expect(SUMMARY).toMatch(/premiumExclusionParts\(/)
+        expect(SUMMARY).toMatch(/\{ otherCurrencyCount, unknownPremiumCount, unknownDurationCount \}/)
     })
 
     it('is fed from the footprint, not assumed', () => {

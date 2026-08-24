@@ -1,0 +1,15 @@
+// PROBE FIXTURE — a render site that coins instrumentation keys the plan
+// never registered. tests/unit/count-instrumentation-registry.test.tsx runs
+// its extractor over this text and MUST report all four keys as unregistered;
+// if it stops finding them, the guard has gone blind (a gutted probe must not
+// pass silently).
+export function UnregisteredCountProbe({ n }: { n: number }) {
+    return (
+        <div>
+            <span data-count="portfolio.bogusCount">{n} policies</span>
+            <span data-fact="policy.inventedFact">{n} days</span>
+            <Meter usedCountKey="entitlement.fabricatedLimit" />
+            <Chips countKey="gap.mintedSeverityCount" />
+        </div>
+    )
+}

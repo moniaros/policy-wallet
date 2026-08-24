@@ -286,12 +286,6 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "call sites ('liveness is derived from the REAL end date') via " +
             "coverageEngineStatus / isPolicyCoverageActive from lib/policy-status.",
     },
-    "lib/services/risk-dna/service.ts": {
-        count: 1,
-        reason:
-            "Filters with isPolicyCoverageActive / coverageEngineStatus in code after the " +
-            "fetch — the per-policy lifecycle path, not the ingestion status.",
-    },
     "lib/services/risk-graph/service.ts": {
         count: 1,
         reason:
@@ -368,13 +362,6 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "customer. A gap on any of the customer's rows is theirs, live or not.",
     },
     // ── Display surfaces that show non-live rows on purpose ─────────────────
-    "app/(protected)/wallet/page.tsx": {
-        count: 2,
-        reason:
-            "The wallet deliberately shows every stored policy — 'analyzing' renders as an " +
-            "in-progress card (the page reaps stale runs for exactly those rows) and " +
-            "lifecycle verdicts come from resolvePolicyLifecycle per policy.",
-    },
     "app/(protected)/agent/page.tsx": {
         count: 1,
         reason:
@@ -382,11 +369,12 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "per-policy display, not a portfolio verdict.",
     },
     "app/(protected)/dashboard/PolicyholderHome.tsx": {
-        count: 2,
+        count: 1,
         reason:
-            "Dashboard fetch renders per-policy cards ('analyzing' included by design — see " +
-            "the Goal 0-5 dashboard series); the gap tile is scoped by gap status. Any change " +
-            "to its universe belongs to the dashboard series, not P1-03.",
+            "Ratcheted 2→1 by V2-P1-11: the policy fetch now carries status ≠ 'deleted' " +
+            "(and renders per-policy cards, 'analyzing' included by design). The remaining " +
+            "query is the gap fetch, scoped by gap status and post-filtered through " +
+            "gapsOnActiveCoverage.",
     },
     // ── DEBT: surfaced by this guard's first enumeration, deferred ──────────
     "lib/services/analysis/portfolio-gap-view.ts": {
@@ -397,22 +385,12 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "counts and scoring; this needs a per-surface decision.",
     },
     "app/(protected)/coverage-insights/page.tsx": {
-        count: 2,
-        reason:
-            "DEBT (P1-03 enumeration): insights page reads gaps and policies without a " +
-            "liveness decision visible at the query. Needs a per-surface decision on whether " +
-            "non-live rows belong in these views.",
-    },
-    "app/(protected)/branches/page.tsx": {
         count: 1,
         reason:
-            "DEBT (P1-03 enumeration): selects status/endDate/acordData and derives branch " +
-            "coverage downstream; whether that derivation handles non-live rows correctly has " +
-            "not been verified. Verify or filter in a branches-scoped task.",
-    },
-    "app/(protected)/branches/[branch]/page.tsx": {
-        count: 1,
-        reason: "DEBT (P1-03 enumeration): same as app/(protected)/branches/page.tsx.",
+            "Ratcheted 2→1 by V2-P1-11: the policy fetch now carries status ≠ 'deleted' " +
+            "and liveness is decided by gapsOnActiveCoverage / isPolicyCoverageActive in code. " +
+            "The remaining query is the gap fetch, scoped by gap status and post-filtered " +
+            "through gapsOnActiveCoverage.",
     },
     "app/(protected)/wallet/[id]/page.tsx": {
         count: 1,

@@ -16,7 +16,7 @@ import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-ide
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { BranchEmptyState } from "@/components/branches/BranchEmptyState"
-import { calendarDaysUntil, effectivePolicyStatus } from "@/lib/policy-status"
+import { calendarDaysUntil, effectivePolicyStatus, resolvePolicyLifecycle } from "@/lib/policy-status"
 
 /**
  * Calendar days until a date, in Athens — not a duration in 24-hour blocks.
@@ -92,7 +92,9 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
 
     const [allPolicies, relationship, entitlements] = await Promise.all([
         db.policy.findMany({
-            where: { ownerUserId: dbUser.id },
+            // status ≠ deleted: a soft-deleted row neither renders nor counts
+            // (same predicate as the wallet and the dashboard).
+            where: { ownerUserId: dbUser.id, status: { not: "deleted" } },
             orderBy: { endDate: "asc" },
         }),
         db.customerRelationship.findFirst({
@@ -122,7 +124,15 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
     }
     const detectedRuleIds = new Set(recommendations.map((rec) => rec.ruleId).filter(Boolean) as string[])
 
-    const renewals = upcomingRenewals(branchPolicies, new Date())
+    // The LIFECYCLE's end date, never the stored column: the raw `endDate`
+    // column is placeholder-prone, and feeding it to the window filter made
+    // this page's «Λήγει σε N ημέρες» disagree with the dashboard's renewal
+    // timeline for the same policy. Same derivation both sides now.
+    const branchPoliciesWithLifecycle = branchPolicies.map((policy) => {
+        const lifecycle = resolvePolicyLifecycle(policy)
+        return { ...policy, endDate: lifecycle.endDate, daysUntilExpiry: lifecycle.daysUntilExpiry }
+    })
+    const renewals = upcomingRenewals(branchPoliciesWithLifecycle, new Date())
     const perkRows = branchPolicies.flatMap((policy) =>
         extractPolicySections(policy.acordData).perks.map((perk) => ({
             perk,
@@ -215,6 +225,12 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                     <SectionCard icon={CircleAlert} title={t.branches.detectedGaps}>
                         <RecommendationCards
                             recommendations={recommendations}
+                            // A branch-filtered SUBSET — not recommendation.openCount.
+                            // Its own subject-scoped key keeps «2 προτάσεις» here
+                            // from reading as the full set disagreeing with the
+                            // dashboard's «9».
+                            countKey="branch.recommendationCount"
+                            countSubject={branch.id}
                             language={lang}
                             tier={tier}
                         />
@@ -301,7 +317,11 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                         <p className="truncate text-sm font-bold text-black dark:text-white">
                                             {displayInsurerName(policy.insurerName) || "—"}
                                         </p>
-                                        <span className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-kicker font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
+                                        <span
+                                            className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-kicker font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300"
+                                            data-fact="policy.daysRemaining"
+                                            data-fact-subject={policy.id}
+                                        >
                                             {t.branches.expiresInDays.replace('{days}', String(days))}
                                         </span>
                                     </Link>

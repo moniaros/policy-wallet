@@ -60,6 +60,52 @@ not one fact rendered twice, and the §2.6 defect ("«2 λήγουν σύντο�
 ημέρες»") is a *labelling* failure that separate keys plus a visible window make impossible to
 restate.
 
+### Additions ratified 2026-08-25 (V2-P1-11, §6.7)
+
+The registry's machine mirror is **`lib/instrumentation/count-keys.ts`** — every key below is
+defined there, and `tests/unit/count-instrumentation-registry.test.tsx` fails on any key used in
+`app/`, `components/` or `lib/` that the registry does not carry. Add to BOTH in one change.
+
+New count keys (definitions in the registry):
+
+- `portfolio.activeCount` · `portfolio.attentionCount` · `portfolio.attentionCollapsedCount` ·
+  `portfolio.coverageActiveCount` · `portfolio.policiesWithFindingsCount` ·
+  `portfolio.renewalsNext180Count` · `portfolio.expiringWithin45Count` ·
+  `portfolio.neverAnalysedCount` · `portfolio.failedCount` ·
+  `portfolio.premiumUnknownDurationCount` · `portfolio.premiumNoAmountCount` ·
+  `portfolio.premiumOtherCurrencyCount`
+- `gap.severityCount` *(subject-scoped by severity; the four values sum to `gap.openCount`)*
+- `household.memberCount` · `household.dependantCount` · `household.assetCount` ·
+  `household.obligationCount` — the same facts on the risk-profile household card and the risk
+  graph headline, which is the cross-check
+- `riskGraph.nodeCount` · `riskGraph.riskCount` · `riskGraph.stateCount` *(subject-scoped)*
+- `profile.lowConfidenceDimensionCount`
+- `branch.policyCount` · `branch.recommendationCount` *(both subject-scoped by branch)*
+- `policy.renewalCheckpointCount` *(subject-scoped by policy)*
+- `review.findingsAtOpen`
+- `entitlement.policyLimit` · `entitlement.freeInsightLimit` — plan limits are NEVER portfolio
+  facts; «έως 10 ασφαλιστήρια» grouped with the policy count was the value scan's false positive
+
+New fact keys: `portfolio.branchPremium` *(subject-scoped)* · `profile.healthIndex` ·
+`profile.healthComponent` *(subject-scoped)* · `profile.daysSinceAssessment` ·
+`riskDimension.score` *(subject-scoped)* · `review.scoreAtOpen`. The policy-detail surface's
+pre-plan spellings (`policy.insurerName`, `policy.policyNumber`, `policy.premiumAmount`,
+`policy.expiryDate`, `policy.status`, `policy.insuredSubject`, `policy.attention`) are registered
+as LEGACY — renaming them must regenerate the policy-detail baselines, so it is a deliberate
+follow-up, not a registry side effect. `renewals.upcoming` (a pre-plan coinage) is retired in
+favour of `portfolio.renewalsNext180Count`, whose label now states the window.
+
+**Subject scoping.** A key that legitimately renders once per subject on one page — a branch
+tile, a renewal row, a severity chip — carries `data-count-subject` / `data-fact-subject` with
+the subject's stable id on the same element, and the scan groups by key+subject. Without it,
+every list reads as one key contradicting itself; with it, a genuine contradiction (two values
+for one subject) is still caught.
+
+**Deliberately NOT instrumented** (recorded so the omission is a decision, not a gap): wizard
+step indicators («1/3» in QuickStart) and pagination controls — control state, not facts about
+the portfolio; and dates rendered without a quantity (a date is a fact but not a count — it may
+carry `policy.endDate`/`policy.startDate` as data-fact where already composed as its own element).
+
 ## Action verbs
 
 `upload` · `analyse` · `viewPolicy` · `viewGap` · `renew` · `contactAdvisor` · `callClaims` ·

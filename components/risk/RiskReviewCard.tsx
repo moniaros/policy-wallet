@@ -91,7 +91,7 @@ export function RiskReviewCard({ review, label, rationale }: RiskReviewCardProps
                 {review.findingsAtOpen != null && review.findingsAtOpen > 0 && (
                     <div className="flex gap-1.5">
                         <dt className="text-muted-foreground">{copy.findings}</dt>
-                        <dd className="font-semibold text-black dark:text-white">
+                        <dd className="font-semibold text-black dark:text-white" data-count="review.findingsAtOpen">
                             {review.findingsAtOpen}
                         </dd>
                     </div>
@@ -99,7 +99,7 @@ export function RiskReviewCard({ review, label, rationale }: RiskReviewCardProps
                 {review.scoreAtOpen != null && (
                     <div className="flex gap-1.5">
                         <dt className="text-muted-foreground">{copy.scoreThen}</dt>
-                        <dd className="font-semibold text-black dark:text-white">
+                        <dd className="font-semibold text-black dark:text-white" data-fact="review.scoreAtOpen">
                             {review.scoreAtOpen}%
                         </dd>
                     </div>

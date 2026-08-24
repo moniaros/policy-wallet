@@ -15,14 +15,15 @@ import { RiskReviewCard } from "@/components/risk/RiskReviewCard"
 import { getTimeline } from "@/lib/services/timeline/service"
 import { assembleWatch } from "@/lib/services/risk-dna/service"
 import { buildProtectionPlan } from "@/lib/services/protection-plan"
-import { portfolioFacts } from "@/lib/dashboard/portfolio-summary"
+import { portfolioFacts, derivePortfolioCounts } from "@/lib/dashboard/portfolio-summary"
+import { gapsOnActiveCoverage } from "@/lib/gaps/gap-universe"
 import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { displayPersonName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
-import { resolvePolicyLifecycle } from "@/lib/policy-status"
+import { resolvePolicyLifecycle, effectivePolicyStatus } from "@/lib/policy-status"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
-import { premiumExclusionNote } from "@/lib/wallet/premium-exclusion-note"
+import { premiumExclusionParts } from "@/lib/wallet/premium-exclusion-note"
 import { deriveRenewalChecklist } from "@/lib/wallet/renewal-outlook"
 import { deriveClaimDeadlines, extractPolicySections, hasAutoRenewal } from "@/lib/wallet/policy-detail"
 import { complianceObligations } from "@/lib/insurance/policy-conditions"
@@ -119,7 +120,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         timelineEntries,
     ] = await Promise.all([
         db.policy.findMany({
-            where: { ownerUserId: dbUser.id },
+            // status ≠ deleted: a soft-deleted row (the API's DELETE path) is
+            // not a policy the owner holds. Counting it inflated every number
+            // on this page — the same predicate the wallet list now applies,
+            // so `portfolio.policyCount` cannot disagree between the two.
+            where: { ownerUserId: dbUser.id, status: { not: "deleted" } },
             include: { documents: true },
             orderBy: { endDate: "asc" },
         }),
@@ -262,12 +267,19 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             return acc
         }, {} as Record<string, number>)
 
-    const openGapCount = openGaps.length
+    // THE GAP UNIVERSE IS ACTIVE COVERAGE — the same predicate
+    // /coverage-insights applies ("a lapsed policy is not protection; its
+    // findings stay on that policy's own page"). This tally links straight to
+    // that page, and used to count every gap the owner had ever accumulated —
+    // 43 here against 33 there, for one portfolio (§2.8). One shared filter
+    // now, so the two surfaces cannot drift.
+    const liveGaps = gapsOnActiveCoverage(openGaps, policies, now)
+    const openGapCount = liveGaps.length
 
     // Open gaps per policy, for the renewal rows' honest "points to check".
     // Profile-level gaps carry no policyId and deliberately attach to nothing.
     const gapsByPolicy = new Map<string, number>()
-    for (const gap of openGaps) {
+    for (const gap of liveGaps) {
         if (!gap.policyId) continue
         gapsByPolicy.set(gap.policyId, (gapsByPolicy.get(gap.policyId) ?? 0) + 1)
     }
@@ -293,13 +305,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
      * tests/unit/score-containment.test.ts.
      */
     const hasPolicies = policies.length > 0
-    const portfolioInput = {
-        total: policies.length,
-        expired: policies.filter((p) => resolvePolicyLifecycle(p, now).status === "expired").length,
-        expiringSoon: policies.filter((p) => resolvePolicyLifecycle(p, now).status === "expiring_soon").length,
-        neverAnalysed: policies.filter((p) => !p.lastAnalyzedAt).length,
-        analysisFailed: policies.filter((p) => Boolean((p.acordData as any)?.processingError)).length,
-    }
+    // One importable derivation (derivePortfolioCounts) instead of five inline
+    // filters, so the count-consistency guard can assert the hero, the wallet
+    // tiles and the risk watch count the same portfolio.
+    const portfolioInput = derivePortfolioCounts(policies, now)
     const factLabel: Record<string, [string, string]> = {
         total: [home.factTotalOne, home.factTotalMany],
         expired: [home.factExpiredOne, home.factExpiredMany],
@@ -308,7 +317,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         analysisFailed: [home.factFailedOne, home.factFailedMany],
     }
     // Each fact keeps its KIND and its COUNT, so the hero can mark the element
-    // that renders it with `data-count="portfolio.<kind>"`. The line used to be
+    // that renders it with the kind's registered count key (the hero's
+    // KIND_COUNT_KEY map — portfolio.policyCount etc.). The line used to be
     // joined into one string here, which meant the page stated «12
     // ασφαλιστήρια» with nothing machine-readable saying what the 12 counted —
     // and the count-consistency metric had to guess by matching nouns, which
@@ -441,6 +451,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 verdict: signal.verdict,
                 verdictLabel: verdictLabels[signal.verdict],
                 detail: signal.detail ? signal.detail[lang] : null,
+                // Segmented detail, localized: each counted quantity keeps its
+                // data-count key through to the DOM (§6.7).
+                detailParts: signal.detailParts
+                    ? signal.detailParts.map((part) => ({
+                          text: part.text[lang] || part.text.en,
+                          countKey: part.countKey,
+                          factKey: part.factKey,
+                      }))
+                    : null,
                 action: signal.action ? signal.action[lang] : null,
             }))
         } catch (error) {
@@ -481,7 +500,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     // Everything the total leaves out, said plainly — matching the wallet's
     // StatusSummary. A figure that silently drops a foreign-currency or
     // premium-less policy understates what the household spends.
-    const premiumExcludedNote = premiumExclusionNote(
+    const premiumExcludedParts = premiumExclusionParts(
         {
             otherCurrencyCount: premiumFootprint.otherCurrencyCount,
             unknownPremiumCount: premiumFootprint.unknownPremiumCount,
@@ -574,7 +593,19 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         not_held: t.branches.statusNotHeld,
         neutral: t.branches.statusNeutral,
     } as const
-    const coverageMapEntries = buildBranchOverview(policies, cachedScore?.expectedLines ?? []).map((entry) => ({
+    // LIFECYCLE status in, never the stored string — buildBranchOverview's own
+    // contract ("callers pass effectivePolicyStatus"), which /branches honours
+    // and this page did not: an expired policy fed the map as stored-'active'
+    // and painted its branch green while the /branches tile showed amber.
+    const coverageMapEntries = buildBranchOverview(
+        policies.map((policy) => ({
+            id: policy.id,
+            lineOfBusiness: policy.lineOfBusiness,
+            status: effectivePolicyStatus(policy),
+            endDate: policy.endDate,
+        })),
+        cachedScore?.expectedLines ?? []
+    ).map((entry) => ({
         id: entry.branch.id,
         icon: getBranchIcon(entry.branch.id),
         label: policyTypeLabels[entry.branch.id] || entry.branch.label[lang],
@@ -582,11 +613,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         stateLabel: stateLabels[entry.state],
     }))
 
+    // Severity BUCKETS of the same live-gap universe as openGapCount — the four
+    // chips sum to gap.openCount by construction, and to what /coverage-insights
+    // states, because all three read `liveGaps`.
     const gapSeverityCounts = {
-        critical: openGaps.filter((gap) => gap.severity === "critical").length,
-        high: openGaps.filter((gap) => gap.severity === "high").length,
-        medium: openGaps.filter((gap) => gap.severity === "medium").length,
-        low: openGaps.filter((gap) => gap.severity === "low").length,
+        critical: liveGaps.filter((gap) => gap.severity === "critical").length,
+        high: liveGaps.filter((gap) => gap.severity === "high").length,
+        medium: liveGaps.filter((gap) => gap.severity === "medium").length,
+        low: liveGaps.filter((gap) => gap.severity === "low").length,
     }
 
     // The last few things that changed, and whether we recorded why. The
@@ -607,11 +641,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             total={setupSteps.length}
             allDone={setupCompleted === setupSteps.length}
             moreOpenLabel={planMoreOpenLabel}
+            moreOpenCount={openFindingCount}
             labels={{
                 kicker: home.planKicker,
-                progress: home.planProgress
-                    .replace('{done}', String(setupCompleted))
-                    .replace('{total}', String(setupSteps.length)),
+                // The TEMPLATE, not the joined string: the card interpolates it
+                // so each number can carry its own data-count (plan.stepsDone /
+                // plan.stepsTotal). A pre-joined «3 από 5» is a quantity the
+                // count-consistency scan cannot attribute.
+                progressTemplate: home.planProgress,
                 upToDate: home.planUpToDate,
             }}
         />
@@ -719,6 +756,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     <RenewalsTimelineCard
                         items={renewalItems}
+                        // The TRUE count, not the rendered rows: items is capped
+                        // at six, and the header used to count the capped list —
+                        // eight upcoming renewals read as «6 ασφαλιστήρια».
+                        totalCount={upcomingRenewals.length}
                         hasPolicies={policies.length > 0}
                         showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
                         labels={{
@@ -806,6 +847,12 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 used: policies.length,
                                 limit: FREE_POLICY_LIMIT,
                                 hint: home.freePlanHint,
+                                // The meter's "used" IS the policy count; its
+                                // limit is a PLAN fact, not a portfolio one —
+                                // separate keys keep «2/10» from reading as a
+                                // contradiction of «2 ασφαλιστήρια».
+                                usedCountKey: "portfolio.policyCount",
+                                limitCountKey: "entitlement.policyLimit",
                             }}
                         />
                     )}
@@ -826,7 +873,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             noDocuments: home.noDocuments,
                             addNewPolicy: home.addNewPolicy,
                         }}
-                        excludedNote={premiumExcludedNote}
+                        excludedParts={premiumExcludedParts}
                     />
 
                     {/* Trigger G: multi-insurer portfolio insight for free tier */}

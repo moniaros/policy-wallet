@@ -29,6 +29,19 @@ interface WatchView {
     label: Bilingual
     verdict: "clear" | "attention" | "action"
     detail: Bilingual | null
+    /**
+     * `detail`, segmented (WatchSignal.detailParts): a part stating a count or
+     * fact carries its registered key so this component can mark the element
+     * with data-count / data-fact — «5 ασφαλιστήρια έχουν ήδη λήξει» here and
+     * on the dashboard hero is ONE fact under one key (§6.7).
+     */
+    detailParts?: Array<{
+        text: Bilingual
+        countKey?: string
+        countValue?: number
+        factKey?: string
+        factValue?: number
+    }> | null
     action: Bilingual | null
     confidence: "high" | "medium" | "low"
 }
@@ -47,6 +60,9 @@ interface PredictionView {
     label: Bilingual
     detail: Bilingual
     probability: number | null
+    /** When the detail states a count, its registered key (PredictionSignal). */
+    countKey?: string
+    countValue?: number
 }
 
 export interface RiskIntelligenceViewProps {
@@ -122,7 +138,7 @@ export function RiskIntelligenceView({
             <div className="pw-card pw-pad">
                 <p className="pw-kicker">{t("Πόσο καλά σας γνωρίζουμε", "How well we understand you")}</p>
                 <div className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className={`text-3xl font-bold tabular-nums ${BAND_TONE[health.band]}`}>
+                    <span className={`text-3xl font-bold tabular-nums ${BAND_TONE[health.band]}`} data-fact="profile.healthIndex">
                         {health.index === null ? "—" : health.index}
                     </span>
                     <span className={`text-sm font-semibold ${BAND_TONE[health.band]}`}>{bandLabel}</span>
@@ -141,7 +157,11 @@ export function RiskIntelligenceView({
                                 <span className="min-w-0 truncate text-caption text-black/70 dark:text-white/70">
                                     {component.label[lang] || component.label.en}
                                 </span>
-                                <span className="flex-shrink-0 text-caption font-semibold tabular-nums text-black dark:text-white">
+                                <span
+                                    className="flex-shrink-0 text-caption font-semibold tabular-nums text-black dark:text-white"
+                                    data-fact="profile.healthComponent"
+                                    data-fact-subject={component.id}
+                                >
                                     {component.value}
                                 </span>
                             </div>
@@ -195,9 +215,17 @@ export function RiskIntelligenceView({
                                 <span className="block text-sm font-semibold text-black dark:text-white">
                                     {signal.label[lang] || signal.label.en}
                                 </span>
-                                {signal.detail && (
+                                {(signal.detailParts?.length || signal.detail) && (
                                     <span className="mt-0.5 block text-caption leading-relaxed text-black/70 dark:text-white/70 [overflow-wrap:anywhere]">
-                                        {signal.detail[lang] || signal.detail.en}
+                                        {signal.detailParts?.length
+                                            ? signal.detailParts.map((part, i) => (
+                                                  <span key={i} data-count={part.countKey} data-fact={part.factKey}>
+                                                      {part.text[lang] || part.text.en}
+                                                  </span>
+                                              ))
+                                            : signal.detail
+                                              ? signal.detail[lang] || signal.detail.en
+                                              : null}
                                     </span>
                                 )}
                                 {signal.action && (
@@ -234,11 +262,15 @@ export function RiskIntelligenceView({
 
                 {/* Two columns only from 400px: four stat tiles at 320px leave
                     ~70px each, which cannot hold a Greek label. */}
+                {/* The same four facts the risk-graph headline states, under the
+                    same keys — the cross-check is the point: both derive from
+                    one graph, and the attributes make an eventual drift a
+                    measured failure instead of an argument. */}
                 <dl className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2">
-                    <Stat label={t("Μέλη", "People")} value={household.memberCount} />
-                    <Stat label={t("Εξαρτώμενα", "Dependants")} value={household.dependantCount} />
-                    <Stat label={t("Περιουσιακά στοιχεία", "Assets")} value={household.assetCount} />
-                    <Stat label={t("Υποχρεώσεις", "Obligations")} value={household.obligationCount} />
+                    <Stat label={t("Μέλη", "People")} value={household.memberCount} countKey="household.memberCount" />
+                    <Stat label={t("Εξαρτώμενα", "Dependants")} value={household.dependantCount} countKey="household.dependantCount" />
+                    <Stat label={t("Περιουσιακά στοιχεία", "Assets")} value={household.assetCount} countKey="household.assetCount" />
+                    <Stat label={t("Υποχρεώσεις", "Obligations")} value={household.obligationCount} countKey="household.obligationCount" />
                 </dl>
 
                 <p className="mt-3 text-caption leading-relaxed text-black/70 dark:text-white/70">
@@ -301,7 +333,10 @@ export function RiskIntelligenceView({
                                 <p className="text-sm font-semibold text-black dark:text-white">
                                     {prediction.label[lang] || prediction.label.en}
                                 </p>
-                                <p className="mt-0.5 text-caption leading-relaxed text-black/70 dark:text-white/70 [overflow-wrap:anywhere]">
+                                <p
+                                    className="mt-0.5 text-caption leading-relaxed text-black/70 dark:text-white/70 [overflow-wrap:anywhere]"
+                                    data-count={prediction.countKey}
+                                >
                                     {prediction.detail[lang] || prediction.detail.en}
                                 </p>
                             </li>
@@ -313,11 +348,11 @@ export function RiskIntelligenceView({
     )
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function Stat({ label, value, countKey }: { label: string; value: number; countKey?: string }) {
     return (
         <div className="rounded-xl border border-black/8 px-3 py-2 dark:border-white/10">
             <dt className="text-kicker uppercase tracking-wider text-muted-foreground">{label}</dt>
-            <dd className="text-lg font-bold tabular-nums text-black dark:text-white">{value}</dd>
+            <dd className="text-lg font-bold tabular-nums text-black dark:text-white" data-count={countKey}>{value}</dd>
         </div>
     )
 }

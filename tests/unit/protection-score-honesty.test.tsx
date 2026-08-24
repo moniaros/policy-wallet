@@ -73,9 +73,12 @@ describe('protection status hero — the headline is the facts', () => {
         expect(heading?.textContent).toContain('12 policies')
         expect(heading?.textContent).toContain('3 expire soon')
         expect(heading?.textContent).toContain('2 not analysed')
-        expect(container.querySelector('[data-count="portfolio.total"]')?.textContent).toBe('12 policies')
-        expect(container.querySelector('[data-count="portfolio.expiringSoon"]')?.textContent).toBe('3 expire soon')
-        expect(container.querySelector('[data-count="portfolio.neverAnalysed"]')?.textContent).toBe('2 not analysed')
+        // The PLAN's registered keys (lib/instrumentation/count-keys.ts) — the
+        // first pass stamped the raw fact kinds (`portfolio.total`), which
+        // coined keys the plan never agreed.
+        expect(container.querySelector('[data-count="portfolio.policyCount"]')?.textContent).toBe('12 policies')
+        expect(container.querySelector('[data-count="portfolio.expiringCount"]')?.textContent).toBe('3 expire soon')
+        expect(container.querySelector('[data-count="portfolio.neverAnalysedCount"]')?.textContent).toBe('2 not analysed')
     })
 
     it('renders no score: no number, no ring, no disclosure, no methodology', () => {

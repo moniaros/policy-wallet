@@ -28,15 +28,40 @@ export interface PremiumExclusionCopy {
 const line = (count: number, one: string, many: string): string | null =>
     count > 0 ? (count === 1 ? one : many).replace('{count}', String(count)) : null
 
+/**
+ * One clause of the disclosure, with the registered `data-count` key for the
+ * count it states (lib/instrumentation/count-keys.ts) — so a renderer can mark
+ * each number instead of burying three counts in one opaque string (§6.7).
+ */
+export interface PremiumExclusionPart {
+    countKey:
+        | 'portfolio.premiumOtherCurrencyCount'
+        | 'portfolio.premiumNoAmountCount'
+        | 'portfolio.premiumUnknownDurationCount'
+    count: number
+    label: string
+}
+
+/** The disclosure, one part per non-zero count, in the note's fixed order. */
+export function premiumExclusionParts(
+    counts: PremiumExclusionCounts,
+    copy: PremiumExclusionCopy
+): PremiumExclusionPart[] {
+    const parts: PremiumExclusionPart[] = []
+    const other = line(counts.otherCurrencyCount, copy.premiumExcludesOtherCurrency, copy.premiumExcludesOtherCurrencyPlural)
+    if (other) parts.push({ countKey: 'portfolio.premiumOtherCurrencyCount', count: counts.otherCurrencyCount, label: other })
+    const noAmount = line(counts.unknownPremiumCount, copy.premiumExcludesNoAmount, copy.premiumExcludesNoAmountPlural)
+    if (noAmount) parts.push({ countKey: 'portfolio.premiumNoAmountCount', count: counts.unknownPremiumCount, label: noAmount })
+    const unknown = line(counts.unknownDurationCount, copy.premiumExcludesUnknown, copy.premiumExcludesUnknownPlural)
+    if (unknown) parts.push({ countKey: 'portfolio.premiumUnknownDurationCount', count: counts.unknownDurationCount, label: unknown })
+    return parts
+}
+
 /** The joined note, or undefined when the total leaves nothing out. */
 export function premiumExclusionNote(
     counts: PremiumExclusionCounts,
     copy: PremiumExclusionCopy
 ): string | undefined {
-    const parts = [
-        line(counts.otherCurrencyCount, copy.premiumExcludesOtherCurrency, copy.premiumExcludesOtherCurrencyPlural),
-        line(counts.unknownPremiumCount, copy.premiumExcludesNoAmount, copy.premiumExcludesNoAmountPlural),
-        line(counts.unknownDurationCount, copy.premiumExcludesUnknown, copy.premiumExcludesUnknownPlural),
-    ].filter(Boolean)
-    return parts.length > 0 ? parts.join(' · ') : undefined
+    const parts = premiumExclusionParts(counts, copy)
+    return parts.length > 0 ? parts.map((part) => part.label).join(' · ') : undefined
 }

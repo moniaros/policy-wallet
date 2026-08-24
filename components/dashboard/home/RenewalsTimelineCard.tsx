@@ -32,11 +32,19 @@ export interface RenewalItem {
  */
 export function RenewalsTimelineCard({
     items,
+    totalCount,
     hasPolicies,
     showUpgradeTeaser,
     labels,
 }: {
     items: RenewalItem[]
+    /**
+     * Renewals in the 180-day window — the FACT the header states. `items` is
+     * capped at six rows, and the header used to render `items.length`, so
+     * eight upcoming renewals read as «6 ασφαλιστήρια»: the header counted the
+     * truncation, not the portfolio.
+     */
+    totalCount?: number
     hasPolicies: boolean
     showUpgradeTeaser: boolean
     labels: {
@@ -56,12 +64,14 @@ export function RenewalsTimelineCard({
                 <p className="pw-kicker">{labels.kicker}</p>
                 {items.length > 0 && (
                     <p className="text-micro font-semibold text-muted-foreground">
-                        {/* A DIFFERENT key from portfolio.total on purpose: this
-                            counts renewals coming up, not the wallet. Naming it
-                            is what makes the difference checkable instead of
-                            arguable. */}
-                        <span data-count="renewals.upcoming">{items.length}</span>{" "}
-                        {items.length === 1 ? labels.policiesSuffixOne : labels.policiesSuffix}
+                        {/* A DIFFERENT key from portfolio.policyCount on purpose:
+                            this counts renewals in the 180-day window, not the
+                            wallet — and the suffix label states the window, so
+                            the difference is readable, not just machine-checkable.
+                            (`renewals.upcoming` was this key's pre-plan spelling;
+                            the plan registers portfolio.renewalsNext180Count.) */}
+                        <span data-count="portfolio.renewalsNext180Count">{totalCount ?? items.length}</span>{" "}
+                        {(totalCount ?? items.length) === 1 ? labels.policiesSuffixOne : labels.policiesSuffix}
                     </p>
                 )}
             </div>
@@ -108,7 +118,16 @@ export function RenewalsTimelineCard({
                                         <item.icon className="h-3.5 w-3.5" aria-hidden />
                                     </span>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+                                        <p
+                                            className="text-xs font-semibold text-black dark:text-white [overflow-wrap:anywhere]"
+                                            // «Ανανέωση αυτοκινήτου σε 24 ημέρες» —
+                                            // a fact rendered as prose is still a
+                                            // fact (plan rule 3); the subject keeps
+                                            // six rows from reading as one key
+                                            // disagreeing with itself.
+                                            data-fact="policy.daysRemaining"
+                                            data-fact-subject={item.id}
+                                        >
                                             {item.titleLabel}
                                         </p>
                                         {/* D7 + D11 in ONE line that may wrap to two.
@@ -121,19 +140,35 @@ export function RenewalsTimelineCard({
                                             the compromise: the insurer and the policy
                                             number both fit, and the row cannot run away. */}
                                         <p className="line-clamp-2 text-micro text-black/65 dark:text-white/60 [overflow-wrap:anywhere]">
-                                            {[
-                                                displayInsurerName(item.insurerName),
-                                                item.policyRef,
-                                                item.endDateLabel,
-                                                item.premiumLabel,
-                                            ]
-                                                .filter(Boolean)
-                                                .join(" · ")}
+                                            {/* Spans, not a pre-joined string: each
+                                                part is a distinct policy fact and
+                                                carries its own attribute. */}
+                                            {(
+                                                [
+                                                    { factKey: "policy.insurer", value: displayInsurerName(item.insurerName) },
+                                                    { factKey: "policy.number", value: item.policyRef },
+                                                    { factKey: "policy.endDate", value: item.endDateLabel },
+                                                    { factKey: "policy.premium", value: item.premiumLabel },
+                                                ] as const
+                                            )
+                                                .filter((part) => Boolean(part.value))
+                                                .map((part, i) => (
+                                                    <span key={part.factKey}>
+                                                        {i > 0 && <span aria-hidden> · </span>}
+                                                        <span data-fact={part.factKey} data-fact-subject={item.id}>
+                                                            {part.value}
+                                                        </span>
+                                                    </span>
+                                                ))}
                                         </p>
                                     </div>
                                     <div className="flex flex-shrink-0 items-center gap-2">
                                         {item.checkpointLabel && (
-                                            <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-micro font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+                                            <span
+                                                data-count="policy.renewalCheckpointCount"
+                                                data-count-subject={item.id}
+                                                className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-micro font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+                                            >
                                                 {item.checkpointLabel}
                                             </span>
                                         )}

@@ -8,6 +8,12 @@ export interface MonitorSignalView {
     verdict: "clear" | "attention" | "action"
     verdictLabel: string
     detail: string | null
+    /**
+     * `detail`, segmented so a part stating a count/fact carries its key
+     * (WatchSignal.detailParts, localised). Joined, the parts read exactly as
+     * `detail`; when absent, `detail` renders as one block.
+     */
+    detailParts?: Array<{ text: string; countKey?: string; factKey?: string }> | null
     action: string | null
 }
 
@@ -79,9 +85,19 @@ export function ProtectionMonitorCard({
                                 <span className="block text-xs font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
                                     {signal.label}
                                 </span>
-                                {signal.detail && (
+                                {(signal.detailParts?.length || signal.detail) && (
                                     <span className="mt-0.5 block text-caption leading-snug text-black/65 dark:text-white/60">
-                                        {signal.detail}
+                                        {signal.detailParts?.length
+                                            ? signal.detailParts.map((part, i) => (
+                                                  <span
+                                                      key={i}
+                                                      data-count={part.countKey}
+                                                      data-fact={part.factKey}
+                                                  >
+                                                      {part.text}
+                                                  </span>
+                                              ))
+                                            : signal.detail}
                                     </span>
                                 )}
                                 {signal.action && (

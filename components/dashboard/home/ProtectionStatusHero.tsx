@@ -5,6 +5,20 @@ import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import type { Language } from "@/lib/i18n"
 
 /**
+ * fact.kind → the PLAN's registered count key (lib/instrumentation/count-keys.ts).
+ * The first instrumentation pass stamped the raw kind (`portfolio.total`),
+ * which coined five keys the plan never agreed — and an unregistered key is
+ * exactly how the vocabulary forks (INSTRUMENTATION-PLAN.md, Naming).
+ */
+const KIND_COUNT_KEY: Record<string, string> = {
+    total: "portfolio.policyCount",
+    expired: "portfolio.expiredCount",
+    expiringSoon: "portfolio.expiringCount",
+    neverAnalysed: "portfolio.neverAnalysedCount",
+    analysisFailed: "portfolio.failedCount",
+}
+
+/**
  * The dashboard's dominant element: what the wallet contains, right now.
  *
  * THE PROTECTION SCORE IS GONE — REMOVED FROM THE PRODUCT, NOT PARKED.
@@ -99,7 +113,7 @@ export function ProtectionStatusHero({
                 {facts.map((fact, i) => (
                     <span key={fact.kind}>
                         {i > 0 && <span aria-hidden> · </span>}
-                        <span data-count={`portfolio.${fact.kind}`}>{fact.label}</span>
+                        <span data-count={KIND_COUNT_KEY[fact.kind] ?? `portfolio.${fact.kind}`}>{fact.label}</span>
                     </span>
                 ))}
             </h2>

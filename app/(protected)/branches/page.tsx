@@ -21,7 +21,10 @@ export default async function BranchesPage() {
 
     const [policies, score] = await Promise.all([
         db.policy.findMany({
-            where: { ownerUserId: dbUser.id },
+            // status ≠ deleted: a soft-deleted row neither renders nor counts —
+            // the same predicate as the wallet, so the branch tiles' counts sum
+            // to portfolio.policyCount.
+            where: { ownerUserId: dbUser.id, status: { not: 'deleted' } },
             // acordData carries the extracted expiry the lifecycle trusts.
             select: { id: true, lineOfBusiness: true, status: true, endDate: true, acordData: true },
         }),
@@ -62,6 +65,7 @@ export default async function BranchesPage() {
                     return (
                         <ProductBranchCard
                             key={branch.id}
+                            branchId={branch.id}
                             icon={getBranchIcon(branch.id)}
                             href={`/branches/${branch.id}`}
                             title={policyTypeLabels[branch.id] || branch.label[lang]}

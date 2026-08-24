@@ -135,7 +135,11 @@ export function RiskDnaPanel({ dimensions, language }: RiskDnaPanelProps) {
                                                     aria-hidden="true"
                                                 />
                                             )}
-                                            <span className="text-sm font-bold tabular-nums text-black dark:text-white">
+                                            <span
+                                                className="text-sm font-bold tabular-nums text-black dark:text-white"
+                                                data-fact="riskDimension.score"
+                                                data-fact-subject={dimension.id}
+                                            >
                                                 {dimension.score}
                                             </span>
                                         </span>

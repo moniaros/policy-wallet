@@ -78,7 +78,9 @@ describe('the dashboard no longer hand-rolls the premium sum', () => {
     })
 
     it('builds the excluded-note through the shared helper', () => {
-        expect(uncommented).toMatch(/premiumExclusionNote\(/)
+        // premiumExclusionParts since V2-P1-11 — same helper family, but one
+        // clause per count so each number carries its data-count key.
+        expect(uncommented).toMatch(/premiumExclusionParts\(/)
     })
 })
 

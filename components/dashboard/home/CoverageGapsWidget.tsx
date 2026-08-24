@@ -54,6 +54,11 @@ export function CoverageGapsWidget({
                                     <span
                                         key={key}
                                         role="listitem"
+                                        // Subject-scoped: one gap.severityCount per
+                                        // severity, so four chips are four subjects,
+                                        // never one key disagreeing with itself.
+                                        data-count="gap.severityCount"
+                                        data-count-subject={key}
                                         className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
                                     >
                                         <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(tone)}`} aria-hidden />

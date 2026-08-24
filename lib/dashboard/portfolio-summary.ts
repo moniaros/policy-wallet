@@ -28,6 +28,8 @@
  * is what may be SAID about a number that already exists.
  */
 
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
+
 export interface PortfolioFactsInput {
     /** Total policies in the wallet, whatever their state. */
     total: number
@@ -39,6 +41,55 @@ export interface PortfolioFactsInput {
     neverAnalysed: number
     /** Analysed, but the latest run failed. */
     analysisFailed: number
+}
+
+/** The rows derivePortfolioCounts needs — a subset of a Policy row. */
+export interface PortfolioCountPolicy {
+    status?: string | null
+    policyNumber?: string | null
+    insurerName?: string | null
+    endDate?: Date | string | null
+    acordData?: unknown
+    lastAnalyzedAt?: Date | string | null
+}
+
+/**
+ * THE portfolio counts, derived once.
+ *
+ * These used to be five inline `.filter()` calls in PolicyholderHome — which a
+ * unit test could not reach, so nothing could assert that the dashboard's
+ * «5 έχουν λήξει» and the risk watch's «5 ασφαλιστήρια έχουν ήδη λήξει» count
+ * the same thing. Now both derive from `resolvePolicyLifecycle` through
+ * importable code, and the count-consistency guard exercises this function
+ * directly (tests/unit/count-instrumentation-registry.test.tsx).
+ *
+ * A soft-deleted row (status 'deleted') is not a policy the owner holds: it
+ * neither renders nor counts, on any surface. The API's DELETE path writes
+ * that status, and an unfiltered fetch was quietly counting the corpses.
+ *
+ * NOTE these five facts are NOT a partition: `neverAnalysed` and
+ * `analysisFailed` are the ANALYSIS dimension and overlap the lifecycle
+ * subsets freely. `total − expired − expiringSoon − neverAnalysed` is not a
+ * count of anything — see §2.8 (the wallet's «18» versus a reviewer's
+ * subtracted «17»).
+ */
+export function derivePortfolioCounts(
+    policies: PortfolioCountPolicy[],
+    now: Date = new Date()
+): PortfolioFactsInput {
+    const held = policies.filter(
+        (policy) => String(policy.status || "").toLowerCase() !== "deleted"
+    )
+    const lifecycles = held.map((policy) => resolvePolicyLifecycle(policy, now).status)
+    return {
+        total: held.length,
+        expired: lifecycles.filter((status) => status === "expired").length,
+        expiringSoon: lifecycles.filter((status) => status === "expiring_soon").length,
+        neverAnalysed: held.filter((policy) => !policy.lastAnalyzedAt).length,
+        analysisFailed: held.filter((policy) =>
+            Boolean((policy.acordData as { processingError?: unknown } | null)?.processingError)
+        ).length,
+    }
 }
 
 export interface PortfolioFact {

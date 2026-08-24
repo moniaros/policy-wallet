@@ -25,7 +25,15 @@ interface UpgradeTriggerCardProps {
     /** "card" = full pw-card with headline+body; "inline" = compact row. */
     variant?: "card" | "inline"
     /** Show a usage meter above the copy (e.g. policies 2/3). */
-    meter?: { label: string; used: number; limit: number | null; hint?: string }
+    meter?: {
+        label: string
+        used: number
+        limit: number | null
+        hint?: string
+        /** Registered data-count keys for the two numbers (see UsageMeter). */
+        usedCountKey?: string
+        limitCountKey?: string
+    }
     /** Allow the user to dismiss the card for this render. */
     dismissible?: boolean
     className?: string
@@ -117,6 +125,8 @@ export function UpgradeTriggerCard({
                         label={meter.label}
                         used={meter.used}
                         limit={meter.limit}
+                        usedCountKey={meter.usedCountKey}
+                        limitCountKey={meter.limitCountKey}
                         hint={meter.hint}
                         className="mb-4"
                     />

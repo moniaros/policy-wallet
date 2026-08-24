@@ -17,6 +17,8 @@ export interface ProductBranchCardProps {
     stateLabel: string
     policyCount: number
     policyCountLabel: string
+    /** The branch id — the data-count subject for branch.policyCount. */
+    branchId?: string
 }
 
 const STATE_STYLES: Record<BranchTileState, { pill: string; dot: string }> = {
@@ -57,6 +59,7 @@ export function ProductBranchCard({
     stateLabel,
     policyCount,
     policyCountLabel,
+    branchId,
 }: ProductBranchCardProps) {
     const styles = STATE_STYLES[state]
 
@@ -84,7 +87,17 @@ export function ProductBranchCard({
                 <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-black/70 dark:text-white/75">{tagline}</p>
             </div>
             {policyCount > 0 && (
-                <p className="mt-auto text-xs font-bold text-black/70 dark:text-white/75">{policyCountLabel}</p>
+                // Subject-scoped: «22 ασφαλιστήρια» on the motor tile and «7»
+                // on home are two subjects of one key, and their sum is the
+                // wallet's portfolio.policyCount — the one §2.8 relation that
+                // already reconciled.
+                <p
+                    className="mt-auto text-xs font-bold text-black/70 dark:text-white/75"
+                    data-count="branch.policyCount"
+                    data-count-subject={branchId}
+                >
+                    {policyCountLabel}
+                </p>
             )}
         </Link>
     )

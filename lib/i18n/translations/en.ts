@@ -1808,8 +1808,10 @@ export const en: TranslationKeys = {
             portfolioKicker: 'Insurance portfolio',
             totalAnnualPremium: 'Total annual premium',
             renewalTimeline: 'Renewal timeline',
-            policiesSuffixOne: 'policy renewing soon',
-            policiesSuffix: 'policies renewing soon',
+            // The window is stated (§2.8): "soon" left the reader to guess why
+            // this number differs from the 30-day expiring count.
+            policiesSuffixOne: 'policy renewing within 6 months',
+            policiesSuffix: 'policies renewing within 6 months',
             trackExpirationsTitle: 'We track your expirations for you',
             trackExpirationsBody: 'Add policies and we will alert you 90 days before every renewal.',
             addPolicy: 'Add a policy',

@@ -83,9 +83,16 @@ export function ImportantNotices({
                     aria-expanded={expanded}
                     className="mt-1.5 inline-flex cursor-pointer items-center gap-1 text-micro font-semibold text-[#B91C1C] hover:underline dark:text-red-300"
                 >
-                    {expanded
-                        ? t.wallet.notices.showLess
-                        : t.wallet.notices.showMore.replace('{count}', String(hiddenCount))}
+                    {expanded ? (
+                        t.wallet.notices.showLess
+                    ) : (
+                        // «+N ακόμη» is a quantity too: the attention notices the
+                        // toggle is hiding. Uninstrumented, the value scan reads
+                        // it as a bare number contradicting the tiles above.
+                        <span data-count="portfolio.attentionCollapsedCount">
+                            {t.wallet.notices.showMore.replace('{count}', String(hiddenCount))}
+                        </span>
+                    )}
                     <ChevronDown className={cn('h-3 w-3 transition-transform', expanded && 'rotate-180')} />
                 </button>
             )}

@@ -10,17 +10,28 @@ import { getTranslations } from "@/lib/i18n"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrency } from "@/lib/i18n/format"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
+import { describeSeverity, SEVERITY_CAVEAT_KEY } from "@/lib/gaps/severity-display"
 
-/** Gap severity label for the report badge — was the raw enum ("medium"). */
+/** Resolve a dotted i18n key ("dashboard.home.recPriorityCritical") from the store. */
+function resolveReportKey(language: "en" | "el", key: string): string {
+    const resolved = key
+        .split(".")
+        .reduce<any>((node, part) => (node == null ? node : node[part]), getTranslations(language))
+    return typeof resolved === "string" ? resolved : key
+}
+
+/**
+ * Gap severity label for the report badge — was the raw enum ("medium"), then
+ * a local {el,en} map. Both bypassed lib/gaps/severity-display.ts, so this
+ * print-ready document could drift from every screen and named a severity with
+ * no caveat. The label is now the primitive's labelKey resolved from the i18n
+ * store, and the gaps section renders the SEVERITY_CAVEAT_KEY sentence beside
+ * the badges — a downloadable report cannot render <SeverityCaveat />, so it
+ * carries the sentence itself (Gate 3b: thresholds and labels are not
+ * underwriter-validated; pinned by gap-severity-display-single-source.test.ts).
+ */
 function gapSeverityLabel(severity: string, language: "en" | "el"): string {
-    const labels: Record<string, { el: string; en: string }> = {
-        critical: { el: "Κρίσιμο", en: "Critical" },
-        high: { el: "Υψηλό", en: "High" },
-        medium: { el: "Μεσαίο", en: "Medium" },
-        low: { el: "Χαμηλό", en: "Low" },
-    }
-    const l = labels[severity] ?? { el: severity, en: severity }
-    return language === "el" ? l.el : l.en
+    return resolveReportKey(language, describeSeverity(severity).labelKey)
 }
 
 interface SavingsOpportunity {
@@ -203,6 +214,7 @@ export function generateSavingsReportHtml(
   .badge-high, .badge-critical { background: #ffcdd2; color: #b71c1c; }
   .badge-medium { background: #ffe0b2; color: #e65100; }
   .badge-low { background: #e8f5e9; color: #2e7d32; }
+  .section-caveat { color: #444; font-size: 12px; margin: 0 0 12px; line-height: 1.5; }
   .coverage-list { font-size: 13px; columns: 2; column-gap: 24px; }
   .coverage-list li { margin-bottom: 4px; }
   .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #999; }
@@ -250,6 +262,7 @@ ${savings.map((s) => `
 
 ${gaps.length > 0 ? `
 <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2>
+<div class="section-caveat">${escapeHtml(resolveReportKey(language, SEVERITY_CAVEAT_KEY))}</div>
 ${gaps.map((g) => `
 <div class="gap-card ${g.severity || "medium"}">
   <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(gapSeverityLabel(g.severity || "medium", language))}</span></div>

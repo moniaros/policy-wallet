@@ -848,3 +848,54 @@ explicit paths, never a directory, so neither agent's work can be swept into the
 Phase 1 has been open across two runs. The reversible choice was to parallelise two disjoint items and
 keep the collision check manual, not to serialise on a rule whose purpose the file layout already
 satisfies. If either reports crossing into the other's tree, the second one re-runs after the first.
+
+## D-027 — A sixth way a guard fails: the subject decides whether it is checked
+
+**Date:** 2026-08-25 · **Found in adversarial review of V2-P1-13, in the guard being extended**
+
+The severity guard contained, in its filter chain:
+
+```ts
+if (source.includes("severity-display")) return false
+```
+
+A file left the guard's universe **by mentioning the primitive** — in an import, or in a comment.
+Eight files were exempt on that basis, including `AttentionList` and `CoverageGapsWidget`, the two
+successes of the earlier migration, and including both files V2-P1-13 had just fixed. **The guard was
+structurally incapable of catching a regression in exactly the files it had just repaired**, because
+repairing them meant importing the primitive, which removed them from the check.
+
+**How it was found.** Not by reading it. I re-ran the agent's failure proof myself rather than
+accepting it, injecting a hand-rolled `{el,en}` severity map into `savings-report.ts` beside its live
+import. **The guard stayed green at 20/20.** The agent's own red-first proof had been honest — it ran
+before the import existed, so it went red then and could not go red afterwards.
+
+**Why this is not one of the five already logged.** The five are about the checker: universe too
+small, adoption incomplete, assertion weaker than the invariant, check cannot see the behaviour,
+reader cannot see the file. This one is about the **exemption mechanism**: the guard asked the subject
+whether it should be checked, and accepted the answer. Any file could opt out, and the cheapest way to
+opt out was a comment. Stated generally: **an exemption keyed on content is an exemption the subject
+controls.** Key exemptions on identity — a path, a hash — never on what the file says about itself.
+
+**Where the hole hid.** The walk had probes. Both matchers had probes. **The wiring between them had
+none** — the filter chain was inline in a `describe` block, so nothing could call it with a synthetic
+source. That is why `isSeverityOffender(path, source, sha256)` is now an extracted, exported function
+with six probes of its own, including the two that go red the moment the old line is reinstated
+(verified: reinstate → 2 red; revert → 26 green).
+
+**The replacement, and why it is narrower rather than merely stricter.**
+- The primitive and its view-layer sibling `components/gaps/severity-tone.ts` are exempt **by path**.
+- The **map matcher always applies**. Nothing excuses hand-rolling `critical/high/medium/low`.
+- The **colour matcher** alone is excused, and only by proof: the file must actually call
+  `describeSeverity(`. A comment cannot satisfy a call.
+
+That last distinction is not softness. The colour matcher cannot tell a severity colour from any
+other amber pill in a file that happens to contain the word "gap" — `AttentionList` renders an
+unconditional amber `timingLabel` chip two lines below a dot that correctly routes through the
+primitive. Flagging it would be a false positive, and false positives are how debt lists grow: the
+cheapest response to a wrong red is an allowlist entry. **`KNOWN_BYPASSES` stayed at 9 through all of
+this.** Both real `lib/` offenders were fixed, not listed.
+
+**Process note.** Mid-proof I ran `git checkout --` on the test file to undo a probe and destroyed the
+agent's entire uncommitted rewrite along with my own fix. Recovered from a `/tmp` copy. `git checkout`
+is not an undo for uncommitted work in a shared tree — probe by copy-and-restore, never by checkout.

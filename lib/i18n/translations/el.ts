@@ -1835,8 +1835,10 @@ export const el = {
             portfolioKicker: 'Χαρτοφυλάκιο ασφαλίσεων',
             totalAnnualPremium: 'Συνολικό ετήσιο ασφάλιστρο',
             renewalTimeline: 'Χρονοδιάγραμμα ανανεώσεων',
-            policiesSuffixOne: 'ασφαλιστήριο με επερχόμενη ανανέωση',
-            policiesSuffix: 'ασφαλιστήρια με επερχόμενη ανανέωση',
+            // The window is stated (§2.8): «επερχόμενη» left the reader to
+            // guess why this number differs from the 30-day expiring count.
+            policiesSuffixOne: 'ασφαλιστήριο με ανανέωση εντός 6 μηνών',
+            policiesSuffix: 'ασφαλιστήρια με ανανέωση εντός 6 μηνών',
             trackExpirationsTitle: 'Παρακολουθούμε τις λήξεις για εσάς',
             trackExpirationsBody: 'Προσθέστε ασφαλιστήρια και θα σας ειδοποιούμε 90 ημέρες πριν από κάθε ανανέωση.',
             addPolicy: 'Προσθήκη ασφαλιστηρίου',

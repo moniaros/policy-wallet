@@ -154,9 +154,9 @@ export function PolicyTable({
                                     <td className="px-4 py-2.5">
                                         <span className="inline-flex items-center gap-1.5 text-caption whitespace-nowrap text-black/70 dark:text-white/70">
                                             <CalendarDays className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                                            <span className="tabular-nums">{renewalLabel}</span>
+                                            <span className="tabular-nums" data-fact="policy.endDate" data-fact-subject={policy.id}>{renewalLabel}</span>
                                             {daysLeft !== null && (
-                                                <span className="tabular-nums text-micro text-muted-foreground">
+                                                <span className="tabular-nums text-micro text-muted-foreground" data-fact="policy.daysRemaining" data-fact-subject={policy.id}>
                                                     ({daysLeft}
                                                     {lang === 'el' ? 'η' : 'd'})
                                                 </span>
@@ -165,7 +165,7 @@ export function PolicyTable({
                                     </td>
 
                                     <td className="px-4 py-2.5 text-right">
-                                        <span className="text-body-sm font-semibold tabular-nums text-foreground">
+                                        <span className="text-body-sm font-semibold tabular-nums text-foreground" data-fact="policy.premium" data-fact-subject={policy.id}>
                                             {summary.premiumDisplay}
                                         </span>
                                     </td>

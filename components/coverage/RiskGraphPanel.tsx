@@ -123,14 +123,24 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
     const n = (count: number, elOne: string, elMany: string, enOne: string, enMany: string) =>
         `${count} ${lang === "el" ? (count === 1 ? elOne : elMany) : count === 1 ? enOne : enMany}`
 
+    // Each clause keeps its registered count key — the SAME keys the household
+    // card on this page renders, because both derive from one graph. The
+    // attributes are what turn an eventual drift between the two into a
+    // measured count-consistency failure instead of an argument (§6.7).
     const parts = [
-        summary.assets > 0 &&
-            n(summary.assets, "περιουσιακό στοιχείο", "περιουσιακά στοιχεία", "asset", "assets"),
-        summary.obligations > 0 &&
-            n(summary.obligations, "υποχρέωση", "υποχρεώσεις", "obligation", "obligations"),
-        summary.dependants > 0 &&
-            n(summary.dependants, "εξαρτώμενο μέλος", "εξαρτώμενα μέλη", "dependant", "dependants"),
-    ].filter((part): part is string => typeof part === "string")
+        summary.assets > 0 && {
+            key: "household.assetCount",
+            label: n(summary.assets, "περιουσιακό στοιχείο", "περιουσιακά στοιχεία", "asset", "assets"),
+        },
+        summary.obligations > 0 && {
+            key: "household.obligationCount",
+            label: n(summary.obligations, "υποχρέωση", "υποχρεώσεις", "obligation", "obligations"),
+        },
+        summary.dependants > 0 && {
+            key: "household.dependantCount",
+            label: n(summary.dependants, "εξαρτώμενο μέλος", "εξαρτώμενα μέλη", "dependant", "dependants"),
+        },
+    ].filter((part): part is { key: string; label: string } => typeof part === "object" && part !== null)
 
     const headline = n(summary.nodeCount, "πράγμα", "πράγματα", "thing", "things")
 
@@ -152,15 +162,28 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                     {t("Τι προστατεύουμε", "What we are protecting")}
                 </h2>
                 <p className="text-caption text-muted-foreground">
-                    {knowsSomething
-                        ? t(
-                              `Παρακολουθούμε ${headline} στη ζωή σας — ${parts.join(", ")}.`,
-                              `We are tracking ${headline} in your life — ${parts.join(", ")}.`
-                          )
-                        : t(
-                              "Δεν μας έχετε πει ακόμη τι υπάρχει στη ζωή σας. Όσα ακολουθούν είναι όσα ισχύουν για τον καθένα.",
-                              "You have not yet told us what is in your life. What follows is what applies to anyone."
-                          )}
+                    {knowsSomething ? (
+                        // Composed as spans so each count carries its key — a
+                        // sentence with four quantities in one string is four
+                        // numbers the count-consistency scan cannot attribute.
+                        <>
+                            {t("Παρακολουθούμε ", "We are tracking ")}
+                            <span data-count="riskGraph.nodeCount">{headline}</span>
+                            {t(" στη ζωή σας — ", " in your life — ")}
+                            {parts.map((part, i) => (
+                                <span key={part.key}>
+                                    {i > 0 && ", "}
+                                    <span data-count={part.key}>{part.label}</span>
+                                </span>
+                            ))}
+                            .
+                        </>
+                    ) : (
+                        t(
+                            "Δεν μας έχετε πει ακόμη τι υπάρχει στη ζωή σας. Όσα ακολουθούν είναι όσα ισχύουν για τον καθένα.",
+                            "You have not yet told us what is in your life. What follows is what applies to anyone."
+                        )
+                    )}
                 </p>
             </div>
 
@@ -171,7 +194,7 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                 role="group"
                 aria-label={t("Φίλτρο προστασίας", "Filter by protection")}
             >
-                <Chip active={filter === "all"} onClick={() => setFilter("all")} label={t("Όλα", "All")} count={risks.length} />
+                <Chip active={filter === "all"} onClick={() => setFilter("all")} label={t("Όλα", "All")} count={risks.length} countKey="riskGraph.riskCount" />
                 {counts.map(({ state, count }) => (
                     <Chip
                         key={state}
@@ -179,6 +202,8 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                         onClick={() => setFilter(state)}
                         label={stateLabel(state)}
                         count={count}
+                        countKey="riskGraph.stateCount"
+                        countSubject={state}
                     />
                 ))}
             </div>
@@ -317,11 +342,16 @@ function Chip({
     onClick,
     label,
     count,
+    countKey,
+    countSubject,
 }: {
     active: boolean
     onClick: () => void
     label: string
     count: number
+    /** Registered data-count key; state chips are subject-scoped by state. */
+    countKey?: string
+    countSubject?: string
 }) {
     return (
         <button
@@ -335,7 +365,13 @@ function Chip({
             }`}
         >
             {label}
-            <span className={active ? "opacity-80" : "text-muted-foreground"}>{count}</span>
+            <span
+                className={active ? "opacity-80" : "text-muted-foreground"}
+                data-count={countKey}
+                data-count-subject={countSubject}
+            >
+                {count}
+            </span>
         </button>
     )
 }

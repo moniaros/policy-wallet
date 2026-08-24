@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readdirSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
+import { createHash } from "node:crypto"
 
 import {
     describeSeverity,
@@ -11,6 +12,9 @@ import {
     isSeverityValidated,
     describeSeverityForDefinition,
 } from "@/lib/gaps/severity-display"
+import { getTranslations } from "@/lib/i18n"
+import { generateSavingsReportHtml } from "@/lib/services/reports/savings-report"
+import { getWeeklyDigestEmail } from "@/lib/email/templates/weekly-digest"
 
 /**
  * Gate 3b: severity is not a verdict, and no screen may imply it is.
@@ -115,6 +119,24 @@ function sourceFiles(dir: string): string[] {
     })
 }
 
+/**
+ * The universe (D-005: the DIRECTORY a guard walks is part of the guard).
+ *
+ * Every root that ships runtime code — the same set the sentinel guard
+ * enumerates (`app components lib scripts hooks contexts`). `lib/` was the
+ * hole: this guard walked only components/ + app/, exactly how
+ * `score-containment` once passed while the score went out by email, and it
+ * hid four severity maps — a frozen engine file, an outbound email template,
+ * a customer-downloadable report, and the i18n store.
+ *
+ * Deliberately excluded, with reasons:
+ *   - tests/    — probe fixtures legitimately hand-roll the forbidden shapes;
+ *   - prisma/, docs/, design-system/, evals/, public/ — not runtime .ts code
+ *     (the encoding/i18n guards own those roots' concerns);
+ *   - `/admin/` paths — the owner's own console, filtered below as before.
+ */
+const WALK_ROOTS = ["app", "components", "lib", "hooks", "contexts", "scripts"] as const
+
 /** A map from severity words to presentation — the shape that multiplied. */
 function handRollsSeverityPresentation(source: string): boolean {
     const hasAllFour = /\bcritical\b/.test(source) && /\bhigh\b/.test(source) && /\bmedium\b/.test(source) && /\blow\b/.test(source)
@@ -123,25 +145,119 @@ function handRollsSeverityPresentation(source: string): boolean {
     return /(bg-|text-|border-)(red|rose|amber|orange|yellow|sky|blue|slate|gray)-\d{3}/.test(source)
 }
 
+/**
+ * The second shape, which the Tailwind matcher above cannot see: an object
+ * KEYED by the four severity words whose values are quoted strings or
+ * localized-pair objects — a Greek label map (`critical: 'Κρίσιμο'`), an
+ * {el,en} pair map, or a raw-hex dot map for an email (`critical: '#DC2626'`).
+ * Emails and printable reports carry inline CSS, not utility classes, so every
+ * severity map in `lib/` was invisible to the colour matcher.
+ *
+ * Values that are references (`critical: home.recPriorityCritical`) or numbers
+ * (`critical: 0` — rank logic) deliberately do not fire: routing a key or
+ * ordering a list presents nothing.
+ */
+function handRollsSeverityMap(source: string): boolean {
+    const keyed = (word: string) => new RegExp(`\\b${word}\\s*:\\s*['"\`{]`).test(source)
+    return keyed("critical") && keyed("high") && keyed("medium") && keyed("low")
+}
+
+/**
+ * The i18n dictionaries are the STORE the primitive's labelKeys resolve into —
+ * the words have to live somewhere, and a dictionary presents nothing by
+ * itself. Exempt from the MAP matcher only; nothing excuses a colour class in
+ * a translations file.
+ *
+ * D-022: an exemption must assert the property that makes it safe. "It is the
+ * store" is asserted below — every labelKey and the caveat key must actually
+ * resolve there, in both languages. The day the labels move out, the
+ * exemption's test fails with them.
+ */
+const I18N_STORE = "lib/i18n/translations/"
+
+/**
+ * `lib/gap-detection.ts` hand-rolls BOTH shapes (getSeverityColor at :507,
+ * getSeverityLabel at :570) and cannot be edited: it is frozen for run
+ * PW-MOBILE-TRANSFORM-02 (§12.4), its sha256 re-verified at every phase
+ * boundary against the baseline in docs/transformation/PROGRESS.md.
+ *
+ * D-022: the exemption is conditional on that reason staying true. While the
+ * hash matches, the file is exempt — both maps are dead exports and the pin
+ * below keeps them uncallable. The FIRST edit ends the freeze, the hash stops
+ * matching, and the file lands in `offenders` until getSeverityColor and
+ * getSeverityLabel are migrated to describeSeverity() or deleted. Never
+ * re-point this constant at a new hash to keep the exemption alive.
+ */
+const FROZEN_GAP_DETECTION_SHA256 =
+    "69d2c946aaefc309a1c09f0a72b13baebddc173811e33f4de0b592ca1259b859"
+
+function isExemptWhileFrozen(path: string, sha256: string): boolean {
+    return path === "lib/gap-detection.ts" && sha256 === FROZEN_GAP_DETECTION_SHA256
+}
+
+/**
+ * The per-file decision, extracted so it can be probed with synthetic sources.
+ *
+ * It lived inline in the filter chain, and that is precisely why the hole in it
+ * survived review: the walk had probes, both matchers had probes, and the
+ * WIRING BETWEEN THEM had none. The old line was
+ * `if (source.includes("severity-display")) return false` — a file left the
+ * guard's universe by MENTIONING the primitive, in an import or even a comment.
+ * Eight files were exempt that way, including the two most recently migrated,
+ * so the guard was structurally unable to catch a regression in exactly the
+ * files it had just fixed. Proven before the change: injecting a hand-rolled
+ * {el,en} severity map into savings-report.ts, beside its live import, left the
+ * guard green.
+ */
+export function isSeverityOffender(path: string, source: string, sha256: string): boolean {
+    if (path.includes("/admin/")) return false
+    // Only files that actually deal in gap/recommendation severity.
+    if (!/gap|severity|urgency/i.test(source)) return false
+
+    // Two files ARE the single source, and are exempt by PATH, not by content.
+    if (path === "lib/gaps/severity-display.ts") return false
+    // Its view-layer sibling: the one place a tone becomes a colour, keyed by
+    // TONE and never by the severity words — the property that makes it safe,
+    // asserted by its own test.
+    if (path === "components/gaps/severity-tone.ts") return false
+
+    // The COLOUR matcher cannot tell a severity colour from any other amber
+    // pill in a file that happens to say "gap": AttentionList renders an
+    // unconditional amber timingLabel chip two lines below a dot that correctly
+    // goes through describeSeverity() + toneDotClass(). Flagging that would
+    // teach people to add allowlist entries, which is how a debt list grows. So
+    // a file is excused from the colour matcher only by PROOF that it routes
+    // severity through the primitive — an actual call. A comment cannot satisfy
+    // it, and it buys no exemption from the map matcher, which always applies:
+    // nothing excuses hand-rolling critical/high/medium/low.
+    const routesThroughPrimitive = /\bdescribeSeverity\s*\(/.test(source)
+
+    const fires =
+        (!routesThroughPrimitive && handRollsSeverityPresentation(source)) ||
+        (!path.startsWith(I18N_STORE) && handRollsSeverityMap(source))
+    if (!fires) return false
+
+    return !isExemptWhileFrozen(path, sha256)
+}
+
 describe("no new hand-rolled severity presentation", () => {
-    const offenders = [...sourceFiles("components"), ...sourceFiles("app")]
-        .filter((path) => !path.includes("/admin/"))
+    const walkedByRoot = new Map<string, string[]>(
+        WALK_ROOTS.map((root) => [root, sourceFiles(root).map((p) => p.replace(/\\/g, "/"))])
+    )
+    const walked = [...walkedByRoot.values()].flat()
+
+    const offenders = walked
         .filter((path) => {
-            const source = readFileSync(path, "utf-8")
-            // Only files that actually deal in gap/recommendation severity.
-            if (!/gap|severity|urgency/i.test(source)) return false
-            if (source.includes("severity-display")) return false
-            return handRollsSeverityPresentation(source)
+            const buf = readFileSync(path)
+            return isSeverityOffender(path, buf.toString("utf-8"), createHash("sha256").update(buf).digest("hex"))
         })
-        .map((path) => path.replace(/\\/g, "/"))
         .filter((path) => !KNOWN_BYPASSES.has(path))
         .sort()
 
-    // The walk and the matcher are the whole guard. If either silently returned
+    // The walk and the matchers are the whole guard. If either silently returned
     // nothing — a moved directory, a renamed class convention — `offenders`
     // would be empty and this file would report success while checking nothing.
     // That is the failure mode a guard cannot self-report, so it is asserted.
-    const walked = [...sourceFiles("components"), ...sourceFiles("app")]
     const severityRelated = walked.filter((p) => /gap|severity|urgency/i.test(readFileSync(p, "utf-8")))
 
     it("the walk and the pre-filter both find files (the scan is not vacuous)", () => {
@@ -152,7 +268,22 @@ describe("no new hand-rolled severity presentation", () => {
         ).toBeGreaterThan(10)
     })
 
-    it("the matcher fires on a hand-rolled map, and not on a compliant surface", () => {
+    it("every root yields files, and lib/ — the D-005 hole — is walked in force", () => {
+        for (const [root, files] of walkedByRoot) {
+            expect(files.length, `sourceFiles("${root}") found nothing — did the directory move?`).toBeGreaterThan(0)
+        }
+        expect(
+            walkedByRoot.get("lib")!.length,
+            "lib/ was THE universe hole this guard was extended to close — it cannot shrink to a stub"
+        ).toBeGreaterThan(100)
+        // The walk must reach the two files this guard is ABOUT. If either is
+        // absent, the walk is not looking where it claims to.
+        expect(walked).toContain("lib/gaps/severity-display.ts")
+        expect(walked).toContain("lib/gap-detection.ts")
+        expect(walked).toContain("lib/services/reports/savings-report.ts")
+    })
+
+    it("the colour matcher fires on a hand-rolled map, and not on a compliant surface", () => {
         // A guard never shown to fail is not a guard. This is the shape that
         // multiplied: all four severity words plus a colour class keyed by them.
         const handRolled = `
@@ -177,10 +308,30 @@ describe("no new hand-rolled severity presentation", () => {
         expect(handRollsSeverityPresentation(unrelated)).toBe(false)
     })
 
+    it("the map matcher fires on label, pair and hex maps — not on rank logic or key routing", () => {
+        // The three shapes found in lib/ the day the walk was extended:
+        // a Greek label map (gap-detection.ts:570)…
+        const labelMap = `const LABELS = { critical: 'Κρίσιμο', high: 'Υψηλό', medium: 'Μέτριο', low: 'Χαμηλό' }`
+        expect(handRollsSeverityMap(labelMap)).toBe(true)
+        // …a localized-pair map (savings-report.ts)…
+        const pairMap = `const L = { critical: { el: "Κρίσιμο", en: "Critical" }, high: { el: "Υψηλό", en: "High" }, medium: { el: "Μεσαίο", en: "Medium" }, low: { el: "Χαμηλό", en: "Low" } }`
+        expect(handRollsSeverityMap(pairMap)).toBe(true)
+        // …and a raw-hex dot map for an email (weekly-digest.ts).
+        const hexMap = `const DOT = { critical: '#DC2626', high: '#EA580C', medium: '#D97706', low: '#6B7280' }`
+        expect(handRollsSeverityMap(hexMap)).toBe(true)
+
+        // Rank/order logic presents nothing.
+        const rank = `const RANK = { critical: 0, high: 1, medium: 2, low: 3 }`
+        expect(handRollsSeverityMap(rank)).toBe(false)
+        // Values that are references are routing — the words come from elsewhere.
+        const routed = `const L = { critical: home.recPriorityCritical, high: home.recPriorityHigh, medium: home.recPriorityMedium, low: home.recPriorityLow }`
+        expect(handRollsSeverityMap(routed)).toBe(false)
+    })
+
     it("every severity surface goes through the primitive, or is listed as debt", () => {
         expect(
             offenders,
-            "These render a gap severity with their own label/colour map. Use " +
+            "These render a gap severity with their own label/colour/hex map. Use " +
                 "describeSeverity() from lib/gaps/severity-display.ts and render its " +
                 "caveatKey, or add the file to KNOWN_BYPASSES with a reason:\n  " +
                 `${offenders.join("\n  ")}`
@@ -191,6 +342,99 @@ describe("no new hand-rolled severity presentation", () => {
         // A ceiling, so the list can only shrink without someone noticing. Drop
         // it as surfaces migrate; never raise it to make a new screen pass.
         expect(KNOWN_BYPASSES.size).toBeLessThanOrEqual(9)
+    })
+
+    it("the i18n-store exemption asserts its own precondition: the labels really live there", () => {
+        // lib/i18n/translations/ is exempt from the map matcher because it is
+        // the store describeSeverity()'s labelKeys resolve into. Assert that:
+        // if the labels or the caveat stop resolving, the exemption is a hole
+        // and this fails with it. (Also the only place a labelKey typo would
+        // surface before a customer saw the raw key rendered as text.)
+        for (const lang of ["el", "en"] as const) {
+            const t = getTranslations(lang)
+            const resolve = (key: string) => key.split(".").reduce((node: any, part) => node?.[part], t)
+            for (const severity of ["critical", "high", "medium", "low"]) {
+                const { labelKey } = describeSeverity(severity)
+                expect(typeof resolve(labelKey), `${lang}: ${labelKey} must resolve in the store`).toBe("string")
+                expect((resolve(labelKey) as string).length).toBeGreaterThan(0)
+            }
+            expect(
+                typeof resolve(SEVERITY_CAVEAT_KEY),
+                `${lang}: the caveat key must resolve in the store`
+            ).toBe("string")
+            // Non-empty, not merely a string. `toContain("")` is true of every
+            // document, so an empty caveat would make the report and digest
+            // assertions above pass while rendering no caveat at all — the
+            // labelKey loop guards this one line up, and the caveat needs it
+            // more, because it is the sentence Gate 3b actually requires.
+            expect(
+                (resolve(SEVERITY_CAVEAT_KEY) as string).length,
+                `${lang}: an empty caveat renders nothing and passes toContain()`
+            ).toBeGreaterThan(0)
+        }
+    })
+
+    it("the frozen-file exemption asserts its own precondition (D-022)", () => {
+        const bytes = readFileSync("lib/gap-detection.ts")
+        const source = bytes.toString("utf-8")
+        const actual = createHash("sha256").update(bytes).digest("hex")
+
+        // 1. The exemption is not decorative: the file it exempts really does
+        //    hand-roll both forbidden shapes (as dead exports, pinned below).
+        expect(handRollsSeverityMap(source)).toBe(true)
+        expect(handRollsSeverityPresentation(source)).toBe(true)
+
+        // 2. The precondition itself: the file still matches the frozen
+        //    baseline recorded in docs/transformation/PROGRESS.md. When the
+        //    freeze ends, this fails ON PURPOSE — the fix is to migrate or
+        //    delete getSeverityColor/getSeverityLabel and remove this
+        //    exemption, never to paste in the new hash.
+        expect(
+            actual,
+            "lib/gap-detection.ts no longer matches its frozen baseline. The freeze is " +
+                "over (or violated): migrate getSeverityColor/getSeverityLabel to " +
+                "describeSeverity() or delete them, then remove FROZEN_GAP_DETECTION_SHA256, " +
+                "isExemptWhileFrozen and this test. Do NOT update the hash."
+        ).toBe(FROZEN_GAP_DETECTION_SHA256)
+
+        // 3. Probe: with any other hash the exemption is inert, so an edited
+        //    file cannot ride on it — it would land in `offenders` above.
+        expect(isExemptWhileFrozen("lib/gap-detection.ts", "0".repeat(64))).toBe(false)
+        // …and the exemption never travels to another path.
+        expect(isExemptWhileFrozen("lib/services/reports/savings-report.ts", actual)).toBe(false)
+    })
+
+    describe("the frozen file's dead severity exports stay dead", () => {
+        // getSeverityColor / getSeverityLabel in lib/gap-detection.ts are
+        // hand-rolled presentation maps with ZERO callers — a loaded trap, not
+        // a live defect. The file is frozen so they cannot be deleted; instead,
+        // nothing may reference them. Enumerated from the filesystem across the
+        // full universe, never a directory shortlist (D-005). Occurrence, not
+        // import syntax: a re-export, a require(), or
+        // `gapDetection.getSeverityLabel` all count — the invariant here IS the
+        // spelling, so a spelling scan is exact (cf. D-021, where it was not).
+        const referencers = walked
+            .filter((path) => path !== "lib/gap-detection.ts")
+            .filter((path) => /getSeverityColor|getSeverityLabel/.test(readFileSync(path, "utf-8")))
+            .sort()
+
+        it("nothing references getSeverityColor or getSeverityLabel", () => {
+            expect(
+                referencers,
+                "These reference a dead severity map inside the frozen lib/gap-detection.ts. " +
+                    "Use describeSeverity() from lib/gaps/severity-display.ts (and render its " +
+                    "caveatKey) instead:\n  " +
+                    `${referencers.join("\n  ")}`
+            ).toEqual([])
+        })
+
+        it("the pin still polices something: the frozen file still defines both", () => {
+            // Vacuity check — if the definitions vanished, this pin would pass
+            // forever while guarding nothing. That is the moment to delete it.
+            const source = readFileSync("lib/gap-detection.ts", "utf-8")
+            expect(source).toMatch(/export function getSeverityColor/)
+            expect(source).toMatch(/export function getSeverityLabel/)
+        })
     })
 
     it("every surface that names a severity says what the word is worth", () => {
@@ -247,5 +491,127 @@ describe("no new hand-rolled severity presentation", () => {
             "Gate 3b is a HUMAN gate. If this is now true, an underwriter must have " +
                 "signed off on the thresholds AND the labels — not a developer."
         ).toBe(false)
+    })
+})
+
+/**
+ * The two customer-facing severity surfaces the extended walk found in `lib/`.
+ * Neither can render <SeverityCaveat /> (one is print-ready HTML, one is an
+ * email), so the truth fix is asserted on their RENDERED OUTPUT, not on their
+ * source text — an assertion on the source could pass while the output lied.
+ */
+describe("lib severity surfaces carry the truth fix in their rendered output", () => {
+    it("the savings/branded report labels severity through the primitive and prints the caveat sentence", () => {
+        // A Pro customer downloads this; an agent hands the branded variant to a
+        // client. It is exactly the "printable report with a red CRITICAL badge"
+        // the primitive's own doc comment names as a loudest-surface miss.
+        for (const lang of ["el", "en"] as const) {
+            const t = getTranslations(lang)
+            const resolve = (key: string) =>
+                key.split(".").reduce((node: any, part) => node?.[part], t) as string
+            const html = generateSavingsReportHtml({}, "2026-08-25T00:00:00.000Z", lang, undefined, [
+                { slug: "earthquake_cover", severity: "critical" },
+            ])
+            // The badge says what the primitive says («Κρίσιμη προτεραιότητα» /
+            // "Critical priority"), not a local map's word…
+            expect(html, `${lang}: severity label must come from the primitive's labelKey`).toContain(
+                resolve(describeSeverity("critical").labelKey)
+            )
+            // …and the gaps section carries the sentence that says what the
+            // word is worth, while Gate 3b is open.
+            expect(html, `${lang}: the severity caveat sentence must appear beside the badges`).toContain(
+                resolve(SEVERITY_CAVEAT_KEY)
+            )
+        }
+    })
+
+    it("the weekly digest keeps severity colour-only, with the colour keyed by the primitive's tone", () => {
+        const { html } = getWeeklyDigestEmail("el", "Owner", {
+            renewingSoon: [],
+            newGaps: 0,
+            unreadMessages: 0,
+            topRecommendations: [
+                { title: "Recommendation A", urgency: "critical", estimatedCostEur: null },
+                // The urgency column is a free string; junk must normalise
+                // through the primitive (→ medium/moderate), never fall to a
+                // fifth colour invented at the call site.
+                { title: "Recommendation B", urgency: "totally-invented", estimatedCostEur: null },
+            ],
+        })
+        // Colour-only surface: no severity word may appear. A disclaimer bolted
+        // to a coloured dot is noise, so the honest form is no word at all —
+        // same policy as PolicyBriefCard's aria-hidden dot.
+        expect(html).not.toMatch(/Κρίσιμ|Critical/i)
+        // The dot's colour is keyed by describeSeverity().tone: urgent renders
+        // the red dot, junk normalises to moderate amber — and the old
+        // hand-rolled grey fallback is gone from the dot markup.
+        expect(html).toContain("background: #DC2626")
+        expect(html).toContain("background: #D97706")
+        expect(html).not.toContain("background: #6B7280")
+    })
+})
+
+/**
+ * PROBES FOR THE WIRING — the half that had none.
+ *
+ * `isSeverityOffender` is the seam between the walk and the matchers. Both
+ * sides were probed; the join was not, and the join is where the hole was. Each
+ * case below is a synthetic source, so these stay red-able forever rather than
+ * depending on a real file keeping its current shape.
+ */
+describe("probe: the escape hatch excuses only what it should", () => {
+    const NOT_FROZEN = "0".repeat(64)
+    const MAP = `
+        const LABELS = {
+            critical: { el: 'Κρίσιμο', en: 'Critical' },
+            high: { el: 'Υψηλό', en: 'High' },
+            medium: { el: 'Μεσαίο', en: 'Medium' },
+            low: { el: 'Χαμηλό', en: 'Low' },
+        }
+    `
+
+    it("catches a hand-rolled map beside a live import of the primitive", () => {
+        // THE REGRESSION. The old filter returned false for any source
+        // containing "severity-display", so this exact shape was invisible.
+        const src = `import { describeSeverity } from "@/lib/gaps/severity-display"\n${MAP}\n// gap`
+        expect(isSeverityOffender("lib/services/reports/savings-report.ts", src, NOT_FROZEN)).toBe(true)
+    })
+
+    it("a comment naming the primitive buys no exemption", () => {
+        const src = `// severity-display — see the primitive\n${MAP}\n// gap severity`
+        expect(isSeverityOffender("components/coverage/Whatever.tsx", src, NOT_FROZEN)).toBe(true)
+    })
+
+    it("the primitive and its tone sibling are exempt by path, not by content", () => {
+        expect(isSeverityOffender("lib/gaps/severity-display.ts", MAP + "// gap", NOT_FROZEN)).toBe(false)
+        expect(isSeverityOffender("components/gaps/severity-tone.ts", MAP + "// gap", NOT_FROZEN)).toBe(false)
+        // ...and the exemption is by that exact path. A neighbour gets nothing.
+        expect(isSeverityOffender("components/gaps/severity-tone-2.ts", MAP + "// gap", NOT_FROZEN)).toBe(true)
+    })
+
+    it("does not flag AttentionList's shape: primitive-routed severity, unrelated amber", () => {
+        // The false positive that would otherwise teach people to grow the
+        // debt list — an unconditional amber chip for a TIMING label, two lines
+        // below a dot that goes through the primitive.
+        const src = `
+            import { describeSeverity } from "@/lib/gaps/severity-display"
+            import { toneDotClass } from "@/components/gaps/severity-tone"
+            // urgency
+            <span className={toneDotClass(describeSeverity(item.urgency).tone)} />
+            <span className="bg-amber-50 text-amber-800">{item.timingLabel}</span>
+        `
+        expect(isSeverityOffender("components/dashboard/home/AttentionList.tsx", src, NOT_FROZEN)).toBe(false)
+    })
+
+    it("routing through the primitive still does not excuse a map", () => {
+        // The colour matcher is excused by proof; the map matcher never is.
+        const src = `describeSeverity(x)\n${MAP}\n// gap`
+        expect(isSeverityOffender("components/anything/Card.tsx", src, NOT_FROZEN)).toBe(true)
+    })
+
+    it("the i18n store is excused from the map matcher and only that", () => {
+        expect(isSeverityOffender("lib/i18n/translations/el.ts", MAP + "// gap", NOT_FROZEN)).toBe(false)
+        const withColour = `${MAP}\n// gap\nconst c = "bg-rose-500 text-rose-700"`
+        expect(isSeverityOffender("lib/i18n/translations/el.ts", withColour, NOT_FROZEN)).toBe(true)
     })
 })

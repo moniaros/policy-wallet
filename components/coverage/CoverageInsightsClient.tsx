@@ -90,7 +90,12 @@ export function CoverageInsightsClient({
             ? 'Το PolicyWallet παραμένει ανεξάρτητη πλατφόρμα που υποστηρίζει καλύτερες αποφάσεις κάλυψης.'
             : 'PolicyWallet remains an independent platform designed to support better coverage decisions.',
         policiesWithPoints: lang === 'el' ? 'Ασφαλιστήρια με σημεία ελέγχου' : 'Policies with points',
-        totalPolicies: lang === 'el' ? 'Ενεργά ασφαλιστήρια' : 'Active policies',
+        // «Σε ισχύ σήμερα», not «Ενεργά»: this tile counts isPolicyCoverageActive
+        // (includes expiring-soon and unreadable-term cover), while the wallet's
+        // «Ενεργά» tile counts the strict lifecycle state. Two facts were
+        // sharing one name across two surfaces (§2.8) — the labels now say
+        // which is which.
+        totalPolicies: lang === 'el' ? 'Σε ισχύ σήμερα' : 'In force today',
         expiredExcludedTitle: lang === 'el'
             ? 'Ληγμένα ασφαλιστήρια δεν προσμετρώνται στην κάλυψη'
             : 'Expired policies are not counted as coverage',
@@ -282,7 +287,16 @@ export function CoverageInsightsClient({
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-10">
                 <div className="mb-7 text-center">
                     <h1 className="pw-kicker mb-2">{copy.summaryTitle}</h1>
-                    <p className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight">{summaryText}</p>
+                    <p
+                        className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight"
+                        // «Εντοπίστηκαν 33 σημεία προς έλεγχο» is gap.openCount as
+                        // prose — the same live-gap universe the dashboard's
+                        // severity tally now sums to (gapsOnActiveCoverage), so
+                        // the two surfaces state one number under one key.
+                        data-count={hasDeepAnalysis && visibleGaps.length > 0 ? "gap.openCount" : undefined}
+                    >
+                        {summaryText}
+                    </p>
                 </div>
 
                 {excludedExpired.length > 0 && (
@@ -306,11 +320,23 @@ export function CoverageInsightsClient({
                     </div>
                     <div className="pw-card rounded-2xl p-4">
                         <p className="pw-kicker mb-1">{copy.policiesWithPoints}</p>
-                        <p className="text-2xl font-semibold text-black dark:text-white">{hasDeepAnalysis ? policiesWithIssues.size : copy.unknownCount}</p>
+                        <p
+                            className="text-2xl font-semibold text-black dark:text-white"
+                            data-count={hasDeepAnalysis ? "portfolio.policiesWithFindingsCount" : undefined}
+                        >
+                            {hasDeepAnalysis ? policiesWithIssues.size : copy.unknownCount}
+                        </p>
                     </div>
                     <div className="pw-card rounded-2xl p-4">
                         <p className="pw-kicker mb-1">{copy.totalPolicies}</p>
-                        <p className="text-2xl font-semibold text-black dark:text-white">{stats.totalPolicies}</p>
+                        {/* isPolicyCoverageActive — cover in force TODAY, which
+                            also counts expiring-soon and unreadable-term cover.
+                            NOT the wallet's «Ενεργά» (strict lifecycle active):
+                            different predicate, different key, and the label
+                            says which («Σε ισχύ σήμερα»). §2.8's labelling case. */}
+                        <p className="text-2xl font-semibold text-black dark:text-white" data-count="portfolio.coverageActiveCount">
+                            {stats.totalPolicies}
+                        </p>
                     </div>
                 </div>
 
@@ -320,7 +346,10 @@ export function CoverageInsightsClient({
                             <Lock className="w-5 h-5 text-primary dark:text-mint mt-0.5" />
                             <div>
                                 <p className="font-semibold text-black dark:text-white">{copy.liteTitle}</p>
-                                <p className="text-sm text-black/75 dark:text-white/80">{copy.liteDescription}</p>
+                                {/* «τα 2 πιο σημαντικά» is a PLAN limit, not a
+                                    portfolio fact — its own key keeps it out of
+                                    the gap-count comparisons. */}
+                                <p className="text-sm text-black/75 dark:text-white/80" data-count="entitlement.freeInsightLimit">{copy.liteDescription}</p>
                             </div>
                         </div>
                         <button

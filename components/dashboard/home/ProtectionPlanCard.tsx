@@ -34,6 +34,7 @@ export function ProtectionPlanCard({
     total,
     allDone,
     moreOpenLabel,
+    moreOpenCount,
     labels,
 }: {
     /** Already truncated by the server; `moreOpenLabel` covers the remainder. */
@@ -43,13 +44,25 @@ export function ProtectionPlanCard({
     allDone: boolean
     /** "+3 more in your recommendations"; null when nothing was truncated. */
     moreOpenLabel: string | null
+    /** The count inside moreOpenLabel — the open recommendation set. */
+    moreOpenCount?: number
     labels: {
         kicker: string
-        progress: string
+        /** «{done} από {total} ολοκληρωμένα» — interpolated HERE so each number carries data-count. */
+        progressTemplate: string
         upToDate: string
     }
 }) {
     const progressPct = total > 0 ? Math.round((completed / total) * 100) : 0
+    const progressText = labels.progressTemplate
+        .replace("{done}", String(completed))
+        .replace("{total}", String(total))
+    // Split the template around its two placeholders so «3 από 5» renders as
+    // <span data-count="plan.stepsDone">3</span> από <span …stepsTotal>5</span>
+    // — a joined string is a quantity the count-consistency scan cannot
+    // attribute (§6.7).
+    const [beforeDone = "", afterDone = ""] = labels.progressTemplate.split("{done}")
+    const [betweenNumbers = "", afterTotal = ""] = afterDone.split("{total}")
 
     if (allDone) {
         return (
@@ -69,7 +82,13 @@ export function ProtectionPlanCard({
         <section className="pw-card pw-pad" aria-labelledby="protection-plan-heading">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker" id="protection-plan-heading">{labels.kicker}</p>
-                <p className="text-micro font-semibold text-muted-foreground">{labels.progress}</p>
+                <p className="text-micro font-semibold text-muted-foreground">
+                    {beforeDone}
+                    <span data-count="plan.stepsDone">{completed}</span>
+                    {betweenNumbers}
+                    <span data-count="plan.stepsTotal">{total}</span>
+                    {afterTotal}
+                </p>
             </div>
 
             <div
@@ -78,7 +97,7 @@ export function ProtectionPlanCard({
                 aria-valuemin={0}
                 aria-valuemax={total}
                 aria-valuenow={completed}
-                aria-valuetext={labels.progress}
+                aria-valuetext={progressText}
             >
                 <div className="h-1.5 rounded-full bg-primary" style={{ width: `${progressPct}%` }} />
             </div>
@@ -129,6 +148,9 @@ export function ProtectionPlanCard({
             {moreOpenLabel && (
                 <Link
                     href="/coverage-insights"
+                    // The «+N ακόμη» count IS the open recommendation set — the
+                    // same fact the hero's areas line states, under one key.
+                    data-count={moreOpenCount !== undefined ? "recommendation.openCount" : undefined}
                     className="pw-inline-action mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {moreOpenLabel}

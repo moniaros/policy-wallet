@@ -91,6 +91,16 @@ interface RecommendationCardsProps {
     tier?: "free" | "plus" | "pro"
     /** ≥1 active policy exists — drives the empty-state message/CTA. */
     hasPolicies?: boolean
+    /**
+     * Registered data-count key for the «N προτάσεις» header (and «Εμφάνιση
+     * όλων (N)»). Coverage-insights passes recommendation.openCount (the full
+     * active set); the branch page renders a branch-filtered SUBSET, which is a
+     * different fact and must pass its own subject-scoped key — the same key
+     * on both would make the subset read as the whole set disagreeing with
+     * itself.
+     */
+    countKey?: string
+    countSubject?: string
 }
 
 // ── LOB icon map ─────────────────────────────────────────────────────
@@ -160,6 +170,8 @@ export function RecommendationCards({
     smartContent = {},
     tier,
     hasPolicies = true,
+    countKey,
+    countSubject,
 }: RecommendationCardsProps) {
     const evidenceLocked = tier === "free"
     const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set())
@@ -260,7 +272,10 @@ export function RecommendationCards({
                     <h2 className="text-lg font-semibold text-black dark:text-white">
                         {t("Προτάσεις κάλυψης", "Coverage Recommendations")}
                     </h2>
-                    <p className="text-xs text-muted-foreground">
+                    {/* On coverage-insights this is the SAME set the dashboard
+                        hero's «N κατηγορίες κινδύνου» states — one key, two
+                        surfaces. The branch page passes its own subset key. */}
+                    <p className="text-xs text-muted-foreground" data-count={countKey} data-count-subject={countSubject}>
                         {t(
                             `${visible.length} προτάσεις βασισμένες στο προφίλ σας`,
                             `${visible.length} recommendation${visible.length !== 1 ? "s" : ""} based on your profile`
@@ -670,12 +685,16 @@ export function RecommendationCards({
                     onClick={() => setShowAll(!showAll)}
                     className="mt-4 w-full text-center text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer flex items-center justify-center gap-1"
                 >
-                    {showAll
-                        ? t("Εμφάνιση λιγότερων", "Show fewer")
-                        : t(
-                              `Εμφάνιση όλων (${visible.length})`,
-                              `Show all (${visible.length})`
-                          )}
+                    {showAll ? (
+                        t("Εμφάνιση λιγότερων", "Show fewer")
+                    ) : (
+                        <span data-count={countKey} data-count-subject={countSubject}>
+                            {t(
+                                `Εμφάνιση όλων (${visible.length})`,
+                                `Show all (${visible.length})`
+                            )}
+                        </span>
+                    )}
                     {showAll ? (
                         <ChevronUp className="h-3.5 w-3.5" />
                     ) : (

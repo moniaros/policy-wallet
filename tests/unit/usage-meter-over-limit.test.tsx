@@ -30,8 +30,12 @@ describe('UsageMeter over the limit', () => {
     })
 
     it('still shows the true figure visually', () => {
+        // The figure is now composed of two instrumented spans («2» / «1»),
+        // so match on the parent's combined text rather than one text node.
         render(<UsageMeter label="Policies" used={2} limit={1} />)
-        expect(screen.getByText('2 / 1')).toBeTruthy()
+        expect(
+            screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === '2 / 1')
+        ).toBeTruthy()
     })
 
     it('is named, so it is not announced as a bare "2 of 1"', () => {

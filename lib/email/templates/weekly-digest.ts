@@ -2,6 +2,7 @@ import { getBaseEmailTemplate } from './base-template'
 import { counted, daysToExpiryPhrase, greeting } from './phrases'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
+import { describeSeverity, type SeverityDescription } from '@/lib/gaps/severity-display'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://policywallet.gr'
 
@@ -117,15 +118,25 @@ export function getWeeklyDigestEmail(
 function buildRecommendationsSection(recs: TopRecommendation[] | undefined, isGreek: boolean): string {
     if (!recs || recs.length === 0) return ''
 
-    const urgencyColors: Record<string, string> = {
-        critical: '#DC2626',
-        high: '#EA580C',
-        medium: '#D97706',
-        low: '#6B7280',
+    /**
+     * Tone → inline hex, keyed by describeSeverity()'s TONE — never by the
+     * severity words, the shape that multiplied across eleven surfaces (this
+     * is the email sibling of components/gaps/severity-tone.ts; email needs
+     * inline hex, not utility classes). The dot stays colour-only and
+     * unlabelled: no severity word reaches the reader, so no caveat is owed —
+     * same policy as PolicyBriefCard's aria-hidden dot. Junk urgency values
+     * normalise through the primitive (→ moderate), never to a fifth colour
+     * invented here. Pinned by gap-severity-display-single-source.test.ts.
+     */
+    const toneDotHex: Record<SeverityDescription['tone'], string> = {
+        urgent: '#DC2626',
+        elevated: '#EA580C',
+        moderate: '#D97706',
+        informational: '#6B7280',
     }
 
     const rows = recs.map(r => {
-        const color = urgencyColors[r.urgency] || '#6B7280'
+        const color = toneDotHex[describeSeverity(r.urgency).tone]
         const costLabel = r.estimatedCostEur
             ? `~€${r.estimatedCostEur}/${isGreek ? 'έτος' : 'yr'}`
             : ''

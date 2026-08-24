@@ -9,6 +9,14 @@ interface UsageMeterProps {
     label: string
     used: number
     limit: number | null
+    /**
+     * Registered data-count keys for the two numbers (lib/instrumentation/
+     * count-keys.ts). `used` is usually a portfolio fact; `limit` is a PLAN
+     * fact — separate keys keep «2/10» from reading as a contradiction of the
+     * policy count elsewhere on the page.
+     */
+    usedCountKey?: string
+    limitCountKey?: string
     /** Short line under the bar, e.g. «Η πλήρης ανάλυση είναι διαθέσιμη στο Plus». */
     hint?: string
     /**
@@ -20,7 +28,7 @@ interface UsageMeterProps {
     className?: string
 }
 
-export function UsageMeter({ label, used, limit, hint, unlimitedLabel, className = "" }: UsageMeterProps) {
+export function UsageMeter({ label, used, limit, usedCountKey, limitCountKey, hint, unlimitedLabel, className = "" }: UsageMeterProps) {
     const pct = limit && limit > 0 ? Math.min(Math.round((used / limit) * 100), 100) : 0
     // Being OVER the cap is a real state, not an edge case: FREE_POLICY_LIMIT is
     // 1, so any free account that downgraded — or that had policies added before
@@ -45,7 +53,15 @@ export function UsageMeter({ label, used, limit, hint, unlimitedLabel, className
                     {label}
                 </p>
                 <p className="text-xs font-bold text-black/70 dark:text-white/75" aria-live="polite">
-                    {limit === null ? (unlimitedLabel ?? `${used} · ∞`) : `${used} / ${limit}`}
+                    {limit === null ? (
+                        unlimitedLabel ?? `${used} · ∞`
+                    ) : (
+                        <>
+                            <span data-count={usedCountKey}>{used}</span>
+                            {" / "}
+                            <span data-count={limitCountKey}>{limit}</span>
+                        </>
+                    )}
                 </p>
             </div>
             {/* A progressbar with no accessible name is announced as a bare

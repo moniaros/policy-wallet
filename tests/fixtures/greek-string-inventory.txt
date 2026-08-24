@@ -16,8 +16,8 @@
 #           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2785
-# inline entries: 4425 across 208 files
-# ternary entries: 297 across 45 files
+# inline entries: 4424 across 207 files
+# ternary entries: 301 across 45 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -1254,8 +1254,8 @@ bundle	dashboard.home.planStepNotificationsTitle	"Ενεργοποιήστε τ�
 bundle	dashboard.home.planStepUploadBody	"Προσθέστε το πρώτο σας ασφαλιστήριο ως PDF ή φωτογραφία."
 bundle	dashboard.home.planStepUploadTitle	"Ανεβάστε ένα ασφαλιστήριο"
 bundle	dashboard.home.planUpToDate	"Το πλάνο σας είναι ενημερωμένο."
-bundle	dashboard.home.policiesSuffix	"ασφαλιστήρια με επερχόμενη ανανέωση"
-bundle	dashboard.home.policiesSuffixOne	"ασφαλιστήριο με επερχόμενη ανανέωση"
+bundle	dashboard.home.policiesSuffix	"ασφαλιστήρια με ανανέωση εντός 6 μηνών"
+bundle	dashboard.home.policiesSuffixOne	"ασφαλιστήριο με ανανέωση εντός 6 μηνών"
 bundle	dashboard.home.portfolioKicker	"Χαρτοφυλάκιο ασφαλίσεων"
 bundle	dashboard.home.quickUploadAria	"Γρήγορο upload"
 bundle	dashboard.home.recAdvisorConfirmed	"Επιβεβαιωμένο από σύμβουλο"
@@ -6884,11 +6884,6 @@ inline	lib/services/renewal.service.ts	`Ειδοποίηση ανανέωσης:
 inline	lib/services/renewal.service.ts	`Η ασφάλισή σας ${daysLeftPhrase(daysUntilExpiry, true)}`
 inline	lib/services/renewal.service.ts	`Το ασφαλιστήριο ${policy.insurerName} (${policy.policyNumber}) λήγει στις ${formatDate(policy.endDate, "el")}. Ελέγξτε τις επιλογές ανανέωσής σας.`
 inline	lib/services/renewal.service.ts	`Το ασφαλιστήριο ${policy.insurerName} (${policy.policyNumber}) του πελάτη ${customerName} λήγει στις ${formatDate(policy.endDate, "el")} — ${awayEl}. Χρειάζεται ενέργεια.`
-inline	lib/services/reports/savings-report.ts	"Κρίσιμο"
-inline	lib/services/reports/savings-report.ts	"Μεσαίο"
-inline	lib/services/reports/savings-report.ts	"Υψηλό"
-inline	lib/services/reports/savings-report.ts	"Χαμηλό"
-inline	lib/services/reports/savings-report.ts	severity
 inline	lib/services/risk-dna/advisory-impact.ts	"Εργαστείτε τη λίστα με σειρά συμβουλευτικού αντικτύπου."
 inline	lib/services/risk-dna/advisory-impact.ts	"Τίποτα δεν είναι ανοιχτό, αλλά αρκετές περιοχές στηρίζονται σε στοιχεία που δεν μπορέσαμε να επιβεβαιώσουμε. Επιβεβαιώστε τα."
 inline	lib/services/risk-dna/advisory-impact.ts	"Τίποτα δεν χρειάζεται προσοχή αυτή τη στιγμή."
@@ -6949,6 +6944,8 @@ inline	lib/services/risk-dna/health-index.ts	`${dimension.label.el}: ${netDelta}
 inline	lib/services/risk-dna/health-index.ts	`${dimension.label.el}: στο ίδιο σημείο όπως πριν ${scored.length} ελέγχους.`
 inline	lib/services/risk-dna/health-index.ts	`${shared.length} περιοχές που αφορούν όλο το νοικοκυριό παραμένουν ανοιχτές.`
 inline	lib/services/risk-dna/health-index.ts	`Έχουμε επανελέγξει τη θέση σας ${versionCount} φορές, οπότε πρόκειται για εικόνα που κινείται και όχι για μια εφάπαξ αποτύπωση.`
+inline	lib/services/risk-dna/monitoring.ts	" Οι ζωές αλλάζουν ταχύτερα."
+inline	lib/services/risk-dna/monitoring.ts	"."
 inline	lib/services/risk-dna/monitoring.ts	"Ανανεώστε ή αντικαταστήστε την κάλυψη που έληξε."
 inline	lib/services/risk-dna/monitoring.ts	"Βρίσκεστε στα χρόνια που οι περισσότεροι σταματούν να εργάζονται. Ό,τι προστατεύει ένα εισόδημα αλλάζει όταν αλλάζει το εισόδημα."
 inline	lib/services/risk-dna/monitoring.ts	"Δείτε τι μετακινήθηκε στο χρονολόγιό σας."
@@ -6965,11 +6962,13 @@ inline	lib/services/risk-dna/monitoring.ts	"Σοβαροί κίνδυνοι χω
 inline	lib/services/risk-dna/monitoring.ts	"Στεγαστικό δάνειο μαζί με άτομα που στηρίζονται σε εσάς είναι ο συνδυασμός όπου μία διακοπή φτάνει ταυτόχρονα σε όλους."
 inline	lib/services/risk-dna/monitoring.ts	"Χρέος και εξαρτώμενα μαζί"
 inline	lib/services/risk-dna/monitoring.ts	`${critical.map((d) => d.label.el).join(", ")}: έκθεση που δεν θα αφήναμε ανοιχτή.`
-inline	lib/services/risk-dna/monitoring.ts	`${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}${lapsing.length > 0 ? (lapsing.length === 1 ? " και άλλο 1 λήγει μέσα σε 45 ημέρες" : ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`) : ""}.`
+inline	lib/services/risk-dna/monitoring.ts	`${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}`
 inline	lib/services/risk-dna/monitoring.ts	`${lapsing.length} ${lapsing.length === 1 ? "ασφαλιστήριο λήγει" : "ασφαλιστήρια λήγουν"} μέσα σε 45 ημέρες.`
 inline	lib/services/risk-dna/monitoring.ts	`${thin.length} περιοχές στηρίζονται σε αναπάντητες ερωτήσεις. Οτιδήποτε λέγαμε για το τι έρχεται θα ήταν εικασία.`
 inline	lib/services/risk-dna/monitoring.ts	`${worsening.map((d) => d.label.el).join(", ")}: πτώση από τον προηγούμενο έλεγχο.`
-inline	lib/services/risk-dna/monitoring.ts	`Τελευταία αξιολόγηση πριν ${staleDays} ημέρες. Οι ζωές αλλάζουν ταχύτερα.`
+inline	lib/services/risk-dna/monitoring.ts	`Τελευταία αξιολόγηση πριν ${staleDays} ημέρες.`
+inline	lib/services/risk-dna/monitoring.ts	lapsing.length === 1 ? " και άλλο 1 λήγει μέσα σε 45 ημέρες" : ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`
+inline	lib/services/risk-dna/monitoring.ts	parts.map((part) => part.text.el).join("")
 inline	lib/services/risk-graph/present.ts	risk.riskId
 inline	lib/services/risk-graph/projection.ts	"Διαδικτυακή οικονομική δραστηριότητα"
 inline	lib/services/risk-graph/projection.ts	"Διαδικτυακοί λογαριασμοί"
@@ -7454,7 +7453,7 @@ ternary	lib/services/renewal.service.ts	"σήμερα"
 ternary	lib/services/renewal.service.ts	`λήγει σε ${days} ημέρες`
 ternary	lib/services/renewal.service.ts	`σε ${daysUntilExpiry} ημέρες`
 ternary	lib/services/reports/savings-report.ts	` <div class="savings-total"> <div class="amount">${escapeHtml(formatCurrency(totalSavings, language, { currency: "EUR", decimals: 0 }))}</div> <div class="label">${L("Εκτιμώμενη ετήσια δυνατότητα εξοικονόμησης", "Estimated annual savings potential")}</div> <div class="caveat">${L( "Οι εκτιμήσεις προκύπτουν από ανάλυση AI του εγγράφου σας και είναι ενδεικτικές — τα πραγματικά ποσά εξαρτώνται από τις προσφορές των ασφαλιστών. Χαμηλότερο ασφάλιστρο μπορεί να σημαίνει μικρότερη κάλυψη: συγκρίνετε τις καλύψεις, όχι μόνο την τιμή. Αυθεντική πηγή παραμένει το ασφαλιστήριό σας.", "Estimates come from AI analysis of your document and are indicative — actual amounts depend on insurer quotes. A lower premium can mean less cover: compare the covers, not just the price. Your policy document remains the authoritative source." )}</div> </div> `
-ternary	lib/services/reports/savings-report.ts	` <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2> ${gaps.map((g) => ` <div class="gap-card ${g.severity || "medium"}"> <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(gapSeverityLabel(g.severity || "medium", language))}</span></div> ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""} ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""} </div> `).join("")} `
+ternary	lib/services/reports/savings-report.ts	` <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2> <div class="section-caveat">${escapeHtml(resolveReportKey(language, SEVERITY_CAVEAT_KEY))}</div> ${gaps.map((g) => ` <div class="gap-card ${g.severity || "medium"}"> <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(gapSeverityLabel(g.severity || "medium", language))}</span></div> ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""} ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""} </div> `).join("")} `
 ternary	lib/services/reports/savings-report.ts	` <h2>${L("Στιγμιότυπο Κάλυψης", "Coverage Snapshot")}</h2> ${snapshot.covered?.length ? ` <h3>${L("Καλύπτονται", "Covered")}</h3> <ul class="coverage-list">${(snapshot.covered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} ${snapshot.notCovered?.length ? ` <h3>${L("Δεν καλύπτονται", "Not Covered")}</h3> <ul class="coverage-list">${(snapshot.notCovered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} ${snapshot.exclusions?.length ? ` <h3>${L("Εξαιρέσεις", "Exclusions")}</h3> <ul class="coverage-list">${(snapshot.exclusions as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} `
 ternary	lib/services/reports/savings-report.ts	` <h3>${L("Δεν καλύπτονται", "Not Covered")}</h3> <ul class="coverage-list">${(snapshot.notCovered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
 ternary	lib/services/reports/savings-report.ts	` <h3>${L("Εξαιρέσεις", "Exclusions")}</h3> <ul class="coverage-list">${(snapshot.exclusions as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
@@ -7495,6 +7494,10 @@ ternary	lib/services/risk-dna/monitoring.ts	"ασφαλιστήρια έχουν
 ternary	lib/services/risk-dna/monitoring.ts	"ασφαλιστήρια λήγουν"
 ternary	lib/services/risk-dna/monitoring.ts	"ασφαλιστήριο έχει ήδη λήξει"
 ternary	lib/services/risk-dna/monitoring.ts	"ασφαλιστήριο λήγει"
+ternary	lib/services/risk-dna/monitoring.ts	[ { text: { en: `${expired.length} ${expired.length === 1 ? "policy has" : "policies have"} already ended`, el: `${expired.length} ${expired.length === 1 ? "ασφαλιστήριο έχει ήδη λήξει" : "ασφαλιστήρια έχουν ήδη λήξει"}`, }, countKey: "portfolio.expiredCount", countValue: expired.length, }, ...(lapsing.length > 0 ? [ { text: { en: lapsing.length === 1 ? ", and 1 more ends within 45 days" : `, and ${lapsing.length} more end within 45 days`, el: lapsing.length === 1 ? " και άλλο 1 λήγει μέσα σε 45 ημέρες" : ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`, }, countKey: "portfolio.expiringWithin45Count", countValue: lapsing.length, } satisfies WatchDetailPart, ] : []), { text: { en: ".", el: "." } }, ]
+ternary	lib/services/risk-dna/monitoring.ts	[ { text: { en: `${lapsing.length} ${lapsing.length === 1 ? "policy ends" : "policies end"} within 45 days.`, el: `${lapsing.length} ${lapsing.length === 1 ? "ασφαλιστήριο λήγει" : "ασφαλιστήρια λήγουν"} μέσα σε 45 ημέρες.`, }, countKey: "portfolio.expiringWithin45Count", countValue: lapsing.length, }, ]
+ternary	lib/services/risk-dna/monitoring.ts	[ { text: { en: `Last assessed ${staleDays} days ago.`, el: `Τελευταία αξιολόγηση πριν ${staleDays} ημέρες.`, }, factKey: "profile.daysSinceAssessment", factValue: staleDays, }, { text: { en: " Lives change faster than that.", el: " Οι ζωές αλλάζουν ταχύτερα.", }, }, ]
+ternary	lib/services/risk-dna/monitoring.ts	[ { text: { en: lapsing.length === 1 ? ", and 1 more ends within 45 days" : `, and ${lapsing.length} more end within 45 days`, el: lapsing.length === 1 ? " και άλλο 1 λήγει μέσα σε 45 ημέρες" : ` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`, }, countKey: "portfolio.expiringWithin45Count", countValue: lapsing.length, } satisfies WatchDetailPart, ]
 ternary	lib/services/risk-dna/monitoring.ts	` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`
 ternary	lib/services/risk-graph/protection.ts	"ασφαλιστήρια"
 ternary	lib/services/risk-graph/protection.ts	"ασφαλιστήριο"

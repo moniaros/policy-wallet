@@ -143,7 +143,17 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                     {/* Row 2: LOB type + expiry inline */}
                     <p className="text-micro text-muted-foreground">
                         {localizedLob}
-                        {expiryInline && <> · {expiryInline}</>}
+                        {expiryInline && (
+                            <>
+                                {' · '}
+                                {/* «σε 24 ημέρες» — the lifecycle's day count,
+                                    subject-scoped so a list of cards never reads
+                                    as one key disagreeing with itself. */}
+                                <span data-fact="policy.daysRemaining" data-fact-subject={policy.id}>
+                                    {expiryInline}
+                                </span>
+                            </>
+                        )}
                     </p>
 
                 </div>

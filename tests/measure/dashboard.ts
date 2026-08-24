@@ -70,16 +70,28 @@ export async function countConsistency(page: Page): Promise<CountConsistencyResu
             return true
         }
 
-        // (a) attribute scan — authoritative once Goal 1 instruments the page
+        // (a) attribute scan — authoritative once Goal 1 instruments the page.
+        //
+        // Two refinements from the V2-P1-11 instrumentation pass:
+        //  - SUBJECT-SCOPED keys (`data-count-subject`) group by key+subject —
+        //    per-branch tiles and per-severity chips legitimately render one
+        //    value per subject, and grouping them by key alone would report
+        //    every list as a contradiction.
+        //  - The value is the FIRST integer in the element's text, not every
+        //    digit concatenated: «3 λήγουν μέσα σε 30 ημέρες» is 3, not 330.
         const byKey = new Map<string, Set<number>>()
         document.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
             if (!visible(el)) return
             const key = el.getAttribute("data-count") || ""
-            const n = Number((el.textContent || "").replace(/[^\d]/g, ""))
+            const subject = el.getAttribute("data-count-subject")
+            const groupKey = subject ? `${key}#${subject}` : key
+            const firstNumber = (el.textContent || "").match(/\d+/)
+            if (!firstNumber) return
+            const n = Number(firstNumber[0])
             if (!Number.isFinite(n)) return
-            const set = byKey.get(key) || new Set<number>()
+            const set = byKey.get(groupKey) || new Set<number>()
             set.add(n)
-            byKey.set(key, set)
+            byKey.set(groupKey, set)
         })
         const attributeDisagreements = Array.from(byKey.entries())
             .filter(([, v]) => v.size > 1)
