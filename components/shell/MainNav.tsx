@@ -12,9 +12,12 @@ export interface MainNavProps {
     onNavigate?: (href: string) => void
 }
 
-/** Shared classes for every nav row, so the <Link> and the '#' <button> match. */
+/** Shared classes for every nav row, so the <Link> and the '#' <button> match.
+ *  min-h-11: py-3 + text-sm happens to reach 44px today, but the touch floor
+ *  must not depend on a line-height staying put — the explicit token is what
+ *  tests/unit/shell-chrome-invariants.test.tsx checks. */
 const ROW_CLASSES = `
-    w-full flex items-center gap-2.5 px-3 py-3 rounded-2xl text-sm font-semibold
+    w-full min-h-11 flex items-center gap-2.5 px-3 py-3 rounded-2xl text-sm font-semibold
     xl:gap-3 xl:px-4
     transition-all duration-300 group relative isolate
     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
@@ -140,7 +143,9 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                 <Link
                     href="/help"
                     onClick={() => onNavigate?.('/help')}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-black/55 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    // min-h-11: py-2 + text-sm rendered ~36px — under the 44px touch
+                    // floor the rest of the shell chrome holds.
+                    className="w-full min-h-11 flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-black/55 hover:text-black dark:text-white/60 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

@@ -15,7 +15,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2784
+# bundle entries: 2785
 # inline entries: 4427 across 208 files
 # ternary entries: 298 across 45 files
 
@@ -1989,6 +1989,7 @@ bundle	userMenu.notificationsPreferencesDesc	"Διαχειριστείτε πώ�
 bundle	userMenu.preferences	"Προτιμήσεις"
 bundle	userMenu.profile	"Προφίλ"
 bundle	userMenu.settings	"Ρυθμίσεις"
+bundle	userMenu.toggleTheme	"Εναλλαγή θέματος"
 bundle	userMenu.viewingAs	"Προβολή ως"
 bundle	wallet.accessGrantedTo	"Πρόσβαση δόθηκε σε"
 bundle	wallet.accessRevoked	"Η πρόσβαση ανακλήθηκε"

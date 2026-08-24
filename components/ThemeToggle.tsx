@@ -2,12 +2,18 @@
 
 import React from "react"
 import { useTheme } from "next-themes"
-import { useLanguage } from "@/contexts/LanguageContext"
 
-export function ThemeToggle() {
+/**
+ * The label comes from the CALLER, like LocaleToggle's `ariaLabel`: this
+ * control renders on both sides of the TranslationsProvider boundary (app
+ * shell AND public header), so it cannot read `useLanguage().t` itself —
+ * public routes deliberately do not mount the dictionary. The shell passes
+ * `t.userMenu.toggleTheme`; public callers pass their own localized string.
+ * (It previously built the label from an inline el/en literal pair, which no
+ * freeze or lint covered.)
+ */
+export function ThemeToggle({ ariaLabel }: { ariaLabel: string }) {
     const { resolvedTheme, setTheme } = useTheme()
-    const { language } = useLanguage()
-    const t = (el: string, en: string) => (language === "el" ? el : en)
     const [mounted, setMounted] = React.useState(false)
 
     React.useEffect(() => {
@@ -15,14 +21,15 @@ export function ThemeToggle() {
     }, [])
 
     if (!mounted) {
-        return <div className="w-8 h-8" /> // placeholder
+        return <div className="h-11 w-11" /> // placeholder, same box as the button
     }
 
     return (
         <button
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            className="p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-400 transition-colors"
-            aria-label={t("Εναλλαγή θέματος", "Toggle theme")}
+            // 36x36 before: p-2 around a 20px icon, under the 44px touch floor.
+            className="grid h-11 w-11 place-items-center rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label={ariaLabel}
         >
             {resolvedTheme === "dark" ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

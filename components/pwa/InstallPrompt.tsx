@@ -125,7 +125,12 @@ export function InstallPrompt() {
                 initial={{ y: 80, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 80, opacity: 0 }}
-                className="fixed bottom-24 left-3 right-3 z-40 sm:left-auto sm:right-6 sm:w-80"
+                // Rides the same variables the bottom nav sizes itself from, plus
+                // the safe-area inset. A static bottom-24 (96px) sat 14px INSIDE
+                // the nav's footprint on any notched phone: the bar is 76px of
+                // content + env(safe-area-inset-bottom) ≈ 110px, and at an equal
+                // z-40 this later-in-DOM banner painted over the tab labels.
+                className="fixed bottom-[calc(var(--pw-bottom-nav-h,5rem)+env(safe-area-inset-bottom,0px)+0.75rem)] left-3 right-3 z-40 sm:left-auto sm:right-6 sm:w-80"
             >
                 <Card className="p-3.5 shadow-xl border-primary/30 dark:border-mint/20 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
                     <div className="flex items-start gap-3">
@@ -138,7 +143,10 @@ export function InstallPrompt() {
                         </div>
                         <button
                             onClick={dismissPrompt}
-                            className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer"
+                            // A bare 16px icon before — the smallest tap target in the
+                            // product, on its most transient surface. 44px box, negative
+                            // margin so the card keeps its compact padding.
+                            className="-m-2.5 grid h-11 w-11 shrink-0 place-items-center rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             aria-label={t.common.close}
                         >
                             <X className="w-4 h-4" />
@@ -154,7 +162,7 @@ export function InstallPrompt() {
                         <Button
                             onClick={handleInstall}
                             disabled={installing}
-                            className="w-full mt-3 gap-2 h-9 text-sm font-semibold"
+                            className="w-full mt-3 gap-2 h-11 text-sm font-semibold"
                         >
                             <Download className="w-4 h-4" />
                             {t.notifications.pwaInstallCta}

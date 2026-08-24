@@ -1574,6 +1574,7 @@ export const el = {
         profile: 'Προφίλ',
         settings: 'Ρυθμίσεις',
         language: 'Γλώσσα',
+        toggleTheme: 'Εναλλαγή θέματος',
         greek: 'Ελληνικά',
         english: 'English',
         notifications: 'Ειδοποιήσεις',

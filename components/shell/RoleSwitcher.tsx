@@ -39,7 +39,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                 aria-expanded={isOpen}
                 aria-controls={menuId}
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 hover:bg-black/10 dark:hover:bg-white/10 transition-all group"
+                className="w-full min-h-11 flex items-center justify-between px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 hover:bg-black/10 dark:hover:bg-white/10 transition-all group"
             >
                 <div className="flex flex-col items-start min-w-0">
                     <span className="text-kicker font-bold uppercase tracking-widest text-muted-foreground group-hover:text-black/65 dark:group-hover:text-white/75 transition-colors">
@@ -72,7 +72,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                                     setIsOpen(false)
                                 }}
                                 className={`
-                                    w-full px-5 py-3 text-left text-micro font-bold uppercase tracking-widest transition-all
+                                    w-full min-h-11 px-5 py-3 text-left text-micro font-bold uppercase tracking-widest transition-all
                                     ${role.role === currentRole.role
                                         ? 'bg-primary text-white dark:text-[#1A2420]'
                                         : 'text-black/60 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10'

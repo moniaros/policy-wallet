@@ -187,14 +187,11 @@ export function PublicHeader({ locale, ctaSource, onPrimaryCtaClick }: PublicHea
                                 EN
                             </Link>
                         </div>
-                        {/* The toggle itself renders a 36px control; the
-                            wrapper alone does not resize the control, so the
-                            size is applied to the child button from here:
-                            presentation only, and the shared component (used by
-                            the authenticated app too) is left alone. */}
-                        <span className="inline-flex items-center [&>button]:inline-flex [&>button]:min-h-11 [&>button]:min-w-11 [&>button]:items-center [&>button]:justify-center">
-                            <ThemeToggle />
-                        </span>
+                        {/* The shared toggle is a 44px control now, so the old
+                            [&>button] resize wrapper is gone. The label comes from
+                            the caller because this header renders outside the
+                            TranslationsProvider boundary. */}
+                        <ThemeToggle ariaLabel={t("Εναλλαγή θέματος", "Toggle theme")} />
                         <Link
                             href={secondaryHref}
                             className="inline-flex min-h-11 items-center text-body font-medium text-[#0F172A] transition-colors hover:text-[#29685B] dark:text-white"

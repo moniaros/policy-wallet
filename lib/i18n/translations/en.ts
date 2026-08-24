@@ -1558,6 +1558,7 @@ export const en: TranslationKeys = {
         profile: 'Profile',
         settings: 'Settings',
         language: 'Language',
+        toggleTheme: 'Toggle theme',
         greek: 'Ελληνικά',
         english: 'English',
         notifications: 'Notifications',

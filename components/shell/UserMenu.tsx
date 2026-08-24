@@ -4,7 +4,6 @@ import React, { useId, useRef, useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { ThemeToggle } from '../ThemeToggle'
-import { NotificationBell } from '../notifications/NotificationBell'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { displayPersonName } from '@/lib/wallet/policy-identity'
 
@@ -17,14 +16,12 @@ export interface UserMenuProps {
     }
     notificationCount?: number
     onLogout?: () => void
-    compact?: boolean
 }
 
 export function UserMenu({
     user,
     notificationCount = 0,
     onLogout,
-    compact = false,
 }: UserMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
     const menuTriggerRef = useRef<HTMLButtonElement>(null)
@@ -74,22 +71,11 @@ export function UserMenu({
         .toUpperCase()
         .slice(0, 2)
 
-    if (compact) {
-        return (
-            <div className="flex items-center gap-2">
-                {/* Notifications - Interactive Bell */}
-                <NotificationBell
-                    initialUnreadCount={notificationCount}
-                />
-
-                {/* Avatar */}
-                <button className="pw-primary-button w-8 h-8">
-                    {initials}
-                </button>
-            </div>
-        )
-    }
-
+    // A `compact` branch used to render a NotificationBell + avatar here, but
+    // the shell's single call site (AppShell, desktop sidebar) never passed
+    // `compact` — the branch had never executed. Deleted rather than kept as
+    // plausible-looking dead code; the header's inline <Bell> is the only
+    // notification bell the shell renders.
     return (
         <div className="relative">
             <button
@@ -195,7 +181,7 @@ export function UserMenu({
 
                         <div className="flex items-center justify-between px-4 py-2 border-t border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700">
                             <span className="text-sm text-stone-700 dark:text-stone-300">{roleCopy.shell.theme}</span>
-                            <ThemeToggle />
+                            <ThemeToggle ariaLabel={t.userMenu.toggleTheme} />
                         </div>
 
                         {/* Logout */}

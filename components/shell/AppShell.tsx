@@ -56,8 +56,6 @@ export interface AppShellProps {
     onLogout?: () => void
 }
 
-/** The two locales, as the mobile footer toggle renders them. "GR"/"EN" are
- *  locale codes shown verbatim in both languages, not translatable copy. */
 interface BottomNavItemBase {
     /** Opens the nav drawer instead of navigating. */
     opensDrawer?: boolean
@@ -203,8 +201,11 @@ export function AppShell({
                     {t.nav.skipToContent}
                 </a>
 
-                {/* Mobile Top Header */}
-                <header className="lg:hidden sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-black/10 dark:border-white/10 px-4 flex items-center justify-between">
+                {/* Mobile Top Header. `inert` while the drawer is open: the drawer
+                    declares aria-modal, and the scrim only covers pointers — inert is
+                    what actually removes these controls from focus and the
+                    accessibility tree while the modal claims they are unreachable. */}
+                <header inert={sidebarOpen || undefined} className="lg:hidden sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-black/10 dark:border-white/10 px-4 flex items-center justify-between">
                     <button
                         onClick={() => setSidebarOpen(true)}
                         aria-label={t.nav.primaryNavigation}
@@ -272,12 +273,16 @@ export function AppShell({
                         {/* Enhanced Logo Section */}
                         <div className="flex flex-col border-b border-black/10 dark:border-white/10 bg-gradient-to-br from-white to-black/5 dark:from-black dark:to-[#111111]">
                             <div className="flex items-center justify-between px-6 h-16">
-                                <Link href={roleHomeHref} onClick={() => handleNavigate(roleHomeHref)} className="hover:opacity-80 transition-opacity">
+                                {/* h-11 wrapper for the same reason the top-header logo
+                                    link has one: the md wordmark is 40px tall on its own. */}
+                                <Link href={roleHomeHref} onClick={() => handleNavigate(roleHomeHref)} className="flex h-11 items-center rounded-lg hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                                     <PolicyWalletLogo size="md" language={user.preferred_language || 'el'} />
                                 </Link>
                                 <button
                                     onClick={() => setSidebarOpen(false)}
-                                    className="lg:hidden p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-white/70 transition-colors"
+                                    // 36x36 before: p-2 around a 20px icon. -mr-2 keeps the
+                                    // icon optically where it was inside the px-6 gutter.
+                                    className="lg:hidden grid h-11 w-11 -mr-2 place-items-center rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-white/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                     aria-label={roleCopy.shell.closeMenu}
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -329,12 +334,12 @@ export function AppShell({
                                         live context value rather than the server-rendered
                                         prop, which could disagree with it. */}
                                     <LocaleToggle variant="group" ariaLabel={t.userMenu.language} />
-                                    <ThemeToggle />
+                                    <ThemeToggle ariaLabel={t.userMenu.toggleTheme} />
                                 </div>
                             </div>
                             <button
                                 onClick={onLogout}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-red-200/70 dark:border-red-400/30 bg-red-50/90 dark:bg-red-950/30 text-red-700 dark:text-red-300 font-semibold text-sm hover:bg-red-100/90 dark:hover:bg-red-950/50 transition-colors"
+                                className="w-full min-h-11 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-red-200/70 dark:border-red-400/30 bg-red-50/90 dark:bg-red-950/30 text-red-700 dark:text-red-300 font-semibold text-sm hover:bg-red-100/90 dark:hover:bg-red-950/50 transition-colors"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -354,10 +359,17 @@ export function AppShell({
                     </div>
                 </aside>
 
-                {/* Mobile sidebar overlay */}
+                {/* Mobile sidebar overlay. z-[45], not z-40: every fixed element in
+                    the shell shares one stacking context, so at z-40 the bottom nav
+                    and the InstallPrompt — both z-40 but LATER in the DOM — painted
+                    over the scrim, leaving live, undimmed controls inside a surface
+                    the drawer declares aria-modal over. 45 sits above all z-40 chrome
+                    and below the drawer's own z-50.
+                    tests/unit/shell-chrome-invariants.test.tsx guards the ordering. */}
                 {sidebarOpen && (
                     <div
-                        className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+                        aria-hidden="true"
+                        className="lg:hidden fixed inset-0 z-[45] bg-black/60 backdrop-blur-sm"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
@@ -378,6 +390,8 @@ export function AppShell({
                 {hasBottomNav && (
                     <nav
                         aria-label={t.nav.bottomNavigation}
+                        // inert while the drawer is open — see the header's comment.
+                        inert={sidebarOpen || undefined}
                         className="pw-above-consent lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 border-t border-black/10 dark:border-white/10 safe-area-inset-bottom shadow-xl backdrop-blur-xl"
                     >
                         <div

@@ -843,7 +843,7 @@ Rewrite line 199. Emotional leverage on an unvalidated finding.
 `__PENDING_EXTRACTION__` rendering as a policy name.
 
 ### Carried from v1, still open
-**P1-10** ✓ done · **P1-08** app shell (last) ·
+**P1-10** ✓ done · **P1-08** ✓ done ·
 **P1-14** ✓ done.
 
 ## Halts to raise
@@ -1305,3 +1305,51 @@ frozen entries are unreachable, including a PAYMENT_SUCCESS invoice link to a se
 **Frozen, not edited, per the brief:** `health-score.ts`'s «Καλή» / «Μέτρια» / «Χρειάζεται προσοχή» —
 a verdict vocabulary on a score, agent-side and therefore §12.4. Pinned at exactly 3 entries with a
 comment naming the invariant, so extending it now requires a deliberate regeneration.
+
+
+---
+
+## P1-08 — Adversarial review: **PASS**. The audit found 7 defects; the guard found 12.
+
+### The modal fix has two halves, and I only asked for one
+
+- **Paint order:** scrim `z-40` → `z-[45]`, above every `z-40` chrome sibling regardless of DOM
+  order, below the drawer's `z-50`. This also covers **`InstallPrompt`**, which painted over the
+  scrim by the same mechanics — the audit named only the nav.
+- **Reachability:** `inert={sidebarOpen || undefined}` on the header **and** the bottom nav. As the
+  code comment puts it: *the scrim only covers pointers — `inert` is what removes the tab targets
+  from focus and the accessibility tree.* That is what makes `aria-modal` true rather than
+  aspirational, and I had not asked for it.
+
+**Proven by me, both halves separately:** reverting the scrim className to `z-40` turns **2** tests
+red (policyholder and agent shells); removing both `inert` guards turns a third red. Reverted → 20/20.
+
+### Five defects the audit missed
+`MainNav` help link ~36px · `InstallPrompt` CTA `h-9` · `RoleSwitcher` menu items ~40px and an
+unfloored trigger · the scrim not covering `InstallPrompt` · and **`MainNav` rows that were 44px only
+by coincidence** — `py-3` plus line-height, now an explicit `min-h-11` so a type change cannot
+silently sink them. That last one is the useful kind: not a defect today, a defect waiting for an
+unrelated edit.
+
+### `InstallPrompt` now rides the nav's own variable
+`bottom-[calc(var(--pw-bottom-nav-h,5rem)+env(safe-area-inset-bottom,0px)+0.75rem)]` — coupled to the
+same variable the nav sizes itself from, so the two cannot drift apart again. −14px overlap → +16px
+clear on a notched device.
+
+### `NotificationBell` was genuinely unreachable
+Verified properly before deletion: `UserMenu` is rendered once (`AppShell.tsx:348`), never with
+`compact`; the only consumer of `@/components/shell` imports `AppShell` alone. Branch, prop and
+import deleted. `NotificationBell.tsx` itself now has **zero production call sites** — flagged, not
+removed, since it is outside the boundary.
+
+### Boundary extensions, each forced and named
+`components/ThemeToggle.tsx` — **my brief had the wrong path**; `components/ui/ThemeToggle.tsx` does
+not exist. And `ThemeToggle` now takes a **required `ariaLabel`** because it renders on public routes
+where `useLanguage().t` deliberately throws — a real constraint found only in implementation.
+
+**Greek freeze:** one addition, `userMenu.toggleTheme "Εναλλαγή θέματος"`. No edits, no deletions.
+
+### Reviewer's own error, eighth of its kind
+My first probe replaced `z-[45]` in a **comment** rather than the `className` — my `s2 != s`
+assertion passed because a comment changed, and I briefly read a correct guard as having a gap. The
+rule I keep relearning: assert the **behavioural token** changed, not that the file did.

@@ -100,7 +100,11 @@ export function LocaleToggle({
                         onClick={() => setLanguage(value)}
                         aria-pressed={language === value}
                         className={cn(
-                            "rounded-md px-2.5 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                            // min-h-11 min-w-11: a two-letter label cannot supply a 44px
+                            // target on its own. The "plain" variant got this floor first;
+                            // this one — the variant the app shell actually renders —
+                            // measured 30x40 until it caught up.
+                            "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-2.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                             language === value
                                 ? "bg-white text-black shadow-sm dark:bg-black dark:text-mint"
                                 : "text-black/60 dark:text-white/60"
