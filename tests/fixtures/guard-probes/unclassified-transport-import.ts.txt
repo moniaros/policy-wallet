@@ -1,0 +1,22 @@
+// RED PROBE for the transport-universe guard in
+// tests/unit/notification-bus-invariants.test.ts ("outbound transports…").
+//
+// This is the exact shape of the defect the guard exists to refuse: a new
+// send path that imports a transport directly — statically AND dynamically —
+// and is classified nowhere, so the §9.5 cadence gate (the customer's global
+// off switch and monthly ceiling) never sees the send. The guard test feeds
+// this file through the SAME detector it runs over the real tree and asserts
+// it comes back flagged; if the detector ever stops seeing it, the guard is
+// no longer guarding.
+
+import { sendEmail } from "@/lib/email/email-service"
+
+export async function remindQuietly(to: string) {
+    // A well-meaning engagement nudge, sent behind the dispatcher's back.
+    await sendEmail({ to, subject: "Μια υπενθύμιση", html: "<p>…</p>" })
+
+    // The dynamic form the admin actions use — same specifier, no import
+    // statement, so a statement-level scan would miss it.
+    const { sendWebPush } = await import("@/lib/push/web-push")
+    void sendWebPush
+}

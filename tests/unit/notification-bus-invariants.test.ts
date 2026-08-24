@@ -477,3 +477,142 @@ describe("stored notification content is bilingual customer copy", () => {
         ).toEqual([])
     })
 })
+
+/**
+ * P1-09b — the §9.5 cadence controls must be impossible to route around.
+ *
+ * The controls themselves are proven behaviourally in
+ * tests/unit/cadence-controls.test.ts: the dispatcher and the retry sweep skip
+ * outbound sends (and record why) when a user's global off switch or monthly
+ * ceiling says so. That proof covers the PIPELINE. What it cannot cover is a
+ * send path that never enters the pipeline — a module that imports a transport
+ * directly and mails whoever it likes, which is exactly what the app's auth
+ * and admin flows legitimately do today.
+ *
+ * THE UNIVERSE (D-005 — a guard states what it walks and what it claims):
+ * every .ts/.tsx file under lib/, app/ and components/, enumerated from the
+ * filesystem at test time. A file is a TRANSPORT TOUCHER when, after comment
+ * stripping, it names a transport module in any import form — static, dynamic
+ * `import("…")` or require — matched on the module SPECIFIER, so aliasing the
+ * imported symbol cannot hide it. The transport modules are the three that
+ * exist (`lib/email/email-service`, `lib/mail`, `lib/push/web-push`) plus the
+ * dead FCM path (`lib/services/push.service`), kept in the net so reviving it
+ * lands here too. NOT covered, stated plainly: a send path that inlines its
+ * own HTTP call to a mail provider would not import any of these — the sibling
+ * outbound-dispatch guard (lib/outbound/dispatch-guard.ts) is the env-level
+ * backstop for that, and `fetch(BREVO…)` exists only inside email-service.
+ *
+ * Every toucher must be classified below — gated pipeline, transport plumbing,
+ * or an exemption with a reason a reviewer can reject. An unclassified toucher
+ * fails the test, so a NEW send path cannot ship without answering "why may
+ * this ignore the customer's off switch?" in this file, in review.
+ */
+describe("outbound transports are invoked only where the §9.5 cadence gate can see them", () => {
+    const TRANSPORT_UNIVERSE = [
+        ...globSync("lib/**/*.ts"),
+        ...globSync("lib/**/*.tsx"),
+        ...globSync("app/**/*.ts"),
+        ...globSync("app/**/*.tsx"),
+        ...globSync("components/**/*.ts"),
+        ...globSync("components/**/*.tsx"),
+    ]
+
+    // Module specifiers, not symbol names: `import { sendEmail as x }` and
+    // `await import("@/lib/email/email-service")` both still name the module.
+    // Anchored on the closing quote so `@/lib/mail-templates` (markup only)
+    // does not match `@/lib/mail`.
+    const TRANSPORT_SPECIFIER =
+        /["'](?:@\/lib\/email\/email-service|@\/lib\/mail|@\/lib\/push\/web-push|@\/lib\/services\/push\.service|\.{1,2}\/(?:[\w/.-]*\/)?(?:email-service|web-push|push\.service|mail))["']/
+
+    const touchesTransport = (source: string) => TRANSPORT_SPECIFIER.test(strip(source))
+
+    /**
+     * Path → why it may touch a transport. Three kinds of answer:
+     *   pipeline  — reached only via deliver(), whose only callers are the
+     *               dispatcher and the sweep (pinned below), both of which
+     *               consult the cadence gate (proven by outcome, in
+     *               cadence-controls.test.ts).
+     *   plumbing  — defines or wraps the transport; makes no send decision.
+     *   exempt    — sends outside the pipeline ON PURPOSE, with the reason.
+     *               Everything here is transactional, operational or
+     *               compliance mail: the same class the dispatcher itself
+     *               refuses to suppress ("nobody consents away a failed
+     *               payment"), or mail to admins / to people who are not
+     *               users yet, where no per-user gate can exist.
+     */
+    const CLASSIFIED: Record<string, string> = {
+        "lib/notifications/channels/email.ts": "pipeline — the email adapter behind deliver()",
+        "lib/notifications/channels/push.ts": "pipeline — the push adapter behind deliver()",
+        "lib/mail.ts": "plumbing — legacy sendMail wrapper around sendEmail; no live callers",
+        "lib/email/admin-emails.ts": "exempt — signup alerts to the operations inbox, not to a customer",
+        "lib/email/form-emails.ts":
+            "exempt — contact/quote submissions to the operations inbox, plus the submitter's receipt (transactional)",
+        "lib/email/invite-emails.ts":
+            "exempt — person-initiated invitations; recipients are usually not users yet, so no per-user gate exists",
+        "app/auth/actions.ts": "exempt — verification and password mail; account security is transactional",
+        "app/api/auth/reset-password/route.ts": "exempt — password reset; account security is transactional",
+        "app/(protected)/admin/actions.ts":
+            "exempt — agent-verification outcomes and GDPR/DSR lifecycle mail; compliance must reach even a user who muted everything",
+    }
+
+    it("every module that touches a transport is classified, and the classification is not stale", () => {
+        const touchers = TRANSPORT_UNIVERSE.filter((f) => touchesTransport(readFileSync(f, "utf-8")))
+
+        const unclassified = touchers.filter((f) => !(f in CLASSIFIED))
+        expect(
+            unclassified,
+            `new outbound send path(s) with no answer to "why may this ignore the customer's off switch?" — classify or route through emit():\n${unclassified.join("\n")}`
+        ).toEqual([])
+
+        // Both directions: an entry whose file no longer touches a transport is
+        // a stale exemption someone could later hide a new sender behind.
+        const stale = Object.keys(CLASSIFIED).filter((f) => !touchers.includes(f))
+        expect(stale, `stale classification entries:\n${stale.join("\n")}`).toEqual([])
+    })
+
+    it("deliver() is called only by the dispatcher and the sweep — the two places that consult the gate", () => {
+        const callers = globSync("lib/**/*.ts").filter((f) => {
+            if (f === "lib/notifications/channels/index.ts") return false // defines it
+            return /\bdeliver\(/.test(strip(readFileSync(f, "utf-8")))
+        })
+        expect(callers.sort()).toEqual(["lib/notifications/dispatch.ts", "lib/notifications/retry.ts"])
+    })
+
+    it("the dispatcher and the sweep actually import the cadence gate", () => {
+        // Belt to the behavioural braces: outcome tests prove the gate works
+        // when consulted; this pins that the two deliver() callers above still
+        // import the module that does the consulting. Import specifier, not a
+        // word match, so a comment cannot satisfy it.
+        for (const f of ["lib/notifications/dispatch.ts", "lib/notifications/retry.ts"]) {
+            expect(
+                /["']\.\/cadence["']/.test(strip(readFileSync(f, "utf-8"))),
+                `${f} no longer imports ./cadence`
+            ).toBe(true)
+        }
+    })
+
+    it("RED PROBE: an unclassified direct sender is detected, through the same detector", () => {
+        const probePath = "tests/fixtures/guard-probes/unclassified-transport-import.ts.txt"
+        const probe = readFileSync(probePath, "utf-8")
+
+        // The probe must trip the detector on BOTH import forms it contains…
+        expect(touchesTransport(probe), "static-import probe went undetected").toBe(true)
+        expect(
+            TRANSPORT_SPECIFIER.test(strip(probe).split("await import")[1] ?? ""),
+            "dynamic-import probe went undetected"
+        ).toBe(true)
+
+        // …and flow through the real classification over the real universe:
+        // injected as a file, it must come out as exactly the offender list.
+        const withProbe = [...TRANSPORT_UNIVERSE, probePath]
+        const offenders = withProbe
+            .filter((f) => touchesTransport(readFileSync(f, "utf-8")))
+            .filter((f) => !(f in CLASSIFIED))
+        expect(offenders).toEqual([probePath])
+
+        // Negative control: naming a NEIGHBOURING module must not match, or
+        // the guard would train people to ignore it.
+        expect(touchesTransport(`import { x } from "@/lib/mail-templates"`)).toBe(false)
+        expect(touchesTransport(`import { y } from "./mailbox"`)).toBe(false)
+    })
+})

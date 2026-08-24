@@ -9,7 +9,7 @@
 #          exact initializer source, whitespace collapsed. NOT covered: en copy, Greek
 #          outside these roots, non-pair literals/ternaries (lint:i18n-changed's beat).
 #
-# bundle entries: 2776
+# bundle entries: 2784
 # inline entries: 4425 across 208 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -1673,6 +1673,14 @@ bundle	roles.policyholder	"Ασφαλισμένος"
 bundle	roles.switchRole	"Αλλαγή ρόλου"
 bundle	settings.addLabel	"Προσθήκη"
 bundle	settings.autoRenewalDisabled	"Η αυτόματη ανανέωση απενεργοποιήθηκε."
+bundle	settings.cadence.ceilingDescription	"Πόσες μη επείγουσες ενημερώσεις — συνόψεις, προτάσεις, υπενθυμίσεις προνομίων — λαμβάνετε το πολύ κάθε μήνα εκτός εφαρμογής. Ό,τι έχει πραγματική προθεσμία, όπως μια ανανέωση, δεν μετρά εδώ."
+bundle	settings.cadence.ceilingLabel	"Μηνιαίο όριο ενημερώσεων"
+bundle	settings.cadence.ceilingNone	"Χωρίς όριο"
+bundle	settings.cadence.ceilingPerMonth	"τον μήνα"
+bundle	settings.cadence.pauseDescription	"Σταματούν όλα τα email και τα push. Ό,τι αφορά πληρωμές ή την ασφάλεια του λογαριασμού σας φτάνει πάντα, και το ιστορικό μέσα στην εφαρμογή συνεχίζει να ενημερώνεται."
+bundle	settings.cadence.pauseLabel	"Παύση όλων εκτός εφαρμογής"
+bundle	settings.cadence.saveFailed	"Δεν ήταν δυνατή η αποθήκευση. Δοκιμάστε ξανά."
+bundle	settings.cadence.title	"Πόσο συχνά σας ενοχλούμε"
 bundle	settings.cancelDeletion	"Ανάκληση αιτήματος"
 bundle	settings.deleteAccountConfirm	"Να υποβληθεί αίτημα διαγραφής του λογαριασμού σας; Μετά την ολοκλήρωσή του η διαγραφή δεν αναστρέφεται."
 bundle	settings.deleteFailed	"Η υποβολή του αιτήματος διαγραφής απέτυχε"

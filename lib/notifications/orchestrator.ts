@@ -48,6 +48,12 @@ export interface DeliverySettings {
     quietHoursEnabled: boolean
     quietHoursStart: number
     quietHoursEnd: number
+    /**
+     * The daily deferral cap — except that an explicit stored 0 is the §9.5
+     * global outbound off switch, which is not a rate limit and is enforced
+     * as a recorded skip in the dispatcher (lib/notifications/cadence.ts),
+     * never as a deferral here. Role defaults are always positive.
+     */
     maxPerDay: number
     digestMode: string
 }
@@ -335,8 +341,17 @@ export async function orchestrate(
                 }
 
                 // Rate limit also defers — to tomorrow, so nothing is lost.
-                const already = rateLimitOn ? await sentToday(recipient.userId) : 0
-                if (rateLimitOn && already >= settings.maxPerDay) {
+                //
+                // A stored cap of 0 is NOT a rate limit: it is the customer's
+                // global off switch (§9.5), enforced as a recorded skip by the
+                // dispatcher (lib/notifications/cadence.ts). Deferring it here
+                // would queue mail the user refused — `already >= 0` is always
+                // true — and the sweep would send it tomorrow without asking
+                // again. So 0 never enters this branch, which also means the
+                // admin's rateLimitEnabled toggle never touches the off switch.
+                const capped = rateLimitOn && settings.maxPerDay > 0
+                const already = capped ? await sentToday(recipient.userId) : 0
+                if (capped && already >= settings.maxPerDay) {
                     const tomorrow = new Date(now.getTime() + 24 * 3600_000)
                     tomorrow.setMinutes(0, 0, 0)
                     scheduledFor = scheduledFor && scheduledFor > tomorrow ? scheduledFor : tomorrow

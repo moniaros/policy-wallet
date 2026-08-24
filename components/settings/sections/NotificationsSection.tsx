@@ -9,6 +9,7 @@ import { SettingsSection } from "@/components/settings/SettingsSection"
 import { Switch } from "@/components/ui/form/Switch"
 import { PushOptIn } from "@/components/notifications/PushOptIn"
 import { QuietHours } from "@/components/notifications/QuietHours"
+import { CadenceControls } from "@/components/notifications/CadenceControls"
 import { setNotificationStreamPreference } from "@/app/(protected)/account/actions"
 import { NOTIFICATION_PREFERENCE_GROUPS } from "@/lib/notifications/preference-registry"
 import type { NotificationSettingsData } from "@/app/(protected)/account/data"
@@ -109,6 +110,14 @@ export function NotificationsSection({ data }: { data: NotificationSettingsData 
             {data.quietHours && (
                 <SettingsSection title={copy.timingTitle}>
                     <QuietHours initial={data.quietHours} />
+                </SettingsSection>
+            )}
+
+            {/* The §9.5 cadence controls — the global outbound off switch and
+                the monthly ceiling. Same null contract as quiet hours. */}
+            {data.cadence && (
+                <SettingsSection title={t.settings.cadence.title}>
+                    <CadenceControls initial={data.cadence} />
                 </SettingsSection>
             )}
 

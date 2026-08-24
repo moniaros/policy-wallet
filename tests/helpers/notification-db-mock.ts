@@ -20,7 +20,11 @@ export function notificationDbMock() {
         notificationEvent: {
             create: vi.fn(async () => ({})),
             findFirst: vi.fn(async () => null),
-            findMany: vi.fn(async () => []),
+            // Takes the query args so a test can route on `where` (the retry
+            // sweep issues three differently-shaped findMany calls, and the
+            // cadence month-count a fourth).
+            findMany: vi.fn(async (_args?: unknown) => [] as any[]),
+            update: vi.fn(async () => ({})),
             updateMany: vi.fn(async () => ({ count: 0 })),
             count: vi.fn(async () => 0),
         },
@@ -54,6 +58,16 @@ export function notificationDbMock() {
             findMany: vi.fn(async () => []),
             deleteMany: vi.fn(async () => ({ count: 0 })),
             updateMany: vi.fn(async () => ({ count: 0 })),
+        },
+        // The §9.5 cadence gate (lib/notifications/cadence.ts). Null = the user
+        // never touched the controls, so nothing is off and no ceiling applies —
+        // the boring path, matching every other default here.
+        userNotificationSettings: {
+            findUnique: vi.fn(async () => null),
+            upsert: vi.fn(async () => ({})),
+        },
+        policyholderProfile: {
+            findUnique: vi.fn(async () => null),
         },
     }
 }

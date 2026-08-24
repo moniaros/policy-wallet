@@ -43,11 +43,16 @@ vi.mock("@/lib/db", () => ({ db: dbMock }))
 vi.mock("@/lib/logger", () => ({ logger: vi.fn() }))
 vi.mock("@/lib/notifications/dispatch", () => ({ emit: emitMock }))
 vi.mock("./dispatch", () => ({ emit: emitMock }))
-vi.mock("@/lib/notifications/channels", () => ({
+// Partial mock: the sweep now also reaches this module for IMPLEMENTED_CHANNELS
+// (via cadence → preference-channels), so the real exports are kept and only
+// the transport seam is stubbed.
+vi.mock("@/lib/notifications/channels", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("@/lib/notifications/channels")>()),
     deliver: vi.fn(async () => ({ status: "sent" })),
     isTransportConfigured: () => true,
 }))
-vi.mock("./channels", () => ({
+vi.mock("./channels", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("@/lib/notifications/channels")>()),
     deliver: vi.fn(async () => ({ status: "sent" })),
     isTransportConfigured: () => true,
 }))

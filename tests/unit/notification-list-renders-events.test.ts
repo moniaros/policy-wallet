@@ -498,6 +498,14 @@ const NON_LIST_EXEMPTIONS: Record<string, { count: number; reason: string }> = {
         count: 1,
         reason: "90-day resend suppression — an idempotency read, not a customer list.",
     },
+    "lib/notifications/cadence.ts": {
+        count: 1,
+        reason:
+            "The §9.5 monthly-ceiling COUNT: sent outbound engagement deliveries in the rolling " +
+            "month, deduplicated by stored dedupeKey in code (one message on two channels counts " +
+            "once — the same per-event collapse the grouping helper performs, applied to a number " +
+            "rather than a render). Never rendered to anyone.",
+    },
     "lib/services/compliance.service.ts": {
         count: 1,
         reason:

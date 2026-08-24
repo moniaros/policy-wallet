@@ -23,6 +23,7 @@ import { getEventDefinition, retryDelayMinutes } from "./registry"
 import { getNotificationConfig } from "./config"
 import { settingValue } from "./settings"
 import { deliver, isTransportConfigured } from "./channels"
+import { cadenceSkipForStoredRow, type CadenceGate } from "./cadence"
 import type { NotificationChannel } from "./registry"
 
 export interface RetrySweepSummary {
@@ -53,6 +54,13 @@ export async function runNotificationRetrySweep(now = new Date()): Promise<Retry
     const escalationEnabled = settingValue<boolean>(config.settings, "automation.escalationEnabled")
     /** Rows one invocation will touch. Reported, never silently capped. */
     const MAX_BATCH = settingValue<number>(config.settings, "automation.retryBatchSize")
+
+    // The §9.5 cadence gate, re-checked per stored row before late delivery.
+    // A row queued last night (quiet hours) or failed last week (retry) was
+    // admitted under the rules of THAT moment; the user may have switched
+    // outbound off since, and this sweep must not be the way around their
+    // refusal. One read per user per sweep.
+    const cadenceGates = new Map<string, CadenceGate>()
 
     // ── 1. Expire ────────────────────────────────────────────────────────────
     const expired = await db.notificationEvent.updateMany({
@@ -164,6 +172,15 @@ export async function runNotificationRetrySweep(now = new Date()): Promise<Retry
             continue
         }
 
+        const cadenceSkip = await cadenceSkipForStoredRow(row.userId, row.eventType, channel, cadenceGates)
+        if (cadenceSkip) {
+            await db.notificationEvent.update({
+                where: { id: row.id },
+                data: { status: "skipped", skipReason: cadenceSkip, scheduledFor: null },
+            })
+            continue
+        }
+
         const user = await db.user.findUnique({
             where: { id: row.userId },
             select: { email: true, preferredLanguage: true },
@@ -247,6 +264,16 @@ export async function runNotificationRetrySweep(now = new Date()): Promise<Retry
                     skipReason: `transport_not_configured:${channel}`,
                     nextAttemptAt: null,
                 },
+            })
+            continue
+        }
+
+        // A retry must not deliver into a mailbox the user has since closed.
+        const cadenceSkip = await cadenceSkipForStoredRow(row.userId, row.eventType, channel, cadenceGates)
+        if (cadenceSkip) {
+            await db.notificationEvent.update({
+                where: { id: row.id },
+                data: { status: "skipped", skipReason: cadenceSkip, nextAttemptAt: null },
             })
             continue
         }

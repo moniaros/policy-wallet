@@ -2249,6 +2249,10 @@ model UserNotificationSettings {
 
   /// Hard cap on notifications per rolling day. Null = the role default.
   /// A runaway cron reaching a customer forty times is worse than the cron.
+  /// An explicit 0 is the customer's §9.5 global outbound OFF switch: the
+  /// dispatcher records a skip — never a deferral — for every non-transactional
+  /// outbound channel, independent of every admin toggle. Only the settings
+  /// screen's pause control writes 0. See lib/notifications/cadence.ts.
   maxPerDay Int? @map("max_per_day")
 
   /// immediate | daily — reserved for digest batching.

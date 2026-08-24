@@ -543,3 +543,78 @@ Fixed two ways: the delimiter is now the escape (behaviourally identical, textua
 
 **The general point:** this run has repeatedly found guards whose *universe* was too small. This is
 the same failure one level down — a correct universe, and a file its *reader* cannot see.
+
+
+---
+
+## D-017 — `maxPerDay = 0` did not suppress. It deferred, and the sweep delivered it anyway.
+
+date: 2026-08-24
+raised_by: P1-09b, correcting the Orchestrator's recon
+decision: The user's outbound gate is decided **before** the deferral branch, excluded from the
+admin-gated rate-limit path, and re-checked on both late-delivery passes.
+
+I briefed P1-09b that a global off switch needed no migration because `orchestrator.ts:93` reads
+`stored.maxPerDay ?? defaults.maxPerDay` (so a stored `0` survives) and `:339` is
+`already >= settings.maxPerDay` (so `0` suppresses everything). The first half was right. The second
+was **wrong in effect**: that branch did not skip, it **deferred to tomorrow** — `emit` wrote a
+`queued` row and the sweep later delivered it **with no re-check**. A one-day delay loop wearing the
+label of an off switch.
+
+Closed at three points, each verified:
+- `orchestrator.ts:352` — `const capped = rateLimitOn && settings.maxPerDay > 0`, so cap-0 never
+  enters the rate-limit branch
+- `dispatch.ts:264` — the gate is consulted **before** the deferral branch
+- `retry.ts:175` — `cadenceSkipForStoredRow` re-checks per stored row on scheduled *and* retry passes
+
+**Fourth instance this run of a fact I recorded as settled being wrong in mechanism** (after D-002's
+dedupeKey suffix, D-012's stale `data/current`, and D-015's key-name defaults). The pattern is
+consistent and worth naming: I read the *decision* a line makes and not the *branch it takes*.
+`already >= 0` is true, so I concluded "suppressed" without reading what the enclosing branch then
+does with that truth.
+
+---
+
+## D-018 — v1 → v2 transition: the instruction is superseded, the codebase is inherited
+
+date: 2026-08-24
+raised_by: Orchestrator, on the owner's answer
+decision: `PW-MOBILE-TRANSFORM-02` **inherits** v1's committed work. Owner-confirmed.
+
+v2 supersedes the v1 *instruction* in full. It does not supersede 50 commits of verified, green
+work. Carried forward: the Phase 0 gate (11 baselines, 188 captures, 36 candidates verified),
+8 shipped and adversarially-reviewed Phase 1 items, 17 guards each proven failing first, and three
+answered halts (H-001 = C, H-002 = B, H-004 = B).
+
+Re-baselining would also have been *wrong*, not merely wasteful: the shipped Phase 1 fixes exist in
+the code either way, so a fresh capture would no longer be a "before" state for anything.
+
+**What v2 adds** is real and unstarted: three unmeasured surfaces (`/branches`,
+`/insights/risk-profile`, `/timeline`), three new invariants (§2.2 unowned-line claims, §2.4 the
+second score, §2.13 the guilt register), the §4.2 IA consolidation, §8's AI advisor, and §10's
+monetization rules.
+
+Numbering: v1 item ids keep their history in this file; new items use v2 ids. Commits use the
+`[PW-MOBILE-TRANSFORM-02]` prefix from here; phase tags become `pw-transform-v2-phase-<n>-complete`.
+
+---
+
+## D-019 — v2 cites RENDERED strings; the source holds different case
+
+date: 2026-08-24
+raised_by: Orchestrator, verifying v2's candidate list
+decision: Candidate verification searches **case-insensitively** and accounts for `text-transform`.
+
+Two of v2's cited defects return **nothing** from a literal grep:
+
+| v2 cites | source actually holds | where |
+|---|---|---|
+| «ΠΟΣΟ ΚΑΛΑ ΣΑΣ ΓΝΩΡΙΖΟΥΜΕ» | «Πόσο καλά σας γνωρίζουμε» | `components/risk-dna/RiskIntelligenceView.tsx:123`, under `.pw-kicker` — which is `uppercase` in `globals.css` |
+| «ΑΠΡΟΣΤΑΤΕΥΤΟ» | «Απροστάτευτο» | `components/coverage/RiskGraphPanel.tsx:71` |
+
+Both defects are **real and located**. A literal grep would have "refuted" them and closed two live
+invariant violations as non-existent — the most damaging possible error in a phase whose job is
+honest refutation.
+
+Same family as D-005 and D-016: the searcher's assumption was about *form* rather than *location*.
+A rendered string is not a source string, and CSS is part of the rendering.

@@ -42,6 +42,14 @@ import {
 import { redactPolicyPlaceholders } from "@/lib/wallet/policy-identity"
 import { renderTemplate, type TemplateVars } from "./templates"
 import { settingValue } from "./settings"
+import {
+    OPEN_GATE,
+    cadenceSkipReason,
+    countOutboundEngagementThisMonth,
+    getCadenceGate,
+    isCeilingGoverned,
+    isOutboundChannel,
+} from "./cadence"
 import { deliver, isTransportConfigured, type ChannelContent, type DeliveryOutcome } from "./channels"
 
 export type { ChannelContent }
@@ -240,6 +248,26 @@ export async function emit(params: EmitParams): Promise<EmitResult> {
 
         const off = await suppressedChannels(params.userId, params.event, effective)
 
+        // The §9.5 cadence gate — the customer's OWN controls: the global
+        // outbound off switch and the monthly ceiling on non-deadline outbound.
+        // Read at send time, per emission, and deliberately not part of the
+        // admin config above: an operator toggle must never be able to defeat a
+        // customer's "no" (lib/notifications/cadence.ts has the full story).
+        const wantsOutbound = effective.channels.some(
+            (channel) =>
+                (!params.only || params.only.includes(channel)) &&
+                isOutboundChannel(channel) &&
+                isTransportConfigured(channel)
+        )
+        const gate =
+            !effective.transactional && wantsOutbound
+                ? await getCadenceGate(params.userId)
+                : OPEN_GATE
+        const sentThisMonth =
+            !gate.outboundOff && gate.monthlyCeiling !== null && isCeilingGoverned(effective)
+                ? await countOutboundEngagementThisMonth(params.userId)
+                : 0
+
         // An administrator switching a trigger off, or pausing all automations,
         // is recorded as a `skipped` row rather than vanishing. "We deliberately
         // did not send this, and here is why" is exactly what an audit needs —
@@ -294,16 +322,25 @@ export async function emit(params: EmitParams): Promise<EmitResult> {
                       }
                     : params.content
 
+            // The user's own gate is decided FIRST, and wins over a deferral:
+            // a deferred row is delivered later by the sweep, and "later" is
+            // not what "off" means. Recorded like `preference_off` — honouring
+            // a choice is worth a row, because the row is the evidence the
+            // control works.
+            const userCadenceSkip = cadenceSkipReason(effective, channel, gate, sentThisMonth)
+
             // Deferred: record the intent now and let the sweep deliver it.
             // The row exists from the moment the decision is made, so "why has
             // this customer heard nothing" has an answer before the send.
             const deferred =
-                params.scheduledFor && params.scheduledFor.getTime() > Date.now()
+                !userCadenceSkip && params.scheduledFor && params.scheduledFor.getTime() > Date.now()
                     ? params.scheduledFor
                     : null
 
             let outcome: DeliveryOutcome
-            if (deferred) {
+            if (userCadenceSkip) {
+                outcome = { status: "skipped", reason: userCadenceSkip }
+            } else if (deferred) {
                 outcome = { status: "skipped", reason: "scheduled" }
             } else if (suppressedGlobally) {
                 outcome = { status: "skipped", reason: suppressedGlobally }

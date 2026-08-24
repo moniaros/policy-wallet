@@ -2511,6 +2511,18 @@ export const en: TranslationKeys = {
             saveFailed: 'This could not be saved. Please try again.',
             save: 'Save quiet hours',
         },
+        cadence: {
+            title: 'How often we reach you',
+            pauseLabel: 'Pause everything outside the app',
+            pauseDescription:
+                'Stops every email and push notification. Anything about payments or your account security always arrives, and the in-app history keeps recording.',
+            ceilingLabel: 'Monthly limit on updates',
+            ceilingDescription:
+                'At most this many non-urgent updates — digests, suggestions, perk reminders — reach you outside the app each month. Anything with a real deadline, like a renewal, does not count here.',
+            ceilingNone: 'No limit',
+            ceilingPerMonth: 'per month',
+            saveFailed: 'This could not be saved. Please try again.',
+        },
         push: {
             title: 'Push notifications',
             description: 'Get urgent findings on this device, even when PolicyWallet is closed.',

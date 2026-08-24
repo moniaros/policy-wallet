@@ -8,9 +8,12 @@ import { defaultSettingsForRoles } from "@/lib/notifications/orchestrator"
 /**
  * Quiet hours, as the customer sets them.
  *
- * Deliberately three fields and nothing else. The orchestrator supports a daily
- * cap and a digest mode too, but those are operator dials — a customer asked to
- * choose their own rate limit would be being asked to do our job.
+ * Deliberately three fields and nothing else. The §9.5 cadence controls — the
+ * global outbound off switch (stored as an explicit maxPerDay of 0) and the
+ * monthly ceiling — are the customer's too, but they live in
+ * cadence-actions.ts; the POSITIVE daily cap and the digest mode remain
+ * operator dials, because a customer asked to pick their own rate limit would
+ * be being asked to do our job.
  */
 export interface QuietHoursState {
     enabled: boolean

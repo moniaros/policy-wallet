@@ -200,18 +200,67 @@ export interface NotificationSettingsData {
      */
     streams: Record<string, boolean>
     quietHours: { enabled: boolean; start: number; end: number; timezone: string } | null
+    /**
+     * The §9.5 cadence controls (P1-09b). `outboundPaused` is true only on an
+     * explicit stored maxPerDay of 0 — the customer's global off switch. The
+     * ceiling lives on the policyholder profile, so `ceilingConfigurable` is
+     * false for roles that have none. Null = unreadable; the section hides
+     * (same contract as quietHours) rather than rendering controls whose
+     * current state it would be guessing.
+     */
+    cadence: {
+        outboundPaused: boolean
+        monthlyCeiling: number | null
+        ceilingConfigurable: boolean
+    } | null
+}
+
+async function getCadenceControlsState(dbUser: {
+    id: string
+    roles: string | null
+}): Promise<NotificationSettingsData["cadence"]> {
+    try {
+        const { parseMonthlyCeiling } = await import("@/lib/notifications/cadence")
+        const ceilingConfigurable = (dbUser.roles ?? "")
+            .split(",")
+            .map((r) => r.trim())
+            .includes("policyholder")
+        const [settings, profile] = await Promise.all([
+            db.userNotificationSettings.findUnique({
+                where: { userId: dbUser.id },
+                select: { maxPerDay: true },
+            }),
+            ceilingConfigurable
+                ? db.policyholderProfile.findUnique({
+                      where: { userId: dbUser.id },
+                      select: { preferences: true },
+                  })
+                : null,
+        ])
+        const prefs = (profile?.preferences ?? {}) as Record<string, unknown>
+        return {
+            outboundPaused: settings?.maxPerDay === 0,
+            monthlyCeiling: parseMonthlyCeiling(prefs.outboundMonthlyCeiling),
+            ceilingConfigurable,
+        }
+    } catch {
+        // Same contract as getQuietHours: a preference read must never take
+        // down the page, and controls whose state we would be guessing hide.
+        return null
+    }
 }
 
 export async function getNotificationSettingsData(): Promise<NotificationSettingsData> {
     const { dbUser } = await getAuthenticatedUser()
     const { getQuietHours } = await import("./quiet-hours-actions")
 
-    const [preferences, quietHours] = await Promise.all([
+    const [preferences, quietHours, cadence] = await Promise.all([
         db.notificationPreference.findMany({
             where: { userId: dbUser.id },
             select: { eventType: true, channel: true, enabled: true },
         }),
         getQuietHours(),
+        getCadenceControlsState(dbUser),
     ])
 
     const streams: Record<string, boolean> = {}
@@ -219,7 +268,7 @@ export async function getNotificationSettingsData(): Promise<NotificationSetting
         streams[group.eventType] = streamReachesOut(preferences, group)
     }
 
-    return { streams, quietHours: quietHours ?? null }
+    return { streams, quietHours: quietHours ?? null, cadence }
 }
 
 // ── Privacy & data ───────────────────────────────────────────────────
