@@ -354,3 +354,61 @@ fixture, which is exactly the gap the policy-detail baseline already documented 
 | **decided by H-001 (option C) — REMOVE** | **6** | D-02, D-04, A-01, A-02, A-03, A-04 |
 | DO NOT TOUCH (§12.2) | **4** | W-15, U-02, R-03, `/consent/ai` + Change Password |
 | monetization surfaces | **5** | dashboard ×2, wallet ×2, analyses ×1 |
+
+
+---
+
+# v2 additions — surfaces v1 never enumerated
+
+## Κλάδοι — `/branches`
+
+Source: `app/(protected)/branches/page.tsx` → `components/branches/ProductBranchCard.tsx`.
+Baseline: `evidence/branches/BASELINE.md` (1,981px @320, 31 containers, depth 2, **9 truncation**).
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| B-01 | See the nine lines of business as cards | fact | **KEEP** | absorbed into «Η προστασία μου», *ανά κλάδο* lens (§4.2) | Phase 2 |
+| B-02 | See how many policies you hold per line | fact | **KEEP** | the honest half of this surface | — |
+| B-03 | Read a one-line tagline per line | fact | **KEEP, FIX** | 8 of 9 clip mid-word at 320px (`line-clamp-2`) — Phase 3 primitive, not a local override | Phase 4 |
+| B-04 | Open a line to see what you hold | action | **KEEP** | `href` per card | — |
+| B-05 | See «Πιθανό κενό» on a line | fact | **REMOVE for unowned lines** | §2.2 — life, pet and cyber render it with **zero** policies. Owned lines may keep a review-framed treatment | V2-P1-02 |
+| B-06 | See `business` among consumer lines | fact | **DEFER — likely unintended** | `contentTier: 'rich'` with no B2C/B2B filter. Needs a product decision, not a fix | Phase 2 |
+
+**Ledger note on B-05.** This is the row that matters. The card's *structure* is fine — the defect
+is that an unowned line wears the visual language of a finding. Removal here means changing the
+register, not deleting the card: the customer still learns they hold no pet cover.
+
+## Χρονολόγιο — `/timeline`
+
+Source: `app/(protected)/timeline/page.tsx` → `components/timeline/LifeTimeline.tsx`.
+Baseline: `evidence/timeline/BASELINE.md` (9,539px @320 paid, 68 containers, **1 leak**).
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| T-01 | See a chronological history of what happened | fact | **KEEP, RELOCATED** | §4.2 — becomes activity history **inside Ρυθμίσεις**; it does not warrant a menu slot | Phase 2 |
+| T-02 | Filter by entry kind | action | **KEEP** | must survive the relocation | Phase 2 |
+| T-03 | See a cause link between entries | fact | **KEEP** | the surface's one genuinely distinctive idea — it clears the filter first because the cause is often a filtered-out kind | Phase 2 |
+| T-04 | Open the policy an entry concerns | action | **KEEP** | `href` per entry | — |
+| T-05 | Read a policy's name on an entry | fact | **KEEP, FIX** | renders `__PENDING_EXTRACTION__` verbatim — `timeline/build.ts:202` bypasses `policy-identity.ts` (D-021) | V2-P1-06 |
+| T-06 | See 18 of 60 rows sharing one title | — | **REMOVE** | duplicate-block; the relocation is the opportunity to group | Phase 2 |
+
+**Ledger note on T-01.** §4.2 removes this from the menu. That is a **relocation, not a deletion** —
+the capability survives inside settings, and T-02/T-03 must survive with it or the move is a loss.
+T-03 especially: the cause link is the only thing here the wallet cannot already tell you.
+
+---
+
+## Running counts — refreshed 2026-08-24 (v2, post-Phase-0-extension)
+
+| | v1 Phase 0 | now | Δ |
+|---|---|---|---|
+| total capabilities | 89 | **101** | +12 (6 `/branches`, 6 `/timeline`) |
+| total CTAs | *not counted* | *pending* | — |
+| AI entry points | *pending* | *pending* | — |
+| monetization surfaces | 5 | **5** | 0 — neither new surface carries one |
+
+**§10 ceiling holds:** the monetization count did not rise, and §10.1 forbids it rising. Recorded
+here so a later phase cannot add one quietly.
+
+`/insights/risk-profile` is not yet enumerated — its baseline is in flight, and it was unreachable
+until `V2-P1-01` landed an hour ago.
