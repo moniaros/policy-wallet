@@ -18,8 +18,6 @@
  * Local-dev database only; refuses the production project by ref.
  */
 
-import { Prisma } from "@prisma/client"
-
 export type PortfolioState = "empty" | "single" | "typical" | "heavy" | "all-expired"
 
 export const PORTFOLIO_STATES: PortfolioState[] = ["empty", "single", "typical", "heavy", "all-expired"]
@@ -551,67 +549,81 @@ export async function applyLongAdvisorFixture(db: any, ownerEmail: string): Prom
 const UNKNOWN_HOUSEHOLD_PREFIX = "E2E-DASH-UNK-MOT-"
 
 /**
- * V2-P0-FIX addition: a household with unknown income and unknown
- * dependants, holding real motor cover.
+ * V2-P0-FIX addition, CORRECTED (2026-08-24): a household that has told us it
+ * owns vehicles, everything else unanswered, holding real motor cover whose
+ * coverage data cannot be read.
  *
- * Reproduces the `/insights/risk-profile` zero-information state — the
- * health index reads `index: null, band: "unknown"` — for an account that
- * is not empty at all: it holds `count` (default 22, matching the reported
- * production shape) active, analysed motor policies. The mismatch is the
- * point: `toLifeContext`/`assessRisks` (lib/services/gap-engine/
- * life-context.ts, risk-assessment.ts) decide what the customer's life
- * looks like from `PolicyholderProfile` ALONE — by design, per
- * lib/services/risk-graph/projection.ts's header comment ("what a person
- * owns must not be inferred from what they bought") — so a wallet full of
- * motor policies is not evidence of anything to the profile-driven engine
- * if nobody ever answered "do you have a vehicle".
+ * ORIGINAL DEFECT (left here because it is the whole lesson): the first cut of
+ * this fixture blanked `vehiclesCount` to 0 along with every other factor, to
+ * build the most "zero-information" profile possible. That tests the wrong
+ * axis. `RISK_CATALOG.motor_liability.applies = (ctx) => ctx.vehiclesCount > 0`
+ * (lib/services/gap-engine/risk-catalog.ts:464) is gated on the "vehicles"
+ * factor being KNOWN before it is even consulted — `assessRisk`
+ * (lib/services/gap-engine/risk-assessment.ts) checks `missingFactors` first
+ * and returns `applicability: "needs_review"` whenever it is not — and
+ * `bindRisksToGraph` (lib/services/risk-graph/protection.ts:504) drops every
+ * risk that is not `applicability === "applicable"` before the graph is even
+ * built. A blanked `vehiclesCount` therefore makes `motor_liability` vanish
+ * from the graph entirely; it can never reach `unknown`, because it is never
+ * bound at all. «Άγνωστο» is a ROLL-UP of per-dimension adequacy verdicts on
+ * an APPLICABLE, BOUND risk (protection.ts:373 — `unknown` fires when every
+ * non-period dimension is `unevaluable`), not a synonym for "we know nothing
+ * about the customer".
+ *
+ * THE FIX: leave every other factor blank (unanswered), but make `vehicles`
+ * the one KNOWN factor — `vehiclesCount: count` plus `"vehiclesCount"` in
+ * `answeredFields` — so `assessRisk` clears step 1, `ctx.vehiclesCount > 0`
+ * clears step 2 (`risk.applies`), and the held motor policies clear step 3
+ * (`already_covered`), landing `applicability: "applicable"`. `bindRisksToGraph`
+ * then binds it and evaluates dimensions against the held policies' `acordData`
+ * — which this fixture already wrote (below) without a `coverage.perils` or
+ * `coverage.sumInsured` key. `readCoverageFacts` (lib/services/risk-graph/
+ * service.ts:44) returns `perils: null, sumInsured: null` for exactly that
+ * shape — never zero, because an unreadable figure is not a declaration of
+ * absence — which is what pushes both the peril and the limit dimension to
+ * `unevaluable` (protection.ts's `assessPeril`/`assessLimit`, "declared.size
+ * === 0" / "readable.length === 0" branches). Territory is never added at all
+ * (`hasTerritoryData` is false with no `territories` on the policy), and period
+ * is `satisfied` because every policy's `endDate` is 200+ days out. So the
+ * adequacy set is exactly `[peril: unevaluable, limit: unevaluable]`, and
+ * `rollUpState` (protection.ts:373) returns `"unknown"` — «Άγνωστο».
  *
  * Real field names, read from prisma/schema.prisma's `PolicyholderProfile`
  * and confirmed against lib/services/gap-engine/profile-gap-rules.ts's
  * `ProfileFields`: `dependentsCount` (Int, default 0) and `annualIncome`
- * (Decimal?, default null) are the two the brief named; `vehiclesCount`
- * (Int, default 0), `employmentStatus`, `hasPets`, `cyberExposure` are
- * reset alongside them so the profile is genuinely a never-onboarded row,
- * not a row with two fields blank and the rest coincidentally answered.
- * `answeredFields` is explicitly nulled (`Prisma.JsonNull`, matching
- * lib/services/gdpr-erasure.service.ts's convention for this same nullable
- * Json column) rather than merely left at Prisma's create default, so a
- * second run over a row a DIFFERENT fixture had touched still ends up
- * genuinely blank — required for the "provision twice, row counts match"
- * idempotence rule, since a stale `answeredFields` array would silently
- * change which factors `isFactorKnown` reports as known.
+ * (Decimal?, default null) are the two the original brief named;
+ * `employmentStatus`, `hasPets`, `cyberExposure` stay reset alongside them so
+ * every factor OTHER than vehicles is genuinely unanswered — not a row with
+ * two fields blank and the rest coincidentally answered. `answeredFields` is
+ * now an explicit one-element array (`["vehiclesCount"]`), not
+ * `Prisma.JsonNull`, so a second run over a row a DIFFERENT fixture had
+ * touched still ends up with exactly "vehicles known, nothing else" —
+ * required for the "provision twice, row counts match" idempotence rule,
+ * since a stale `answeredFields` array would silently change which factors
+ * `isFactorKnown` reports as known.
  *
  * VERIFIED 2026-08-24 by calling the real functions directly against this
- * exact shape (blank profile + 22 active motor policies, no acordData) —
- * not assumed:
+ * exact corrected shape (vehicles-known profile + 22 active, analysed motor
+ * policies, acordData with no `coverage` key) — not assumed. See the
+ * per-risk `state` values recorded in the run report; the summary:
  *
  *   assessRisks(ctx, policies).find(r => r.riskId === "motor_liability")
- *     → { applicability: "needs_review", status: "needs_review" }
+ *     → { applicability: "applicable", status: "already_covered" }
  *
- *   assembleRiskGraph(profile, policies).views
- *     → ONLY `health_access_delay` (unprotected). `motor_liability` is
- *       ABSENT — `bindRisksToGraph` drops every non-`applicable` risk
- *       before the graph is built, so the reported
- *       "Οδήγηση χωρίς υποχρεωτική κάλυψη · ΑΓΝΩΣΤΟ" row does NOT
- *       reproduce as a rendered RiskGraphPanel row on this page in the
- *       current code — an honest refutation of that specific symptom,
- *       not a confirmation. What DOES reproduce, below, is the
- *       zero-information health state the same brief calls out.
+ *   assembleRiskGraph(profile, policies).risks.find(r => r.riskId ===
+ *   "motor_liability") → { state: "unknown", dimensions: [
+ *       { dimension: "peril", verdict: "unevaluable" },
+ *       { dimension: "limit", verdict: "unevaluable" },
+ *       { dimension: "period", verdict: "satisfied" } ] }
  *
- *   calculateScoreFromAssessments(...) → overallScore: 94,
- *     indeterminate: true, expectedLines: ["health"] — NOT a literal 0;
- *     "zero-score" is more precisely "indeterminate", flagged rather than
- *     defaulted to a number that would look confident.
+ *   → "Οδήγηση χωρίς υποχρεωτική κάλυψη · ΑΓΝΩΣΤΟ" DOES reproduce as a bound,
+ *     rendered RiskGraphPanel row once `motor_liability` is allowed through
+ *     `bindRisksToGraph`'s applicability gate.
  *
- *   customerHealthIndex(...) → { index: null, band: "unknown" }, copy
- *     "We know too little about your life for this to mean anything yet."
- *     — THIS is the zero/blank state the brief's "zero-score" refers to,
- *     and it reproduces exactly, even though the wallet holds 22 real,
- *     active, analysed motor policies.
- *
- *   buildBranchOverview(...) → motor tile: `covered`, policyCount 22 — the
- *     /branches surface is unaffected; it reads held policies directly,
- *     never the profile-driven risk assessment.
+ *   customerHealthIndex(...) still reads `index: null, band: "unknown"` —
+ *     one known factor out of ~20 is still a zero-information household for
+ *     the health index, so the §2.13 guilt-copy / zero-score candidates this
+ *     fixture also feeds are unaffected by the correction.
  *
  * ISOLATION NOTE for whoever wires the capture spec: this function only
  * touches `PolicyholderProfile` and its own `E2E-DASH-UNK-MOT-`-prefixed
@@ -630,9 +642,12 @@ export async function applyUnknownHouseholdFixture(db: any, ownerEmail: string, 
     const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
     if (!owner) throw new Error(`applyUnknownHouseholdFixture: ${ownerEmail} not provisioned — run global-setup first`)
 
-    // The profile half — reset to genuinely UNANSWERED, not merely "no":
-    // every risk factor at its column default AND absent from
-    // `answeredFields`, so `isFactorKnown` resolves every factor to false.
+    // The profile half — every factor UNANSWERED except vehicles, which must
+    // be KNOWN (not merely non-zero — see `isFactorKnown` /
+    // `DEFAULTED_COLUMNS.vehiclesCount`, lib/services/gap-engine/
+    // life-context.ts) for `motor_liability` to ever reach the graph. `count`
+    // matches the held motor-policy count so `whyItApplies`'s "you told us you
+    // have N vehicles" is internally consistent with the wallet.
     const blankProfile = {
         dependentsCount: 0,
         childrenCount: 0,
@@ -640,9 +655,9 @@ export async function applyUnknownHouseholdFixture(db: any, ownerEmail: string, 
         annualIncome: null,
         hasPets: false,
         petsCount: null,
-        vehiclesCount: 0,
+        vehiclesCount: count,
         cyberExposure: null,
-        answeredFields: Prisma.JsonNull,
+        answeredFields: ["vehiclesCount"],
     }
     const existingProfile = await db.policyholderProfile.findUnique({ where: { userId: owner.id }, select: { id: true } })
     if (existingProfile) {

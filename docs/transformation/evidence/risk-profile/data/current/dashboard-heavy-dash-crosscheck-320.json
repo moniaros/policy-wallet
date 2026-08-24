@@ -1,0 +1,169 @@
+{
+  "capture": "dashboard-heavy-dash-crosscheck",
+  "width": 320,
+  "url": "http://localhost:3000/dashboard",
+  "scrollHeight": 5178,
+  "viewportsOfContent": 7.2,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 6,
+    "ids": [
+      "#overview",
+      "#attention",
+      "#plan",
+      "#coverage",
+      "#portfolio",
+      "#activity"
+    ]
+  },
+  "containers": {
+    "count": 72,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.pw-card pw-pad lg:col-span-2",
+      "div.flex items-start gap-3 rounded-xl border",
+      "span.grid h-9 w-9 flex-shrink-0 place-items-c"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:subpixel] <a> \"Κενά κάλυψης4 υψηλά5 μέτρια4 χαμηλ\" boundary 1.08:1 (needs 3) inside=#dde0e3 outside=#fafafb — declared 3.33:1, rendered across two device rows",
+      "[1.4.11:surface] <section> \"Κατάσταση προστασίας34 ασφαλιστήρι\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fafc",
+      "[1.4.11:unmeasured] <div> \"Χρειάζεται την προσοχή σαςΤίποτα δ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Χρονοδιάγραμμα ανανεώσεων6 ασφαλισ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:unmeasured] <section> \"Το πλάνο προστασίας σας3 από 5 ολο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Διαρκής επίβλεψη της προστασίας σα\" boundary 1.22:1 (needs 3) inside=#f4f7f7 outside=#fdfefe",
+      "[1.4.11:surface] <div> \"Χάρτης κάλυψηςΌλοι οι κλάδοιΑυτοκί\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:unmeasured] <div> \"Χαρτοφυλάκιο ασφαλίσεωνΠροσθέστε ν\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:shell] <a> \"Αρχική\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.pw-scroll-strip.-mx-1",
+        "text": "ΑυτοκίνητοΚατοικίαΥγείαΖωήΣύνταξη & ΑποταμίευσηΤαξιδιωτικήΚατοικίδιοCyberΕπιχείρ",
+        "scrollWidth": 1234,
+        "clientWidth": 262,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "2",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      },
+      {
+        "selector": "p.line-clamp-2.text-micro",
+        "text": "ΥΔΡΟΓΕΙΟΣ Ανώνυμος Ασφαλιστική και Αντασφαλιστική Εταιρεία · ΣΥΜΒ-2026-H4 · 05/0",
+        "scrollWidth": 17,
+        "clientWidth": 17,
+        "reason": "css-truncation",
+        "scrollHeight": 590,
+        "clientHeight": 32
+      },
+      {
+        "selector": "p.line-clamp-2.text-micro",
+        "text": "Generali · ΣΥΜΒ-2026-H5 · 23/09/2026 · 240 €",
+        "scrollWidth": 17,
+        "clientWidth": 17,
+        "reason": "css-truncation",
+        "scrollHeight": 335,
+        "clientHeight": 32
+      },
+      {
+        "selector": "p.line-clamp-2.text-micro",
+        "text": "Europ Assistance · ΣΥΜΒ-2026-H7 · 08/10/2026 · 60 €",
+        "scrollWidth": 19,
+        "clientWidth": 19,
+        "reason": "css-truncation",
+        "scrollHeight": 335,
+        "clientHeight": 32
+      },
+      {
+        "selector": "p.line-clamp-2.text-micro",
+        "text": "Interamerican · ΣΥΜΒ-2026-H8 · 22/11/2026 · 120 €",
+        "scrollWidth": 17,
+        "clientWidth": 17,
+        "reason": "css-truncation",
+        "scrollHeight": 351,
+        "clientHeight": 32
+      },
+      {
+        "selector": "p.line-clamp-2.text-micro",
+        "text": "Interamerican · ΣΥΜΒ-2026-H3 · 04/02/2027 · 380 €",
+        "scrollWidth": 17,
+        "clientWidth": 17,
+        "reason": "css-truncation",
+        "scrollHeight": 351,
+        "clientHeight": 32
+      },
+      {
+        "selector": "p.line-clamp-2.text-micro",
+        "text": "Interamerican · ΣΥΜΒ-2026-H2 · 04/02/2027 · 380 €",
+        "scrollWidth": 17,
+        "clientWidth": 17,
+        "reason": "css-truncation",
+        "scrollHeight": 351,
+        "clientHeight": 32
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "#attention: 05/09/2026 — \"ΥΔΡΟΓΕΙΟΣ Ανώνυμος Ασφαλιστική και Αντασφαλιστική Εταιρεία ·\"",
+        "#attention: 23/09/2026 — \"Generali · ΣΥΜΒ-2026-H5 · 23/09/2026 · 240 €\"",
+        "#attention: 08/10/2026 — \"Europ Assistance · ΣΥΜΒ-2026-H7 · 08/10/2026 · 60 €\"",
+        "#attention: 22/11/2026 — \"Interamerican · ΣΥΜΒ-2026-H8 · 22/11/2026 · 120 €\"",
+        "#attention: 04/02/2027 — \"Interamerican · ΣΥΜΒ-2026-H3 · 04/02/2027 · 380 €\"",
+        "#attention: 04/02/2027 — \"Interamerican · ΣΥΜΒ-2026-H2 · 04/02/2027 · 380 €\""
+      ],
+      "dayCounts": [
+        "#overview: \"2 λήγουν μέσα σε 30 ημέρες\"",
+        "#attention: \"Υγεία: ανανέωση σε 12 ημέρες\"",
+        "#attention: \"Κατοικία: ανανέωση σε 30 ημέρες\"",
+        "#attention: \"Ταξιδιωτική: ανανέωση σε 45 ημέρες\"",
+        "#attention: \"Κατοικίδιο: ανανέωση σε 90 ημέρες\"",
+        "#attention: \"Αυτοκίνητο: ανανέωση σε 164 ημέρες\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "2 σημεία για έλεγχο",
+        "count": 5,
+        "where": [
+          "#attention <span>",
+          "#attention <span>",
+          "#attention <span>",
+          "#attention <span>",
+          "#attention <span>"
+        ]
+      },
+      {
+        "text": "Αυτοκίνητο: ανανέωση σε 164 ημέρες",
+        "count": 2,
+        "where": [
+          "#attention <p>",
+          "#attention <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση ΑΡΧΙΚΗ Η προστασία μου ΚΑΤΑΣΤΑΣΗ ΠΡΟΣΤΑΣΙΑΣ 34 ασφαλιστήρια · 1 έχει λήξει · 2 λήγουν μέσα σε 30 ημέρες · 1 δεν έχει αναλυθεί · 1 δεν διαβάστηκε Έλεγχος της προστασίας μου ΧΡΕΙΑΖΕΤΑΙ ΤΗΝ ΠΡΟΣΟΧΗ ΣΑΣ Τίποτα δεν χρειάζεται την προσοχή σας αυτή τη στιγμή Με βάση τα ασφαλιστήρια και τις απαντήσεις που έχουμε. Πείτε μας όταν αλλάξει κάτι και θα το ξανακοιτάξουμε. ΚΕΝΑ ΚΑΛΥΨΗΣ 4 υψηλά 5 μέτρια 4 χαμηλά ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ ΑΝΑΝΕΩΣΕΩΝ 6 ασφαλιστήρια με επερχόμενη ανανέωση Υγεία: ανανέωση σε 12 ημέρες ΥΔΡΟΓΕΙΟΣ Ανώνυμος Ασφαλιστική και Αντασφαλιστική Εταιρεία · ΣΥΜΒ-2026-H4 · 05/09/2026 2 σημεία για έλεγχο Κατοικία: ανανέωση σε 30 ημέρες Generali · ΣΥΜΒ-2026-H5 · 23/09/2026 · 240 € 2 σημεία για έλεγχο Ταξιδιωτική: ανανέωση σε 45 ημέρες Europ Assistance · ΣΥΜΒ-2026-H7 · 08/10/2026 · 60 € 1 σημείο για έλεγχο Κατοικίδιο: ανανέωση σε 90 ημέρες Interamerican · ΣΥΜΒ-2026-H8 · 22/11/2026 · 120 € 2 σημεία για έλεγχο Αυτοκίνητο: ανανέωση σε 164 ημέρες Interamerican · ΣΥΜΒ-2026-H3 · 04/02/2027 · 380 € 2 σημεία για έλεγχο Αυτοκίνητο: ανανέωση σε 164 ημέρες Interamerican · ΣΥΜΒ-2026-H2 · 04/02/2027 · 380 € 2 σημεία για έλεγχο Μην περιμένεις τη λήξη για να ψάξεις το ασφαλιστήριό σου. Ξεκλείδωσε έξυπνες υπενθυμίσεις ανανέωσης. Ενεργοποίηση έξυπνων υπενθυμίσεων ΤΟ ΠΛΑΝΟ ΠΡΟΣΤΑΣΙΑΣ ΣΑΣ 3 από 5 ολοκληρωμένα Ανεβάστε ένα ασφαλιστήριο Δείτε την ανάλυση AI Ελέγξτε τα κενά κάλυψης Δείτε αν κάτι σημαντικό μένει ακάλυπτο. Συνδεθείτε με σύμβουλο Ενεργοποιήστε τις ειδοποιήσεις Λάβετε ειδοποιήσεις για ανανεώσεις και αλλαγές. Διαρκής επίβλεψη της προστασίας σας Το Plus συνεχίζει να παρακολουθεί ανάμεσα στις επισκέψεις σας — μετά από κάθε αλλαγή και σε τακτικούς ελέγχους — και σας ενημερώνει όταν κάτι αξίζει μια ματιά. Ενεργοποίηση παρακολούθησης προστασίας ΑΛΛΑΞΕ ΚΑΤΙ; Νέο σπίτι, παιδί, νέα δουλειά — οι αλλαγές της ζωής μετακινούν την προστασία σας. Πείτε μας και θα την επανεκτιμήσουμε. Γάμος ή σύμφωνο συμβίωσης Διαζύγιο Γέννηση παιδιού Ένα παιδί ανεξαρτητοποιήθηκε Δηλώστε μια αλλαγή ΧΑΡΤΗΣ ΚΑΛΥΨΗΣ Όλοι οι κλάδοι Αυτοκίνητο Κατοικία Υγεία Ζωή Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Επιχείρηση ΧΑΡΤΟΦΥΛΑΚΙΟ ΑΣΦΑΛΙΣΕΩΝ Προσθέστε νέο ασφαλιστήριο 9.353 € Συνολικό ετήσιο ασφάλιστρο 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Αυτοκίνητο 7.433 € Υγεία 900 € Ζωή 600 € Κατοικία 240 € Κατοικίδιο 120 € Ταξιδιωτική 60 € Πρόσφατα έγγραφα Δεν βρέθηκαν έγγραφα. ΤΙ ΑΛΛΑΞΕ ΠΡΟΣΦΑΤΑ Προστέθηκε ασφαλιστήριο Αυτοκίνητο — Hellas Direct Προστέθηκε ασφαλιστήριο Κατοικία — Ydrogios Προστέθηκε ασφαλιστήριο Υγεία — Generali Δείτε όλο το χρονολόγιο ΚΑΤΑΣΤΑΣΗ ΣΥΜΒΟΥΛΟΥ Συνδεδεμένος: Παναγιώτης-Ευστράτιος Οικονομόπουλος-Παπαδημητρίου ΒΟΗΘΕΙΑ ΚΑΙ ΥΠΟΣΤΗΡΙΞΗ Άνοιγμα κέντρου βοήθειας Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+  },
+  "tier": "n/a",
+  "state": "heavy portfolio — same session as the risk-profile capture above, for direct count comparison"
+}

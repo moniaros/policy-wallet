@@ -1,0 +1,79 @@
+{
+  "capture": "risk-profile-natural-free",
+  "width": 430,
+  "url": "http://localhost:3000/insights/risk-profile",
+  "scrollHeight": 1778,
+  "viewportsOfContent": 1.9,
+  "headingCounts": {
+    "h1": 0,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 9,
+    "ids": [
+      "<div> Πού μένετε;",
+      "<div> Τι παρακολουθούμε",
+      "<span> ",
+      "<span> ",
+      "<span> ",
+      "<div> Τι παρακολουθούμε",
+      "<div> Το προφίλ κινδύνου σας",
+      "<p> Δεν σας αφορούν: Περιουσία, Εισόδημα, Οι",
+      "<div> Τι προστατεύουμε"
+    ]
+  },
+  "containers": {
+    "count": 18,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.pw-card pw-pad",
+      "details.group rounded-2xl border border-black/10",
+      "span.inline-flex items-center gap-1 rounded-f"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Νοικιάζω\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Έχω δικό μου σπίτι\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Με την οικογένεια\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Άγνωστο1\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Ας ξεκινήσουμε1/3Πού μένετε;Νοικιά\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fbfd",
+      "[1.4.11:surface] <div> \"Πόσο καλά σας γνωρίζουμε—ΆγνωστηΓν\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:unmeasured] <div> \"Τι παρακολουθούμεΚάλυψη που λήγει1\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Το προφίλ κινδύνου σαςΕννέα διαστά\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Τι προστατεύουμεΔεν μας έχετε πει \" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfd"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "3",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [
+        "top: \"1 ασφαλιστήριο λήγει μέσα σε 45 ημέρες.\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 3 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 3 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση ΑΣ ΞΕΚΙΝΗΣΟΥΜΕ 1/3 Πού μένετε; Νοικιάζω Έχω δικό μου σπίτι Με την οικογένεια ΠΟΣΟ ΚΑΛΑ ΣΑΣ ΓΝΩΡΙΖΟΥΜΕ — Άγνωστη Γνωρίζουμε πολύ λίγα για τη ζωή σας ώστε να έχει νόημα ακόμη. Όλα τα υπόλοιπα σε αυτή τη σελίδα στηρίζονται σε αυτό. Όσα γνωρίζουμε για τη ζωή σας 0 Πόσο πρόσφατη είναι η εικόνα 100 Πόσα μπορέσαμε να κρίνουμε 0 Απαντήστε σε μερικές ακόμη ερωτήσεις για την κατάστασή σας. Τι παρακολουθούμε Κάλυψη που λήγει 1 ασφαλιστήριο λήγει μέσα σε 45 ημέρες. Επιβεβαιώστε ότι ανανεώνεται το καθένα. Κάλυψη που μειώνεται Πότε έγινε ο τελευταίος έλεγχος Σοβαροί κίνδυνοι χωρίς κάλυψη Το προφίλ κινδύνου σας Εννέα διαστάσεις της ζωής σας. Δεν αθροίζονται σε έναν βαθμό — είναι φακοί, όχι βαθμολόγιο. Υγεία 100 Δεν σας αφορούν: Περιουσία, Εισόδημα, Οικογένεια, Αστική ευθύνη, Ψηφιακοί κίνδυνοι, Ταξίδια, Επιχείρηση, Οικονομική αντοχή. Δεν βαθμολογούνται επειδή δεν υπάρχει έκθεση προς μέτρηση. Τι προστατεύουμε Δεν μας έχετε πει ακόμη τι υπάρχει στη ζωή σας. Όσα ακολουθούν είναι όσα ισχύουν για τον καθένα. Όλα 1 Άγνωστο 1 Αναμονή για θεραπεία τη στιγμή που μετράει Εσείς ΑΓΝΩΣΤΟ Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 3 Ρυθμίσεις"
+  },
+  "tier": "free",
+  "state": "populated-2-policies, no declared exposures"
+}

@@ -524,3 +524,63 @@ cited a real line — and it closed a defect the owner had seen with their own e
 `RiskGraphPanel.tsx:73` renders «Άγνωστο» at all: a branch exists for a state something must
 produce. **A refutation that leaves live code unexplained is incomplete**, however good its
 mechanism.
+
+
+---
+
+## v2-7 REVISITED — «ΑΓΝΩΣΤΟ» is the DEFAULT for motor, not an edge case
+
+The requeued fixture reproduced it, and then found why. This is the largest finding of the v2
+Phase 0 extension.
+
+`lib/services/risk-graph/service.ts` → `readCoverageFacts` resolves a policy's sum insured from:
+
+```ts
+acord.coverage?.sumInsured ?? acord.property?.insuredValue ?? acord.home?.insuredValue
+```
+
+**Two of the three are property fields. The motor equivalent is missing.** `vehicle.insuredValue` is
+the schema's own field — defined at `lib/schemas/acord-data.ts:235` and read by both
+`lib/gaps/authored-catalogue.ts:190` and `lib/services/renewal-differential.ts:55`.
+
+So for **every** motor policy `sumInsured` is `null` → the limit dimension is `unevaluable` →
+`protection.ts:373` returns `state: "unknown"` → the row renders **«Οδήγηση χωρίς υποχρεωτική
+κάλυψη · ΑΓΝΩΣΤΟ»**.
+
+Confirmed by calling the real functions:
+```
+assessRisks(…)          → { applicability: "applicable", status: "already_covered" }
+assembleRiskGraph(…)    → state: "unknown",
+                          dimensions: [peril: unevaluable, limit: unevaluable, period: satisfied]
+```
+and reproduced live in a browser at 320/390/430 — **including on the standard 15-policy matrix**,
+not only the degraded fixture.
+
+**Why this matters more than the row.** Motor insurance is compulsory in Greece and near-universal.
+This is not a state a customer reaches by having odd data; it is what the product shows **everyone
+who owns a car**. The function's own comment says it "reaches through several spellings" — breadth
+was the intent, and the motor spelling was omitted.
+
+It also reframes the §2.2 fix. «Άγνωστο» is honest when a check truly cannot run. Here the check
+*could* run — the data exists in the column, under a name nobody read. The fix is to read the field,
+not to soften the label.
+
+### Two further findings from the same pass
+
+- **§2.4's amber band fails contrast.** The «Μερική εικόνα» label measures **3.20:1** against
+  4.5:1 required (WCAG 1.4.3). The second score is not only a verdict, it is an unreadable one.
+- **A singular/plural agreement bug**, `lib/services/risk-dna/health-index.ts:206`: «1 περιοχή που
+  **αφορούν** … **παραμένουν** ανοιχτές» — plural verbs, singular subject. **Exactly the class fixed
+  by `11ec4987`**, the commit this entire run is based on ("count and noun agree at one — found on
+  production, not in the fixtures"). Same defect, different component, still shipping.
+
+### §2.8 — a count contradiction proved empirically, not inferred
+
+Same session, same database state:
+- `/insights/risk-profile` → «3 λήγουν μέσα σε **45** ημέρες» (`risk-dna/monitoring.ts:69`)
+- `/dashboard` → «2 λήγουν μέσα σε **30** ημέρες» (`lib/policy-status.ts:192`)
+
+with the specific policy responsible (a Ταξιδιωτική on a 45-day renewal) named as the cause. Both
+numbers are correct for their own window; the surfaces never agreed on the window. That is §2.8's
+"both correct, differently labelled" case, and the fix is one window or two visible labels — not
+arithmetic.

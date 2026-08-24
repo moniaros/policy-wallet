@@ -802,7 +802,7 @@ Blocks V2-P0-BASE, because a fixture must be able to produce the defect.
 - [ ] a household with income and dependants genuinely unset, with motor cover present (§2.4 zero-scores)
 - [ ] each verified by calling the real render functions, not assumed
 
-### V2-P0-BASE — baseline three unmeasured surfaces · `2 of 3 done`
+### V2-P0-BASE — baseline three unmeasured surfaces · `done`
 owner: Evidence (Sonnet 5) · blocked_by: V2-P0-FIX
 `/branches` · `/insights/risk-profile` · `/timeline`, at 320/390/430, every applicable state.
 **Note for `/insights/risk-profile`:** it is currently unreachable for policyholders (v2-6) — the
@@ -950,3 +950,51 @@ that and said so rather than publishing the numbers.
 `lib/services/timeline/build.ts:202` reads `policy.insurerName?.trim()` directly; `LifeTimeline.tsx`
 renders it verbatim. Route through `lib/wallet/policy-identity.ts`, and close the guard gap in
 D-021 — the sentinel guard cannot see this because the file never contains a literal.
+
+
+---
+
+## V2-P0-BASE(b) — `/insights/risk-profile` baselined. Review: **PASS**
+
+All five candidates confirmed, plus three findings nobody listed. Reachability verified live first
+(a dedicated `reachability:` assertion in all three specs, proving V2-P1-01 actually opened the
+surface) — this page had never been measured because policyholders could not reach it.
+
+### New Phase 1 items from this baseline
+
+### V2-P1-07 — `readCoverageFacts` never reads `vehicle.insuredValue` · `todo` — **HIGHEST PRIORITY**
+owner: Implementation (Fable 5) · file_boundary: `lib/services/risk-graph/service.ts`, `tests/unit/`
+
+`readCoverageFacts` resolves a sum insured from `coverage.sumInsured ?? property.insuredValue ??
+home.insuredValue`. Two are property fields; the motor one is missing, though
+`lib/schemas/acord-data.ts:235` defines `vehicle.insuredValue` and both the gap catalogue and
+renewal-differential read it.
+
+Every motor policy therefore yields `sumInsured: null` → limit `unevaluable` → `state: "unknown"` →
+**«Οδήγηση χωρίς υποχρεωτική κάλυψη · ΑΓΝΩΣΤΟ» for every customer who owns a car**, in a market
+where motor cover is compulsory.
+
+- [ ] read `vehicle.insuredValue`, and audit the other spellings the schema defines against what
+      this function reads — one omission implies the list was never checked against the schema
+- [ ] guard: the fields `readCoverageFacts` reads are **derived from or checked against**
+      `lib/schemas/acord-data.ts`, so a schema field cannot go unread again
+- [ ] **do not soften the label as the fix.** «Άγνωστο» is honest when a check cannot run; here it
+      can — the data is in the column under a name nobody read
+
+### V2-P1-08 — the second score's amber fails contrast · `todo`
+«Μερική εικόνα» measures **3.20:1** against 4.5:1 (WCAG 1.4.3). Merge into V2-P1-03 if H-005 removes
+the verdict — deleting it resolves this too.
+
+### V2-P1-09 — singular/plural agreement, `health-index.ts:206` · `todo`
+«1 περιοχή που **αφορούν** … **παραμένουν** ανοιχτές». **The same class `11ec4987` fixed** — the
+commit this run is based on. Fix with V2-P1-04 (guilt copy), same file.
+
+### V2-P1-10 — one expiry window, or two visible labels · `todo`
+`/insights/risk-profile` says «3 λήγουν μέσα σε 45 ημέρες» (`risk-dna/monitoring.ts:69`);
+`/dashboard` says «2 λήγουν μέσα σε 30 ημέρες» (`lib/policy-status.ts:192`). Proved in one session
+against one database state, with the causing policy identified. Both correct for their own window —
+§2.8's labelling case, not an arithmetic one.
+
+**Honesty note carried from the capture:** the "heavy portfolio" state was contaminated (34 policies
+= 12 + 22) because `applyPortfolioState` only clears its own prefix. Called out in the baseline
+rather than mislabelled; the same-session dashboard cross-check inside that state is unaffected.

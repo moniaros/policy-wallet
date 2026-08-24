@@ -1,0 +1,168 @@
+{
+  "capture": "risk-profile-unowned-lines-paid",
+  "width": 390,
+  "url": "http://localhost:3000/insights/risk-profile",
+  "scrollHeight": 2900,
+  "viewportsOfContent": 3.4,
+  "headingCounts": {
+    "h1": 0,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 6,
+    "ids": [
+      "<div> Τι παρακολουθούμε",
+      "<div> Τι παρακολουθούμε",
+      "<div> Το προφίλ κινδύνου σας",
+      "<p> Δεν σας αφορούν: Εισόδημα, Ταξίδια, Επιχ",
+      "<div> Τι προστατεύουμε",
+      "<div> Το νοικοκυριό"
+    ]
+  },
+  "containers": {
+    "count": 35,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.pw-card pw-pad",
+      "details.group rounded-2xl border border-black/10",
+      "span.inline-flex items-center gap-1 rounded-f"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [
+      "\"Μερική εικόνα\" 3.20:1 (needs 4.5) fg=#e17100 bg=#ffffff <SPAN> text-sm font-semibold text-amber-600 dark:text-amb"
+    ],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Απροστάτευτο4\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Άγνωστο2\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Πόσο καλά σας γνωρίζουμε66Μερική ε\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fbfc",
+      "[1.4.11:surface] <div> \"Τι παρακολουθούμεΚάλυψη που λήγει5\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"Το προφίλ κινδύνου σαςΕννέα διαστά\" boundary 1.38:1 (needs 3) inside=#dce0e3 outside=#ffffff",
+      "[1.4.11:unmeasured] <div> \"Τι προστατεύουμεΠαρακολουθούμε 11 \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Το νοικοκυριόΜέλη3Εξαρτώμενα2Περιο\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.relative",
+        "text": "9+",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [
+        "top: \"5 ασφαλιστήρια έχουν ήδη λήξει και άλλα 6 λήγουν μέσα σε 45 ημέρες.\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Απροστάτευτο",
+        "count": 5,
+        "where": [
+          "top <button>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Σε τι βασιζόμαστε",
+        "count": 6,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Κανένα ενεργό ασφαλιστήριο στο πορτοφόλι σας δεν καλύπτει αυτόν τον κίνδυνο.",
+        "count": 4,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Σε ισχύ: το ασφαλιστήριο Υγεία (Εθνική Ασφαλιστική).",
+        "count": 6,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Τι δεν επιβεβαιώνεται",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Δεν μπορέσαμε να διαβάσουμε ασφαλισμένο κεφάλαιο, οπότε δεν ξέρουμε αν το ποσό ε",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Σε ισχύ: το ασφαλιστήριο Αυτοκίνητο (Interamerican).",
+        "count": 14,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Σε ισχύ: το ασφαλιστήριο Αυτοκίνητο (ΕΘΝΙΚΗ).",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [
+      "pending/sentinel marker: \"Σε ισχύ: το ασφαλιστήριο Αυτοκίνητο (__PENDING_EXTRACTION__).\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση ΠΟΣΟ ΚΑΛΑ ΣΑΣ ΓΝΩΡΙΖΟΥΜΕ 66 Μερική εικόνα Αυτό μετρά πόσο καλά σας κατανοούμε, όχι πόση κάλυψη έχετε. Μια μέτρια κάλυψη που κατανοούμε πλήρως αξίζει περισσότερο για εσάς από μια ευρεία κάλυψη που δεν μπορούμε να διαβάσουμε. Όσα γνωρίζουμε για τη ζωή σας 52 Πόσο πρόσφατη είναι η εικόνα 100 Πόσα μπορέσαμε να κρίνουμε 60 Απαντήστε στις υπόλοιπες ερωτήσεις για τη ζωή σας. Τι παρακολουθούμε Κάλυψη που λήγει 5 ασφαλιστήρια έχουν ήδη λήξει και άλλα 6 λήγουν μέσα σε 45 ημέρες. Ανανεώστε ή αντικαταστήστε την κάλυψη που έληξε. Σοβαροί κίνδυνοι χωρίς κάλυψη Οικογένεια: έκθεση που δεν θα αφήναμε ανοιχτή. Ξεκινήστε από αυτά. Κάλυψη που μειώνεται Πότε έγινε ο τελευταίος έλεγχος Το προφίλ κινδύνου σας Εννέα διαστάσεις της ζωής σας. Δεν αθροίζονται σε έναν βαθμό — είναι φακοί, όχι βαθμολόγιο. Περιουσία 50 Οικογένεια 0 Υγεία 100 Αστική ευθύνη 0 Ψηφιακοί κίνδυνοι 0 Δεν σας αφορούν: Εισόδημα, Ταξίδια, Επιχείρηση, Οικονομική αντοχή. Δεν βαθμολογούνται επειδή δεν υπάρχει έκθεση προς μέτρηση. Τι προστατεύουμε Παρακολουθούμε 11 πράγματα στη ζωή σας — 3 περιουσιακά στοιχεία, 2 εξαρτώμενα μέλη. Όλα 6 Απροστάτευτο 4 Άγνωστο 2 Διαδικτυακή απάτη και παραβίαση λογαριασμού Διαδικτυακοί λογαριασμοί ΑΠΡΟΣΤΑΤΕΥΤΟ Τα υπάρχοντά σας και ζημιές που προκαλείτε ως ενοικιαστής Η ενοικιαζόμενη κατοικία σας ΑΠΡΟΣΤΑΤΕΥΤΟ Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας Εξαρτώμενο μέλος 1 · Εξαρτώμενο μέλος 2 ΑΠΡΟΣΤΑΤΕΥΤΟ Απρόβλεπτα κτηνιατρικά έξοδα και ευθύνη κατοικιδίου Κατοικίδιο 1 · Κατοικίδιο 2 ΑΠΡΟΣΤΑΤΕΥΤΟ Αναμονή για θεραπεία τη στιγμή που μετράει Εσείς ΑΓΝΩΣΤΟ Οδήγηση χωρίς υποχρεωτική κάλυψη Όχημα 1 ΑΓΝΩΣΤΟ Το νοικοκυριό ΜΕΛΗ 3 ΕΞΑΡΤΩΜΕΝΑ 2 ΠΕΡΙΟΥΣΙΑΚΑ ΣΤΟΙΧΕΙΑ 3 ΥΠΟΧΡΕΩΣΕΙΣ 0 2 άτομα εξαρτώνται από αυτή την προστασία. Ένα κενό εδώ δεν είναι μόνο δικό σας πρόβλημα. 2 περιοχές που αφορούν όλο το νοικοκυριό παραμένουν ανοιχτές. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "state": "unowned-lines-profile (pet/cyber/2-dependants declared, motor+health-only wallet)"
+}

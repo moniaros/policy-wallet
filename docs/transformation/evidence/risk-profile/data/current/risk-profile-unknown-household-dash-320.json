@@ -1,0 +1,132 @@
+{
+  "capture": "risk-profile-unknown-household-dash",
+  "width": 320,
+  "url": "http://localhost:3000/insights/risk-profile",
+  "scrollHeight": 2574,
+  "viewportsOfContent": 3.6,
+  "headingCounts": {
+    "h1": 0,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 10,
+    "ids": [
+      "<div> Πού μένετε;",
+      "<div> Τι παρακολουθούμε",
+      "<span> ",
+      "<span> ",
+      "<span> ",
+      "<div> Τι παρακολουθούμε",
+      "<div> Το προφίλ κινδύνου σας",
+      "<p> Δεν σας αφορούν: Εισόδημα, Οικογένεια, Α",
+      "<div> Τι προστατεύουμε",
+      "<div> Το νοικοκυριό"
+    ]
+  },
+  "containers": {
+    "count": 27,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.pw-card pw-pad",
+      "details.group rounded-2xl border border-black/10",
+      "span.inline-flex items-center gap-1 rounded-f"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Νοικιάζω\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Έχω δικό μου σπίτι\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Με την οικογένεια\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Απροστάτευτο1\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Άγνωστο1\" boundary 1.21:1 (needs 3) inside=#fefeff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Ας ξεκινήσουμε1/3Πού μένετε;Νοικιά\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fbfc",
+      "[1.4.11:surface] <div> \"Πόσο καλά σας γνωρίζουμε—ΆγνωστηΓν\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:surface] <div> \"Τι παρακολουθούμεΠότε έγινε ο τελε\" boundary 1.18:1 (needs 3) inside=#efefef outside=#dbdcdd",
+      "[1.4.11:unmeasured] <div> \"Το προφίλ κινδύνου σαςΕννέα διαστά\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Τι προστατεύουμεΠαρακολουθούμε 14 \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Το νοικοκυριόΜέλη1Εξαρτώμενα0Περιο\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd"
+    ]
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.-mx-1.mb-4",
+        "text": "Όλα2Απροστάτευτο1Άγνωστο1",
+        "scrollWidth": 302,
+        "clientWidth": 262,
+        "reason": "overflow"
+      },
+      {
+        "selector": "div.relative",
+        "text": "2",
+        "scrollWidth": 30,
+        "clientWidth": 24,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Απροστάτευτο",
+        "count": 2,
+        "where": [
+          "top <button>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Σε τι βασιζόμαστε",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Σε ισχύ: το ασφαλιστήριο Αυτοκίνητο (Interamerican).",
+        "count": 22,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση ΑΣ ΞΕΚΙΝΗΣΟΥΜΕ 1/3 Πού μένετε; Νοικιάζω Έχω δικό μου σπίτι Με την οικογένεια ΠΟΣΟ ΚΑΛΑ ΣΑΣ ΓΝΩΡΙΖΟΥΜΕ — Άγνωστη Γνωρίζουμε πολύ λίγα για τη ζωή σας ώστε να έχει νόημα ακόμη. Όλα τα υπόλοιπα σε αυτή τη σελίδα στηρίζονται σε αυτό. Όσα γνωρίζουμε για τη ζωή σας 4 Πόσο πρόσφατη είναι η εικόνα 0 Πόσα μπορέσαμε να κρίνουμε 50 Απαντήστε σε μερικές ακόμη ερωτήσεις για την κατάστασή σας. Τι παρακολουθούμε Πότε έγινε ο τελευταίος έλεγχος Δεν έχουμε αξιολογήσει ακόμη τη θέση σας. Πείτε μας για οτιδήποτε άλλαξε. Κάλυψη που λήγει Κάλυψη που μειώνεται Σοβαροί κίνδυνοι χωρίς κάλυψη Το προφίλ κινδύνου σας Εννέα διαστάσεις της ζωής σας. Δεν αθροίζονται σε έναν βαθμό — είναι φακοί, όχι βαθμολόγιο. Περιουσία 100 Υγεία 0 Δεν σας αφορούν: Εισόδημα, Οικογένεια, Αστική ευθύνη, Ψηφιακοί κίνδυνοι, Ταξίδια, Επιχείρηση, Οικονομική αντοχή. Δεν βαθμολογούνται επειδή δεν υπάρχει έκθεση προς μέτρηση. Τι προστατεύουμε Παρακολουθούμε 14 πράγματα στη ζωή σας — 12 περιουσιακά στοιχεία. Όλα 2 Απροστάτευτο 1 Άγνωστο 1 Αναμονή για θεραπεία τη στιγμή που μετράει Εσείς ΑΠΡΟΣΤΑΤΕΥΤΟ Οδήγηση χωρίς υποχρεωτική κάλυψη Όχημα 1 · Όχημα 2 · Όχημα 3 · Όχημα 4 · Όχημα 5 · Όχημα 6 · Όχημα 7 · Όχημα 8 · Όχημα 9 · Όχημα 10 · Όχημα 11 · Όχημα 12 ΑΓΝΩΣΤΟ Το νοικοκυριό ΜΕΛΗ 1 ΕΞΑΡΤΩΜΕΝΑ 0 ΠΕΡΙΟΥΣΙΑΚΑ ΣΤΟΙΧΕΙΑ 12 ΥΠΟΧΡΕΩΣΕΙΣ 0 Κανείς άλλος δεν εξαρτάται από την κάλυψή σας, οπότε κάθε κενό εδώ το φέρετε μόνος σας. 1 περιοχή που αφορούν όλο το νοικοκυριό παραμένουν ανοιχτές. Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 2 Ρυθμίσεις"
+  },
+  "tier": "n/a (no gating on this surface)",
+  "state": "unknown-household — 22 unreadable-coverage motor policies, only 'vehicles' known"
+}
