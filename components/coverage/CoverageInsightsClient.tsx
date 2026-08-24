@@ -18,6 +18,7 @@ import { InsightCard, InsightData } from './InsightCard'
 import { updateGapStatus } from '@/app/(protected)/coverage-insights/actions'
 import { toast } from 'sonner'
 import { AiDisclaimer } from '@/components/ui/AiDisclaimer'
+import { displayInsurerName } from '@/lib/wallet/policy-identity'
 
 type PlanTier = 'free' | 'plus' | 'pro'
 
@@ -398,7 +399,7 @@ export function CoverageInsightsClient({
                                         </div>
                                         <div>
                                             <div className="font-semibold text-black dark:text-white text-sm">{policy.lineOfBusiness?.name || (lang === 'el' ? 'Ασφαλιστήριο' : 'Policy')}</div>
-                                            <div className="text-xs text-muted-foreground">{policy.insurerName}</div>
+                                            <div className="text-xs text-muted-foreground">{displayInsurerName(policy.insurerName)}</div>
                                         </div>
                                     </div>
                                     <span className="text-xs font-semibold text-black/70 dark:text-white/75 bg-black/5 dark:bg-white/10 px-2 py-1 rounded">OK</span>

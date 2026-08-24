@@ -632,3 +632,56 @@ describe("the assembled timeline", () => {
         expect(future.some((e) => e.id.startsWith("coverage_change:p2"))).toBe(false)
     })
 })
+
+describe("a policy's identity reaches the timeline only through the primitive", () => {
+    // V2-P1-06: `insurerName` can hold an extraction sentinel on a healthy
+    // active policy, and buildTimeline used to interpolate the raw column into
+    // the policy_added title — /timeline rendered «Προστέθηκε ασφαλιστήριο
+    // Αυτοκίνητο — __PENDING_EXTRACTION__» to a customer (evidence:
+    // docs/transformation/evidence/timeline/BASELINE.md §2.6).
+    const sourcesWith = (insurerName: string | null): TimelineSources => ({
+        lifeEvents: [],
+        renewals: [],
+        recommendations: [],
+        advisorActions: [],
+        versions: [],
+        policies: [
+            {
+                id: "p1",
+                lineOfBusiness: "motor",
+                insurerName,
+                createdAt: new Date("2026-08-01"),
+                startDate: new Date("2026-08-01"),
+                endDate: new Date("2027-08-01"),
+                status: "active",
+            },
+        ],
+    })
+
+    it.each(["__PENDING_EXTRACTION__", "Unknown Insurer", "AI Analyzing...", "Άγνωστος ασφαλιστής"])(
+        "degrades %s to the branch label alone — no suffix, no sentinel",
+        (sentinel) => {
+            const entries = buildTimeline(sourcesWith(sentinel), new Date("2026-08-20"))
+            const added = entries.find((e) => e.kind === "policy_added")
+            expect(added).toBeDefined()
+            // The title survives without the em-dash suffix…
+            expect(added!.title.el).not.toContain("—")
+            expect(added!.title.en).not.toContain("—")
+            // …and the sentinel appears nowhere in any entry, either language.
+            expect(JSON.stringify(entries)).not.toContain(sentinel)
+        }
+    )
+
+    it("still names a real insurer, so the scrub is not a blanket delete", () => {
+        const entries = buildTimeline(sourcesWith("Interamerican"), new Date("2026-08-20"))
+        const added = entries.find((e) => e.kind === "policy_added")!
+        expect(added.title.el).toContain("— Interamerican")
+        expect(added.title.en).toContain("— Interamerican")
+    })
+
+    it("treats an empty insurer the way it always did — branch label alone", () => {
+        const entries = buildTimeline(sourcesWith(null), new Date("2026-08-20"))
+        const added = entries.find((e) => e.kind === "policy_added")!
+        expect(added.title.el).not.toContain("—")
+    })
+})

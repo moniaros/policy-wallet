@@ -1,0 +1,10 @@
+// RED probe — rule 1 (JSX text interpolation of a raw identity column).
+// The shape CoverageInsightsClient shipped: the raw column rendered as text.
+export function Probe({ policy }: { policy: { insurerName: string; policyNumber: string } }) {
+    return (
+        <div>
+            <div className="text-xs text-muted-foreground">{policy.insurerName}</div>
+            <span>{policy.policyNumber}</span>
+        </div>
+    )
+}

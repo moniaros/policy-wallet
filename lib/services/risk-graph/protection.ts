@@ -27,6 +27,7 @@
 import { getBranchFamily, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { calendarDaysUntil } from "@/lib/policy-status"
 import { formatCurrency } from "@/lib/i18n/format"
+import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { outstandingDebt, type LifeContext } from "@/lib/services/gap-engine/life-context"
 import type { Bilingual, RiskAssessment } from "@/lib/services/gap-engine/risk-types"
 import type {
@@ -445,7 +446,11 @@ function buildEvidence(
             // sentence, which is the exact defect the repo's Greek-copy guard
             // exists to catch.
             const branch = normalizeBranch(policy.lineOfBusiness).label
-            const insurer = policy.insurerName?.trim()
+            // Through the primitive, never the raw column: `insurerName` can be
+            // an extraction sentinel on a healthy active policy, and this
+            // statement renders to the customer. A placeholder degrades to the
+            // branch label alone (same fix as the timeline's policy_added title).
+            const insurer = displayInsurerName(policy.insurerName)
             evidence.push({
                 kind: "held_policy",
                 policyRef: policy.id,

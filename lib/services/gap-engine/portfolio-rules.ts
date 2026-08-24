@@ -19,6 +19,7 @@ import { formatDate as formatDateShared } from "@/lib/i18n/format"
 import {
     isPlaceholderInsurerName,
     isPlaceholderPolicyNumber,
+    policyLabel,
 } from "@/lib/wallet/policy-identity"
 
 export interface SmartCardContent {
@@ -75,12 +76,14 @@ function clean(value: string | null | undefined): string | null {
     return value
 }
 
-/** "Interamerican (POL-123)" / fallback to whatever identifier exists. */
+/**
+ * "Interamerican (POL-123)" / fallback to whatever identifier exists.
+ * Through `policyLabel` — this used to hand-compose the same string from
+ * locally-cleaned halves, which is exactly the inline re-implementation the
+ * render-boundary guard exists to retire.
+ */
 function policyRef(p: PortfolioPolicyFacts): string {
-    const insurer = clean(p.insurerName)
-    const number = clean(p.policyNumber)
-    if (insurer && number) return `${insurer} (${number})`
-    return insurer || number || lobLabel(p.lineOfBusiness).en
+    return policyLabel(p, lobLabel(p.lineOfBusiness).en)
 }
 
 /**

@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import type { RecentNotification } from "@/lib/notifications/watcher"
 import { resolveStoredNotification } from "@/lib/notifications/stored-content"
+import { policyLabel } from "@/lib/wallet/policy-identity"
 import { groupNotificationEventRows } from "@/lib/notifications/event-grouping"
 
 export async function getNotificationData() {
@@ -125,7 +126,11 @@ export async function getNotificationData() {
     uiEvents.forEach(e => {
         if (e.related_policy_id) {
             const p = policies.find(p => p.id === e.related_policy_id)
-            if (p) e.related_policy_name = `${p.insurerName} (${p.policyNumber})`
+            // Through the primitive: both columns can hold extraction sentinels
+            // ("Unknown Insurer", "PENDING-…") on a healthy policy, and this
+            // string renders verbatim in NotificationCard. policyLabel degrades
+            // to whichever half is real, or to nothing.
+            if (p) e.related_policy_name = policyLabel(p) || null
         }
         if (e.related_customer_relationship_id) {
             const r = customerRelationships.find(r => r.id === e.related_customer_relationship_id)

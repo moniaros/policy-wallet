@@ -607,3 +607,388 @@ describe('centrality — no file re-implements the synthetic-name check', () => 
         ).toEqual([])
     })
 })
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2-P1-06 / D-021 — the render boundary, not just the spelling.
+//
+// The literal scan above forbids a file from KNOWING the sentinel strings. It
+// could not see the defect that shipped on /timeline: lib/services/timeline/
+// build.ts never spelled a sentinel — it read the FIELD
+// (`policy.insurerName?.trim()`), renamed it, and interpolated it into
+// bilingual customer copy, so `__PENDING_EXTRACTION__` rendered as a policy
+// name while this guard stayed green. A guard forbidding a spelling does not
+// enforce a routing rule.
+//
+// THE UNIVERSE (D-005): every tracked .ts/.tsx under app/, components/, lib/,
+// hooks/, contexts/ — enumerated from git at test time, existing on disk —
+// minus /admin/ and /agent/ path segments (§12.4: agent and admin surfaces are
+// outside B2C jurisdiction). Agent files OUTSIDE those segments that trip the
+// matcher are named exemptions below rather than silently path-excluded, so
+// their status stays visible.
+//
+// WHAT IS A RENDER SINK — and what deliberately is not. Reading `.insurerName`
+// or `.policyNumber` is usually legitimate: select projections, null checks,
+// detection-logic comparisons, event payloads, prop pass-through. ~160 such
+// reads exist and flagging them would need a hundred exemptions — a guard with
+// a hundred exemptions exempts the problem. So, following the render/
+// pass-through distinction score-containment.test.ts already draws, only three
+// shapes are flagged — the ones where the raw value becomes customer-visible
+// TEXT:
+//
+//   1. `jsx_text`      — JSX text interpolation: `>{policy.insurerName}` /
+//                        `{x.policyNumber}<`. Attribute pass-through
+//                        (`insurerName={…}`) does not match: it hands the value
+//                        to a component, which the DOM assertions above hold
+//                        responsible for its own render.
+//   2. `bilingual_copy`— a `${…}` carrying the raw value on a line that is an
+//                        `el:`/`en:` initializer or contains Greek text. In
+//                        this codebase Greek inside a template IS customer
+//                        copy; English internal strings (prompts, audit
+//                        descriptions, dedup keys) match neither.
+//   3. `identity_pair` — `${…insurerName…}` and `${…policyNumber…}` composed
+//                        on one line: the exact "Insurer (Number)" string
+//                        policyLabel() exists to build safely. Audit-trail
+//                        lines (a `logActivity(` call in the five lines above,
+//                        or a same-line `description:` field) are skipped —
+//                        the activity log is admin-read.
+//
+// Taint is lexical and per-file: a direct member read whose chain does not
+// root at the translation object `t` (t.wallet.policyNumber is a LABEL), or a
+// `const`/`let`/`var` alias whose single-line initializer carries one without
+// a sanitizer call, propagated to a fixpoint (build.ts aliased the read as
+// `insurer` well above the template that leaked it). STATED LIMITATION:
+// destructuring (`const { insurerName } = x`) is not tainted — the one
+// occurrence in the universe (app/(protected)/branches/[branch]/page.tsx)
+// destructures an already-sanitized value, and tainting the bare name would
+// flag it falsely. A leak through a destructured raw read must be caught by
+// the DOM assertions, not this scan.
+// ─────────────────────────────────────────────────────────────────────────────
+
+type IdentityField = 'insurerName' | 'policyNumber'
+interface IdentityRenderViolation {
+    line: number
+    rule: 'jsx_text' | 'bilingual_copy' | 'identity_pair'
+    fields: IdentityField[]
+    snippet: string
+}
+
+/** Calls that make a read safe: the primitive and its sanctioned resolvers. */
+const IDENTITY_SANITIZERS =
+    /\b(?:displayInsurerName|displayPolicyNumber|safePolicyNumber|policyLabel|policyIdentityView|scrubPolicyIdentity|resolveInsurerDisplay|redactPolicyPlaceholders|scrubRenderableText|assertRenderableText|isPlaceholderInsurerName|isPlaceholderPolicyNumber|hasPlaceholderIdentity)\s*\(/
+
+/** A member read of an identity column, with its chain's root identifier. */
+const IDENTITY_CHAIN = /([A-Za-z_$][\w$]*)((?:\??\.[\w$]+)*?)\??\.(insurerName|policyNumber)\b/g
+/** Chains rooted here are translation LABELS (t.wallet.policyNumber), not values. */
+const TRANSLATION_ROOTS = new Set(['t'])
+
+function rawIdentityReads(expr: string): Set<IdentityField> {
+    const fields = new Set<IdentityField>()
+    for (const m of expr.matchAll(IDENTITY_CHAIN)) {
+        if (!TRANSLATION_ROOTS.has(m[1])) fields.add(m[3] as IdentityField)
+    }
+    return fields
+}
+
+const IDENTITY_DECL = /(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*([^\n;]+)/g
+
+/**
+ * Aliases that carry a raw identity value, to a fixpoint: a declaration is
+ * tainted when its initializer holds an unsanitized member read OR references
+ * an already-tainted alias (`const n = getPolicyNumber()`).
+ */
+function taintedIdentityAliases(code: string): Map<string, Set<IdentityField>> {
+    const tainted = new Map<string, Set<IdentityField>>()
+    let changed = true
+    while (changed) {
+        changed = false
+        for (const m of code.matchAll(IDENTITY_DECL)) {
+            const [, name, rhs] = m
+            if (tainted.has(name)) continue
+            if (IDENTITY_SANITIZERS.test(rhs)) continue
+            const fields = rawIdentityReads(rhs)
+            for (const [alias, aliasFields] of tainted) {
+                if (new RegExp(`\\b${alias}\\b`).test(rhs)) {
+                    for (const f of aliasFields) fields.add(f)
+                }
+            }
+            if (fields.size > 0) {
+                tainted.set(name, fields)
+                changed = true
+            }
+        }
+    }
+    return tainted
+}
+
+function identityTaintOf(expr: string, aliases: Map<string, Set<IdentityField>>): Set<IdentityField> {
+    // A sanitizer call anywhere in the expression means the read is wrapped —
+    // `${displayInsurerName(policy.insurerName)}` is the FIX, not the defect.
+    if (IDENTITY_SANITIZERS.test(expr)) return new Set()
+    const fields = rawIdentityReads(expr)
+    for (const [alias, aliasFields] of aliases) {
+        if (new RegExp(`\\b${alias}\\b`).test(expr)) {
+            for (const f of aliasFields) fields.add(f)
+        }
+    }
+    return fields
+}
+
+// `(?<!=)` keeps arrow bodies (`=> { p.insurerName }`) from reading as JSX text.
+const JSX_TEXT_EXPR = /(?:(?<!=)>\s*\{([^{}\n]*)\})|(?:\{([^{}\n]*)\}\s*<)/g
+const TEMPLATE_EXPR = /\$\{([^{}\n]*)\}/g
+const EL_EN_KEY_LINE = /^\s*["']?(?:el|en)["']?\s*:/
+const GREEK_TEXT = /[Ͱ-Ͽἀ-῿]/
+const AUDIT_CALL = /logActivity\s*\(/
+const AUDIT_FIELD_LINE = /^\s*description:\s*`/
+
+function stripCommentsForScan(source: string): string {
+    return source
+        .replace(/\/\*[\s\S]*?\*\//g, (block) => block.replace(/[^\n]/g, ' '))
+        .split('\n')
+        .map((line) => line.replace(/^\s*\/\/.*$/, ''))
+        .join('\n')
+}
+
+function scanIdentityRenderViolations(source: string): IdentityRenderViolation[] {
+    const code = stripCommentsForScan(source)
+    const aliases = taintedIdentityAliases(code)
+    const lines = code.split('\n')
+    const violations: IdentityRenderViolation[] = []
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]
+        if (!line) continue
+
+        // Rule 1 — JSX text interpolation.
+        for (const m of line.matchAll(JSX_TEXT_EXPR)) {
+            const expr = m[1] ?? m[2] ?? ''
+            const taint = identityTaintOf(expr, aliases)
+            if (taint.size > 0) {
+                violations.push({ line: i + 1, rule: 'jsx_text', fields: [...taint], snippet: line.trim() })
+            }
+        }
+
+        // Rules 2 and 3 — template interpolation.
+        const isCopyLine = EL_EN_KEY_LINE.test(line) || GREEK_TEXT.test(line)
+        const lineTaint = new Set<IdentityField>()
+        for (const m of line.matchAll(TEMPLATE_EXPR)) {
+            const taint = identityTaintOf(m[1] ?? '', aliases)
+            for (const f of taint) lineTaint.add(f)
+            if (isCopyLine && taint.size > 0) {
+                violations.push({ line: i + 1, rule: 'bilingual_copy', fields: [...taint], snippet: line.trim() })
+            }
+        }
+        if (lineTaint.has('insurerName') && lineTaint.has('policyNumber')) {
+            const auditWindow = lines.slice(Math.max(0, i - 5), i + 1).join('\n')
+            const isAudit = AUDIT_CALL.test(auditWindow) || AUDIT_FIELD_LINE.test(line)
+            if (!isAudit) {
+                violations.push({
+                    line: i + 1,
+                    rule: 'identity_pair',
+                    fields: ['insurerName', 'policyNumber'],
+                    snippet: line.trim(),
+                })
+            }
+        }
+    }
+    return violations
+}
+
+/**
+ * Files whose flagged copy is NOTIFICATION content: every one of these routes
+ * its title/message through lib/notifications/dispatch.ts, which applies
+ * redactPolicyPlaceholders to both before any channel sees them — the
+ * boundary the primitive documents as the notification backstop. The value
+ * therefore DOES pass through lib/wallet/policy-identity, at the shared
+ * boundary rather than the call site. The sanction is excused from rules
+ * 2 and 3 only (server files hold no JSX), and two assertions below keep it
+ * honest: dispatch must still scrub, and each file must still import the
+ * boundary. A file that stops calling emit loses its excuse mechanically.
+ */
+const NOTIFICATION_BOUNDARY_FILES = new Set([
+    'app/(protected)/renewals/actions.ts',
+    'app/(protected)/wallet/actions.ts',
+    'app/api/v1/collaboration/proposals/[id]/route.ts',
+    'app/api/v1/jobs/process-policy/route.ts',
+    'lib/services/compliance/obligation-scan.ts',
+    'lib/services/policy-merge.service.ts',
+    'lib/services/perk-reminder.service.ts',
+    'lib/services/renewal.service.ts',
+    'lib/services/policy.service.ts',
+])
+
+/** Agent-facing surfaces outside the /agent/ path segment — §12.4 out of B2C scope. */
+const AGENT_SURFACE_FILES = new Map<string, string>([
+    ['app/(protected)/renewals/RenewalsClient.tsx', 'agent renewals board (page.tsx calls getAgentRenewals)'],
+    ['app/(protected)/customers/[id]/policy/[policyId]/page.tsx', "agent's customer-policy view (agent role gate)"],
+])
+
+/** Composed for a model prompt, never rendered to a customer. */
+const MODEL_INPUT_FILES = new Set(['lib/services/ai/prompts.ts'])
+
+/**
+ * Identity-pair compositions that are KEYS, not copy: batch-create's
+ * `duplicateKey` builds `insurer::number` to compare uploads within one
+ * owner's wallet, in memory, and nothing renders it. Excused from
+ * `identity_pair` only — a JSX or bilingual-copy hit here would still fail.
+ */
+const INTERNAL_KEY_FILES = new Set(['app/api/policies/batch-create/route.ts'])
+
+describe('render boundary — a raw identity column never becomes customer text', () => {
+    const identityUniverse = (): string[] =>
+        execFileSync('git', ['ls-files', 'app', 'components', 'lib', 'hooks', 'contexts'], {
+            cwd: REPO_ROOT,
+            encoding: 'utf-8',
+        })
+            .split('\n')
+            .filter((f) => /\.(ts|tsx)$/.test(f))
+            .filter((f) => !/\/(admin|agent)\//.test(f))
+            .filter((f) => existsSync(path.join(REPO_ROOT, f)))
+
+    it('enumerates a real universe (a moved directory must not empty this guard)', () => {
+        const files = identityUniverse()
+        expect(files.length).toBeGreaterThan(400)
+        expect(files.some((f) => f.startsWith('lib/'))).toBe(true)
+        expect(files.some((f) => f.startsWith('components/'))).toBe(true)
+    })
+
+    it('no customer-facing file renders a raw identity column', () => {
+        const offenders: string[] = []
+        for (const file of identityUniverse()) {
+            const source = readFileSync(path.join(REPO_ROOT, file), 'utf-8')
+            let violations = scanIdentityRenderViolations(source)
+            if (NOTIFICATION_BOUNDARY_FILES.has(file)) {
+                violations = violations.filter((v) => v.rule === 'jsx_text')
+            }
+            if (INTERNAL_KEY_FILES.has(file)) {
+                violations = violations.filter((v) => v.rule !== 'identity_pair')
+            }
+            if (AGENT_SURFACE_FILES.has(file) || MODEL_INPUT_FILES.has(file)) continue
+            for (const v of violations) {
+                offenders.push(`${file}:${v.line} [${v.rule}] ${v.snippet}`)
+            }
+        }
+        expect(
+            offenders,
+            `These interpolate a raw insurerName/policyNumber into customer-visible text.\n` +
+                `Route the value through lib/wallet/policy-identity (displayInsurerName / ` +
+                `policyLabel / scrubPolicyIdentity) instead:\n  ${offenders.join('\n  ')}`
+        ).toEqual([])
+    })
+
+    it('the notification boundary the sanction relies on still exists', () => {
+        // (a) dispatch still scrubs both halves of every notification…
+        const dispatch = readFileSync(path.join(REPO_ROOT, 'lib/notifications/dispatch.ts'), 'utf-8')
+        expect(dispatch).toMatch(/redactPolicyPlaceholders\(resolveLocalized\(params\.title/)
+        expect(dispatch).toMatch(/redactPolicyPlaceholders\(resolveLocalized\(params\.message/)
+        // …and (b) every sanctioned file still routes through that boundary.
+        for (const file of NOTIFICATION_BOUNDARY_FILES) {
+            const source = readFileSync(path.join(REPO_ROOT, file), 'utf-8')
+            expect(
+                /import\s*\{[^}]*\b(?:emit|sendNotification|notifyCounterparty)\b[^}]*\}\s*from\s*["'][^"']*notifications/.test(
+                    source
+                ),
+                `${file} is sanctioned as notification copy but no longer imports the ` +
+                    `dispatch boundary — its templates would render unscrubbed`
+            ).toBe(true)
+        }
+    })
+
+    it('every agent-surface exemption still exists and still reads as one', () => {
+        for (const [file] of AGENT_SURFACE_FILES) {
+            expect(existsSync(path.join(REPO_ROOT, file)), `${file} exempted but gone`).toBe(true)
+        }
+    })
+})
+
+describe('render boundary — the matcher is proven against committed probes', () => {
+    const probeSource = (name: string) => readFileSync(path.join(PROBES_DIR, name), 'utf-8')
+
+    it('flags the JSX text render (rule 1 — the CoverageInsightsClient shape)', () => {
+        const violations = scanIdentityRenderViolations(probeSource('identity-render-jsx.tsx.txt'))
+        expect(violations.filter((v) => v.rule === 'jsx_text').length).toBeGreaterThanOrEqual(2)
+        expect(violations.some((v) => v.fields.includes('insurerName'))).toBe(true)
+        expect(violations.some((v) => v.fields.includes('policyNumber'))).toBe(true)
+    })
+
+    it('flags the aliased bilingual template (rule 2 — build.ts’s exact pre-fix shape)', () => {
+        const probe = probeSource('identity-render-bilingual-alias.ts.txt')
+        // Self-check: the probe genuinely reads the raw field and never a sanitizer.
+        expect(probe).toContain('policy.insurerName?.trim()')
+        expect(IDENTITY_SANITIZERS.test(probe)).toBe(false)
+        const violations = scanIdentityRenderViolations(probe)
+        const copy = violations.filter((v) => v.rule === 'bilingual_copy')
+        // Both the el: and the en: line, through the `insurer` alias.
+        expect(copy.length).toBeGreaterThanOrEqual(2)
+        expect(copy.every((v) => v.fields.includes('insurerName'))).toBe(true)
+    })
+
+    it('flags the hand-built identity pair (rule 3 — the notifications/actions shape)', () => {
+        const violations = scanIdentityRenderViolations(probeSource('identity-render-pair.ts.txt'))
+        expect(violations.filter((v) => v.rule === 'identity_pair').length).toBe(1)
+    })
+
+    it('stays green on every legitimate shape — reads are not renders', () => {
+        const probe = probeSource('identity-render-clean.tsx.txt')
+        // Self-check: a gutted probe must not pass vacuously — the shapes that
+        // most invite false positives are demonstrably still in the fixture.
+        expect(probe).toContain('select: { insurerName: true')
+        expect(probe).toContain('t.wallet.policyNumber')
+        expect(probe).toMatch(/logActivity\(/)
+        expect(probe).toContain('insurerName={policy.insurerName}')
+        expect(scanIdentityRenderViolations(probe)).toEqual([])
+    })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// The defect itself, at the DOM: /timeline renders buildTimeline's titles
+// verbatim, so the flow-through proof renders the REAL builder into the REAL
+// component with a placeholder-identity policy. The positive assertions keep
+// the probe from passing vacuously: the entry must still render, and a real
+// insurer must still be named.
+// ─────────────────────────────────────────────────────────────────────────────
+import { buildTimeline } from '@/lib/services/timeline/build'
+import { LifeTimeline } from '@/components/timeline/LifeTimeline'
+
+describe('rendered output — the timeline never prints a placeholder identity', () => {
+    const timelineFor = (insurerName: string) =>
+        buildTimeline(
+            {
+                lifeEvents: [],
+                renewals: [],
+                recommendations: [],
+                advisorActions: [],
+                versions: [],
+                policies: [
+                    {
+                        id: 'pol-timeline-1',
+                        lineOfBusiness: 'motor',
+                        insurerName,
+                        createdAt: new Date('2026-08-01T00:00:00.000Z'),
+                        startDate: new Date('2026-08-01T00:00:00.000Z'),
+                        endDate: new Date('2027-08-01T00:00:00.000Z'),
+                        status: 'active',
+                    },
+                ],
+            },
+            new Date('2026-08-20T12:00:00.000Z')
+        ).map((entry) => ({ ...entry, at: entry.at.toISOString() }))
+
+    it.each(SENTINELS.filter((s) => !s.startsWith('PENDING-')))(
+        'renders the policy-added entry without leaking %s',
+        (sentinel) => {
+            const { container } = render(<LifeTimeline entries={timelineFor(sentinel)} language="el" />)
+            const text = container.textContent || ''
+            expectNoSentinel(text)
+            // Flow-through: the entry RENDERED — the title degrades to the
+            // branch label alone instead of disappearing or leaking.
+            expect(text).toContain('Προστέθηκε ασφαλιστήριο')
+        }
+    )
+
+    it('still names a real insurer in the same title', () => {
+        const { container } = render(<LifeTimeline entries={timelineFor('Interamerican')} language="el" />)
+        expect(container.textContent).toContain('Interamerican')
+        expect(container.textContent).toContain('Προστέθηκε ασφαλιστήριο')
+    })
+})

@@ -9,6 +9,7 @@
 import { getTranslations } from "@/lib/i18n"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { formatCurrency } from "@/lib/i18n/format"
+import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 
 /** Gap severity label for the report badge — was the raw enum ("medium"). */
 function gapSeverityLabel(severity: string, language: "en" | "el"): string {
@@ -174,7 +175,7 @@ export function generateSavingsReportHtml(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${L("Έκθεση", "Savings Report")} — ${escapeHtml(metadata.policyNumber || "Policy")}</title>
+<title>${L("Έκθεση", "Savings Report")} — ${escapeHtml(displayPolicyNumber(metadata.policyNumber) || "Policy")}</title>
 <style>${brandingStyleVars}
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a2e; line-height: 1.6; padding: 40px; max-width: 800px; margin: 0 auto; }
@@ -216,8 +217,8 @@ export function generateSavingsReportHtml(
 ${headerBlock}
 
 <div class="meta-grid">
-  <span class="meta-label">${L("Ασφαλιστική", "Insurer")}</span><span class="meta-value">${escapeHtml(metadata.insurerName || "—")}</span>
-  <span class="meta-label">${L("Αριθμός ασφαλιστηρίου", "Policy Number")}</span><span class="meta-value">${escapeHtml(metadata.policyNumber || "—")}</span>
+  <span class="meta-label">${L("Ασφαλιστική", "Insurer")}</span><span class="meta-value">${escapeHtml(displayInsurerName(metadata.insurerName) || "—")}</span>
+  <span class="meta-label">${L("Αριθμός ασφαλιστηρίου", "Policy Number")}</span><span class="meta-value">${escapeHtml(displayPolicyNumber(metadata.policyNumber) || "—")}</span>
   <span class="meta-label">${L("Τύπος", "Type")}</span><span class="meta-value">${escapeHtml(metadata.lineOfBusiness ? normalizeBranch(metadata.lineOfBusiness).label[language] : "—")}</span>
   <span class="meta-label">${L("Περίοδος", "Period")}</span><span class="meta-value">${escapeHtml(metadata.startDate ? formatDate(metadata.startDate) : "—")} ${L("έως", "to")} ${escapeHtml(metadata.endDate ? formatDate(metadata.endDate) : "—")}</span>
   <span class="meta-label">${L("Ασφάλιστρο", "Premium")}</span><span class="meta-value">${metadata.premiumAmount != null ? escapeHtml(formatCurrency(Number(metadata.premiumAmount), language, { currency: "EUR", decimals: 2 })) : "—"}</span>

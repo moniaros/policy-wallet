@@ -7,6 +7,7 @@
  */
 
 import { db } from "@/lib/db"
+import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { resolveGapConcept, resolveGapContent } from "@/lib/wallet/gap-report"
 import type { ProfileGap, GapSeverity } from "./profile-gap-rules"
 import { lobProtectionWeight } from "./protection-score"
@@ -345,6 +346,7 @@ export function policyGapsToRecommendations(
 ): RecommendationInput[] {
     const recs = gapInstances.map((gi) => {
         const lob = gi.policy?.lineOfBusiness ?? "other"
+        const insurer = displayInsurerName(gi.policy?.insurerName)
         // Same resolver as the gap report, so a finding reads identically
         // wherever it surfaces — and the pipeline's raw English slug titles
         // ("Own-Vehicle-Damage") never reach the card.
@@ -371,8 +373,17 @@ export function policyGapsToRecommendations(
             urgency: (gi.severity as GapSeverity) || "medium",
             estimatedCostEur: getEstimatedPremium(lob),
             personalReason: {
-                en: gi.aiSuggestion || `Review your ${gi.policy?.insurerName ?? ""} policy for this coverage gap.`,
-                el: gi.aiSuggestionEl || `Ελέγξτε το ασφαλιστήριο ${gi.policy?.insurerName ?? ""} για αυτό το κενό κάλυψης.`,
+                // Through the primitive: `insurerName` can hold an extraction
+                // sentinel ("Unknown Insurer") on a healthy policy, and this
+                // fallback is STORED prose the dashboard renders — no downstream
+                // scrub exists on this path (unlike notifications, which pass
+                // dispatch). A placeholder degrades to naming no insurer at all.
+                en: gi.aiSuggestion || (insurer
+                    ? `Review your ${insurer} policy for this coverage gap.`
+                    : `Review this policy for this coverage gap.`),
+                el: gi.aiSuggestionEl || (insurer
+                    ? `Ελέγξτε το ασφαλιστήριο ${insurer} για αυτό το κενό κάλυψης.`
+                    : `Ελέγξτε το ασφαλιστήριό σας για αυτό το κενό κάλυψης.`),
             },
         }
     })

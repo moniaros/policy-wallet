@@ -1,0 +1,8 @@
+// RED probe — rule 3 (the identity-pair composition policyLabel() owns).
+// The shape notifications/actions.ts shipped: "Insurer (Number)" hand-built
+// from the raw columns, outside any el/en key and with no Greek on the line.
+export function probe(p: { insurerName: string; policyNumber: string }) {
+    const e: { related_policy_name: string | null } = { related_policy_name: null }
+    e.related_policy_name = `${p.insurerName} (${p.policyNumber})`
+    return e
+}

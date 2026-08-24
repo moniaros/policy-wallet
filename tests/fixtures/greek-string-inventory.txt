@@ -6505,7 +6505,7 @@ inline	lib/services/gap-engine/recommendation-generator.ts	"Νέα πρότασ�
 inline	lib/services/gap-engine/recommendation-generator.ts	`${created} νέες προτάσεις για εσάς`
 inline	lib/services/gap-engine/recommendation-generator.ts	content.titleEl
 inline	lib/services/gap-engine/recommendation-generator.ts	gi.aiExplanationEl || gi.definition.description || content.titleEl
-inline	lib/services/gap-engine/recommendation-generator.ts	gi.aiSuggestionEl || `Ελέγξτε το ασφαλιστήριο ${gi.policy?.insurerName ?? ""} για αυτό το κενό κάλυψης.`
+inline	lib/services/gap-engine/recommendation-generator.ts	gi.aiSuggestionEl || (insurer ? `Ελέγξτε το ασφαλιστήριο ${insurer} για αυτό το κενό κάλυψης.` : `Ελέγξτε το ασφαλιστήριό σας για αυτό το κενό κάλυψης.`)
 inline	lib/services/gap-engine/risk-assessment.ts	"Δεν απαιτείται ενέργεια."
 inline	lib/services/gap-engine/risk-assessment.ts	"Δεν καταγράφεται έκθεση."
 inline	lib/services/gap-engine/risk-assessment.ts	"Δεν μπορούμε να το υπολογίσουμε μέχρι να μάθουμε περισσότερα για την κατάστασή σας."

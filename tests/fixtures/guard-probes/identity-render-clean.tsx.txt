@@ -1,0 +1,34 @@
+// GREEN probe — every legitimate shape the render-boundary scan must NOT flag.
+// A matcher that fires on these would need a hundred exemptions, and a guard
+// with a hundred exemptions exempts the problem.
+import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
+
+export function probe(policy: any, t: any, ctx: any) {
+    // 1. a select projection — the field as an object KEY, not a value
+    const projection = { select: { insurerName: true, policyNumber: true } }
+    // 2. a null check / comparison — reads, not renders
+    if (!policy.insurerName) return projection
+    const same = policy.insurerName.toLowerCase() === "interamerican"
+    // 3. a sanitized interpolation — the primitive wraps the read
+    const label = `${displayInsurerName(policy.insurerName)} — ${displayPolicyNumber(policy.policyNumber) ?? ""}`
+    // 4. a translation KEY whose leaf happens to be named policyNumber (a label, not the value)
+    const heading = `${t.wallet.policyNumber}: ${displayPolicyNumber(policy.policyNumber) ?? ""}`
+    // 5. an audit-trail description — admin-read, skipped by context
+    void logActivity(
+        "POLICY_CREATED",
+        `Created policy ${policy.policyNumber} for ${policy.insurerName}`,
+    )
+    // 6. an event payload field — data, not copy
+    const payload = { insurerName: policy.insurerName, policyNumber: policy.policyNumber }
+    void payload
+    return (
+        <div>
+            {/* 7. prop pass-through — the receiving component owns the render */}
+            <ProbeCard insurerName={policy.insurerName} label={label} heading={heading} same={same} />
+            {/* 8. a translation label rendered as JSX text */}
+            <span>{t.wallet.policyNumber}</span>
+        </div>
+    )
+}
+declare function logActivity(kind: string, description: string): void
+declare function ProbeCard(props: any): any

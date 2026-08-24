@@ -946,7 +946,7 @@ Playwright workers — `branches-*.spec.ts` force-refreshing the shared account'
 a file, not across files. §0.5 forbids comparing captures whose data moved; it found itself doing
 that and said so rather than publishing the numbers.
 
-### V2-P1-06 — `/timeline` identity bypass · `todo`
+### V2-P1-06 — `/timeline` identity bypass · `done` — REVIEW PASSED
 `lib/services/timeline/build.ts:202` reads `policy.insurerName?.trim()` directly; `LifeTimeline.tsx`
 renders it verbatim. Route through `lib/wallet/policy-identity.ts`, and close the guard gap in
 D-021 — the sentinel guard cannot see this because the file never contains a literal.
@@ -1142,3 +1142,47 @@ That is the rule from my own correction, applied in both directions by the imple
   ledger count, so it was **reported rather than added**.
 - **Greek freeze:** exactly one removal, one addition — `branches.statusGap "Πιθανό κενό"` →
   `branches.statusNotHeld "Χωρίς ασφαλιστήριο"`. Audited.
+
+
+---
+
+## V2-P1-06 — Adversarial review: **PASS**. Six more bypasses, one of them downloadable.
+
+`/timeline` now degrades a placeholder identity to the branch label alone — «Προστέθηκε
+ασφαλιστήριο Αυτοκίνητο», no dangling em-dash — while a real insurer still renders « — Interamerican».
+
+### The guard's rule: *reads are not renders*
+Three sinks only — **jsx_text** (interpolation, not attribute pass-through), **bilingual_copy**
+(`${…}` on an `el:`/`en:` line, or any line carrying Greek), **identity_pair** (hand-built
+"Insurer (Number)"). Per-file lexical taint follows `const` aliases **to a fixpoint** — which is
+precisely the shape (`const insurer = policy.insurerName`) that walked past the literal scan and
+caused D-021.
+
+Universe: tracked `.ts/.tsx` under `app/ components/ lib/ hooks/ contexts/`, minus admin/agent, floor
+asserted >400 files. **13 exemptions in 4 mechanical classes, not 100 one-offs** — and they
+self-invalidate (D-022).
+
+### The guard found six bypasses beyond the briefed one
+
+| site | why it matters |
+|---|---|
+| `lib/services/risk-graph/protection.ts:448` | the **identical alias shape**, found by the guard rather than my manual survey |
+| `lib/services/gap-engine/recommendation-generator.ts` | **DB-stored** prose — "Review your Unknown Insurer policy" persisted with no downstream scrub |
+| `lib/services/reports/savings-report.ts` | a **customer-downloadable** report title and meta rows |
+| `app/(protected)/notifications/actions.ts` | `${insurerName} (${policyNumber})` rendered by `NotificationCard` |
+| `components/wallet/PolicyDetailsClientView.tsx` | the `navigator.share` sheet |
+| `components/coverage/CoverageInsightsClient.tsx:401` | was relying on a scrub in *another* file — made self-defending |
+
+The stored one deserves attention beyond this item: rows already written carry that prose, and a
+scrub at render is not a migration. Flagged, not silently assumed clean.
+
+### Failure proof
+Reverting `build.ts` to the raw read → **9 tests red**, with the DOM assertion's received text
+byte-identical to the leak in `evidence/timeline/BASELINE.md`'s §2.6 screenshot. Restored → green.
+I separately probed the *exemption* rather than the fix — see D-022.
+
+**Greek freeze:** one entry, the sanitization itself. The old form was
+`${gi.policy?.insurerName ?? ""}`, which rendered a **dangling sentence** on a null insurer as well
+as the sentinel on a placeholder. Both gone.
+
+**Outbound stays 0 / 0 / 0.**

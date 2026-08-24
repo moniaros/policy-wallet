@@ -684,3 +684,38 @@ invariant it was named for.
 rule*. Wherever the invariant is "all X goes through Y", the guard must enumerate reads of X, not
 occurrences of X's known bad values — because the bad values are data, and data does not appear in
 source.
+
+
+---
+
+## D-022 — An exemption that asserts its own precondition is not a hole
+
+date: 2026-08-24
+raised_by: Adversarial Reviewer, reviewing V2-P1-06
+decision: Adopted as the standard form. An exemption must name the property that makes it safe, and
+the guard must assert that property.
+
+D-021 closed with a guard carrying **13 exemptions**, which by every earlier lesson in this run
+should have been a warning sign — 43 exemptions in P1-03 were only acceptable because they were
+exact-count and ratcheted.
+
+These are safe for a different and better reason. Nine of the thirteen are notification files whose
+copy passes `lib/notifications/dispatch.ts`, which scrubs every title and message. The exemption's
+own comment states the condition:
+
+> *"two assertions below keep it honest: dispatch must still scrub, and each file must still import
+> the boundary. A file that stops calling emit loses its excuse mechanically."*
+
+**Verified by probe:** neutering all six `redactPolicyPlaceholders` calls in `dispatch.ts` turned the
+guard red on a test named *"the notification boundary the sanction relies on still exists"*.
+
+That is the distinction worth keeping. A **list** exemption says "trust these files". A
+**conditional** exemption says "these files are safe *because* X, and here is X asserted". The
+second cannot rot silently: the day the backstop is removed, the exemptions fail with it.
+
+The other four are honest in their own way — two agent surfaces named individually with reasons
+rather than hidden behind a path glob, one model-input file that never reaches a customer, and one
+in-memory dedup key.
+
+**Added to the taxonomy** in `PROGRESS.md`: alongside the five ways a guard fails, this is the first
+recorded way an exemption succeeds.

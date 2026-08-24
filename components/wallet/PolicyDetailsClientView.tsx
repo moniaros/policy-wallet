@@ -472,9 +472,14 @@ export function PolicyDetailsClient({
 
     const handleShare = async () => {
         const shareUrl = window.location.href
+        // The sanitized values (`displayInsurer`, `displayPolicyNumber`) are
+        // computed below; this handler runs on click, after render, so the
+        // consts are initialized. The raw getters can return an extraction
+        // sentinel ("__PENDING_EXTRACTION__", "PENDING-…"), and the share
+        // sheet is customer-visible output like any other.
         const shareData = {
-            title: getInsurerName(),
-            text: `${t.wallet.policyNumber}: ${getPolicyNumber()}`,
+            title: displayInsurer,
+            text: displayPolicyNumber ? `${t.wallet.policyNumber}: ${displayPolicyNumber}` : displayInsurer,
             url: shareUrl,
         }
 

@@ -22,6 +22,7 @@
 
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { calendarDaysUntil } from "@/lib/policy-status"
+import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { RISK_CATALOG } from "@/lib/services/gap-engine/risk-catalog"
 import { risksExposedBy } from "@/lib/services/gap-engine/recommendation-context"
 import { getLifeEvent } from "@/lib/services/life-events/registry"
@@ -199,7 +200,12 @@ export function buildTimeline(sources: TimelineSources, now: Date = new Date()):
     // ── Policies ─────────────────────────────────────────────────────
     for (const policy of sources.policies) {
         const branch = branchLabel(policy.lineOfBusiness)
-        const insurer = policy.insurerName?.trim()
+        // Through the primitive, never the raw column: `insurerName` can hold a
+        // sentinel (`__PENDING_EXTRACTION__`, `Unknown Insurer`) on a healthy
+        // active policy, and this title rendered one to a customer verbatim.
+        // `displayInsurerName` returns '' for a placeholder, so the title
+        // degrades to the branch label alone rather than leaking the token.
+        const insurer = displayInsurerName(policy.insurerName)
         entries.push({
             id: `policy_added:${policy.id}`,
             kind: "policy_added",

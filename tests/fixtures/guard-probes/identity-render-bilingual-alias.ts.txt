@@ -1,0 +1,14 @@
+// RED probe — rule 2 (tainted alias interpolated into bilingual customer copy).
+// This is lib/services/timeline/build.ts's exact pre-fix shape: the file never
+// spells a sentinel — it reads the FIELD, renames it, and interpolates it two
+// object keys later. The literal scan is green on this file; the render
+// boundary must not be.
+export function probe(policy: { insurerName: string | null }, branch: { en: string; el: string }) {
+    const insurer = policy.insurerName?.trim()
+    return {
+        title: {
+            en: `${branch.en} policy added${insurer ? ` — ${insurer}` : ""}`,
+            el: `Προστέθηκε ασφαλιστήριο ${branch.el}${insurer ? ` — ${insurer}` : ""}`,
+        },
+    }
+}
