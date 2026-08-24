@@ -1809,7 +1809,7 @@ export const el = {
             title: 'Η προστασία μου',
             heroKicker: 'Κατάσταση προστασίας',
             heroCta: 'Έλεγχος της προστασίας μου',
-            heroAreasOne: '1 κατηγορία κινδύνου ίσως χρειάζεται έλεγχο',
+            heroAreasOne: '1 εύρημα ίσως χρειάζεται έλεγχο',
             // ── The factual composition that replaced the verdict ──
             // Each is a COUNT of something the wallet contains, so none of them
             // can be wrong the way «Καλή κάλυψη» could.
@@ -1824,7 +1824,7 @@ export const el = {
             factFailedOne: '1 δεν διαβάστηκε',
             factFailedMany: '{count} δεν διαβάστηκαν',
             severityGroupLabel: 'Ανοιχτά ευρήματα ανά προτεραιότητα',
-            heroAreasMany: '{count} κατηγορίες κινδύνου ίσως χρειάζονται έλεγχο',
+            heroAreasMany: '{count} ευρήματα ίσως χρειάζονται έλεγχο',
             heroEmptyTitle: 'Ας δούμε πόσο προστατευμένοι είστε',
             heroEmptyBody: 'Ανεβάστε το πρώτο σας ασφαλιστήριο. Θα το διαβάσουμε, θα το εξηγήσουμε απλά και θα χαρτογραφήσουμε πού βρίσκεστε.',
             heroEmptyCta: 'Προσθέστε το πρώτο σας ασφαλιστήριο',
