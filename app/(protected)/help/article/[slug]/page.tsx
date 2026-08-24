@@ -192,7 +192,7 @@ export default function ArticlePage() {
                                 <p className="text-sm text-muted-foreground mb-4">{copy.supportDescription}</p>
                                 <a
                                     href={`mailto:${siteConfig.contactEmail}`}
-                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-sm px-4 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-sm px-4 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                                 >
                                     {copy.contactSupport}
                                 </a>

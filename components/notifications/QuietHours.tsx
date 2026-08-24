@@ -62,7 +62,13 @@ export function QuietHours({ initial }: QuietHoursProps) {
                     type="checkbox"
                     checked={enabled}
                     onChange={(e) => setEnabled(e.target.checked)}
-                    className="mt-1 h-5 w-5 shrink-0 accent-[var(--primary)]"
+                    // h-6 w-6 = 24x24, the WCAG 2.5.8 (AA) target-size floor; it
+                    // measured 20x24 and failed on width. Not 44x44: the harness
+                    // uses the 2.5.5 AAA floor, and a 44px checkbox is not what
+                    // that criterion asks for when the control has a real label —
+                    // `htmlFor="quietHoursEnabled"` above makes the whole title a
+                    // second, much larger target for the same toggle.
+                    className="mt-1 h-6 w-6 shrink-0 accent-[var(--primary)]"
                 />
             </div>
 

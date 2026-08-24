@@ -368,7 +368,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
                         <p className="text-sm text-muted-foreground mb-5">{t.help.emailDesc}</p>
                         <a
                             href={`mailto:${siteConfig.contactEmail}`}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                            className="inline-flex min-h-11 items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         >
                             {t.help.sendEmail}
                             <ArrowRight className="w-4 h-4" />

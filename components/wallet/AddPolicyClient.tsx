@@ -475,7 +475,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         type="button"
                         onClick={() => router.back()}
                         aria-label={t.common.back}
-                        className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        // min-h-11 min-w-11: p-2 around a w-5 icon is 36px wide, and
+                        // the h-16 header stretched it to 36x44 — measured on
+                        // /wallet/add at 320/390/430. Explicit, like MainNav's rows,
+                        // so a padding change cannot silently sink it again.
+                        className="grid min-h-11 min-w-11 place-items-center -ml-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
