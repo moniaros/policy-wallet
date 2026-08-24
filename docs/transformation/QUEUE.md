@@ -998,3 +998,46 @@ against one database state, with the causing policy identified. Both correct for
 **Honesty note carried from the capture:** the "heavy portfolio" state was contaminated (34 policies
 = 12 + 22) because `applyPortfolioState` only clears its own prefix. Called out in the baseline
 rather than mislabelled; the same-session dashboard cross-check inside that state is unaffected.
+
+
+---
+
+# V2 PHASE 0 EXTENSION — **COMPLETE** 2026-08-24
+
+| §5 gate condition | evidence |
+|---|---|
+| Every surface baselined, 3 widths, applicable states | **14 BASELINE.md documents** — v1's 11 plus `/branches`, `/timeline`, `/insights/risk-profile` |
+| New degraded fixtures built and proven | `applyUnownedLinesProfileFixture` (§2.2) and the corrected `applyUnknownHouseholdFixture` (§2.4 / ΑΓΝΩΣΤΟ), both verified by calling real functions |
+| Every v2 candidate reproduced or refuted | **7 verified: 6 confirmed, 1 refuted** (§10's analyses counter, already fixed) |
+| 1.4.11 automated | in every baseline |
+| `LEDGER.md` complete | **109 capabilities**, 4 counts refreshed |
+| Instrumentation plan agreed | carried from v1 |
+| Adversarial Reviewer confirms | yes — each row checked against disk |
+
+**§0.7 re-verified at the boundary:** `lib/gap-detection.ts` sha256 unchanged from run start;
+dispatch stub 6/6 green.
+
+## What the extension actually bought
+
+Three surfaces measured for the first time, and **four defects nobody had listed**:
+
+1. **`readCoverageFacts` never reads `vehicle.insuredValue`** — so «ΑΓΝΩΣΤΟ» is the default for
+   every motor policy, in a market where motor cover is compulsory. The single most consequential
+   finding of either run.
+2. **A mirrored proxy prefix collision** — `/wallet/[id]/review` bounced agents off an agent-only
+   page, the same root cause as the reported `/insights/risk-profile` bug, in the opposite direction.
+3. **`/timeline` bypasses `policy-identity.ts`** — and the guard cannot see it, because it forbids a
+   spelling where the invariant demands a routing rule (D-021).
+4. **A plural-agreement bug of exactly the class `11ec4987` fixed** — the commit this run is based on.
+
+And two refutations that would have caused wasted work: the floating avatar (twice, on two
+surfaces) and §10's analyses counter.
+
+## Phase 1 (v2) queue — 10 items
+
+**V2-P1-07** (motor field, highest priority) · **V2-P1-02** (unowned lines, incl. email) ·
+**V2-P1-06** (timeline identity + the D-021 guard gap) · **V2-P1-03**+**08** (second score, blocked
+on H-005) · **V2-P1-04**+**09** (guilt copy + agreement, same file) · **V2-P1-10** (expiry window) ·
+**V2-P1-05** (timeline leakage) · plus v1's carried **P1-10**, **P1-08**, **P1-14**.
+
+Phase 1 remains **serial** (§1).

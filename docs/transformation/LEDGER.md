@@ -410,5 +410,32 @@ T-03 especially: the cause link is the only thing here the wallet cannot already
 **§10 ceiling holds:** the monetization count did not rise, and §10.1 forbids it rising. Recorded
 here so a later phase cannot add one quietly.
 
-`/insights/risk-profile` is not yet enumerated — its baseline is in flight, and it was unreachable
-until `V2-P1-01` landed an hour ago.
+## Οι κίνδυνοί σας — `/insights/risk-profile`
+
+Baseline: `evidence/risk-profile/BASELINE.md`. Unreachable to policyholders until `V2-P1-01`.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| R-01 | See a risk graph of what your life is exposed to | fact | **KEEP** | «Η προστασία μου», *ανά κίνδυνο* lens (§4.2) | Phase 2 |
+| R-02 | See per-risk protection state | fact | **KEEP, FIX** | `unknown` is currently the DEFAULT for motor (V2-P1-07), so the axis is uninformative until the field is read | V2-P1-07 |
+| R-03 | See «Απροστάτευτο» on lines you do not hold | fact | **REMOVE** | §2.2 — 4 rows with zero matching policies | V2-P1-02 |
+| R-04 | See the coverage-completeness score + verdict | fact | **PENDING H-005** | verdict removed regardless; metric's fate is the owner's | V2-P1-03 |
+| R-05 | Read the household summary | fact | **KEEP, REWRITE** | guilt register (§2.13) + a plural-agreement bug, same file | V2-P1-04, V2-P1-09 |
+| R-06 | See what is being monitored, and expiry counts | fact | **KEEP, RECONCILE** | 45-day window here vs 30-day on the dashboard | V2-P1-10 |
+| R-07 | Filter risks by state | action | **KEEP** | the «Όλα N» tab whose count disagrees with «Παρακολουθούμε N» | V2-P1-10 |
+| R-08 | See trends and predictions | fact | **KEEP** | must not assert a claim the engine cannot substantiate (§2.10) | Phase 2 |
+
+**Ledger note on R-02.** Worth stating plainly: this surface's whole premise is per-risk protection
+state, and for motor — the line nearly every Greek customer holds — that state is `unknown` by
+default because of an unread field. The surface is not mis-designed; it is starved.
+
+---
+
+## Running counts — refreshed 2026-08-24 (v2 Phase 0 extension complete)
+
+| | v1 Phase 0 | now | Δ |
+|---|---|---|---|
+| total capabilities | 89 | **109** | +20 (6 branches, 6 timeline, 8 risk-profile) |
+| monetization surfaces | 5 | **5** | 0 — none of the three new surfaces carries one |
+
+**§10.1 ceiling holds.** Three surfaces added, no upgrade surface among them.
