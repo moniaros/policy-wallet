@@ -1353,3 +1353,57 @@ where `useLanguage().t` deliberately throws — a real constraint found only in 
 My first probe replaced `z-[45]` in a **comment** rather than the `className` — my `s2 != s`
 assertion passed because a comment changed, and I briefly read a correct guard as having a gap. The
 rule I keep relearning: assert the **behavioural token** changed, not that the file did.
+
+## Phase 1, the three items the §6 diff surfaced (D-025)
+
+| id | § | item | state |
+|---|---|---|---|
+| **V2-P1-11** | 6.7 | count consistency — instrument, then reconcile or label | in flight |
+| **V2-P1-12** | — | H-008: the credit grant nothing granted | **shipped** `0e62dc45` |
+| **V2-P1-13** | 6.9 | severity guard universe — extend the walk to `lib/` | in flight |
+
+V2-P1-12 was not on the §6 list. It came out of H-008 and shipped ahead of the halt's commercial half
+because CLAUDE.md prohibits publishing a claim the code does not support *regardless of instruction*,
+and this one was going out daily. See `HALTS.md`.
+
+### V2-P1-14 (§6.12 layout integrity) — queued, not yet dispatched
+
+**The harness has never asked whether the page scrolls sideways.** `captureSurface` records scroll
+*height* and, via `truncationFailures`, element-level overflow (`el.scrollWidth > el.clientWidth`,
+the widened successor to `clippedLabels`). Nothing anywhere compares
+`document.documentElement.scrollWidth` against the viewport width. Across ~190 captures at 320/390/430
+the one question §6.12 exists to ask has not been asked.
+
+That matters more here than it would elsewhere, because `app/globals.css` carries a **deliberate
+safety net** for exactly this failure — `:where(.grid, .flex) > * { min-width: 0 }` below 430px, added
+so a long Greek compound cannot push the page sideways — and `.pw-scroll-strip` exists because that
+net, applied to a strip that is *meant* to scroll, removes the floor that makes it scroll. Both are
+load-bearing and neither has a page-level assertion behind it.
+
+**Item:** add a document-level horizontal-overflow probe to `metrics.ts`, wire it into
+`captureSurface` so every future capture carries it, re-measure the baselines at 320, and fix what it
+finds. Held until V2-P1-11 lands — that agent may also be extending the harness, and `metrics.ts` is
+the one file both items would touch (D-026).
+
+### V2-P1-14 gains a second half: §6.14 tap targets, pending re-measurement
+
+Aggregating `tapTargets` across all **212** captures that carry the field: **129 clean, 83 with
+offenders**, 1,277 offender instances — 1,110 `button`, 137 `input`, 30 `a`. The dominant shape is
+**36×44**: the height already clears the 44px floor and the **width** is 8px short, repeated across a
+comparison table's per-policy actions («Κατανόηση ασφαλιστηρίου», «Έγγραφα», «Κοινοποίηση σε
+σύμβουλο»). That is one component repeated down a list, not 88 independent defects, so it is a
+primitive-level fix — cheap, and high leverage.
+
+**Not queued as work yet, deliberately.** Those captures are dated **2026-08-23** and live in
+`data/current/`, which is the directory D-012 caught holding pre-Goal-2 numbers. HEAD is two days and
+several commits past them, P1-08 among those. Acting on them would repeat D-012 exactly.
+
+So V2-P1-14 becomes one measurement pass with two outputs: add the page-level horizontal-overflow
+probe, re-measure the affected surfaces at 320/390/430, and take the tap-target numbers from that run
+rather than from August 23. Whatever survives re-measurement is the §6.14 fix list.
+
+**Not a defect, checked and dismissed:** `threshold.protectionScoreLowBand` survives in
+`/admin/automation` after the protection score was removed from the product. It reads as a dead knob
+and is not one — `decision-engine.ts:322` uses it to open an **advisor task**, a book-management
+signal, never a customer render. The code says so at the branch. Admin is also outside §12.4's B2C
+scope. No action.

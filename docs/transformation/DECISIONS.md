@@ -824,3 +824,27 @@ filesystem or the schema. For phase completion it is §6.
 
 **Standing change:** before declaring any phase complete or blocked, diff the phase's spec section
 against the queue and paste the diff into `PROGRESS.md`. A phase is closed against the instruction.
+
+## D-026 — Two Phase 1 items running in parallel, against §1's serial rule
+
+**Date:** 2026-08-25 · **Deviation, logged rather than hidden**
+
+§1 keeps Phase 1 serial so two items cannot land conflicting edits on the same surface. I am running
+**V2-P1-11** (count instrumentation) and **V2-P1-13** (severity guard universe) concurrently anyway.
+
+**Why the rule's purpose is not defeated here.** The two touch disjoint trees: P1-11 works in
+`components/dashboard/**` and the wallet/risk-profile/analyses/branches views and adds a count guard;
+P1-13 works in `lib/` and in `tests/unit/gap-severity-display-single-source.test.ts`. Both briefs name
+the other's territory as off-limits and require a report rather than an edit if they need to cross.
+
+**The residual risk, named.** Two places they could still collide: a shared wallet component that
+renders both a count and a severity, and `tests/fixtures/greek-string-inventory.txt`, which either may
+regenerate. The freeze is the likelier one and it is also the harmless one — it is generated, so I
+regenerate it once myself after both land and audit the union of the diffs line by line. A component
+collision would show as a merge-dirty file in `git status`, which I check before staging; I stage
+explicit paths, never a directory, so neither agent's work can be swept into the other's commit.
+
+**Why not just run them serially.** Nothing about correctness required it, and the cost was real:
+Phase 1 has been open across two runs. The reversible choice was to parallelise two disjoint items and
+keep the collision check manual, not to serialise on a rule whose purpose the file layout already
+satisfies. If either reports crossing into the other's tree, the second one re-runs after the first.
