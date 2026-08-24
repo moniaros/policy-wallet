@@ -213,7 +213,8 @@ export interface FactSpec {
 }
 
 export interface DuplicateFactResult {
-    dataFactDuplicates: { key: string; count: number }[]
+    /** `subject` present when the key is subject-scoped (per row/branch/severity). */
+    dataFactDuplicates: { key: string; subject?: string; count: number }[]
     valueScanDuplicates: { key: string; value: string; count: number; where: string[] }[]
     duplicateFactCount: number
 }
@@ -228,16 +229,32 @@ export async function duplicateFacts(page: Page, facts: FactSpec[]): Promise<Dup
             return true
         }
 
-        // (a) data-fact scan
+        // (a) data-fact scan, grouped by key AND SUBJECT.
+        //
+        // `data-fact-subject` scopes a key to one row, branch or severity, so a
+        // 29-policy wallet renders `policy.daysRemaining` 29 times legitimately
+        // — 29 different policies, not one fact twice. Without the subject this
+        // scan reported `{key: "policy.daysRemaining", count: 29}` and the
+        // duplicate metric became noise on every wallet capture, which is how a
+        // real duplicate would later get ignored.
+        //
+        // It does NOT weaken the check: two elements sharing a key AND a subject
+        // (or both carrying no subject at all) are still one fact rendered
+        // twice, and still fire. `countConsistency` in ./dashboard.ts already
+        // grouped this way; this is the same rule reaching the second scanner.
         const byKey = new Map<string, number>()
         document.querySelectorAll<HTMLElement>("[data-fact]").forEach((el) => {
             if (!visible(el)) return
             const k = el.getAttribute("data-fact") || ""
-            byKey.set(k, (byKey.get(k) || 0) + 1)
+            const subject = el.getAttribute("data-fact-subject") || ""
+            byKey.set(`${k}\u0000${subject}`, (byKey.get(`${k}\u0000${subject}`) || 0) + 1)
         })
         const dataFactDuplicates = Array.from(byKey.entries())
             .filter(([, n]) => n > 1)
-            .map(([key, count]) => ({ key, count }))
+            .map(([composite, count]) => {
+                const [key, subject] = composite.split("\u0000")
+                return subject ? { key, subject, count } : { key, count }
+            })
 
         // (b) value scan — count elements whose OWN text (direct text nodes)
         // contains the fact value, so an ancestor chain doesn't count once per level.
