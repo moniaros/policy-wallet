@@ -65,7 +65,14 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
                 tabIndex={-1}
                 className="bg-card rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-border"
             >
-                <div className="bg-red-500 p-6 text-white">
+                {/* bg-red-600, not red-500. On red-500 even PURE WHITE is 3.81:1 —
+                    no foreground choice clears 4.5:1, so the background was the
+                    defect. «Η ενέργεια είναι οριστική» measured 3.12:1 in
+                    text-red-100 at 320/390/430; the h2 above it passed only
+                    because bold 20px counts as large text and needs 3:1. On
+                    red-600 white is 4.77:1 and the sentence that says the
+                    deletion cannot be undone is legible. */}
+                <div className="bg-red-600 p-6 text-white">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -73,7 +80,7 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
                             </div>
                             <div>
                                 <h2 id={titleId} className="text-xl font-black">{copy.confirmDeletion}</h2>
-                                <p className="text-sm text-red-100 mt-0.5">{copy.permanentAction}</p>
+                                <p className="text-sm text-white mt-0.5">{copy.permanentAction}</p>
                             </div>
                         </div>
                         <button

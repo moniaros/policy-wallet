@@ -1064,3 +1064,73 @@ export async function truncationFailures(page: Page): Promise<TruncationFailure[
         return out
     })
 }
+
+export type PageOverflow = {
+    documentScrollWidth: number
+    viewportWidth: number
+    overflowPx: number
+    offenders: string[]
+}
+
+/**
+ * Does the PAGE scroll sideways?
+ *
+ * The harness has always measured scroll HEIGHT, and `truncationFailures`
+ * measures element-level overflow (`el.scrollWidth > el.clientWidth`). Neither
+ * asks the question §6.12 exists to ask, so across ~190 captures at
+ * 320/390/430 nobody asked it: is the document itself wider than the viewport?
+ *
+ * It matters here more than it would elsewhere, because two load-bearing rules
+ * in app/globals.css exist for exactly this failure and neither had an
+ * assertion behind it: `:where(.grid, .flex) > * { min-width: 0 }` below 430px,
+ * added so a long Greek compound cannot push the page sideways, and
+ * `.pw-scroll-strip`, added because that same rule, applied to a strip that is
+ * MEANT to scroll, removes the floor that makes it scroll.
+ *
+ * A legitimate horizontal scroller does NOT show up here — a `.pw-scroll-strip`
+ * clips its own overflow, so its children never extend the document's
+ * scrollWidth. That is the point of the distinction: the strip scrolls, the
+ * page does not. Offenders are therefore only elements that push past the
+ * viewport WITHOUT a scrolling ancestor to contain them.
+ */
+export async function pageOverflow(page: Page): Promise<PageOverflow> {
+    return page.evaluate(() => {
+        const doc = document.documentElement
+        const viewportWidth = doc.clientWidth
+        const documentScrollWidth = Math.max(doc.scrollWidth, document.body.scrollWidth)
+        // 1px of tolerance: sub-pixel layout rounding is not a defect.
+        const overflowPx = Math.max(0, documentScrollWidth - viewportWidth - 1)
+
+        const selectorOf = (el: Element): string => {
+            const id = el.id ? `#${el.id}` : ""
+            const cls = el.classList.length ? "." + Array.from(el.classList).slice(0, 2).join(".") : ""
+            return `${el.tagName.toLowerCase()}${id}${cls}`
+        }
+        const containedByAScroller = (el: Element): boolean => {
+            let p = el.parentElement
+            while (p && p !== doc) {
+                const ox = getComputedStyle(p).overflowX
+                if (ox === "auto" || ox === "scroll" || ox === "hidden") return true
+                p = p.parentElement
+            }
+            return false
+        }
+
+        const offenders: string[] = []
+        if (overflowPx > 0) {
+            for (const el of Array.from(doc.querySelectorAll("*"))) {
+                const cs = getComputedStyle(el)
+                if (cs.display === "none" || cs.visibility === "hidden") continue
+                if (cs.position === "fixed") continue
+                const r = el.getBoundingClientRect()
+                if (r.width === 0 || r.height === 0) continue
+                if (r.right <= viewportWidth + 1) continue
+                if (containedByAScroller(el)) continue
+                const text = (el.textContent ?? "").trim().replace(/\s+/g, " ").slice(0, 60)
+                offenders.push(`${selectorOf(el)} right=${Math.round(r.right)}px "${text}"`)
+                if (offenders.length >= 25) break
+            }
+        }
+        return { documentScrollWidth, viewportWidth, overflowPx, offenders }
+    })
+}

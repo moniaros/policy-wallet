@@ -1449,3 +1449,36 @@ First real numbers: **`/timeline` is clean at 320/390/430** (`overflow=0px`).
 **Harness note:** the `measure` projects depend on `setup`, which re-runs UI login and dies when the
 bundled Playwright browser is absent — the normal state here, since everything runs on system Chrome.
 Run with `--no-deps` and reuse `playwright/.auth/*.json`. Saved to memory.
+
+### V2-P1-14 — first results, and two contrast defects found by arithmetic
+
+**Page-level overflow: clean.** 51 captures across 17 surfaces (settings subtree, notifications,
+timeline, benefits, help, upgrade, wallet-add landing, risk-profile) — **0px on every one**. The
+`min-width: 0` safety net holds where it has been measured. Still unmeasured: dashboard, wallet,
+policy-detail, branches, coverage-insights, overlays — all just rewritten by V2-P1-11, so they need a
+fresh pass. **Caveat on these captures:** they were taken while V2-P1-11 was mid-edit, so their
+count/duplicate-fact numbers are not trustworthy. The overflow figure is what is claimed here.
+
+**Two WCAG 1.4.3 failures fixed**, one found by the browser and one by arithmetic:
+
+1. **The delete-policy dialog.** «Η ενέργεια είναι οριστική» — the sentence saying the deletion cannot
+   be undone — rendered at **3.12:1** in `text-red-100` on `bg-red-500`. The instructive part: **no
+   foreground fixes it.** On `bg-red-500` even pure white is 3.81:1. The background was the defect,
+   and the heading above it passed only because bold 20px counts as large text. Now `bg-red-600` with
+   white, 4.77:1.
+2. **The `/agent` count badge.** `bg-amber-500` + `text-white` = **2.14:1**, failing even the lenient
+   3:1 large-text floor, on `text-kicker` — the smallest text on the page. Now `amber-700`, 5.03:1.
+
+**The harness measures contrast and nothing gates on it** — six failures were sitting in the evidence
+files. `tests/unit/solid-panel-contrast.test.ts` is the cheap arithmetic half: any element naming a
+background AND a foreground in one class list is checkable without a browser. It found four pairs the
+browser had never navigated to. Its palette **fails loudly on an unknown colour** rather than skipping
+it, and that check is a test rather than a module throw, because a throw makes vitest report "no
+tests" — which reads like a pass.
+
+What it cannot see is an inherited background, which is exactly how the delete dialog looked in
+source. That case belongs to the harness's `contrastFailures`. Two halves, neither sufficient alone.
+
+**Out of scope, recorded not fixed (§12.4):** six agent/admin surfaces carry the same failing pairs.
+The guard asserts they still fail, so the exemption set cannot outlive the defects and quietly excuse
+a new one. `NotificationBell` is exempt only while nothing imports it — asserted, not assumed.

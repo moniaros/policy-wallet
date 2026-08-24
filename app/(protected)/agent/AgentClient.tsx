@@ -546,8 +546,12 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                             >
                                 <Icon className="w-4 h-4" aria-hidden="true" />
                                 {tab.label}
+                                {/* amber-700, not amber-500: white on amber-500 is 2.14:1,
+                                    which fails even the 3:1 large-text floor — and this is a
+                                    `text-kicker` count, the smallest text on the page.
+                                    amber-700 is 5.03:1. */}
                                 {tab.count && tab.count > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-kicker font-bold text-white">
+                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-700 px-1 text-kicker font-bold text-white">
                                         {tab.count}
                                     </span>
                                 )}

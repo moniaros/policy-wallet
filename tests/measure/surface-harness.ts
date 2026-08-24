@@ -38,6 +38,7 @@ import {
     latinSentences,
     nonTelPhoneNumbers,
     truncationFailures,
+    pageOverflow,
     dateFacts,
     repeatedStrings,
     internalTokenLeaks,
@@ -186,6 +187,8 @@ export interface CaptureResult {
     duplicateFacts: Awaited<ReturnType<typeof duplicateFacts>>
     tapTargets: Awaited<ReturnType<typeof smallTapTargets>>
     contrast: { text: string[]; nonText: string[] }
+    /** §6.12: does the page itself scroll sideways at this width? */
+    pageOverflow: Awaited<ReturnType<typeof pageOverflow>>
     probes: {
         truncation: Awaited<ReturnType<typeof truncationFailures>>
         latinSentences: string[]
@@ -260,6 +263,7 @@ export async function captureSurface(
             text: await contrastFailures(page),
             nonText: await nonTextContrastFailures(page),
         },
+        pageOverflow: await pageOverflow(page),
         probes: {
             truncation: await truncationFailures(page),
             latinSentences: await latinSentences(page),
@@ -279,7 +283,8 @@ export async function captureSurface(
         `${data.containers.count} containers (depth ${data.containers.maxDepth}), ${data.tapTargets.length} sub-44, ` +
         `dup-facts(attr/value)=${data.duplicateFacts.dataFactDuplicates.length}/${data.duplicateFacts.valueScanDuplicates.length}, ` +
         `contrast(text/nonText)=${data.contrast.text.length}/${data.contrast.nonText.length}, ` +
-        `truncation=${data.probes.truncation.length}, leaks=${data.probes.internalTokenLeaks.length}`
+        `truncation=${data.probes.truncation.length}, leaks=${data.probes.internalTokenLeaks.length}, ` +
+        `overflow=${data.pageOverflow.overflowPx}px(${data.pageOverflow.offenders.length})`
     )
     return data
 }
