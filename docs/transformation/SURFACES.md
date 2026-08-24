@@ -25,6 +25,7 @@
 | `/account/privacy` | `app/(protected)/account/privacy/page.tsx` | Subpage | None | policyholder | Account nav rail |
 | `/account/plan` | `app/(protected)/account/plan/page.tsx` | Subpage | Free+ | policyholder | Account nav rail |
 | `/account/notifications` | `app/(protected)/account/notifications/page.tsx` | Subpage | None | policyholder | Account nav rail |
+| `/timeline` | `app/(protected)/timeline/page.tsx` | Landing | None | policyholder (auth only — no role gate) | Main menu item #6 |
 | `/notifications` | `app/(protected)/notifications/page.tsx` | Landing | None | policyholder | Top header bell icon (mobile) |
 | `/help` | `app/(protected)/help/page.tsx` | Landing | None | all roles | Sidebar nav |
 | `/help/article/[slug]` | `app/(protected)/help/article/[slug]/page.tsx` | Subpage | None | all roles | Help index rows |
@@ -37,7 +38,7 @@
 | `/coverage` | `app/(protected)/coverage/page.tsx` | Redirect only | — | — | Redirects to `/coverage-insights` (legacy URL) |
 | `/home` | `app/(protected)/home/page.tsx` | Redirect only | — | — | Redirects to `/dashboard` (legacy URL) |
 
-**Total B2C routes:** 24 (including 2 redirects)  
+**Total B2C routes:** 25 (including 2 redirects) — `/timeline` added 2026-08-24, see the correction note  
 **Distinct landing surfaces:** 20
 
 ---
@@ -428,3 +429,25 @@ This surface is bidirectional: both agents and policyholders can access the same
 - **B2B Agent:** Insurance agent-facing surface for managing customers, renewals, tasks, and commissions; part of the agent portal.
 - **Admin:** Administrative backend for ops, configuration, system management; separate role and completely separate feature area.
 
+
+
+---
+
+## CORRECTION 2026-08-24 — the enumeration was 36 of 37
+
+`/timeline` was missing from this document. It exists (`app/(protected)/timeline/page.tsx`), is
+auth-gated with **no role check**, and is **item #6 in the main menu** (`layout.tsx:96`).
+
+Found not by re-reading this file but by `tests/unit/route-ownership-surfaces.test.ts`, which parses
+its route tables **out of this document** — the new guard could not classify a route the document
+never mentioned, and said so.
+
+Cross-checked afterwards: of **37 `href:` entries in the main menu, exactly one** was absent from
+here. So the original sweep was accurate to 36/37 rather than broadly unreliable — but the one it
+missed is a top-level menu destination, and v2 lists it as a surface with real defects
+(`__PENDING_EXTRACTION__` rendered as a policy name).
+
+**The lesson is about consumers, not the sweep.** This document was written as a report and is now
+*load-bearing* — a guard derives its universe from it. A gap in it is no longer a documentation
+defect, it is a hole in a guard. Anything parsing `SURFACES.md` must assert a floor (that guard
+does) and any route added to the menu must be added here in the same change.

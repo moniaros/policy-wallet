@@ -1,8 +1,126 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 import { rateLimit } from "@/lib/rate-limit"
-import { getPostLoginRedirectByRole, getPrimaryRole } from "@/lib/auth/role-routing"
+import { getPostLoginRedirectByRole, getPrimaryRole, type AppRole } from "@/lib/auth/role-routing"
 import { isIndexableDeployment } from "@/lib/seo/site"
+
+// ---------------------------------------------------------------------------
+// Role ownership of authenticated routes — ONE declared table, matched on
+// whole path segments, most specific pattern wins.
+//
+// This replaced two prefix arrays (`agentRoutes` / `policyholderRoutes`) plus
+// hand-written exception guards. A raw `startsWith` cannot say "this child
+// belongs to a different role than its parent": /insights/risk-profile (B2C —
+// it reads the caller's OWN policyholderProfile) starts with /insights (the
+// adviser's book), so every policyholder was bounced to /dashboard and the
+// surface was unreachable; /wallet/[id]/review (agent-only extraction review,
+// linked from the agent customer-policy page) starts with /wallet, so agents
+// were bounced off it to /dashboard/agent. The identical collision had
+// already been found for /dashboard vs /dashboard/agent and patched with a
+// special case — the flaw was the RULE, so the rule changed instead of a
+// third exception growing beside the first two.
+//
+// Semantics:
+//   - A pattern matches when each of its segments equals the corresponding
+//     leading segment of the request path: "/insights" matches /insights and
+//     /insights/book, never /insightsfoo. "*" matches exactly one segment of
+//     any value.
+//   - The most specific match decides the owner: most segments wins, and on
+//     equal length the one with fewer wildcards. A child's row therefore
+//     overrides its parent's — that is the whole mechanism.
+//   - No match means the proxy imposes no role gate and the surface gates
+//     itself underneath (defense in depth — layouts, requireApiUser,
+//     getPolicyAccess). "shared" declares that explicitly for a child inside
+//     an owned tree, should one ever need carving out.
+//   - Admins are never bounced (unchanged): agent/policyholder hitting an
+//     "admin"-owned tree go to their own home.
+//
+// Ownership follows docs/transformation/SURFACES.md, and
+// tests/unit/route-ownership-surfaces.test.ts enumerates that document to
+// assert every route stays reachable by the role that owns it — the next
+// parent/child collision fails CI instead of stranding a surface in
+// production.
+
+export type RouteOwner = "policyholder" | "agent" | "admin"
+
+export const ROUTE_OWNERSHIP: ReadonlyArray<readonly [pattern: string, owner: RouteOwner | "shared"]> = [
+    ["/dashboard", "policyholder"],
+    ["/dashboard/agent", "agent"],
+    // Legacy redirect to /dashboard (handled before the role gate runs, so an
+    // agent takes two hops: /home → /dashboard → /dashboard/agent).
+    ["/home", "policyholder"],
+    ["/wallet", "policyholder"],
+    // Agent-only extraction review under the policyholder's wallet tree.
+    ["/wallet/*/review", "agent"],
+    // v2 §4.2 removes /coverage-insights entirely — delete this line with it.
+    ["/coverage-insights", "policyholder"],
+    // Shared /agent tree: the exact page is the customer's "My Agent" view;
+    // the children are the agent's own tools.
+    ["/agent", "policyholder"],
+    ["/agent/settings", "agent"],
+    ["/agent/pricing", "agent"],
+    ["/customers", "agent"],
+    ["/opportunities", "agent"],
+    ["/renewals", "agent"],
+    ["/commissions", "agent"],
+    ["/questionnaires", "agent"],
+    ["/tasks", "agent"],
+    // The adviser's book — except risk-profile, which is the customer's own.
+    ["/insights", "agent"],
+    ["/insights/risk-profile", "policyholder"],
+    ["/team", "agent"],
+    ["/admin", "admin"],
+]
+
+/**
+ * Owner of the most specific ROUTE_OWNERSHIP pattern matching `pathname`, or
+ * null when nothing matches. "shared" also resolves to null — both mean the
+ * proxy imposes no role gate here.
+ */
+export function resolveRouteOwner(pathname: string): RouteOwner | null {
+    const segments = pathname.split("/").filter(Boolean)
+    let bestOwner: RouteOwner | "shared" | null = null
+    let bestLength = -1
+    let bestWildcards = Number.MAX_SAFE_INTEGER
+    for (const [pattern, owner] of ROUTE_OWNERSHIP) {
+        const patternSegments = pattern.split("/").filter(Boolean)
+        if (patternSegments.length > segments.length) continue
+        let wildcards = 0
+        let matches = true
+        for (let i = 0; i < patternSegments.length; i++) {
+            if (patternSegments[i] === "*") {
+                wildcards += 1
+            } else if (patternSegments[i] !== segments[i]) {
+                matches = false
+                break
+            }
+        }
+        if (!matches) continue
+        if (
+            patternSegments.length > bestLength ||
+            (patternSegments.length === bestLength && wildcards < bestWildcards)
+        ) {
+            bestOwner = owner
+            bestLength = patternSegments.length
+            bestWildcards = wildcards
+        }
+    }
+    return bestOwner === "shared" ? null : bestOwner
+}
+
+/**
+ * The role-gate decision for an authenticated request: the path to bounce to,
+ * or null to let the request through. Pure — the route-ownership guard test
+ * drives this directly, and proxy() below does nothing but obey it.
+ */
+export function decideRoleRedirect(pathname: string, role: AppRole): "/dashboard" | "/dashboard/agent" | null {
+    // Admins pass everywhere, including their own /admin tree (unchanged from
+    // the old guards).
+    if (role === "admin") return null
+    const owner = resolveRouteOwner(pathname)
+    if (owner === null || owner === role) return null
+    return role === "agent" ? "/dashboard/agent" : "/dashboard"
+}
 
 export async function proxy(request: NextRequest) {
     const { nextUrl } = request
@@ -216,45 +334,13 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL(`/dashboard${nextUrl.search}`, nextUrl))
     }
 
-    // Role-based route protection for authenticated users
+    // Role-based route protection for authenticated users — the decision is
+    // decideRoleRedirect's alone (see above); this block only executes it.
     if (isLoggedIn && user) {
         const userRole = getPrimaryRole((user.user_metadata?.role as string) || "")
-
-        const agentRoutes = ["/dashboard/agent", "/customers", "/opportunities", "/renewals", "/commissions", "/questionnaires", "/tasks", "/insights", "/team"]
-        // "/home" stays listed: it still exists as a redirect to /dashboard, and an
-        // agent landing on it must be bounced to their own home first. "/dashboard"
-        // is deliberately NOT in this array — `startsWith` would also match
-        // "/dashboard/agent" and bounce agents off their own home in a loop; it is
-        // handled by the explicit guard below.
-        const policyholderRoutes = ["/home", "/wallet", "/coverage-insights"]
-
-        // /agent path is shared: /agent is policyholder's "My Agent", /agent/settings is agent settings
-        const isPolicyholderAgentPage = nextUrl.pathname === "/agent" || nextUrl.pathname === "/agent/"
-
-        const isAgentRoute = agentRoutes.some(r => nextUrl.pathname.startsWith(r))
-        // "/dashboard" without "/dashboard/agent" prefix = policyholder dashboard
-        const isPolicyholderRoute =
-            policyholderRoutes.some(r => nextUrl.pathname.startsWith(r)) ||
-            (nextUrl.pathname.startsWith("/dashboard") && !nextUrl.pathname.startsWith("/dashboard/agent"))
-
-        // Agent trying to access policyholder-only routes
-        if (userRole === "agent") {
-            if (isPolicyholderRoute || isPolicyholderAgentPage) {
-                return NextResponse.redirect(new URL("/dashboard/agent", nextUrl))
-            }
-        }
-
-        // Policyholder trying to access agent-only routes
-        if (userRole === "policyholder") {
-            if (isAgentRoute) {
-                return NextResponse.redirect(new URL("/dashboard", nextUrl))
-            }
-        }
-
-        // Non-admin trying to access admin routes (already handled above for unauthenticated)
-        if (nextUrl.pathname.startsWith("/admin") && userRole !== "admin") {
-            const redirectTarget = userRole === "agent" ? "/dashboard/agent" : "/dashboard"
-            return NextResponse.redirect(new URL(redirectTarget, nextUrl))
+        const bounceTo = decideRoleRedirect(nextUrl.pathname, userRole)
+        if (bounceTo) {
+            return NextResponse.redirect(new URL(bounceTo, nextUrl))
         }
     }
 

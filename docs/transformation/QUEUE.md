@@ -814,7 +814,7 @@ Six v2 candidates verified case-insensitively. **5 confirmed, 1 refuted.** Recor
 
 ## Phase 1 additions (v2)
 
-### V2-P1-01 — the misroute is a proxy prefix collision · `todo`
+### V2-P1-01 — the misroute is a proxy prefix collision · `done` — REVIEW PASSED
 owner: Implementation (Fable 5) · file_boundary: `proxy.ts`, `tests/unit/`
 `proxy.ts:223` lists `"/insights"` in `agentRoutes` and matches with `startsWith`, so the B2C
 `/insights/risk-profile` is classified agent-only and policyholders are bounced to `/dashboard`.
@@ -878,3 +878,34 @@ Requeue with the corrected target: **policies present · risk applicable · adeq
 One result worth keeping from it regardless: `protectionScore` returned **94 with
 `indeterminate: true`** for a household the product knows nothing about. That is §2.5 territory and
 feeds H-005.
+
+
+---
+
+## V2-P1-01 — Adversarial review: **PASS**, and it found the same bug mirrored
+
+| check | result |
+|---|---|
+| Rule replaced, not patched | `ROUTE_OWNERSHIP` — one table, whole-segment matching, most-specific-wins. A child overriding its parent is **one more row**, not a hand-written exception, and `/dashboard` vs `/dashboard/agent` collapses from a special case into two ordinary rows |
+| Guard derives its universe from `SURFACES.md` | **proven**: adding `/timeline` to that document took the guard 56 → 57 tests with no code change |
+| Fails first | **proven by me.** Deleting the `/insights/risk-profile` ownership row turned it red naming that route, plus the control case. Reverted → 57/57 |
+| Seam test on the real `proxy()` | 7 cases end-to-end with real `NextRequest`/`NextResponse`: policyholder **200 pass-through**, agent **307 → `/dashboard/agent`** |
+| CI | tsc · lint · i18n · utf8 clean; **5262/5262** (+63); `npm run build` compiles the middleware entry |
+
+### The find: the identical defect, mirrored
+
+`/wallet/[id]/review` is **agent-owned** — `review/page.tsx:24` is
+`if (!isAgentRole(dbUser.roles)) notFound()`, and it is linked from
+`customers/[id]/policy/[policyId]/page.tsx:128`. The old `policyholderRoutes` contained `/wallet`,
+matched by `startsWith`, so **every agent was bounced off a page built for them.**
+
+Same defect class as `/insights/risk-profile`, in the opposite direction, in the same function,
+a few lines apart — under a comment warning about precisely this hazard for `/dashboard`. Two live
+instances and one documented near-miss of a single root cause.
+
+### `/timeline` was missing from `SURFACES.md`
+
+The guard could not classify a route the document never mentioned, and said so. Cross-checked
+afterwards: of 37 menu hrefs, exactly one was absent — the v1 sweep was 36/37, not unreliable, but
+the miss is a top-level menu destination. Corrected, with the lesson recorded: that document is no
+longer a report, it is **load-bearing**, and a gap in it is now a hole in a guard.
