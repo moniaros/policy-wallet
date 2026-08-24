@@ -3,7 +3,7 @@
 Questions only the human may answer (§12.1) and items blocked under §12.2.
 A halt blocks the listed items, not the run, unless marked `blocks: RUN`.
 
-**Open: 3** (H-005, H-006, H-007). **Answered: 3** (H-001 = C, H-002 = B, H-004 = B). §12.1.6 (price intelligence) waits for the Phase 2 specs.
+**Open: 4** (H-005, H-006, H-007, **H-008 — live customer-facing falsehood**). **Answered: 3** (H-001 = C, H-002 = B, H-004 = B). §12.1.6 (price intelligence) waits for the Phase 2 specs.
 
 ---
 
@@ -426,5 +426,65 @@ retention · and whether the record may be exported to an intermediary, which is
 **Recommendation:** specify the interview to Tier A/B only and **defer every health question** to a
 later decision. That is buildable now, needs no Art. 9 basis, and still produces a record worth
 having. It also avoids opening a second Article 9 front alongside the pending agent-side decision.
+
+answer: *(awaiting)*
+
+
+---
+
+## H-008 — A daily production cron tells customers it granted 500 credits. Nothing grants them.
+
+date: 2026-08-24 · raised_by: P1-14, escalated by the Adversarial Reviewer
+blocks: nothing in the queue. Raised because the fix is a **commercial** decision, not a defect fix.
+status: **open** — and this is the one I would want answered soonest.
+
+### What ships today
+
+`lib/services/churn-prevention.service.ts` (day-30 branch) sends `getChurnDay30Email`, which says:
+
+> «Ως ένδειξη εκτίμησης, **σας δωρίζουμε 500 δωρεάν AI credits**…»
+> «**AI Credits προστέθηκαν στον λογαριασμό σας**»
+
+and then emits an in-app notification repeating it:
+
+> «Μπόνους επανασύνδεσης: **500 credits προστέθηκαν**, λήγουν σε 30 ημέρες»
+
+**No credits are granted.** Verified: the service contains **zero** balance writes — no
+`creditTransaction`, no `tokenBalance`, no increment, no create. The only write is the notification
+itself. The code says so in its own comment:
+
+```ts
+// Record the bonus token grant (integrate with actual billing/token system)
+await emit({ event: "bonus_credits_granted", … })
+```
+
+The `emit` **is** the "record". The integration was never built.
+
+**And it is live.** `vercel.json` schedules `/api/v1/jobs/churn-prevention` at `0 11 * * *` — daily,
+in production.
+
+### Why this is a halt and not an item
+
+`CLAUDE.md` lists *"publishing a public claim the code does not support"* under **Never, regardless
+of instruction**. This is that, in both channels, on a schedule. It also breaches §2.10 — a
+notification asserting an event that did not occur.
+
+But the *fix* depends on intent, and that is yours:
+
+- **A — grant the credits.** The promise becomes true. Touches the billing/token system, which
+  §12.4 puts out of scope for this run.
+- **B — stop making the claim.** Remove the grant language from the day-30 email and delete the
+  `bonus_credits_granted` emission. In scope (P1-01 removed score claims from these same templates),
+  reversible, and stops the falsehood today.
+- **C — reword to an offer.** "Here is what Family gives you" rather than "credits have been added".
+  Keeps a re-engagement hook without asserting a transaction.
+
+**Recommendation: B now, then A or C deliberately.** B is the only option that stops a live
+misstatement without committing you to build billing under time pressure, and it is the reversible
+one. If the credits were always intended, A is the right end state and B costs nothing on the way.
+
+**What I have NOT done:** I have not changed the copy. Removing it is in scope and I can do it in
+minutes, but which of A/B/C you want is a commercial call, and B silently deletes a customer
+incentive somebody may have been counting on.
 
 answer: *(awaiting)*

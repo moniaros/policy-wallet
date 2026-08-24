@@ -1,0 +1,83 @@
+// Committed red-probe for the TERNARY arm of the Greek copy freeze.
+// Parsed (never compiled) by tests/unit/greek-string-inventory.test.ts, which
+// asserts the EXACT multiset extracted from this file — one MATCH per branch
+// shape that exists in the codebase, plus the NO MATCH shapes that must stay
+// out. Editing this file without updating that assertion turns the guard red,
+// which is the point: the probe proves the detector detects.
+
+declare const lang: string
+declare const isEl: boolean
+declare const formal: boolean
+declare const score: number
+declare const days: number
+declare const flag: boolean
+declare const stored: string | null
+declare const v: number
+declare function counted(n: number, one: string, many: string): string
+declare function compute(n: number): string
+declare function other(n: number): string
+
+// MATCH: the canonical locale ternary — only the Greek branch freezes.
+export const m1 = lang === "el" ? "Απλό κείμενο" : "Plain text"
+
+// MATCH: alias condition — the condition is never inspected.
+export const m2 = isEl ? 'Ψευδώνυμο' : 'Alias'
+
+// MATCH: reversed polarity — the Greek sits in whenFalse.
+export const m3 = lang === "en" ? "English first" : "Στα ελληνικά δεύτερο"
+
+// MATCH: template WITH interpolation — the SHAPE is frozen.
+export const m4 = isEl ? `Λήγει σε ${days} ημέρες` : `Expires in ${days} days`
+
+// MATCH: multiline template branch — whitespace collapses to one space.
+export const m5 = isEl
+    ? `Πρώτη γραμμή
+       δεύτερη γραμμή`
+    : "one line"
+
+// MATCH x3: chained else-if ternary — three leaf entries, never a mega-entry.
+export const m6 = score >= 80 ? "Καλή τιμή" : score >= 60 ? "Μέτρια τιμή" : "Κακή τιμή"
+
+// MATCH x2: parenthesized nested conditional branch is skipped as a branch;
+// its own two branches freeze individually.
+export const m7 = isEl ? (flag ? "Πρώτη επιλογή" : "Δεύτερη επιλογή") : "either"
+
+// MATCH: a call whose arguments carry the Greek — the whole branch freezes.
+export const m8 = isEl ? counted(v, "στοιχείο", "στοιχεία") : counted(v, "item", "items")
+
+// MATCH: a ternary inside a template interpolation is still visited.
+export const m9 = `${isEl ? "Ναι" : "No"} — done`
+
+// MATCH x2: both branches Greek (register, not locale) — both freeze.
+export const m10 = formal ? "Αγαπητέ πελάτη" : "Γεια σου φίλε"
+
+// MATCH: Greek written as \u escapes — DECODED literal text is what counts.
+export const m11 = isEl ? "\u0395\u03BB\u03BB\u03AC\u03B4\u03B1" : "Greece"
+
+// MATCH: exact duplicate of m1's Greek — both copies survive as repeated
+// lines, so deleting one of two identical strings still trips.
+export const m12 = lang === "el" ? "Απλό κείμενο" : "Other text"
+
+// NO MATCH: locale codes are ASCII — the discriminator is Greek TEXT, so the
+// freeze never nags about language plumbing.
+export const n1 = lang === "el" ? "el" : "en"
+export const n2 = lang === "el" ? "el_GR" : "en_US"
+
+// NO MATCH: a branch that IS an {el, en} pair — the inline arm froze its el
+// side already (the guard cross-checks that below).
+export const n3 = flag ? { el: "Ζεύγος εδώ", en: "Pair here" } : null
+
+// NO MATCH: Greek only in the CONDITION is data comparison, not copy.
+export const n4 = stored === "ναι" ? 1 : 2
+
+// NO MATCH: Greek only in a comment — decoded literals decide, not raw source.
+export const n5 = flag ? compute(v) /* ελληνικό σχόλιο */ : other(v)
+
+// NO MATCH: Greek reaching the branch through a reference — the constant's own
+// literal is a bare literal, deliberately outside this freeze (stated limit).
+const greekConst = "Εκτός τριαδικού"
+export const n6 = isEl ? greekConst : "en text"
+
+// NO MATCH: ?? / || fallbacks are not ternaries — deliberately unfrozen (stated limit).
+export const n7 = stored ?? "Εφεδρικό κείμενο"
+export const n8 = stored || "Άλλο εφεδρικό"

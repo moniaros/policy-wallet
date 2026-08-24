@@ -844,7 +844,7 @@ Rewrite line 199. Emotional leverage on an unvalidated finding.
 
 ### Carried from v1, still open
 **P1-10** ✓ done · **P1-08** app shell (last) ·
-**P1-14** locale-ternary Greek in `.ts`.
+**P1-14** ✓ done.
 
 ## Halts to raise
 **H-005** — should the second score exist? **H-006** — the AI advisor's advice boundary (IDD Art. 20).
@@ -1264,3 +1264,44 @@ i18n bridge). Cleared: a DSR export status and Green Card validity — a documen
 does not model.
 
 **No B2C surface derives a policy lifecycle status independently any more.**
+
+
+---
+
+## P1-14 — Adversarial review: **PASS**. 298 strings nobody had ever reviewed.
+
+The freeze gained a third source: **298 ternary entries across 45 files** (7 under `app/`, 38 under
+`lib/`). Diff verified clean — 307 insertions, 298 of them `ternary` lines, and **zero** bundle or
+inline lines changed.
+
+### The discriminator is elegant and needs no allowlist
+A branch freezes iff **any literal under it decodes to text containing a Greek codepoint**
+(U+0370–03FF, U+1F00–1FFF). The condition is never inspected — so `lang === "el"`, `isEl`, `isGreek`
+and reversed `=== "en"` polarity are all covered, while **locale codes are ASCII and fall out
+naturally.** No allowlist means nothing to silence later, which is what would have killed this guard.
+
+Two branch kinds skipped, both correct: a branch that is itself a conditional (chains freeze as
+leaves, not mega-entries) and a branch that is exactly an `{el, en}` pair (already an inline entry —
+cross-checked against the inline extractor from the same fixture).
+
+Failure proofs at **artifact level** in both directions: an added Greek ternary appears in the diff
+as its own inventory line; a deleted one produces a double red — the missing line *and* a reach pin.
+
+### The point of the item was the unreviewed copy, and it delivered
+
+**BROKEN — escalated as H-008.** The day-30 churn email says «σας δωρίζουμε 500 δωρεάν AI credits»
+and «AI Credits προστέθηκαν στον λογαριασμό σας», and the service grants nothing. Verified: zero
+balance writes; the only write is the notification repeating the claim. The code's own comment —
+*"integrate with actual billing/token system"* — admits the integration was never built. The cron is
+scheduled **daily in production**.
+
+**Dead copy:** `lib/mail-templates.ts` exports a `templates` map that **no file imports** — 16 of the
+frozen entries are unreachable, including a PAYMENT_SUCCESS invoice link to a seed-only table.
+
+**Flagged, not acted on:** the day-60 email asserts «Η κάλυψή σας μπορεί να κινδυνεύει» from
+*inactivity alone*, with no check behind it — the mirror image of the all-clear-honesty rule, and a
+§2.10 candidate for Phase 3.
+
+**Frozen, not edited, per the brief:** `health-score.ts`'s «Καλή» / «Μέτρια» / «Χρειάζεται προσοχή» —
+a verdict vocabulary on a score, agent-side and therefore §12.4. Pinned at exactly 3 entries with a
+comment naming the invariant, so extending it now requires a deliberate regeneration.

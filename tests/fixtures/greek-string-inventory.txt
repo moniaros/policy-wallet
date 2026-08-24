@@ -6,11 +6,18 @@
 #
 # bundle — leaf values of `el` in lib/i18n/translations/el.ts, by dotted path, JSON-encoded.
 # inline — el side of every {el, en} object literal under app/, components/, lib/;
-#          exact initializer source, whitespace collapsed. NOT covered: en copy, Greek
-#          outside these roots, non-pair literals/ternaries (lint:i18n-changed's beat).
+#          exact initializer source, whitespace collapsed.
+# ternary — every ?: branch whose decoded string/template literals contain Greek,
+#           in .ts files under app/, components/, lib/, contexts/, hooks/, types/,
+#           utils/; branch source, whitespace collapsed. Skipped: branches that are
+#           themselves conditionals (chains freeze as their leaves) and {el, en}
+#           pair branches (already inline entries). NOT covered by any arm: en
+#           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
+#           ??/|| fallbacks, Greek outside these roots.
 #
 # bundle entries: 2784
 # inline entries: 4427 across 208 files
+# ternary entries: 298 across 45 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -7223,3 +7230,301 @@ inline	lib/wallet/policy-review.ts	'Ετήσιο όριο κάλυψης κατ�
 inline	lib/wallet/policy-review.ts	'Ετήσιο όριο κάλυψης κατοικιδίου'
 inline	lib/wallet/policy-review.ts	'Ετήσιο όριο κάλυψης υγείας'
 inline	lib/wallet/policy-review.ts	'Κεφάλαιο θανάτου'
+ternary	app/(protected)/activity/actions.ts	'Επιτυχής Ευκαιρία!'
+ternary	app/(protected)/activity/actions.ts	`Ενημέρωση Ευκαιρίας: ${opportunityStatusLabel(opp.status).el}`
+ternary	app/(protected)/admin/notifications/actions.ts	`${def.copy.message.el} — δοκιμαστική αποστολή για το συμβάν ${eventType} από την κονσόλα διαχείρισης.`
+ternary	app/(protected)/admin/notifications/actions.ts	`Δοκιμαστική αποστολή για το συμβάν ${eventType} από την κονσόλα διαχείρισης.`
+ternary	app/(protected)/agent/actions.ts	`Φτάσατε το όριο συμβολαίων ανά πελάτη του πλάνου σας (${policyGate.current}/${policyGate.limit}).`
+ternary	app/(protected)/wallet/actions.ts	'ασφάλισης'
+ternary	app/(protected)/wallet/actions.ts	`Φτάσατε το μηνιαίο όριο αναλύσεων (${manualGate.used}/${manualGate.limit}). Αναβαθμίστε το πλάνο σας.`
+ternary	app/api/v1/feedback/route.ts	"Βρήκατε το άρθρο χρήσιμο"
+ternary	app/api/v1/feedback/route.ts	"Δεν βρήκατε το άρθρο χρήσιμο"
+ternary	app/api/v1/feedback/route.ts	` και το σχόλιό σας: ${comment}`
+ternary	app/api/v1/jobs/process-policy/route.ts	'σημαντικά ευρήματα'
+ternary	app/api/v1/jobs/process-policy/route.ts	'σημαντικό εύρημα'
+ternary	app/api/v1/policies/[id]/documents/[docId]/route.ts	"Επιστροφή στο ασφαλιστήριο"
+ternary	app/api/v1/policies/[id]/documents/[docId]/route.ts	"Το έγγραφο δεν είναι πλέον διαθέσιμο."
+ternary	app/api/v1/policies/[id]/documents/[docId]/route.ts	"Το έγγραφο δεν είναι προσωρινά διαθέσιμο. Δοκιμάστε ξανά."
+ternary	lib/agent/format.ts	"Ανενεργοί"
+ternary	lib/agent/format.ts	"Μόλις τώρα"
+ternary	lib/agent/format.ts	"Σε καλή πορεία"
+ternary	lib/agent/format.ts	"Χρειάζεται προσοχή"
+ternary	lib/agent/health-score.ts	"Καλή"
+ternary	lib/agent/health-score.ts	"Μέτρια"
+ternary	lib/agent/health-score.ts	"Χρειάζεται προσοχή"
+ternary	lib/email/admin-emails.ts	"Ενεργοποίηση προσκεκλημένου λογαριασμού"
+ternary	lib/email/admin-emails.ts	"Νέος λογαριασμός"
+ternary	lib/email/admin-emails.ts	([["Γλώσσα", params.language]] as Array<[string, string]>)
+ternary	lib/email/admin-emails.ts	([["Τηλέφωνο", params.phoneNumber]] as Array<[string, string]>)
+ternary	lib/email/form-emails.ts	"Νέα εγγραφή στο newsletter"
+ternary	lib/email/form-emails.ts	"Νέο μήνυμα από τη φόρμα επικοινωνίας"
+ternary	lib/email/form-emails.ts	`[PolicyWallet] Νέα εγγραφή newsletter: ${submitterEmail}`
+ternary	lib/email/form-emails.ts	`[PolicyWallet] Νέα επικοινωνία: ${(payload.submission as ContactSubmission).subject}`
+ternary	lib/email/form-emails.ts	detailRows([ ["Email", submitterEmail], ["Πηγή", (payload.submission as NewsletterSubmission).source || "-"], ])
+ternary	lib/email/form-emails.ts	detailRows([ ["Ονοματεπώνυμο", (payload.submission as ContactSubmission).name], ["Email", submitterEmail], ["Τηλέφωνο", (payload.submission as ContactSubmission).phone || "-"], ["Θέμα", (payload.submission as ContactSubmission).subject], ["Μήνυμα", (payload.submission as ContactSubmission).message], ])
+ternary	lib/email/invite-emails.ts	"Ένα μέλος του PolicyWallet"
+ternary	lib/email/invite-emails.ts	"Αυτός ο ασφαλής σύνδεσμος λήγει σύντομα για την προστασία σας."
+ternary	lib/email/invite-emails.ts	"Ο σύμβουλός σας"
+ternary	lib/email/invite-emails.ts	"ένα ασφαλιστήριο"
+ternary	lib/email/invite-emails.ts	`το ασφαλιστήριο ${safeNumber}`
+ternary	lib/email/invite-emails.ts	{ subject: "Αίτημα συγκατάθεσης για ανάλυση AI", title: "Ο σύμβουλός σας ζητά τη συγκατάθεσή σας", body: `${agent} ζητά τη συγκατάθεσή σας για να αναλύσει τα ασφαλιστήριά σας με AI στο PolicyWallet. Η συγκατάθεση καταγράφεται και μπορείτε να την ανακαλέσετε ανά πάσα στιγμή.`, action: "Έλεγχος & έγκριση", }
+ternary	lib/email/invite-emails.ts	{ subject: "Κοινοποιήθηκε ένα ασφαλιστήριο μαζί σας", title: "Κοινοποιήθηκε ένα ασφαλιστήριο στο πορτοφόλι σας", body: `${inviter} κοινοποίησε ${label} στο πορτοφόλι σας. Συνδεθείτε για να δείτε τα στοιχεία του κοινοποιημένου ασφαλιστηρίου.`, action: "Άνοιγμα πορτοφολιού", }
+ternary	lib/email/invite-emails.ts	{ subject: "Πρόσκληση από το PolicyWallet", title: "Έχετε προσκληθεί για συνεργασία", body: `${inviter} σας προσκάλεσε να αποκτήσετε πρόσβαση σε ${label} στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο πρόσκλησης για να αποδεχτείτε την πρόσβαση.`, action: "Άνοιγμα πρόσκλησης", }
+ternary	lib/email/invite-emails.ts	{ subject: `${inviter} σας προσκαλεί ως σύμβουλό του στο PolicyWallet`, title: "Προσκληθήκατε ως σύμβουλος", body: `${inviter} θέλει να σας συνδέσει ως ασφαλιστικό σύμβουλό του στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο για να δημιουργήσετε λογαριασμό συμβούλου ή να συνδεθείτε — θα συνδεθείτε αυτόματα.`, action: "Αποδοχή πρόσκλησης", }
+ternary	lib/email/templates/churn-prevention.ts	'AI Credits προστέθηκαν στον λογαριασμό σας'
+ternary	lib/email/templates/churn-prevention.ts	'Άνοιγμα πίνακα ελέγχου'
+ternary	lib/email/templates/churn-prevention.ts	'Έχουμε προσθέσει νέες δυνατότητες στο PolicyWallet:'
+ternary	lib/email/templates/churn-prevention.ts	'Αν δεν θέλετε να λαμβάνετε αυτά τα email, μπορείτε να τα απενεργοποιήσετε στις Ρυθμίσεις.'
+ternary	lib/email/templates/churn-prevention.ts	'Δείτε τι νέο υπάρχει!'
+ternary	lib/email/templates/churn-prevention.ts	'Δεν έχετε ελέγξει τα ασφαλιστήρια σας εδώ και 2 μήνες. Ανανεώσεις, κενά κάλυψης, και μηνύματα από τον σύμβουλό σας μπορεί να περιμένουν.'
+ternary	lib/email/templates/churn-prevention.ts	'Δεν εντοπίσαμε κάτι που να απαιτεί ενέργεια αυτή τη στιγμή — αξίζει όμως μια ματιά στο χαρτοφυλάκιό σας.'
+ternary	lib/email/templates/churn-prevention.ts	'Δεν σας έχουμε δει εδώ και λίγο καιρό, αλλά η ασφαλιστική σας κάλυψη δεν σταματά.'
+ternary	lib/email/templates/churn-prevention.ts	'Ελέγξτε τώρα'
+ternary	lib/email/templates/churn-prevention.ts	'Εξερευνήστε τα νέα'
+ternary	lib/email/templates/churn-prevention.ts	'Η ασφαλιστική σας κάλυψη σας περιμένει'
+ternary	lib/email/templates/churn-prevention.ts	'Η ασφαλιστική σας κάλυψη σας περιμένει'
+ternary	lib/email/templates/churn-prevention.ts	'Η κάλυψή σας μπορεί να κινδυνεύει'
+ternary	lib/email/templates/churn-prevention.ts	'Μας λείπετε!'
+ternary	lib/email/templates/churn-prevention.ts	'Τα credits λήγουν σε 30 ημέρες.'
+ternary	lib/email/templates/churn-prevention.ts	'Το χαρτοφυλάκιό σας χρειάζεται προσοχή'
+ternary	lib/email/templates/churn-prevention.ts	'Το χαρτοφυλάκιό σας χρειάζεται προσοχή'
+ternary	lib/email/templates/churn-prevention.ts	'Χρησιμοποιήστε τα τώρα'
+ternary	lib/email/templates/churn-prevention.ts	'✨ Νέες λειτουργίες που χάνετε'
+ternary	lib/email/templates/churn-prevention.ts	'🔒 Η κάλυψή σας μπορεί να κινδυνεύει'
+ternary	lib/email/templates/churn-prevention.ts	[ '🤖 Βελτιωμένη AI ανάλυση κάλυψης', '📊 Εβδομαδιαία σύνοψη email', '💬 Ενσωματωμένα μηνύματα με τον σύμβουλό σας', ]
+ternary	lib/email/templates/churn-prevention.ts	` <div style="background: #FEF2F2; border-radius: 12px; padding: 16px; margin: 20px 0;"> <p style="margin: 0; font-size: 14px; color: #991B1B; font-weight: bold;"> ${isGreek ? counted(expiringPolicies, 'ασφαλιστήριο λήγει σύντομα', 'ασφαλιστήρια λήγουν σύντομα') : counted(expiringPolicies, 'policy expiring soon', 'policies expiring soon')} </p> </div> `
+ternary	lib/email/templates/churn-prevention.ts	` <div style="background: #FFFBEB; border-radius: 12px; padding: 16px; margin: 20px 0;"> <p style="margin: 0; font-size: 14px; color: #92400E; font-weight: bold;"> ${isGreek ? counted(openGaps, 'κενό κάλυψης χρειάζεται αντιμετώπιση', 'κενά κάλυψης χρειάζονται αντιμετώπιση') : counted(openGaps, 'coverage gap needs attention', 'coverage gaps need attention')} </p> </div> `
+ternary	lib/email/templates/churn-prevention.ts	`<p>${isGreek ? 'Δεν εντοπίσαμε κάτι που να απαιτεί ενέργεια αυτή τη στιγμή — αξίζει όμως μια ματιά στο χαρτοφυλάκιό σας.' : 'We found nothing that needs action right now — but your portfolio is worth a look.' }</p>`
+ternary	lib/email/templates/churn-prevention.ts	`Ως ένδειξη εκτίμησης, σας δωρίζουμε <strong>${bonusTokens} δωρεάν AI credits</strong> για να εξερευνήσετε τη νέα μας ανάλυση κάλυψης.`
+ternary	lib/email/templates/churn-prevention.ts	`🎁 Μας λείπετε — ${bonusTokens} δωρεάν credits σας περιμένουν`
+ternary	lib/email/templates/churn-prevention.ts	counted(expiringPolicies, 'ασφαλιστήριο λήγει σύντομα', 'ασφαλιστήρια λήγουν σύντομα')
+ternary	lib/email/templates/churn-prevention.ts	counted(openGaps, 'κενό κάλυψης χρειάζεται αντιμετώπιση', 'κενά κάλυψης χρειάζονται αντιμετώπιση')
+ternary	lib/email/templates/engagement-drip.ts	'1. Ανεβάστε ένα PDF ή βγάλτε φωτογραφία'
+ternary	lib/email/templates/engagement-drip.ts	'2. Η AI διαβάζει και αναλύει το συμβόλαιο'
+ternary	lib/email/templates/engagement-drip.ts	'3. Λαμβάνετε ρεπορτ κάλυψης σε λεπτά'
+ternary	lib/email/templates/engagement-drip.ts	'Άνοιγμα πίνακα ελέγχου'
+ternary	lib/email/templates/engagement-drip.ts	'Ένα βήμα σας χωρίζει!'
+ternary	lib/email/templates/engagement-drip.ts	'Έχει περάσει μία εβδομάδα από την εγγραφή σας. Ας δούμε πού βρίσκεστε:'
+ternary	lib/email/templates/engagement-drip.ts	'Αν χρειάζεστε βοήθεια, επισκεφθείτε το Help Center μας.'
+ternary	lib/email/templates/engagement-drip.ts	'Αναλύθηκε 1 ασφαλιστήριο'
+ternary	lib/email/templates/engagement-drip.ts	'Ανεβάστε τα ασφαλιστήρια σας για να δείτε τη σύνοψη κάλυψής σας.'
+ternary	lib/email/templates/engagement-drip.ts	'Ανεβάστε το πρώτο σας συμβόλαιο'
+ternary	lib/email/templates/engagement-drip.ts	'Ανεβάστε τώρα'
+ternary	lib/email/templates/engagement-drip.ts	'Ασφαλιστήρια'
+ternary	lib/email/templates/engagement-drip.ts	'Δεν έχει αναλυθεί ακόμη'
+ternary	lib/email/templates/engagement-drip.ts	'Δημιουργήσατε με επιτυχία τον λογαριασμό σας. Τώρα μπορείτε να οργανώσετε όλα τα ασφαλιστήρια συμβόλαιά σας σε ένα ασφαλές μέρος.'
+ternary	lib/email/templates/engagement-drip.ts	'Η πρώτη σας εβδομάδα!'
+ternary	lib/email/templates/engagement-drip.ts	'Καλώς ήρθες στο PolicyWallet!'
+ternary	lib/email/templates/engagement-drip.ts	'Κενά κάλυψης'
+ternary	lib/email/templates/engagement-drip.ts	'Παρατηρήσαμε ότι δεν έχετε ανεβάσει ακόμα κάποιο ασφαλιστήριο. Η AI ανάλυσή μας μπορεί να εντοπίσει κενά κάλυψης και ευκαιρίες εξοικονόμησης σε δευτερόλεπτα.'
+ternary	lib/email/templates/engagement-drip.ts	'Πώς λειτουργεί:'
+ternary	lib/email/templates/engagement-drip.ts	'Τα ασφαλιστήριά σας δεν έχουν αναλυθεί ακόμη, οπότε δεν γνωρίζουμε αν υπάρχουν κενά κάλυψης. Ξεκινήστε την ανάλυση από τον πίνακα ελέγχου.'
+ternary	lib/email/templates/engagement-drip.ts	'Τα πρώτα βήματα:'
+ternary	lib/email/templates/engagement-drip.ts	'🎉 Καλώς ήρθες στο PolicyWallet!'
+ternary	lib/email/templates/engagement-drip.ts	'💡 Tip: Μπορείτε να ανεβάσετε συμβόλαια από αυτοκίνητο, σπίτι, υγεία, ζωή — όλα σε ένα μέρος.'
+ternary	lib/email/templates/engagement-drip.ts	'📊 Η εβδομαδιαία σύνοψη κάλυψης'
+ternary	lib/email/templates/engagement-drip.ts	'📎 Ανεβάσατε το πρώτο σας συμβόλαιο;'
+ternary	lib/email/templates/engagement-drip.ts	'📎 Ανεβάστε το πρώτο ασφαλιστήριο (PDF ή φωτογραφία)'
+ternary	lib/email/templates/engagement-drip.ts	'🔍 Ανακαλύψτε κενά κάλυψης και ευκαιρίες εξοικονόμησης'
+ternary	lib/email/templates/engagement-drip.ts	'🤖 Η AI θα αναλύσει αυτόματα την κάλυψή σας'
+ternary	lib/email/templates/engagement-drip.ts	` <p style="color: #6B7280; font-size: 14px;">${isGreek ? counted(remainder, 'ασφαλιστήριο δεν έχει αναλυθεί ακόμη.', 'ασφαλιστήρια δεν έχουν αναλυθεί ακόμη.') : counted(remainder, 'policy has not been analysed yet.', 'policies have not been analysed yet.') }</p> `
+ternary	lib/email/templates/engagement-drip.ts	` <p style="margin-top: 16px;"> <span class="warning-badge">${isGreek ? counted(stats.gapCount, 'κενό κάλυψης χρειάζεται προσοχή', 'κενά κάλυψης χρειάζονται προσοχή') : counted(stats.gapCount, 'coverage gap needs attention', 'coverage gaps need attention')}</span> </p> `
+ternary	lib/email/templates/engagement-drip.ts	` <p>${isGreek ? 'Τα ασφαλιστήριά σας δεν έχουν αναλυθεί ακόμη, οπότε δεν γνωρίζουμε αν υπάρχουν κενά κάλυψης. Ξεκινήστε την ανάλυση από τον πίνακα ελέγχου.' : 'Your policies have not been analysed yet, so we do not know whether there are coverage gaps. Start the analysis from your dashboard.' }</p> `
+ternary	lib/email/templates/engagement-drip.ts	`Αναλύθηκαν ${analysed} από ${policyCount} ασφαλιστήρια`
+ternary	lib/email/templates/engagement-drip.ts	`Αναλύθηκαν και τα ${analysed} ασφαλιστήρια`
+ternary	lib/email/templates/engagement-drip.ts	`Αναλύθηκε 1 από ${policyCount} ασφαλιστήρια`
+ternary	lib/email/templates/engagement-drip.ts	counted(remainder, 'ασφαλιστήριο δεν έχει αναλυθεί ακόμη.', 'ασφαλιστήρια δεν έχουν αναλυθεί ακόμη.')
+ternary	lib/email/templates/engagement-drip.ts	counted(stats.gapCount, 'κενό κάλυψης χρειάζεται προσοχή', 'κενά κάλυψης χρειάζονται προσοχή')
+ternary	lib/email/templates/phrases.ts	'Καλησπέρα σας,'
+ternary	lib/email/templates/phrases.ts	'λήγει αύριο'
+ternary	lib/email/templates/phrases.ts	'λήγει σήμερα'
+ternary	lib/email/templates/phrases.ts	`Αγαπητέ/ή ${safeName},`
+ternary	lib/email/templates/phrases.ts	`σε ${days} ημέρες`
+ternary	lib/email/templates/weekly-digest.ts	'Άνοιγμα πίνακα ελέγχου'
+ternary	lib/email/templates/weekly-digest.ts	'Ακολουθεί η σύνοψη της εβδομάδας σας.'
+ternary	lib/email/templates/weekly-digest.ts	'Ανανεώσεις εντός 30 ημερών'
+ternary	lib/email/templates/weekly-digest.ts	'Δείτε όλες τις προτάσεις →'
+ternary	lib/email/templates/weekly-digest.ts	'Εβδομαδιαία σύνοψη'
+ternary	lib/email/templates/weekly-digest.ts	'Ενημέρωση προφίλ →'
+ternary	lib/email/templates/weekly-digest.ts	'Η εβδομαδιαία σας σύνοψη PolicyWallet'
+ternary	lib/email/templates/weekly-digest.ts	'Λαμβάνετε αυτό το email κάθε Δευτέρα.'
+ternary	lib/email/templates/weekly-digest.ts	'έτος'
+ternary	lib/email/templates/weekly-digest.ts	'💡 Προτάσεις Κάλυψης'
+ternary	lib/email/templates/weekly-digest.ts	'📝 Ολοκληρώστε το Προφίλ σας'
+ternary	lib/email/templates/weekly-digest.ts	` <h3 style="margin-bottom: 8px; font-size: 16px; color: #111827;"> ${isGreek ? 'Ανανεώσεις εντός 30 ημερών' : 'Renewals within 30 days'} </h3> <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;"> ${data.renewingSoon.map(r => ` <tr style="border-bottom: 1px solid #E5E7EB;"> <td style="padding: 8px 0; font-size: 14px; color: #374151;">${displayInsurerName(r.insurerName, normalizeBranch(r.lineOfBusiness).label[language])}</td> <td style="padding: 8px 0; font-size: 14px; color: #6B7280;">${normalizeBranch(r.lineOfBusiness).label[language]}</td> <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: ${r.daysUntilExpiry <= 7 ? '#DC2626' : r.daysUntilExpiry <= 14 ? '#D97706' : '#059669'}; text-align: right;"> ${daysToExpiryPhrase(r.daysUntilExpiry, isGreek)} </td> </tr> `).join('')} </table> `
+ternary	lib/email/templates/weekly-digest.ts	`~€${r.estimatedCostEur}/${isGreek ? 'έτος' : 'yr'}`
+ternary	lib/email/templates/weekly-digest.ts	`Το προφίλ κινδύνου σας είναι ${completeness}% ολοκληρωμένο. Συμπληρώστε τα πεδία που λείπουν για ακριβέστερες προτάσεις κάλυψης.`
+ternary	lib/email/templates/weekly-digest.ts	counted(data.newGaps, 'νέο κενό κάλυψης εντοπίστηκε', 'νέα κενά κάλυψης εντοπίστηκαν')
+ternary	lib/email/templates/weekly-digest.ts	counted(data.unreadMessages, 'αδιάβαστο μήνυμα', 'αδιάβαστα μηνύματα')
+ternary	lib/errors/app-error.ts	'Δεν έχετε δικαίωμα να εκτελέσετε αυτήν την ενέργεια'
+ternary	lib/errors/app-error.ts	'Πρέπει να συνδεθείτε για να εκτελέσετε αυτήν την ενέργεια'
+ternary	lib/errors/i18n.ts	'Πάρα πολλά αιτήματα. Παρακαλώ δοκιμάστε ξανά αργότερα.'
+ternary	lib/errors/i18n.ts	`Πάρα πολλά αιτήματα. Παρακαλώ δοκιμάστε ξανά σε ${retryAfter} δευτερόλεπτα.`
+ternary	lib/glossary/hints.ts	"Περισσότερα"
+ternary	lib/i18n/amount-format.ts	'Απεριόριστο'
+ternary	lib/i18n/amount-format.ts	'Μεταβλητό'
+ternary	lib/i18n/role-copy.ts	"1 στοιχείο που χρειάζεται προσοχή."
+ternary	lib/i18n/role-copy.ts	`${n} στοιχεία που χρειάζονται προσοχή.`
+ternary	lib/mail-templates.ts	'Έλεγχος Ασφαλιστηρίου'
+ternary	lib/mail-templates.ts	'Διαχείριση Ανανέωσης'
+ternary	lib/mail-templates.ts	'Εντοπίστηκε πιθανό κενό κάλυψης'
+ternary	lib/mail-templates.ts	'Επιτυχής Πληρωμή'
+ternary	lib/mail-templates.ts	'Λήψη Τιμολογίου'
+ternary	lib/mail-templates.ts	'Προβολή λεπτομερειών'
+ternary	lib/mail-templates.ts	`Ανανέωση: ${data.customerName} — ${data.policyName} (${data.daysLeft} ημέρες)`
+ternary	lib/mail-templates.ts	`Απαιτείται ενέργεια ανανέωσης — ${data.daysLeft} ημέρες`
+ternary	lib/mail-templates.ts	`Επιτυχής Πληρωμή: ${data.amount}`
+ternary	lib/mail-templates.ts	`Η AI ανάλυσή μας εντόπισε πιθανό κενό κάλυψης στο ασφαλιστήριο <strong>${data.policyName}</strong>: <strong>${data.gapTitle}</strong>. Δείτε τις λεπτομέρειες για να αξιολογήσετε αν χρειάζεται κάποια ενέργεια.`
+ternary	lib/mail-templates.ts	`Η πληρωμή σας ύψους ${data.amount} ολοκληρώθηκε επιτυχώς. Το ασφαλιστικό σας πορτοφόλι παραμένει ενεργό και προστατευμένο.`
+ternary	lib/mail-templates.ts	`Πιθανό κενό κάλυψης στο ${data.policyName}`
+ternary	lib/mail-templates.ts	`Το ασφαλιστήριο <strong>${data.policyName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Ελέγξτε τις επιλογές ανανέωσης τώρα.`
+ternary	lib/mail-templates.ts	`Το ασφαλιστήριο <strong>${data.policyName}</strong> του/της <strong>${data.customerName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Επικοινωνήστε με τον πελάτη για ανανέωση.`
+ternary	lib/mail-templates.ts	`Το ασφαλιστήριό σας λήγει σε ${data.daysLeft} ημέρες`
+ternary	lib/mail-templates.ts	`Υπενθύμιση Ανανέωσης: Το ${data.policyName} λήγει σε ${data.daysLeft} ημέρες`
+ternary	lib/notifications/risk-events.ts	`${first.el} και ${changed.length - 1} ακόμη αλλαγές.`
+ternary	lib/seo/site.ts	"PolicyWallet — Δεν αξιολογούμε τα συμβόλαιά σας. Αξιολογούμε την προστασία της ζωής σας."
+ternary	lib/services/ai/mock-ai.service.ts	{ extractionSources: { insurerName: { page: 1, snippet: 'Mock Insurance Co. — Ασφαλιστήριο Συμβόλαιο' }, endDate: { page: 2, snippet: 'Λήξη ασφάλισης: όπως ορίζεται στον πίνακα καλύψεων' }, premiumAmount: { page: 2, snippet: 'Ετήσια ολικά ασφάλιστρα: €500,00' }, }, }
+ternary	lib/services/collaboration-reminders.service.ts	"ανοιχτές συζητήσεις"
+ternary	lib/services/collaboration-reminders.service.ts	"ανοιχτή συζήτηση"
+ternary	lib/services/collaboration-reminders.service.ts	"εκπρόθεσμες ενέργειες"
+ternary	lib/services/collaboration-reminders.service.ts	"εκπρόθεσμη ενέργεια"
+ternary	lib/services/compliance/obligation-scan.ts	`Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει ${due.length} προϋποθέσεις που πρέπει να τηρούνται. Η πρώτη: ${lead.el}`
+ternary	lib/services/compliance/obligation-scan.ts	`Το ασφαλιστήριό σου με την ${policy.insurerName} θέτει την εξής προϋπόθεση κάλυψης: ${lead.el}`
+ternary	lib/services/gap-analysis.service.ts	'Δεν έχετε δικαίωμα να απορρίψετε αυτό το κενό'
+ternary	lib/services/gap-analysis.service.ts	'Δεν έχετε δικαίωμα να επιλύσετε αυτό το κενό'
+ternary	lib/services/gap-engine/agent-playbook.ts	"κρίσιμης"
+ternary	lib/services/gap-engine/agent-playbook.ts	"μέσης"
+ternary	lib/services/gap-engine/agent-playbook.ts	"υψηλής"
+ternary	lib/services/gap-engine/portfolio-rules.ts	" — αύριο"
+ternary	lib/services/gap-engine/portfolio-rules.ts	" — σήμερα"
+ternary	lib/services/gap-engine/portfolio-rules.ts	"ενεργά ασφαλιστήρια"
+ternary	lib/services/gap-engine/portfolio-rules.ts	"ενεργό ασφαλιστήριο"
+ternary	lib/services/gap-engine/portfolio-rules.ts	"το 1 ενεργό ασφαλιστήριό σας"
+ternary	lib/services/gap-engine/portfolio-rules.ts	` (και ${unclear.length - 2} ακόμα)`
+ternary	lib/services/gap-engine/portfolio-rules.ts	` — σε ${daysLeft} ημέρες`
+ternary	lib/services/gap-engine/portfolio-rules.ts	`${scanEl}, ενώ ${fact.el}.`
+ternary	lib/services/gap-engine/portfolio-rules.ts	`τα ${activePolicyCount} ενεργά ασφαλιστήριά σας`
+ternary	lib/services/gap-engine/portfolio-rules.ts	`τον κλάδο ${label.el}`
+ternary	lib/services/gap-engine/portfolio-rules.ts	`τον κλάδο «${lineOfBusiness}»`
+ternary	lib/services/gap-engine/profile-gap-rules.ts	"ελεύθερος επαγγελματίας"
+ternary	lib/services/gap-engine/profile-gap-rules.ts	"ελεύθερος επαγγελματίας"
+ternary	lib/services/gap-engine/profile-gap-rules.ts	"εργαζόμενος"
+ternary	lib/services/gap-engine/profile-gap-rules.ts	"ιδιοκτήτης ακινήτου"
+ternary	lib/services/gap-engine/recommendation-generator.ts	`Ελέγξτε το ασφαλιστήριο ${insurer} για αυτό το κενό κάλυψης.`
+ternary	lib/services/gap-engine/recommendation-generator.ts	`Ελέγξτε το ασφαλιστήριό σας για αυτό το κενό κάλυψης.`
+ternary	lib/services/gap-engine/risk-catalog.ts	" και "
+ternary	lib/services/gap-engine/risk-catalog.ts	"Contractual sick pay plus ΕΦΚΑ benefit covers the first weeks for most employees. The gap starts where they stop."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Illness or injury that stops you working stops your invoicing the same day. Self-employed cover from ΕΦΚΑ begins only after a waiting period and pays a fraction of a working income."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Ένας πελάτης που ισχυρίζεται ότι η εργασία σας του προκάλεσε ζημιά σας ενάγει προσωπικά. Τα έξοδα υπεράσπισης τρέχουν πολύ πριν κριθεί η ευθύνη."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Έχετε επιχείρηση, οπότε αξιώσεις από τη δραστηριότητά της μπορούν να σας φτάσουν."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Ασθένεια ή τραυματισμός που σας σταματά από την εργασία εξαντλεί τελικά την αναρρωτική άδεια. Μετά, το επίδομα αντικαθιστά κλάσμα του μισθού σας ενώ τα έξοδά σας παραμένουν ίδια."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Ασθένεια ή τραυματισμός που σας σταματά από την εργασία σταματά την τιμολόγησή σας την ίδια μέρα. Η κάλυψη του ΕΦΚΑ για ελεύθερους επαγγελματίες ξεκινά μετά από περίοδο αναμονής και καταβάλλει κλάσμα ενός εργασιακού εισοδήματος."
+ternary	lib/services/gap-engine/risk-catalog.ts	"ΕΦΚΑ sickness benefit for the self-employed starts after a waiting period. Knowing the exact gap is what tells you how much cover to buy."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Είστε ελεύθερος επαγγελματίας, οπότε οι αξιώσεις από την εργασία σας σας φτάνουν προσωπικά."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Εκμισθώνετε ακίνητο σε ενοικιαστές, από όπου ξεκινούν οι περισσότερες ιδιωτικές διαφορές ακινήτων."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Η συμβατική αναρρωτική άδεια μαζί με το επίδομα ΕΦΚΑ καλύπτει τις πρώτες εβδομάδες για τους περισσότερους μισθωτούς. Το κενό ξεκινά εκεί που σταματούν."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Μας δηλώσατε ότι έχετε κατοικίδια."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Σας ανήκει η κατοικία στην οποία μένετε."
+ternary	lib/services/gap-engine/risk-catalog.ts	"Το επίδομα ασθενείας ΕΦΚΑ για ελεύθερους επαγγελματίες ξεκινά μετά από περίοδο αναμονής. Γνωρίζοντας το ακριβές κενό ξέρετε πόση κάλυψη χρειάζεστε."
+ternary	lib/services/gap-engine/risk-catalog.ts	"από ελεύθερο επάγγελμα"
+ternary	lib/services/gap-engine/risk-catalog.ts	"από μισθωτή εργασία"
+ternary	lib/services/gap-engine/risk-catalog.ts	"είστε ελεύθερος επαγγελματίας"
+ternary	lib/services/gap-engine/risk-catalog.ts	"εργάζεστε"
+ternary	lib/services/gap-engine/risk-catalog.ts	"μέτρια"
+ternary	lib/services/gap-engine/risk-catalog.ts	"προηγούμενα ατυχήματα"
+ternary	lib/services/gap-engine/risk-catalog.ts	"σοβαρές παραβάσεις"
+ternary	lib/services/gap-engine/risk-catalog.ts	"υψηλή"
+ternary	lib/services/gap-engine/risk-catalog.ts	` Οι αποταμιεύσεις σας θα κάλυπταν περίπου ${months} ${plural(months, "μήνα", "μήνες")} εισοδήματος.`
+ternary	lib/services/gap-engine/risk-catalog.ts	`Έχετε ${n} ${plural(n, "κατοικίδιο", "κατοικίδια")}, και η έκθεση αυξάνεται με κάθε ένα.`
+ternary	lib/services/gap-engine/risk-catalog.ts	`Οι αξιώσεις που προκύπτουν από ${occ.el} στρέφονται εναντίον σας προσωπικά, και τα έξοδα υπεράσπισης τρέχουν πολύ πριν κριθεί η ευθύνη.`
+ternary	lib/services/gap-engine/risk-catalog.ts	`Σας ανήκουν ${ctx.propertiesOwned} ακίνητα, γεγονός που αυξάνει την πιθανότητα διαφοράς ορίων, εργασιών ή κοινοχρήστων.`
+ternary	lib/services/gap-engine/risk-catalog.ts	`Σας ανήκουν ${ctx.propertiesOwned} ακίνητα.`
+ternary	lib/services/policy.service.ts	'Δεν έχετε δικαίωμα επεξεργασίας αυτού του συμβολαίου'
+ternary	lib/services/policy.service.ts	'Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης'
+ternary	lib/services/policy.service.ts	'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
+ternary	lib/services/policy.service.ts	'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
+ternary	lib/services/policy.service.ts	'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
+ternary	lib/services/policy.service.ts	'Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το.'
+ternary	lib/services/policy.service.ts	'του εγγράφου που ανεβάσατε'
+ternary	lib/services/policy.service.ts	`Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
+ternary	lib/services/policy.service.ts	`Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
+ternary	lib/services/policy.service.ts	`του συμβολαίου ${label}`
+ternary	lib/services/renewal.service.ts	"αύριο"
+ternary	lib/services/renewal.service.ts	"λήγει αύριο"
+ternary	lib/services/renewal.service.ts	"λήγει σήμερα"
+ternary	lib/services/renewal.service.ts	"σήμερα"
+ternary	lib/services/renewal.service.ts	`λήγει σε ${days} ημέρες`
+ternary	lib/services/renewal.service.ts	`σε ${daysUntilExpiry} ημέρες`
+ternary	lib/services/reports/savings-report.ts	` <div class="savings-total"> <div class="amount">${escapeHtml(formatCurrency(totalSavings, language, { currency: "EUR", decimals: 0 }))}</div> <div class="label">${L("Εκτιμώμενη ετήσια δυνατότητα εξοικονόμησης", "Estimated annual savings potential")}</div> <div class="caveat">${L( "Οι εκτιμήσεις προκύπτουν από ανάλυση AI του εγγράφου σας και είναι ενδεικτικές — τα πραγματικά ποσά εξαρτώνται από τις προσφορές των ασφαλιστών. Χαμηλότερο ασφάλιστρο μπορεί να σημαίνει μικρότερη κάλυψη: συγκρίνετε τις καλύψεις, όχι μόνο την τιμή. Αυθεντική πηγή παραμένει το ασφαλιστήριό σας.", "Estimates come from AI analysis of your document and are indicative — actual amounts depend on insurer quotes. A lower premium can mean less cover: compare the covers, not just the price. Your policy document remains the authoritative source." )}</div> </div> `
+ternary	lib/services/reports/savings-report.ts	` <h2>${L("Εντοπισμένα Κενά Κάλυψης", "Coverage Gaps Detected")} (${gaps.length})</h2> ${gaps.map((g) => ` <div class="gap-card ${g.severity || "medium"}"> <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(gapSeverityLabel(g.severity || "medium", language))}</span></div> ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""} ${g.suggestion ? `<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""} </div> `).join("")} `
+ternary	lib/services/reports/savings-report.ts	` <h2>${L("Στιγμιότυπο Κάλυψης", "Coverage Snapshot")}</h2> ${snapshot.covered?.length ? ` <h3>${L("Καλύπτονται", "Covered")}</h3> <ul class="coverage-list">${(snapshot.covered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} ${snapshot.notCovered?.length ? ` <h3>${L("Δεν καλύπτονται", "Not Covered")}</h3> <ul class="coverage-list">${(snapshot.notCovered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} ${snapshot.exclusions?.length ? ` <h3>${L("Εξαιρέσεις", "Exclusions")}</h3> <ul class="coverage-list">${(snapshot.exclusions as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> ` : ""} `
+ternary	lib/services/reports/savings-report.ts	` <h3>${L("Δεν καλύπτονται", "Not Covered")}</h3> <ul class="coverage-list">${(snapshot.notCovered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
+ternary	lib/services/reports/savings-report.ts	` <h3>${L("Εξαιρέσεις", "Exclusions")}</h3> <ul class="coverage-list">${(snapshot.exclusions as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
+ternary	lib/services/reports/savings-report.ts	` <h3>${L("Καλύπτονται", "Covered")}</h3> <ul class="coverage-list">${(snapshot.covered as string[]).map((c: string) => `<li>${escapeHtml(c)}</li>`).join("")}</ul> `
+ternary	lib/services/reports/savings-report.ts	`<div class="detail"><strong>${L("Σύσταση", "Recommendation")}:</strong> ${escapeHtml(loc(g.suggestion))}</div>`
+ternary	lib/services/reports/savings-report.ts	`<div class="estimate">${L("Ενδεικτική εκτίμηση", "Indicative estimate")}: ${escapeHtml(formatCurrency(Number(s.estimatedAnnualSavingsEur), language, { currency: "EUR", decimals: 0 }))}/${L("έτος", "year")}</div>`
+ternary	lib/services/reports/savings-report.ts	`<h1>${reportTitle}</h1> <p class="subtitle">${L("Δημιουργήθηκε", "Generated")} ${formatDate(generatedAt)} ${L("από το", "by")} PolicyWallet</p>`
+ternary	lib/services/reports/savings-report.ts	`<h2>${L("Σύνοψη", "Summary")}</h2><p style="font-size:14px">${escapeHtml(loc(summary))}</p>`
+ternary	lib/services/reports/savings-report.ts	`<p style='font-size:14px;color:#888'>${L("Δεν εντοπίστηκαν ευκαιρίες εξοικονόμησης.", "No savings opportunities identified.")}</p>`
+ternary	lib/services/risk-dna/advisory-impact.ts	"1 νοικοκυριό είναι πολύ ελλιπώς γνωστό για να δοθούν συμβουλές. Αυτός είναι ο πρώτος περιορισμός, όχι τα κενά."
+ternary	lib/services/risk-dna/advisory-impact.ts	"Δεν υπάρχει διαθέσιμη μετακίνηση σκορ εδώ· η αξία βρίσκεται στην επιβεβαίωση όσων δεν μπορέσαμε να διαβάσουμε."
+ternary	lib/services/risk-dna/advisory-impact.ts	"άτομα εξαρτώνται"
+ternary	lib/services/risk-dna/advisory-impact.ts	"άτομα εξαρτώνται"
+ternary	lib/services/risk-dna/advisory-impact.ts	"άτομο εξαρτάται"
+ternary	lib/services/risk-dna/advisory-impact.ts	"άτομο εξαρτάται"
+ternary	lib/services/risk-dna/advisory-impact.ts	"μονάδα"
+ternary	lib/services/risk-dna/advisory-impact.ts	"μονάδες"
+ternary	lib/services/risk-dna/advisory-impact.ts	"νοικοκυριά υποχώρησαν"
+ternary	lib/services/risk-dna/advisory-impact.ts	"νοικοκυριά φέρουν"
+ternary	lib/services/risk-dna/advisory-impact.ts	"νοικοκυριό υποχώρησε"
+ternary	lib/services/risk-dna/advisory-impact.ts	"νοικοκυριό φέρει"
+ternary	lib/services/risk-dna/advisory-impact.ts	"περιοχές υποχώρησαν"
+ternary	lib/services/risk-dna/advisory-impact.ts	"περιοχές χρειάζονται"
+ternary	lib/services/risk-dna/advisory-impact.ts	"περιοχές χρειάζονται"
+ternary	lib/services/risk-dna/advisory-impact.ts	"περιοχή υποχώρησε"
+ternary	lib/services/risk-dna/advisory-impact.ts	"περιοχή χρειάζεται"
+ternary	lib/services/risk-dna/advisory-impact.ts	"περιοχή χρειάζεται"
+ternary	lib/services/risk-dna/advisory-impact.ts	`${unknownHouseholds} νοικοκυριά είναι πολύ ελλιπώς γνωστά για να δοθούν συμβουλές. Αυτός είναι ο πρώτος περιορισμός, όχι τα κενά.`
+ternary	lib/services/risk-dna/advisory-impact.ts	`Η κάλυψη των ανοιχτών θεμάτων θα μετακινούσε το σκορ προστασίας τους κατά περίπου ${recoverablePoints} ${recoverablePoints === 1 ? "μονάδα" : "μονάδες"}.`
+ternary	lib/services/risk-dna/compute.ts	"μήνας"
+ternary	lib/services/risk-dna/compute.ts	"μήνες"
+ternary	lib/services/risk-dna/compute.ts	"μονάδα"
+ternary	lib/services/risk-dna/compute.ts	"μονάδες"
+ternary	lib/services/risk-dna/health-index.ts	"άτομα εξαρτώνται"
+ternary	lib/services/risk-dna/health-index.ts	"άτομο εξαρτάται"
+ternary	lib/services/risk-dna/monitoring.ts	" και άλλο 1 λήγει μέσα σε 45 ημέρες"
+ternary	lib/services/risk-dna/monitoring.ts	"ασφαλιστήρια έχουν ήδη λήξει"
+ternary	lib/services/risk-dna/monitoring.ts	"ασφαλιστήρια λήγουν"
+ternary	lib/services/risk-dna/monitoring.ts	"ασφαλιστήριο έχει ήδη λήξει"
+ternary	lib/services/risk-dna/monitoring.ts	"ασφαλιστήριο λήγει"
+ternary	lib/services/risk-dna/monitoring.ts	` και άλλα ${lapsing.length} λήγουν μέσα σε 45 ημέρες`
+ternary	lib/services/risk-graph/protection.ts	"ασφαλιστήρια"
+ternary	lib/services/risk-graph/protection.ts	"ασφαλιστήριο"
+ternary	lib/services/timeline/build.ts	{ entryId: causeEventId, explanation: { en: "Recalculated because you told us about this change.", el: "Επανυπολογίστηκε επειδή μας δηλώσατε αυτή τη μεταβολή.", }, }
+ternary	lib/services/timeline/diff.ts	"κίνδυνοι άνοιξαν"
+ternary	lib/services/timeline/diff.ts	"κίνδυνοι έκλεισαν"
+ternary	lib/services/timeline/diff.ts	"κίνδυνος άνοιξε"
+ternary	lib/services/timeline/diff.ts	"κίνδυνος έκλεισε"
+ternary	lib/services/timeline/diff.ts	"και"
+ternary	lib/services/timeline/diff.ts	`${items.slice(0, -1).join(", ")} ${lang === "el" ? "και" : "and"} ${items[items.length - 1]}`
+ternary	lib/wallet/document-insights.ts	"ΑΓΝΩΣΤΗ ΔΙΑΡΚΕΙΑ"
+ternary	lib/wallet/document-insights.ts	"ΑΚΥΡΟ"
+ternary	lib/wallet/document-insights.ts	"ΑΝΑΛΥΣΗ"
+ternary	lib/wallet/document-insights.ts	"Ασφαλιστήριο"
+ternary	lib/wallet/document-insights.ts	"Δεν εντοπίστηκε ημερομηνία λήξης — συμπληρώστε την."
+ternary	lib/wallet/document-insights.ts	"ΕΛΕΓΞΤΕ ΤΑ ΔΕΔΟΜΕΝΑ AI"
+ternary	lib/wallet/document-insights.ts	"ΕΝΕΡΓΟ"
+ternary	lib/wallet/document-insights.ts	"ΕΠΙΒΕΒΑΙΩΜΕΝΗ"
+ternary	lib/wallet/document-insights.ts	"Η ανάλυση AI είναι σε εξέλιξη."
+ternary	lib/wallet/document-insights.ts	"ΛΕΙΠΟΥΝ ΣΤΟΙΧΕΙΑ"
+ternary	lib/wallet/document-insights.ts	"ΛΗΓΜΕΝΟ"
+ternary	lib/wallet/document-insights.ts	"Το συμβόλαιο έχει ακυρωθεί."
+ternary	lib/wallet/document-insights.ts	"ΧΡΕΙΑΖΕΤΑΙ ΑΝΑΝΕΩΣΗ"
+ternary	lib/wallet/document-insights.ts	"ΧΡΕΙΑΖΕΤΑΙ ΕΛΕΓΧΟ"
+ternary	lib/wallet/document-insights.ts	"Χρειάζεται έλεγχος πεδίων από το έγγραφο."
+ternary	lib/wallet/document-insights.ts	`Έληξε στις ${expiryDisplay}.`
+ternary	lib/wallet/document-insights.ts	`Ενεργό έως ${expiryDisplay}.`
+ternary	lib/wallet/document-insights.ts	`Λήγει σε ${daysUntilExpiry} ημέρες.`
+ternary	lib/wallet/document-label.ts	"Έγγραφο σε επεξεργασία"
+ternary	lib/wallet/document-label.ts	"Ανανεωτήριο"
+ternary	lib/wallet/document-label.ts	"Ασφαλιστήριο"

@@ -30,13 +30,40 @@
  *            enumeration is read-only, and public marketing copy is exactly
  *            where an unreviewed claim is most dangerous.
  *
+ *   ternary — every branch of every conditional expression (?:) in a .ts
+ *            file whose DECODED string/template literal text contains a
+ *            Greek codepoint (U+0370–U+03FF, U+1F00–U+1FFF), under app/,
+ *            components/, lib/ PLUS contexts/, hooks/, types/, utils/ —
+ *            every top-level root that holds runtime .ts code (the
+ *            remaining roots — tests/, scripts/, prisma/, docs/, evals/,
+ *            design-system/, ds-bundle/ — are not shipped to users).
+ *            Enumerated recursively from the filesystem at test time. The
+ *            frozen text is the branch's exact source, whitespace
+ *            collapsed. The discriminator is GREEK TEXT IN A LITERAL,
+ *            never the shape of the condition: `lang === "el" ? …`,
+ *            `isEl ? …`, reversed `=== "en"` polarity and score chains are
+ *            all in; locale codes ("el", "el_GR") are ASCII and naturally
+ *            out, so the freeze never nags about language plumbing. Two
+ *            branch kinds are skipped: a branch that is itself a
+ *            conditional (a chained else-if ternary freezes as its leaves,
+ *            not as one mega-entry), and a branch that is exactly an
+ *            {el, en} pair object (the inline arm already froze its el
+ *            side). Why this arm exists: locale-ternary Greek in .ts was
+ *            the third shape of user-facing Greek that NOTHING covered —
+ *            lint:i18n-changed scans .tsx only, and the two arms above see
+ *            only bundle leaves and pairs — so a Greek sentence could ship
+ *            there entirely unreviewed.
+ *
  * DELIBERATELY NOT FROZEN (so nobody mistakes this for total coverage):
  *   - en.ts values, and the `en` side of inline pairs (English copy);
- *   - Greek outside the three roots (tests/, scripts/, prisma/, docs/);
- *   - Greek not shaped as an {el, en} pair outside the bundle — bare
- *     literals and `locale === 'el' ? '…' : '…'` ternaries are
- *     lint:i18n-changed's beat, and locale-keyed maps with other key names
- *     are invisible to this walk;
+ *   - Greek outside the roots each arm names (tests/, scripts/, prisma/,
+ *     docs/ and the other non-runtime roots);
+ *   - bare Greek literals not shaped as a pair or a ternary branch —
+ *     consts, enum members, object values under other key names, and
+ *     `??` / `||` fallbacks;
+ *   - ternaries in .tsx files (lint:i18n-changed's beat when touched);
+ *   - Greek reaching a ternary branch only through a variable reference
+ *     (the variable's own literal is a bare literal, above);
  *   - runtime composition beyond the frozen expression text;
  *   - computed property keys and spread-carried pairs (none exist today).
  *
@@ -49,11 +76,12 @@
  *
  * and commit the inventory diff IN THE SAME COMMIT as the copy change.
  *
- * PROBES: tests/fixtures/guard-probes/inline-el-en-pairs.tsx.txt is the
- * committed red-probe for the extractor — the guard asserts the exact
- * multiset it extracts from that file, one entry per shape that exists in
- * the codebase, plus non-pairs that must NOT match. The pre-filter (a cheap
- * regex that decides which files get a full AST parse) is probed separately,
+ * PROBES: tests/fixtures/guard-probes/inline-el-en-pairs.tsx.txt and
+ * tests/fixtures/guard-probes/locale-ternary-greek.ts.txt are the committed
+ * red-probes for the two extractors — the guard asserts the exact multiset
+ * each extracts from its file, one entry per shape that exists in the
+ * codebase, plus shapes that must NOT match. The pre-filters (cheap regexes
+ * that decide which files get a full AST parse) are probed separately,
  * because a pre-filter that skips a file the extractor could read is the
  * kind of hole that produces a false green.
  */
@@ -67,6 +95,10 @@ import { el } from "@/lib/i18n/translations/el"
 
 const REPO_ROOT = process.cwd()
 const INLINE_ROOTS = ["app", "components", "lib"] as const
+// Ternary arm: a superset of INLINE_ROOTS — runtime .ts code lives in more
+// roots than pair copy ever did. A root deleted from the repo makes the walk
+// throw, so a rename cannot silently shrink the universe.
+const TERNARY_ROOTS = ["app", "components", "lib", "contexts", "hooks", "types", "utils"] as const
 const INVENTORY_PATH = "../fixtures/greek-string-inventory.txt"
 
 // ─── Enumeration: the filesystem decides the universe, not a list ──────────
@@ -138,6 +170,70 @@ export function extractInlinePairs(source: string, fileLabel: string): string[] 
     return out
 }
 
+// ─── Ternary arm: Greek in a ?: branch of a .ts file ───────────────────────
+
+/** Greek and Coptic + Greek Extended — the ternary arm's discriminator. */
+const GREEK_RE = /[\u0370-\u03FF\u1F00-\u1FFF]/
+
+/**
+ * Cheap gate before the (expensive) AST parse, ternary arm. MUST err toward
+ * parsing: raw Greek, or a \u03xx / \u1Fxx / \u{…} escape that would DECODE
+ * to Greek inside a literal (the raw source of an escaped literal contains
+ * no Greek codepoint, so testing the raw text alone would skip it).
+ */
+export function couldContainGreek(source: string): boolean {
+    return GREEK_RE.test(source) || /\\u03|\\u1f|\\u\{/i.test(source)
+}
+
+/** True iff any string/template literal under `node` DECODES to Greek text. */
+function hasGreekLiteral(node: ts.Node): boolean {
+    if (ts.isStringLiteralLike(node) && GREEK_RE.test(node.text)) return true
+    if (ts.isTemplateExpression(node)) {
+        if (GREEK_RE.test(node.head.text)) return true
+        for (const span of node.templateSpans) if (GREEK_RE.test(span.literal.text)) return true
+        // fall through: interpolated expressions may hold literals of their own
+    }
+    return ts.forEachChild(node, hasGreekLiteral) === true
+}
+
+function unparenthesize(n: ts.Expression): ts.Expression {
+    while (ts.isParenthesizedExpression(n)) n = n.expression
+    return n
+}
+
+function isElEnPairObject(n: ts.Node): boolean {
+    if (!ts.isObjectLiteralExpression(n)) return false
+    let hasEl = false
+    let hasEn = false
+    for (const p of n.properties) {
+        const name = propName(p)
+        if (name === "el") hasEl = true
+        if (name === "en") hasEn = true
+    }
+    return hasEl && hasEn
+}
+
+/** Every Greek-bearing ?: branch in one .ts source → normalized branch source. */
+export function extractTernaryGreek(source: string, fileLabel: string): string[] {
+    const sf = ts.createSourceFile(fileLabel, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+    const out: string[] = []
+    const visit = (node: ts.Node) => {
+        if (ts.isConditionalExpression(node)) {
+            for (const branch of [node.whenTrue, node.whenFalse]) {
+                const inner = unparenthesize(branch)
+                // A conditional branch freezes as its own leaves (visited on
+                // their own), and an {el, en} pair branch is already the
+                // inline arm's entry — freezing it twice is only noise.
+                if (ts.isConditionalExpression(inner) || isElEnPairObject(inner)) continue
+                if (hasGreekLiteral(branch)) out.push(branch.getText(sf).replace(/\s+/g, " ").trim())
+            }
+        }
+        ts.forEachChild(node, visit)
+    }
+    visit(sf)
+    return out
+}
+
 // ─── Bundle arm: walk the real module, not its source text ─────────────────
 
 export function collectBundleLeaves(
@@ -178,6 +274,9 @@ interface Universe {
     inlineLines: string[]
     inlineFileCount: number
     perFile: Map<string, number>
+    ternaryLines: string[]
+    ternaryFileCount: number
+    perFileTernary: Map<string, number>
 }
 
 function buildUniverse(): Universe {
@@ -189,25 +288,48 @@ function buildUniverse(): Universe {
 
     const inlineLines: string[] = []
     const perFile = new Map<string, number>()
+    const ternaryLines: string[] = []
+    const perFileTernary = new Map<string, number>()
     let filesEnumerated = 0
-    for (const root of INLINE_ROOTS) {
+    const inlineRootSet = new Set<string>(INLINE_ROOTS)
+    for (const root of TERNARY_ROOTS) {
+        const isInlineRoot = inlineRootSet.has(root)
         for (const abs of listSourceFiles(join(REPO_ROOT, root))) {
             filesEnumerated++
             const source = readFileSync(abs, "utf8")
-            if (!couldContainPair(source)) continue
             const rel = abs.slice(REPO_ROOT.length + 1).split("\\").join("/")
-            const texts = extractInlinePairs(source, rel)
-            if (texts.length === 0) continue
-            perFile.set(rel, texts.length)
             // Sorted WITHIN the file (duplicates kept as repeated lines): a
             // pure reorder of existing copy is invisible; an added, changed
             // or deleted string — including the second copy of a duplicate —
             // is a line-level diff.
-            for (const t of [...texts].sort(byCodeUnit)) inlineLines.push(`inline\t${rel}\t${t}`)
+            if (isInlineRoot && couldContainPair(source)) {
+                const texts = extractInlinePairs(source, rel)
+                if (texts.length > 0) {
+                    perFile.set(rel, texts.length)
+                    for (const t of [...texts].sort(byCodeUnit)) inlineLines.push(`inline\t${rel}\t${t}`)
+                }
+            }
+            if (rel.endsWith(".ts") && !rel.endsWith(".tsx") && couldContainGreek(source)) {
+                const texts = extractTernaryGreek(source, rel)
+                if (texts.length > 0) {
+                    perFileTernary.set(rel, texts.length)
+                    for (const t of [...texts].sort(byCodeUnit)) ternaryLines.push(`ternary\t${rel}\t${t}`)
+                }
+            }
         }
     }
     inlineLines.sort(byCodeUnit)
-    return { filesEnumerated, bundleLines, inlineLines, inlineFileCount: perFile.size, perFile }
+    ternaryLines.sort(byCodeUnit)
+    return {
+        filesEnumerated,
+        bundleLines,
+        inlineLines,
+        inlineFileCount: perFile.size,
+        perFile,
+        ternaryLines,
+        ternaryFileCount: perFileTernary.size,
+        perFileTernary,
+    }
 }
 
 function serializeInventory(u: Universe): string {
@@ -220,14 +342,21 @@ function serializeInventory(u: Universe): string {
         "#",
         "# bundle — leaf values of `el` in lib/i18n/translations/el.ts, by dotted path, JSON-encoded.",
         "# inline — el side of every {el, en} object literal under app/, components/, lib/;",
-        "#          exact initializer source, whitespace collapsed. NOT covered: en copy, Greek",
-        "#          outside these roots, non-pair literals/ternaries (lint:i18n-changed's beat).",
+        "#          exact initializer source, whitespace collapsed.",
+        "# ternary — every ?: branch whose decoded string/template literals contain Greek,",
+        "#           in .ts files under app/, components/, lib/, contexts/, hooks/, types/,",
+        "#           utils/; branch source, whitespace collapsed. Skipped: branches that are",
+        "#           themselves conditionals (chains freeze as their leaves) and {el, en}",
+        "#           pair branches (already inline entries). NOT covered by any arm: en",
+        "#           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and",
+        "#           ??/|| fallbacks, Greek outside these roots.",
         "#",
         `# bundle entries: ${u.bundleLines.length}`,
         `# inline entries: ${u.inlineLines.length} across ${u.inlineFileCount} files`,
+        `# ternary entries: ${u.ternaryLines.length} across ${u.ternaryFileCount} files`,
         "",
     ]
-    return [...header, ...u.bundleLines, ...u.inlineLines, ""].join("\n")
+    return [...header, ...u.bundleLines, ...u.inlineLines, ...u.ternaryLines, ""].join("\n")
 }
 
 // ─── The guard ──────────────────────────────────────────────────────────────
@@ -251,12 +380,26 @@ describe("greek string inventory (§6.1.8 copy freeze)", () => {
         expect(universe.bundleLines.length).toBeGreaterThan(2200)
         expect(universe.inlineLines.length).toBeGreaterThan(3500)
         expect(universe.inlineFileCount).toBeGreaterThan(150)
+        // Ternary arm, measured 2026-08-24: 298 entries across 45 files.
+        expect(universe.ternaryLines.length).toBeGreaterThan(250)
+        expect(universe.ternaryFileCount).toBeGreaterThan(35)
     })
 
     it("reached all three roots — one known copy-heavy file per root is present", () => {
         expect(universe.perFile.get("app/(protected)/agent/AgentClient.tsx") ?? 0).toBeGreaterThan(30)
         expect(universe.perFile.get("components/coverage/RiskProfileWizard.tsx") ?? 0).toBeGreaterThan(20)
         expect(universe.perFile.get("lib/guides/content.ts") ?? 0).toBeGreaterThan(200)
+    })
+
+    it("ternary arm reached both roots that carry entries — and pinned the health-score verdict vocabulary", () => {
+        // lib/agent/health-score.ts returns «Καλή»/«Μέτρια»/«Χρειάζεται
+        // προσοχή» — a verdict vocabulary on a score, the pattern §2.3
+        // prohibits. It is agent-side and out of scope to CHANGE (§12.4),
+        // so the freeze PINS it at exactly 3 entries: editing or extending
+        // that vocabulary now requires a deliberate inventory regen.
+        expect(universe.perFileTernary.get("lib/agent/health-score.ts") ?? 0).toBe(3)
+        expect(universe.perFileTernary.get("lib/email/templates/engagement-drip.ts") ?? 0).toBeGreaterThan(25)
+        expect(universe.perFileTernary.get("app/api/v1/policies/[id]/documents/[docId]/route.ts") ?? 0).toBeGreaterThan(2)
     })
 
     // ── Probes: prove the detector detects, with committed fixtures ────────
@@ -305,6 +448,74 @@ describe("greek string inventory (§6.1.8 copy freeze)", () => {
         ]) {
             expect(couldContainPair(snippet)).toBe(true)
         }
+    })
+
+    // ── Ternary-arm probes: committed fixture, exact multiset ──────────────
+
+    const ternaryProbeSource = readFileSync(
+        join(REPO_ROOT, "tests/fixtures/guard-probes/locale-ternary-greek.ts.txt"),
+        "utf8",
+    )
+
+    it("ternary arm extracts the exact multiset from its committed probe fixture", () => {
+        const got = [...extractTernaryGreek(ternaryProbeSource, "locale-ternary-greek.ts.txt")].sort(
+            byCodeUnit,
+        )
+        const expected = [
+            '"Απλό κείμενο"', // canonical locale ternary, Greek branch only
+            "'Ψευδώνυμο'", // alias condition (isEl) — condition never inspected
+            '"Στα ελληνικά δεύτερο"', // reversed polarity — Greek in whenFalse
+            "`Λήγει σε ${days} ημέρες`", // template WITH interpolation — shape frozen
+            "`Πρώτη γραμμή δεύτερη γραμμή`", // multiline template, whitespace collapsed
+            '"Καλή τιμή"', // chained else-if ternary …
+            '"Μέτρια τιμή"', // … freezes as three leaves …
+            '"Κακή τιμή"', // … never as one mega-entry
+            '"Πρώτη επιλογή"', // parenthesized nested conditional: inner leaves …
+            '"Δεύτερη επιλογή"', // … freeze; the wrapping branch does not
+            'counted(v, "στοιχείο", "στοιχεία")', // call carrying the Greek — whole branch
+            '"Ναι"', // ternary inside a template interpolation
+            '"Αγαπητέ πελάτη"', // both branches Greek (register, not locale) …
+            '"Γεια σου φίλε"', // … both freeze
+            '"\\u0395\\u03BB\\u03BB\\u03AC\\u03B4\\u03B1"', // escaped Greek — decoded text decides
+            '"Απλό κείμενο"', // duplicate of the first entry: both copies survive
+        ].sort(byCodeUnit)
+        expect(got).toEqual(expected)
+    })
+
+    it("ternary arm does not invent entries — plumbing, pairs, conditions, comments, references and fallbacks stay out", () => {
+        const got = extractTernaryGreek(ternaryProbeSource, "locale-ternary-greek.ts.txt")
+        const joined = got.join("\n")
+        expect(got).not.toContain('"el"') // locale codes are ASCII, not copy
+        expect(got).not.toContain('"el_GR"')
+        expect(joined).not.toContain("Ζεύγος εδώ") // {el, en} pair branch — inline arm's entry
+        expect(joined).not.toContain("ναι") // Greek in the CONDITION is data, not copy
+        expect(joined).not.toContain("σχόλιο") // Greek in a comment — literals decide
+        expect(joined).not.toContain("greekConst") // reference-carried Greek: stated limit
+        expect(joined).not.toContain("Εκτός τριαδικού")
+        expect(joined).not.toContain("Εφεδρικό") // ?? fallback is not a ternary: stated limit
+        expect(joined).not.toContain("Άλλο εφεδρικό") // || fallback likewise
+        expect(joined).not.toContain("score >= 60") // no mega-entry for the chain
+        expect(joined).not.toContain("flag ?") // no mega-entry for the parenthesized nest
+        // The pair branch the ternary arm skips is NOT unguarded — the inline
+        // arm extracts it from the very same fixture:
+        expect(extractInlinePairs(ternaryProbeSource, "locale-ternary-greek.ts.txt")).toContain(
+            '"Ζεύγος εδώ"',
+        )
+    })
+
+    it("ternary pre-filter never skips a file the extractor could read — escaped Greek included", () => {
+        expect(couldContainGreek(ternaryProbeSource)).toBe(true)
+        // Escaped-only sources contain no raw Greek codepoint; the gate must
+        // still let them through, and the extractor must decode them.
+        const escaped = 'const a = x ? "\\u0395\\u03BB\\u03BB\\u03AC\\u03B4\\u03B1" : "e"'
+        expect(GREEK_RE.test(escaped)).toBe(false) // proves the case is real
+        expect(couldContainGreek(escaped)).toBe(true)
+        expect(extractTernaryGreek(escaped, "escaped.ts")).toEqual([
+            '"\\u0395\\u03BB\\u03BB\\u03AC\\u03B4\\u03B1"',
+        ])
+        expect(couldContainGreek('x ? "\\u1F08" : "e"')).toBe(true)
+        // A file with no Greek and no escape is legitimately skipped.
+        expect(couldContainGreek('const x = flag ? "yes" : "no"')).toBe(false)
     })
 
     it("bundle walker records every leaf and refuses leaves it cannot freeze", () => {
