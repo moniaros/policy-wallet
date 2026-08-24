@@ -3,7 +3,7 @@
 Questions only the human may answer (§12.1) and items blocked under §12.2.
 A halt blocks the listed items, not the run, unless marked `blocks: RUN`.
 
-**Open: 0.** **Answered: 3** (H-001 = C, H-002 = B). H-003 is not yet raisable — it needs the Phase 2 specs.
+**Open: 3** (H-005, H-006, H-007). **Answered: 3** (H-001 = C, H-002 = B, H-004 = B). §12.1.6 (price intelligence) waits for the Phase 2 specs.
 
 ---
 
@@ -317,3 +317,114 @@ on a compliance surface is a §12.2 change regardless of who authorised the §12
 in `docs/STATUS.md` for that track.
 
 Gate after: tsc, lint, i18n, utf8 clean; 5076/5076 tests.
+
+
+---
+
+## H-005 — Should the second score («Πόσο καλά σας γνωρίζουμε») exist?
+
+date: 2026-08-24 · raised_by: Product-Truth (Opus 5)
+blocks: **V2-P1-03 only.** Removing the *verdict* is Phase 1 and proceeds without you; whether the
+**metric** survives is §12.1.2 and is yours.
+status: **open**
+
+### What it renders today
+
+`components/risk-dna/RiskIntelligenceView.tsx:123-131` — the first card on the surface:
+
+| element | code |
+|---|---|
+| kicker «ΠΟΣΟ ΚΑΛΑ ΣΑΣ ΓΝΩΡΙΖΟΥΜΕ» | `:123`, `.pw-kicker` (CSS-uppercased — a literal grep misses it) |
+| the number, **`text-3xl font-bold`** — the largest element in the card | `:128-130` |
+| a verdict beside it | `:104-111` — «Καλή εικόνα» / «Μερική εικόνα» / «Περιορισμένη εικόνα» / «Άγνωστη» |
+| colour by band | `BAND_TONE[health.band]` on **both** number and label |
+
+**What it already gets right,** and should survive whatever you decide: `health.index === null`
+renders **«—», not 0**, and the unknown band says «Άγνωστη». That is §2.5 done correctly, and it is
+better than the protection score managed before P1-01.
+
+### Why it breaches §2.4 regardless
+
+It is a **second headline number with a verdict**, on a product that has just removed its first one
+(H-001 = C). «Καλή εικόνα» is a judgement about *the product's own knowledge*, rendered in the
+grammar of a judgement about *the customer*. Colour is a carrier on both elements.
+
+And there is a specific dishonesty the fixture exposed: for a household the product knows nothing
+about — income null, dependants unset — `protectionScore` returned **94 with `indeterminate: true`**
+while the health index correctly returned `null`/unknown. Two metrics describing the same emptiness
+disagree, and the more confident one is wrong.
+
+### Options
+
+- **A — remove the metric entirely.** Simplest, consistent with H-001 = C. Loses a genuinely useful
+  internal signal.
+- **B — keep the number, remove the verdict and the colour.** A bare figure under a plain kicker.
+  Cheapest, but a 0-100 number at `text-3xl` still reads as a grade whatever the label says.
+- **C — express it as plain facts, not a score.** «Ξέρουμε 3 περιουσιακά στοιχεία και 2 εξαρτώμενα
+  μέλη· δεν ξέρουμε το εισόδημά σας.» — §2.4's own suggested wording. Same information, no grade,
+  and it tells the customer *what to fix* rather than how they rate.
+
+**Recommendation: C.** It is the treatment that worked on the dashboard for H-001, it converts
+telemetry into an actionable prompt, and it is the only option where the "unknown" case is as
+legible as the "known" one. B keeps the artefact that makes the surface feel like a report card.
+
+answer: *(awaiting)*
+
+---
+
+## H-006 — The AI advisor's advice boundary (IDD Art. 20)
+
+date: 2026-08-24 · raised_by: Product-Truth (Opus 5)
+blocks: **§8 implementation only.** Comprehension and the demands-and-needs record can be specified
+now; nothing ships until this is answered.
+status: **open**
+
+### The question
+§8.2 draws the line at: document **comprehension** and a **demands-and-needs record** are
+supportable; output stating what cover a customer *should* buy, what limit or deductible they
+*should* hold, or that a contract is *suitable*, is a personal recommendation under IDD Article 20
+and engages the demands-and-needs regime supervised by the Τράπεζα της Ελλάδος.
+
+I cannot decide where that line sits in Greek law, and neither should the run.
+
+### What I need decided
+1. Is a **factual comparison** — "your stated requirement is X, your current policy says Y" —
+   inside the line, given it does not conclude in an instruction to act?
+2. May the record be **routed to a human intermediary** who makes the recommendation, and does that
+   routing itself constitute intermediation?
+3. What disclosure must appear on every AI output, and in what register?
+
+### Why it is worth resolving rather than avoiding
+A completed demands-and-needs record is **exactly what an intermediary needs and rarely has**. The
+regulatory constraint, answered, becomes the product's asset rather than its ceiling.
+
+**Recommendation:** build comprehension first — it is the bulk of the value, carries no advice risk,
+and does not depend on this answer. Take questions 1–3 to the DPO and intermediary-compliance track
+before the interview ships.
+
+answer: *(awaiting)*
+
+---
+
+## H-007 — Article 9 consent for the advisor interview
+
+date: 2026-08-24 · raised_by: Product-Truth (Opus 5)
+blocks: the §8.2 interview only.
+status: **open**
+
+The interview as described asks about **health, income and family** to establish cover needs.
+Health is Article 9 special-category data; income and dependants are ordinary but sensitive.
+
+§9.5's tier test already answers most of it — *can the app deliver the value without ever learning
+the answer?* — and §9.5 puts **Tier C (health) out of this run entirely.** H-007 is whether §8's
+interview may cross that line, which §9.5 does not govern.
+
+**What needs deciding:** which categories may be collected · on what lawful basis, given consent for
+Art. 9 must be explicit and separable from the AI-processing consent that already exists ·
+retention · and whether the record may be exported to an intermediary, which is a disclosure.
+
+**Recommendation:** specify the interview to Tier A/B only and **defer every health question** to a
+later decision. That is buildable now, needs no Art. 9 basis, and still produces a record worth
+having. It also avoids opening a second Article 9 front alongside the pending agent-side decision.
+
+answer: *(awaiting)*
