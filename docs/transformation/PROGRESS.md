@@ -434,3 +434,74 @@ the owner.
 Halts open: **0**. Suite 5090 green. 30 run commits. Phase 0 gate still failed on its one
 condition; T-016b/c in flight to close it. Phase 1 opens the moment it passes, with P1-01 now
 carrying the expanded in-product scope.
+
+
+---
+---
+
+# PW-MOBILE-TRANSFORM-02 — cold-start state, 2026-08-24
+
+**Read this section first.** v1's instruction is superseded; its committed work is inherited
+(D-018). Everything below reflects v2.
+
+## Where the run is
+
+**v2 Phase 0 extension: COMPLETE**, tagged `pw-transform-v2-phase-0-complete`.
+**v2 Phase 1: OPEN**, serial (§1). `V2-P1-07` in flight; 9 items behind it.
+**Halts open: 3** — H-005 (second score), H-006 (IDD advice boundary), H-007 (Art. 9 consent).
+None blocks Phase 1. **Answered: 3** — H-001 = C, H-002 = B, H-004 = B.
+**Tests: 5263.** `gap-detection.ts` hash unchanged from run start. Dispatch stub 6/6.
+
+## What exists on disk
+
+- **14 baselines** in `docs/transformation/evidence/` — v1's 11 plus `/branches`, `/timeline`,
+  `/insights/risk-profile`.
+- **`LEDGER.md`: 109 capabilities**, monetization surfaces **5** (§10.1 forbids that rising).
+- **`SURFACES.md` is load-bearing** — `tests/unit/route-ownership-surfaces.test.ts` parses its route
+  tables. A gap in it is a hole in a guard, not a documentation defect.
+- **~20 guards**, each demonstrated failing first.
+- Outbound is clean on all three metrics: **score 0 · tokens 0 · Latin 0**.
+
+## The four defects the v2 extension found that nobody had listed
+
+1. **`readCoverageFacts` never reads `vehicle.insuredValue`** → «ΑΓΝΩΣΤΟ» is the default for every
+   motor policy, in a market where motor cover is compulsory. `V2-P1-07`, in flight.
+2. **A mirrored proxy prefix collision** — `/wallet/[id]/review` bounced agents off an agent-only
+   page. Fixed with the reported one; both came from a single `startsWith`.
+3. **`/timeline` bypasses `policy-identity.ts`** — D-021: the guard forbids a *spelling* where the
+   invariant demands a *routing rule*.
+4. **A plural-agreement bug of the class `11ec4987` fixed** — the commit this run is based on.
+
+## The pattern worth carrying — how guards fail here
+
+Five distinct modes, each found in this run rather than theorised:
+
+| mode | instances |
+|---|---|
+| **universe too small** | `score-containment` never walked `lib/` (D-005); the equivalence guard sat outside the CI path (D-009) |
+| **adoption incomplete** | `NON_LIVE_POLICY_STATUSES` reached 3 of 5 call sites (D-007) |
+| **assertion weaker than the invariant** | score allowlist permitted two locations where §2.2 permits one; the sentinel guard forbids literals where the rule is "route through the primitive" (D-021) |
+| **the check cannot see the behaviour** | `SURFACES.md` verified routes *exist*; `/coverage` exists and silently fails to redirect |
+| **the reader cannot see the file** | a raw NUL byte made a source file binary to grep — valid UTF-8, so `lint:utf8` passed (D-016) |
+
+**And four times a fact I recorded as *settled* was wrong in mechanism** — D-002 (dedupeKey suffix),
+D-012 (stale `data/current`), D-015 (key-name defaults), D-017 (`maxPerDay = 0` deferred rather than
+skipped). Settled means do not relitigate the *conclusion*; it never means do not check the
+*mechanism*.
+
+## Verification habits that earned their place
+
+- **Assert a probe changed rendered behaviour**, not merely that a file changed. No-op probes
+  produced false greens four times, including inside a probe harness's own assertions.
+- **Search case-insensitively and account for `text-transform`** (D-019) — v2 cites rendered
+  strings; a literal grep nearly refuted two real defects.
+- **A refutation that leaves live code unexplained is incomplete** (D-020) — a branch exists, so
+  something reaches it.
+- **Audit every Greek freeze regeneration line by line.** It has already caught one item's copy
+  changes and proven them interpolation-only.
+
+## Next three actions
+1. Review **V2-P1-07** when it reports — check the new motor state is *correct*, not merely no
+   longer «ΑΓΝΩΣΤΟ».
+2. **V2-P1-02** (unowned lines, including the email path at `mail-templates.ts:132`).
+3. **V2-P1-06** + the D-021 guard gap, together — the fix and the reason it was invisible.
