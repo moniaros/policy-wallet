@@ -16,13 +16,15 @@ export interface CoverageMapEntry {
 const DOT_STYLES: Record<BranchTileState, string> = {
     covered: "bg-primary dark:bg-mint",
     attention: "bg-amber-500",
-    gap: "bg-rose-500",
+    // §2.2: not owning a product is not a finding — this dot was rose-500.
+    // The state's meaning is carried by its aria-label text, not the colour.
+    not_held: "bg-black/30 dark:bg-white/30",
     neutral: "bg-black/25 dark:bg-white/10",
 }
 
 /**
  * Compact branch coverage map — one chip per insurance branch with its
- * covered / attention / gap / neutral dot, linking to the branch page.
+ * covered / attention / not-held / neutral dot, linking to the branch page.
  * Server component; entries and copy arrive pre-resolved (states derive
  * from lib/insurance/branch-page buildBranchOverview).
  */
@@ -73,7 +75,10 @@ export function BranchCoverageMap({
                             // The state is already carried by the dot, which has its own
                             // aria-label, so de-emphasise the SURFACE and leave the text
                             // at full strength.
-                            entry.state === "neutral" && "border-dashed bg-black/[0.02] dark:bg-white/[0.03]"
+                            // not_held shares the empty-slot surface: a line the
+                            // user does not hold reads as an empty slot, not an alarm.
+                            (entry.state === "neutral" || entry.state === "not_held") &&
+                                "border-dashed bg-black/[0.02] dark:bg-white/[0.03]"
                         )}
                     >
                         <entry.icon className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" aria-hidden />

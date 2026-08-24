@@ -371,7 +371,7 @@ Baseline: `evidence/branches/BASELINE.md` (1,981px @320, 31 containers, depth 2,
 | B-02 | See how many policies you hold per line | fact | **KEEP** | the honest half of this surface | — |
 | B-03 | Read a one-line tagline per line | fact | **KEEP, FIX** | 8 of 9 clip mid-word at 320px (`line-clamp-2`) — Phase 3 primitive, not a local override | Phase 4 |
 | B-04 | Open a line to see what you hold | action | **KEEP** | `href` per card | — |
-| B-05 | See «Πιθανό κενό» on a line | fact | **REMOVE for unowned lines** | §2.2 — life, pet and cyber render it with **zero** policies. Owned lines may keep a review-framed treatment | V2-P1-02 |
+| B-05 | See «Πιθανό κενό» on a line | fact | **DONE — register changed, information kept** | now «Χωρίς ασφαλιστήριο», neutral. A *lapsed* policy still reads as a finding | V2-P1-02 ✓ |
 | B-06 | See `business` among consumer lines | fact | **DEFER — likely unintended** | `contentTier: 'rich'` with no B2C/B2B filter. Needs a product decision, not a fix | Phase 2 |
 
 **Ledger note on B-05.** This is the row that matters. The card's *structure* is fine — the defect
@@ -418,7 +418,7 @@ Baseline: `evidence/risk-profile/BASELINE.md`. Unreachable to policyholders unti
 |---|---|---|---|---|---|
 | R-01 | See a risk graph of what your life is exposed to | fact | **KEEP** | «Η προστασία μου», *ανά κίνδυνο* lens (§4.2) | Phase 2 |
 | R-02 | See per-risk protection state | fact | **KEEP, FIX** | `unknown` is currently the DEFAULT for motor (V2-P1-07), so the axis is uninformative until the field is read | V2-P1-07 |
-| R-03 | See «Απροστάτευτο» on lines you do not hold | fact | **REMOVE** | §2.2 — 4 rows with zero matching policies | V2-P1-02 |
+| R-03 | See «Απροστάτευτο» on lines you do not hold | fact | **DONE — own register** | counted as «Χωρίς ασφαλιστήριο», never among findings | V2-P1-02 ✓ |
 | R-04 | See the coverage-completeness score + verdict | fact | **PENDING H-005** | verdict removed regardless; metric's fate is the owner's | V2-P1-03 |
 | R-05 | Read the household summary | fact | **KEEP, REWRITE** | guilt register (§2.13) + a plural-agreement bug, same file | V2-P1-04, V2-P1-09 |
 | R-06 | See what is being monitored, and expiry counts | fact | **KEEP, RECONCILE** | 45-day window here vs 30-day on the dashboard | V2-P1-10 |

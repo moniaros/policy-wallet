@@ -571,7 +571,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     const stateLabels = {
         covered: t.branches.statusCovered,
         attention: t.branches.statusAttention,
-        gap: t.branches.statusGap,
+        not_held: t.branches.statusNotHeld,
         neutral: t.branches.statusNeutral,
     } as const
     const coverageMapEntries = buildBranchOverview(policies, cachedScore?.expectedLines ?? []).map((entry) => ({

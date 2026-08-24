@@ -1538,7 +1538,11 @@ export const el = {
         viewBranch: 'Δες τον κλάδο',
         statusCovered: 'Καλυμμένο',
         statusAttention: 'Χρειάζεται προσοχή',
-        statusGap: 'Πιθανό κενό',
+        // §2.2: a branch with no policy is a product the customer does not
+        // own — «Πιθανό κενό» claimed exposure they never bought into. A
+        // neutral statement of fact instead; the recommendation surfaces
+        // carry any advice, plainly labelled.
+        statusNotHeld: 'Χωρίς ασφαλιστήριο',
         statusNeutral: 'Δεν έχει αξιολογηθεί',
         onePolicy: '1 ασφαλιστήριο',
         policyCountN: '{count} ασφαλιστήρια',

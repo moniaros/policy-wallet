@@ -19,6 +19,8 @@ export interface GraphRiskView {
     riskId: string
     lineOfBusiness: string
     state: RiskState
+    /** Wallet policies of any status in this line — see GraphRisk.heldInLine. */
+    heldInLine: number
     anchors: Bilingual[]
     name: Bilingual
     evidence: Array<{ kind: string; statement: Bilingual }>
@@ -46,6 +48,11 @@ export function presentRiskGraph(
             riskId: risk.riskId,
             lineOfBusiness: risk.lineOfBusiness,
             state: risk.state,
+            // A fact carried through, not a decision made here: the panel needs
+            // it to render an unowned line as *not held* rather than as a
+            // finding (§2.2), and deriving ownership in render code is exactly
+            // the second-rules-engine failure this header forbids.
+            heldInLine: risk.heldInLine,
             // A risk whose assessment vanished still renders — with its id
             // rather than a blank row. Silently dropping it would hide an
             // unprotected exposure, which is the one failure mode this whole

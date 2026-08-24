@@ -379,7 +379,7 @@ describe("the protection score reflects only relevant risks", () => {
             })),
             score.expectedLines
         )
-        const gapTiles = tiles.filter((t) => t.state === "gap").map((t) => t.branch.id)
+        const gapTiles = tiles.filter((t) => t.state === "not_held").map((t) => t.branch.id)
         expect(gapTiles).not.toContain("cyber")
         expect(gapTiles).not.toContain("travel")
         expect(gapTiles).not.toContain("pet")

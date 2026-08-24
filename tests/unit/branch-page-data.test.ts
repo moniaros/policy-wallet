@@ -61,10 +61,15 @@ describe('branch page data — upcomingRenewals', () => {
 
 describe('branch page data — deriveBranchState', () => {
     it('prioritises attention > covered > gap > neutral', () => {
-        expect(deriveBranchState({ hasActivePolicy: true, needsAttention: true, expected: true })).toBe('attention')
-        expect(deriveBranchState({ hasActivePolicy: true, needsAttention: false, expected: true })).toBe('covered')
-        expect(deriveBranchState({ hasActivePolicy: false, needsAttention: false, expected: true })).toBe('gap')
-        expect(deriveBranchState({ hasActivePolicy: false, needsAttention: false, expected: false })).toBe('neutral')
+        expect(deriveBranchState({ hasActivePolicy: true, needsAttention: true, expected: true, hasAnyPolicy: true })).toBe('attention')
+        expect(deriveBranchState({ hasActivePolicy: true, needsAttention: false, expected: true, hasAnyPolicy: true })).toBe('covered')
+        // §2.2: an expected line with NOTHING in the wallet is not held —
+        // never a finding about a product the customer does not own.
+        expect(deriveBranchState({ hasActivePolicy: false, needsAttention: false, expected: true, hasAnyPolicy: false })).toBe('not_held')
+        // …but a wallet that HOLDS a (cancelled) policy in the line is an
+        // owned product with dead cover: attention, not not-held.
+        expect(deriveBranchState({ hasActivePolicy: false, needsAttention: false, expected: true, hasAnyPolicy: true })).toBe('attention')
+        expect(deriveBranchState({ hasActivePolicy: false, needsAttention: false, expected: false, hasAnyPolicy: false })).toBe('neutral')
     })
 })
 
@@ -89,7 +94,7 @@ describe('branch page data — buildBranchOverview', () => {
 
     it('marks expected-but-missing TOP-LEVEL lines as gaps', () => {
         const overview = buildBranchOverview([], ['health', 'income_protection'])
-        expect(overview.find((entry) => entry.branch.id === 'health')!.state).toBe('gap')
+        expect(overview.find((entry) => entry.branch.id === 'health')!.state).toBe('not_held')
 
         // A child-branch EXPECTATION deliberately does NOT roll up, even though a
         // child-branch POLICY does (see the test above). The asymmetry is the

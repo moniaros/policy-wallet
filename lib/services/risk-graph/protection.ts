@@ -171,15 +171,21 @@ function anchorsFor(graph: PersonalRiskGraph, riskId: string): string[] {
         .map((n) => n.id)
 }
 
-/** Policies whose branch family answers this line. */
-function policiesFor(line: string, alsoLines: string[], policies: ProtectingPolicy[]): ProtectingPolicy[] {
+/**
+ * Policies whose branch family answers this line — of ANY lifecycle status.
+ *
+ * This is the OWNERSHIP question (§2.2): does the customer hold a product in
+ * this line at all? Liveness is a separate question, filtered by the caller —
+ * an expired motor policy is still a held product, and the distinction is
+ * what lets presentation render "you do not hold this" differently from
+ * "what you hold no longer covers you".
+ */
+function policiesInLine(line: string, alsoLines: string[], policies: ProtectingPolicy[]): ProtectingPolicy[] {
     const accepted = new Set<string>()
     for (const lob of [line, ...alsoLines]) {
         for (const id of getBranchFamily(lob.toLowerCase())) accepted.add(id)
     }
-    return policies.filter(
-        (p) => p.status === "active" && accepted.has(normalizeBranch(p.lineOfBusiness).id)
-    )
+    return policies.filter((p) => accepted.has(normalizeBranch(p.lineOfBusiness).id))
 }
 
 // ── Dimensions ───────────────────────────────────────────────────────
@@ -504,7 +510,8 @@ export function bindRisksToGraph(
         if (assessment.applicability !== "applicable") continue
 
         const anchorIds = anchorsFor(graph, assessment.riskId)
-        const matched = policiesFor(assessment.lineOfBusiness, assessment.coveredBy, policies)
+        const inLine = policiesInLine(assessment.lineOfBusiness, assessment.coveredBy, policies)
+        const matched = inLine.filter((p) => p.status === "active")
         const hasCover = matched.length > 0
 
         // Only questions that are actually live become dimensions. A dimension
@@ -542,6 +549,7 @@ export function bindRisksToGraph(
             dimensions,
             evidence: buildEvidence(assessment, graph, anchorIds, matched, dimensions, shortOfAnchors),
             protectedBy: matched.map((p) => p.id),
+            heldInLine: inLine.length,
         })
     }
 

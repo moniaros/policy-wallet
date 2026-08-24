@@ -17,10 +17,18 @@
  *   statements — "we cannot tell" versus "nothing covers this" — and rendering
  *   them alike is the defect that made an unread sum insured look like adequate
  *   cover.
+ * - **A line the customer does not hold is *not held*, never a finding**
+ *   (§2.2). «Απροστάτευτο» over a pet line whose owner has simply never bought
+ *   pet cover claims exposure for a product they do not own. The split is a
+ *   FACT, not a heuristic: `heldInLine` counts wallet policies of any status
+ *   in the risk's line, so an expired motor policy — a held product whose
+ *   cover lapsed — stays a red finding, while a never-bought line renders in
+ *   a neutral register, in words («Χωρίς ασφαλιστήριο»), and is never counted
+ *   among the findings. Guard: tests/unit/unowned-lines-not-held.test.tsx.
  */
 
 import { useState } from "react"
-import { AlertTriangle, CircleHelp, ShieldCheck, ShieldAlert } from "lucide-react"
+import { AlertTriangle, CircleDashed, CircleHelp, ShieldCheck, ShieldAlert } from "lucide-react"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import type { RiskState } from "@/lib/services/risk-graph/types"
 import type { GraphRiskView } from "@/lib/services/risk-graph/present"
@@ -31,9 +39,28 @@ interface RiskGraphPanelProps {
     language: "en" | "el"
 }
 
-const STATE_ORDER: RiskState[] = ["unprotected", "partially_protected", "unknown", "protected"]
+/**
+ * What the panel renders is the engine's state REFINED by ownership: an
+ * `unprotected` risk with no policy of any status in its line is presented as
+ * `not_held`. The refinement lives here, from facts the engine supplies —
+ * never re-derived from policy data in render code.
+ */
+type PanelState = RiskState | "not_held"
 
-const STATE_STYLES: Record<RiskState, { chip: string; icon: typeof ShieldCheck }> = {
+const STATE_ORDER: PanelState[] = [
+    "unprotected",
+    "partially_protected",
+    "unknown",
+    // After every statement about cover the customer HAS, before "fine":
+    // not-held is information, not a problem to rank among problems.
+    "not_held",
+    "protected",
+]
+
+const presentationState = (risk: GraphRiskView): PanelState =>
+    risk.state === "unprotected" && risk.heldInLine === 0 ? "not_held" : risk.state
+
+const STATE_STYLES: Record<PanelState, { chip: string; icon: typeof ShieldCheck }> = {
     unprotected: {
         chip: "border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300",
         icon: AlertTriangle,
@@ -52,16 +79,23 @@ const STATE_STYLES: Record<RiskState, { chip: string; icon: typeof ShieldCheck }
         chip: "border-primary/25 bg-primary/8 text-primary dark:border-primary/30 dark:bg-primary/12 dark:text-mint",
         icon: ShieldCheck,
     },
+    not_held: {
+        // Neutral on purpose (§2.2): not owning a product is not a gap, so
+        // nothing here may read as a finding — no red, no alarm icon. The
+        // label carries the distinction in words, never colour alone.
+        chip: "border-black/15 bg-black/5 text-black/70 dark:border-white/20 dark:bg-white/8 dark:text-white/75",
+        icon: CircleDashed,
+    },
 }
 
 export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps) {
     const lang = language
     const t = (el: string, en: string) => (lang === "el" ? el : en)
-    const [filter, setFilter] = useState<RiskState | "all">("all")
+    const [filter, setFilter] = useState<PanelState | "all">("all")
 
     if (risks.length === 0) return null
 
-    const stateLabel = (state: RiskState): string => {
+    const stateLabel = (state: PanelState): string => {
         switch (state) {
             case "protected":
                 return t("Προστατευμένο", "Protected")
@@ -71,12 +105,16 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                 return t("Απροστάτευτο", "Unprotected")
             case "unknown":
                 return t("Άγνωστο", "Unknown")
+            case "not_held":
+                // A statement of fact in a neutral register, not a verdict:
+                // the customer holds no policy in this line.
+                return t("Χωρίς ασφαλιστήριο", "Not held")
         }
     }
 
     const counts = STATE_ORDER.map((state) => ({
         state,
-        count: risks.filter((r) => r.state === state).length,
+        count: risks.filter((r) => presentationState(r) === state).length,
     })).filter((entry) => entry.count > 0)
 
     // Greek inflects for number, so "1 περιουσιακά στοιχεία" is simply wrong in
@@ -102,9 +140,9 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
     // something they actually told us is in there.
     const knowsSomething = parts.length > 0
 
-    const visible = filter === "all" ? risks : risks.filter((r) => r.state === filter)
+    const visible = filter === "all" ? risks : risks.filter((r) => presentationState(r) === filter)
     const ordered = [...visible].sort(
-        (a, b) => STATE_ORDER.indexOf(a.state) - STATE_ORDER.indexOf(b.state)
+        (a, b) => STATE_ORDER.indexOf(presentationState(a)) - STATE_ORDER.indexOf(presentationState(b))
     )
 
     return (
@@ -147,7 +185,8 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
 
             <ul className="space-y-2.5">
                 {ordered.map((risk) => {
-                    const styles = STATE_STYLES[risk.state]
+                    const rowState = presentationState(risk)
+                    const styles = STATE_STYLES[rowState]
                     const StateIcon = styles.icon
                     const BranchIcon = getBranchIcon(risk.lineOfBusiness)
 
@@ -183,7 +222,7 @@ export function RiskGraphPanel({ risks, summary, language }: RiskGraphPanelProps
                                                 className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-kicker font-semibold uppercase tracking-wider ${styles.chip}`}
                                             >
                                                 <StateIcon className="h-2.5 w-2.5" aria-hidden="true" />
-                                                {stateLabel(risk.state)}
+                                                {stateLabel(rowState)}
                                             </span>
                                         </span>
                                     </span>

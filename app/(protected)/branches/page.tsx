@@ -43,7 +43,7 @@ export default async function BranchesPage() {
     const stateLabels = {
         covered: t.branches.statusCovered,
         attention: t.branches.statusAttention,
-        gap: t.branches.statusGap,
+        not_held: t.branches.statusNotHeld,
         neutral: t.branches.statusNeutral,
     } as const
 

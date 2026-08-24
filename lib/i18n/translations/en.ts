@@ -1527,7 +1527,7 @@ export const en: TranslationKeys = {
         viewBranch: 'View branch',
         statusCovered: 'Covered',
         statusAttention: 'Needs attention',
-        statusGap: 'Possible gap',
+        statusNotHeld: 'Not held',
         statusNeutral: 'Not assessed',
         onePolicy: '1 policy',
         policyCountN: '{count} policies',

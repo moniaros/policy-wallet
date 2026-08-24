@@ -28,9 +28,14 @@ const STATE_STYLES: Record<BranchTileState, { pill: string; dot: string }> = {
         pill: 'bg-amber-50 text-amber-700 dark:bg-amber-900/25 dark:text-amber-300',
         dot: 'bg-amber-500',
     },
-    gap: {
-        pill: 'bg-rose-50 text-rose-700 dark:bg-rose-900/25 dark:text-rose-300',
-        dot: 'bg-rose-500',
+    not_held: {
+        // §2.2: an unowned line is *not held*, never a finding. This pill was
+        // rose («Πιθανό κενό») — a red chip claiming exposure for a product
+        // the customer never bought. The register is now neutral and the
+        // distinction from 'neutral' (not assessed) is carried by the LABEL
+        // text, never by colour alone (WCAG 1.4.1).
+        pill: 'bg-black/5 text-black/70 dark:bg-white/10 dark:text-white/85',
+        dot: 'bg-black/30 dark:bg-white/30',
     },
     neutral: {
         // Pixel audit measured the old text-black/55/text-white/60 at 3.15:1 in

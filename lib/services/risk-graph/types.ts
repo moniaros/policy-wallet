@@ -229,4 +229,16 @@ export interface GraphRisk {
     evidence: Evidence[]
     /** Policies answering it, wholly or in part. */
     protectedBy: string[]
+    /**
+     * Policies of ANY lifecycle status in the wallet whose line answers this
+     * risk — the ownership fact, distinct from `protectedBy` (live cover).
+     *
+     * §2.2: "nothing covers this" and "you do not hold this product" are
+     * different statements, and presentation must be able to tell them apart
+     * from a fact rather than a heuristic. `heldInLine > 0` with an
+     * `unprotected` state means a HELD product whose cover lapsed — a
+     * finding; `heldInLine === 0` means the line is simply not held — a
+     * neutral statement, never a red chip.
+     */
+    heldInLine: number
 }

@@ -87,7 +87,9 @@ describe('container opacity does not dim informational text', () => {
         const src = readFileSync('components/branches/BranchCoverageMap.tsx', 'utf-8')
         // Match the applied class, not the comment that explains the old bug.
         expect(src).not.toMatch(/"[^"\n]*opacity-70[^"\n]*"/)
-        expect(src).toMatch(/entry\.state === "neutral" && "border-dashed/)
+        expect(src).toMatch(
+            /\(entry\.state === "neutral" \|\| entry\.state === "not_held"\) &&[\s\n]*"border-dashed/
+        )
     })
 
     it('the EmptyState preview is not dimmed — it teaches what the feature shows', () => {

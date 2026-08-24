@@ -17,7 +17,13 @@ export interface BranchPolicyFacts {
     endDate: Date | null
 }
 
-export type BranchTileState = 'covered' | 'attention' | 'gap' | 'neutral'
+/**
+ * `not_held` replaced `gap` (§2.2): a branch where the profile expects cover
+ * but the wallet holds NO policy is a product the customer does not own, and
+ * not owning a product is not a gap. The state renders in a neutral register
+ * («Χωρίς ασφαλιστήριο»), never as a finding.
+ */
+export type BranchTileState = 'covered' | 'attention' | 'not_held' | 'neutral'
 
 // Callers pass the LIFECYCLE status (effectivePolicyStatus), never the stale
 // stored string: a lapsed policy is 'expired' here, so the tile shows amber
@@ -60,11 +66,22 @@ export function deriveBranchState(args: {
     hasActivePolicy: boolean
     needsAttention: boolean
     expected: boolean
+    /**
+     * Whether ANY policy — active, lapsed or cancelled — exists in this
+     * branch. Ownership is what separates `not_held` (a product never bought;
+     * neutral register) from a held product whose cover ended (a finding).
+     */
+    hasAnyPolicy: boolean
 }): BranchTileState {
     if (args.needsAttention) return 'attention'
     if (args.hasActivePolicy) return 'covered'
-    if (args.expected) return 'gap'
-    return 'neutral'
+    if (!args.expected) return 'neutral'
+    // Expected line, no active cover. If the wallet holds a policy here at
+    // all (only reachable with cancelled-status rows — expired ones already
+    // returned 'attention' above), the customer OWNS the product and its dead
+    // cover is worth their attention. Only a wallet with nothing in the
+    // branch is 'not_held'.
+    return args.hasAnyPolicy ? 'attention' : 'not_held'
 }
 
 export interface BranchOverviewEntry {
@@ -78,7 +95,7 @@ export interface BranchOverviewEntry {
  * The branch tiles to display: every rich-content branch, plus any top-level
  * branch where the user holds policies or the protection score expects a
  * line. States derive from the cached score's expectedLines (may be empty
- * when no score has ever been computed — tiles then never show 'gap').
+ * when no score has ever been computed — tiles then never show 'not_held').
  */
 export function buildBranchOverview(
     policies: BranchPolicyFacts[],
@@ -130,6 +147,7 @@ export function buildBranchOverview(
                 hasActivePolicy: activeCount > 0,
                 needsAttention,
                 expected: expectedTopLevel.has(branch.id),
+                hasAnyPolicy: branchPolicies.length > 0,
             }),
             policyCount: branchPolicies.length,
             activeCount,

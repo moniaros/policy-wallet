@@ -825,7 +825,7 @@ owner: Implementation (Fable 5) · file_boundary: `proxy.ts`, `tests/unit/`
       class for `/dashboard`; the guard must catch the next one too
 - [ ] demonstrate failing first, with the probe proven to exercise the routing decision
 
-### V2-P1-02 — unowned lines are not findings (§2.2) · `todo`
+### V2-P1-02 — unowned lines are not findings (§2.2) · `done` — REVIEW PASSED
 owner: Implementation (Fable 5) · blocked_by: V2-P0-FIX
 `RiskGraphPanel.tsx:71` «Απροστάτευτο» · `lib/wallet/gap-report.ts:592,599` «Πιθανό κενό» ·
 **`lib/mail-templates.ts:132` puts «Πιθανό κενό» in email.** Unowned lines render as *not held*,
@@ -1095,3 +1095,50 @@ that is a `requiredMinimum` extension — a separate item, not a silent widening
 My first probe asserted on a 2,000-character window rather than counting occurrences, so the file
 was never written and the green was meaningless. Caught because the assertion threw. Re-run with a
 before/after count.
+
+
+---
+
+## V2-P1-02 — Adversarial review: **PASS**
+
+An unowned line now renders «Χωρίς ασφαλιστήριο» on a neutral gray surface with a dashed-circle
+glyph, keeping its name and anchors and its evidence line — «Κανένα ενεργό ασφαλιστήριο στο
+πορτοφόλι σας δεν καλύπτει αυτόν τον κίνδυνο.» The filter strip counts them under **their own
+register**: «Όλα 6 | Άγνωστο 2 | Χωρίς ασφαλιστήριο 4». No «Απροστάτευτο», no red, and the
+information the ledger required kept (B-05, R-03) is intact.
+
+### The discrimination is ownership, and it is proven by the case that would break a copy-only fix
+
+`GraphRisk.heldInLine` counts wallet policies **of any lifecycle status** whose branch family
+answers the risk's line. `not_held` derives only from `state === "unprotected" && heldInLine === 0`.
+
+The test that matters: **a held-but-lapsed line stays a red finding.** An expired motor policy
+yields `unprotected` with `heldInLine === 1` and still renders «Απροστάτευτο», beside pet rendering
+«Χωρίς ασφαλιστήριο» — *"an expired policy is a held product; its exposure is a finding, not a
+not-held."*
+
+Getting that backwards would have been the dangerous outcome: someone driving on expired cover
+reclassified as merely not owning motor insurance. §2.2 removes a false claim; it must not suppress
+a true one.
+
+**Proven by me:** disabling the `heldInLine === 0` derivation turned **4 tests red**, including the
+lapsed-policy case and the WCAG 1.4.1 plain-text assertion. Reverted → 14/14.
+
+### The ownership test found a third site and cleared two others
+- **Found:** `components/branches/BranchCoverageMap.tsx` on the **dashboard** — same state and label,
+  rose dot on a zero-policy branch. Fixed through the shared mechanism, not separately.
+- **Cleared:** `PolicyWalletWidget.tsx` and `AudienceTabs.tsx` — the demo customer **holds** the home
+  policy and the gap is missing flood cover *inside* it. Correctly untouched, as were the two sites
+  I had wrongly listed.
+
+That is the rule from my own correction, applied in both directions by the implementer.
+
+### Details worth keeping
+- **An existing guard caught its copy choice.** The first draft «Χωρίς συμβόλαιο» was rejected by
+  `policy-term-asfalistirio.test.ts` — «συμβόλαιο» is owner-banned vocabulary. The repo's guards
+  are now dense enough to correct an agent mid-implementation.
+- **Colour is not the carrier.** «Χωρίς ασφαλιστήριο» differs from «Δεν έχει αξιολογηθεί» in *words*.
+- **Monetization stayed at 5.** §2.2 permits one labelled upsell; adding one would have raised the
+  ledger count, so it was **reported rather than added**.
+- **Greek freeze:** exactly one removal, one addition — `branches.statusGap "Πιθανό κενό"` →
+  `branches.statusNotHeld "Χωρίς ασφαλιστήριο"`. Audited.

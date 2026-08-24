@@ -265,7 +265,7 @@ function evaluate(sc: Scenario) {
         })),
         score.expectedLines
     )
-        .filter((t) => t.state === "gap")
+        .filter((t) => t.state === "not_held")
         .map((t) => t.branch.id)
     return { ctx, assessments, open, score, recs, tiles }
 }
@@ -361,7 +361,7 @@ describe.each(SCENARIOS.map((s) => [s.label, s] as const))("%s", (_label, sc) =>
         for (const tile of tiles) {
             expect(
                 open.map((a) => a.lineOfBusiness),
-                `tile "${tile}" shows a gap with no open finding on that line`
+                `tile "${tile}" is marked not-held with no open finding on that line`
             ).toContain(tile)
         }
     })
