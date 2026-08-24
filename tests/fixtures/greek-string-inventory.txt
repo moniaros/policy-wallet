@@ -7275,6 +7275,8 @@ ternary	lib/email/templates/churn-prevention.ts	'Έχει περάσει και�
 ternary	lib/email/templates/churn-prevention.ts	'Έχουμε προσθέσει νέες δυνατότητες στο PolicyWallet:'
 ternary	lib/email/templates/churn-prevention.ts	'Αν δεν θέλετε να λαμβάνετε αυτά τα email, μπορείτε να τα απενεργοποιήσετε στις Ρυθμίσεις.'
 ternary	lib/email/templates/churn-prevention.ts	'Δείτε τι νέο υπάρχει!'
+ternary	lib/email/templates/churn-prevention.ts	'Δεν έχετε ελέγξει τα ασφαλιστήριά σας εδώ και 2 μήνες'
+ternary	lib/email/templates/churn-prevention.ts	'Δεν έχετε ελέγξει τα ασφαλιστήριά σας εδώ και 2 μήνες'
 ternary	lib/email/templates/churn-prevention.ts	'Δεν έχετε ελέγξει τα ασφαλιστήρια σας εδώ και 2 μήνες. Ανανεώσεις, κενά κάλυψης, και μηνύματα από τον σύμβουλό σας μπορεί να περιμένουν.'
 ternary	lib/email/templates/churn-prevention.ts	'Δεν εντοπίσαμε κάτι που να απαιτεί ενέργεια αυτή τη στιγμή — αξίζει όμως μια ματιά στο χαρτοφυλάκιό σας.'
 ternary	lib/email/templates/churn-prevention.ts	'Δεν σας έχουμε δει εδώ και λίγο καιρό, αλλά η ασφαλιστική σας κάλυψη δεν σταματά.'
@@ -7282,14 +7284,12 @@ ternary	lib/email/templates/churn-prevention.ts	'Ελέγξτε τώρα'
 ternary	lib/email/templates/churn-prevention.ts	'Εξερευνήστε τα νέα'
 ternary	lib/email/templates/churn-prevention.ts	'Η ασφαλιστική σας κάλυψη σας περιμένει'
 ternary	lib/email/templates/churn-prevention.ts	'Η ασφαλιστική σας κάλυψη σας περιμένει'
-ternary	lib/email/templates/churn-prevention.ts	'Η κάλυψή σας μπορεί να κινδυνεύει'
 ternary	lib/email/templates/churn-prevention.ts	'Μας λείπετε!'
 ternary	lib/email/templates/churn-prevention.ts	'Μπείτε ξανά όποτε θέλετε — όλα είναι εκεί που τα αφήσατε.'
 ternary	lib/email/templates/churn-prevention.ts	'Ο ασφαλιστικός σας φάκελος σας περιμένει'
 ternary	lib/email/templates/churn-prevention.ts	'Το χαρτοφυλάκιό σας χρειάζεται προσοχή'
 ternary	lib/email/templates/churn-prevention.ts	'Το χαρτοφυλάκιό σας χρειάζεται προσοχή'
 ternary	lib/email/templates/churn-prevention.ts	'✨ Νέες λειτουργίες που χάνετε'
-ternary	lib/email/templates/churn-prevention.ts	'🔒 Η κάλυψή σας μπορεί να κινδυνεύει'
 ternary	lib/email/templates/churn-prevention.ts	[ '🤖 Βελτιωμένη AI ανάλυση κάλυψης', '📊 Εβδομαδιαία σύνοψη email', '💬 Ενσωματωμένα μηνύματα με τον σύμβουλό σας', ]
 ternary	lib/email/templates/churn-prevention.ts	` <div style="background: #FEF2F2; border-radius: 12px; padding: 16px; margin: 20px 0;"> <p style="margin: 0; font-size: 14px; color: #991B1B; font-weight: bold;"> ${isGreek ? counted(expiringPolicies, 'ασφαλιστήριο λήγει σύντομα', 'ασφαλιστήρια λήγουν σύντομα') : counted(expiringPolicies, 'policy expiring soon', 'policies expiring soon')} </p> </div> `
 ternary	lib/email/templates/churn-prevention.ts	` <div style="background: #FFFBEB; border-radius: 12px; padding: 16px; margin: 20px 0;"> <p style="margin: 0; font-size: 14px; color: #92400E; font-weight: bold;"> ${isGreek ? counted(openGaps, 'κενό κάλυψης χρειάζεται αντιμετώπιση', 'κενά κάλυψης χρειάζονται αντιμετώπιση') : counted(openGaps, 'coverage gap needs attention', 'coverage gaps need attention')} </p> </div> `

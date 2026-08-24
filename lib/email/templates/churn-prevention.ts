@@ -164,7 +164,21 @@ export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: s
 }
 
 /**
- * Day 60 inactive — Final reminder
+ * Day 60 inactive — final reminder.
+ *
+ * The subject and heading asserted a coverage risk behind a padlock. This
+ * tier is selected on `daysSinceActive` alone (churn-prevention.service.ts:
+ * 58-62 days) — nothing on the path looks at an expiry date, a gap, or a
+ * policy at all. Day 7 does take `expiringPolicies` and `openGaps`; this one
+ * had no basis for what it said.
+ *
+ * That is the absence-is-not-evidence rule pointed the other way. The usual
+ * failure is a check that could not run reporting the GOOD outcome; this one
+ * reported the bad one, which is worse — fear manufactured from missing data
+ * is not a warning, it is a lever. The body was already honest and hedged;
+ * only the headline claimed to know something.
+ *
+ * It now states the one thing this path established: they have not looked.
  */
 export function getChurnDay60Email(data: ChurnPreventionEmailData): { subject: string; html: string } {
     const { name, language } = data
@@ -172,11 +186,11 @@ export function getChurnDay60Email(data: ChurnPreventionEmailData): { subject: s
     const hello = greeting(name, isGreek)
 
     const subject = isGreek
-        ? '🔒 Η κάλυψή σας μπορεί να κινδυνεύει'
-        : '🔒 Your coverage may be at risk'
+        ? 'Δεν έχετε ελέγξει τα ασφαλιστήριά σας εδώ και 2 μήνες'
+        : "You haven't checked your policies in 2 months"
 
     const content = `
-        <h2>${isGreek ? 'Η κάλυψή σας μπορεί να κινδυνεύει' : 'Your coverage may be at risk'}</h2>
+        <h2>${isGreek ? 'Δεν έχετε ελέγξει τα ασφαλιστήριά σας εδώ και 2 μήνες' : "You haven't checked your policies in 2 months"}</h2>
         <p>${hello}</p>
         <p>${isGreek
             ? 'Δεν έχετε ελέγξει τα ασφαλιστήρια σας εδώ και 2 μήνες. Ανανεώσεις, κενά κάλυψης, και μηνύματα από τον σύμβουλό σας μπορεί να περιμένουν.'

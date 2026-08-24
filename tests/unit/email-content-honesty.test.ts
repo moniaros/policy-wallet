@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs"
 import { globSync } from "../helpers/glob"
 import { counted, daysToExpiryPhrase, greeting } from '@/lib/email/templates/phrases'
 import { getWeeklyDigestEmail } from '@/lib/email/templates/weekly-digest'
-import { getChurnDay7Email } from '@/lib/email/templates/churn-prevention'
+import { getChurnDay7Email, getChurnDay60Email } from '@/lib/email/templates/churn-prevention'
 import { provisionalProtectionScore } from '@/lib/services/gap-engine/protection-score'
 
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
@@ -185,5 +185,53 @@ describe('email CTAs point at the canonical route in the reader language', () =>
     it('no Greek CTA says "Dashboard"', () => {
         const offenders = TEMPLATES.filter((f) => /'[^']*Dashboard[^']*'\s*:\s*'/.test(read(f)))
         expect(offenders, `English "Dashboard" in Greek copy:\n${offenders.join('\n')}`).toEqual([])
+    })
+})
+
+
+/**
+ * An email selected by inactivity may not assert a fact about the portfolio.
+ *
+ * The day-60 churn email led with «Η κάλυψή σας μπορεί να κινδυνεύει» / "Your
+ * coverage may be at risk" behind a padlock. Its tier is chosen on
+ * `daysSinceActive` alone; nothing on that path reads an expiry, a gap, or a
+ * policy. Day 7 does take `expiringPolicies` and `openGaps` and has a basis.
+ *
+ * This is the absence-is-not-evidence rule inverted. `all-clear-honesty` guards
+ * a check that could not run reporting the GOOD outcome; this is one reporting
+ * the BAD one, which is worse — fear built from missing data is a lever, not a
+ * warning.
+ */
+describe('the day-60 email claims only what selected it', () => {
+    const RISK_CLAIM = /κινδυν|at risk|επικίνδυν|unprotected|απροστάτευτ|έχετε κενό|you have a gap/i
+
+    it('the tier really is inactivity-only — the reason this rule exists', () => {
+        // D-022: assert the precondition. If day60 ever starts receiving
+        // portfolio facts, this test should be revisited rather than obeyed.
+        const svc = read('lib/services/churn-prevention.service.ts')
+        expect(svc).toMatch(/daysSinceActive >= 58/)
+        const call = svc.match(/getChurnDay60Email\(\{[^}]*\}\)/)?.[0] ?? ''
+        expect(call, 'day60 now takes portfolio input — re-derive what it may claim').not.toMatch(
+            /expiringPolicies|openGaps|policies|gaps/
+        )
+    })
+
+    it('asserts no coverage risk, in either language', () => {
+        for (const language of ['el', 'en'] as const) {
+            const { subject, html } = getChurnDay60Email({ name: 'Νίκος', language })
+            expect(subject, `${language} subject`).not.toMatch(RISK_CLAIM)
+            expect(html, `${language} body`).not.toMatch(RISK_CLAIM)
+        }
+    })
+
+    it('still says the true thing that selected it, and still links back', () => {
+        const { subject, html } = getChurnDay60Email({ name: 'Νίκος', language: 'el' })
+        expect(subject).toMatch(/2 μήνες/)
+        expect(html).toMatch(/\/dashboard/)
+    })
+
+    it('day 7 is unaffected — it has a basis and may name it', () => {
+        const { html } = getChurnDay7Email({ name: 'Νίκος', language: 'el', expiringPolicies: 2, openGaps: 3 })
+        expect(html).toMatch(/2|3/)
     })
 })
