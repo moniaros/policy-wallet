@@ -460,3 +460,22 @@ The registry entry survives as `planned` rather than being deleted, so the day a
 there is a defined event to emit — at the point the grant **commits**, never at the point one is
 announced. `tests/unit/claimed-benefit-is-conferred.test.ts` fails if it goes `live` without an
 emitter that touches `creditTransaction`.
+
+## Removal — V2-P1-12: `lib/mail-templates.ts` `export const templates`
+
+| capability | surface | disposition | destination |
+|---|---|---|---|
+| sixteen per-event mail bodies (GAP_DETECTED, …), both languages | none — reachable from nothing | **REMOVED** | `buildNotificationEmail`, which already replaced them |
+
+**Not a capability, on two independent grounds.** Nothing imported the symbol — the file is imported
+often, but only ever for `buildNotificationEmail` and `getBaseTemplate`. And the templates were
+already **broken**: the comment on `buildNotificationEmail` records that they "rendered `undefined`
+because sendNotification only ever passed them `{ id, language }`", so every data parameter arrived
+empty. They could not have rendered for a customer even if something had called them.
+
+**Why delete rather than leave.** They contributed **16 Greek ternary entries** to the frozen copy
+inventory. That inventory is what this run reviews every customer-facing word through, so sixteen
+dead strings were sitting in it looking live. Someone improving the gap-detected wording would have
+edited these and shipped nothing. Dead copy is worse than no copy.
+
+Capability count unchanged at **109**. A tombstone comment stands where they were.

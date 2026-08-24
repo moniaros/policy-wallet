@@ -17,7 +17,7 @@
 #
 # bundle entries: 2785
 # inline entries: 4424 across 207 files
-# ternary entries: 301 across 45 files
+# ternary entries: 285 across 44 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -7362,22 +7362,6 @@ ternary	lib/i18n/amount-format.ts	'Απεριόριστο'
 ternary	lib/i18n/amount-format.ts	'Μεταβλητό'
 ternary	lib/i18n/role-copy.ts	"1 στοιχείο που χρειάζεται προσοχή."
 ternary	lib/i18n/role-copy.ts	`${n} στοιχεία που χρειάζονται προσοχή.`
-ternary	lib/mail-templates.ts	'Έλεγχος Ασφαλιστηρίου'
-ternary	lib/mail-templates.ts	'Διαχείριση Ανανέωσης'
-ternary	lib/mail-templates.ts	'Εντοπίστηκε πιθανό κενό κάλυψης'
-ternary	lib/mail-templates.ts	'Επιτυχής Πληρωμή'
-ternary	lib/mail-templates.ts	'Λήψη Τιμολογίου'
-ternary	lib/mail-templates.ts	'Προβολή λεπτομερειών'
-ternary	lib/mail-templates.ts	`Ανανέωση: ${data.customerName} — ${data.policyName} (${data.daysLeft} ημέρες)`
-ternary	lib/mail-templates.ts	`Απαιτείται ενέργεια ανανέωσης — ${data.daysLeft} ημέρες`
-ternary	lib/mail-templates.ts	`Επιτυχής Πληρωμή: ${data.amount}`
-ternary	lib/mail-templates.ts	`Η AI ανάλυσή μας εντόπισε πιθανό κενό κάλυψης στο ασφαλιστήριο <strong>${data.policyName}</strong>: <strong>${data.gapTitle}</strong>. Δείτε τις λεπτομέρειες για να αξιολογήσετε αν χρειάζεται κάποια ενέργεια.`
-ternary	lib/mail-templates.ts	`Η πληρωμή σας ύψους ${data.amount} ολοκληρώθηκε επιτυχώς. Το ασφαλιστικό σας πορτοφόλι παραμένει ενεργό και προστατευμένο.`
-ternary	lib/mail-templates.ts	`Πιθανό κενό κάλυψης στο ${data.policyName}`
-ternary	lib/mail-templates.ts	`Το ασφαλιστήριο <strong>${data.policyName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Ελέγξτε τις επιλογές ανανέωσης τώρα.`
-ternary	lib/mail-templates.ts	`Το ασφαλιστήριο <strong>${data.policyName}</strong> του/της <strong>${data.customerName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Επικοινωνήστε με τον πελάτη για ανανέωση.`
-ternary	lib/mail-templates.ts	`Το ασφαλιστήριό σας λήγει σε ${data.daysLeft} ημέρες`
-ternary	lib/mail-templates.ts	`Υπενθύμιση Ανανέωσης: Το ${data.policyName} λήγει σε ${data.daysLeft} ημέρες`
 ternary	lib/notifications/risk-events.ts	`${first.el} και ${changed.length - 1} ακόμη αλλαγές.`
 ternary	lib/seo/site.ts	"PolicyWallet — Δεν αξιολογούμε τα συμβόλαιά σας. Αξιολογούμε την προστασία της ζωής σας."
 ternary	lib/services/ai/mock-ai.service.ts	{ extractionSources: { insurerName: { page: 1, snippet: 'Mock Insurance Co. — Ασφαλιστήριο Συμβόλαιο' }, endDate: { page: 2, snippet: 'Λήξη ασφάλισης: όπως ορίζεται στον πίνακα καλύψεων' }, premiumAmount: { page: 2, snippet: 'Ετήσια ολικά ασφάλιστρα: €500,00' }, }, }

@@ -121,76 +121,18 @@ export function buildNotificationEmail(params: {
     return { subject: title, html }
 }
 
-export const templates = {
-    GAP_DETECTED: (data: { policyName: string, gapTitle: string, url: string, language?: Language }) => {
-        const isEl = data.language === "el"
-        return {
-            // "Security Alert" belongs on a breach notification. This is a finding
-            // about someone's insurance cover, and dressing it as a security
-            // incident both alarms the reader wrongly and cheapens the real thing.
-            subject: isEl
-                ? `Πιθανό κενό κάλυψης στο ${data.policyName}`
-                : `Possible coverage gap in your ${data.policyName} policy`,
-            html: getBaseTemplate({
-                title: isEl ? 'Εντοπίστηκε πιθανό κενό κάλυψης' : 'Possible coverage gap found',
-                description: isEl
-                    ? `Η AI ανάλυσή μας εντόπισε πιθανό κενό κάλυψης στο ασφαλιστήριο <strong>${data.policyName}</strong>: <strong>${data.gapTitle}</strong>. Δείτε τις λεπτομέρειες για να αξιολογήσετε αν χρειάζεται κάποια ενέργεια.`
-                    : `Our AI has identified a potential coverage gap in your <strong>${data.policyName}</strong> policy: <strong>${data.gapTitle}</strong>. Review the details to see whether any action is needed.`,
-                actionUrl: data.url,
-                actionLabel: isEl ? 'Προβολή λεπτομερειών' : 'View details',
-            })
-        }
-    },
-    PAYMENT_SUCCESS: (data: { amount: string, invoiceUrl: string, language?: Language }) => {
-        const isEl = data.language === "el"
-        return {
-            subject: isEl
-                ? `Επιτυχής Πληρωμή: ${data.amount}`
-                : `Payment Successful: ${data.amount}`,
-            html: getBaseTemplate({
-                title: isEl ? 'Επιτυχής Πληρωμή' : 'Payment Successful',
-                description: isEl
-                    ? `Η πληρωμή σας ύψους ${data.amount} ολοκληρώθηκε επιτυχώς. Το ασφαλιστικό σας πορτοφόλι παραμένει ενεργό και προστατευμένο.`
-                    : `We've successfully processed your payment of ${data.amount}. Your insurance wallet remains active and protected.`,
-                actionUrl: data.invoiceUrl,
-                actionLabel: isEl ? 'Λήψη Τιμολογίου' : 'Download Invoice',
-            })
-        }
-    },
-    POLICY_EXPIRING: (data: { policyName: string, daysLeft: number, expiryDate: string, url: string, language?: Language }) => {
-        const isEl = data.language === "el"
-        return {
-            subject: isEl
-                ? `Υπενθύμιση Ανανέωσης: Το ${data.policyName} λήγει σε ${data.daysLeft} ημέρες`
-                : `Renewal Reminder: ${data.policyName} expires in ${data.daysLeft} days`,
-            html: getBaseTemplate({
-                title: isEl
-                    ? `Το ασφαλιστήριό σας λήγει σε ${data.daysLeft} ημέρες`
-                    : `Your policy expires in ${data.daysLeft} days`,
-                description: isEl
-                    ? `Το ασφαλιστήριο <strong>${data.policyName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Ελέγξτε τις επιλογές ανανέωσης τώρα.`
-                    : `Your <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Review your renewal options before the expiry date.`,
-                actionUrl: data.url,
-                actionLabel: isEl ? 'Έλεγχος Ασφαλιστηρίου' : 'Review Policy',
-            })
-        }
-    },
-    RENEWAL_MILESTONE: (data: { customerName: string, policyName: string, daysLeft: number, expiryDate: string, url: string, language?: Language }) => {
-        const isEl = data.language === "el"
-        return {
-            subject: isEl
-                ? `Ανανέωση: ${data.customerName} — ${data.policyName} (${data.daysLeft} ημέρες)`
-                : `Renewal Alert: ${data.customerName} — ${data.policyName} (${data.daysLeft} days)`,
-            html: getBaseTemplate({
-                title: isEl
-                    ? `Απαιτείται ενέργεια ανανέωσης — ${data.daysLeft} ημέρες`
-                    : `Renewal action needed — ${data.daysLeft} days`,
-                description: isEl
-                    ? `Το ασφαλιστήριο <strong>${data.policyName}</strong> του/της <strong>${data.customerName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Επικοινωνήστε με τον πελάτη για ανανέωση.`
-                    : `<strong>${data.customerName}</strong>'s <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Contact the customer to discuss renewal options and secure the commission.`,
-                actionUrl: data.url,
-                actionLabel: isEl ? 'Διαχείριση Ανανέωσης' : 'Manage Renewal',
-            })
-        }
-    },
-};
+/**
+ * `export const templates` stood here: sixteen per-event mail bodies, in both
+ * languages, referenced by nothing.
+ *
+ * They were not merely unused — they were BROKEN, and the comment on
+ * buildNotificationEmail above said so: they "rendered `undefined` because
+ * sendNotification only ever passed them { id, language }". Every one of their
+ * data parameters arrived empty. buildNotificationEmail replaced them.
+ *
+ * Deleted rather than left, because dead copy is worse than no copy: seventeen
+ * Greek strings sat in the frozen inventory looking live, and the freeze is what
+ * this run uses to review every customer-facing word. Someone improving the
+ * gap-detected wording would have edited these and shipped nothing.
+ */
+;
