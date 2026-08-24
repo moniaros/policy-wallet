@@ -584,3 +584,31 @@ with the specific policy responsible (a Ταξιδιωτική on a 45-day renew
 numbers are correct for their own window; the surfaces never agreed on the window. That is §2.8's
 "both correct, differently labelled" case, and the fix is one window or two visible labels — not
 arithmetic.
+
+
+---
+
+## CORRECTION — §2.2's site list was over-scoped by me, twice
+
+I recorded «Πιθανό κενό» as a §2.2 unowned-line claim at three locations. **Only one is.** The other
+two are about policies the customer **holds**, and changing them would have been wrong work.
+
+| site | what it actually is | §2.2? |
+|---|---|---|
+| `components/coverage/RiskGraphPanel.tsx:71` «Απροστάτευτο» | a risk state for a line with **zero** matching policies — verified: 4 such rows | **YES** |
+| `/branches` tiles «Πιθανό κενό» (`el.ts:1541`) | rendered on line cards where `policyCount` is 0 — verified: life, pet, cyber | **YES** |
+| `lib/mail-templates.ts:132` `GAP_DETECTED` | *"Πιθανό κενό κάλυψης **στο ${data.policyName}**"* — a gap found **inside the customer's own policy**, with the policy named and the gap titled | **NO** |
+| `lib/wallet/gap-report.ts:592,599` «Πιθανό κενό ευθύνης εργοδότη» | entries in `GAP_CONTENT_MAP` — authored titles for slugs that `decideGapsForPolicy` produced **against a held policy** | **NO** |
+
+**Why I got it wrong:** I grepped the *string* «Πιθανό κενό» and treated every hit as the same
+defect. The phrase is correct in one context and wrong in another, and the difference is not in the
+words — it is in whether a policy exists behind them. §2.2 is not a copy rule; it is a rule about
+*what may be asserted given what the customer owns*.
+
+**This is the sixth mis-recorded fact of the run**, and the first where the error was over-scoping
+rather than a wrong mechanism. It would have sent an implementation agent to rewrite a legitimate
+email subject and two authored gap titles — a change that would have passed review, because the
+strings match and the reviewer had recorded them as in scope.
+
+The general rule, and it applies to every remaining §2 item: **a grep finds a spelling; an invariant
+is about a condition.** Before queueing a site, confirm the condition holds there.
