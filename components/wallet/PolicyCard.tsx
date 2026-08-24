@@ -64,7 +64,12 @@ function CardAction({
             onClick={onClick}
             aria-label={label}
             title={label}
-            className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${destructive
+            // h-11 w-11 = 44x44, the tap-target floor. This was h-9 w-9 and
+            // measured 36x44 on /wallet — height borrowed from a stretching
+            // parent, width 8px short — three times per card, 87 offenders
+            // across a 29-policy wallet at 320/390/430. One primitive, not 87
+            // defects. The icon inside stays h-4 w-4; only the hit area grows.
+            className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${destructive
                 ? 'text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
