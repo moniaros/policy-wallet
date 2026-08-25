@@ -1,0 +1,24 @@
+-- gap_definitions minted by the AI clarity pipeline — DEV, deactivated 2026-08-25
+--
+-- CLAUDE.md warned this could recur ("the pipeline can mint again") after the
+-- 2026-08-23 cleanup, and it did: this row was created 2026-08-23T15:37Z, hours
+-- after both databases were verified clean. rule_id `ai_clarity_pipeline`,
+-- detection_logic {"source":"ai_clarity_pipeline"} — not an evaluable rule — and
+-- it had already produced ONE gap_instance, so a customer read a finding from a
+-- rule nobody authored.
+--
+-- Repaired with `align:gap-catalogue --apply`, which DEACTIVATES rather than
+-- deletes. Dev is now 29 active / fingerprint 2df9d0fd4b581caa, matching the
+-- authored catalogue. PROD was checked and was already clean (29 active, 0
+-- inactive, 0 minted); the two active sets were compared slug by slug and are
+-- identical, so no production change was made.
+--
+-- WHAT IS DELIBERATELY NOT IN THIS FILE: the gap_instance row. It carries
+-- user_id, policy_id and AI-written prose about a real person's cover, and git
+-- history is somewhere no erasure request can reach — the same reasoning that
+-- keeps an orphaned storage object from being acceptable. The archive rule
+-- exists as a rollback for DROP/DELETE/TRUNCATE; nothing here was deleted. The
+-- instance is untouched in the database and this is reversible with:
+--     UPDATE gap_definitions SET is_active = true WHERE slug = 'no_glass_cover_variant';
+
+INSERT INTO gap_definitions ("gap_definition_id", "slug", "name", "title", "description", "line_of_business", "severity", "default_severity", "rule_id", "detection_logic", "is_active", "created_at", "updated_at", "scope", "version", "changed_at", "changed_by", "severity_validated_at", "severity_validated_by", "severity_rationale") VALUES ('cmt5z1cqc0008510sj045jwv2', 'no_glass_cover_variant', 'AI-minted glass cover variant (fixture)', 'Θραύση κρυστάλλων — παραλλαγή όρου (fixture)', 'Fixture-only definition mirroring an unauthored, AI-minted slug variant — never sourced from lib/gaps/authored-catalogue.ts.', 'motor', 'medium', 'medium', 'ai_clarity_pipeline', '{"source":"ai_clarity_pipeline"}'::jsonb, true, '"2026-08-23T15:37:58.452Z"'::jsonb, '"2026-08-23T15:37:58.452Z"'::jsonb, 'document', 1, NULL, NULL, NULL, NULL, NULL);
