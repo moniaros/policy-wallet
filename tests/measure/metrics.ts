@@ -287,6 +287,227 @@ export async function duplicateFacts(page: Page, facts: FactSpec[]): Promise<Dup
 }
 
 /**
+ * DUPLICATE-IDENTITY ROWS (P5-wallet-00) — gates the §7.3 asset reframe.
+ *
+ * The reframe's premise is that a customer cannot tell wallet rows apart.
+ * This is the measurement: for each rendered wallet row, extract the
+ * concatenated visible text of its IDENTITY fields — insurer, line of
+ * business, date, status — and count rows whose identity string is
+ * BYTE-IDENTICAL to at least one other row's. The policy number is
+ * DELIBERATELY EXCLUDED: it is the disambiguator, so including it would make
+ * every row unique and measure nothing. The definition MUST stay identical
+ * between the baseline and the post-reframe result pass — that is the whole
+ * point of it living here rather than being re-typed per capture — so do not
+ * edit the field-location logic below without re-running BOTH passes.
+ *
+ * A ROW is `[data-testid="policy-card"]` — the ONE hook both `PolicyCard`
+ * (grid) and `PolicyTable` (list) carry (PolicyTable.tsx's own comment: "the
+ * wallet defaults to LIST view, so tagging only the grid card left the audit
+ * finding no policy at all"). There is no literal `<a href="/wallet/<id>">`
+ * on either renderer — both navigate via `router.push` on click — so the
+ * testid, not a link, is what identifies a row here.
+ *
+ * FIELD LOCATION — read before changing this function; a metric whose
+ * extraction is undocumented cannot be reproduced after the reframe:
+ *
+ *  CARD shape (components/wallet/PolicyCard.tsx — the ONLY shape this run's
+ *  320/390/430 capture matrix ever renders: PolicyWallet.tsx's own comment,
+ *  "cards are ALWAYS the presentation below lg ... the view toggle is itself
+ *  desktop-only"):
+ *   - insurer          the row's ONLY `span.truncate` — PolicyCard.tsx:138
+ *                       assigns `displayInsurer` to exactly this element.
+ *   - lineOfBusiness    the LOB paragraph's OWN leading text node (before any
+ *                       child span) — PolicyCard.tsx:149-150 renders
+ *                       `{localizedLob}` as a bare expression immediately
+ *                       followed by the conditional `· <expiry>` fragment, so
+ *                       the first text node is exactly the LOB label alone.
+ *   - date              the element carrying `data-fact="policy.daysRemaining"`
+ *                       (PolicyCard.tsx:157). Despite the key name this is the
+ *                       card's ONE displayed date/expiry signal:
+ *                       `formatRelativeExpiry` returns a relative count inside
+ *                       60 days and the formatted END DATE beyond that, so one
+ *                       field carries both concepts on this renderer. ABSENT
+ *                       from the DOM entirely (not merely empty) when the card
+ *                       has nothing to show (`analyzing`, or no resolvable end
+ *                       date) — `expiryInline && (...)` does not render the
+ *                       wrapping span at all in that case. That is the row's
+ *                       real content, so it contributes an EMPTY STRING to the
+ *                       identity rather than counting as an extraction
+ *                       failure — and an empty date makes two such rows MORE
+ *                       likely to collide, which is correct: a customer
+ *                       scanning two "nothing to show" rows sees them as
+ *                       identical too.
+ *   - status            the row's ONLY `span.rounded-full` — the one element
+ *                       `StatusPill` renders (components/ui/StatusPill.tsx).
+ *                       Distinguished from the branch icon chip, which is
+ *                       `rounded-lg`, never `rounded-full`.
+ *
+ *  TABLE shape (components/wallet/PolicyTable.tsx — UNVERIFIED by this run:
+ *  no capture in the 320/390/430 matrix ever renders a `<tr>`, so this path
+ *  is best-effort and untested against a real page):
+ *   - insurer          the first `<td>`'s SECOND `<p>` when present (the first
+ *                       is `summary.assetTitle`, which for an unnamed asset
+ *                       IS the insurer — PolicyTable.tsx:134-143 prints the
+ *                       insurer on the second line only when it differs from
+ *                       the asset title). When there is no second `<p>`, the
+ *                       insurer is not independently on the row — reported as
+ *                       an unlocatable field for that row rather than guessed.
+ *   - lineOfBusiness    the branch-label `<span>` in the second `<td>`.
+ *   - date              `[data-fact="policy.endDate"]` on the row.
+ *   - status            the row's `span.rounded-full` (same StatusPill).
+ *
+ * A row on EITHER shape where a field cannot be located is excluded from the
+ * duplicate comparison and reported separately under `unlocatable` — never
+ * silently padded with empty string or the whole row's text, which would
+ * measure something else and call it this.
+ */
+export interface IdentityRowRecord {
+    index: number
+    rowTag: string
+    /** `data-fact-subject` off the date element, when present — usually the policy id. */
+    subject: string | null
+    insurer: string | null
+    lineOfBusiness: string | null
+    /** the card's single date/expiry signal, or the table's end date. `""` when the row legitimately shows none. */
+    date: string
+    status: string | null
+    missingFields: string[]
+}
+
+export interface IdentityDuplicateGroup {
+    /** human-readable, NOT the comparison key (which joins fields on a distinctive delimiter) */
+    display: string
+    count: number
+    rows: { index: number; subject: string | null }[]
+}
+
+export interface DuplicateIdentityResult {
+    totalRows: number
+    comparableRows: number
+    /** rows that are part of some group of size > 1 — the "raw count" the brief asks for */
+    duplicateRowCount: number
+    /** size of the largest identical-identity group — 0 or 1 when there are none */
+    largestGroupSize: number
+    groups: IdentityDuplicateGroup[]
+    /** rows where a field could not be located — excluded from comparison, reported separately */
+    unlocatable: { index: number; missingFields: string[] }[]
+}
+
+export async function duplicateIdentityRows(page: Page): Promise<DuplicateIdentityResult> {
+    const records = (await page.evaluate(() => {
+        const visible = (el: Element) => {
+            const r = (el as HTMLElement).getBoundingClientRect()
+            const cs = getComputedStyle(el as HTMLElement)
+            if (r.width <= 0 || r.height <= 0 || cs.display === "none" || cs.visibility === "hidden") return false
+            if (r.right <= 0 || r.bottom <= 0 || r.left >= document.documentElement.clientWidth) return false
+            return true
+        }
+        const ownLeadingText = (el: Element): string | null => {
+            const node = Array.from(el.childNodes).find((n) => n.nodeType === 3 && (n.textContent || "").trim().length > 0)
+            return node ? (node.textContent || "").trim() : null
+        }
+
+        const out: {
+            index: number
+            rowTag: string
+            subject: string | null
+            insurer: string | null
+            lineOfBusiness: string | null
+            date: string
+            status: string | null
+            missingFields: string[]
+        }[] = []
+
+        let index = 0
+        document.querySelectorAll<HTMLElement>('[data-testid="policy-card"]').forEach((row) => {
+            if (!visible(row)) return
+            const missingFields: string[] = []
+            let insurer: string | null = null
+            let lineOfBusiness: string | null = null
+            let date = ""
+            let status: string | null = null
+
+            if (row.tagName === "TR") {
+                const cells = row.querySelectorAll("td")
+                const firstTd = cells[0] || null
+                const ps = firstTd ? firstTd.querySelectorAll("p") : ([] as unknown as NodeListOf<HTMLElement>)
+                insurer = ps.length > 1 ? (ps[1].textContent || "").trim() : null
+                if (insurer === null) missingFields.push("insurer")
+
+                const lobSpan = cells[1] ? cells[1].querySelector("span") : null
+                lineOfBusiness = lobSpan ? (lobSpan.textContent || "").trim() : null
+                if (lineOfBusiness === null) missingFields.push("lineOfBusiness")
+
+                const dateEl = row.querySelector('[data-fact="policy.endDate"]')
+                date = dateEl ? (dateEl.textContent || "").trim() : ""
+
+                const statusEl = row.querySelector("span.rounded-full")
+                status = statusEl ? (statusEl.textContent || "").trim() : null
+                if (status === null) missingFields.push("status")
+            } else {
+                const insurerEl = row.querySelector("button span.truncate")
+                insurer = insurerEl ? (insurerEl.textContent || "").trim() : null
+                if (insurer === null) missingFields.push("insurer")
+
+                const lobP = row.querySelector("button p")
+                lineOfBusiness = lobP ? ownLeadingText(lobP) : null
+                if (lineOfBusiness === null) missingFields.push("lineOfBusiness")
+
+                // Absent element (not merely empty text) = the card legitimately
+                // shows no date — contributes "" rather than an unlocatable field.
+                const dateEl = row.querySelector('[data-fact="policy.daysRemaining"]')
+                date = dateEl ? (dateEl.textContent || "").trim() : ""
+
+                const statusEl = row.querySelector("span.rounded-full")
+                status = statusEl ? (statusEl.textContent || "").trim() : null
+                if (status === null) missingFields.push("status")
+            }
+
+            const subjectEl = row.querySelector("[data-fact-subject]")
+            const subject = subjectEl ? subjectEl.getAttribute("data-fact-subject") : null
+
+            out.push({ index, rowTag: row.tagName, subject, insurer, lineOfBusiness, date, status, missingFields })
+            index++
+        })
+        return out
+    })) as IdentityRowRecord[]
+
+    const IDENTITY_SEP = "|~identity~|"
+    const comparable = records.filter((r) => r.missingFields.length === 0)
+    const byIdentity = new Map<string, IdentityRowRecord[]>()
+    for (const r of comparable) {
+        const key = [r.insurer, r.lineOfBusiness, r.date, r.status].join(IDENTITY_SEP)
+        const arr = byIdentity.get(key) || []
+        arr.push(r)
+        byIdentity.set(key, arr)
+    }
+
+    const groups: IdentityDuplicateGroup[] = Array.from(byIdentity.values())
+        .filter((arr) => arr.length > 1)
+        .map((arr) => ({
+            display: `${arr[0].insurer} · ${arr[0].lineOfBusiness} · ${arr[0].date || "(no date)"} · ${arr[0].status}`,
+            count: arr.length,
+            rows: arr.map((r) => ({ index: r.index, subject: r.subject })),
+        }))
+        .sort((a, b) => b.count - a.count)
+
+    const duplicateRowCount = groups.reduce((sum, g) => sum + g.count, 0)
+    const largestGroupSize = groups.reduce((max, g) => Math.max(max, g.count), 0)
+    const unlocatable = records
+        .filter((r) => r.missingFields.length > 0)
+        .map((r) => ({ index: r.index, missingFields: r.missingFields }))
+
+    return {
+        totalRows: records.length,
+        comparableRows: comparable.length,
+        duplicateRowCount,
+        largestGroupSize,
+        groups,
+        unlocatable,
+    }
+}
+
+/**
  * SUB-44px TAP TARGETS.
  * Interactive selector fixed by the brief:
  *   a, button, [role="button"], input, select, summary, [tabindex]:not([tabindex="-1"])

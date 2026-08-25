@@ -32,6 +32,7 @@ import {
     containerCount,
     duplicateFacts,
     type FactSpec,
+    duplicateIdentityRows,
     smallTapTargets,
     contrastFailures,
     nonTextContrastFailures,
@@ -185,6 +186,8 @@ export interface CaptureResult {
     sections: Awaited<ReturnType<typeof sectionCount>>
     containers: Awaited<ReturnType<typeof containerCount>>
     duplicateFacts: Awaited<ReturnType<typeof duplicateFacts>>
+    /** P5-wallet-00: byte-identical wallet-row identity (insurer/line/date/status, no policy number) — every capture, not opt-in. */
+    identityDuplicates: Awaited<ReturnType<typeof duplicateIdentityRows>>
     tapTargets: Awaited<ReturnType<typeof smallTapTargets>>
     contrast: { text: string[]; nonText: string[] }
     /** §6.12: does the page itself scroll sideways at this width? */
@@ -258,6 +261,7 @@ export async function captureSurface(
         sections: sec,
         containers: await containerCount(page),
         duplicateFacts: await duplicateFacts(page, facts),
+        identityDuplicates: await duplicateIdentityRows(page),
         tapTargets: await smallTapTargets(page),
         contrast: {
             text: await contrastFailures(page),
@@ -282,6 +286,7 @@ export async function captureSurface(
         `[measure] ${label}@${width}: ${sh}px (${data.viewportsOfContent} screens), ${sec.count} sections, ` +
         `${data.containers.count} containers (depth ${data.containers.maxDepth}), ${data.tapTargets.length} sub-44, ` +
         `dup-facts(attr/value)=${data.duplicateFacts.dataFactDuplicates.length}/${data.duplicateFacts.valueScanDuplicates.length}, ` +
+        `identity-dup(rows/largest)=${data.identityDuplicates.duplicateRowCount}/${data.identityDuplicates.largestGroupSize}, ` +
         `contrast(text/nonText)=${data.contrast.text.length}/${data.contrast.nonText.length}, ` +
         `truncation=${data.probes.truncation.length}, leaks=${data.probes.internalTokenLeaks.length}, ` +
         `overflow=${data.pageOverflow.overflowPx}px(${data.pageOverflow.offenders.length})`

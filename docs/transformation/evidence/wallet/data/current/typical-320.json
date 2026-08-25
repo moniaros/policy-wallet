@@ -1,0 +1,116 @@
+{
+  "capture": "typical",
+  "width": 320,
+  "url": "http://localhost:3000/wallet",
+  "scrollHeight": 1910,
+  "viewportsOfContent": 2.7,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 12,
+    "ids": [
+      "<div> Το πορτοφόλι μου",
+      "<div> Σημαντικές ειδοποιήσεις",
+      "<div> Ξεκλείδωσε την πλήρη ανάλυση",
+      "<div> Το πορτοφόλι μου",
+      "<div> Ενεργή προστασία22/3 προστεθέντα",
+      "<div> ΛΗΓΕΙ ΣΥΝΤΟΜΑ1Εντός 30 ημερών",
+      "<div> Χρειάζεται προσοχή1Προς έλεγχο",
+      "<div> Ασφαλιστικό αποτύπωμα1.691 €",
+      "<div> Σημαντικές ειδοποιήσεις",
+      "<div> ΌλαΑυτοκίνητοΚατοικίαΥγεία",
+      "<div> ",
+      "<div> Ξεκλείδωσε την πλήρη ανάλυση"
+    ]
+  },
+  "containers": {
+    "count": 41,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.flex flex-col sm:flex-row gap-4 justify-",
+      "div.flex bg-black/5 dark:bg-black p-1 rounde",
+      "button.px-3 py-1.5 rounded-md text-xs font-bold"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 3,
+    "comparableRows": 3,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <input> \"Αναζήτηση ασφαλιστηρίων...\" boundary 1.29:1 (needs 3) inside=#f6f8fa outside=#f8f9f9",
+      "[1.4.11:unmeasured] <button> \"Χειροκίνητη προσθήκη\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Μεταφόρτωση εγγράφου\" boundary 1.00:1 (needs 3) inside=#fcfdfe outside=#fcfdfe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Μαζική μεταφόρτωση\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Ενεργή προστασία22/3 προστεθέντα\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:surface] <div> \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ1Εντός 30 ημερών\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"Χρειάζεται προσοχή1Προς έλεγχο\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"Ασφαλιστικό αποτύπωμα1.691 €\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΛΗΓΕΙ ΣΥΝΤΟΜΑΥγε\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Generali HellasΕΝΕΡΓΟΚατοικία · 23\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 23\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"Ξεκλείδωσε την πλήρη ανάλυσηΤο βασ\" boundary 1.21:1 (needs 3) inside=#f4f7f7 outside=#fcfcfd",
+      "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dee6e5 outside=#fefdfd"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 320,
+    "viewportWidth": 320,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "span.truncate.text-body-sm",
+        "text": "Εθνική Ασφαλιστική",
+        "scrollWidth": 129,
+        "clientWidth": 85,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "top: 23/12/2026 — \"23/12/2026\"",
+        "top: 23/03/2027 — \"23/03/2027\""
+      ],
+      "dayCounts": [
+        "top: \"Υγεία · Εθνική Ασφαλιστική: λήγει σε 18 ημέρες.\"",
+        "top: \"σε 18 ημέρες\""
+      ],
+      "statusChips": [
+        "top: \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ\"",
+        "top: \"ΕΝΕΡΓΟ\""
+      ]
+    },
+    "repeatedStrings": [
+      {
+        "text": "ΛΗΓΕΙ ΣΥΝΤΟΜΑ",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <span>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 2 2/3 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 1 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 1 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 1.691 € Σημαντικές ειδοποιήσεις 1 Υγεία · Εθνική Ασφαλιστική: λήγει σε 18 ημέρες. Όλα Αυτοκίνητο Κατοικία Υγεία Τα ασφαλιστήρια μου Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · σε 18 ημέρες Generali Hellas ΕΝΕΡΓΟ Κατοικία · 23/12/2026 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 23/03/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Ξεκλείδωσε την πλήρη ανάλυση Το βασικό summary είναι έτοιμο. Ξεκλείδωσε την πλήρη ανάλυση για να δεις κενά, εξαιρέσεις, όρια και προτεινόμενες ενέργειες. Ξεκλείδωμα πλήρους ανάλυσης Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "tier": "unknown",
+  "state": "typical-3-policies"
+}
