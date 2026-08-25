@@ -1550,3 +1550,28 @@ the owner, so no such email is in anyone's inbox. But the reasoning I gave at th
 and the general rule is worth keeping: **a delivered email is an external reference to a route.** The
 link itself is computed at render, not stored on the row, so changing that one line is enough for
 everything not yet sent.
+
+### Findings from browser-checking the new surfaces (2026-08-25)
+
+The agents' guards render components in jsdom. Loading the real routes in Chrome with a live session
+found three things their tests could not:
+
+1. **React key warning on the risk lens — PRE-EXISTING, not a Phase 2 regression.** The exact
+   diagnostic, which nobody had before: *"Check the render method of `RiskIntelligenceView`. It was
+   passed a child from `ProtectionRiskLens`."* `/insights/risk-profile` emits the identical warning,
+   so `/protection` inherited it. All five `.map()` calls in `RiskIntelligenceView` carry keys and
+   `graphPanel` is a single element rendered directly at :259, so the array is somewhere less
+   obvious — note the file has **two** `return (` statements, at :149 and :366. Not chased further:
+   it is a dev-mode warning on a surface Phase 2 is rebuilding anyway. Real, though — a keyless list
+   misapplies child state across a reorder or a filter, and this list is filterable (R-07).
+2. **`/insights/risk-profile` renders an empty `<h1>`.** Resolves by deletion; `/protection` has a
+   real one («Η προστασία μου»).
+3. **Auth state expires mid-session.** `playwright/.auth/*.json` silently stops working and every
+   route renders the sign-in page at **HTTP 200** — so a naive check reads as "route fine, content
+   thin". Diagnosed by checking a known-good route (`/wallet`) rather than trusting the new ones.
+   Refresh with `--project=setup` and the system-Chrome env var. Worth knowing before anyone reads a
+   measurement run that quietly captured 17 sign-in pages.
+
+**Verified good, at 320px with a live session:** `/protection` (h1 «Η προστασία μου», 4 counts, 5,478
+chars), `/protection?lens=risk` (15 counts, 9 facts, 6,365 chars), `/account/history` (h1 «Ιστορικό
+δραστηριότητας», 8 counts, 3 facts, 6,430 chars). **All three: 0px page overflow.**
