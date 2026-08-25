@@ -935,3 +935,31 @@ and the heading is asserted to still exist (D-022). The known-gap list may only 
 gets rows, not an entry.
 
 **Standing change:** a surface is enumerated when the filesystem says it is, never when a list does.
+
+## D-029 — I committed a lint-red HEAD, using an invisible character to dodge a syntax problem
+
+**Date:** 2026-08-25 · **Self-inflicted; caught by a subagent, not by me**
+
+Writing `ledger-covers-every-surface.test.ts` I needed `/wallet/*/review` inside a `/** */` block
+comment, where `*/` terminates the comment. I put a **ZERO WIDTH SPACE** between the `*` and the `/`.
+It renders identically, reads identically in a diff, and `no-irregular-whitespace` rejects it — so
+commit `9c2d7d35` shipped with `npm run lint` failing. I had run `tsc` and the full unit suite and
+skipped lint. The V2-P2-02 agent hit the red gate, traced it to my file, and fixed it.
+
+**Two failures, and the second is the interesting one.**
+
+1. *Process.* I ran part of the gate. CLAUDE.md lists the guardrails in order for exactly this reason.
+2. *Judgement.* Faced with "this character would break the syntax", I reached for a character nobody
+   can see. That is D-016 — the raw NUL byte that made a file binary to grep — committed by me one
+   day after I wrote D-016 down. The right fix was to restructure the comment, which is what the
+   replacement does (`∗`, U+2217, visibly not an asterisk).
+
+**Guard.** `scripts/check-utf8.js` already refused a raw NUL as "valid UTF-8 and invisible to
+tooling"; it now refuses **ZWSP, ZWNJ, ZWJ, WORD JOINER and a mid-file BOM** on the same grounds, with
+a message that says an invisible fix is a defect the next reader cannot see. ESLint caught mine only
+because the file was TypeScript — a `.md`, `.css` or `.json` carrying the same character had no net.
+NBSP is deliberately excluded: 464 occurrences live in captured evidence JSON, where it is the page's
+own text. Scanned first, then written: zero violations across 2,398 tracked files, and an injected
+ZWSP is caught at the right line.
+
+**Standing change:** run the guardrails as a set, not a selection. `tsc` plus tests is not the gate.

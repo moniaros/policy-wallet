@@ -68,6 +68,41 @@ function main() {
           `\\u0000 instead of a literal NUL.`,
       });
     }
+
+    // Zero-width and invisible formatting characters. Same family as the NUL
+    // above: valid UTF-8, and unreadable. This one is not hypothetical — I put
+    // a ZERO WIDTH SPACE inside a block comment so that `/wallet/*<zwsp>/review`
+    // would not terminate the comment at `*/`, committed it, and shipped a
+    // lint-red HEAD; ESLint's no-irregular-whitespace caught it afterwards, but
+    // only because the file happened to be TypeScript. A .md, .css or .json
+    // carrying the same character has no such net.
+    //
+    // Evidence JSON legitimately contains NBSP — it is captured page text — so
+    // NBSP is not in this set and docs/**/evidence data is not scanned for it.
+    const INVISIBLES = [
+      [0x200b, "ZERO WIDTH SPACE"],
+      [0x200c, "ZERO WIDTH NON-JOINER"],
+      [0x200d, "ZERO WIDTH JOINER"],
+      [0x2060, "WORD JOINER"],
+      [0xfeff, "ZERO WIDTH NO-BREAK SPACE (BOM)"],
+    ];
+    const text = bytes.toString("utf8");
+    for (const [code, name] of INVISIBLES) {
+      const ch = String.fromCharCode(code);
+      // A BOM at position 0 is a legitimate byte-order mark, not a stray.
+      const at = code === 0xfeff ? text.indexOf(ch, 1) : text.indexOf(ch);
+      if (at !== -1) {
+        const line = text.slice(0, at).split("\n").length;
+        invalid.push({
+          filePath,
+          error:
+            `${name} (U+${code.toString(16).toUpperCase().padStart(4, "0")}) at line ${line} — ` +
+            `valid UTF-8 and INVISIBLE in an editor and a diff. If it is standing in for a ` +
+            `character that would break syntax, restructure instead: an invisible fix is a ` +
+            `defect the next reader cannot see.`,
+        });
+      }
+    }
   }
 
   if (invalid.length > 0) {
