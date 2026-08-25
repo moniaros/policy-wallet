@@ -145,7 +145,7 @@ export const employerLiabilityContent: BranchContent = {
         {
             id: 'employer_liability_review_headcount',
             label: { el: 'Επικαιροποιήστε αριθμό εργαζομένων και δραστηριότητες', en: 'Refresh headcount and activities' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

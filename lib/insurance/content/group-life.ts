@@ -142,7 +142,7 @@ export const groupLifeContent: BranchContent = {
         {
             id: 'group_life_update_profile',
             label: { el: 'Ενημερώστε το προφίλ σας με εξαρτώμενα και δάνεια', en: 'Update your profile with dependants and loans' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'profile',
         },
         {

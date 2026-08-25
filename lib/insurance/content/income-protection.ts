@@ -143,7 +143,7 @@ export const incomeProtectionContent: BranchContent = {
         {
             id: 'income_protection_update_occupation',
             label: { el: 'Ενημερώστε επάγγελμα και εισόδημα στο προφίλ σας', en: 'Update occupation and income in your profile' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'profile',
         },
         {

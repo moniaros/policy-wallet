@@ -129,7 +129,7 @@ export function ProtectionStatusHero({
 
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <Link
-                    href="/coverage-insights"
+                    href="/protection"
                     data-action="reviewCoverage"
                     className="pw-primary-button inline-flex items-center gap-2"
                 >

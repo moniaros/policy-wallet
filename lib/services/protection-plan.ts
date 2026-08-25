@@ -52,8 +52,8 @@ export interface ProtectionPlan {
 
 const SETUP_HREFS: Record<ProtectionPlanStepId, string> = {
     upload: "/wallet/add",
-    analysis: "/coverage-insights",
-    gaps: "/coverage-insights",
+    analysis: "/protection",
+    gaps: "/protection",
     agent: "/agent",
     notifications: "/notifications",
 }
@@ -83,7 +83,7 @@ export function buildProtectionPlan(facts: ProtectionPlanFacts): ProtectionPlan 
             id: `recommendation:${recId}`,
             kind: "recommendation",
             state: "open",
-            href: "/coverage-insights",
+            href: "/protection",
         })
     }
 

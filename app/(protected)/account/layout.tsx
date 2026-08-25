@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 import { SettingsShell } from "@/components/settings/SettingsShell"
 
 /**
@@ -14,5 +15,9 @@ export const metadata: Metadata = {
 export default async function AccountSettingsLayout({ children }: { children: React.ReactNode }) {
     const { dbUser } = await getAuthenticatedUser()
 
-    return <SettingsShell roles={dbUser.roles}>{children}</SettingsShell>
+    // §4.2: the partner-benefits entry lives inside Ρυθμίσεις, and only while
+    // ≥1 offer is live (cached read — no extra DB round-trip per request).
+    const hasLiveOffers = (await getPublicPartnerOffers()).length > 0
+
+    return <SettingsShell roles={dbUser.roles} hasLiveOffers={hasLiveOffers}>{children}</SettingsShell>
 }

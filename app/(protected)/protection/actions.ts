@@ -22,9 +22,8 @@ export async function refreshCoverageAnalysis(): Promise<{ ok: boolean; error?: 
         }
         await runGapEngine(dbUser.id)
 
-        revalidatePath("/coverage-insights")
-        // /protection (V2-P2-01) renders the same snapshot and reuses this
-        // action for its refresh affordance — a refresh must not leave it stale.
+        // /coverage-insights was revalidated here too until V2-P2-03 removed
+        // the route; /protection is the only mount of this snapshot now.
         revalidatePath("/protection")
         return { ok: true }
     } catch (error) {
@@ -62,6 +61,6 @@ export async function updateGapStatus(gapId: string, status: 'acknowledged' | 'd
         data: { status }
     })
 
-    revalidatePath("/coverage-insights")
+    revalidatePath("/protection")
     return { success: true }
 }

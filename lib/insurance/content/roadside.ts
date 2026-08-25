@@ -146,7 +146,7 @@ export const roadsideContent: BranchContent = {
         {
             id: 'roadside_review_overlap',
             label: { el: 'Δείτε αν επικαλύπτεται με το συμβόλαιο του αυτοκινήτου', en: 'See if it overlaps with your motor policy' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

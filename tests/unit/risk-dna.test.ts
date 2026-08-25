@@ -588,26 +588,36 @@ describe("the new surfaces are mobile-first and accessible", () => {
 describe("the information architecture holds", () => {
     const VIEW = readFileSync("components/risk-dna/RiskIntelligenceView.tsx", "utf-8")
     const DNA = readFileSync("components/risk-dna/RiskDnaPanel.tsx", "utf-8")
-    const COVER = readFileSync("app/(protected)/coverage-insights/page.tsx", "utf-8")
+    // V2-P2-03 collapsed /coverage-insights and /insights/risk-profile into
+    // /protection: the findings surface and the branch lens are the surviving
+    // "what do my policies say" side; the risk lens is "what are my risks".
+    const FINDINGS = readFileSync("components/coverage/CoverageInsightsClient.tsx", "utf-8")
+    const BRANCH_LENS = readFileSync("components/protection/ProtectionBranchLens.tsx", "utf-8")
+    const RISK_LENS = readFileSync("components/protection/ProtectionRiskLens.tsx", "utf-8")
 
-    it("renders the assessment once, not five times across two pages", () => {
+    it("renders the assessment once — only the risk lens mounts the risk panels", () => {
         // The product had recommendations, the risk graph, a flat list of all 21
         // risks, a six-category score and nine dimensions all describing one
         // assessment, on two pages. Reconciling those is our job, not the
-        // customer's. The risks now live inside the dimension they belong to.
+        // customer's. The risks now live inside the dimension they belong to,
+        // on the risk lens alone.
         expect(DNA).toMatch(/dimension\.risks\.map/)
-        expect(COVER).not.toMatch(/<RiskAssessmentPanel/)
-        expect(COVER).not.toMatch(/<RiskGraphPanel/)
+        expect(RISK_LENS).toMatch(/<RiskGraphPanel/)
+        for (const src of [FINDINGS, BRANCH_LENS]) {
+            expect(src).not.toMatch(/<RiskAssessmentPanel/)
+            expect(src).not.toMatch(/<RiskGraphPanel/)
+        }
     })
 
-    it("keeps the two pages answering different questions", () => {
+    it("keeps the two lenses answering different questions", () => {
         // "What are my risks" and "what do my policies say" are different
-        // questions; the nav has to say so, and each page has to point at the
-        // other rather than half-answering both.
+        // questions; the lens switcher has to say so in both languages.
         const en = readFileSync("lib/i18n/translations/en.ts", "utf-8")
-        expect(en).toMatch(/riskProfile: 'Your risks'/)
-        expect(en).toMatch(/coverageInsights: 'Your cover'/)
-        expect(COVER).toMatch(/\/insights\/risk-profile/)
+        const el = readFileSync("lib/i18n/translations/el.ts", "utf-8")
+        expect(en).toMatch(/lensByBranch: 'By line'/)
+        expect(en).toMatch(/lensByRisk: 'By risk'/)
+        expect(el).toMatch(/lensByBranch: 'Ανά κλάδο'/)
+        expect(el).toMatch(/lensByRisk: 'Ανά κίνδυνο'/)
     })
 
     it("does not strand a call to action with nowhere to go", () => {
@@ -630,8 +640,10 @@ describe("the information architecture holds", () => {
     it("keeps the evidence view reachable", () => {
         // "What we are protecting", with the evidence behind each verdict, is
         // the only surface that shows WHY we believe something — the product's
-        // whole claim to trust. Removing its old home must not have lost it.
-        const page = readFileSync("app/(protected)/insights/risk-profile/page.tsx", "utf-8")
-        expect(page).toMatch(/<RiskGraphPanel/)
+        // whole claim to trust. Removing its old home must not have lost it:
+        // the /protection risk lens mounts it (asserted above on RISK_LENS),
+        // and the lens itself must stay mounted by the surface.
+        const surface = readFileSync("components/protection/ProtectionSurface.tsx", "utf-8")
+        expect(surface).toMatch(/<ProtectionRiskLens/)
     })
 })

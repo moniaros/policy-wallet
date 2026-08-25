@@ -2,6 +2,7 @@ export const runtime = 'nodejs'
 
 import { redirect } from "next/navigation"
 import { LEGACY_TAB_REDIRECTS } from "@/lib/settings/sections"
+import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 import { SettingsNav } from "@/components/settings/SettingsNav"
 import { ProfileSection } from "@/components/settings/sections/ProfileSection"
 import { getProfileData } from "./data"
@@ -27,11 +28,12 @@ export default async function AccountPage({
     if (legacyTarget && legacyTarget !== "/account") redirect(legacyTarget)
 
     const profile = await getProfileData()
+    const hasLiveOffers = (await getPublicPartnerOffers()).length > 0
 
     return (
         <>
             <div className="lg:hidden">
-                <SettingsNav roles={profile.roles} variant="index" />
+                <SettingsNav roles={profile.roles} hasLiveOffers={hasLiveOffers} variant="index" />
             </div>
             <div className="hidden space-y-4 lg:block">
                 <ProfileSection data={profile} />

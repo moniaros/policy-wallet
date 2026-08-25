@@ -73,16 +73,16 @@ interface BottomNavItem extends BottomNavItemBase {
 // Bottom navigation items based on role
 const getBottomNavItems = (role: UserRole['role'], t: any): BottomNavItem[] => {
     if (role === 'policyholder') {
+        // §4.2: the same five tabs as the sidebar — /protection absorbed
+        // /branches, /insights/risk-profile and /coverage-insights. The bell
+        // (→ /notifications, with the unread badge) lives in the mobile top
+        // header, so the badge no longer rides on a tab here.
         return [
             { href: '/dashboard', icon: LayoutDashboard, label: t.nav.home, id: 'home' },
-            { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
-            { href: '/coverage-insights', icon: Shield, label: t.nav.insightsShort, id: 'analysis' },
+            { href: '/wallet', icon: Wallet, label: t.nav.walletShort, id: 'wallet' },
+            { href: '/protection', icon: Shield, label: t.nav.protectionShort, id: 'protection' },
             { href: '/agent', icon: Users, label: t.nav.agentShort, id: 'agent' },
-            // The unread badge used to be hardcoded to `item.id === 'notifications'`,
-            // an id NO bottom-nav item has — so on mobile the badge could never
-            // render for any role. It now rides on whichever tab owns notifications;
-            // /account is where the policyholder reaches them.
-            { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings', showsNotificationBadge: true }
+            { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings' }
         ]
     } else if (role === 'agent') {
         const translations = {

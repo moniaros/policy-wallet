@@ -14,7 +14,7 @@ import { declarableLifeEvents, getLifeEvent, magnitudePrompt } from "@/lib/servi
 import { getLifeEventHistory } from "@/lib/services/life-events/service"
 import { QUICK_START_QUESTIONS, quickStartComplete } from "@/lib/services/onboarding/quick-start"
 import { toLifeContext } from "@/lib/services/gap-engine/life-context"
-import { submitQuickStart } from "@/app/(protected)/insights/risk-profile/actions"
+import { submitQuickStart } from "@/app/(protected)/protection/quick-start-actions"
 import { ProtectionSurface } from "@/components/protection/ProtectionSurface"
 import type { ProtectionLens } from "@/components/protection/ProtectionLensTabs"
 import type { BranchTileState } from "@/lib/insurance/branch-page"
@@ -27,7 +27,7 @@ import type { BranchTileState } from "@/lib/insurance/branch-page"
  * wizard, life events, refresh, upgrade). Each lens is the SOURCE surface's own
  * derivation, moved: the branch tiles are buildBranchOverview over lifecycle
  * statuses, the risk lens is getRiskIntelligence rendered by the same view.
- * The three old routes stay alive until V2-P2-03 removes them.
+ * The three old routes were removed by V2-P2-03; this is their one home.
  *
  * Read-only, like both sources: no engine run happens in render — the WRITE
  * path lives behind the explicit refresh action, the upload pipeline and cron.

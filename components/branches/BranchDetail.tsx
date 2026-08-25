@@ -75,17 +75,12 @@ const STATUS_I18N_KEY: Record<string, string> = {
 }
 
 
-/** Which surface mounted the detail — decides only the breadcrumb. */
-export type BranchDetailOrigin = "branches" | "protection"
-
 /**
- * One line of business, in full — extracted verbatim from
- * app/(protected)/branches/[branch]/page.tsx (V2-P2-01) so the same content
- * mounts at BOTH /branches/[branch] (until V2-P2-03 removes it) and
- * /protection/[branch], the §4.2 home. Behaviour is identical on both mounts;
- * only the breadcrumb differs.
+ * One line of business, in full — extracted verbatim from the legacy
+ * /branches/[branch] page (V2-P2-01); since V2-P2-03 removed that route,
+ * /protection/[branch] (the §4.2 home) is its only mount.
  */
-export async function BranchDetail({ branchParam, origin }: { branchParam: string; origin: BranchDetailOrigin }) {
+export async function BranchDetail({ branchParam }: { branchParam: string }) {
     const branch = getBranch(branchParam)
     if (!branch) notFound()
 
@@ -168,10 +163,10 @@ export async function BranchDetail({ branchParam, origin }: { branchParam: strin
             {/* Header */}
             <nav className="mb-4 text-xs font-bold text-black/60 dark:text-white/55">
                 <Link
-                    href={origin === "protection" ? "/protection" : "/branches"}
+                    href="/protection"
                     className="hover:text-primary dark:hover:text-mint"
                 >
-                    {origin === "protection" ? t.protection.title : t.branches.title}
+                    {t.protection.title}
                 </Link>
                 <span className="mx-2" aria-hidden>/</span>
                 <span className="text-black/75 dark:text-white/80">{branchTitle}</span>

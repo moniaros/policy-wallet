@@ -19,7 +19,7 @@ import { settle } from "./metrics"
 test.describe("pageOverflow detects what it claims to", () => {
     test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: 320, height: 800 })
-        await page.goto("/timeline")
+        await page.goto("/account/history")
         await settle(page)
     })
 

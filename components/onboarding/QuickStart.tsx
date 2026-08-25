@@ -117,7 +117,7 @@ export function QuickStart({ questions, language, onSubmit }: QuickStartProps) {
                 )}
 
                 <Link
-                    href="/coverage-insights#risk-profile-wizard"
+                    href="/protection#risk-profile-wizard"
                     className="mt-3 inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {t("Πείτε μας περισσότερα", "Tell us more")}

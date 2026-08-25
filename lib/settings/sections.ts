@@ -20,6 +20,7 @@ export type SettingsSectionId =
     | "notifications"
     | "privacy"
     | "history"
+    | "benefits"
     | "agency"
 
 export interface SettingsSectionDef {
@@ -28,7 +29,13 @@ export interface SettingsSectionDef {
     /** Key under `t.settings.nav` — label + description live in the dictionary. */
     labelKey: SettingsSectionId
     /** Only rendered for users holding this role. */
-    requiresRole?: "agent"
+    requiresRole?: "agent" | "policyholder"
+    /**
+     * Only rendered while ≥1 partner offer is live — the honesty rule extends
+     * to navigation. The caller resolves the flag server-side
+     * (getPublicPartnerOffers, a cached read) and passes it down.
+     */
+    requiresLiveOffers?: true
 }
 
 export const SETTINGS_SECTIONS: SettingsSectionDef[] = [
@@ -41,15 +48,19 @@ export const SETTINGS_SECTIONS: SettingsSectionDef[] = [
     // thing you consult about your account, not a destination — it lives here
     // rather than holding a menu slot.
     { id: "history", href: "/account/history", labelKey: "history" },
+    // §4.2 (V2-P2-03): the partner-benefits entry lives inside Ρυθμίσεις, not
+    // as a tab — and only while an offer is actually live.
+    { id: "benefits", href: "/benefits", labelKey: "benefits", requiresRole: "policyholder", requiresLiveOffers: true },
     // Lives on its own route because the agent shell links straight to it and
     // the onboarding checklist deep-links two of its fields.
     { id: "agency", href: "/agent/settings", labelKey: "agency", requiresRole: "agent" },
 ]
 
 /** The sections a user with these roles can actually reach. */
-export function settingsSectionsFor(roles: string): SettingsSectionDef[] {
-    const isAgent = roles.includes("agent")
-    return SETTINGS_SECTIONS.filter((s) => !s.requiresRole || (s.requiresRole === "agent" && isAgent))
+export function settingsSectionsFor(roles: string, opts?: { hasLiveOffers?: boolean }): SettingsSectionDef[] {
+    return SETTINGS_SECTIONS
+        .filter((s) => !s.requiresRole || roles.includes(s.requiresRole))
+        .filter((s) => !s.requiresLiveOffers || opts?.hasLiveOffers === true)
 }
 
 /**

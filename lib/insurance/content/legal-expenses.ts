@@ -142,7 +142,7 @@ export const legalExpensesContent: BranchContent = {
         {
             id: 'legal_review_terms',
             label: { el: 'Διαβάστε τους όρους ανάληψης υπόθεσης', en: 'Read the case-acceptance conditions' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

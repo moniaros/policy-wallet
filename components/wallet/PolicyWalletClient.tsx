@@ -321,7 +321,13 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
                 onAddManually={() => router.push('/wallet/add')}
                 onUploadDocument={() => router.push('/wallet/add?method=upload')}
                 onBatchUpload={() => setIsBatchUploadOpen(true)}
-                onShareWithAgent={(policyId) => router.push(`/wallet/${policyId}/share`)}
+                // `/wallet/[id]/share` has never existed — this control 404'd.
+                // Found by the dead-link guard V2-P2-03 built, which enumerates
+                // routes from the filesystem; nothing else was checking that a
+                // button's destination was real. Sharing lives in
+                // CollaborationPanel, inside the `#agent` section of the policy
+                // page, and calls the sharePolicy action from wallet/actions.
+                onShareWithAgent={(policyId) => router.push(`/wallet/${policyId}#agent`)}
                 onRunAnalysis={runAnalysis}
                 onDeletePolicy={(policyId) => setDeletePolicyId(policyId)}
             />

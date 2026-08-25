@@ -72,7 +72,7 @@ export function notificationActionPath(
         // one that lands somewhere true. When a detail route appears, this is
         // the single line that changes.
         case "recommendation":
-            return "/coverage-insights"
+            return "/protection"
         case "renewal":
             return "/renewals"
         case "opportunity":

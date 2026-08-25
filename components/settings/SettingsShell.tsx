@@ -11,6 +11,8 @@ import { activeSectionFor } from "@/lib/settings/sections"
 interface SettingsShellProps {
     /** Comma-separated `User.roles` — decides whether the agency section shows. */
     roles: string
+    /** Whether ≥1 partner offer is live — decides the benefits entry. */
+    hasLiveOffers: boolean
     children: ReactNode
 }
 
@@ -27,7 +29,7 @@ interface SettingsShellProps {
  * in, so the section is the page), while on a wide screen "Settings" is the h1
  * and the rail beside it says where you are.
  */
-export function SettingsShell({ roles, children }: SettingsShellProps) {
+export function SettingsShell({ roles, hasLiveOffers, children }: SettingsShellProps) {
     const { t } = useLanguage()
     const pathname = usePathname()
     const active = activeSectionFor(pathname)
@@ -67,7 +69,7 @@ export function SettingsShell({ roles, children }: SettingsShellProps) {
 
                 <div className="lg:grid lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-8">
                     <div className="hidden lg:block">
-                        <SettingsNav roles={roles} variant="rail" />
+                        <SettingsNav roles={roles} hasLiveOffers={hasLiveOffers} variant="rail" />
                     </div>
                     <main className="min-w-0 space-y-4">{children}</main>
                 </div>

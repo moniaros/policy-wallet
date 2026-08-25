@@ -92,7 +92,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     fact; what it "scores" was a verdict. */}
                 <p className="mb-8 text-muted-foreground">{t.agentUi.responsesSubmitted}</p>
                 <Link
-                    href="/coverage-insights"
+                    href="/protection"
                     data-action="reviewCoverage"
                     className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-white dark:text-[#1A2420] transition-transform hover:-translate-y-0.5"
                 >

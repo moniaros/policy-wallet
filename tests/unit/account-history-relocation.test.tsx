@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { render, fireEvent, cleanup, waitFor } from "@testing-library/react"
 import { LifeTimeline, type TimelineEntryView } from "@/components/timeline/LifeTimeline"
 
@@ -71,7 +71,7 @@ function fixtureEntries(): TimelineEntryView[] {
                     el: "Μας δηλώσατε αυτή τη μεταβολή.",
                 },
             },
-            href: "/coverage-insights",
+            href: "/protection",
         },
         {
             id: "life_event:e1",
@@ -80,7 +80,7 @@ function fixtureEntries(): TimelineEntryView[] {
             title: { en: "You took out a mortgage", el: LIFE_EVENT_TITLE },
             detail: null,
             cause: null,
-            href: "/coverage-insights",
+            href: "/protection",
         },
         ...duplicates,
         {
@@ -213,9 +213,7 @@ describe("T-01 — /account/history is a real settings route over the same timel
         expect(page).toMatch(/HistorySection/)
     })
 
-    it("the old route still works until the removal item lands (build-before-remove)", () => {
-        const page = readFileSync("app/(protected)/timeline/page.tsx", "utf-8")
-        expect(page).toMatch(/getTimeline/)
-        expect(page).toMatch(/LifeTimeline/)
+    it("the old route is gone — V2-P2-03 removed /timeline after the relocation", () => {
+        expect(existsSync("app/(protected)/timeline/page.tsx")).toBe(false)
     })
 })

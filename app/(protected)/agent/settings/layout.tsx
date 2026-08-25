@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 import { SettingsShell } from "@/components/settings/SettingsShell"
 
 /**
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 
 export default async function AgentSettingsLayout({ children }: { children: React.ReactNode }) {
     const { dbUser } = await getAuthenticatedUser()
+    const hasLiveOffers = (await getPublicPartnerOffers()).length > 0
 
-    return <SettingsShell roles={dbUser.roles}>{children}</SettingsShell>
+    return <SettingsShell roles={dbUser.roles} hasLiveOffers={hasLiveOffers}>{children}</SettingsShell>
 }

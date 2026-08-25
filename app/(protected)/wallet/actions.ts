@@ -481,7 +481,7 @@ export async function confirmPolicyReview(policyId: string, edits: ConfirmReview
     revalidatePath("/wallet")
     revalidatePath(`/wallet/${policyId}`)
     revalidatePath(`/customers/${policy.ownerUserId}/policy/${policyId}`)
-    revalidatePath("/coverage-insights")
+    revalidatePath("/protection")
     revalidatePath("/dashboard")
     return { success: true }
 }
@@ -1289,7 +1289,7 @@ export async function deletePolicy(policyId: string) {
         })
 
         revalidatePath("/wallet")
-        revalidatePath("/coverage-insights")
+        revalidatePath("/protection")
         revalidatePath("/dashboard")
         return { success: true }
     }

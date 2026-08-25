@@ -148,7 +148,7 @@ export const fidelityContent: BranchContent = {
         {
             id: 'fidelity_review_schedule',
             label: { el: 'Επικαιροποιήστε τις καλυπτόμενες θέσεις', en: 'Refresh the covered positions' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

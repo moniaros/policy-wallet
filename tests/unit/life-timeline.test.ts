@@ -76,8 +76,10 @@ describe("the causal chain reaches every surface that shows a recommendation", (
         const card = readFileSync("components/coverage/RecommendationCards.tsx", "utf-8")
         expect(card).toMatch(/rec\.cause &&/)
         expect(card).toMatch(/Why you are seeing this/)
-        // And it links back to where the cause sits in context.
-        expect(card).toMatch(/href="\/timeline"/)
+        // And it links back to where the cause sits in context — the activity
+        // history inside Ρυθμίσεις since V2-P2-02/03 relocated and removed
+        // /timeline.
+        expect(card).toMatch(/href="\/account\/history"/)
     })
 
     it("reaches the wallet and branch pages too", () => {
@@ -95,11 +97,14 @@ describe("the causal chain reaches every surface that shows a recommendation", (
         }
     })
 
-    it("is reachable from the primary navigation", () => {
-        // A whole surface reachable only from two deep links is a surface most
-        // customers will never find.
-        const layout = readFileSync("app/(protected)/layout.tsx", "utf-8")
-        expect(layout).toMatch(/href: "\/timeline"/)
+    it("is reachable from the settings map", () => {
+        // §4.2 deliberately removed the menu slot (T-01: activity history is a
+        // thing you consult about your account, not a destination). Reachability
+        // now flows through the settings registry, which the rail, the mobile
+        // index and settings-ia.test.ts all render from — so this is the single
+        // source that keeps the surface findable.
+        const sections = readFileSync("lib/settings/sections.ts", "utf-8")
+        expect(sections).toMatch(/href: "\/account\/history"/)
     })
 })
 

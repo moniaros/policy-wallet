@@ -144,7 +144,7 @@ export const transportsContent: BranchContent = {
         {
             id: 'transports_review_cargo_pairing',
             label: { el: 'Δείτε πώς συνδυάζεται με ασφάλιση εμπορευμάτων', en: 'See how it pairs with cargo insurance' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

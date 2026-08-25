@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import type { BranchTileState } from '@/lib/insurance/branch-page'
 
 /**
- * One insurance branch on the /branches overview grid. Server-safe — all
+ * One insurance branch on the /protection branch-lens grid. Server-safe — all
  * copy (and the icon) arrives pre-resolved (EmptyState convention).
  */
 export interface ProductBranchCardProps {

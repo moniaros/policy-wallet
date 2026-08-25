@@ -113,7 +113,7 @@ export const pensionContent: BranchContent = {
         {
             id: 'pension_compare_goal',
             label: { el: 'Συγκρίνετε εισφορές με τον στόχο αποταμίευσης', en: 'Compare contributions with your savings goal' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'profile',
         },
         {

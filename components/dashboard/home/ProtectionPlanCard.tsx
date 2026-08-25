@@ -147,7 +147,7 @@ export function ProtectionPlanCard({
             </ul>
             {moreOpenLabel && (
                 <Link
-                    href="/coverage-insights"
+                    href="/protection"
                     // The «+N ακόμη» count IS the open recommendation set — the
                     // same fact the hero's areas line states, under one key.
                     data-count={moreOpenCount !== undefined ? "recommendation.openCount" : undefined}

@@ -257,7 +257,7 @@ export const POST = withApiGuard(
             }
 
             revalidatePath("/wallet")
-            revalidatePath("/coverage-insights")
+            revalidatePath("/protection")
             revalidatePath("/dashboard")
 
             return NextResponse.json({

@@ -12,14 +12,13 @@ import { NeedsClaim } from "@/components/needs/NeedsClaim"
 import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
 import { TranslationsProvider } from "@/contexts/TranslationsProvider"
 import { getClientPlanFacts } from "@/lib/pricing/plan-catalog"
-import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { signOut } from "@/app/auth/actions"
 import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, Gift, FileText, Inbox, Coins, History, Zap } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, Euro, UsersRound, FileQuestion, Flag, Handshake, FileText, Inbox, Coins, Zap } from 'lucide-react'
 import { displayPersonName } from "@/lib/wallet/policy-identity"
 
 export default async function ProtectedLayout({
@@ -75,28 +74,16 @@ export default async function ProtectedLayout({
     const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'en' | 'el') || 'el')
 
     if (currentRole === "policyholder") {
-        // Partner-benefits nav entry appears only while ≥1 offer is live —
-        // the honesty rule extends to navigation (cached read, no extra DB
-        // round-trip per request).
-        const hasLiveOffers = (await getPublicPartnerOffers()).length > 0
+        // §4.2 IA: five tabs plus the bell. /protection absorbed /branches,
+        // /insights/risk-profile and /coverage-insights; the timeline lives
+        // inside Ρυθμίσεις (/account/history); the partner-benefits entry is
+        // conditional INSIDE Ρυθμίσεις (SettingsNav), not a tab.
         navigation.push({
             title: t.nav.navigation,
             items: [
                 { label: t.nav.home, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
-                { label: t.nav.branches, href: "/branches", icon: <LayoutGrid className="w-5 h-5" /> },
-                { label: t.nav.riskProfile, href: "/insights/risk-profile", icon: <Activity className="w-5 h-5" /> },
-                {
-                    label: t.nav.coverageInsights,
-                    href: "/coverage-insights",
-                    variant: 'pro',
-                    isLocked: false,
-                    icon: <Shield className="w-5 h-5" />
-                },
-                { label: t.nav.timeline, href: "/timeline", icon: <History className="w-5 h-5" /> },
-                ...(hasLiveOffers
-                    ? [{ label: t.nav.benefits, href: "/benefits", icon: <Gift className="w-5 h-5" /> }]
-                    : []),
+                { label: t.nav.protection, href: "/protection", icon: <Shield className="w-5 h-5" /> },
                 { label: t.nav.myAgent, href: "/agent", icon: <Users className="w-5 h-5" /> },
                 { label: t.userMenu.settings, href: "/account", icon: <Settings className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" />, badge: unreadNotificationCount || undefined },

@@ -91,7 +91,7 @@ export const healthContent: BranchContent = {
         {
             id: 'health_check_group',
             label: { el: 'Ελέγξτε αν το ομαδικό σας αρκεί', en: 'Check whether your group plan is enough' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

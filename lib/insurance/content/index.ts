@@ -4,7 +4,7 @@
  * by branch pages, PolicyQA suggested questions and branch empty states.
  *
  * NOTE ON `contentTier`: taxonomy `contentTier` is MARKETING PROMINENCE (it
- * drives the `/branches` listing), not a claim about whether a bundle exists.
+ * drives the branch-lens listing on `/protection`), not a claim about whether a bundle exists.
  * A `basic`-tier branch may — and now does — carry a hand-written bundle:
  * `liability`, `legal_expenses` and the three b2b `group_*` lines are authored
  * here while deliberately staying off the consumer branch listing. Registering
@@ -48,7 +48,7 @@ export type { Bilingual, BranchAction, BranchCommonGap, BranchContent } from './
 
 /**
  * The registry key is the canonical taxonomy branch id — NOT `contentTier`.
- * `contentTier` is marketing prominence and doubles as the `/branches` listing
+ * `contentTier` is marketing prominence and doubles as the `/protection` branch-lens listing
  * switch (lib/insurance/branch-page.ts), so a branch can have a hand-written
  * bundle here while staying `basic` in the taxonomy. See the registry
  * invariants in tests/unit/branch-content.test.ts.

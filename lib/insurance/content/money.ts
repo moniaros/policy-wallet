@@ -144,7 +144,7 @@ export const moneyContent: BranchContent = {
         {
             id: 'money_review_property_link',
             label: { el: 'Ελέγξτε αν απαιτείται ασφαλιστήριο περιουσίας σε ισχύ', en: 'Check whether an in-force property policy is required' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

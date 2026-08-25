@@ -72,9 +72,9 @@ function ownershipViolations(entries: ReadonlyArray<{ route: string; owner: Owne
 describe('SURFACES.md enumeration is alive (parser sanity floor)', () => {
     it('finds the B2C table and its known members', () => {
         expect(b2cRoutes.length).toBeGreaterThanOrEqual(20)
-        expect(b2cRoutes).toContain('/insights/risk-profile')
+        expect(b2cRoutes).toContain('/protection')
         expect(b2cRoutes).toContain('/dashboard')
-        expect(b2cRoutes).toContain('/coverage-insights')
+        expect(b2cRoutes).toContain('/account/history')
     })
 
     it('finds the B2B agent table and its known members', () => {
@@ -123,9 +123,9 @@ describe('the cross-role gates still stand', () => {
         expect(decideRoleRedirect('/dashboard', 'agent')).toBe('/dashboard/agent')
         expect(decideRoleRedirect('/wallet', 'agent')).toBe('/dashboard/agent')
         expect(decideRoleRedirect('/wallet/abc/edit', 'agent')).toBe('/dashboard/agent')
-        expect(decideRoleRedirect('/coverage-insights', 'agent')).toBe('/dashboard/agent')
+        expect(decideRoleRedirect('/protection', 'agent')).toBe('/dashboard/agent')
+        expect(decideRoleRedirect('/protection/property', 'agent')).toBe('/dashboard/agent')
         expect(decideRoleRedirect('/home', 'agent')).toBe('/dashboard/agent')
-        expect(decideRoleRedirect('/insights/risk-profile', 'agent')).toBe('/dashboard/agent')
     })
 
     it('keeps /dashboard vs /dashboard/agent from looping (the warning proxy.ts already carried)', () => {
@@ -189,10 +189,12 @@ describe('probe: the guard catches the NEXT prefix collision, not just this one'
     })
 
     it('control: a declared ownership override clears the flag', () => {
-        // /insights/risk-profile is exactly such a child, with its owner
-        // declared — the machinery that flags the probes passes it.
+        // /agent is exactly such a child-vs-parent split (the exact page is
+        // the customer's view, the children are agent tools), and
+        // /wallet/[id]/review is the mirror — both declared, so the machinery
+        // that flags the probes passes them.
         expect(ownershipViolations([
-            { route: '/insights/risk-profile', owner: 'policyholder' },
+            { route: '/agent', owner: 'policyholder' },
             { route: '/wallet/[id]/review', owner: 'agent' },
         ])).toEqual([])
     })

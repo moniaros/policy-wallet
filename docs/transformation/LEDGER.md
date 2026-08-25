@@ -210,10 +210,13 @@ T-011. Harmless but it should be corrected when T-015 republishes.
 
 ---
 
-## Αναλύσεις — `/coverage-insights`
+## Αναλύσεις — `/coverage-insights` — **ROUTE REMOVED (V2-P2-03)**; every KEEP row lives on `/protection`
 
-Source: `app/(protected)/coverage-insights/page.tsx` → `CoverageInsightsClient`, `ProtectionScoreCard`,
+Source (historical): `app/(protected)/coverage-insights/page.tsx` → `CoverageInsightsClient`, `ProtectionScoreCard`,
 `RecommendationCards`, `LifeEventsPanel`, `RiskProfileWizard`, `RefreshAnalysisButton`, `UpgradeTriggerCard`.
+The route was deleted by V2-P2-03; the shared components mount on «Η προστασία μου» (`/protection`),
+its server actions moved to `app/(protected)/protection/actions.ts` auth-intact (a 100% git rename),
+and `/coverage` (the legacy redirect, a KEEP row) now points at `/protection`.
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
@@ -221,11 +224,11 @@ Source: `app/(protected)/coverage-insights/page.tsx` → `CoverageInsightsClient
 | A-02 | See the score's colour verdict (`scoreColor`) | fact | **REMOVE** | goes with A-01, so the WCAG 1.4.1 finding resolves by deletion rather than by adding a text equivalent | P1-01 |
 | A-03 | Read the freshness stamp ("computed from data as of…") | fact | **REMOVE** | it stamps the score; nothing left to stamp | P1-01 |
 | A-04 | Read methodology / limits / not-advice | fact | **REMOVE** | goes with A-01 | P1-01 |
-| A-05 | See recommendations (`RecommendationCards`) | fact | **KEEP** | titles must not be AI prose from an unauthored slug | — |
-| A-06 | Declare life events (`LifeEventsPanel`) | action | **KEEP** | duplicates the dashboard's `LifeEventPromptCard` — one must link to the other (§7.5 renders once) | Phase 5 |
-| A-07 | Complete the risk-profile wizard | action | **KEEP** | the long form; §7.5 says it is not the first thing on the surface | Phase 2 |
-| A-08 | Refresh the analysis | action | **KEEP** | consent-gated path | — |
-| A-09 | Upgrade trigger | action | **KEEP** | monetization surface | — |
+| A-05 | See recommendations (`RecommendationCards`) | fact | **KEEP** | `/protection` (V2-P2-03); titles must not be AI prose from an unauthored slug | — |
+| A-06 | Declare life events (`LifeEventsPanel`) | action | **KEEP** | `/protection#life-events`; duplicates the dashboard's `LifeEventPromptCard` — one must link to the other (§7.5 renders once) | Phase 5 |
+| A-07 | Complete the risk-profile wizard | action | **KEEP** | `/protection#risk-profile-wizard`; the long form; §7.5 says it is not the first thing on the surface | Phase 2 |
+| A-08 | Refresh the analysis | action | **KEEP** | `/protection` (action moved to `protection/actions.ts`, auth-intact); consent-gated path | — |
+| A-09 | Upgrade trigger | action | **KEEP** | `/protection` — its ONLY mount since V2-P2-03; §10.1 count stays 5 | — |
 
 ### A-10…A-21 — `CoverageInsightsClient` itself. Added 2026-08-25; it had NO rows.
 
@@ -238,7 +241,7 @@ route. Without these rows the rule in §12 would have reported no violation.
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
 | A-10 | The reviewed-findings list: per-gap card with title, severity, line of business | fact | **KEEP** | «Η προστασία μου» | V2-P2-01b ✓ |
-| A-11 | Severity tally that sums to `gap.openCount` on live cover | fact | **NEW — corrected 2026-08-25** | «Η προστασία μου» *and* `/coverage-insights`, since both mount the same client | V2-P2-01b ✓ |
+| A-11 | Severity tally that sums to `gap.openCount` on live cover | fact | **NEW — corrected 2026-08-25** | «Η προστασία μου» — single mount since V2-P2-03 removed `/coverage-insights` | V2-P2-01b ✓ |
 | A-12 | «Εξαιρέθηκαν» — names the EXPIRED policies left out of the tally | fact | **KEEP — honesty feature** | same. This is the surface telling the reader what it did not count; losing it silently would be the §2.1 shape | V2-P2-01b |
 | A-13 | «Ελέγχθηκε και είναι εντάξει» — policies checked with no findings | fact | **KEEP** | same. The counterpart to A-12: checked-and-clear stated as such, distinct from never-looked | V2-P2-01b |
 | A-14 | Counts: policies with findings, total policies, total coverage | fact | **KEEP** | same, through registered `data-count` keys | V2-P2-01b |
@@ -247,7 +250,7 @@ route. Without these rows the rule in §12 would have reported no violation.
 | A-17 | Never-analysed state, with a refresh hint and a locked CTA | fact | **KEEP** | same. Absence-is-not-reassurance depends on this state existing separately from A-13 | V2-P2-01b |
 | A-18 | Empty-wallet state with an add-first CTA | fact | **KEEP** | same | V2-P2-01b |
 | A-19 | All-good state | fact | **KEEP, CHECK** | same — must not read as reassurance when nothing was analysed (that is A-17's job) | V2-P2-01b |
-| A-20 | Free-tier lite view: partial list, unlock CTA | action | **KEEP** | same; monetization count must not rise (§10.1) | V2-P2-01b |
+| A-20 | Free-tier lite view: partial list, unlock CTA | action | **KEEP** | same — single mount since V2-P2-03; monetization count must not rise (§10.1) | V2-P2-01b |
 | A-21 | Independence note, link to coverage settings | fact | **KEEP** | same | V2-P2-01b ✓ |
 
 **Two of these rows were wrong when I wrote them, and the implementing agent caught both.**
@@ -415,37 +418,39 @@ fixture, which is exactly the gap the policy-detail baseline already documented 
 
 # v2 additions — surfaces v1 never enumerated
 
-## Κλάδοι — `/branches`
+## Κλάδοι — `/branches` — **ROUTE REMOVED (V2-P2-03)**; the grid is the ανά κλάδο lens of `/protection`
 
-Source: `app/(protected)/branches/page.tsx` → `components/branches/ProductBranchCard.tsx`.
+Source (historical): `app/(protected)/branches/page.tsx` → `components/branches/ProductBranchCard.tsx`
+(the card survives, mounted by `ProtectionBranchLens`).
 Baseline: `evidence/branches/BASELINE.md` (1,981px @320, 31 containers, depth 2, **9 truncation**).
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
 | B-01 | See the nine lines of business as cards | fact | **KEEP** | absorbed into «Η προστασία μου», *ανά κλάδο* lens (§4.2) | Phase 2 |
-| B-02 | See how many policies you hold per line | fact | **KEEP** | the honest half of this surface | — |
-| B-03 | Read a one-line tagline per line | fact | **KEEP, FIX** | 8 of 9 clip mid-word at 320px (`line-clamp-2`) — Phase 3 primitive, not a local override | Phase 4 |
-| B-04 | Open a line to see what you hold | action | **KEEP** | `href` per card | — |
+| B-02 | See how many policies you hold per line | fact | **KEEP** | `/protection`, ανά κλάδο lens — the honest half of this surface | — |
+| B-03 | Read a one-line tagline per line | fact | **KEEP, FIX** | `/protection`, ανά κλάδο lens; 8 of 9 clip mid-word at 320px (`line-clamp-2`) — Phase 3 primitive, not a local override | Phase 4 |
+| B-04 | Open a line to see what you hold | action | **KEEP** | `/protection/[branch]` (`href` per card) | — |
 | B-05 | See «Πιθανό κενό» on a line | fact | **DONE — register changed, information kept** | now «Χωρίς ασφαλιστήριο», neutral. A *lapsed* policy still reads as a finding | V2-P1-02 ✓ |
-| B-06 | See `business` among consumer lines | fact | **DEFER — likely unintended** | `contentTier: 'rich'` with no B2C/B2B filter. Needs a product decision, not a fix | Phase 2 |
+| B-06 | See `business` among consumer lines | fact | **DECIDED (QUEUE.md Phase 2)** | `/protection`, ανά κλάδο lens: renders only when the customer holds a policy in the line — one predicate in `ProtectionBranchLens`, reversible | V2-P2-01 ✓ |
 
 **Ledger note on B-05.** This is the row that matters. The card's *structure* is fine — the defect
 is that an unowned line wears the visual language of a finding. Removal here means changing the
 register, not deleting the card: the customer still learns they hold no pet cover.
 
-## Χρονολόγιο — `/timeline`
+## Χρονολόγιο — `/timeline` — **ROUTE REMOVED (V2-P2-03)**; the capability lives at `/account/history`
 
-Source: `app/(protected)/timeline/page.tsx` → `components/timeline/LifeTimeline.tsx`.
+Source (historical): `app/(protected)/timeline/page.tsx` → `components/timeline/LifeTimeline.tsx`
+(the component survives, mounted by `HistorySection` inside Ρυθμίσεις).
 Baseline: `evidence/timeline/BASELINE.md` (9,539px @320 paid, 68 containers, **1 leak**).
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
 | T-01 | See a chronological history of what happened | fact | **KEEP, RELOCATED** | §4.2 — activity history **inside Ρυθμίσεις**, at `/account/history` («Ιστορικό δραστηριότητας», V2-P2-02); it does not warrant a menu slot | Phase 2 |
-| T-02 | Filter by entry kind | action | **KEEP** | must survive the relocation | Phase 2 |
-| T-03 | See a cause link between entries | fact | **KEEP** | the surface's one genuinely distinctive idea — it clears the filter first because the cause is often a filtered-out kind | Phase 2 |
-| T-04 | Open the policy an entry concerns | action | **KEEP** | `href` per entry | — |
+| T-02 | Filter by entry kind | action | **KEEP** | `/account/history` — survived the relocation (guarded on rendered output by `account-history-relocation.test.tsx`) | V2-P2-02 ✓ |
+| T-03 | See a cause link between entries | fact | **KEEP** | `/account/history` — survived; it clears the filter first because the cause is often a filtered-out kind | V2-P2-02 ✓ |
+| T-04 | Open the policy an entry concerns | action | **KEEP** | `/account/history` (`href` per entry) | — |
 | T-05 | Read a policy's name on an entry | fact | **KEEP, FIX** | renders `__PENDING_EXTRACTION__` verbatim — `timeline/build.ts:202` bypasses `policy-identity.ts` (D-021) | V2-P1-06 |
-| T-06 | See 18 of 60 rows sharing one title | — | **REMOVE** | duplicate-block; the relocation is the opportunity to group | Phase 2 |
+| T-06 | See 18 of 60 rows sharing one title | — | **REMOVED** | grouped during the relocation to `/account/history` | V2-P2-02 ✓ |
 
 **Ledger note on T-01.** §4.2 removes this from the menu. That is a **relocation, not a deletion** —
 the capability survives inside settings, and T-02/T-03 must survive with it or the move is a loss.
@@ -465,13 +470,17 @@ T-03 especially: the cause link is the only thing here the wallet cannot already
 **§10 ceiling holds:** the monetization count did not rise, and §10.1 forbids it rising. Recorded
 here so a later phase cannot add one quietly.
 
-## Οι κίνδυνοί σας — `/insights/risk-profile`
+## Οι κίνδυνοί σας — `/insights/risk-profile` — **ROUTE REMOVED (V2-P2-03)**; the content is `/protection?lens=risk`
 
 Baseline: `evidence/risk-profile/BASELINE.md`. Unreachable to policyholders until `V2-P1-01`.
+The route was deleted by V2-P2-03; `RiskIntelligenceView` + `RiskGraphPanel` mount on the ανά
+κίνδυνο lens of «Η προστασία μου», and `submitQuickStart` moved to
+`app/(protected)/protection/quick-start-actions.ts` auth-intact (a 100% git rename). This also
+resolves the empty-`<h1>` finding (QUEUE.md, 2026-08-25): `/protection` has a real one.
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
-| R-01 | See a risk graph of what your life is exposed to | fact | **KEEP** | «Η προστασία μου», *ανά κίνδυνο* lens (§4.2) | Phase 2 |
+| R-01 | See a risk graph of what your life is exposed to | fact | **KEEP** | «Η προστασία μου», *ανά κίνδυνο* lens (§4.2) | V2-P2-01 ✓ |
 | R-02 | See per-risk protection state | fact | **KEEP, FIX** | `unknown` is currently the DEFAULT for motor (V2-P1-07), so the axis is uninformative until the field is read | V2-P1-07 |
 | R-03 | See «Απροστάτευτο» on lines you do not hold | fact | **DONE — own register** | counted as «Χωρίς ασφαλιστήριο», never among findings | V2-P1-02 ✓ |
 | R-04 | See the coverage-completeness score + verdict | fact | **PENDING H-005** | verdict removed regardless; metric's fate is the owner's | V2-P1-03 |
@@ -537,7 +546,7 @@ Capability count unchanged at **109**. A tombstone comment stands where they wer
 
 ---
 
-## Η προστασία μου — `/protection` (V2-P2-01 — built; sources still alive)
+## Η προστασία μου — `/protection` (V2-P2-01 built · V2-P2-03 removed the absorbed sources)
 
 Source: `app/(protected)/protection/page.tsx` → `components/protection/ProtectionSurface.tsx`
 (`ProtectionBranchLens` / `ProtectionRiskLens` + the surviving /coverage-insights components).
@@ -558,42 +567,62 @@ Three facts a later phase must not lose:
 
 - **B-06 is decided here** (QUEUE.md Phase 2): the `business` line renders only when the customer
   holds a policy in it — one predicate in `ProtectionBranchLens`, reversible.
-- **A-09 transitionally renders on two mounts** — /coverage-insights and /protection — until
-  V2-P2-03 deletes the old route. One monetization surface (one featureKey, one modal), two mounts;
-  the §10.1 count of 5 stands on surfaces, and the transitional state must collapse back to one
-  mount when the old route goes.
-- **A-10…A-21 transitionally render on two mounts too** (V2-P2-01b) — the findings surface is ONE
-  component, `CoverageInsightsClient`, now mounted by both routes, so the two cannot drift while
-  both exist. That includes **A-20's monetization pieces** (the lite banner, its «Αναβάθμιση»
-  button, the «Ξεκλείδωσε πλήρη ανάλυση» next-step and the A-17 «Ξεκλείδωμα με Plus» CTA): one
-  surface, two mounts — recorded here precisely so the duplication is transitional and audited,
-  not silent. The §10.1 count stands on surfaces (unchanged); V2-P2-03 collapses the mounts back
-  to one by deleting the old route.
+- **A-09 renders on ONE mount** — V2-P2-03 deleted /coverage-insights, collapsing the transitional
+  double-mount recorded here on 2026-08-25. One monetization surface (one featureKey, one modal),
+  one mount; **the §10.1 count is 5, not 6** — confirmed after the collapse.
+- **A-10…A-21 render on one mount too** — the findings surface is ONE component,
+  `CoverageInsightsClient`, and /protection is now its only mount. That includes **A-20's
+  monetization pieces** (the lite banner, its «Αναβάθμιση» button, the «Ξεκλείδωσε πλήρη ανάλυση»
+  next-step and the A-17 «Ξεκλείδωμα με Plus» CTA). The transitional two-mount state V2-P2-01b
+  recorded existed only while both routes lived; it collapsed with the route, exactly as recorded.
 
-## Κλάδος αναλυτικά — `/branches/[branch]` → `/protection/[branch]` (V2-P2-01)
+## Κλάδος αναλυτικά — `/branches/[branch]` → `/protection/[branch]` (V2-P2-01; sole mount since V2-P2-03)
 
 Source: `components/branches/BranchDetail.tsx` — extracted verbatim from
 `app/(protected)/branches/[branch]/page.tsx`, which had **no ledger rows** (D-028: Phase 0
-enumerated the listing page only). Both mounts render the same component; only the breadcrumb
-differs. Enumerated by the implementing item; rows below are the extraction's inventory, not a
-redesign.
+enumerated the listing page only). V2-P2-03 deleted the legacy mount and the `origin` prop with
+it; `/protection/[branch]` is the only mount and the breadcrumb always leads to `/protection`.
+Enumerated by the implementing item; rows below are the extraction's inventory, not a redesign.
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
-| BD-01 | Breadcrumb back to the line listing | action | **KEEP** | `/protection` on the new mount; `/branches` until V2-P2-03 | — |
-| BD-02 | Branch header: icon, name, short description | fact | **KEEP** | both mounts | — |
-| BD-03 | Policies held in this line (identity via policy-identity, LIFECYCLE status badge); empty state with CTA when none | fact | **KEEP** | both mounts | — |
-| BD-04 | Branch-filtered recommendations (`branch.recommendationCount`, subject-scoped — never `recommendation.openCount`) | fact | **KEEP** | both mounts | — |
-| BD-05 | «Γιατί έχει σημασία» editorial | fact | **KEEP** | both mounts | — |
-| BD-06 | «Τι αναλύει το PolicyWallet» editorial | fact | **KEEP** | both mounts | — |
-| BD-07 | «Συχνά κενά κάλυψης» editorial, engine-badged «Εντοπίστηκε στο χαρτοφυλάκιό σου» when the rule fired | fact | **KEEP** | both mounts | — |
-| BD-08 | «Πώς να το αξιοποιήσεις καλύτερα» editorial | fact | **KEEP** | both mounts | — |
-| BD-09 | Perks aggregated from analyzed policies, linking to `/wallet/[id]#coverage` | fact | **KEEP** | both mounts | — |
-| BD-10 | Upcoming renewals with `policy.daysRemaining` (subject-scoped, Athens-calendar via lifecycle) | fact | **KEEP** | both mounts | — |
-| BD-11 | Recommended-action chips (askAi deep-links into policy Q&A) | action | **KEEP** | both mounts | — |
-| BD-12 | Suggested AI questions (when a policy exists in the line) | action | **KEEP** | both mounts | — |
-| BD-13 | Agent CTA (connected/disconnected hint, link to `/agent`) | action | **KEEP** | both mounts | — |
+| BD-01 | Breadcrumb back to the line listing | action | **KEEP** | `/protection` (the `/branches` arm died with the route in V2-P2-03) | — |
+| BD-02 | Branch header: icon, name, short description | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-03 | Policies held in this line (identity via policy-identity, LIFECYCLE status badge); empty state with CTA when none | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-04 | Branch-filtered recommendations (`branch.recommendationCount`, subject-scoped — never `recommendation.openCount`) | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-05 | «Γιατί έχει σημασία» editorial | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-06 | «Τι αναλύει το PolicyWallet» editorial | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-07 | «Συχνά κενά κάλυψης» editorial, engine-badged «Εντοπίστηκε στο χαρτοφυλάκιό σου» when the rule fired | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-08 | «Πώς να το αξιοποιήσεις καλύτερα» editorial | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-09 | Perks aggregated from analyzed policies, linking to `/wallet/[id]#coverage` | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-10 | Upcoming renewals with `policy.daysRemaining` (subject-scoped, Athens-calendar via lifecycle) | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-11 | Recommended-action chips (askAi deep-links into policy Q&A) | action | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-12 | Suggested AI questions (when a policy exists in the line) | action | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-13 | Agent CTA (connected/disconnected hint, link to `/agent`) | action | **KEEP** | `/protection/[branch]` (sole mount) | — |
 
 **Known debt carried, not created:** the status→translation-key bridge (P1-10 exemption in
 `policy-status-display-single-source.test.ts`, moved by name to `BranchDetail.tsx`), and B-03's
 `line-clamp-2` truncation, which the tagline shares (Phase 4 primitive).
+
+
+---
+
+## Removal — V2-P2-03 (§4.2): four routes, zero capabilities
+
+| removed route | rows | where every KEEP row lives now |
+|---|---|---|
+| `/coverage-insights` | A-05…A-21 | `/protection` (components unchanged; server actions moved to `protection/actions.ts` as a 100% git rename) |
+| `/branches` | B-01…B-06 | `/protection`, ανά κλάδο lens |
+| `/branches/[branch]` | BD-01…BD-13 | `/protection/[branch]` (sole mount; `origin` prop deleted) |
+| `/insights/risk-profile` | R-01…R-08 | `/protection?lens=risk` (`submitQuickStart` moved to `protection/quick-start-actions.ts`, a 100% git rename) |
+| `/timeline` | T-01…T-06 | `/account/history` (relocated by V2-P2-02; T-02/T-03 guarded on rendered output) |
+
+**This is a removal of ROUTES, not of capabilities** — every KEEP row above renders on its new
+home, so the total capability count stands at **109**. The nav is five tabs plus the bell
+(`/dashboard`, `/wallet`, `/protection`, `/agent`, `/account`, bell → `/notifications`);
+`/benefits` is a conditional entry inside Ρυθμίσεις (`SettingsNav`, live-offers-gated).
+**Monetization surfaces: 5 → 5** (§10.1) — A-09 and A-20 each collapsed from two transitional
+mounts back to one when the old route went; no surface was added or lost.
+`tests/unit/no-dead-internal-links.test.ts` (added with this item) enumerates every internal
+link/redirect/revalidate target in the tree against the filesystem's routes, so the NEXT removal
+that leaves a link behind fails CI instead of shipping a dead tap.

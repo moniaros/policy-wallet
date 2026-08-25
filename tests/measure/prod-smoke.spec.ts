@@ -19,7 +19,7 @@ import { test, expect } from "@playwright/test"
 const PROD = "https://www.policywallet.gr"
 
 // Public pages that render the shell and the Greek content layer.
-const ROUTES = ["/", "/pricing", "/product/motor", "/product/health", "/branches", "/trust"]
+const ROUTES = ["/", "/pricing", "/product/motor", "/product/health", "/trust"]
 
 test("every public route renders, in Greek, with no leaked internals", async ({ page }) => {
     test.setTimeout(10 * 60_000)

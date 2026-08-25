@@ -49,7 +49,7 @@ describe("buildProtectionPlan", () => {
         const recSteps = plan.steps.filter((s) => s.kind === "recommendation")
         expect(recSteps).toHaveLength(2)
         expect(recSteps.map((s) => s.id)).toEqual(["recommendation:r1", "recommendation:r2"])
-        expect(recSteps.every((s) => s.state === "open" && s.href === "/coverage-insights")).toBe(true)
+        expect(recSteps.every((s) => s.state === "open" && s.href === "/protection")).toBe(true)
         expect(plan.total).toBe(7)
     })
 
@@ -78,8 +78,8 @@ describe("buildProtectionPlan", () => {
         const plan = buildProtectionPlan(NONE)
         const href = (id: string) => plan.steps.find((s) => s.id === id)?.href
         expect(href("upload")).toBe("/wallet/add")
-        expect(href("analysis")).toBe("/coverage-insights")
-        expect(href("gaps")).toBe("/coverage-insights")
+        expect(href("analysis")).toBe("/protection")
+        expect(href("gaps")).toBe("/protection")
         expect(href("agent")).toBe("/agent")
         expect(href("notifications")).toBe("/notifications")
     })

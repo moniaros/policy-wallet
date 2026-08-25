@@ -4,7 +4,7 @@ import { useTransition } from "react"
 import { RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 
-import { refreshCoverageAnalysis } from "@/app/(protected)/coverage-insights/actions"
+import { refreshCoverageAnalysis } from "@/app/(protected)/protection/actions"
 
 /** Explicit "re-run the analysis" affordance — copy arrives pre-resolved. */
 export function RefreshAnalysisButton({

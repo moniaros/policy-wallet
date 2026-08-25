@@ -384,21 +384,12 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "cancelled policies count toward the summary. P1-03's fix scope was outbound " +
             "counts and scoring; this needs a per-surface decision.",
     },
-    "app/(protected)/coverage-insights/page.tsx": {
-        count: 1,
-        reason:
-            "Ratcheted 2→1 by V2-P1-11: the policy fetch now carries status ≠ 'deleted' " +
-            "and liveness is decided by gapsOnActiveCoverage / isPolicyCoverageActive in code. " +
-            "The remaining query is the gap fetch, scoped by gap status and post-filtered " +
-            "through gapsOnActiveCoverage.",
-    },
     "app/(protected)/protection/page.tsx": {
         count: 1,
         reason:
-            "V2-P2-01b carries the /coverage-insights findings surface onto /protection with " +
-            "the IDENTICAL gap fetch: scoped by GAP status and post-filtered through " +
-            "gapsOnActiveCoverage (the page's policy fetch itself carries status ≠ 'deleted'). " +
-            "Collapses back to one entry when V2-P2-03 deletes the old route.",
+            "The findings surface (formerly /coverage-insights, removed by V2-P2-03): the gap " +
+            "fetch is scoped by GAP status and post-filtered through gapsOnActiveCoverage " +
+            "(the page's policy fetch itself carries status ≠ 'deleted').",
     },
     "app/(protected)/wallet/[id]/page.tsx": {
         count: 1,

@@ -455,7 +455,7 @@ export function RecommendationCards({
                                                         {rec.cause.explanation[lang] || rec.cause.explanation.en}
                                                     </p>
                                                     <Link
-                                                        href="/timeline"
+                                                        href="/account/history"
                                                         className="mt-1 inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
                                                     >
                                                         {t("Δείτε το στο χρονολόγιο", "See it on your timeline")}

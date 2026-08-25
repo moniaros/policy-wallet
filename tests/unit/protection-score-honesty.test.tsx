@@ -113,7 +113,7 @@ describe('protection status hero — the headline is the facts', () => {
 
     it('routes its primary action to coverage insights', () => {
         const { container } = renderHero()
-        const cta = container.querySelector('a[href="/coverage-insights"]')
+        const cta = container.querySelector('a[href="/protection"]')
         expect(cta).toBeTruthy()
         expect(cta?.getAttribute('data-action')).toBe('reviewCoverage')
     })

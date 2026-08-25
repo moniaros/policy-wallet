@@ -111,7 +111,7 @@ export function RiskReviewCard({ review, label, rationale }: RiskReviewCardProps
             {/* Full-width, stacked on a phone; inline from sm. 44px floors. */}
             <div className="flex flex-col sm:flex-row gap-2 mt-4">
                 <Link
-                    href="/insights/risk-profile"
+                    href="/protection?lens=risk"
                     className="pw-primary-button min-h-11 flex-1 inline-flex items-center justify-center"
                 >
                     {copy.cta}

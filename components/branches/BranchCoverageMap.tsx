@@ -42,7 +42,7 @@ export function BranchCoverageMap({
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 <Link
-                    href="/branches"
+                    href="/protection"
                     className="inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {labels.viewAll}
@@ -61,7 +61,7 @@ export function BranchCoverageMap({
                 {entries.map((entry) => (
                     <Link
                         key={entry.id}
-                        href={`/branches/${entry.id}`}
+                        href={`/protection/${entry.id}`}
                         title={entry.stateLabel}
                         className={cn(
                             "pw-control-boundary flex min-h-11 snap-start items-center gap-2 rounded-xl border bg-white px-3 py-2.5 transition-colors hover:border-primary/40 dark:bg-black dark:hover:border-mint/40 sm:min-w-0",

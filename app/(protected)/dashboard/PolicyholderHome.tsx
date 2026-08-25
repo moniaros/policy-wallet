@@ -881,7 +881,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         <UpgradeTriggerCard
                             featureKey="multi_insurer_insights"
                             triggerSource="home_multi_insurer"
-                            returnTo="/coverage-insights"
+                            returnTo="/protection"
                             dismissible
                         />
                     )}

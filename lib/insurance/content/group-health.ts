@@ -142,7 +142,7 @@ export const groupHealthContent: BranchContent = {
         {
             id: 'group_health_review_with_personal',
             label: { el: 'Δείτε πώς συνδυάζεται με το ατομικό σας πρόγραμμα', en: 'See how it combines with your individual plan' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

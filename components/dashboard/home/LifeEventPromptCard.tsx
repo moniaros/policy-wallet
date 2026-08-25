@@ -22,7 +22,7 @@ export function LifeEventPromptCard({
 }) {
     return (
         <Link
-            href="/coverage-insights#life-events"
+            href="/protection#life-events"
             className="pw-card pw-pad block"
             aria-label={labels.cta}
         >

@@ -19,7 +19,7 @@ const HIDDEN_PATH_PREFIXES = [
 
 const HIDDEN_EXACT_PATHS = [
     "/wallet",
-    "/coverage-insights",
+    "/protection",
 ]
 
 function shouldHidePrompt(pathname: string | null) {

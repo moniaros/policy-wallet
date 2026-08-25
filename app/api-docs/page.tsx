@@ -17,7 +17,7 @@ const SwaggerUI = dynamic(() => import('swagger-ui-react'), {
 const appMenuRoutes = [
     { name: 'Home', path: '/home', apis: ['GET /api/v1/policies', 'GET /api/v1/gaps/[id]/acknowledge'] },
     { name: 'MyWallet', path: '/wallet', apis: ['POST /api/policies/extract', 'POST /api/policies/batch-create', 'GET /api/v1/policies/[id]'] },
-    { name: 'AIInsights', path: '/coverage-insights', apis: ['GET /api/v1/policies/[id]/gaps', 'POST /api/v1/gaps/[id]/acknowledge'] },
+    { name: 'AIInsights', path: '/protection', apis: ['GET /api/v1/policies/[id]/gaps', 'POST /api/v1/gaps/[id]/acknowledge'] },
     { name: 'Agent', path: '/agent', apis: ['GET /api/v1/access-grants', 'POST /api/v1/policies/share'] },
     { name: 'Settings', path: '/account', apis: ['GET /api/v1/me', 'GET /api/v1/me/subscription', 'POST /api/v1/notifications/preferences'] },
 ]

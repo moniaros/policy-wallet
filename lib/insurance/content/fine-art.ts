@@ -148,7 +148,7 @@ export const fineArtContent: BranchContent = {
         {
             id: 'fine_art_review_values',
             label: { el: 'Συγκρίνετε τις αξίες με τη σημερινή συλλογή', en: 'Compare the values against today’s collection' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

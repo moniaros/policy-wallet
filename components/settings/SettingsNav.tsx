@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, Building2, ChevronRight, CreditCard, History, Lock, ShieldCheck, User, type LucideIcon } from "lucide-react"
+import { Bell, Building2, ChevronRight, CreditCard, Gift, History, Lock, ShieldCheck, User, type LucideIcon } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { activeSectionFor, settingsSectionsFor, type SettingsSectionId } from "@/lib/settings/sections"
 
@@ -13,12 +13,18 @@ const ICONS: Record<SettingsSectionId, LucideIcon> = {
     notifications: Bell,
     privacy: Lock,
     history: History,
+    benefits: Gift,
     agency: Building2,
 }
 
 interface SettingsNavProps {
     /** Comma-separated `User.roles`. */
     roles: string
+    /**
+     * Whether ≥1 partner offer is live — decides the benefits entry (§4.2:
+     * it lives here, not as a tab). Resolved server-side by the caller.
+     */
+    hasLiveOffers: boolean
     /**
      * "rail" is the desktop sidebar; "index" is the mobile landing list. Same
      * array, same labels, two presentations — chosen in CSS by the caller, never
@@ -27,11 +33,11 @@ interface SettingsNavProps {
     variant: "rail" | "index"
 }
 
-export function SettingsNav({ roles, variant }: SettingsNavProps) {
+export function SettingsNav({ roles, hasLiveOffers, variant }: SettingsNavProps) {
     const { t } = useLanguage()
     const pathname = usePathname()
     const active = activeSectionFor(pathname)
-    const sections = settingsSectionsFor(roles)
+    const sections = settingsSectionsFor(roles, { hasLiveOffers })
     const copy = t.settings.nav
 
     if (variant === "index") {

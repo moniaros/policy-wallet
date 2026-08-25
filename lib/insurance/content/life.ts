@@ -92,7 +92,7 @@ export const lifeContent: BranchContent = {
         {
             id: 'life_check_sum',
             label: { el: 'Δείτε αν το κεφάλαιο καλύπτει τις ανάγκες της οικογένειας', en: 'See if the sum covers your family’s needs' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {
@@ -105,7 +105,7 @@ export const lifeContent: BranchContent = {
         {
             id: 'life_update_profile',
             label: { el: 'Σημειώστε σημαντικές αλλαγές ζωής στο προφίλ σας', en: 'Note major life changes in your profile' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'profile',
         },
         {

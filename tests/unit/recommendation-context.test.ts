@@ -484,8 +484,10 @@ describe("every surface that renders a card gets all nine fields", () => {
         // happened to call is how surfaces drift apart.
         const pages = [
             "app/(protected)/wallet/[id]/page.tsx",
-            "app/(protected)/branches/[branch]/page.tsx",
-            "app/(protected)/coverage-insights/page.tsx",
+            // V2-P2-03: the branch detail and findings surfaces moved under
+            // /protection — same invariant, surviving mounts.
+            "components/branches/BranchDetail.tsx",
+            "app/(protected)/protection/page.tsx",
         ]
         for (const page of pages) {
             const src = readFileSync(page, "utf-8")

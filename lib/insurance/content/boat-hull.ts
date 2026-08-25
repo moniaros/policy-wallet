@@ -150,7 +150,7 @@ export const boatHullContent: BranchContent = {
         {
             id: 'boat_hull_review_value',
             label: { el: 'Συγκρίνετε ασφαλισμένη και αγοραία αξία', en: 'Compare insured and market value' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

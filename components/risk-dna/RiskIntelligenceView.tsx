@@ -194,7 +194,7 @@ export function RiskIntelligenceView({
                     first, so it has to be a control. */}
                 {health.nextAction && (
                     <Link
-                        href={wizardHref ?? "/coverage-insights#risk-profile-wizard"}
+                        href={wizardHref ?? "/protection#risk-profile-wizard"}
                         className="mt-3 inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
                     >
                         {health.nextAction[lang] || health.nextAction.en}

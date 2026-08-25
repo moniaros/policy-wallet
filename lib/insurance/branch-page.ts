@@ -1,5 +1,5 @@
 /**
- * Pure data-assembly helpers for the /branches pages and the dashboard
+ * Pure data-assembly helpers for the /protection branch lens and the dashboard
  * coverage map. No DB access — testable with plain fixtures.
  */
 import {

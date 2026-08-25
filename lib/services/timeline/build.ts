@@ -193,7 +193,7 @@ export function buildTimeline(sources: TimelineSources, now: Date = new Date()):
             detail: definition?.description ?? null,
             // A declared change IS a cause. Nothing caused it but the customer.
             cause: null,
-            href: "/coverage-insights",
+            href: "/protection",
         })
     }
 
@@ -293,7 +293,7 @@ export function buildTimeline(sources: TimelineSources, now: Date = new Date()):
             delta: comparableScores(previous, current)
                 ? current.overallScore - previous.overallScore
                 : null,
-            href: "/coverage-insights",
+            href: "/protection",
         })
 
         // Cap the per-version risk rows.
@@ -324,7 +324,7 @@ export function buildTimeline(sources: TimelineSources, now: Date = new Date()):
                           },
                 },
                 riskId: transition.riskId,
-                href: "/coverage-insights",
+                href: "/protection",
             })
         }
     }
@@ -339,7 +339,7 @@ export function buildTimeline(sources: TimelineSources, now: Date = new Date()):
             detail: null,
             cause: attributeRecommendation(rec, versions, sources.lifeEvents, eventEntryId, scoreEntryByVersion, openedAt),
             riskId: rec.riskId,
-            href: "/coverage-insights",
+            href: "/protection",
         })
     }
 

@@ -52,8 +52,9 @@ export const ROUTE_OWNERSHIP: ReadonlyArray<readonly [pattern: string, owner: Ro
     ["/wallet", "policyholder"],
     // Agent-only extraction review under the policyholder's wallet tree.
     ["/wallet/*/review", "agent"],
-    // v2 §4.2 removes /coverage-insights entirely — delete this line with it.
-    ["/coverage-insights", "policyholder"],
+    // §4.2: «Η προστασία μου» — absorbed /branches, /insights/risk-profile
+    // and /coverage-insights (all removed by V2-P2-03).
+    ["/protection", "policyholder"],
     // Shared /agent tree: the exact page is the customer's "My Agent" view;
     // the children are the agent's own tools.
     ["/agent", "policyholder"],
@@ -65,9 +66,10 @@ export const ROUTE_OWNERSHIP: ReadonlyArray<readonly [pattern: string, owner: Ro
     ["/commissions", "agent"],
     ["/questionnaires", "agent"],
     ["/tasks", "agent"],
-    // The adviser's book — except risk-profile, which is the customer's own.
+    // The adviser's book. (/insights/risk-profile, the customer's own child
+    // route that once carved an exception here, was removed by V2-P2-03 —
+    // its content lives at /protection?lens=risk.)
     ["/insights", "agent"],
-    ["/insights/risk-profile", "policyholder"],
     ["/team", "agent"],
     ["/admin", "admin"],
 ]

@@ -79,7 +79,7 @@ export const COUNT_KEYS: Record<string, string> = {
     "review.findingsAtOpen": "Findings recorded when the review opened.",
 
     // timeline.* — the activity history (settings › Ιστορικό δραστηριότητας;
-    // also /timeline until its removal item lands). The universe is the
+    // /timeline itself was removed by V2-P2-03). The universe is the
     // getTimeline window (60 newest entries), NOT the account's lifetime.
     "timeline.entryCount": "Entries in the activity-history window — the «Όλα» filter chip.",
     "timeline.kindCount": "SUBJECT-SCOPED by entry kind: one kind's tally in the filter strip. The values sum to timeline.entryCount.",

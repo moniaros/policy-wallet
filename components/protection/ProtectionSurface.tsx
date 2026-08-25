@@ -59,9 +59,9 @@ export interface ProtectionSurfaceProps {
      * A-10…A-21 — the carried findings surface: the reviewed-findings list,
      * severity tally, the «Εξαιρέθηκαν» / «Τι ελέγξαμε και είναι εντάξει»
      * honesty notices, next steps, and the four states (never-analysed, empty
-     * wallet, all-good, free-tier lite). The SAME component /coverage-insights
-     * mounts, so the two routes cannot drift while both exist (V2-P2-03
-     * removes the old mount). `tier`, `userLanguage` and `hasPolicies` are
+     * wallet, all-good, free-tier lite). The same component mounted on
+     * /coverage-insights until V2-P2-03 removed that route — this surface is
+     * its only mount now. `tier`, `userLanguage` and `hasPolicies` are
      * injected from this surface's own props — one fact, one source.
      */
     findings: Omit<CoverageInsightsClientProps, "embedded" | "tier" | "userLanguage" | "hasPolicies">

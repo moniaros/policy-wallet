@@ -142,7 +142,7 @@ export const personalAccidentContent: BranchContent = {
         {
             id: 'personal_accident_review_overlap',
             label: { el: 'Ελέγξτε αν επικαλύπτεται με άλλη κάλυψη ατυχήματος', en: 'Check for overlap with other accident cover' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

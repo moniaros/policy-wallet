@@ -34,7 +34,7 @@ export function RecentChangesWidget({
     }
 }) {
     return (
-        <Link href="/timeline" className="pw-card pw-pad">
+        <Link href="/account/history" className="pw-card pw-pad">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 <History className="h-4 w-4 text-muted-foreground" aria-hidden />

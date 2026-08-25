@@ -158,7 +158,7 @@ function buildRecommendationsSection(recs: TopRecommendation[] | undefined, isGr
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
             ${rows}
         </table>
-        <a href="${APP_URL}/coverage-insights" style="font-size: 13px; color: #059669; text-decoration: underline;">
+        <a href="${APP_URL}/protection" style="font-size: 13px; color: #059669; text-decoration: underline;">
             ${isGreek ? 'Δείτε όλες τις προτάσεις →' : 'View all recommendations →'}
         </a>
         <div style="height: 24px;"></div>

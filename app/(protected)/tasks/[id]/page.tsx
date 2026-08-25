@@ -74,7 +74,7 @@ export default async function TaskDetailPage({
                 <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-6">
                     <p className="text-lg font-semibold text-foreground">{t.agentUi.responsesSubmitted}</p>
                     <Link
-                        href="/coverage-insights"
+                        href="/protection"
                         className="inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-4 text-sm font-black text-white dark:text-[#1A2420] transition-transform hover:scale-[1.02]"
                     >
                         {t.tasks.viewCoverageInsights}

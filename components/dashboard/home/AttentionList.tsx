@@ -48,7 +48,7 @@ export function AttentionList({
                 <p className="pw-kicker">{labels.kicker}</p>
                 {items.length > 0 && (
                     <Link
-                        href="/coverage-insights"
+                        href="/protection"
                         className="pw-inline-action inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                     >
                         {labels.viewAll}
@@ -72,7 +72,7 @@ export function AttentionList({
                         {items.map((item) => (
                             <li key={item.id}>
                                 <Link
-                                    href="/coverage-insights"
+                                    href="/protection"
                                     className="pw-control-boundary flex items-start gap-3 rounded-xl border bg-black/[0.03] p-3 transition hover:bg-black/[0.06] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
                                 >
                                     <span

@@ -182,7 +182,7 @@ describe("the opener is mobile-first and honest on screen", () => {
         // out of twenty-four factors is about a fifth of the picture, and the
         // index refuses to report below a third — so the customer answered,
         // the page reloaded, and asked them the same three questions again.
-        const page = readFileSync("app/(protected)/insights/risk-profile/page.tsx", "utf-8")
+        const page = readFileSync("app/(protected)/protection/page.tsx", "utf-8")
         expect(page).toMatch(/quickStartComplete/)
         expect(page).not.toMatch(/needsQuickStart = intelligence\.health\.index === null/)
 
@@ -203,7 +203,7 @@ describe("the opener is mobile-first and honest on screen", () => {
         // The three answers are coarse by design — "I own my home" becomes one
         // property, and the dependant count is a floor from the children. A
         // mutation must not rely on the UI to be safe.
-        const action = readFileSync("app/(protected)/insights/risk-profile/actions.ts", "utf-8")
+        const action = readFileSync("app/(protected)/protection/quick-start-actions.ts", "utf-8")
         expect(action).toMatch(/!previously\.includes\(column\)/)
         expect(action).toMatch(/update: \{ \.\.\.fresh/)
     })
@@ -211,7 +211,7 @@ describe("the opener is mobile-first and honest on screen", () => {
     it("re-runs the engine before the page re-reads it", () => {
         // The page renders from the profile the action just wrote, so a
         // background run would race it and the answers would appear inert.
-        const action = readFileSync("app/(protected)/insights/risk-profile/actions.ts", "utf-8")
+        const action = readFileSync("app/(protected)/protection/quick-start-actions.ts", "utf-8")
         expect(action).toMatch(/await refreshProtectionScore\(/)
     })
 })

@@ -27,9 +27,9 @@ const STRIP_ROUTES = [
     "/dashboard",
     "/wallet",
     "/coverage",
-    "/timeline",
+    "/account/history",
     "/opportunities",
-    "/branches/motor",
+    "/protection/motor",
 ]
 
 test("report: which scroll strips actually compress at 320px", async ({ page }) => {
@@ -84,7 +84,7 @@ test("report: which headings break mid-word at 320px", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 720 })
 
     const findings: string[] = []
-    for (const route of ["/dashboard", "/wallet", "/coverage", "/branches/motor"]) {
+    for (const route of ["/dashboard", "/wallet", "/coverage", "/protection/motor"]) {
         try {
             await page.goto(route, { waitUntil: "domcontentloaded", timeout: 60_000 })
             await dismissCookieBanner(page)

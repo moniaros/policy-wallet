@@ -113,7 +113,7 @@ export const homeContent: BranchContent = {
         {
             id: 'home_check_value',
             label: { el: 'Ελέγξτε αν η κατοικία είναι ασφαλισμένη στη σωστή αξία', en: 'Check the home is insured at the right value' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

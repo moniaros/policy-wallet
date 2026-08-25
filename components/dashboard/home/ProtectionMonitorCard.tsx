@@ -111,7 +111,7 @@ export function ProtectionMonitorCard({
                 })}
             </ul>
             <Link
-                href="/insights/risk-profile"
+                href="/protection?lens=risk"
                 className="pw-inline-action mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
             >
                 {labels.detailsLink}

@@ -167,7 +167,7 @@ export function HelpClient({ guideSummaries }: { guideSummaries: GuideSummary[] 
             icon: Sparkles,
             label: t.help.shortcuts.coverageLabel,
             desc: t.help.shortcuts.coverageDesc,
-            href: '/coverage-insights',
+            href: '/protection',
         },
         {
             id: 'share-collab',

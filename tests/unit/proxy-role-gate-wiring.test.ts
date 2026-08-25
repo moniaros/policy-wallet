@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 
 /**
  * Wiring proof for the role gate: the REAL proxy() — not the pure classifier —
- * lets a policyholder through to /insights/risk-profile and bounces an agent.
+ * lets a policyholder through to /protection and bounces an agent.
  *
  * The route-ownership guard drives decideRoleRedirect directly; a mutation
  * that unhooked proxy() from that function would still pass it. This file
@@ -43,16 +43,16 @@ beforeEach(() => {
 })
 
 describe('proxy() role gate wiring', () => {
-    it('lets a policyholder reach /insights/risk-profile (the B2C surface under an agent parent)', async () => {
+    it('lets a policyholder reach /protection (the §4.2 consolidated surface)', async () => {
         sessionFor('policyholder')
-        const res = await run('/insights/risk-profile')
+        const res = await run('/protection')
         expect(res.status).toBe(200)
         expect(res.headers.get('location')).toBeNull()
     })
 
-    it('bounces an agent off /insights/risk-profile to their own home', async () => {
+    it('bounces an agent off /protection to their own home', async () => {
         sessionFor('agent')
-        const res = await run('/insights/risk-profile')
+        const res = await run('/protection')
         expect(res.status).toBe(307)
         expect(res.headers.get('location')).toBe('http://localhost:3000/dashboard/agent')
     })
@@ -88,7 +88,7 @@ describe('proxy() role gate wiring', () => {
 
     it('keeps the anonymous wall in front of the whole tree', async () => {
         sessionFor(null)
-        const res = await run('/insights/risk-profile')
+        const res = await run('/protection')
         expect(res.status).toBe(307)
         expect(res.headers.get('location')).toContain('/auth/signin?callbackUrl=')
     })

@@ -91,17 +91,15 @@ export const en: TranslationKeys = {
     nav: {
         navigation: 'Navigation',
         home: 'Home',
-        wallet: 'Wallet',
-        myAgent: 'My Advisor',
+        wallet: 'My folder',
+        walletShort: 'Folder',
+        protection: 'My protection',
+        protectionShort: 'Protection',
+        myAgent: 'My advisor',
         agentShort: 'Advisor',
         policies: 'Policies',
         coverage: 'Coverage',
-        riskProfile: 'Your risks',
         advisorBook: 'Your book',
-        timeline: 'Timeline',
-        coverageInsights: 'Your cover',
-        insightsShort: 'AI Insights',
-        branches: 'Branches',
         notifications: 'Notifications',
         account: 'Account',
         dashboard: 'Dashboard',
@@ -1509,8 +1507,6 @@ export const en: TranslationKeys = {
 
     // Branch pages & branch content chrome (per-branch copy lives in lib/insurance/content)
     branches: {
-        title: 'Insurance branches',
-        subtitle: 'See per branch what you have, what appears to be missing and how to get more from what you already pay for.',
         whyItMatters: 'Why it matters',
         whatWeAnalyze: 'What PolicyWallet analyzes',
         howToUseBetter: 'How to use it better',
@@ -1792,7 +1788,7 @@ export const en: TranslationKeys = {
 
     dashboard: {
         home: {
-            title: 'My protection',
+            title: 'Your insurance picture',
             heroKicker: 'Protection status',
             heroCta: 'Review my protection',
             heroAreasOne: '1 finding may need review',
@@ -2318,6 +2314,7 @@ export const en: TranslationKeys = {
             notifications: { label: 'Notifications', description: 'What we send you, and when' },
             privacy: { label: 'Privacy & data', description: 'Consents, export, deletion' },
             history: { label: 'Activity history', description: 'What changed in your protection, when, and why' },
+            benefits: { label: 'Partner benefits', description: 'Offers available with your plan' },
             agency: { label: 'Agency profile', description: 'Agency details and commission rates' },
         },
 

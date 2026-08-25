@@ -88,16 +88,14 @@ export const el = {
     nav: {
         navigation: 'Πλοήγηση',
         home: 'Αρχική',
-        wallet: 'Πορτοφόλι',
-        myAgent: 'Ο Σύμβουλός μου',
+        wallet: 'Ο φάκελός μου',
+        walletShort: 'Φάκελος',
+        protection: 'Η προστασία μου',
+        protectionShort: 'Προστασία',
+        myAgent: 'Ο σύμβουλός μου',
         agentShort: 'Σύμβουλος',
         coverage: 'Κάλυψη',
-        riskProfile: 'Οι κίνδυνοί σας',
         advisorBook: 'Το χαρτοφυλάκιό σας',
-        timeline: 'Χρονολόγιο',
-        coverageInsights: 'Η κάλυψή σας',
-        insightsShort: 'Αναλύσεις',
-        branches: 'Κλάδοι',
         notifications: 'Ειδοποιήσεις',
         account: 'Λογαριασμός',
         dashboard: 'Πίνακας ελέγχου',
@@ -1520,8 +1518,6 @@ export const el = {
 
     // Branch pages & branch content chrome (per-branch copy lives in lib/insurance/content)
     branches: {
-        title: 'Κλάδοι ασφάλισης',
-        subtitle: 'Δες ανά κλάδο τι έχεις, τι φαίνεται να λείπει και πώς να αξιοποιήσεις όσα ήδη πληρώνεις.',
         whyItMatters: 'Γιατί έχει σημασία',
         whatWeAnalyze: 'Τι αναλύει το PolicyWallet',
         howToUseBetter: 'Πώς να το αξιοποιήσεις καλύτερα',
@@ -1818,7 +1814,7 @@ export const el = {
 
     dashboard: {
         home: {
-            title: 'Η προστασία μου',
+            title: 'Η ασφαλιστική σας εικόνα',
             heroKicker: 'Κατάσταση προστασίας',
             heroCta: 'Έλεγχος της προστασίας μου',
             heroAreasOne: '1 εύρημα ίσως χρειάζεται έλεγχο',
@@ -2347,6 +2343,7 @@ export const el = {
             notifications: { label: 'Ειδοποιήσεις', description: 'Τι σας στέλνουμε και πότε' },
             privacy: { label: 'Απόρρητο και δεδομένα', description: 'Συγκαταθέσεις, εξαγωγή, διαγραφή' },
             history: { label: 'Ιστορικό δραστηριότητας', description: 'Τι άλλαξε στην προστασία σας, πότε και γιατί' },
+            benefits: { label: 'Οφέλη συνεργατών', description: 'Προσφορές διαθέσιμες με το πρόγραμμά σας' },
             agency: { label: 'Προφίλ γραφείου', description: 'Στοιχεία πρακτορείου και προμήθειες' },
         },
 

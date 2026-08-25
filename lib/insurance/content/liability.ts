@@ -141,7 +141,7 @@ export const liabilityContent: BranchContent = {
         {
             id: 'liability_review_overlap',
             label: { el: 'Αντιπαράβαλε με το συμβόλαιο κατοικίας για επικαλύψεις', en: 'Cross-check the home policy for overlaps' },
-            href: '/coverage-insights',
+            href: '/protection',
             ctaType: 'review',
         },
         {

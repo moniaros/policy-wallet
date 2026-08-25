@@ -1,6 +1,6 @@
 /**
  * T-015 baseline — priority 10, "the remaining surfaces": `/help`,
- * `/help/article/[slug]`, `/activity`, `/insights/risk-profile`, `/upgrade`,
+ * `/help/article/[slug]`, `/activity`, `/upgrade`,
  * `/upgrade/success`, `/benefits`, plus the two legacy redirects (`/coverage`,
  * `/home`) confirmed as redirects rather than measured as content, and
  * `/consent/ai` attempted with its outcome recorded either way (redirects
@@ -58,14 +58,6 @@ test("baseline: /activity (paid)", async ({ page }) => {
     }
 })
 
-test("baseline: /insights/risk-profile (paid)", async ({ page }) => {
-    test.setTimeout(6 * 60_000)
-    for (const width of WIDTHS) {
-        await openSurface(page, "/insights/risk-profile", width)
-        await captureSurface(page, dirs, "risk-profile-paid", width, [], { tier: "paid" }, 300, 0)
-    }
-})
-
 test("baseline: /upgrade (paid — already on top tier, no server redirect)", async ({ page }) => {
     test.setTimeout(6 * 60_000)
     for (const width of WIDTHS) {
@@ -116,10 +108,10 @@ async function confirmRedirect(page: Page, from: string, expectedTo: string) {
     expect(page.url(), `${from} should redirect to ${expectedTo}`).toContain(expectedTo)
 }
 
-test("probe: /coverage redirects to /coverage-insights", async ({ page }) => {
+test("probe: /coverage redirects to /protection", async ({ page }) => {
     test.setTimeout(2 * 60_000)
     await page.setViewportSize({ width: 390, height: HEIGHT[390] })
-    await confirmRedirect(page, "/coverage", "/coverage-insights")
+    await confirmRedirect(page, "/coverage", "/protection")
 })
 
 test("probe: /home redirects to /dashboard", async ({ page }) => {

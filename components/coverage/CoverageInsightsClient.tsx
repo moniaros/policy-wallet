@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { InsightCard, InsightData } from './InsightCard'
-import { updateGapStatus } from '@/app/(protected)/coverage-insights/actions'
+import { updateGapStatus } from '@/app/(protected)/protection/actions'
 import { toast } from 'sonner'
 import { AiDisclaimer } from '@/components/ui/AiDisclaimer'
 import { displayInsurerName } from '@/lib/wallet/policy-identity'
@@ -50,8 +50,9 @@ interface CoverageInsightsClientProps {
     /**
      * Mounted inside another surface (/protection, V2-P2-01b): the parent owns
      * the page container, so drop this component's own width/padding frame and
-     * step the section heading down a level. /coverage-insights keeps the
-     * standalone rendering until V2-P2-03 removes that route.
+     * step the section heading down a level. Since V2-P2-03 removed
+     * /coverage-insights, /protection is the only mount — the standalone
+     * rendering survives for tests and any future standalone use.
      */
     embedded?: boolean
     policies?: Array<{

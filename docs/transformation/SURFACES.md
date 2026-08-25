@@ -17,7 +17,8 @@
 | `/wallet/[id]` | `app/(protected)/wallet/[id]/page.tsx` | Subpage | Free+ | `getPolicyAccess(id)` | Policy list rows, in-page navigation |
 | `/wallet/[id]/edit` | `app/(protected)/wallet/[id]/edit/page.tsx` | Subpage | Free+ | `getPolicyAccess.canWrite` | Edit button on policy detail |
 | `/wallet/add` | `app/(protected)/wallet/add/page.tsx` | Landing | Free+ | policyholder | Dashboard CTA, portfolio summary CTA |
-| `/coverage-insights` | `app/(protected)/coverage-insights/page.tsx` | Landing | Free+ | policyholder | Tab bar |
+| `/protection` | `app/(protected)/protection/page.tsx` | Landing | Free+ | policyholder | Tab bar («Η προστασία μου», §4.2 — absorbed `/coverage-insights`, `/branches`, `/insights/risk-profile`) |
+| `/protection/[branch]` | `app/(protected)/protection/[branch]/page.tsx` | Subpage | Free+ | policyholder | Branch tiles on the ανά κλάδο lens |
 | `/agent` | `app/(protected)/agent/page.tsx` | Landing | Free+ | policyholder | Tab bar (customer's adviser view) |
 | `/account` | `app/(protected)/account/page.tsx` | Landing | None | policyholder | Tab bar, bottom nav, settings rail |
 | `/account/profile` | `app/(protected)/account/profile/page.tsx` | Subpage | None | policyholder | Account nav rail |
@@ -25,21 +26,20 @@
 | `/account/privacy` | `app/(protected)/account/privacy/page.tsx` | Subpage | None | policyholder | Account nav rail |
 | `/account/plan` | `app/(protected)/account/plan/page.tsx` | Subpage | Free+ | policyholder | Account nav rail |
 | `/account/notifications` | `app/(protected)/account/notifications/page.tsx` | Subpage | None | policyholder | Account nav rail |
-| `/timeline` | `app/(protected)/timeline/page.tsx` | Landing | None | policyholder (auth only — no role gate) | Main menu item #6 |
+| `/account/history` | `app/(protected)/account/history/page.tsx` | Subpage | None | policyholder | Account nav rail (relocated `/timeline`, V2-P2-02) |
 | `/notifications` | `app/(protected)/notifications/page.tsx` | Landing | None | policyholder | Top header bell icon (mobile) |
 | `/help` | `app/(protected)/help/page.tsx` | Landing | None | all roles | Sidebar nav |
 | `/help/article/[slug]` | `app/(protected)/help/article/[slug]/page.tsx` | Subpage | None | all roles | Help index rows |
 | `/benefits` | `app/(protected)/benefits/page.tsx` | Landing | Paid+ | policyholder | Not discoverable in default nav (partner offers gated) |
 | `/consent/ai` | `app/(protected)/consent/ai/page.tsx` | Landing | None | policyholder | AI processing consent flow; redirects if already consented |
 | `/activity` | `app/(protected)/activity/page.tsx` | Landing | None | policyholder (mixed content for agents too) | Activity feed shown to both roles; content varies |
-| `/insights/risk-profile` | `app/(protected)/insights/risk-profile/page.tsx` | Landing | Free+ | policyholder | Coverage insights section, dashboard CTA |
 | `/upgrade` | `app/(protected)/upgrade/page.tsx` | Landing | Free only | policyholder | Plan gate CTAs, account nav, in-page limits |
 | `/upgrade/success` | `app/(protected)/upgrade/success/page.tsx` | Subpage | None | policyholder | Redirect after Stripe checkout success |
-| `/coverage` | `app/(protected)/coverage/page.tsx` | Redirect only | — | — | Redirects to `/coverage-insights` (legacy URL) |
+| `/coverage` | `app/(protected)/coverage/page.tsx` | Redirect only | — | — | Redirects to `/protection` (legacy URL) |
 | `/home` | `app/(protected)/home/page.tsx` | Redirect only | — | — | Redirects to `/dashboard` (legacy URL) |
 
-**Total B2C routes:** 25 (including 2 redirects) — `/timeline` added 2026-08-24, see the correction note  
-**Distinct landing surfaces:** 20
+**Total B2C routes:** 25 (including 2 redirects) — refreshed 2026-08-25 for V2-P2-03 (§4.2): `/coverage-insights`, `/timeline` and `/insights/risk-profile` removed; `/protection`, `/protection/[branch]` and `/account/history` are their homes  
+**Distinct landing surfaces:** 18
 
 ---
 
@@ -65,16 +65,17 @@
 
 ### From `/dashboard` (Policyholder Home)
 **Bottom tab bar:**
-- `/wallet` (Wallet tab)
-- `/coverage-insights` (Coverage Insights tab)
-- `/agent` (Adviser View tab)
-- `/account` (Settings tab)
-- `/notifications` (Top header)
+- `/wallet` (Ο φάκελός μου tab)
+- `/protection` (Η προστασία μου tab)
+- `/agent` (Ο σύμβουλός μου tab)
+- `/account` (Ρυθμίσεις tab)
+- `/notifications` (Top header bell)
 
 **Inline CTAs / Cards:**
 - `/wallet/add` (Upload policies widget, Portfolio Summary, Renewals card)
-- `/coverage-insights` (Coverage Gaps widget, Attention List)
-- `/insights/risk-profile` (Protection Monitor card)
+- `/protection` (Coverage Gaps widget, Attention List)
+- `/protection?lens=risk` (Protection Monitor card)
+- `/account/history` (Recent Changes widget)
 - `/help` (Help links in footer)
 
 **Sidebar / Main nav:**
@@ -126,15 +127,16 @@
 
 ---
 
-### From `/coverage-insights` (Coverage Analysis)
+### From `/protection` («Η προστασία μου», §4.2)
 **Bottom tab bar:** Same as `/dashboard`
+
+**Lens switcher (`?lens=`):** ανά κλάδο (branch tiles → `/protection/[branch]`) · ανά κίνδυνο (risk view)
 
 **Inline CTAs:**
 - `/wallet/add` (Add missing coverage CTA)
-- `/insights/risk-profile` (Risk profile link)
 
 **Life event prompts:**
-- `/coverage-insights#life-events` (anchor within page)
+- `/protection#life-events` (anchor within page)
 
 **Sidebar / Main nav:**
 - `/help`
@@ -160,6 +162,8 @@
 - `/account/privacy`
 - `/account/plan`
 - `/account/notifications`
+- `/account/history` (relocated `/timeline`)
+- `/benefits` (conditional — only while ≥1 partner offer is live; §4.2 keeps this entry inside Ρυθμίσεις, not as a tab)
 
 **Mobile sheet:**
 - Opens settings nav (on lg+, nav is sidebar column)
@@ -248,20 +252,6 @@
 
 ---
 
-### From `/insights/risk-profile` (Risk Profile)
-**Bottom tab bar:** Same as `/dashboard`
-
-**Quick Start form (first visit):**
-- Submits and reloads same page with profile data visible
-
-**Inline CTAs:**
-- `/coverage-insights` (Coverage analysis link)
-
-**Sidebar / Main nav:**
-- `/help`
-
----
-
 ### From `/upgrade` (Subscription Upgrade)
 **Tier cards:**
 - Stripe checkout (external, then returns to `/upgrade/success`)
@@ -273,7 +263,7 @@
 
 ### From `/upgrade/success` (Upgrade Success)
 **Primary CTA:**
-- Redirect to origin page (e.g., `/coverage-insights` if upgrade was gated from there)
+- Redirect to origin page (e.g., `/protection` if upgrade was gated from there)
 
 **Default:**
 - `/dashboard`
@@ -303,13 +293,11 @@ All routes listed here are **verified as NOT B2C** based on role gating, access 
 | `/tasks` | `app/(protected)/tasks/page.tsx:8` - `db.task.findMany({ where: { assignedAgentId } })` | Agent task list |
 | `/tasks/[id]` | `app/(protected)/tasks/[id]/page.tsx` - individual agent task | Agent task detail |
 | `/team` | `app/(protected)/team/page.tsx:6` - `getTeamData()` from agent actions | Agent's team members |
-| `/branches` | `app/(protected)/branches/page.tsx:8` - `db.branch.findMany({ where: { agentId } })` | Agent's insurance branches |
-| `/branches/[branch]` | `app/(protected)/branches/[branch]/page.tsx` - agent branch detail | Agent branch detail |
 | `/questionnaires` | `app/(protected)/questionnaires/page.tsx:4` - `getTemplates()`, `getSentQuestionnaires()` | Agent questionnaire templates and tracking |
 | `/wallet/[id]/review` | `app/(protected)/wallet/[id]/review/page.tsx:17` - `if (!isAgentRole(dbUser.roles)) notFound()` | Agent-only extraction review workflow |
 | `/collaboration/threads/[id]` | `app/(protected)/collaboration/threads/[id]/page.tsx:17` - `collaborationService.getThreadDetail(dbUser.id, dbUser.roles, id)` | Shared between agent and policyholder; both can access via relationship |
 
-**Count:** 19 B2B agent routes
+**Count:** 17 B2B agent routes (the two `/branches` rows were removed by V2-P2-03 — and had been misclassified: the page read the caller's OWN policies, not an agent's book)
 
 ### Admin Routes (Under `/admin/` — all out of scope)
 
@@ -357,7 +345,8 @@ All routes under `app/(protected)/admin/**` are explicitly gated to admin role a
 - `/wallet` — EXISTS ✓
 - `/wallet/[id]` — EXISTS ✓
 - `/wallet/add` — EXISTS ✓
-- `/coverage-insights` — EXISTS ✓
+- `/protection` — EXISTS ✓
+- `/protection/[branch]` — EXISTS ✓
 - `/agent` — EXISTS ✓
 - `/account` — EXISTS ✓
 - `/account/*` — ALL EXISTS ✓
@@ -367,9 +356,9 @@ All routes under `app/(protected)/admin/**` are explicitly gated to admin role a
 - `/benefits` — EXISTS ✓
 - `/consent/ai` — EXISTS ✓
 - `/activity` — EXISTS ✓
-- `/insights/risk-profile` — EXISTS ✓
 - `/upgrade` — EXISTS ✓
-- `/coverage` — EXISTS ✓ (redirect to `/coverage-insights`)
+- `/coverage` — EXISTS ✓ (redirect to `/protection`)
+- `/account/history` — EXISTS ✓
 - `/home` — EXISTS ✓ (redirect to `/dashboard`)
 - `/contact` — Public route (outside protected scope) ✓
 - `/lexiko` — Public route (outside protected scope) ✓
@@ -387,12 +376,12 @@ No unreachable routes detected. All B2C routes are discoverable via primary navi
 
 | Category | Count |
 |---|---|
-| **B2C Routes** | 24 routes (20 landing + 4 subpage clusters; 2 are legacy redirects) |
-| **B2C Landing Surfaces** | 20 distinct landing screens |
+| **B2C Routes** | 25 routes (18 landing + subpage clusters; 2 are legacy redirects) |
+| **B2C Landing Surfaces** | 18 distinct landing screens |
 | **B2C Overlays** | 7 (modals, dialogs, sheets) |
-| **B2B Agent Routes** | 19 routes |
+| **B2B Agent Routes** | 17 routes |
 | **Admin Routes** | 43 routes |
-| **Total Protected Routes** | 86 routes |
+| **Total Protected Routes** | 85 routes |
 | **Anomalies (unreachable routes)** | 3 (intentionally gated or conditional) |
 | **Anomalies (broken nav)** | 0 |
 
@@ -451,3 +440,16 @@ missed is a top-level menu destination, and v2 lists it as a surface with real d
 *load-bearing* — a guard derives its universe from it. A gap in it is no longer a documentation
 defect, it is a hole in a guard. Anything parsing `SURFACES.md` must assert a floor (that guard
 does) and any route added to the menu must be added here in the same change.
+
+
+---
+
+## CORRECTION 2026-08-25 — V2-P2-03 (§4.2 IA consolidation)
+
+Four routes removed outright (owner chose removal over redirects): `/coverage-insights`,
+`/branches`, `/branches/[branch]`, `/insights/risk-profile`, `/timeline`. Their content lives at
+`/protection` (both lenses), `/protection/[branch]` and `/account/history`; the risk lens is
+addressable as `/protection?lens=risk`. `/coverage` (legacy redirect, KEEP) now points at
+`/protection`. The nav is five tabs plus the bell; `/benefits` is a conditional entry inside
+Ρυθμίσεις. `tests/unit/no-dead-internal-links.test.ts` now enumerates every internal link target
+against the filesystem, so a link left pointing at a removed route fails CI instead of shipping.

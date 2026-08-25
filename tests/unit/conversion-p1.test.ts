@@ -29,7 +29,7 @@ const DAY = 24 * 60 * 60 * 1000
 describe('sanitizeReturnPath (open-redirect guard)', () => {
     it('accepts same-origin app paths', () => {
         expect(sanitizeReturnPath('/wallet/abc?tab=analysis')).toBe('/wallet/abc?tab=analysis')
-        expect(sanitizeReturnPath('/coverage-insights')).toBe('/coverage-insights')
+        expect(sanitizeReturnPath('/protection')).toBe('/protection')
     })
 
     it('rejects absolute URLs, protocol-relative URLs, and empty values', () => {
