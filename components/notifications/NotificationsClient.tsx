@@ -1,12 +1,65 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { BellRing, CheckCheck, Settings2 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
+
+/**
+ * A stored message, clamped — with the rest reachable.
+ *
+ * The clamp is right: stored messages carry whatever the writer put there, and
+ * one quotes an insurer's full legal name over five lines in a list cell. What
+ * was wrong is that the remainder had nowhere to go. The comment here used to
+ * say "the item's own page shows the rest"; `/notifications` is a single
+ * `page.tsx` with no per-item route, and nothing links to one — so the sentence
+ * was false and the clipped half was unreachable anywhere in the product. Same
+ * shape as the branch taglines (B-03, V2-P3-01).
+ *
+ * The toggle appears only when the text is ACTUALLY clipped, measured after
+ * layout rather than guessed from a character count — a "show more" that
+ * reveals nothing is its own small lie.
+ */
+function ClampedMessage({ text, moreLabel, lessLabel }: { text: string; moreLabel: string; lessLabel: string }) {
+    const [expanded, setExpanded] = useState(false)
+    const [clipped, setClipped] = useState(false)
+    const ref = useRef<HTMLParagraphElement | null>(null)
+
+    useEffect(() => {
+        const el = ref.current
+        if (!el) return
+        const measure = () => setClipped(el.scrollHeight > el.clientHeight + 1)
+        measure()
+        const ro = new ResizeObserver(measure)
+        ro.observe(el)
+        return () => ro.disconnect()
+        // Re-measure when the clamp is released and re-applied.
+    }, [expanded, text])
+
+    return (
+        <>
+            <p
+                ref={ref}
+                className={`mt-1 text-sm text-black/65 dark:text-white/70 ${expanded ? "" : "line-clamp-3"}`}
+            >
+                {text}
+            </p>
+            {(clipped || expanded) && (
+                <button
+                    type="button"
+                    onClick={() => setExpanded((v) => !v)}
+                    aria-expanded={expanded}
+                    className="mt-1 inline-flex min-h-11 items-center text-xs font-semibold text-primary underline-offset-2 hover:underline dark:text-mint"
+                >
+                    {expanded ? lessLabel : moreLabel}
+                </button>
+            )}
+        </>
+    )
+}
 
 // Each history item is one EVENT, grouped server-side from its per-channel
 // delivery rows (§2.7). There is deliberately no `channel` here: which pipe
@@ -205,15 +258,11 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                             >
                                                 {fixMojibakeText(event.subject || "")}
                                             </p>
-                                            {/* Clamped: stored messages carry whatever the
-                                                writer put there — one quotes an insurer's
-                                                full legal name («ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ
-                                                ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ...»), five lines of
-                                                boilerplate in a list cell. A list shows the
-                                                gist; the item's own page shows the rest. */}
-                                            <p className="mt-1 line-clamp-3 text-sm text-black/65 dark:text-white/70">
-                                                {fixMojibakeText(event.message || "")}
-                                            </p>
+                                            <ClampedMessage
+                                                text={fixMojibakeText(event.message || "")}
+                                                moreLabel={t.notifications.showFullMessage}
+                                                lessLabel={t.notifications.showLessMessage}
+                                            />
                                             {/* No channel chip. One card is one EVENT; which
                                                 pipe delivered it (email, push, in-app) is not
                                                 customer-facing information — and the chip's

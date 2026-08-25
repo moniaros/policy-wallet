@@ -354,11 +354,17 @@ const REGISTER: RegisterEntry[] = [
     {
         file: "components/notifications/NotificationsClient.tsx",
         clamps: { "line-clamp-3": 1 },
-        kind: "debt",
+        kind: "reachable",
         note:
-            "Body clamps to three lines. The in-file comment claims «the item's own " +
-            "page shows the rest» — no such page exists. The full message body of a " +
-            "notification is unreachable in the product.",
+            "Body clamps to three lines, released in place by ClampedMessage's " +
+            "«Εμφάνιση ολόκληρου μηνύματος» toggle. The toggle renders only when the " +
+            "text is MEASURED as clipped (scrollHeight > clientHeight after layout), " +
+            "not guessed from a character count — a «show more» that reveals nothing " +
+            "is its own small lie. This entry was `debt`: the in-file comment claimed " +
+            "«the item's own page shows the rest» and no such page exists — " +
+            "/notifications is a single page.tsx with nothing linking to a per-item " +
+            "route. That comment is gone with the defect. Fixing this also makes the " +
+            "bell's 2-line clamp reachable, since the bell links here.",
     },
     {
         file: "components/risk-dna/RiskDnaPanel.tsx",
@@ -476,7 +482,6 @@ const DEBT_BASELINE = [
     "components/collaboration/AgentCard.tsx",
     "components/notifications/NotificationBell.tsx",
     "components/notifications/NotificationCard.tsx",
-    "components/notifications/NotificationsClient.tsx",
     "components/wallet/CollaborationPanel.tsx",
 ]
 

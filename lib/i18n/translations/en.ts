@@ -1390,6 +1390,8 @@ export const en: TranslationKeys = {
     },
 
     notifications: {
+        showFullMessage: 'Show the full message',
+        showLessMessage: 'Show less',
         markAllReadFailed: 'Could not mark everything as read. Please try again.',
         catSystemConfirmation: 'System confirmations',
         catSystemConfirmationDesc: 'Always sent — cannot be turned off.',

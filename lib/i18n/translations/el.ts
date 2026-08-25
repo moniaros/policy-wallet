@@ -1401,6 +1401,8 @@ export const el = {
     },
 
     notifications: {
+        showFullMessage: 'Εμφάνιση ολόκληρου μηνύματος',
+        showLessMessage: 'Εμφάνιση λιγότερων',
         markAllReadFailed: 'Τα μηνύματα δεν σημάνθηκαν ως αναγνωσμένα. Δοκιμάστε ξανά.',
         catSystemConfirmation: 'Επιβεβαιώσεις συστήματος',
         catSystemConfirmationDesc: 'Αποστέλλονται πάντα — δεν απενεργοποιούνται.',

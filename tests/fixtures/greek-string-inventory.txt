@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2790
+# bundle entries: 2792
 # inline entries: 4424 across 207 files
 # ternary entries: 285 across 44 files
 # call entries: 1139 across 71 files
@@ -1584,6 +1584,8 @@ bundle	notifications.pwaInstallCta	"Εγκατάσταση εφαρμογής"
 bundle	notifications.pwaInstallIos	"Πατήστε Κοινή χρήση και επιλέξτε «Προσθήκη στην αρχική οθόνη»."
 bundle	notifications.pwaInstallSubtitle	"Ταχύτερη πρόσβαση από την αρχική οθόνη σας."
 bundle	notifications.pwaInstallTitle	"Εγκατάσταση PolicyWallet"
+bundle	notifications.showFullMessage	"Εμφάνιση ολόκληρου μηνύματος"
+bundle	notifications.showLessMessage	"Εμφάνιση λιγότερων"
 bundle	notifications.viewAllNotifications	"Προβολή όλων των ειδοποιήσεων"
 bundle	notifications.viewPolicy	"Προβολή ασφαλιστηρίου"
 bundle	planGate.lockedFeature	"Αυτή η λειτουργία απαιτεί {plan}"
