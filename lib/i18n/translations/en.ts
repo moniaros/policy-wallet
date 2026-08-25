@@ -620,6 +620,8 @@ export const en: TranslationKeys = {
             actionRequiredChip: 'Action needed',
             noExclusionsDetected: 'We could not identify any exclusions in this document — that does not mean there are none.',
             exclusionsReanalyzeHint: 'Every policy has exclusions. Check your policy wording or ask your insurer. A fresh analysis may also surface more detail.',
+            perksSourceLink: 'See where these appear in your policy',
+            perksSourceMissing: 'These come from your policy, but we have no stored document to show you.',
             showMoreFinePrint: 'Show all clauses',
             showLessFinePrint: 'Show fewer clauses',
             showAllExclusions: 'Show all',

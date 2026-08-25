@@ -18,6 +18,21 @@ import { pickLang, type PolicyPerk } from "@/lib/wallet/policy-detail"
 interface PerksCardProps {
     perks: PolicyPerk[]
     lang: "el" | "en"
+    /**
+     * P-08: where these perks came from.
+     *
+     * A perk is a claim — "you have free roadside assistance" — extracted by a
+     * model from the policy document, and this card rendered it with no way for
+     * the reader to check. The only links it carried were the perk's OWN `tel:`
+     * and website. `PolicyPerk` has no clause reference in the ACORD schema, so
+     * document-level provenance is the honest granularity available: the same
+     * answer `lib/wallet/unreadable-value.ts` gives when it cannot read a field
+     * — it points at the document, which is the only place the truth is.
+     *
+     * Null when the policy has no stored document, in which case the line says
+     * so rather than linking nowhere.
+     */
+    sourceDocumentHref: string | null
     copy: {
         perksTitle: string
         perksSubtitle: string
@@ -27,6 +42,8 @@ interface PerksCardProps {
         dontForgetChip: string
         noPerksDetected: string
         exclusionsReanalyzeHint: string
+        perksSourceLink: string
+        perksSourceMissing: string
         perkTypes: Record<string, string>
     }
 }
@@ -46,7 +63,7 @@ const PERK_ICON: Record<string, typeof Gift> = {
  * Perks & benefits bundled with the policy — free services, assistance
  * hotlines, prevention programs — that policyholders routinely forget exist.
  */
-export function PerksCard({ perks, lang, copy }: PerksCardProps) {
+export function PerksCard({ perks, lang, copy, sourceDocumentHref }: PerksCardProps) {
     return (
         <div className="pw-card pw-pad sm:p-7">
             <div className="mb-1 flex items-center gap-2">
@@ -126,6 +143,27 @@ export function PerksCard({ perks, lang, copy }: PerksCardProps) {
                         )
                     })}
                 </div>
+            )}
+            {/* P-08: the claim's provenance. A perk is something the product
+                asserts you have; until now the reader had no way to check it
+                against the contract. Document-level is the honest granularity —
+                PolicyPerk carries no clause reference — and when there is no
+                document the line says that rather than linking nowhere. */}
+            {perks.length > 0 && (
+                <p className="mt-4 border-t border-black/10 pt-3 text-caption text-black/60 dark:border-white/10 dark:text-white/60">
+                    {sourceDocumentHref ? (
+                        <a
+                            href={sourceDocumentHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex min-h-11 items-center font-semibold text-primary underline-offset-2 hover:underline dark:text-mint"
+                        >
+                            {copy.perksSourceLink}
+                        </a>
+                    ) : (
+                        copy.perksSourceMissing
+                    )}
+                </p>
             )}
         </div>
     )

@@ -896,6 +896,9 @@ export function PolicyDetailsClient({
                                 <PerksCard
                                     perks={perks}
                                     lang={lang}
+                                    // P-08: a perk is a claim the product makes about your
+                                    // contract; this is how the reader checks it.
+                                    sourceDocumentHref={firstDocumentHref}
                                     copy={{
                                         perksTitle: detailsCopy.perksTitle,
                                         perksSubtitle: detailsCopy.perksSubtitle,
@@ -905,6 +908,8 @@ export function PolicyDetailsClient({
                                         dontForgetChip: detailsCopy.dontForgetChip,
                                         noPerksDetected: detailsCopy.noPerksDetected,
                                         exclusionsReanalyzeHint: detailsCopy.exclusionsReanalyzeHint,
+                                        perksSourceLink: detailsCopy.perksSourceLink,
+                                        perksSourceMissing: detailsCopy.perksSourceMissing,
                                         perkTypes: detailsCopy.perkTypes,
                                     }}
                                 />

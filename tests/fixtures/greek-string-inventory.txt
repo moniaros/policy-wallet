@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2792
+# bundle entries: 2794
 # inline entries: 4424 across 207 files
 # ternary entries: 285 across 44 files
 # call entries: 1134 across 71 files
@@ -2591,6 +2591,8 @@ bundle	wallet.policyDetailsPage.perkTypes.gift	"Δώρο"
 bundle	wallet.policyDetailsPage.perkTypes.legal_aid	"Νομική προστασία"
 bundle	wallet.policyDetailsPage.perkTypes.loyalty_bonus	"Πρόγραμμα επιβράβευσης"
 bundle	wallet.policyDetailsPage.perkTypes.prevention	"Πρόληψη"
+bundle	wallet.policyDetailsPage.perksSourceLink	"Δείτε πού αναγράφονται στο ασφαλιστήριο"
+bundle	wallet.policyDetailsPage.perksSourceMissing	"Οι παροχές προέρχονται από το ασφαλιστήριό σας, αλλά δεν έχουμε αποθηκευμένο έγγραφο για να σας το δείξουμε."
 bundle	wallet.policyDetailsPage.perksSubtitle	"Έξτρα που περιλαμβάνονται ήδη στο ασφαλιστήριο — οι περισσότεροι δεν τα αξιοποιούν ποτέ."
 bundle	wallet.policyDetailsPage.perksTitle	"Παροχές & προνόμια"
 bundle	wallet.policyDetailsPage.premiumFrequency.annual	"Ετήσια"
