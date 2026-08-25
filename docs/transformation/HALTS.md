@@ -734,6 +734,24 @@ policy, and §12.2 blocks it regardless. Revisit when a real capture shows non-z
 which the `duplicate-identity-row` metric now checks continuously, so the revisit condition is
 measured rather than remembered.
 
+### The cyber / business / pension half, verified 2026-08-26
+
+The amendment recorded this as "`/branches` renders cards for both Cyber and Επιχείρηση with nothing
+behind them". Checked, and the precise version is narrower and more useful:
+
+- **Editorial content exists.** `lib/insurance/content/{cyber,business,pension}.ts` are all present,
+  so the cards carry a tagline and "why it matters" prose like any other line. They are not blank.
+- **Structured extraction does not.** `AcordData` has objects for `motor`, `property` and `health`,
+  and **none** for `cyber`, `business` or `pension`.
+
+So a customer who uploads a cyber policy gets a branch card and editorial, and **nothing extracted**:
+no coverage figures, no identity, and no structured input for gap detection. That is a
+**structured-identity gap**, not an empty card — and it is the more serious reading, because an empty
+card is visibly empty while an editorial card looks complete.
+
+Worth stating for whoever acts on this: adding the three objects is the same §12.2 schema change as
+the insured-person name, and should be decided with it rather than separately.
+
 ### Why this is worth a halt rather than a silent limitation
 Because the alternative is a substitute field. The nearest candidates all look like identifiers and
 are not: `beneficiaries.name` names the **beneficiary**, `insuredPersons.*` is a class schedule, and
