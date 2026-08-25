@@ -135,7 +135,13 @@ export function CoverageInsightsClient({
         notAnalyzedBody: lang === 'el'
             ? 'Τρέξτε πλήρη ανάλυση για να ελεγχθούν τα ασφαλιστήριά σας για κενά.'
             : 'Run a full analysis to check your policies for gaps.',
-        notAnalyzedLockedCta: lang === 'el' ? 'Ξεκλείδωμα με Plus' : 'Unlock with Plus',
+        // Pro, not Plus. The gate is `entitlements.tier !== 'pro'`, so Plus does
+        // NOT unlock deep analysis — this CTA promised that buying Plus would,
+        // which is a claim the code does not support, made at the moment it
+        // induces the purchase. Whether the feature SHOULD sit behind Pro is
+        // H-009 and the owner's call; naming the plan that actually clears the
+        // gate is not. Guarded by locked-cta-names-the-real-tier.test.ts.
+        notAnalyzedLockedCta: lang === 'el' ? 'Ξεκλείδωμα με Pro' : 'Unlock with Pro',
         notAnalyzedRefreshHint: lang === 'el' ? 'Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει.' : 'Upload or refresh a policy to start it.',
         unknownCount: '—',
     }

@@ -546,6 +546,26 @@ answer: *(awaiting)*
 
 ---
 
+## H-009 — HALF FIXED. The false claim is gone; which tier owns the feature is yours.
+
+**Resolved 2026-08-25 (copy half).** The CTA now reads «Ξεκλείδωμα με Pro» / "Unlock with Pro",
+naming the tier that actually clears `tier !== 'pro'`. `tests/unit/locked-cta-names-the-real-tier.test.ts`
+reads the tier **out of the gate expression** and fails if the copy names a different paid tier —
+probed both ways: changing the copy goes red, and changing the gate goes red too, so the sentence and
+the predicate cannot drift apart again.
+
+**A guard was pinning the defect.** V2-P2-01b's A-17 test asserted the literal «Ξεκλείδωμα με Plus»,
+so the false claim had a test holding it in place. Updated, with a note pointing at the guard that
+now owns the tier-naming invariant rather than duplicating it.
+
+**Still open, and still yours:** whether deep analysis belongs behind Pro (€8.99) or Plus (€4.99).
+That is what each plan is worth, §12.4 puts gating mechanics out of scope, and a Plus subscriber is
+still shown an upgrade prompt — now an honest one. Note `lib/monetization/feature-gates.ts` exports
+`tierUnlocks(tier, gate)` with a `TIER_RANK`; this gate hand-rolls `tier !== 'pro'` instead of using
+it, which is the kind of second definition this run keeps finding.
+
+### Original halt as raised
+
 ## H-009 — «Ξεκλείδωμα με Plus» unlocks nothing. The gate requires Pro.
 
 **Raised 2026-08-25, from V2-P2-01b's out-of-scope list. The copy half is mine to fix; the gate is

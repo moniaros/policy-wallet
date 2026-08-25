@@ -814,8 +814,14 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
             )
         ).toBe(true)
     })
+    // The tier this CTA names is NOT this guard's invariant — it asserts the
+    // string, and yesterday that string was «Ξεκλείδωμα με Plus» against a
+    // `tier !== 'pro'` gate, so this test PINNED a false claim: buying Plus
+    // unlocked nothing. locked-cta-names-the-real-tier.test.ts owns that
+    // invariant now, reading the tier out of the gate expression so copy and
+    // predicate cannot drift apart again. Keep this assertion in step with it.
 
-    it("A-17: never-analysed renders its own state — refresh hint when open, locked CTA when Plus-gated", () => {
+    it("A-17: never-analysed renders its own state — refresh hint when open, locked CTA when Pro-gated", () => {
         const open = renderSurface(withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false }))
         expect(open.container.textContent).toContain("Δεν έχει γίνει ακόμη πλήρης ανάλυση")
         expect(open.container.textContent).toContain(
@@ -826,7 +832,7 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
         const locked = renderSurface(
             withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false, isDeepAnalysisLocked: true })
         )
-        expect(locked.container.textContent).toContain("Ξεκλείδωμα με Plus")
+        expect(locked.container.textContent).toContain("Ξεκλείδωμα με Pro")
         expect(locked.container.textContent).not.toContain(
             "Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει."
         )
