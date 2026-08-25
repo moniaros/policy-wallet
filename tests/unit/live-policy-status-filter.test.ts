@@ -392,6 +392,14 @@ const UNFILTERED_OWNERSHIP_EXEMPTIONS: Record<string, { count: number; reason: s
             "The remaining query is the gap fetch, scoped by gap status and post-filtered " +
             "through gapsOnActiveCoverage.",
     },
+    "app/(protected)/protection/page.tsx": {
+        count: 1,
+        reason:
+            "V2-P2-01b carries the /coverage-insights findings surface onto /protection with " +
+            "the IDENTICAL gap fetch: scoped by GAP status and post-filtered through " +
+            "gapsOnActiveCoverage (the page's policy fetch itself carries status ≠ 'deleted'). " +
+            "Collapses back to one entry when V2-P2-03 deletes the old route.",
+    },
     "app/(protected)/wallet/[id]/page.tsx": {
         count: 1,
         reason:

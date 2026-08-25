@@ -4,6 +4,9 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getTranslations } from "@/lib/i18n"
 import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status"
+import { gapsOnActiveCoverage } from "@/lib/gaps/gap-universe"
+import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
+import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
 import { getGapEngineSnapshot, type GapEngineSnapshot } from "@/lib/services/gap-engine"
 import { getRiskIntelligence } from "@/lib/services/risk-dna/service"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
@@ -41,7 +44,7 @@ export default async function ProtectionPage({
     const lang: 'el' | 'en' = dbUser.preferredLanguage === 'en' ? 'en' : 'el'
     const t = getTranslations(lang)
 
-    const [entitlements, profileRecord, policies, score] = await Promise.all([
+    const [entitlements, profileRecord, policies, score, allGapInstances] = await Promise.all([
         resolveUserEntitlements(dbUser.id),
         db.policyholderProfile.findUnique({ where: { userId: dbUser.id } }),
         db.policy.findMany({
@@ -49,15 +52,66 @@ export default async function ProtectionPage({
             // the same held-policy predicate as the wallet and both source
             // surfaces, so branch tile counts sum to portfolio.policyCount.
             where: { ownerUserId: dbUser.id, status: { not: 'deleted' } },
-            select: { id: true, lineOfBusiness: true, status: true, endDate: true, acordData: true },
+            select: {
+                id: true,
+                lineOfBusiness: true,
+                status: true,
+                endDate: true,
+                acordData: true,
+                // The findings surface's extra needs (A-10…A-21):
+                policyNumber: true,
+                insurerName: true,
+                // Set only by the deep pipeline — the A-13/A-17 discriminator.
+                lastAnalyzedAt: true,
+            },
         }),
         // Read-only: expectedLines for tile states, never a rendered score.
         db.protectionScore.findUnique({ where: { userId: dbUser.id } }),
+        // Open findings — same query as the source surface (minus the unused
+        // definition include); rows serialize into client props, so only the
+        // fields the client reads travel (no acordData per gap).
+        db.gapInstance.findMany({
+            where: {
+                policy: { ownerUserId: dbUser.id },
+                status: { in: ['detected', 'acknowledged', 'open'] },
+            },
+            include: {
+                policy: {
+                    select: {
+                        id: true,
+                        policyNumber: true,
+                        lineOfBusiness: true,
+                        insurerName: true,
+                        status: true,
+                        endDate: true,
+                    },
+                },
+            },
+            orderBy: { detectedAt: 'desc' },
+        }),
     ])
+
+    // CRITICAL (source-surface rule, verbatim): coverage insights describe the
+    // protection you have TODAY. A lapsed policy is not protection — its
+    // findings must not be presented as the current coverage picture (they
+    // stay on that policy's own page). The tally therefore counts through the
+    // shared predicate (gapsOnActiveCoverage) — the same helper the dashboard
+    // filters through, so the surfaces state one gap universe (§2.8: 43 vs 33
+    // was this filter existing on one side only).
+    const activePolicies = policies.filter((policy) => isPolicyCoverageActive(policy))
+    const expiredPolicies = policies.filter(
+        (policy) => !isPolicyCoverageActive(policy) && effectivePolicyStatus(policy) === 'expired'
+    )
+    const gapInstances = gapsOnActiveCoverage(allGapInstances, policies)
 
     // Same signal as /coverage-insights: at least one policy provides
     // coverage TODAY (drives the recommendations empty state).
-    const hasPolicies = policies.some((policy) => isPolicyCoverageActive(policy))
+    const hasPolicies = activePolicies.length > 0
+
+    // A-13/A-17 discriminator: lastAnalyzedAt is set ONLY by the deep
+    // pipeline, so "0 findings" over a null column is nobody-looked, never
+    // checked-and-clear.
+    const hasDeepAnalysis = activePolicies.some((policy) => policy.lastAnalyzedAt != null)
 
     // Read-only snapshot (recommendations + smart content + completeness).
     let engineResult: GapEngineSnapshot | null = null
@@ -201,6 +255,43 @@ export default async function ProtectionPage({
             tier={entitlements.tier}
             hasPolicies={hasPolicies}
             lifeEvents={{ options: lifeEventOptions, recent: recentLifeEvents }}
+            findings={{
+                gaps: gapInstances,
+                stats: {
+                    critical: gapInstances.filter((g) => g.severity === 'critical').length,
+                    high: gapInstances.filter((g) => g.severity === 'high').length,
+                    medium: gapInstances.filter((g) => g.severity === 'medium').length,
+                    low: gapInstances.filter((g) => g.severity === 'low').length,
+                    totalGaps: gapInstances.length,
+                    totalPolicies: activePolicies.length,
+                    totalCoverage: 0,
+                },
+                // A-12 — the honesty notice naming what the tally does NOT count.
+                excludedExpired: expiredPolicies.map((policy) => ({
+                    id: policy.id,
+                    label:
+                        resolveInsurerDisplay(policy.insurerName).displayName ||
+                        displayPolicyNumber(policy.policyNumber) ||
+                        '',
+                })),
+                isPaid: entitlements.isPaid,
+                hasDeepAnalysis,
+                // Same gate as the source surface: deep gap analysis is
+                // pro-tier; below it the A-17 state offers the unlock CTA.
+                isDeepAnalysisLocked: entitlements.tier !== 'pro',
+                canUseAgentCollaboration: entitlements.limits.agentCollaboration,
+                policies: activePolicies.map((p) => ({
+                    id: p.id,
+                    insurerName: displayInsurerName(p.insurerName, p.lineOfBusiness || 'Policy'),
+                    lineOfBusiness: {
+                        code: (p.acordData as any)?.policy?.lineOfBusiness?.code || p.lineOfBusiness || 'other',
+                        name:
+                            (p.acordData as any)?.policy?.lineOfBusiness?.Description ||
+                            p.lineOfBusiness ||
+                            (lang === 'el' ? 'Άλλο Συμβόλαιο' : 'Other Policy'),
+                    },
+                })),
+            }}
         />
     )
 }

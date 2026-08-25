@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react"
 
+import { CoverageInsightsClient } from "@/components/coverage/CoverageInsightsClient"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { LifeEventsPanel, type LifeEventOption, type RecordedEvent } from "@/components/coverage/LifeEventsPanel"
 import { RiskProfileWizard } from "@/components/coverage/RiskProfileWizard"
@@ -10,6 +11,7 @@ import { ProtectionBranchLens, type BranchLensLabels } from "./ProtectionBranchL
 import { ProtectionRiskLens } from "./ProtectionRiskLens"
 import type { BranchPolicyFacts } from "@/lib/insurance/branch-page"
 
+type CoverageInsightsClientProps = ComponentProps<typeof CoverageInsightsClient>
 type RecommendationCardsProps = ComponentProps<typeof RecommendationCards>
 type RiskProfileWizardProps = ComponentProps<typeof RiskProfileWizard>
 type ProtectionRiskLensProps = ComponentProps<typeof ProtectionRiskLens>
@@ -53,6 +55,16 @@ export interface ProtectionSurfaceProps {
     tier: "free" | "plus" | "pro"
     hasPolicies: boolean
     lifeEvents: { options: LifeEventOption[]; recent: RecordedEvent[] }
+    /**
+     * A-10…A-21 — the carried findings surface: the reviewed-findings list,
+     * severity tally, the «Εξαιρέθηκαν» / «Τι ελέγξαμε και είναι εντάξει»
+     * honesty notices, next steps, and the four states (never-analysed, empty
+     * wallet, all-good, free-tier lite). The SAME component /coverage-insights
+     * mounts, so the two routes cannot drift while both exist (V2-P2-03
+     * removes the old mount). `tier`, `userLanguage` and `hasPolicies` are
+     * injected from this surface's own props — one fact, one source.
+     */
+    findings: Omit<CoverageInsightsClientProps, "embedded" | "tier" | "userLanguage" | "hasPolicies">
 }
 
 /**
@@ -60,7 +72,8 @@ export interface ProtectionSurfaceProps {
  *
  * One route absorbing three: /branches (ανά κλάδο lens, B-01…B-06),
  * /insights/risk-profile (ανά κίνδυνο lens, R-01…R-08) and /coverage-insights'
- * surviving content (A-05…A-09). Ordering follows the source surface's
+ * surviving content (A-05…A-21 — the engine sections and, since V2-P2-01b,
+ * the findings surface itself). Ordering follows the source surface's
  * rationale: what to DO leads (recommendations), the lens answers "what do I
  * have / what am I exposed to", and the profile-improving actions (wizard,
  * life events) follow. The protection score is gone from the product (H-001)
@@ -80,6 +93,7 @@ export function ProtectionSurface({
     tier,
     hasPolicies,
     lifeEvents,
+    findings,
 }: ProtectionSurfaceProps) {
     return (
         <div className="pw-page-shell">
@@ -107,6 +121,16 @@ export function ProtectionSurface({
                         hasPolicies={hasPolicies}
                     />
                 )}
+
+                {/* A-10…A-21 — the reviewed findings, carried whole and in the
+                    source surface's own order (right after what-to-DO). */}
+                <CoverageInsightsClient
+                    embedded
+                    tier={tier}
+                    userLanguage={language}
+                    hasPolicies={hasPolicies}
+                    {...findings}
+                />
 
                 {/* The lens switcher, then exactly ONE lens per request. */}
                 <ProtectionLensTabs active={lens} labels={labels.lens} />

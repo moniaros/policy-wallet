@@ -237,8 +237,8 @@ route. Without these rows the rule in §12 would have reported no violation.
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
-| A-10 | The reviewed-findings list: per-gap card with title, severity, line of business, insurer | fact | **KEEP** | «Η προστασία μου» | V2-P2-01b |
-| A-11 | Severity tally that sums to `gap.openCount` on live cover | fact | **KEEP** | same | V2-P2-01b |
+| A-10 | The reviewed-findings list: per-gap card with title, severity, line of business | fact | **KEEP** | «Η προστασία μου» | V2-P2-01b ✓ |
+| A-11 | Severity tally that sums to `gap.openCount` on live cover | fact | **NEW — corrected 2026-08-25** | «Η προστασία μου» *and* `/coverage-insights`, since both mount the same client | V2-P2-01b ✓ |
 | A-12 | «Εξαιρέθηκαν» — names the EXPIRED policies left out of the tally | fact | **KEEP — honesty feature** | same. This is the surface telling the reader what it did not count; losing it silently would be the §2.1 shape | V2-P2-01b |
 | A-13 | «Ελέγχθηκε και είναι εντάξει» — policies checked with no findings | fact | **KEEP** | same. The counterpart to A-12: checked-and-clear stated as such, distinct from never-looked | V2-P2-01b |
 | A-14 | Counts: policies with findings, total policies, total coverage | fact | **KEEP** | same, through registered `data-count` keys | V2-P2-01b |
@@ -248,7 +248,25 @@ route. Without these rows the rule in §12 would have reported no violation.
 | A-18 | Empty-wallet state with an add-first CTA | fact | **KEEP** | same | V2-P2-01b |
 | A-19 | All-good state | fact | **KEEP, CHECK** | same — must not read as reassurance when nothing was analysed (that is A-17's job) | V2-P2-01b |
 | A-20 | Free-tier lite view: partial list, unlock CTA | action | **KEEP** | same; monetization count must not rise (§10.1) | V2-P2-01b |
-| A-21 | Independence note, link to coverage settings | fact | **KEEP** | same | V2-P2-01b |
+| A-21 | Independence note, link to coverage settings | fact | **KEEP** | same | V2-P2-01b ✓ |
+
+**Two of these rows were wrong when I wrote them, and the implementing agent caught both.**
+
+- **A-11 was not a capability.** I wrote "severity tally that sums to `gap.openCount`" after reading
+  `CoverageInsightsClient.tsx:294`, which is a **comment** — "severity tally now sums to
+  (gapsOnActiveCoverage)" — describing the dashboard widget. In the surface itself `stats` is
+  destructured and only `stats.totalPolicies` is ever rendered. Nothing tallied severity here. So the
+  carry did not preserve it; it **built** it, and the row now says so. Recording a capability that
+  does not exist is not a harmless error: it makes an addition look like preservation, which is
+  exactly the confusion §12 exists to prevent.
+- **A-10 never rendered the insurer.** I listed it; the per-finding card does not show it. Insurer
+  appears on A-13's checked-and-clear rows. Removed from the row rather than built, because the
+  point was to record what exists.
+
+The lesson is the ledger's own: **itemise from rendered output, not from source you are reading for
+the first time.** A comment is not a capability. This is the same mistake as asserting a file changed
+instead of asserting behaviour changed — made in the artifact whose entire job is to be accurate.
+
 
 **§7.5 calls this "the densest surface in the app" and wants the most aggressive reduction.** That
 claim is **unmeasured on current code** — no baseline exists for it. T-015 measures it before Phase
@@ -528,12 +546,15 @@ filesystem; the run coordinator owns the final wording.
 
 **No capabilities of its own.** The route absorbs, per §4.2: **B-01…B-06** render on the *ανά
 κλάδο* lens, **R-01…R-08** on the *ανά κίνδυνο* lens, **A-05…A-09** as the lens-independent engine
-content. The lens switcher (`?lens=`) is navigation, not capability. Guard:
+content, and — since V2-P2-01b — **A-10…A-21**, the findings surface itself
+(`CoverageInsightsClient`, mounted `embedded` between the recommendations and the lens switcher,
+with the A-11 severity tally rendered through `describeSeverity()` under `gap.severityCount`,
+summing to `gap.openCount` over the shared `gapsOnActiveCoverage` universe). The lens switcher (`?lens=`) is navigation, not capability. Guard:
 `tests/unit/protection-surface-ledger.test.tsx` renders the surface and fails when any KEEP row
 stops rendering; expected content is enumerated from the taxonomy, the graph/watch assemblers and
 the §6.7 key registry, never from a hand-written list.
 
-Two facts a later phase must not lose:
+Three facts a later phase must not lose:
 
 - **B-06 is decided here** (QUEUE.md Phase 2): the `business` line renders only when the customer
   holds a policy in it — one predicate in `ProtectionBranchLens`, reversible.
@@ -541,6 +562,13 @@ Two facts a later phase must not lose:
   V2-P2-03 deletes the old route. One monetization surface (one featureKey, one modal), two mounts;
   the §10.1 count of 5 stands on surfaces, and the transitional state must collapse back to one
   mount when the old route goes.
+- **A-10…A-21 transitionally render on two mounts too** (V2-P2-01b) — the findings surface is ONE
+  component, `CoverageInsightsClient`, now mounted by both routes, so the two cannot drift while
+  both exist. That includes **A-20's monetization pieces** (the lite banner, its «Αναβάθμιση»
+  button, the «Ξεκλείδωσε πλήρη ανάλυση» next-step and the A-17 «Ξεκλείδωμα με Plus» CTA): one
+  surface, two mounts — recorded here precisely so the duplication is transitional and audited,
+  not silent. The §10.1 count stands on surfaces (unchanged); V2-P2-03 collapses the mounts back
+  to one by deleting the old route.
 
 ## Κλάδος αναλυτικά — `/branches/[branch]` → `/protection/[branch]` (V2-P2-01)
 

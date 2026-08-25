@@ -47,9 +47,12 @@ import { getBranchContent } from "@/lib/insurance/content"
 import { policiesInBranch, type BranchPolicyFacts, type BranchTileState } from "@/lib/insurance/branch-page"
 import { assembleRiskGraph } from "@/lib/services/risk-graph/service"
 import { assembleWatch } from "@/lib/services/risk-dna/service"
-import { COUNT_KEYS } from "@/lib/instrumentation/count-keys"
+import { COUNT_KEYS, SUBJECT_SCOPED_KEYS, isRegisteredCountKey } from "@/lib/instrumentation/count-keys"
 import { QUICK_START_QUESTIONS } from "@/lib/services/onboarding/quick-start"
 import { getUpgradeCopy } from "@/lib/monetization"
+import { GAP_SEVERITIES, SEVERITY_CAVEAT_KEY, describeSeverity, toGapSeverity } from "@/lib/gaps/severity-display"
+import { gapSeverityRank } from "@/lib/wallet/gap-report"
+import { displayInsurerName } from "@/lib/wallet/policy-identity"
 import { ProtectionSurface, type ProtectionSurfaceProps } from "@/components/protection/ProtectionSurface"
 
 const t = getTranslations("el")
@@ -221,6 +224,91 @@ const BRANCH_LABELS = {
     policyCountN: t.branches.policyCountN,
 }
 
+// ── Findings fixtures (A-10…A-21 — the carried /coverage-insights surface) ──
+
+/** Active-coverage policies as the findings section receives them (pre-mapped). */
+const FINDING_POLICIES = [
+    { id: "mot-1", insurerName: "Εθνική", lineOfBusiness: { code: "motor", name: "Αυτοκίνητο" } },
+    { id: "mot-2", insurerName: "Interamerican", lineOfBusiness: { code: "motor", name: "Αυτοκίνητο" } },
+    { id: "home-ok", insurerName: "Allianz", lineOfBusiness: { code: "home", name: "Κατοικία" } },
+]
+
+/**
+ * One open finding per severity the registry knows — enumerated from
+ * GAP_SEVERITIES, so a fifth severity grows this fixture by itself. The first
+ * two land on mot-1, the rest on mot-2; home-ok carries none (A-13's subject).
+ */
+const FINDING_GAPS = GAP_SEVERITIES.map((severity, i) => {
+    const policyId = i < 2 ? "mot-1" : "mot-2"
+    return {
+        id: `gap-${severity}`,
+        policyId,
+        severity,
+        title: `Σημείο ελέγχου (${severity})`,
+        description: `Περιγραφή ευρήματος (${severity})`,
+        policy: { id: policyId, lineOfBusiness: "motor" },
+    }
+})
+
+const FINDING_STATS = {
+    critical: FINDING_GAPS.filter((g) => g.severity === "critical").length,
+    high: FINDING_GAPS.filter((g) => g.severity === "high").length,
+    medium: FINDING_GAPS.filter((g) => g.severity === "medium").length,
+    low: FINDING_GAPS.filter((g) => g.severity === "low").length,
+    totalGaps: FINDING_GAPS.length,
+    totalPolicies: FINDING_POLICIES.length,
+    totalCoverage: 0,
+}
+
+const EMPTY_STATS = {
+    critical: 0,
+    high: 0,
+    medium: 0,
+    low: 0,
+    totalGaps: 0,
+    totalPolicies: FINDING_POLICIES.length,
+    totalCoverage: 0,
+}
+
+/** Expired policies the tally deliberately leaves out (A-12 names them). */
+const EXCLUDED_EXPIRED = [
+    { id: "exp-1", label: "Εθνική Ασφαλιστική" },
+    { id: "exp-2", label: "Ευρωπαϊκή Πίστη" },
+]
+
+const FINDINGS_BASE: ProtectionSurfaceProps["findings"] = {
+    gaps: FINDING_GAPS,
+    stats: FINDING_STATS,
+    excludedExpired: EXCLUDED_EXPIRED,
+    isPaid: false,
+    hasDeepAnalysis: true,
+    isDeepAnalysisLocked: false,
+    canUseAgentCollaboration: false,
+    policies: FINDING_POLICIES,
+}
+
+function withFindings(
+    overrides: Partial<ProtectionSurfaceProps["findings"]>
+): Partial<ProtectionSurfaceProps> {
+    return { findings: { ...FINDINGS_BASE, ...overrides } }
+}
+
+/** Resolve a dotted i18n key — the registry speaks in keys, the DOM in words. */
+function resolveCopyKey(key: string): string {
+    let node: any = t
+    for (const part of key.split(".")) node = node?.[part]
+    if (typeof node !== "string") throw new Error(`i18n key ${key} does not resolve to a string`)
+    return node
+}
+
+/** The rendered card carrying this finding, found by its title. */
+function findingCard(container: HTMLElement, title: string): Element | null {
+    const heading = Array.from(container.querySelectorAll("h3")).find(
+        (h) => h.textContent?.trim() === title
+    )
+    return heading?.closest(".relative") ?? null
+}
+
 function surfaceProps(overrides: Partial<ProtectionSurfaceProps> = {}): ProtectionSurfaceProps {
     return {
         language: "el",
@@ -256,6 +344,7 @@ function surfaceProps(overrides: Partial<ProtectionSurfaceProps> = {}): Protecti
         tier: "free",
         hasPolicies: true,
         lifeEvents: { options: [LIFE_EVENT_OPTION], recent: [] },
+        findings: FINDINGS_BASE,
         ...overrides,
     }
 }
@@ -586,5 +675,293 @@ describe("the lens switch", () => {
         const riskRender = renderSurface(riskLensProps)
         expect(riskRender.container.querySelector('[data-count="branch.policyCount"]')).toBeNull()
         expect(riskRender.container.querySelector('[data-fact="profile.healthIndex"]')).toBeTruthy()
+    })
+})
+
+
+// ── The carried findings surface: A-10…A-21 (V2-P2-01b) ──────────────
+
+describe("carried findings surface preserves A-10…A-21 on rendered output", () => {
+    // Free-tier truncation is A-20's own subject; every other row asserts on
+    // the untruncated (pro) list.
+    const pro: Partial<ProtectionSurfaceProps> = { tier: "pro" }
+
+    it("enumerates a real universe (a finding per registry severity; one policy stays clean)", () => {
+        expect(FINDING_GAPS.map((g) => g.severity)).toEqual([...GAP_SEVERITIES])
+        expect(FINDING_POLICIES.some((p) => !FINDING_GAPS.some((g) => g.policyId === p.id))).toBe(true)
+    })
+
+    it("A-10: every finding renders as a card — title, severity label resolved from describeSeverity's key, line of business", () => {
+        const { container } = renderSurface(pro)
+        for (const gap of FINDING_GAPS) {
+            const card = findingCard(container, gap.title)
+            expect(card, `A-10: no card rendered for ${gap.id}`).toBeTruthy()
+            expect(
+                card!.textContent,
+                `A-10: ${gap.id} does not carry its severity label`
+            ).toContain(resolveCopyKey(describeSeverity(gap.severity).labelKey))
+            expect(card!.textContent).toContain(gap.policy.lineOfBusiness.toUpperCase())
+        }
+    })
+
+    it("A-11: the severity tally renders subject-scoped chips that sum to gap.openCount, with the caveat on the page", () => {
+        const { container } = renderSurface(pro)
+        const open = container.querySelector('[data-count="gap.openCount"]')
+        expect(open, "A-11: gap.openCount renders nowhere").toBeTruthy()
+        const openCount = Number((open!.textContent || "").match(/\d+/)?.[0])
+        expect(openCount).toBe(FINDING_GAPS.length)
+
+        let sum = 0
+        for (const severity of GAP_SEVERITIES) {
+            const expected = FINDING_GAPS.filter((g) => toGapSeverity(g.severity) === severity).length
+            const chip = container.querySelector(
+                `[data-count="gap.severityCount"][data-count-subject="${severity}"]`
+            )
+            if (expected === 0) {
+                expect(chip, `${severity} counts nothing and must not render a chip`).toBeNull()
+                continue
+            }
+            expect(chip, `A-11: no chip for ${severity}`).toBeTruthy()
+            const value = Number((chip!.textContent || "").match(/\d+/)?.[0])
+            expect(value, `A-11: ${severity} chip renders the wrong count`).toBe(expected)
+            sum += value
+        }
+        expect(sum, "A-11: chips must sum to gap.openCount").toBe(openCount)
+        // Severity is not a verdict until an underwriter says so (Gate 3b) —
+        // the caveat sentence, resolved from the registry key, accompanies it.
+        expect(container.textContent).toContain(resolveCopyKey(SEVERITY_CAVEAT_KEY))
+    })
+
+    it("A-12: «Εξαιρέθηκαν» names every expired policy left out of the tally — and does not render when nothing was excluded", () => {
+        const withExcluded = renderSurface(pro)
+        expect(withExcluded.container.textContent).toContain(
+            "Ληγμένα ασφαλιστήρια δεν προσμετρώνται στην κάλυψη"
+        )
+        for (const excluded of EXCLUDED_EXPIRED) {
+            expect(
+                withExcluded.container.textContent,
+                `A-12: excluded policy ${excluded.id} is not named`
+            ).toContain(excluded.label)
+        }
+        withExcluded.unmount()
+
+        const none = renderSurface({ ...pro, ...withFindings({ excludedExpired: [] }) })
+        expect(none.container.textContent).not.toContain(
+            "Ληγμένα ασφαλιστήρια δεν προσμετρώνται στην κάλυψη"
+        )
+    })
+
+    it("A-13: the checked-and-clear list holds exactly the policies with no findings, insurer through policy-identity", () => {
+        const { container } = renderSurface(pro)
+        const heading = Array.from(container.querySelectorAll("h3")).find(
+            (h) => h.textContent === "Τι ελέγξαμε και είναι εντάξει"
+        )
+        expect(heading, "A-13: the checked-and-clear section is missing").toBeTruthy()
+        const section = heading!.parentElement!
+        const withFindingIds = new Set(FINDING_GAPS.map((g) => g.policyId))
+        const clean = FINDING_POLICIES.filter((p) => !withFindingIds.has(p.id))
+        expect(clean.length).toBeGreaterThan(0)
+        for (const policy of clean) {
+            expect(section.textContent, `A-13: clean policy ${policy.id} not listed`).toContain(
+                displayInsurerName(policy.insurerName)
+            )
+            expect(section.textContent).toContain(policy.lineOfBusiness.name)
+        }
+        for (const policy of FINDING_POLICIES.filter((p) => withFindingIds.has(p.id))) {
+            expect(
+                section.textContent,
+                `A-13: ${policy.id} carries findings and must not read as clear`
+            ).not.toContain(displayInsurerName(policy.insurerName))
+        }
+    })
+
+    it("A-14: the counts render under their registered keys and agree with the data", () => {
+        const { container } = renderSurface(pro)
+        const withFindingsCount = container.querySelector(
+            '[data-count="portfolio.policiesWithFindingsCount"]'
+        )
+        expect(withFindingsCount, "A-14: policiesWithFindingsCount missing").toBeTruthy()
+        expect(Number(withFindingsCount!.textContent)).toBe(
+            new Set(FINDING_GAPS.map((g) => g.policyId)).size
+        )
+
+        const inForce = container.querySelector('[data-count="portfolio.coverageActiveCount"]')
+        expect(inForce, "A-14: coverageActiveCount missing").toBeTruthy()
+        expect(Number(inForce!.textContent)).toBe(FINDING_STATS.totalPolicies)
+    })
+
+    it("A-15: every finding card carries its actions — review the policy, add a note, dismiss", () => {
+        const { container } = renderSurface(pro)
+        for (const gap of FINDING_GAPS) {
+            const labels = Array.from(
+                findingCard(container, gap.title)!.querySelectorAll("button")
+            ).map((b) => b.textContent?.trim() ?? "")
+            for (const label of ["Προβολή ασφαλιστηρίου", "Σημείωση", "Αγνόηση"]) {
+                expect(
+                    labels.some((l) => l.includes(label)),
+                    `A-15: ${gap.id} lost «${label}»`
+                ).toBe(true)
+            }
+        }
+    })
+
+    it("A-16: «Επόμενα βήματα» renders with the wallet action", () => {
+        const { container } = renderSurface(pro)
+        expect(container.textContent).toContain("Επόμενα βήματα")
+        expect(
+            Array.from(container.querySelectorAll("button")).some((b) =>
+                b.textContent?.includes("Επιστροφή στο πορτοφόλι")
+            )
+        ).toBe(true)
+    })
+
+    it("A-17: never-analysed renders its own state — refresh hint when open, locked CTA when Plus-gated", () => {
+        const open = renderSurface(withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false }))
+        expect(open.container.textContent).toContain("Δεν έχει γίνει ακόμη πλήρης ανάλυση")
+        expect(open.container.textContent).toContain(
+            "Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει."
+        )
+        open.unmount()
+
+        const locked = renderSurface(
+            withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false, isDeepAnalysisLocked: true })
+        )
+        expect(locked.container.textContent).toContain("Ξεκλείδωμα με Plus")
+        expect(locked.container.textContent).not.toContain(
+            "Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει."
+        )
+    })
+
+    it("A-18: an empty wallet renders the add-first state with its CTA", () => {
+        const { container } = renderSurface({
+            hasPolicies: false,
+            ...withFindings({
+                gaps: [],
+                stats: { ...EMPTY_STATS, totalPolicies: 0 },
+                policies: [],
+                excludedExpired: [],
+            }),
+        })
+        expect(container.textContent).toContain("Προσθέστε το πρώτο σας ασφαλιστήριο")
+        expect(
+            Array.from(container.querySelectorAll("button")).some((b) =>
+                b.textContent?.includes("Προσθήκη ασφαλιστηρίου")
+            )
+        ).toBe(true)
+    })
+
+    it("A-19: analysed-and-clean renders the all-good state, backed by the checked list — never the pending register", () => {
+        const { container } = renderSurface(
+            withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: true })
+        )
+        expect(container.textContent).toContain("Δεν εντοπίστηκαν κενά")
+        expect(container.textContent).toContain("Τι ελέγξαμε και είναι εντάξει")
+        expect(container.textContent).not.toContain("Δεν έχει γίνει ακόμη πλήρης ανάλυση")
+    })
+
+    it("A-20: the free tier sees the lite view — the two most severe findings, the plan limit under its own key, the unlock CTA — and a paid tier sees none of it", () => {
+        const free = renderSurface() // the default tier is "free"
+        expect(free.container.textContent).toContain("Προβολή lite insights")
+        expect(
+            free.container.querySelector('[data-count="entitlement.freeInsightLimit"]'),
+            "A-20: the plan limit must wear entitlement.freeInsightLimit, never a portfolio key"
+        ).toBeTruthy()
+
+        const FREE_LIMIT = 2 // the limit the lite copy itself states («τα 2 πιο σημαντικά»)
+        const bySeverity = [...FINDING_GAPS].sort(
+            (a, b) => gapSeverityRank(a.severity) - gapSeverityRank(b.severity)
+        )
+        for (const gap of bySeverity.slice(0, FREE_LIMIT)) {
+            expect(
+                findingCard(free.container, gap.title),
+                `A-20: top finding ${gap.id} hidden from the free tier`
+            ).toBeTruthy()
+        }
+        for (const gap of bySeverity.slice(FREE_LIMIT)) {
+            expect(
+                findingCard(free.container, gap.title),
+                `A-20: ${gap.id} must sit behind the gate on the free tier`
+            ).toBeNull()
+        }
+        expect(free.container.textContent).toContain("Ξεκλείδωσε πλήρη ανάλυση")
+        free.unmount()
+
+        const paid = renderSurface({ tier: "pro" })
+        expect(paid.container.textContent).not.toContain("Προβολή lite insights")
+        for (const gap of FINDING_GAPS) {
+            expect(findingCard(paid.container, gap.title), `A-20: paid tier lost ${gap.id}`).toBeTruthy()
+        }
+        expect(paid.container.textContent).toContain("Ρυθμίσεις κάλυψης")
+    })
+
+    it("A-21: the independence note renders", () => {
+        const { container } = renderSurface(pro)
+        expect(container.textContent).toContain(
+            "Το PolicyWallet παραμένει ανεξάρτητη πλατφόρμα που υποστηρίζει καλύτερες αποφάσεις κάλυψης."
+        )
+    })
+
+    it("§6.7: every data-count on the surface is a registered key, subject-scoped ones carrying their subject", () => {
+        const { container } = renderSurface(pro)
+        const counted = Array.from(container.querySelectorAll("[data-count]"))
+        expect(counted.length).toBeGreaterThan(0)
+        for (const el of counted) {
+            const key = el.getAttribute("data-count")!
+            expect(isRegisteredCountKey(key), `data-count="${key}" is not in the §6.7 registry`).toBe(true)
+            if (SUBJECT_SCOPED_KEYS.has(key)) {
+                expect(
+                    el.getAttribute("data-count-subject"),
+                    `${key} is subject-scoped and must name its subject`
+                ).toBeTruthy()
+            }
+        }
+    })
+})
+
+// ── A-13 vs A-17: checked-and-clear and nobody-looked must not render alike ──
+
+describe("A-13 and A-17 render as different states, not different words for one state", () => {
+    // The two registers, pinned. Each side's phrases are asserted PRESENT in
+    // their own state and ABSENT from the other, so the two states cannot
+    // converge on one rendering without this going red.
+    const CLEAR_REGISTER = ["Δεν εντοπίστηκαν κενά", "Τι ελέγξαμε και είναι εντάξει", "Επαρκής"]
+    const PENDING_REGISTER = ["Δεν έχει γίνει ακόμη πλήρης ανάλυση", "Εκκρεμεί"]
+
+    it("never-analysed says pending, and NO phrase of the all-clear register (§2.1: a check that never ran must not reassure)", () => {
+        const { container } = renderSurface(
+            withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false })
+        )
+        for (const phrase of PENDING_REGISTER) {
+            expect(container.textContent, `A-17 lost «${phrase}»`).toContain(phrase)
+        }
+        for (const phrase of CLEAR_REGISTER) {
+            expect(
+                container.textContent,
+                `«${phrase}» renders over a wallet nothing has analysed — A-19 leaking into A-17`
+            ).not.toContain(phrase)
+        }
+        // An unknown publishes no number: the findings tile shows the unknown
+        // mark and wears NO count key, rather than counting what nobody checked.
+        expect(container.querySelector('[data-count="portfolio.policiesWithFindingsCount"]')).toBeNull()
+        const kicker = Array.from(container.querySelectorAll("p")).find(
+            (p) => p.textContent === "Ασφαλιστήρια με σημεία ελέγχου"
+        )
+        expect(kicker, "the findings tile is missing").toBeTruthy()
+        expect(kicker!.parentElement!.textContent).toContain("—")
+    })
+
+    it("analysed-and-clean says clear, and NO phrase of the pending register", () => {
+        const { container } = renderSurface(
+            withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: true })
+        )
+        for (const phrase of CLEAR_REGISTER) {
+            expect(container.textContent, `A-13/A-19 lost «${phrase}»`).toContain(phrase)
+        }
+        for (const phrase of PENDING_REGISTER) {
+            expect(
+                container.textContent,
+                `«${phrase}» renders over an analysed wallet — A-17 leaking into A-19`
+            ).not.toContain(phrase)
+        }
     })
 })

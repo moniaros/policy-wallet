@@ -2,6 +2,8 @@
 
 import { getTranslations } from "@/lib/i18n"
 import { gapSeverityRank } from "@/lib/wallet/gap-report"
+import { GAP_SEVERITIES, describeSeverity, toGapSeverity, type GapSeverity } from "@/lib/gaps/severity-display"
+import { toneDotClass } from "@/components/gaps/severity-tone"
 import React, { useMemo, useState } from 'react'
 import {
     Shield,
@@ -45,6 +47,13 @@ interface CoverageInsightsClientProps {
     /** Deep gap analysis is a Plus feature the current tier can't run. */
     isDeepAnalysisLocked?: boolean
     canUseAgentCollaboration: boolean
+    /**
+     * Mounted inside another surface (/protection, V2-P2-01b): the parent owns
+     * the page container, so drop this component's own width/padding frame and
+     * step the section heading down a level. /coverage-insights keeps the
+     * standalone rendering until V2-P2-03 removes that route.
+     */
+    embedded?: boolean
     policies?: Array<{
         id: string
         insurerName: string
@@ -63,10 +72,16 @@ export function CoverageInsightsClient({
     hasDeepAnalysis = false,
     isDeepAnalysisLocked = false,
     canUseAgentCollaboration,
+    embedded = false,
     policies = []
 }: CoverageInsightsClientProps) {
     const lang = userLanguage === 'el' ? 'el' : 'en'
     const router = useRouter()
+    // Standalone (/coverage-insights) frames itself; embedded (/protection)
+    // inherits the parent's `.pw-page-shell` container — doubling the frame
+    // doubled the horizontal padding at 320px.
+    const containerClass = embedded ? "" : "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-10"
+    const Heading = (embedded ? "h2" : "h1") as "h1" | "h2"
     const [hiddenInsights, setHiddenInsights] = useState<Set<string>>(new Set())
 
     const isFreeTier = tier === 'free'
@@ -223,6 +238,24 @@ export function CoverageInsightsClient({
     const policiesWithIssues = new Set(gaps.map((g) => g.policyId).filter(Boolean))
     const policiesOk = policies.filter((p) => !policiesWithIssues.has(p.id))
 
+    // A-11 — the severity tally. Same universe as the headline count
+    // (visibleGaps: the shared gapsOnActiveCoverage selection, minus local
+    // dismissals), so the chips always sum to gap.openCount. Order and tone
+    // come from describeSeverity() — never a hand-rolled map (Gate 3b); the
+    // caveat the primitive demands is the recPriorityNote already rendered
+    // above the findings list, which is on-page whenever a chip is.
+    const home = getTranslations(lang).dashboard.home
+    const severityLabels: Record<GapSeverity, string> = {
+        critical: home.severityCritical,
+        high: home.severityHigh,
+        medium: home.severityMedium,
+        low: home.severityLow,
+    }
+    const severityTally = GAP_SEVERITIES.map((severity) => ({
+        ...describeSeverity(severity),
+        count: visibleGaps.filter((gap) => toGapSeverity(gap.severity) === severity).length,
+    })).filter((entry) => entry.count > 0)
+
     const handleAction = async (type: string, id: string, label: string) => {
         if (label === copy.ignore) {
             setHiddenInsights((prev) => new Set(prev).add(id))
@@ -262,9 +295,9 @@ export function CoverageInsightsClient({
     if (!hasPolicies) {
         return (
             <div>
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-10">
+                <div className={containerClass}>
                     <div className="mb-7 text-center">
-                        <h1 className="pw-kicker mb-2">{copy.summaryTitle}</h1>
+                        <Heading className="pw-kicker mb-2">{copy.summaryTitle}</Heading>
                         <p className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight">{copy.addFirstBody}</p>
                     </div>
                     <div className="text-center py-10 pw-card">
@@ -284,9 +317,9 @@ export function CoverageInsightsClient({
         // No page shell here — the coverage-insights route provides the single
         // shared `.pw-page-shell` so the sections don't each claim a full screen.
         <div>
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-10">
+            <div className={containerClass}>
                 <div className="mb-7 text-center">
-                    <h1 className="pw-kicker mb-2">{copy.summaryTitle}</h1>
+                    <Heading className="pw-kicker mb-2">{copy.summaryTitle}</Heading>
                     <p
                         className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight"
                         // «Εντοπίστηκαν 33 σημεία προς έλεγχο» is gap.openCount as
@@ -297,6 +330,29 @@ export function CoverageInsightsClient({
                     >
                         {summaryText}
                     </p>
+                    {hasDeepAnalysis && severityTally.length > 0 && (
+                        <div
+                            className="mt-3 flex flex-wrap justify-center gap-2"
+                            role="list"
+                            aria-label={home.severityGroupLabel}
+                        >
+                            {severityTally.map((entry) => (
+                                <span
+                                    key={entry.severity}
+                                    role="listitem"
+                                    // Subject-scoped: one gap.severityCount per
+                                    // severity — four chips are four subjects,
+                                    // never one key disagreeing with itself.
+                                    data-count="gap.severityCount"
+                                    data-count-subject={entry.severity}
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
+                                >
+                                    <span className={`h-1.5 w-1.5 rounded-full ${toneDotClass(entry.tone)}`} aria-hidden />
+                                    {entry.count} {severityLabels[entry.severity]}
+                                </span>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {excludedExpired.length > 0 && (
