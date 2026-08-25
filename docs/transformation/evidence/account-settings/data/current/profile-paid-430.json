@@ -16,7 +16,7 @@
     ]
   },
   "containers": {
-    "count": 19,
+    "count": 18,
     "maxDepth": 4,
     "deepestChain": [
       "section.pw-card pw-pad  ",
@@ -34,11 +34,11 @@
   "contrast": {
     "text": [],
     "nonText": [
-      "[1.4.11:control] <button> \"English\" boundary 1.39:1 (needs 3) inside=#d7dbdf outside=#fefffe",
+      "[1.4.11:control] <button> \"English\" boundary 1.42:1 (needs 3) inside=#d6dade outside=#fefffe",
       "[1.4.11:surface] <section> \"Τα στοιχεία σαςΠώς σας απευθυνόμασ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
       "[1.4.11:unmeasured] <section> \"ΓλώσσαΙσχύει και για την εφαρμογή \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:surface] <section> \"Ο λογαριασμός σαςΜέλος από11 Ιουλί\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
-      "[1.4.11:shell] <a> \"9+Ρυθμίσεις\" boundary 1.24:1 (needs 3) inside=#d3e0dd outside=#fefefe"
+      "[1.4.11:shell] <a> \"Ρυθμίσεις\" boundary 1.24:1 (needs 3) inside=#dee8e6 outside=#fefefe"
     ]
   },
   "pageOverflow": {
@@ -69,13 +69,6 @@
         "scrollWidth": 52,
         "clientWidth": 1,
         "reason": "overflow"
-      },
-      {
-        "selector": "div.relative",
-        "text": "9+",
-        "scrollWidth": 30,
-        "clientWidth": 24,
-        "reason": "overflow"
       }
     ],
     "latinSentences": [],
@@ -90,7 +83,7 @@
       "E2E fixture identifier: \"E2E Policyholder\"",
       "E2E fixture identifier: \"e2e-ph@policywallet.test\""
     ],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 14 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ρυθμίσεις Προφίλ Όνομα, email, τηλέφωνο, γλώσσα Τα στοιχεία σας Πώς σας απευθυνόμαστε και πού μπορούμε να σας βρούμε. Ονοματεπώνυμο E2E Policyholder Επεξεργασία — Ονοματεπώνυμο Κινητό τηλέφωνο Δεν έχει οριστεί Προαιρετικό. Το βλέπει ο σύμβουλός σας, αν έχετε συνδεθεί με κάποιον. Προσθήκη — Κινητό τηλέφωνο Email e2e-ph@policywallet.test Η διεύθυνση με την οποία συνδέεστε. Επεξεργασία — Email Γλώσσα Ισχύει και για την εφαρμογή και για τα email που σας στέλνουμε. Ελληνικά English Ο λογαριασμός σας Μέλος από 11 Ιουλίου 2026 Ρόλος Ασφαλισμένος Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 14 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ρυθμίσεις Προφίλ Όνομα, email, τηλέφωνο, γλώσσα Τα στοιχεία σας Πώς σας απευθυνόμαστε και πού μπορούμε να σας βρούμε. Ονοματεπώνυμο E2E Policyholder Επεξεργασία — Ονοματεπώνυμο Κινητό τηλέφωνο Δεν έχει οριστεί Προαιρετικό. Το βλέπει ο σύμβουλός σας, αν έχετε συνδεθεί με κάποιον. Προσθήκη — Κινητό τηλέφωνο Email e2e-ph@policywallet.test Η διεύθυνση με την οποία συνδέεστε. Επεξεργασία — Email Γλώσσα Ισχύει και για την εφαρμογή και για τα email που σας στέλνουμε. Ελληνικά English Ο λογαριασμός σας Μέλος από 11 Ιουλίου 2026 Ρόλος Ασφαλισμένος Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "paid",
   "route": "/account/profile"

@@ -11,10 +11,10 @@
   "sections": {
     "count": 12,
     "ids": [
-      "<div> Καλώς ήρθατε πίσω, E2E!",
+      "<div> Το πορτοφόλι μου",
       "<div> Σημαντικές ειδοποιήσεις",
       "<div> Σύγκριση Ασφαλιστηρίων.",
-      "<div> Καλώς ήρθατε πίσω, E2E!",
+      "<div> Το πορτοφόλι μου",
       "<div> Ενεργή προστασία1818/29 προστεθέντα",
       "<div> ΛΗΓΕΙ ΣΥΝΤΟΜΑ5Εντός 30 ημερών",
       "<div> Χρειάζεται προσοχή11Προς έλεγχο",
@@ -26,7 +26,7 @@
     ]
   },
   "containers": {
-    "count": 186,
+    "count": 185,
     "maxDepth": 3,
     "deepestChain": [
       "div.flex flex-col sm:flex-row gap-4 justify-",
@@ -40,615 +40,6 @@
     "duplicateFactCount": 0
   },
   "tapTargets": [
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κατανόηση ασφαλιστηρίου",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Έγγραφα",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
-    {
-      "tag": "button",
-      "text": "Κοινοποίηση σε σύμβουλο",
-      "w": 36,
-      "h": 44,
-      "chain": "div < div < div < section"
-    },
     {
       "tag": "button",
       "text": "Κλείσιμο",
@@ -672,17 +63,17 @@
       "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-EXPΛΗ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:control] <button> \"🚗Εθνική Ασφαλιστική64504715ΕΝΕΡΓΟ\" boundary 1.17:1 (needs 3) inside=#f0f0f0 outside=#f1f5f9",
       "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.13:1 (needs 3) inside=#ffffff outside=#edf1f6",
+      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.05:1 (needs 3) inside=#fcfcfd outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"🚗Δεύτερος Αλληλασφαλιστικός Συνετ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-NPΕΝΕ\" boundary 1.33:1 (needs 3) inside=#ffffff outside=#dde0e1",
       "[1.4.11:unmeasured] <button> \"🚗ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ250,00 €/έτος\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-UGΕΝΕ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"🚗Δεύτερος Αλληλασφαλιστικός Συνετ\" boundary 1.25:1 (needs 3) inside=#ffffff outside=#e4e6e7",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-ENΕΝΕ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-REΕΝΕ\" boundary 1.02:1 (needs 3) inside=#fbfbfb outside=#ffffff",
       "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-UGΕΝΕ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#e9eaec",
+      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-ENΕΝΕ\" boundary 1.01:1 (needs 3) inside=#ffffff outside=#fdfefe",
       "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-XXΕΝΕ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-NPΕΝΕ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#e9eaec",
-      "[1.4.11:control] <button> \"🚗InteramericanΣΥΜΒ-2025-MOT-ACTΕΝ\" boundary 1.01:1 (needs 3) inside=#ffffff outside=#fdfefe",
-      "[1.4.11:unmeasured] <button> \"🚗InteramericanΣΥΜΒ-2025-DEF-REΕΝΕ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <button> \"🚗Εθνική Ασφαλιστική63708952ΕΝΕΡΓΟ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"🚗Εθνική Ασφαλιστική63708952ΕΝΕΡΓΟ\" boundary 1.05:1 (needs 3) inside=#fbfcfc outside=#ffffff",
       "[1.4.11:unmeasured] <button> \"🚗InteramericanE2E-MOT-001ΕΝΕΡΓΟ42\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:control] <button> \"Κλείσιμο\" boundary 1.18:1 (needs 3) inside=#f1f5f9 outside=#fef9f9",
       "[1.4.11:unmeasured] <div> \"Ενεργή προστασία1818/29 προστεθέντ\" boundary 1.00:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
@@ -690,9 +81,9 @@
       "[1.4.11:unmeasured] <div> \"Χρειάζεται προσοχή11Προς έλεγχο\" boundary 1.00:1 (needs 3) inside=#f0fdf4 outside=#f0fdf4 — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:surface] <div> \"Ασφαλιστικό αποτύπωμα6.656 €1 ασφα\" boundary 1.29:1 (needs 3) inside=#cbe2d8 outside=#f0fdf4",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fafb",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΛΗΓΜΕΝΟΥγεία · Έ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΛΗΓΜΕΝΟΥγεία · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
@@ -700,26 +91,32 @@
       "[1.4.11:unmeasured] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΛΗΓΕΙ ΣΥΝΤΟΜΑΥγε\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"ΑυτοκίνητοΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑΑυτοκ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 05\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 05\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Δεύτερος Αλληλασφαλιστικός Συνεται\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 04\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fbfbfc",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:surface] <div> \"ΑυτοκίνητοΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑΑυτοκ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 06\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 06\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fbfbfc",
       "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
       "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 01\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
-      "[1.4.11:shell] <a> \"Πορτοφόλι\" boundary 1.25:1 (needs 3) inside=#dde6e5 outside=#fdfdfd"
+      "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dde6e5 outside=#fdfdfd"
     ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 430,
+    "viewportWidth": 430,
+    "overflowPx": 0,
+    "offenders": []
   },
   "probes": {
     "truncation": [
@@ -736,13 +133,6 @@
         "scrollWidth": 1160,
         "clientWidth": 262,
         "reason": "overflow"
-      },
-      {
-        "selector": "div.relative",
-        "text": "9+",
-        "scrollWidth": 30,
-        "clientWidth": 24,
-        "reason": "overflow"
       }
     ],
     "latinSentences": [],
@@ -750,15 +140,18 @@
     "dateFacts": {
       "dates": [
         "top: 05/05/2026 — \"Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026.\"",
-        "top: 05/05/2026 — \"Υγεία · Εθνική Ασφαλιστική: έληξε στις 05/05/2026.\"",
         "top: 05/05/2026 — \"Έληξε στις 05/05/2026\"",
+        "top: 07/05/2026 — \"Έληξε στις 07/05/2026\"",
         "top: 04/02/2027 — \"04/02/2027\"",
+        "top: 05/02/2027 — \"05/02/2027\"",
+        "top: 06/02/2027 — \"06/02/2027\"",
         "top: 25/05/2027 — \"25/05/2027\"",
         "top: 01/06/2027 — \"01/06/2027\""
       ],
       "dayCounts": [
+        "top: \"σε 13 ημέρες\"",
         "top: \"σε 15 ημέρες\"",
-        "top: \"σε 44 ημέρες\""
+        "top: \"σε 42 ημέρες\""
       ],
       "statusChips": [
         "top: \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ\"",
@@ -789,6 +182,14 @@
           "top <span>",
           "top <span>",
           "top <span>"
+        ]
+      },
+      {
+        "text": "Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026.",
+        "count": 2,
+        "where": [
+          "top <button>",
+          "top <button>"
         ]
       },
       {
@@ -830,13 +231,40 @@
         ]
       },
       {
-        "text": "Αυτοκίνητο · Έληξε στις 05/05/2026",
-        "count": 4,
+        "text": "Αυτοκίνητο ·",
+        "count": 22,
         "where": [
           "top <p>",
           "top <p>",
           "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
           "top <p>"
+        ]
+      },
+      {
+        "text": "Έληξε στις 05/05/2026",
+        "count": 3,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>"
         ]
       },
       {
@@ -857,45 +285,24 @@
         ]
       },
       {
-        "text": "Αυτοκίνητο · σε 15 ημέρες",
-        "count": 4,
+        "text": "Έληξε στις 07/05/2026",
+        "count": 2,
         "where": [
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>"
+          "top <span>",
+          "top <span>"
         ]
       },
       {
-        "text": "Αυτοκίνητο · 04/02/2027",
-        "count": 11,
+        "text": "σε 13 ημέρες",
+        "count": 3,
         "where": [
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>"
+          "top <span>",
+          "top <span>",
+          "top <span>"
         ]
       },
       {
-        "text": "Υγεία · 04/02/2027",
-        "count": 5,
-        "where": [
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>",
-          "top <p>"
-        ]
-      },
-      {
-        "text": "ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ",
+        "text": "σε 15 ημέρες",
         "count": 2,
         "where": [
           "top <span>",
@@ -908,6 +315,14 @@
         "where": [
           "top <span>",
           "top <p>"
+        ]
+      },
+      {
+        "text": "ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
         ]
       },
       {
@@ -962,7 +377,7 @@
     "internalTokenLeaks": [
       "E2E fixture identifier: \"E2E-MOT-001\""
     ],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Πορτοφόλι Κλάδοι Οι κίνδυνοί σας Η κάλυψή σας PLUS Χρονολόγιο Ο Σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 18 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Καλώς ήρθατε πίσω, E2E! Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 18 18/29 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 5 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 11 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 6.656 € 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Σημαντικές ειδοποιήσεις 11 Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. Υγεία · Εθνική Ασφαλιστική: έληξε στις 05/05/2026. +9 ακόμη Όλα Αυτοκίνητο Υγεία Τα ασφαλιστήρια μου Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Εθνική Ασφαλιστική ΛΗΓΜΕΝΟ Υγεία · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 15 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 15 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 15 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 15 ημέρες Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · σε 15 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · σε 44 ημέρες Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Αυτοκίνητο ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ Αυτοκίνητο · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · 25/05/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 01/06/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + ΣΥΓΚΡΙΣΗ ΑΣΦΑΛΙΣΤΗΡΙΩΝ Σύγκριση Ασφαλιστηρίων. Επιλέξτε έως 3 ασφαλιστήρια του ίδιου τύπου για σύγκριση δίπλα-δίπλα. Επιλέχθηκε: Interamerican (Αυτοκίνητο). Επιλέξτε κι άλλα: 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Εθνική Ασφαλιστική 64504715 ΕΝΕΡΓΟ 94,07 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ 250,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-UG ΕΝΕΡΓΟ 301,00 €/έτος 🚗 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΣΥΜΒ-2025-DEF-LI ΕΝΕΡΓΟ 340,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-EN ΕΝΕΡΓΟ 94,07 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-XX ΕΝΕΡΓΟ 287,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-NP ΕΝΕΡΓΟ 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-RE ΕΝΕΡΓΟ 275,00 €/έτος 🚗 Εθνική Ασφαλιστική 63708952 ΕΝΕΡΓΟ 104,87 €/έτος 🚗 Interamerican E2E-MOT-001 ΕΝΕΡΓΟ 420,00 €/έτος ΚΛΕΙΣΙΜΟ Αρχική Πορτοφόλι Αναλύσεις Σύμβουλος 9+ Ρυθμίσεις"
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 14 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 18 18/29 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 5 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 11 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 6.656 € 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Σημαντικές ειδοποιήσεις 11 Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. +9 ακόμη Όλα Αυτοκίνητο Υγεία Τα ασφαλιστήρια μου Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 05/05/2026 Εθνική Ασφαλιστική ΛΗΓΜΕΝΟ Υγεία · Έληξε στις 07/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · Έληξε στις 07/05/2026 Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 13 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · σε 15 ημέρες Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · σε 15 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · σε 42 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 05/02/2027 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Αυτοκίνητο ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 06/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · 25/05/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 01/06/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + ΣΥΓΚΡΙΣΗ ΑΣΦΑΛΙΣΤΗΡΙΩΝ Σύγκριση Ασφαλιστηρίων. Επιλέξτε έως 3 ασφαλιστήρια του ίδιου τύπου για σύγκριση δίπλα-δίπλα. Επιλέχθηκε: Interamerican (Αυτοκίνητο). Επιλέξτε κι άλλα: 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-EXP ΛΗΓΕΙ ΣΥΝΤΟΜΑ 298,10 €/έτος 🚗 Εθνική Ασφαλιστική 64504715 ΕΝΕΡΓΟ 94,07 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΣΥΜΒ-2025-DEF-LI ΕΝΕΡΓΟ 340,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-NP ΕΝΕΡΓΟ 🚗 ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ 250,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-RE ΕΝΕΡΓΟ 275,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-MOT-ACT ΕΝΕΡΓΟ 312,40 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-UG ΕΝΕΡΓΟ 301,00 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-EN ΕΝΕΡΓΟ 94,07 €/έτος 🚗 Interamerican ΣΥΜΒ-2025-DEF-XX ΕΝΕΡΓΟ 287,40 €/έτος 🚗 Εθνική Ασφαλιστική 63708952 ΕΝΕΡΓΟ 104,87 €/έτος 🚗 Interamerican E2E-MOT-001 ΕΝΕΡΓΟ 420,00 €/έτος ΚΛΕΙΣΙΜΟ Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "paid",
   "trigger": "/wallet compare button, 2 selected (motor)"

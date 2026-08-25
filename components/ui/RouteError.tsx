@@ -25,9 +25,35 @@ export function RouteError({
 }) {
     const { t } = useLanguage()
 
+    /**
+     * Next implements `redirect()` and `notFound()` by THROWING. Those throws
+     * travel the same path as a real failure and land here, so a boundary that
+     * renders every error it receives converts a 307 into a **200 with an error
+     * page** — and serialises `NEXT_REDIRECT` into the HTML.
+     *
+     * That is not hypothetical. `/coverage` is a legacy redirect to
+     * `/protection` (a KEEP row); it returned 200 with the redirect error
+     * embedded five times in the body, and the customer saw «Κάτι πήγε στραβά»
+     * instead of arriving. `/home` looked fine only because `proxy.ts` owns
+     * that path and redirects before the page ever runs, which hid the bug for
+     * every page-level redirect under `(protected)` — all 26 boundaries that
+     * share this component.
+     *
+     * Re-thrown so the framework can finish what it started. Checked by digest,
+     * which is the contract Next exposes to a client boundary.
+     */
+    const isFrameworkControlFlow =
+        typeof error?.digest === "string" &&
+        (error.digest.startsWith("NEXT_REDIRECT") || error.digest.startsWith("NEXT_NOT_FOUND"))
+
     useEffect(() => {
+        // A redirect is not an incident. Reporting one wakes somebody for a
+        // working feature and buries the failures that matter.
+        if (isFrameworkControlFlow) return
         Sentry.captureException(error)
-    }, [error])
+    }, [error, isFrameworkControlFlow])
+
+    if (isFrameworkControlFlow) throw error
 
     const isAgentHome = homeHref.startsWith("/dashboard/agent")
     const homeLabel = isAgentHome ? t.nav.dashboard : t.nav.home

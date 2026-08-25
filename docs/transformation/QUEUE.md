@@ -1575,3 +1575,32 @@ found three things their tests could not:
 **Verified good, at 320px with a live session:** `/protection` (h1 «Η προστασία μου», 4 counts, 5,478
 chars), `/protection?lens=risk` (15 counts, 9 facts, 6,365 chars), `/account/history` (h1 «Ιστορικό
 δραστηριότητας», 8 counts, 3 facts, 6,430 chars). **All three: 0px page overflow.**
+
+### Full re-measure, 2026-08-25 — 513 captures, two failures
+
+**Truncation restated.** 572 across the evidence set, against the **729** that justified deferring
+§6.11 — and the corrected files are the ones that fell. **Page overflow: 0 of 174 captures.**
+
+**Failure 1 — `/coverage` did not redirect. Real, and fixed.** It answered **200 with
+`NEXT_REDIRECT` serialised into the body**: the customer got the app shell with an empty content area
+instead of arriving at «Η προστασία μου». `proxy.ts:332` already carried the explanation, written by
+whoever last hit this — *"a page-level redirect streams inside the RSC payload as a 200"* — and had
+solved it for `/home` by owning that path in the proxy. `/coverage` was left as a page-level
+`redirect()` and had exactly the documented bug. `/home` passing is what hid it: the proxy answered
+before the page ever ran, so the one legacy redirect that was broken looked like the healthy one.
+Now proxy-owned; verified `307 → /protection`.
+
+Two fixes came out of it, both kept:
+- `proxy.ts` owns `/coverage`, matching `/home`.
+- `RouteError` **re-throws framework control flow** (`NEXT_REDIRECT` / `NEXT_NOT_FOUND` by digest)
+  instead of rendering it. All **26** boundaries sharing it were turning a redirect into «Κάτι πήγε
+  στραβά», and reporting it to Sentry as an incident. That is a separate defect from the RSC-payload
+  one and would have outlived it.
+
+**Failure 2 — `policy-detail-goal2`: 10 sections against a ≤8 budget. UNRESOLVED, not fixed.**
+The reported list is six anchored sections plus a header, a button, and «Το ασφαλιστήριό σας σε απλά
+ελληνικά» **twice**. `SummaryCard` is rendered once, at `PolicyDetailsClientView.tsx:824`, so the
+duplicate is more likely `sectionCount` counting a wrapper and its child than the page rendering
+twice — but I could not confirm it against the live DOM and **am not claiming it is an artifact**.
+Not on the CI path, does not gate the deploy. Needs the section detector checked for nested matches
+before anyone edits the page on the strength of this number.

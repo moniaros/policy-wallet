@@ -336,6 +336,17 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL(`/dashboard${nextUrl.search}`, nextUrl))
     }
 
+    // §4.2: /coverage → «Η προστασία μου». Here, not in the page, for the reason
+    // the comment above gives — and this one is the proof of it. The page
+    // `app/(protected)/coverage/page.tsx` calls redirect("/protection") and has
+    // been answering **200** with `NEXT_REDIRECT` serialised into the body: the
+    // customer got the app shell with an empty content area instead of arriving.
+    // /home looked healthy only because the proxy already owned that path, which
+    // hid the defect for the one legacy redirect that did not.
+    if (nextUrl.pathname === "/coverage" || nextUrl.pathname === "/coverage/") {
+        return NextResponse.redirect(new URL(`/protection${nextUrl.search}`, nextUrl))
+    }
+
     // Role-based route protection for authenticated users — the decision is
     // decideRoleRedirect's alone (see above); this block only executes it.
     if (isLoggedIn && user) {
