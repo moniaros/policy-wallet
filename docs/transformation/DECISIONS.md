@@ -1007,3 +1007,52 @@ shape. The work is not "fix 729 truncations" — it is: make the branch taglines
 the codebase a rule for when a clamp is acceptable. 38 B2C files clamp text (81 `truncate`, 12
 `line-clamp-2`, 4 others); forcing an expand control onto a name in a table row would be noise. The
 invariant is **reachability**, not the absence of clamping.
+
+## D-031 — §9's Product-Truth check: notification priority is NOT severity renamed
+
+**Date:** 2026-08-25 · **A negative finding, and a false alarm I caught before reporting it**
+
+§9 opens with the worry that notification criticality is §2.1's severity verdict wearing a different
+name — the thing Phase 1 spent itself removing from gaps. Checked, with the discriminator stated
+first: **does priority reach the customer as a rendered label, or does it only route delivery?**
+
+**It never renders.** No component under `components/notifications/` or `app/(protected)/notifications`
+reads `priority`. It drives exactly two things: a stored column, and
+`urgent = definition.priority === "critical" || definition.transactional` in `orchestrator.ts:322`.
+So it is a routing concern, not a verdict. The registry's authored tiers (6 critical / 22 high /
+25 normal / 14 low) are not a claim made to anyone.
+
+**The 6 `critical` events pass the dated-consequence test** — `renewal_overdue`, `payment_failed`,
+`subscription_expired` are dated facts; `password_change` and `email_change` are security events;
+`claim_opened` is `planned` with no source. None is a judgement about risk.
+
+Only **3 of 22** `high` events name a dated consequence, but that is not a defect once priority is
+established as unrendered: "a proposal arrived" being `high` routes it promptly, it does not tell the
+customer their situation is serious.
+
+### The real question, and where I nearly got it wrong
+
+`urgent` bypasses quiet hours and the daily cap, so the interrupt set is what matters — and it is
+`critical` **∪** `transactional`, not the six. That is **35 live events, 21 reaching the customer.**
+
+Scanning that list I saw `feedback_nps` and `feedback_article` — satisfaction surveys — and started
+writing up "surveys can wake someone at 3am". **Wrong.** Those events, with `login_success` and the
+two `recommendation_*` events, declare `channels: ["analytics"]`: they notify nobody, they record. The
+bypass is irrelevant because there is nothing to deliver. Checking the channel before reporting cost
+one command; not checking would have put a fabricated defect in a report.
+
+**The honest interrupt set is 14 outbound events** (7 `FULL_REACH`, 7 `EMAIL_LED`). Against the
+registry's own definition — "things a user cannot meaningfully consent away from: a failed payment, a
+security event, a confirmation of something they just did" — all 14 fit. Security and payment: 4.
+Dated lapse: `renewal_overdue`. A consent request from an advisor. A failure of something they asked
+for. Relationship changes. The rest are confirmations of their own actions.
+
+**One arguable case, left alone.** Transactional events bypass the per-stream preferences
+(`dispatch.ts:148`) and take an `OPEN_GATE` (`:263`), which skips `gate.outboundOff` — the global
+outbound off switch P1-09b built. So "you updated a policy" still emails a customer who asked for no
+email. Whether a confirmation of your own action is something you can consent away from is a policy
+question; the registry states its position explicitly and defensibly, and I am not overriding a
+documented decision on my own judgement. **Recorded, not changed.**
+
+**Conclusion: §9's central worry does not hold here.** Reporting that plainly is the point of the
+check — the alternative is manufacturing work to justify having looked.
