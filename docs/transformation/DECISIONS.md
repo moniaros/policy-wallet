@@ -1056,3 +1056,37 @@ documented decision on my own judgement. **Recorded, not changed.**
 
 **Conclusion: §9's central worry does not hold here.** Reporting that plainly is the point of the
 check — the alternative is manufacturing work to justify having looked.
+
+## D-032 — Phase 2b (§8, the AI advisor) stays blocked, and that IS the reversible option
+
+**Date:** 2026-08-25 · **Decided under standing authority, in the direction of not building**
+
+Every other halt in this run has been handled by the standing rule: pick the reversible option, log
+it, keep going. Applied literally that would say *build the safe parts of §8 and leave recommendation
+output alone* — comprehension, the demands-and-needs record, factual comparison.
+
+**Applied honestly it says the opposite.** The rule optimises for reversibility, and code is the only
+thing here that reverts.
+
+- **H-007 — Article 9 consent for the interview.** A demands-and-needs interview collects health
+  data. Once a customer answers questions about their health under a consent basis nobody has
+  settled, `git revert` does not un-collect it. The data exists, the processing happened, and the
+  lawful basis was either there at the time or it was not.
+- **H-006 — the IDD Art. 20 advice boundary.** The line between *information* and *advice* is what
+  separates an insurance wallet from a regulated intermediary. Crossing it is not a UI state; it
+  changes what the product is and what it owes a customer who acted on it. A surface that gave advice
+  yesterday gave advice yesterday.
+
+Both are regulatory questions about a Greek intermediary (IDD, Law 4583/2018), and both are precisely
+the kind §12.1 reserves for a human. **Nothing about them gets safer by my picking a default.**
+
+**So Phase 2b is not started.** No interview, no demands-and-needs record, no comparison framed as a
+recommendation. This is recorded as a decision rather than left as an absence, because "the agent
+skipped a phase" and "the agent judged that starting it was the irreversible move" read identically
+in a commit log and mean opposite things.
+
+**What is NOT blocked, and shipped anyway:** the comprehension the customer already has —
+«Κατανόηση ασφαλιστηρίου», the coverage summary pinned to Greek, the findings surface carried onto
+«Η προστασία μου». §8's value that needs no regulatory answer is largely the value already there.
+
+**To unblock:** answer H-006 and H-007. Neither needs code first.
