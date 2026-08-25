@@ -1,0 +1,16 @@
+// RED-PROBE for clamped-text-reachability's enumerator (V2-P3-01).
+// The extractor must count: truncate ×2, line-clamp-2 ×1 — and nothing else.
+import Link from "next/link"
+
+export function ClampProbe({ name, blurb }: { name: string; blurb: string }) {
+    // this commented clamp must NOT count: className="truncate line-clamp-2"
+    /* nor this one: line-clamp-3 truncate */
+    const untruncated = "the word 'untruncated' must not match the clamp token (word boundary)"
+    return (
+        <Link href="/somewhere" className="block">
+            <p className="truncate text-sm font-bold">{name}</p>
+            <p className="mt-1 line-clamp-2 text-xs">{blurb}</p>
+            <p className="truncate text-xs">{untruncated}</p>
+        </Link>
+    )
+}

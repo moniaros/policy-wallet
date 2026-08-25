@@ -428,7 +428,7 @@ Baseline: `evidence/branches/BASELINE.md` (1,981px @320, 31 containers, depth 2,
 |---|---|---|---|---|---|
 | B-01 | See the nine lines of business as cards | fact | **KEEP** | absorbed into «Η προστασία μου», *ανά κλάδο* lens (§4.2) | Phase 2 |
 | B-02 | See how many policies you hold per line | fact | **KEEP** | `/protection`, ανά κλάδο lens — the honest half of this surface | — |
-| B-03 | Read a one-line tagline per line | fact | **KEEP, FIX** | `/protection`, ανά κλάδο lens; 8 of 9 clip mid-word at 320px (`line-clamp-2`) — Phase 3 primitive, not a local override | Phase 4 |
+| B-03 | Read a one-line tagline per line | fact | **DONE — reachable, not unclamped** | `/protection`, ανά κλάδο lens keeps the `line-clamp-2` (uniform cards on a 19-screen page); the full tagline now renders on `/protection/[branch]`'s header — the page the card links to. Guarded on rendered DOM by `clamped-text-reachability` for every top-level branch | V2-P3-01 ✓ |
 | B-04 | Open a line to see what you hold | action | **KEEP** | `/protection/[branch]` (`href` per card) | — |
 | B-05 | See «Πιθανό κενό» on a line | fact | **DONE — register changed, information kept** | now «Χωρίς ασφαλιστήριο», neutral. A *lapsed* policy still reads as a finding | V2-P1-02 ✓ |
 | B-06 | See `business` among consumer lines | fact | **DECIDED (QUEUE.md Phase 2)** | `/protection`, ανά κλάδο lens: renders only when the customer holds a policy in the line — one predicate in `ProtectionBranchLens`, reversible | V2-P2-01 ✓ |
@@ -587,7 +587,7 @@ Enumerated by the implementing item; rows below are the extraction's inventory, 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
 | BD-01 | Breadcrumb back to the line listing | action | **KEEP** | `/protection` (the `/branches` arm died with the route in V2-P2-03) | — |
-| BD-02 | Branch header: icon, name, short description | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
+| BD-02 | Branch header: icon, name, full tagline (B-03's full render since V2-P3-01), short description | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
 | BD-03 | Policies held in this line (identity via policy-identity, LIFECYCLE status badge); empty state with CTA when none | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
 | BD-04 | Branch-filtered recommendations (`branch.recommendationCount`, subject-scoped — never `recommendation.openCount`) | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
 | BD-05 | «Γιατί έχει σημασία» editorial | fact | **KEEP** | `/protection/[branch]` (sole mount) | — |
@@ -601,8 +601,8 @@ Enumerated by the implementing item; rows below are the extraction's inventory, 
 | BD-13 | Agent CTA (connected/disconnected hint, link to `/agent`) | action | **KEEP** | `/protection/[branch]` (sole mount) | — |
 
 **Known debt carried, not created:** the status→translation-key bridge (P1-10 exemption in
-`policy-status-display-single-source.test.ts`, moved by name to `BranchDetail.tsx`), and B-03's
-`line-clamp-2` truncation, which the tagline shares (Phase 4 primitive).
+`policy-status-display-single-source.test.ts`, moved by name to `BranchDetail.tsx`). B-03's
+tagline truncation is resolved (V2-P3-01): the header above renders the tagline in full.
 
 
 ---

@@ -177,7 +177,15 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                 </div>
                 <div>
                     <h1 className="text-2xl font-black text-black dark:text-white sm:text-3xl">{branchTitle}</h1>
-                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-black/60 dark:text-white/65">
+                    {/* The FULL tagline — the one-line promise the /protection card
+                        clamps to two lines (ledger B-03). This header is the page that
+                        card links to, and V2-P3-01 made it the tagline's full render:
+                        before this line the cut half existed nowhere in the product.
+                        Guarded on rendered DOM by clamped-text-reachability. */}
+                    <p className="mt-2 max-w-2xl text-sm font-semibold leading-relaxed text-black/80 dark:text-white/85">
+                        {content.tagline[lang]}
+                    </p>
+                    <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-black/60 dark:text-white/65">
                         {content.shortDescription[lang]}
                     </p>
                 </div>
