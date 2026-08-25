@@ -210,3 +210,55 @@ itself on something other than distinguishability.
 **Do not build the asset reframe on this evidence.** Re-run this metric when real portfolios exist;
 it is wired into `captureSurface`, so every future capture on every surface carries it and the
 after-number will be produced by the same definition as the before-number.
+
+---
+
+## P5-wallet-01a — partial. What is measured, and what is not (2026-08-26)
+
+### varied-household — MEASURED at 390 and 430, and the result is decisive
+
+**7 rows · 2 duplicate rows · largest group 2 · 0 unlocatable.**
+
+The only duplicate group is:
+
+```
+x2   Εθνική Ασφαλιστική · Υγεία · σε 39 ημέρες · ΕΝΕΡΓΟ
+```
+
+**Two health policies on one insured party — and nothing else.** The two vehicles, the property and
+the life policy all distinguish themselves already, before any identifier rule exists.
+
+**This is exactly what H-010 predicts**, and it changes what P5-wallet-01 can achieve on a realistic
+wallet: the per-line identifier rule would move **nothing** here, because the only duplicates are the
+ones that carry no available identifier. Motor, property and pet are already at zero on this shape,
+so their targets are met by the fixture rather than by the fix.
+
+**It also complicates D-034's reopen trigger.** That trigger reads "a realistic household fixture
+producing a non-zero count", and the count is 2 — so it fires. But the cause is **H-010, not row
+structure**, and the asset reframe would not resolve it either: grouping by asset cannot distinguish
+two health policies on the same person. **A mechanical reading of the trigger would reopen the wrong
+item.** The trigger should test for a non-zero count *with an available identifier*.
+
+### single-line-concentration — NOT MEASURED
+
+Blocked on the environment, not on the work. Two captures were produced and **both were deleted
+rather than published**:
+
+- The first ran the fixture **on top of** varied-household's rows — the two fixtures cleared only
+  their own policy-number prefix, so the wallet held 13 rows and the count of 8/6 described neither
+  fixture. The spec's own row-count assertion caught it. **Fixed**: both fixtures now clear both
+  prefixes, because they are mutually exclusive portfolio *shapes* and render into the same list.
+- The retry could not reach the database at all. `connection_limit=5` is mandated locally to stay
+  under the session pooler's 15-client ceiling, and that ceiling is **shared with a parallel session
+  on this machine**. The app rendered its error boundary and the spec **refused to record**, which is
+  the correct behaviour and the reason no bad number reached this file.
+
+`varied-household@320` was overwritten by the contaminated run and has been deleted for the same
+reason. 390 and 430 agree exactly, so the shape's result is not in doubt; the missing width is.
+
+### Still owed
+- `single-line-concentration` at all three widths, and `varied-household@320`.
+- The per-line duplicate breakdown for both fixtures.
+
+Re-run when the pooler is quiet:
+`npx playwright test tests/measure/dashboard-wallet-identity-household-fixtures.spec.ts --project=measure-dash --no-deps --workers=1`

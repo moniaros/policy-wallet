@@ -737,3 +737,286 @@ export async function applyUnknownHouseholdFixture(db: any, ownerEmail: string, 
 
     return created
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// P5-wallet-01a additions — two fixtures for the `duplicateIdentityRows()`
+// metric (metrics.ts) that neither the heavy 29-policy account nor the
+// `PortfolioState` matrix above could produce, because both are the wrong
+// shape for what D-034's reopen trigger actually asks for:
+//
+//   1. VARIED-HOUSEHOLD — a REALISTIC mixed portfolio (2 vehicles, 1 property,
+//      2-3 health, 1 life; mixed insurers, mixed renewal dates), to test
+//      whether ordinary household variety already avoids the duplicate-row
+//      problem the heavy fixture showed, or whether it survives at realistic
+//      size.
+//   2. SINGLE-LINE-CONCENTRATION — 5+ motor policies, ONE insurer, ONE
+//      renewal date, all active. This is the fixture that isolates a future
+//      identifier-based fix (adding `vehicle.plateNumber` to the row):
+//      holding insurer/line/date/status constant means an identifier is the
+//      ONLY field left that could ever distinguish these rows.
+//
+// Identifier availability by line, checked directly against
+// lib/schemas/acord-data.ts before building either fixture:
+//
+//   motor     vehicle.plateNumber, vehicle.vin        available
+//   property  property.address                        available
+//   pet       pet.name                                 available
+//   travel    travel.destinationScope only              no dates in the schema
+//   health    NONE — insuredPersons is a crew/class schedule (role,
+//             classLabel, count, benefits), not a list of named people
+//   life      NONE — beneficiaries.name names the BENEFICIARY, not the
+//             insured
+//
+// So health and life rows CANNOT be disambiguated by adding an identifier
+// field, because none exists. VARIED-HOUSEHOLD deliberately includes two
+// health policies sharing insurer + renewal date + status (a plausible real
+// case — two family members on the same insurer's family health scheme,
+// renewing together) specifically so this unresolvable case is visible in a
+// realistic fixture, not just the synthetic single-line one. No field was
+// invented to make them distinct; per the item's instruction, they are
+// EXPECTED to collide.
+//
+// Both write real line-specific identifiers (plate/VIN/address) into
+// `acordData` even though the CURRENT `duplicateIdentityRows()` definition
+// never reads them (by design — see metrics.ts's doc comment: the policy
+// number/identifier is deliberately excluded from the four-field identity
+// string). They are there for the fixture's SECOND life: whatever P5-wallet-01
+// builds to render an identifier on the row can point at this same fixture
+// and expect the motor/property rows (but not health/life) to stop
+// colliding.
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface IdentityFixturePolicySpec {
+    policyNumber: string
+    lineOfBusiness: "motor" | "home" | "health" | "life"
+    insurerName: string
+    /** days from now; kept positive (active) for both fixtures — the metric
+     *  under test is identity collision, not lifecycle state. */
+    endInDays: number
+    premiumAmount: number
+    /** Written into acordData.vehicle — NOT read by the current metric. */
+    vehicle?: { plateNumber: string; vin: string }
+    /** Written into acordData.property — NOT read by the current metric. */
+    property?: { address: string }
+    /** Why this row is here, when it is not just filler. */
+    note?: string
+}
+
+/**
+ * Shared row-writer for both P5-wallet-01a fixtures below. Deliberately NOT
+ * `applyPortfolioState`: that function owns the `ΣΥΜΒ-2026-` prefix and a
+ * fixed set of PolicySpec shapes with no room for per-line identifiers
+ * (plate/VIN/address) — forking the acordData shape into a second function
+ * is less risk than teaching one function two incompatible schemas.
+ * Idempotent by upsert-on-(ownerId, policyNumber), matching
+ * `applyUnknownHouseholdFixture`'s pattern above.
+ */
+async function createIdentityFixturePolicy(db: any, ownerId: string, spec: IdentityFixturePolicySpec): Promise<string> {
+    const end = utcMidnight(spec.endInDays)
+    const start = utcMidnight(spec.endInDays - 365)
+    const analyzedAt = new Date(Date.now() - 5 * DAY)
+
+    const acordData: Record<string, unknown> = {
+        _version: 3,
+        policy: {
+            insurerName: spec.insurerName,
+            policyNumber: spec.policyNumber,
+            lineOfBusiness: spec.lineOfBusiness,
+            effectiveDate: start.toISOString().slice(0, 10),
+            expirationDate: end.toISOString().slice(0, 10),
+            premium: { amount: spec.premiumAmount, currency: "EUR" },
+        },
+        extraction: {
+            source: "fixture",
+            extractedAt: new Date().toISOString(),
+            reviewState: "unconfirmed",
+            summaryLanguage: "el",
+        },
+    }
+    if (spec.vehicle) acordData.vehicle = spec.vehicle
+    if (spec.property) acordData.property = spec.property
+
+    const data = {
+        ownerUserId: ownerId,
+        createdByUserId: ownerId,
+        policyNumber: spec.policyNumber,
+        insurerName: spec.insurerName,
+        lineOfBusiness: spec.lineOfBusiness,
+        status: "active",
+        startDate: start,
+        endDate: end,
+        coverageEndDate: end,
+        premiumAmount: spec.premiumAmount,
+        premiumCurrency: "EUR",
+        coverageSummary: SUMMARY_EL,
+        lastAnalyzedAt: analyzedAt,
+        acordData,
+    }
+
+    let policy = await db.policy.findFirst({ where: { ownerUserId: ownerId, policyNumber: spec.policyNumber }, select: { id: true } })
+    if (policy) {
+        await db.policy.update({ where: { id: policy.id }, data })
+    } else {
+        policy = await db.policy.create({ data, select: { id: true } })
+    }
+
+    const run = await db.policyAnalysisRun.findFirst({ where: { policyId: policy.id }, select: { id: true } })
+    if (!run) {
+        await db.policyAnalysisRun.create({
+            data: {
+                policyId: policy.id,
+                userId: ownerId,
+                provider: "fixture",
+                model: "fixture",
+                status: "completed",
+                overallSuccessPct: 100,
+                startedAt: analyzedAt,
+                finishedAt: analyzedAt,
+            },
+        })
+    }
+    return policy.id
+}
+
+/** Policy-number prefix — isolates this fixture's rows from every other prefix on the account. */
+export const VARIED_HOUSEHOLD_PREFIX = "WH-VARIED-"
+
+/**
+ * 2 vehicles (distinct plates/VINs, mixed insurers/dates) + 1 property +
+ * 3 health (2 deliberately colliding, 1 distinct) + 1 life = 7 policies.
+ */
+export function variedHouseholdPolicies(): IdentityFixturePolicySpec[] {
+    return [
+        {
+            policyNumber: `${VARIED_HOUSEHOLD_PREFIX}MOT1`,
+            lineOfBusiness: "motor",
+            insurerName: "Interamerican",
+            endInDays: 210,
+            premiumAmount: 340,
+            vehicle: { plateNumber: "ΙΖΤ-1234", vin: "WVWZZZ1KZAW000001" },
+        },
+        {
+            policyNumber: `${VARIED_HOUSEHOLD_PREFIX}MOT2`,
+            lineOfBusiness: "motor",
+            insurerName: "Ergo",
+            endInDays: 55,
+            premiumAmount: 290,
+            vehicle: { plateNumber: "ΝΞΗ-7890", vin: "WVWZZZ1KZAW000002" },
+        },
+        {
+            policyNumber: `${VARIED_HOUSEHOLD_PREFIX}HOME1`,
+            lineOfBusiness: "home",
+            insurerName: "Generali",
+            endInDays: 300,
+            premiumAmount: 220,
+            property: { address: "Λεωφόρος Κηφισίας 123, Αθήνα 115 23" },
+        },
+        {
+            policyNumber: `${VARIED_HOUSEHOLD_PREFIX}HLT1`,
+            lineOfBusiness: "health",
+            insurerName: "Εθνική Ασφαλιστική",
+            endInDays: 40,
+            premiumAmount: 950,
+            note: "family health scheme, member A — DELIBERATELY shares insurer+date+status with HLT2 (no insured-party field exists to distinguish them, see comment above)",
+        },
+        {
+            policyNumber: `${VARIED_HOUSEHOLD_PREFIX}HLT2`,
+            lineOfBusiness: "health",
+            insurerName: "Εθνική Ασφαλιστική",
+            endInDays: 40,
+            premiumAmount: 1100,
+            note: "family health scheme, member B — the unresolvable twin of HLT1",
+        },
+        {
+            policyNumber: `${VARIED_HOUSEHOLD_PREFIX}HLT3`,
+            lineOfBusiness: "health",
+            insurerName: "Interamerican",
+            endInDays: 200,
+            premiumAmount: 480,
+            note: "a third, DISTINCT health policy — different insurer and date, so the household is not ALL colliding health rows",
+        },
+        {
+            policyNumber: `${VARIED_HOUSEHOLD_PREFIX}LIFE1`,
+            lineOfBusiness: "life",
+            insurerName: "NN Hellas",
+            endInDays: 400,
+            premiumAmount: 500,
+        },
+    ]
+}
+
+export async function applyVariedHouseholdFixture(db: any, ownerEmail: string): Promise<string[]> {
+    if (PROD_GUARD) {
+        throw new Error("applyVariedHouseholdFixture: refusing to run against the PRODUCTION database")
+    }
+    const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
+    if (!owner) throw new Error(`applyVariedHouseholdFixture: ${ownerEmail} not provisioned — run global-setup first`)
+
+    // Own-prefix-only delete, matching applyPortfolioState's isolation rule —
+    // never touches another fixture family's rows on the same account.
+    // Both identity fixtures clear BOTH prefixes, not just their own.
+    //
+    // Own-prefix-only isolation is right for fixtures that coexist; these two
+    // cannot. They are mutually exclusive portfolio SHAPES — a wallet is either
+    // a varied household or a single-line concentration — and they render into
+    // the same list, so leaving the other in place measures their union. That
+    // is what happened: applying one on top of the other produced a 13-row
+    // wallet and an identity count of 8/6 that described neither fixture. The
+    // spec's row-count assertion caught it rather than publishing the number.
+    await db.policy.deleteMany({ where: { ownerUserId: owner.id, policyNumber: { startsWith: VARIED_HOUSEHOLD_PREFIX } } })
+    // Both identity fixtures clear BOTH prefixes, not just their own.
+    //
+    // Own-prefix-only isolation is right for fixtures that coexist; these two
+    // cannot. They are mutually exclusive portfolio SHAPES — a wallet is either
+    // a varied household or a single-line concentration — and they render into
+    // the same list, so leaving the other in place measures their union. That
+    // is what happened: applying one on top of the other produced a 13-row
+    // wallet and an identity count of 8/6 that described neither fixture. The
+    // spec's row-count assertion caught it rather than publishing the number.
+    await db.policy.deleteMany({ where: { ownerUserId: owner.id, policyNumber: { startsWith: SINGLE_LINE_CONCENTRATION_PREFIX } } })
+    await db.policy.deleteMany({ where: { ownerUserId: owner.id, policyNumber: { startsWith: VARIED_HOUSEHOLD_PREFIX } } })
+
+    const created: string[] = []
+    for (const spec of variedHouseholdPolicies()) {
+        created.push(await createIdentityFixturePolicy(db, owner.id, spec))
+    }
+    return created
+}
+
+/** Policy-number prefix — isolates this fixture's rows from every other prefix on the account. */
+export const SINGLE_LINE_CONCENTRATION_PREFIX = "WH-CONC-"
+
+/**
+ * 6 motor policies, ONE insurer, ONE renewal date, all active — line,
+ * insurer, status and date held constant on purpose. Distinct plates/VINs
+ * ARE written (unlike the collision this produces today) so a future
+ * identifier-based fix has something real to render.
+ */
+export function singleLineConcentrationPolicies(): IdentityFixturePolicySpec[] {
+    const insurer = "Interamerican"
+    const sharedEndInDays = 180
+    return Array.from({ length: 6 }, (_, i) => ({
+        policyNumber: `${SINGLE_LINE_CONCENTRATION_PREFIX}MOT${i + 1}`,
+        lineOfBusiness: "motor" as const,
+        insurerName: insurer,
+        endInDays: sharedEndInDays,
+        premiumAmount: 300 + i * 5,
+        vehicle: { plateNumber: `ΙΝΤ-000${i + 1}`, vin: `WVWZZZ1KZAW10000${i + 1}` },
+    }))
+}
+
+export async function applySingleLineConcentrationFixture(db: any, ownerEmail: string): Promise<string[]> {
+    if (PROD_GUARD) {
+        throw new Error("applySingleLineConcentrationFixture: refusing to run against the PRODUCTION database")
+    }
+    const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
+    if (!owner) throw new Error(`applySingleLineConcentrationFixture: ${ownerEmail} not provisioned — run global-setup first`)
+
+    await db.policy.deleteMany({ where: { ownerUserId: owner.id, policyNumber: { startsWith: SINGLE_LINE_CONCENTRATION_PREFIX } } })
+
+    const created: string[] = []
+    for (const spec of singleLineConcentrationPolicies()) {
+        created.push(await createIdentityFixturePolicy(db, owner.id, spec))
+    }
+    return created
+}

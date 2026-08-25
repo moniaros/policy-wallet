@@ -1,0 +1,183 @@
+{
+  "capture": "varied-household",
+  "width": 430,
+  "url": "http://localhost:3000/wallet",
+  "scrollHeight": 2294,
+  "viewportsOfContent": 2.5,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 11,
+    "ids": [
+      "<div> Το πορτοφόλι μου",
+      "<div> Τα ασφαλιστήρια μου",
+      "<div> Ξεκλείδωσε την πλήρη ανάλυση",
+      "<div> Το πορτοφόλι μου",
+      "<div> Ενεργή προστασία77/7 προστεθέντα",
+      "<div> ΛΗΓΕΙ ΣΥΝΤΟΜΑ0Εντός 30 ημερών",
+      "<div> Χρειάζεται προσοχή0Προς έλεγχο",
+      "<div> Ασφαλιστικό αποτύπωμα3.880 €",
+      "<div> ΌλαΑυτοκίνητοΚατοικίαΥγείαΖωή",
+      "<div> ",
+      "<div> Ξεκλείδωσε την πλήρη ανάλυση"
+    ]
+  },
+  "containers": {
+    "count": 57,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.flex flex-col sm:flex-row gap-4 justify-",
+      "div.flex bg-black/5 dark:bg-black p-1 rounde",
+      "button.px-3 py-1.5 rounded-md text-xs font-bold"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 7,
+    "comparableRows": 7,
+    "duplicateRowCount": 2,
+    "largestGroupSize": 2,
+    "groups": [
+      {
+        "display": "Εθνική Ασφαλιστική · Υγεία · σε 39 ημέρες · ΕΝΕΡΓΟ",
+        "count": 2,
+        "rows": [
+          {
+            "index": 0,
+            "subject": "cmt9a2mn8000dtzx6d5hmk3am"
+          },
+          {
+            "index": 1,
+            "subject": "cmt9a2v1e000htzx6y4rb2dvz"
+          }
+        ]
+      }
+    ],
+    "unlocatable": []
+  },
+  "tapTargets": [
+    {
+      "tag": "button",
+      "text": "Όλα",
+      "w": 40,
+      "h": 44,
+      "chain": "div < div < div < div"
+    },
+    {
+      "tag": "button",
+      "text": "Ζωή",
+      "w": 40,
+      "h": 44,
+      "chain": "div < div < div < div"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Σύγκριση ασφαλιστηρίων\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <input> \"Αναζήτηση ασφαλιστηρίων...\" boundary 1.31:1 (needs 3) inside=#f8fafc outside=#fefeff",
+      "[1.4.11:control] <button> \"Χειροκίνητη προσθήκη\" boundary 1.03:1 (needs 3) inside=#fefeff outside=#fbfbfc",
+      "[1.4.11:control] <button> \"Μεταφόρτωση εγγράφου\" boundary 1.04:1 (needs 3) inside=#fefeff outside=#f8fafc",
+      "[1.4.11:unmeasured] <button> \"Μαζική μεταφόρτωση\" boundary 1.00:1 (needs 3) inside=#f1f2f2 outside=#f1f2f2 — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Ενεργή προστασία77/7 προστεθέντα\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfd",
+      "[1.4.11:surface] <div> \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ0Εντός 30 ημερών\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fbfb",
+      "[1.4.11:surface] <div> \"Χρειάζεται προσοχή0Προς έλεγχο\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:surface] <div> \"Ασφαλιστικό αποτύπωμα3.880 €\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · σε\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · σε\" boundary 1.01:1 (needs 3) inside=#f7f9f9 outside=#f5f8f7",
+      "[1.4.11:unmeasured] <div> \"ERGO ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο ·\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΥγεία · 13/03/2\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 23\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Generali HellasΕΝΕΡΓΟΚατοικία · 21\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"NN HellasΕΝΕΡΓΟΖωή · 29/09/2027\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"Ξεκλείδωσε την πλήρη ανάλυσηΤο βασ\" boundary 1.20:1 (needs 3) inside=#f4f7f7 outside=#fbfcfd",
+      "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 430,
+    "viewportWidth": 430,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "button.px-3.py-1.5",
+        "text": "Αυτοκίνητο",
+        "scrollWidth": 81,
+        "clientWidth": 67,
+        "reason": "overflow"
+      },
+      {
+        "selector": "button.px-3.py-1.5",
+        "text": "Κατοικία",
+        "scrollWidth": 65,
+        "clientWidth": 57,
+        "reason": "overflow"
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "top: 13/03/2027 — \"13/03/2027\"",
+        "top: 23/03/2027 — \"23/03/2027\"",
+        "top: 21/06/2027 — \"21/06/2027\"",
+        "top: 29/09/2027 — \"29/09/2027\""
+      ],
+      "dayCounts": [
+        "top: \"σε 39 ημέρες\"",
+        "top: \"σε 54 ημέρες\""
+      ],
+      "statusChips": [
+        "top: \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ\"",
+        "top: \"ΕΝΕΡΓΟ\""
+      ]
+    },
+    "repeatedStrings": [
+      {
+        "text": "Εθνική Ασφαλιστική",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "σε 39 ημέρες",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Αυτοκίνητο ·",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Interamerican",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 7 7/7 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 0 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 0 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 3.880 € Όλα εντάξει — κανένα ασφαλιστήριο δεν χρειάζεται ενέργεια. Όλα Αυτοκίνητο Κατοικία Υγεία Ζωή Τα ασφαλιστήρια μου Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · σε 39 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · σε 39 ημέρες ERGO Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · σε 54 ημέρες Interamerican ΕΝΕΡΓΟ Υγεία · 13/03/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 23/03/2027 Generali Hellas ΕΝΕΡΓΟ Κατοικία · 21/06/2027 NN Hellas ΕΝΕΡΓΟ Ζωή · 29/09/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Ξεκλείδωσε την πλήρη ανάλυση Το βασικό summary είναι έτοιμο. Ξεκλείδωσε την πλήρη ανάλυση για να δεις κενά, εξαιρέσεις, όρια και προτεινόμενες ενέργειες. Ξεκλείδωμα πλήρους ανάλυσης Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "tier": "unknown",
+  "state": "varied-household-7-policies"
+}
