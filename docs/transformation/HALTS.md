@@ -321,7 +321,31 @@ Gate after: tsc, lint, i18n, utf8 clean; 5076/5076 tests.
 
 ---
 
-## H-005 — the ACCESSIBILITY half is fixed. The product question is still open, and I did not answer it.
+## H-005 — ANSWERED 2026-08-25: **no, it should not exist.** Removed.
+
+The owner's decision. «Πόσο καλά σας γνωρίζουμε» is gone from the risk lens: the 0-100 index, the
+band verdict («Καλή εικόνα» / «Μερική εικόνα» / «Περιορισμένη εικόνα» / «Άγνωστη»), the `BAND_TONE`
+colour map, and the eight component percentages with their progress bars.
+
+**Deleted whole rather than de-verdicted.** Keeping the components would have kept the score in
+pieces — eight percentages *is* the index, distributed. `whyItMatters` went with it; its copy reads
+"…for THIS to mean anything yet", prose about a number that is no longer there.
+
+**What survives is the one part that was never a score.** `nextAction` — «Απαντήστε σε μερικές ακόμη
+ερωτήσεις για την κατάστασή σας» — tells someone what to do without ranking them for not having done
+it. Its card now renders only when there is an action, because removing the score would otherwise
+have left an empty bordered box where a finding goes.
+
+Guards moved with it: `protection-surface-ledger`'s R-04 asserted the metric RENDERED and now asserts
+it does not; `solid-panel-contrast`'s band-tone check guarded a contrast ratio on a thing that no
+longer exists and now enforces the decision instead — a check for absence cannot pass vacuously,
+where "if it exists it must clear 4.5:1" would pass loudest when the file is empty.
+
+---
+
+### Original halt as raised
+
+## H-005 (accessibility half, fixed earlier)
 
 **2026-08-25.** V2-P1-03 and V2-P1-08 were queued together as "remove the verdict «Καλή εικόνα» and
 fix the amber label failing at 3.20:1". They are not the same kind of thing, so they are no longer
@@ -465,7 +489,25 @@ answer: *(awaiting)*
 
 ---
 
-## H-008 — RESOLVED IN PART (2026-08-25). The false claim is gone; the commercial question stands.
+## H-008 — CLOSED 2026-08-25. No grant. The email drives the activation event instead.
+
+The false claim was removed earlier. The commercial half, answered on the owner's instruction to use
+my own judgement:
+
+**Do not reinstate the grant.** Credits are the wrong lever for this audience. Someone who has not
+opened the wallet in thirty days is not blocked by a lack of currency — they are blocked because
+there is nothing analysed to spend it on. 500 credits against an empty wallet buys nothing the
+recipient can use, costs real inference money for people who may never return, and rewards dormancy
+over the action that makes the product worth anything.
+
+The activation event is an **upload**, so the day-30 email now drives that: the CTA points at
+`/wallet/add` («Προσθήκη ασφαλιστηρίου») rather than the dashboard. If a win-back incentive is ever
+wanted, tie it to the upload — value released by an action is self-funding and measurable; a blanket
+grant is neither.
+
+---
+
+### Earlier resolution (the honesty half)
 
 **Acted under standing authority, because the honesty half was not a decision.** CLAUDE.md forbids
 "publishing a public claim the code does not support" *regardless of instruction*, and this one was
@@ -546,7 +588,21 @@ answer: *(awaiting)*
 
 ---
 
-## H-009 — HALF FIXED. The false claim is gone; which tier owns the feature is yours.
+## H-009 — CLOSED 2026-08-25: deep analysis sits on **both** paid tiers.
+
+The owner's decision. `isDeepAnalysisLocked` was `tier !== 'pro'`; it is now `tier === 'free'`, so
+Plus and Pro both unlock it and no paying subscriber is shown an upgrade prompt for a plan they hold.
+The CTA reads «Ξεκλείδωμα με Plus» — the cheapest tier that clears the gate.
+
+`locked-cta-names-the-real-tier` survived the change the way a guard should: it **failed**, saying
+"if it moved, re-point this guard rather than deleting it". It now reads both gate shapes
+(`tier !== 'X'` and `tier === 'free'`) and requires the CTA to name the *cheapest* unlocking tier —
+naming a dearer one is not a lie, but it sells an upgrade the customer does not need. Probed both
+ways.
+
+---
+
+### Earlier resolution (the copy half)
 
 **Resolved 2026-08-25 (copy half).** The CTA now reads «Ξεκλείδωμα με Pro» / "Unlock with Pro",
 naming the tier that actually clears `tier !== 'pro'`. `tests/unit/locked-cta-names-the-real-tier.test.ts`

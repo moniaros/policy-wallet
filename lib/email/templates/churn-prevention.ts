@@ -136,6 +136,22 @@ export function getChurnDay14Email(data: ChurnPreventionEmailData): { subject: s
  * a false statement, so the claim is gone and the re-engagement email stands on
  * what is true: the wallet is still there, and so are their policies.
  */
+
+/*
+ * H-008's commercial half, answered 2026-08-25: do NOT reinstate the grant.
+ *
+ * Credits are the wrong lever for this audience. A customer who has not opened
+ * the wallet in thirty days is not blocked by a lack of currency — they are
+ * blocked because there is nothing analysed to spend it on. Handing 500 credits
+ * to an empty wallet buys nothing the recipient can use, costs real inference
+ * money for people who may never return, and rewards dormancy rather than the
+ * action that makes the product worth anything.
+ *
+ * The activation event is an upload. So this email drives that, and the CTA
+ * points at /wallet/add rather than the dashboard. If a win-back incentive is
+ * ever wanted, tie it to the upload — value released by the action is
+ * self-funding and measurable; a blanket grant is neither.
+ */
 export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: string; html: string } {
     const { name, language } = data
     const isGreek = language === 'el'
@@ -157,7 +173,7 @@ export function getChurnDay30Email(data: ChurnPreventionEmailData): { subject: s
             : 'Sign back in whenever you like — everything is where you left it.'
         }</p>
 
-        <a href="${APP_URL}/dashboard" class="button">${isGreek ? 'Άνοιγμα του φακέλου μου' : 'Open my wallet'}</a>
+        <a href="${APP_URL}/wallet/add" class="button">${isGreek ? 'Προσθήκη ασφαλιστηρίου' : 'Add a policy'}</a>
     `
 
     return { subject, html: getBaseEmailTemplate(content, language) }

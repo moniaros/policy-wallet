@@ -510,14 +510,35 @@ describe("«ανά κίνδυνο» lens preserves R-01…R-08 on rendered outpu
         }
     })
 
-    it("R-04 (H-005 — ported unchanged): the completeness metric renders under its fact key, and the score value renders nowhere", () => {
+    it("R-04 (H-005 ANSWERED: it should not exist) — no completeness metric, in any form", () => {
         const { container } = renderSurface(riskLensProps)
-        const index = container.querySelector('[data-fact="profile.healthIndex"]')
-        expect(index, "R-04: health index missing").toBeTruthy()
-        expect(index!.textContent).toBe("62")
-        // H-001: the service still returns protectionScore (77 in the fixture);
-        // the surface must never render it.
-        expect(container.textContent).not.toContain("77")
+        // The owner answered H-005 on 2026-08-25: the second score should not
+        // exist. This assertion was the opposite two hours ago — it required
+        // the index to render — which is why it is written to fail loudly if
+        // the metric returns rather than being deleted along with it.
+        expect(
+            container.querySelector('[data-fact="profile.healthIndex"]'),
+            "the completeness index is back — H-005 says it should not exist"
+        ).toBeNull()
+        expect(
+            container.querySelector('[data-fact="profile.healthComponent"]'),
+            "component percentages are the index distributed — still the score"
+        ).toBeNull()
+        // The fixture's index is 62 and its band verdict «Καλή εικόνα»; neither
+        // may appear. 77 is the protectionScore the service still returns
+        // (H-001) and has never been renderable here.
+        for (const forbidden of ["62", "77", "Καλή εικόνα", "Μερική εικόνα"]) {
+            expect(container.textContent, `R-04: "${forbidden}" renders`).not.toContain(forbidden)
+        }
+        // What survives is the control, not a ranking — but `nextAction` is
+        // null once the weakest area is answered well enough, and it is null in
+        // this fixture. So the assertion is that the card does not render EMPTY
+        // in that state, which is the defect removing the score could have left
+        // behind: a bordered box saying nothing where a finding would go.
+        const emptyCards = [...container.querySelectorAll(".pw-card")].filter(
+            (c) => (c.textContent ?? "").trim() === ""
+        )
+        expect(emptyCards, "an empty card renders where the score used to be").toEqual([])
     })
 
     it("R-05: the household summary renders every household.* key from the §6.7 registry, agreeing with the graph", () => {
@@ -668,13 +689,15 @@ describe("the lens switch", () => {
     })
 
     it("renders exactly ONE lens per request — §6.7: two lenses stating one fact in one DOM is a measured contradiction", () => {
+        // Marker moved off profile.healthIndex when H-005 deleted it. The risk
+        // lens still owns the household facts, so they identify it now.
         const branchRender = renderSurface()
-        expect(branchRender.container.querySelector('[data-fact="profile.healthIndex"]')).toBeNull()
+        expect(branchRender.container.querySelector('[data-count^="household."]')).toBeNull()
         branchRender.unmount()
 
         const riskRender = renderSurface(riskLensProps)
         expect(riskRender.container.querySelector('[data-count="branch.policyCount"]')).toBeNull()
-        expect(riskRender.container.querySelector('[data-fact="profile.healthIndex"]')).toBeTruthy()
+        expect(riskRender.container.querySelector('[data-count^="household."]')).toBeTruthy()
     })
 })
 
@@ -821,7 +844,7 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
     // invariant now, reading the tier out of the gate expression so copy and
     // predicate cannot drift apart again. Keep this assertion in step with it.
 
-    it("A-17: never-analysed renders its own state — refresh hint when open, locked CTA when Pro-gated", () => {
+    it("A-17: never-analysed renders its own state — refresh hint when open, locked CTA when tier-gated", () => {
         const open = renderSurface(withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false }))
         expect(open.container.textContent).toContain("Δεν έχει γίνει ακόμη πλήρης ανάλυση")
         expect(open.container.textContent).toContain(
@@ -832,7 +855,7 @@ describe("carried findings surface preserves A-10…A-21 on rendered output", ()
         const locked = renderSurface(
             withFindings({ gaps: [], stats: EMPTY_STATS, hasDeepAnalysis: false, isDeepAnalysisLocked: true })
         )
-        expect(locked.container.textContent).toContain("Ξεκλείδωμα με Pro")
+        expect(locked.container.textContent).toContain("Ξεκλείδωμα με Plus")
         expect(locked.container.textContent).not.toContain(
             "Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει."
         )

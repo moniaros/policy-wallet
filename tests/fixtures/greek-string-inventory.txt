@@ -22,7 +22,7 @@
 # bundle entries: 2792
 # inline entries: 4424 across 207 files
 # ternary entries: 285 across 44 files
-# call entries: 1139 across 71 files
+# call entries: 1134 across 71 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -7282,7 +7282,6 @@ ternary	lib/email/invite-emails.ts	{ subject: "Κοινοποιήθηκε ένα
 ternary	lib/email/invite-emails.ts	{ subject: "Πρόσκληση από το PolicyWallet", title: "Έχετε προσκληθεί για συνεργασία", body: `${inviter} σας προσκάλεσε να αποκτήσετε πρόσβαση σε ${label} στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο πρόσκλησης για να αποδεχτείτε την πρόσβαση.`, action: "Άνοιγμα πρόσκλησης", }
 ternary	lib/email/invite-emails.ts	{ subject: `${inviter} σας προσκαλεί ως σύμβουλό του στο PolicyWallet`, title: "Προσκληθήκατε ως σύμβουλος", body: `${inviter} θέλει να σας συνδέσει ως ασφαλιστικό σύμβουλό του στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο για να δημιουργήσετε λογαριασμό συμβούλου ή να συνδεθείτε — θα συνδεθείτε αυτόματα.`, action: "Αποδοχή πρόσκλησης", }
 ternary	lib/email/templates/churn-prevention.ts	'Άνοιγμα πίνακα ελέγχου'
-ternary	lib/email/templates/churn-prevention.ts	'Άνοιγμα του φακέλου μου'
 ternary	lib/email/templates/churn-prevention.ts	'Έχει περάσει καιρός από την τελευταία σας επίσκεψη. Τα ασφαλιστήριά σας είναι αποθηκευμένα με ασφάλεια και σας περιμένουν.'
 ternary	lib/email/templates/churn-prevention.ts	'Έχουμε προσθέσει νέες δυνατότητες στο PolicyWallet:'
 ternary	lib/email/templates/churn-prevention.ts	'Αν δεν θέλετε να λαμβάνετε αυτά τα email, μπορείτε να τα απενεργοποιήσετε στις Ρυθμίσεις.'
@@ -7299,6 +7298,7 @@ ternary	lib/email/templates/churn-prevention.ts	'Η ασφαλιστική σα�
 ternary	lib/email/templates/churn-prevention.ts	'Μας λείπετε!'
 ternary	lib/email/templates/churn-prevention.ts	'Μπείτε ξανά όποτε θέλετε — όλα είναι εκεί που τα αφήσατε.'
 ternary	lib/email/templates/churn-prevention.ts	'Ο ασφαλιστικός σας φάκελος σας περιμένει'
+ternary	lib/email/templates/churn-prevention.ts	'Προσθήκη ασφαλιστηρίου'
 ternary	lib/email/templates/churn-prevention.ts	'Το χαρτοφυλάκιό σας χρειάζεται προσοχή'
 ternary	lib/email/templates/churn-prevention.ts	'Το χαρτοφυλάκιό σας χρειάζεται προσοχή'
 ternary	lib/email/templates/churn-prevention.ts	'✨ Νέες λειτουργίες που χάνετε'
@@ -8605,16 +8605,11 @@ call	components/risk-dna/RiskDnaPanel.tsx	"Τι περιλαμβάνει"
 call	components/risk-dna/RiskDnaPanel.tsx	"Το προφίλ κινδύνου σας"
 call	components/risk-dna/RiskDnaPanel.tsx	"Υψηλή βεβαιότητα"
 call	components/risk-dna/RiskDnaPanel.tsx	"Χαμηλή βεβαιότητα"
-call	components/risk-dna/RiskIntelligenceView.tsx	"Άγνωστη"
 call	components/risk-dna/RiskIntelligenceView.tsx	"Εξαρτώμενα"
-call	components/risk-dna/RiskIntelligenceView.tsx	"Καλή εικόνα"
 call	components/risk-dna/RiskIntelligenceView.tsx	"Μέλη"
-call	components/risk-dna/RiskIntelligenceView.tsx	"Μερική εικόνα"
 call	components/risk-dna/RiskIntelligenceView.tsx	"Παρατηρήσεις για το σήμερα που αφορούν το αύριο — όχι προβλέψεις."
-call	components/risk-dna/RiskIntelligenceView.tsx	"Περιορισμένη εικόνα"
 call	components/risk-dna/RiskIntelligenceView.tsx	"Περιουσιακά στοιχεία"
 call	components/risk-dna/RiskIntelligenceView.tsx	"Πού κινείται"
-call	components/risk-dna/RiskIntelligenceView.tsx	"Πόσο καλά σας γνωρίζουμε"
 call	components/risk-dna/RiskIntelligenceView.tsx	"Τι βλέπουμε μπροστά"
 call	components/risk-dna/RiskIntelligenceView.tsx	"Τι παρακολουθούμε"
 call	components/risk-dna/RiskIntelligenceView.tsx	"Το νοικοκυριό"

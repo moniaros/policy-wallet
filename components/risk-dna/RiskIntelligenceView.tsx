@@ -103,19 +103,6 @@ export interface RiskIntelligenceViewProps {
     wizardHref?: string
 }
 
-const BAND_TONE: Record<string, string> = {
-    strong: "text-primary dark:text-mint",
-    // amber-700, not amber-600. This tone is worn by BOTH the 3xl index (large
-    // text, 3:1) and the text-sm band label beside it (normal text, 4.5:1).
-    // amber-600 is 3.20:1 on white — measured on /insights/risk-profile at
-    // 320/390/430 — so the label failed while the number passed. amber-700 is
-    // 5.03:1 and clears both. Checked every band, not just the one the fixture
-    // hit: thin/red-600 is 4.77:1, strong/--primary and unknown/muted are
-    // already guarded.
-    fair: "text-amber-700 dark:text-amber-400",
-    thin: "text-red-600 dark:text-red-400",
-    unknown: "text-muted-foreground",
-}
 
 export function RiskIntelligenceView({
     language,
@@ -131,14 +118,12 @@ export function RiskIntelligenceView({
     const lang = language
     const t = (el: string, en: string) => (lang === "el" ? el : en)
 
-    const bandLabel =
-        health.band === "strong"
-            ? t("Καλή εικόνα", "Well understood")
-            : health.band === "fair"
-              ? t("Μερική εικόνα", "Partly understood")
-              : health.band === "thin"
-                ? t("Περιορισμένη εικόνα", "Thinly understood")
-                : t("Άγνωστη", "Not yet known")
+    // `bandLabel` and `BAND_TONE` lived here: «Καλή εικόνα» / «Μερική εικόνα» /
+    // «Περιορισμένη εικόνα» / «Άγνωστη», and the colour that carried the
+    // verdict. Both deleted with the metric (H-005). Left as dead code they
+    // would have kept four Greek strings in the frozen inventory for a feature
+    // that no longer exists, which is the same trap as the sixteen unreachable
+    // mail templates.
 
     // Only signals with something to say lead; `clear` ones follow, because a
     // watch that hides its clear results cannot be told from a broken one.
@@ -148,60 +133,39 @@ export function RiskIntelligenceView({
 
     return (
         <div className="space-y-6">
-            {/* ── Customer Health Index ─────────────────────────────── */}
-            <div className="pw-card pw-pad">
-                <p className="pw-kicker">{t("Πόσο καλά σας γνωρίζουμε", "How well we understand you")}</p>
-                <div className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className={`text-3xl font-bold tabular-nums ${BAND_TONE[health.band]}`} data-fact="profile.healthIndex">
-                        {health.index === null ? "—" : health.index}
-                    </span>
-                    <span className={`text-sm font-semibold ${BAND_TONE[health.band]}`}>{bandLabel}</span>
-                </div>
+            {/* ── The completeness metric was REMOVED here (H-005) ──────
+                «Πόσο καλά σας γνωρίζουμε»: a 0-100 index, a coloured band
+                verdict («Καλή εικόνα»), and eight component percentages with
+                progress bars. §2.4 says one score, not two, and the owner
+                answered H-005 on 2026-08-25: it should not exist.
 
-                <p className="mt-2 text-caption leading-relaxed text-black/70 dark:text-white/70">
-                    {health.whyItMatters[lang] || health.whyItMatters.en}
-                </p>
+                Deleted whole rather than de-verdicted. Keeping the components
+                would have kept the score in pieces — eight percentages IS the
+                index, distributed. `whyItMatters` went with it: its copy reads
+                "…for THIS to mean anything yet", prose about a number that is
+                no longer there.
 
-                {/* The components, so the number can be argued with rather than
-                    trusted. One column at every width. */}
-                <ul className="mt-3 space-y-2">
-                    {health.components.map((component) => (
-                        <li key={component.id}>
-                            <div className="flex items-baseline justify-between gap-2">
-                                <span className="min-w-0 truncate text-caption text-black/70 dark:text-white/70">
-                                    {component.label[lang] || component.label.en}
-                                </span>
-                                <span
-                                    className="flex-shrink-0 text-caption font-semibold tabular-nums text-black dark:text-white"
-                                    data-fact="profile.healthComponent"
-                                    data-fact-subject={component.id}
-                                >
-                                    {component.value}
-                                </span>
-                            </div>
-                            <span className="mt-1 block h-1 w-full overflow-hidden rounded-full bg-black/8 dark:bg-white/10">
-                                <span
-                                    className="block h-full rounded-full bg-black/35 dark:bg-white/40"
-                                    style={{ width: `${Math.max(2, component.value)}%` }}
-                                />
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-
-                {/* A call to action with nowhere to go is not a call to action.
-                    This is the one place a new customer is told what to do
-                    first, so it has to be a control. */}
-                {health.nextAction && (
+                What survives is the one thing that was never a score. The
+                comment below called it "the one place a new customer is told
+                what to do first, so it has to be a control", and that is still
+                true — «Απαντήστε σε μερικές ακόμη ερωτήσεις για την κατάστασή
+                σας» tells someone what to do without ranking them for not
+                having done it yet. */}
+            {/* The card exists only when it has something to say. `nextAction`
+                is null once the weakest area is answered well enough, and an
+                empty bordered box is a surface telling the reader nothing while
+                occupying the space where a finding would go. */}
+            {health.nextAction && (
+                <div className="pw-card pw-pad">
                     <Link
                         href={wizardHref ?? "/protection#risk-profile-wizard"}
-                        className="mt-3 inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
+                        className="inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
                     >
                         {health.nextAction[lang] || health.nextAction.en}
                         <ArrowRight className="h-3 w-3" aria-hidden="true" />
                     </Link>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* ── Continuous monitoring ─────────────────────────────── */}
             <div className="pw-card pw-pad">

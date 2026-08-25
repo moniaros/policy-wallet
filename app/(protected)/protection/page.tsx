@@ -278,7 +278,12 @@ export default async function ProtectionPage({
                 hasDeepAnalysis,
                 // Same gate as the source surface: deep gap analysis is
                 // pro-tier; below it the A-17 state offers the unlock CTA.
-                isDeepAnalysisLocked: entitlements.tier !== 'pro',
+                // H-009, answered 2026-08-25: deep analysis sits on BOTH paid
+                // tiers. Was `tier !== 'pro'`, which locked out paying Plus
+                // subscribers while the CTA told them Plus would unlock it —
+                // the copy was fixed first because it was false either way;
+                // this is the gate the owner decided.
+                isDeepAnalysisLocked: entitlements.tier === 'free',
                 canUseAgentCollaboration: entitlements.limits.agentCollaboration,
                 policies: activePolicies.map((p) => ({
                     id: p.id,

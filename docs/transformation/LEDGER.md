@@ -486,7 +486,7 @@ resolves the empty-`<h1>` finding (QUEUE.md, 2026-08-25): `/protection` has a re
 | R-01 | See a risk graph of what your life is exposed to | fact | **KEEP** | «Η προστασία μου», *ανά κίνδυνο* lens (§4.2) | V2-P2-01 ✓ |
 | R-02 | See per-risk protection state | fact | **KEEP, FIX** | `unknown` is currently the DEFAULT for motor (V2-P1-07), so the axis is uninformative until the field is read | V2-P1-07 |
 | R-03 | See «Απροστάτευτο» on lines you do not hold | fact | **DONE — own register** | counted as «Χωρίς ασφαλιστήριο», never among findings | V2-P1-02 ✓ |
-| R-04 | See the coverage-completeness score + verdict | fact | **PENDING H-005** | verdict removed regardless; metric's fate is the owner's | V2-P1-03 |
+| R-04 | See the coverage-completeness score + verdict | fact | **REMOVED — H-005 answered 2026-08-25: it should not exist** | nothing; index, verdict, tone map and component percentages all deleted. `nextAction` survives as a control, not a ranking | H-005 ✓ |
 | R-05 | Read the household summary | fact | **KEEP, REWRITE** | guilt register (§2.13) + a plural-agreement bug, same file | V2-P1-04, V2-P1-09 |
 | R-06 | See what is being monitored, and expiry counts | fact | **KEEP, RECONCILE** | 45-day window here vs 30-day on the dashboard | V2-P1-10 |
 | R-07 | Filter risks by state | action | **KEEP** | the «Όλα N» tab whose count disagrees with «Παρακολουθούμε N» | V2-P1-10 |

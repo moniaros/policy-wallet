@@ -373,12 +373,6 @@ const REGISTER: RegisterEntry[] = [
         note: "Dimension labels are authored fixed vocabulary sized for the row; the row expands to the dimension's detail.",
     },
     {
-        file: "components/risk-dna/RiskIntelligenceView.tsx",
-        clamps: { truncate: 1 },
-        kind: "no-information-loss",
-        note: "Health-component labels are authored fixed vocabulary sized for the row.",
-    },
-    {
         file: "components/shell/RoleSwitcher.tsx",
         clamps: { truncate: 1 },
         kind: "no-information-loss",

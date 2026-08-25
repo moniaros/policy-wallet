@@ -141,7 +141,7 @@ export function CoverageInsightsClient({
         // induces the purchase. Whether the feature SHOULD sit behind Pro is
         // H-009 and the owner's call; naming the plan that actually clears the
         // gate is not. Guarded by locked-cta-names-the-real-tier.test.ts.
-        notAnalyzedLockedCta: lang === 'el' ? 'Ξεκλείδωμα με Pro' : 'Unlock with Pro',
+        notAnalyzedLockedCta: lang === 'el' ? 'Ξεκλείδωμα με Plus' : 'Unlock with Plus',
         notAnalyzedRefreshHint: lang === 'el' ? 'Ανεβάστε ή ανανεώστε ένα ασφαλιστήριο για να ξεκινήσει.' : 'Upload or refresh a policy to start it.',
         unknownCount: '—',
     }

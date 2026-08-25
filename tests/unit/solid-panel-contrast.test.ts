@@ -178,48 +178,51 @@ describe("a panel that names its own foreground and background is readable", () 
 })
 
 /**
- * A tone worn by two text sizes is bound by the SMALLER one.
+ * The risk-profile band tones are GONE, and this holds them gone.
  *
- * `BAND_TONE` on the risk profile colours both a `text-3xl font-bold` index and
- * the `text-sm font-semibold` band label beside it. `text-amber-600` is 3.20:1
- * on white: fine for the number, which is large text at a 3:1 floor, and a
- * failure for the label, which is normal text at 4.5:1. The browser measured
- * exactly that on «Μερική εικόνα» at 320/390/430.
+ * `BAND_TONE` coloured a completeness index and its verdict label («Καλή
+ * εικόνα»). Its `fair` entry was `text-amber-600` — 3.20:1 on white, measured
+ * on the live page — which passed for the 3xl number and failed for the
+ * `text-sm` label beside it, and the guard that used to live here caught that.
  *
- * Every band is checked, not just the one the fixture happened to render — a
- * verdict bug hides in the states nobody generated.
+ * H-005 was answered 2026-08-25: the second score should not exist. The metric,
+ * its band label and this tone map were deleted, so guarding their contrast
+ * guards nothing. Rewritten to enforce the DECISION instead — a check that the
+ * tones are absent cannot pass vacuously, where "if BAND_TONE exists it must
+ * clear 4.5:1" would pass loudest exactly when the file is empty.
+ *
+ * If a coloured band ever returns, this fails and points at H-005. Whoever
+ * revives it owes a fresh contrast check, because the last one was wrong.
  */
-describe("risk-profile band tones are legible at the smallest size that wears them", () => {
-    const src = readFileSync("components/risk-dna/RiskIntelligenceView.tsx", "utf-8")
-    const block = src.slice(src.indexOf("const BAND_TONE"), src.indexOf("export function RiskIntelligenceView"))
+describe("the risk-profile band tones stay deleted (H-005)", () => {
+    const raw = readFileSync("components/risk-dna/RiskIntelligenceView.tsx", "utf-8")
+    // Comments stripped first. The file carries a tombstone explaining what was
+    // removed and naming BAND_TONE — and this test failed on its own tombstone
+    // before the strip. An absence check that reads prose is measuring the wrong
+    // thing; that is the third time this has bitten in this codebase.
+    const src = raw.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "")
 
-    it("finds the tones it claims to check", () => {
-        for (const band of ["strong", "fair", "thin", "unknown"]) {
-            // Plain includes, not a template-literal RegExp: `\b` inside a
-            // template literal is a BACKSPACE character, not a word boundary.
-            expect(block.includes(`${band}:`), `BAND_TONE lost its ${band} entry`).toBe(true)
+    it("no BAND_TONE map, and no band verdict label", () => {
+        expect(src, "BAND_TONE is back — H-005 says the second score should not exist").not.toMatch(
+            /\bBAND_TONE\b/
+        )
+        for (const label of ["Καλή εικόνα", "Μερική εικόνα", "Περιορισμένη εικόνα"]) {
+            expect(src, `the band verdict «${label}» is back`).not.toContain(label)
         }
     })
 
-    it("every light-mode tone clears 4.5:1 on white", () => {
-        const SURFACE = "#ffffff"
-        // Resolved values: the two CSS custom properties come from globals.css,
-        // the Tailwind ones from PALETTE.
-        const RESOLVED: Record<string, string> = {
-            "text-primary": "#29685B",
-            "text-muted-foreground": "#5b6a7a",
-        }
-        const bad: string[] = []
-        for (const m of block.matchAll(/(\w+):\s*"([^"]*)"/g)) {
-            const band = m[1]
-            // Light-mode class only; the dark variant pairs with a dark surface.
-            const light = m[2].split(/\s+/).find((c) => c.startsWith("text-") && !c.startsWith("dark:"))
-            if (!light) continue
-            const hex = RESOLVED[light] ?? PALETTE[light.replace("text-", "")]
-            expect(hex, `no resolved colour for ${light} — add it rather than skipping`).toBeTruthy()
-            const r = ratio(hex, SURFACE)
-            if (r < 4.5) bad.push(`${band}: ${light} = ${r.toFixed(2)}:1`)
-        }
-        expect(bad).toEqual([])
+    it("no completeness index renders under its fact key", () => {
+        expect(src, "profile.healthIndex is back on this surface").not.toContain("profile.healthIndex")
+        expect(src, "the component percentages are the index distributed").not.toContain(
+            "profile.healthComponent"
+        )
+    })
+
+    it("the file is still the one being checked — not renamed out from under this test", () => {
+        // Non-vacuity: absence assertions on a missing file all pass.
+        expect(raw.length).toBeGreaterThan(2000)
+        expect(raw).toContain("RiskIntelligenceView")
+        // and the strip did not eat the whole file
+        expect(src.length).toBeGreaterThan(1000)
     })
 })
