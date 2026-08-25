@@ -429,6 +429,34 @@ answer: *(awaiting)*
 
 ---
 
+## H-006 — ANSWERED 2026-08-25: proceed, with the disclosure. Implemented.
+
+The owner's decision: do not gate on IDD Art. 20 analysis; state plainly that AI output is **not
+professional advice** and that the customer should take important decisions to **their agent**.
+
+Implemented as coverage, not as a sentence written once. The disclosure now denies *professional*
+advice (it previously denied only legal and insurance advice) and names the adviser rather than "a
+licensed professional".
+
+`tests/unit/ai-output-carries-the-disclosure.test.ts` enumerates every B2C file rendering
+model-written prose — `aiExplanation`, `aiSuggestion`, `coverageSummary`, `aiAnswer` — and walks the
+**import graph in both directions**, because the unit is the page a reader sees, not the component: a
+page is covered by what it renders, a component by the pages that mount it.
+
+It found **nine** surfaces with no disclosure anywhere near them, including the **policy detail
+page** — which renders «Το ασφαλιστήριό σας σε απλά ελληνικά», the most-read AI prose in the
+product. All fixed.
+
+**The guard's own limit, found by probing it and stated rather than hidden:** importing
+`AiDisclaimer` is not rendering it. Stripping the disclosure from `PolicyDetailsClientView` left the
+closure check green, because that page also imports `RecommendationCards`, which carries its own. So
+the closure check catches a surface with nothing near it, and a short list of surfaces *where the
+prose is the point* must carry the disclosure in their own source. Probed both ways.
+
+---
+
+### Original halt as raised
+
 ## H-006 — The AI advisor's advice boundary (IDD Art. 20)
 
 date: 2026-08-24 · raised_by: Product-Truth (Opus 5)
@@ -462,6 +490,25 @@ before the interview ships.
 answer: *(awaiting)*
 
 ---
+
+## H-007 — ANSWERED 2026-08-25: same treatment. The notice already existed; now it cannot vanish.
+
+The wizard already collects the special-category fields — chronic conditions, family medical history,
+height, weight, smoking, activity, gender — behind a notice that says they are **optional**, used
+**only** to tailor health and life cover, **not shared with insurers without explicit consent**, and
+may be left blank or deleted later. That is a good notice, and nothing was measuring whether it stays.
+
+`tests/unit/health-questions-carry-their-notice.test.tsx` enumerates those seven fields from the
+wizard's own source and requires all four promises to still be present. A new health question added
+without extending the notice fails there — which is the only moment anyone would think to ask.
+
+It matches each promise by **substance, not wording**. Pinning a sentence pins whatever that sentence
+happens to say, and a guard in this codebase has already held a false monetization claim in place by
+asserting a literal.
+
+---
+
+### Original halt as raised
 
 ## H-007 — Article 9 consent for the advisor interview
 

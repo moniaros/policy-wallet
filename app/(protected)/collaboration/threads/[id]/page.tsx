@@ -11,6 +11,7 @@ import type { DocumentRequestData, ProposalData } from "@/components/collaborati
 
 import { getTranslations } from "@/lib/i18n"
 import { displayPersonName } from "@/lib/wallet/policy-identity"
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 export default async function CollaborationThreadPage({
     params,
 }: {
@@ -81,6 +82,8 @@ export default async function CollaborationThreadPage({
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* H-006/H-007: Proposal threads carry AI-written explanation text alongside a human adviser's own words. Which is which matters more here than anywhere. */}
+        <AiDisclaimer variant="inline" />
             <div className="flex items-center justify-between">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">

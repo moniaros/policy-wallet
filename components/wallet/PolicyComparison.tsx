@@ -14,6 +14,7 @@ import { branchFamilyId, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { motorSection, homeSection, lifeSection } from "@/lib/wallet/coverage-sections"
 import { classifyMotorCoverageTier } from "@/lib/wallet/motor-coverage-tier"
 import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 interface PolicyForComparison {
     id: string
@@ -497,6 +498,9 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                     )}
                 </div>
             </div>
+            {/* H-006/H-007: this surface compares AI-extracted coverage. Once per
+                screen, the reader is told what that is and who to ask. */}
+            <AiDisclaimer variant="inline" />
         </div>
     )
 }

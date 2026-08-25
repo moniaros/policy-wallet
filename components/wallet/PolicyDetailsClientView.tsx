@@ -63,6 +63,7 @@ import type { PolicyGlossaryHints } from "@/lib/glossary/hints"
 import { coverageSectionKeys } from "@/lib/wallet/coverage-sections"
 import { resolveClaimsContact } from "@/lib/wallet/claims-contact"
 import { deriveInsuredNames } from "@/lib/wallet/insured-people"
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 // Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
 // so the changed-file i18n lint stays clean.
 const EXPORT_COPY = {
@@ -1265,6 +1266,15 @@ export function PolicyDetailsClient({
                                     )}
                                 </div>
                             )}
+
+                            {/* H-006/H-007, answered 2026-08-25: a screen showing
+                                model-written prose says what it is. This page renders the
+                                AI coverage summary («Το ασφαλιστήριό σας σε απλά ελληνικά»)
+                                and AI gap explanations, and carried no disclosure anywhere in
+                                its ancestry — the most-read AI prose in the product. Once per
+                                page, not beside every paragraph: a disclosure repeated into
+                                wallpaper stops being read. */}
+                            <AiDisclaimer variant="inline" />
 
                             {/* Advisor notes & collaboration — the same subject as
                                 sharing: who else can see and act on this policy. */}

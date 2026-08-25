@@ -9,6 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 interface EditPolicyFormProps {
     policy: {
@@ -99,6 +100,8 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 pb-20">
+        {/* H-006/H-007: This form is pre-filled with values an AI read out of the document — including the coverage summary it WROTE. The reader is correcting a machine, and should be told so. */}
+        <AiDisclaimer variant="inline" />
             <div className="space-y-4">
                 <div className="grid gap-2">
                     <label htmlFor="insurerName" className={labelClass}>{copy.labels.insurer}</label>

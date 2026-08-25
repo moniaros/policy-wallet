@@ -36,7 +36,7 @@ export const en: TranslationKeys = {
         locale: 'en-GB',
         copy: 'Copy',
         needHelp: 'Need help?',
-        aiAdviceDisclaimer: 'AI outputs are informational support and are not legal or insurance advice. You should verify critical decisions with a licensed professional.',
+        aiAdviceDisclaimer: 'AI outputs are informational support and are not professional, legal or insurance advice. Discuss any important decision with your insurance adviser.',
         aiConsentTitle: 'Consent to AI analysis',
         aiConsentBody: 'To analyze your policies, the content of your documents — which may include health data — is sent to an AI provider for processing. Your consent is recorded and you can withdraw it at any time from your privacy settings.',
         aiConsentAccept: 'I consent to AI processing',

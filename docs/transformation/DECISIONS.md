@@ -1090,3 +1090,38 @@ in a commit log and mean opposite things.
 «Η προστασία μου». §8's value that needs no regulatory answer is largely the value already there.
 
 **To unblock:** answer H-006 and H-007. Neither needs code first.
+
+
+## D-033 — Phase 2b unblocked, and D-032 superseded by an owner decision
+
+**Date:** 2026-08-25
+
+D-032 recorded that Phase 2b stayed blocked and that *not building was the reversible option*,
+because code reverts while collected health data and given advice do not. That reasoning was sound
+under an unanswered halt. **The halts are now answered**, which is exactly the input D-032 said it
+was waiting for — so it is superseded, not overturned.
+
+The owner's instruction was to proceed with a clear statement that AI output is not professional
+advice and that customers should consult their agent, and the same treatment for the health
+questions. Implemented as **coverage**, because a disclosure written once and rendered somewhere is
+not the same as a disclosure a reader meets:
+
+- The text now denies **professional** advice — it previously denied only legal and insurance — and
+  names the **adviser**.
+- Nine B2C surfaces rendering model prose had no disclosure anywhere near them, including the
+  **policy detail page**, which shows «Το ασφαλιστήριό σας σε απλά ελληνικά». Fixed.
+- The Article 9 notice on the wizard's seven health fields is now enumerated and held to its four
+  promises.
+
+**What I did NOT build.** §8's interview and demands-and-needs record remain unbuilt. The decision
+unblocked them; it did not specify them, and the product already carries most of §8's value —
+comprehension, the coverage summary pinned to Greek, and the risk graph's «Σε τι βασιζόμαστε» /
+«Τι δεν επιβεβαιώνεται» rows, which are already a factual comparison of stated requirement against
+what the policy says. What is genuinely missing is a **consolidated record** an intermediary could
+read, and that is a design question rather than a blocked one.
+
+**Guard limits, stated rather than hidden.** The disclosure guard over-approximates: an import is not
+a render. Found by probing it — stripping the disclosure from the policy page left it green because
+that page also imports a component carrying one. Closed with a short must-carry-their-own list for
+the surfaces where the prose is the point. The health guard matches promises by substance rather than
+wording, because a guard here has already pinned a false claim by asserting a literal.
