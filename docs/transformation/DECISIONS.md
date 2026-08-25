@@ -1150,11 +1150,25 @@ collapses a quarter of the identity string for most of its rows. A household wit
 property, two or three health policies and a life policy varies that field, and the 29-policy number
 does not transfer to it.
 
-### Trigger to reopen
+### Trigger to reopen — **amended 2026-08-26, because the original would have misfired**
 
-- `duplicate-identity-row` **> 0 on any real-user capture**, or
-- a realistic household fixture — 2 vehicles, 1 property, 2–3 health, 1 life — producing a non-zero
-  count.
+- `duplicate-identity-row` **> 0 on any real-user capture, on a line that has an available
+  identifier**, or
+- the **`varied-household`** or **`single-line-concentration`** fixture producing a non-zero count
+  **on such a line**.
+
+**Why the qualifier was added.** P5-wallet-01a measured `varied-household` at 7 rows: **2 duplicates,
+largest group 2**, and the only group is two health policies on one insured party. The original
+trigger — "a realistic household fixture producing a non-zero count" — therefore **fires**, and it
+should not, because:
+
+1. the cause is **H-010** (extraction carries no insured-person name), not row structure; and
+2. **the asset reframe would not resolve it either** — grouping by asset cannot distinguish two
+   health policies on the same person.
+
+A mechanical reading would have reopened the reframe on evidence that argues against it. The
+qualifier makes the trigger test what it was meant to: whether rows that *could* be distinguished are
+failing to be.
 
 The metric is wired into `captureSurface`, so every future capture on every surface carries it and
 the reopening condition is checked continuously rather than remembered.
