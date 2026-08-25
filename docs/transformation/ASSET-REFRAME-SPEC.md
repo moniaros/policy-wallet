@@ -1,5 +1,11 @@
 # §7.3 asset reframe — the grouping spec Phase 5 is gated on
 
+> **Status 2026-08-26 (D-034): the wallet re-rendering is DEFERRED; this key is RETAINED.**
+> §9.3's obligation calendar depends on the asset *concept*, not the wallet's *presentation*, so §1's
+> derivation below is live and §2–§4's invariants govern any consumer that groups by it. What is
+> deferred is §7.3's re-rendering of the wallet around it. §5 asked for a measurement before building;
+> the measurement (P5-wallet-00) came back 0/3 on a typical wallet and this is the answer to it.
+
 `LEDGER.md` states the gate plainly:
 
 > The asset reframe is the one change in this run that can **lose capability invisibly**: if one car

@@ -1125,3 +1125,44 @@ a render. Found by probing it — stripping the disclosure from the policy page 
 that page also imports a component carrying one. Closed with a short must-carry-their-own list for
 the surfaces where the prose is the point. The health guard matches promises by substance rather than
 wording, because a guard here has already pinned a false claim by asserting a literal.
+
+## D-034 — Asset reframe deferred; wallet identity resolved by field addition
+
+**Date:** 2026-08-26 · **Owner decision, on P5-wallet-00's evidence**
+
+**The asset-first wallet rendering is NOT built.** The render-time grouping key from
+`ASSET-REFRAME-SPEC.md` **is retained** — §9.3's obligation calendar depends on the asset *concept*,
+not on the wallet's *presentation*. Those are separable, and separating them is the whole content of
+this decision: the spec's §1 derivation (`acordData.vehicle.plateNumber`,
+`acordData.property.address`, no schema change) stands as the asset key; only the §7.3 re-rendering
+of the wallet around it is deferred.
+
+### Evidence
+
+`duplicate-identity-row` = **19/29** heavy (largest group 6), **0/3** typical, **0/4** all-expired.
+Identical at 320/390/430, **0 unlocatable fields** across 36 rows. Production: **2 wallets, of 3 and 1
+policies**. Market: ~85–90% of Greek individuals hold ≤3 policies.
+
+**The heavy fixture's shape is unrepresentative, and the capture shows why.** Of its 19 duplicate
+rows, **14 are Αυτοκίνητο and 5 are Υγεία** — the duplicates track line-of-business *concentration*,
+not portfolio size. `line` is one of the four identity fields, so a fixture dominated by one line
+collapses a quarter of the identity string for most of its rows. A household with two vehicles, a
+property, two or three health policies and a life policy varies that field, and the 29-policy number
+does not transfer to it.
+
+### Trigger to reopen
+
+- `duplicate-identity-row` **> 0 on any real-user capture**, or
+- a realistic household fixture — 2 vehicles, 1 property, 2–3 health, 1 life — producing a non-zero
+  count.
+
+The metric is wired into `captureSurface`, so every future capture on every surface carries it and
+the reopening condition is checked continuously rather than remembered.
+
+### What still stands
+
+The cheaper intervention P5-wallet-00 exposed is untouched by this and still available: the duplicate
+groups are `insurer · line · date · status`, so what makes rows identical is the **absence of the
+asset identifier** — already extracted. Putting the plate or address on the row makes them distinct
+with no grouping and none of the capability-loss exposure. That is a field addition, which is what
+this decision's title calls it, and it does not require the reframe.

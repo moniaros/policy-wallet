@@ -119,8 +119,8 @@ ledger is the contract for it.
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
-| W-01 | See every policy the customer holds | fact | **KEEP, RESTRUCTURED** | becomes assets with policies nested (§7.3) | Phase 5 |
-| W-02 | Identify which policy a row is about | fact | **KEEP, STRENGTHENED** | asset rows identify by plate/address/person, not policy number | Phase 5 |
+| W-01 | See every policy the customer holds | fact | **KEEP — unchanged** | the asset-first rendering is DEFERRED (D-034): measured 0 duplicate-identity rows on a typical 3-policy wallet, and production holds 2 wallets of 3 and 1 | D-034 |
+| W-02 | Identify which policy a row is about | fact | **KEEP, STRENGTHENED** | still the right fix, without the reframe: rows carry the asset identifier (plate/address) so `insurer · line · date · status` stops being the whole identity. Field addition, not restructuring (D-034) | open |
 | W-03 | See active / expiring / attention counts | fact | **KEEP** | already derived via `getPolicyStatusView` — expiry-aware and canonical | — |
 | W-04 | See the completion ring (active / total) | fact | **KEEP** | renders its own denominator; the only gauge on the screen | — |
 | W-05 | See total premium, with three exclusions stated | fact | **KEEP** | unreadable end date / other currency / no amount, each said out loud | — |
