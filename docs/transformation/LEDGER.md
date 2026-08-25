@@ -185,8 +185,8 @@ Reusable, with two caveats recorded for T-015:
 | P-04 | See the per-policy health signal + `healthLevels` verdict | fact | **REMOVE the verdict** | «Σε καλή κατάσταση» over a 110-day-expired policy is §2.2 + §2.3 | P1-04 |
 | P-05 | See coverages with limits (`coverage`) | fact | **KEEP** | separated from claims contact — two different jobs (§7.5) | Phase 5 |
 | P-06 | Read exclusions / ψιλά γράμματα (`ExclusionsCard`) | fact | **KEEP, PROMOTED** | the most differentiating content in the product; currently furthest down | Phase 2 |
-| P-07 | Read notable conditions | fact | **KEEP** | a condition that can VOID cover belongs in the review register, not the perk register (§9.4) | Phase 4 |
-| P-08 | See perks (`PerksCard`) | fact | **KEEP** | feeds §9.4 perk prompts; each needs a clause link or it does not render | Phase 4 |
+| P-07 | Read notable conditions | fact | **KEEP — concern does not hold, verified 2026-08-25** | The schema separates them by TYPE, not free text: `perkType` is a closed enum (free_service, assistance, discount, prevention, loyalty_bonus, digital_tool, gift, legal_aid) with no value able to express "voids cover", while `notableConditions.conditionType` carries `warranty`, `condition_precedent`, `security_requirement` — and `PolicyConditionsCard` renders those in their own register with their own labels | — |
+| P-08 | See perks (`PerksCard`) | fact | **KEEP, FIX — confirmed 2026-08-25** | `PerksCard` carries no clause or source reference: the only links it renders are the perk's own `tel:` and `contactUrl`. The customer is told they have free roadside assistance with no way to check where that came from. Precedent for the fix exists in `lib/wallet/unreadable-value.ts`, which links to the source document | Phase 4 |
 | P-09 | Claims guidance + phone (`ClaimsGuidanceCard`) | action | **KEEP, PROMOTED** | §7.1 question 3; phones become real `tel:` targets | Phase 5 |
 | P-10 | Key dates + renewal outlook + reminders | fact | **KEEP, CONSOLIDATED** | three date locations collapse to one | Phase 5 |
 | P-11 | See insured people (`InsuredPeopleCard`) | fact | **KEEP** | may carry Art. 9 data — minimise, never widen | — |
@@ -312,12 +312,15 @@ as the design intent; the subpages are audited as first-class surfaces per §4.4
 | R-06 | Plan: see plan and usage | fact | **KEEP** | pricing/entitlements are §12.4 out of scope — display only | — |
 | R-07 | Notifications: per-group toggles | action | **KEEP, FIX SCOPE** | writes `channel: "email"` only while `push` is implemented — the control does less than its label (candidate #24) | P1-09 |
 | R-08 | Notifications: quiet hours | action | **KEEP** | one of the four §9.5 controls that already exists | — |
-| R-09 | *(absent)* user-configurable monthly ceiling | — | **MISSING** | Phase 4 precondition, not a Phase 1 defect | Phase 4 |
-| R-10 | *(absent)* global off switch honoured in outbound | — | **MISSING** | Phase 4 precondition | Phase 4 |
+| R-09 | user-configurable monthly ceiling | action | **DONE** | `CadenceControls`, `/account/notifications` | P1-09b ✓ |
+| R-10 | global off switch honoured in outbound | action | **DONE** | same; read by the send path via `getCadenceGate` | P1-09b ✓ |
+| R-11 | activity history | fact | **KEEP, RELOCATED** | `/account/history` — the timeline's new home | V2-P2-02 ✓ |
 
-R-09 and R-10 are recorded as ledger rows despite not existing, because §9.5 requires them and
-Phase 4 cannot ship a cadence-controlled mechanic without them. A missing capability that a later
-phase depends on is exactly what this ledger is for.
+R-09 and R-10 were recorded as rows **despite not existing**, because §9.5 required them and Phase 4
+could not ship a cadence-controlled mechanic without them. Recording an absent capability a later
+phase depends on is exactly what this ledger is for — and it worked: they were built in P1-09b and
+these rows are the reason anyone went looking. **Corrected 2026-08-25**; they had stayed `MISSING`
+for two phases after shipping, which is the ledger's own version of a stale exemption.
 
 
 ---
