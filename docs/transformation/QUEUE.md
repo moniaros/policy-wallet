@@ -1604,3 +1604,32 @@ duplicate is more likely `sectionCount` counting a wrapper and its child than th
 twice — but I could not confirm it against the live DOM and **am not claiming it is an artifact**.
 Not on the CI path, does not gate the deploy. Needs the section detector checked for nested matches
 before anyone edits the page on the strength of this number.
+
+
+## P5-wallet-00 — the measurement the reframe is gated on · `in flight`
+
+owner: Evidence (Sonnet 5) · phase 5 · surface: wallet
+file_boundary: `tests/measure/**`, `docs/transformation/evidence/wallet/**`
+
+**duplicate-identity-row count.** For each rendered wallet row, concatenate the visible text of its
+identity fields — **insurer, line, date, status** — and count rows whose identity string is
+byte-identical to at least one other row's. Report the **raw count** and the **size of the largest
+identical group**. Target after the reframe: **0**.
+
+The policy number is deliberately excluded. It is the disambiguator, so including it would make every
+row unique and measure nothing. The question is whether the fields a customer actually scans tell one
+row from another.
+
+- [ ] metric in the **shared harness module, imported not copied** — baseline and result must use one
+      definition, or the after-number is not comparable to the before-number
+- [ ] heavy (29), typical (3), all-expired · 320/390/430
+- [ ] `BASELINE.md` publishes raw count and largest-group size per capture, **and how each of the four
+      fields was located** — an undocumented extraction cannot be reproduced after the reframe, which
+      is the one thing this measurement exists to allow
+- [ ] reported to the Orchestrator
+
+**This closes the gap `ASSET-REFRAME-SPEC.md` §5 left open.** That spec removed the ledger's gate but
+refused to argue the case: the wallet renders 29 policies as 29 rows and "hard to scan" was not on
+the measured defect list. This turns that into a number. **The asset reframe stays blocked until it
+lands** — and if the count is low, the reframe's premise is wrong and the phase should say so rather
+than build anyway.
