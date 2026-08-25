@@ -143,6 +143,22 @@ each be reachable and individually identifiable. Phase 2's spec must show that e
 Phase 5 must not merge rows until it does. If the reframe needs a schema change it is a §12.2 halt
 (§7.3 says so); the presentation-layer grouping key must be documented if it does not.
 
+**Gate satisfied 2026-08-25** — `docs/transformation/ASSET-REFRAME-SPEC.md`. **No schema change is
+needed**, so this is not a §12.2 halt: the grouping key is derived at render time from
+`acordData.vehicle.plateNumber` (motor) and `acordData.property.address` (property), both of which
+already exist. Nothing is persisted, so a wrong grouping is a display bug rather than a migration.
+
+The spec states the invariant as four testable claims — count conservation, individual reachability,
+individual identity, and status per policy never per group — and one rule that runs against the
+instinct to tidy: **a policy whose key is missing, sentinel or unreadable stands alone.** Those keys
+are extracted, and two policies whose plate was read as the same wrong string are not the same car;
+merging on a bad key tells the customer two unrelated policies cover one asset, which is worse than a
+longer list.
+
+It also records what it does **not** decide: whether the reframe is worth doing. The wallet renders
+29 policies as 29 rows and "hard to scan" is not on the measured defect list, so **the reframe wants
+a measurement before it is built** — and that measurement does not exist.
+
 **Ledger note on W-03.** Worth recording because it contradicts the brief: these counts come from
 `getPolicyStatusView`, which is expiry-aware, so the wallet is NOT the source of the count
 contradiction. The outbound services are (D-007).
