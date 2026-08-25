@@ -15,8 +15,13 @@ jobs:
     # is not a permitted context in a step-level `if` — using it there does not
     # skip the step, it fails the whole workflow to compile.
     env:
-      DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
-      DEV_DIRECT_URL: ${{ secrets.DEV_DIRECT_URL }}
+      # The catalogue check needs a database. These are the same secrets the
+      # build job already uses; it previously looked for DEV_DATABASE_URL /
+      # DEV_DIRECT_URL, which have never existed — so the step SKIPPED on every
+      # run since it was written, and a skipped step is indistinguishable from a
+      # passing one. Wired to the real names 2026-08-25.
+      CATALOGUE_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      CATALOGUE_DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
     steps:
       - name: Checkout code
@@ -63,12 +68,34 @@ jobs:
       # no review. It has now happened three times: migrations, plan rows, and
       # gap definitions.
       - name: Verify gap catalogue matches the database
-        if: env.DEV_DATABASE_URL != ''
-        run: npm run verify:gap-catalogue
+        if: env.CATALOGUE_DATABASE_URL != ''
+        # Print the HOST only — no user, no password, no query string. Which
+        # database CI checks decides what a red here means: dev drift is a local
+        # repair, prod drift is customer-facing and blocks the deploy on purpose.
+        # Nobody could answer that from outside the secret store, so the run says.
+        run: |
+          node -e "const u=new URL(process.env.DATABASE_URL);console.log('catalogue check target host:',u.hostname,'db:',u.pathname.slice(1))"
+          npm run verify:gap-catalogue
         env:
-          DATABASE_URL: ${{ env.DEV_DATABASE_URL }}
-          DIRECT_URL: ${{ env.DEV_DIRECT_URL || env.DEV_DATABASE_URL }}
+          DATABASE_URL: ${{ env.CATALOGUE_DATABASE_URL }}
+          DIRECT_URL: ${{ env.CATALOGUE_DIRECT_URL || env.CATALOGUE_DATABASE_URL }}
         continue-on-error: false
+
+      # A skipped gate looks exactly like a passing one. If the secret ever goes
+      # missing again, say so loudly in the run summary rather than going quiet
+      # for another two months.
+      - name: Say so when the catalogue check could not run
+        if: env.CATALOGUE_DATABASE_URL == ''
+        run: |
+          echo "::warning title=Gap catalogue unverified::No database secret, so the ACTIVE gap catalogue was NOT compared against the repo. Drift in this table changes what the product detects, with no diff and no review."
+          {
+            echo "### ⚠️ Gap catalogue NOT verified"
+            echo ""
+            echo "\`verify:gap-catalogue\` was skipped: no database secret is available to this workflow."
+            echo "The authored-catalogue unit test still ran; the database comparison did not."
+            echo ""
+            echo "This check has caught real drift — the AI clarity pipeline mints rules at runtime."
+          } >> "$GITHUB_STEP_SUMMARY"
 
   unit-tests:
     name: Unit Tests
