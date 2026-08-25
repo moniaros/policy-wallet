@@ -1038,9 +1038,28 @@ export async function truncationFailures(page: Page): Promise<TruncationFailure[
         }[] = []
         const seen = new Set<Element>()
 
+        // An element that SCROLLS is not truncating — it is doing its job.
+        //
+        // This exclusion was missing, and its absence inverted the metric: every
+        // `.pw-scroll-strip` counted as a truncation failure on every capture.
+        // That primitive exists precisely so a horizontal strip CAN overflow
+        // rather than compress its children into slivers (globals.css), so the
+        // measurement was penalising the sanctioned fix for the thing it was
+        // measuring. A representative entry: `div.-mx-1.mb-4`, 577px of filter
+        // chips in a 262px viewport, reported as truncation — nothing was
+        // clipped, the reader swipes.
+        //
+        // Overflow hidden BEHIND a clip is still a failure and still counted;
+        // only `auto`/`scroll` — a reachable overflow — is excused.
+        const scrollsByDesign = (el: HTMLElement) => {
+            const ox = getComputedStyle(el).overflowX
+            return ox === "auto" || ox === "scroll"
+        }
+
         // (a) generic horizontal overflow, any element.
         document.querySelectorAll<HTMLElement>("body *").forEach((el) => {
             if (!visible(el)) return
+            if (scrollsByDesign(el)) return
             if (el.scrollWidth > el.clientWidth + 1) {
                 seen.add(el)
                 out.push({

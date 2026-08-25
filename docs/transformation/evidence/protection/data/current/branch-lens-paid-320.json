@@ -293,13 +293,6 @@
   "probes": {
     "truncation": [
       {
-        "selector": "div.-mx-1.mb-3",
-        "text": "ΌλαΟικογένειαΚατοικίαΑκίνηταΟικονομικάΟχήματαΤρόπος ζωήςΕργασίαΥγεία",
-        "scrollWidth": 774,
-        "clientWidth": 262,
-        "reason": "overflow"
-      },
-      {
         "selector": "p.mt-1.line-clamp-2",
         "text": "Καταλάβετε τι πραγματικά καλύπτει το συμβόλαιο του αυτοκινήτου σας — πριν το χρε",
         "scrollWidth": 246,

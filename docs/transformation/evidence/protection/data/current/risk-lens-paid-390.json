@@ -303,22 +303,7 @@
     "offenders": []
   },
   "probes": {
-    "truncation": [
-      {
-        "selector": "div.-mx-1.mb-4",
-        "text": "Όλα6Μερικώς προστατευμένο1Χωρίς ασφαλιστήριο4Προστατευμένο1",
-        "scrollWidth": 577,
-        "clientWidth": 332,
-        "reason": "overflow"
-      },
-      {
-        "selector": "div.-mx-1.mb-3",
-        "text": "ΌλαΟικογένειαΚατοικίαΑκίνηταΟικονομικάΟχήματαΤρόπος ζωήςΕργασίαΥγεία",
-        "scrollWidth": 774,
-        "clientWidth": 332,
-        "reason": "overflow"
-      }
-    ],
+    "truncation": [],
     "latinSentences": [],
     "nonTelPhoneNumbers": [],
     "dateFacts": {

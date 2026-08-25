@@ -963,3 +963,47 @@ own text. Scanned first, then written: zero violations across 2,398 tracked file
 ZWSP is caught at the right line.
 
 **Standing change:** run the guardrails as a set, not a selection. `tsc` plus tests is not the gate.
+
+## D-030 — The truncation metric counted the fix as the defect
+
+**Date:** 2026-08-25 · **Found opening §6.11, before building anything**
+
+§6.11 was deferred out of Phase 1 as "a primitive, not a patch", on the strength of a measured
+**729 truncation failures** across committed evidence (603 `overflow`, 126 `css-truncation`).
+
+`truncationFailures` flagged any element with `scrollWidth > clientWidth`, **with no exclusion for
+elements that legitimately scroll**. So every `.pw-scroll-strip` counted as a failure on every
+capture — and that primitive exists *precisely* so a horizontal strip can overflow rather than
+compress its children into slivers (`app/globals.css`; CLAUDE.md records the policy page rendering
+fourteen 34px slivers when the narrow-viewport net was applied to it). **The metric was penalising
+the sanctioned fix for the thing it was measuring.**
+
+A representative "failure": `div.-mx-1.mb-4`, 577px of filter chips in a 262px viewport, text
+«Όλα6Μερικώς προστατευμένο1Χωρίς ασφαλιστήριο4Προστατευμένο1». Nothing is clipped. The reader swipes.
+
+**Corrected**: an element whose own `overflow-x` is `auto` or `scroll` is scrolling by design and is
+excused. Overflow hidden behind a **clip** is still counted — a reachable overflow is excused, an
+unreachable one is not.
+
+Effect on the three surfaces re-measured immediately:
+
+| capture @320 | before | after |
+|---|---|---|
+| `/protection?lens=risk` | 2 | **0** |
+| `/account/history` | 1 | **0** |
+| `/protection` ανά κλάδο | 8 | **7** |
+
+On two of three, **every** reported truncation was a scroll strip. The global 729 is unrestated until
+a full re-measure, and must not be quoted until then.
+
+**What survives is real, and is one thing.** All 7 on the branch lens are `p.line-clamp-2` branch
+taglines — ledger row **B-03**, "8 of 9 clip mid-word at 320px". Their `clientWidth` equals their
+`scrollWidth`, so the clip is *vertical*: the clamp, not the width. Taglines run ~110 characters and
+two lines at 246px in `text-xs` hold roughly 60, and **`BranchDetail` does not render the tagline**,
+so the cut half is unreachable. That is the test that makes a clamp a defect rather than a design.
+
+**Consequence for the item.** §6.11 is much smaller than its number implied, and pointed at one
+shape. The work is not "fix 729 truncations" — it is: make the branch taglines reachable, and give
+the codebase a rule for when a clamp is acceptable. 38 B2C files clamp text (81 `truncate`, 12
+`line-clamp-2`, 4 others); forcing an expand control onto a name in a table row would be noise. The
+invariant is **reachability**, not the absence of clamping.

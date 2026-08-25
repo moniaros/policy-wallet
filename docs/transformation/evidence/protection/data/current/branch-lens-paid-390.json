@@ -294,13 +294,6 @@
   "probes": {
     "truncation": [
       {
-        "selector": "div.-mx-1.mb-3",
-        "text": "ΌλαΟικογένειαΚατοικίαΑκίνηταΟικονομικάΟχήματαΤρόπος ζωήςΕργασίαΥγεία",
-        "scrollWidth": 774,
-        "clientWidth": 332,
-        "reason": "overflow"
-      },
-      {
         "selector": "p.mt-1.line-clamp-2",
         "text": "Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι ",
         "scrollWidth": 316,

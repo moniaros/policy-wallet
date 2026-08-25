@@ -45,15 +45,7 @@
     "offenders": []
   },
   "probes": {
-    "truncation": [
-      {
-        "selector": "div.-mx-1.mb-4",
-        "text": "Όλα60Ασφαλιστήρια27Προτάσεις16Κίνδυνοι11Σκορ6",
-        "scrollWidth": 516,
-        "clientWidth": 332,
-        "reason": "overflow"
-      }
-    ],
+    "truncation": [],
     "latinSentences": [],
     "nonTelPhoneNumbers": [],
     "dateFacts": {
