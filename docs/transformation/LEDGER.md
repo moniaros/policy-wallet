@@ -626,3 +626,22 @@ mounts back to one when the old route went; no surface was added or lost.
 `tests/unit/no-dead-internal-links.test.ts` (added with this item) enumerates every internal
 link/redirect/revalidate target in the tree against the filesystem's routes, so the NEXT removal
 that leaves a link behind fails CI instead of shipping a dead tap.
+
+## Running counts — refreshed 2026-08-25 (Phase 2 complete)
+
+| | v2 Phase 0 | now | Δ |
+|---|---|---|---|
+| total capabilities | 109 | **109** | 0 — four routes removed, nothing lost |
+| monetization surfaces | 5 | **5** | 0 — the A-09/A-20 double-mounts collapsed with `/coverage-insights` |
+| policyholder menu items | 10 | **5 + a bell** | §4.2 |
+| B2C routes with ledger rows | 20 of 20 *(claimed)* | derived from the filesystem | D-028 |
+
+**The capability count holding at 109 across an IA collapse is the point of the ledger**, and it only
+means anything because two gaps were found and closed first: `/branches/[branch]`'s 392 lines
+(BD-01…BD-13) and `CoverageInsightsClient`'s whole findings surface (A-10…A-21). Both were one item
+away from being deleted with no row to notice them.
+
+Coverage is now checked rather than asserted: `tests/unit/ledger-covers-every-surface.test.ts`
+derives the route universe from `app/(protected)` and resolves B2C-versus-staff through
+`resolveRouteOwner` in `proxy.ts`. Its known-gap list holds one entry,
+`/collaboration/threads/[id]`, and may only shrink.

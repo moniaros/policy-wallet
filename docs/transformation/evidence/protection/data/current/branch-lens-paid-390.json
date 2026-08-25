@@ -1,0 +1,534 @@
+{
+  "capture": "branch-lens-paid",
+  "width": 390,
+  "url": "http://localhost:3000/protection",
+  "scrollHeight": 12776,
+  "viewportsOfContent": 15.1,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 20,
+    "ids": [
+      "<div> Η προστασία μου",
+      "<div> Προτάσεις κάλυψης",
+      "<div> Σύνοψη κάλυψης",
+      "<div> Αυτοκίνητο",
+      "#risk-profile-wizard",
+      "#life-events",
+      "<h1> Η προστασία μου",
+      "<div> ",
+      "<div> Προτάσεις κάλυψης",
+      "<div> Απώλεια του εισοδήματος από το οποίο εξα",
+      "<div> Το όχημά σας πρόκειται να μείνει ανασφάλ",
+      "<div> Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικ",
+      "<div> Σύνοψη κάλυψης",
+      "<div> Ληγμένα ασφαλιστήρια δεν προσμετρώνται σ",
+      "<div> Σημεία που αξίζει να ελέγξεις",
+      "<div> Τι ελέγξαμε και είναι εντάξει",
+      "<p> Οι αναλύσεις AI παρέχουν υποστηρικτική π",
+      "<div> Επόμενα βήματα",
+      "<div> Προφίλ κινδύνου",
+      "<div> Τι άλλαξε στη ζωή σας;"
+    ]
+  },
+  "containers": {
+    "count": 212,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.pw-card pw-pad",
+      "div.rounded-2xl border border-red-300 dark:b",
+      "span.inline-flex items-center gap-1 px-2 py-0"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "tapTargets": [
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < div"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    },
+    {
+      "tag": "input",
+      "text": "",
+      "w": 24,
+      "h": 24,
+      "chain": "label < div < div < form"
+    }
+  ],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Σημείωση\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Αγνόηση\" boundary 1.40:1 (needs 3) inside=#f2f2f2 outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Σημείωση\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Αγνόηση\" boundary 1.40:1 (needs 3) inside=#f2f2f2 outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Σημείωση\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Αγνόηση\" boundary 1.40:1 (needs 3) inside=#f2f2f2 outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Σημείωση\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Αγνόηση\" boundary 1.40:1 (needs 3) inside=#f2f2f2 outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Σημείωση\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Αγνόηση\" boundary 1.40:1 (needs 3) inside=#f2f2f2 outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Σημείωση\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <button> \"Αγνόηση\" boundary 1.40:1 (needs 3) inside=#f2f2f2 outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Ρυθμίσεις κάλυψης\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <a> \"Ανά κίνδυνο\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <a> \"Δεν έχει αξιολογηθείΚατοικίαΤο σπί\" boundary 2.51:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <a> \"Δεν έχει αξιολογηθείΣύνταξη & Αποτ\" boundary 2.50:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <a> \"Δεν έχει αξιολογηθείΤαξιδιωτικήΠρι\" boundary 2.50:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <select> \"Ανύπαντρος/ηΠαντρεμένος/ηΔιαζευγμέ\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <select> \"ΜισθωτόςΕλεύθερος επαγγελματίαςΣυν\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <select> \"Επιλέξτε...Μη καπνιστήςΚαπνιστήςΠρ\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <select> \"Επιλέξτε...ΆνδραςΓυναίκαΠροτιμώ να\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <select> \"Επιλέξτε...ΚαθιστικόςΜέτρια ενεργό\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <select> \"Επιλέξτε...Καθαρό ιστορικόΜικρές π\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <select> \"Επιλέξτε…ΙδιόκτητηΕνοικιαζόμενηΟικ\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <input> \"\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:control] <select> \"Επιλέξτε…ΕλάχιστεςΤακτικέςΕκτεταμέ\" boundary 1.35:1 (needs 3) inside=#f7f7f7 outside=#ffffff",
+      "[1.4.11:unmeasured] <button> \"Μηχανοκίνητα σπορ\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Αναρρίχηση\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Σκι\" boundary 1.11:1 (needs 3) inside=#fefefe outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Καταδύσεις\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Αεροπορικές δραστηριότητες\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Πολεμικές τέχνες\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ιππασία\" boundary 1.30:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ιστιοπλοΐα\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Αγωνιστική ποδηλασία\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Κυνήγι\" boundary 1.27:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Οικογένεια\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Κατοικία\" boundary 1.31:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ακίνητα\" boundary 1.30:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Οικονομικά\" boundary 1.00:1 (needs 3) inside=#fafbfc outside=#fafbfc — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Γάμος ή σύμφωνο συμβίωσης\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Διαζύγιο\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Γέννηση παιδιού\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Ένα παιδί ανεξαρτητοποιήθηκε\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Αγορά ακινήτου\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Πώληση ακινήτου\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Έναρξη ενοικίασης\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Λήψη στεγαστικού δανείου\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Εξόφληση στεγαστικού δανείου\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Έναρξη εκμίσθωσης ακινήτου\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Αγορά οχήματος\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Αγορά μοτοσυκλέτας\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Πώληση ή απόσυρση οχήματος\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Αγορά σκάφους\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Υιοθεσία κατοικιδίου\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Έναρξη συχνών ταξιδιών\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Απόκτηση αντικειμένου υψηλής αξίας\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Δημιουργία επιχείρησης\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Πρόσληψη προσωπικού\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Συνταξιοδότηση\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Σημαντική αύξηση εισοδήματος\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <button> \"Μεταβολή στην υγεία σας\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Προτάσεις κάλυψης11 προτάσεις βασι\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f8fafc",
+      "[1.4.11:surface] <div> \"Ασφαλιστήρια με σημεία ελέγχου19\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:surface] <div> \"Σε ισχύ σήμερα24\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:unmeasured] <div> \"motorInteramericanOKmotorΕΘΝΙΚΗOKm\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Προφίλ κινδύνουΒοηθήστε μας να κατ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:surface] <div> \"Τι άλλαξε στη ζωή σας;Κάθε αλλαγή \" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fbfbfc",
+      "[1.4.11:shell] <a> \"Προστασία\" boundary 1.25:1 (needs 3) inside=#dee7e6 outside=#fefefd"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 390,
+    "viewportWidth": 390,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "div.-mx-1.mb-3",
+        "text": "ΌλαΟικογένειαΚατοικίαΑκίνηταΟικονομικάΟχήματαΤρόπος ζωήςΕργασίαΥγεία",
+        "scrollWidth": 774,
+        "clientWidth": 332,
+        "reason": "overflow"
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι ",
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "reason": "css-truncation",
+        "scrollHeight": 59,
+        "clientHeight": 39
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Σιγουρέψου ότι το συμβόλαιο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σ",
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "reason": "css-truncation",
+        "scrollHeight": 59,
+        "clientHeight": 39
+      },
+      {
+        "selector": "p.mt-1.line-clamp-2",
+        "text": "Κτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το συμβόλαιο του κατοικιδίου σα",
+        "scrollWidth": 316,
+        "clientWidth": 316,
+        "reason": "css-truncation",
+        "scrollHeight": 59,
+        "clientHeight": 39
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "top: 07/09/2026 — \"Το ασφαλιστήριό σας Interamerican (ΣΥΜΒ-2025-MOT-EXP) λήγει \""
+      ],
+      "dayCounts": [
+        "top: \"Το ασφαλιστήριό σας Interamerican (ΣΥΜΒ-2025-MOT-EXP) λήγει στις 07/09\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν ",
+        "count": 8,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Ρωτήστε τον σύμβουλό μου",
+        "count": 3,
+        "where": [
+          "top <a>",
+          "top <a>",
+          "top <a>"
+        ]
+      },
+      {
+        "text": "Μη σχετικό για εμένα",
+        "count": 3,
+        "where": [
+          "top <button>",
+          "top <button>",
+          "top <button>"
+        ]
+      },
+      {
+        "text": "Υψηλή προτεραιότητα",
+        "count": 8,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν νομική ή ασ",
+        "count": 2,
+        "where": [
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Χρειάζεται προσοχή",
+        "count": 3,
+        "where": [
+          "top <p>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Σημείο κάλυψης προς έλεγχο",
+        "count": 6,
+        "where": [
+          "top <h3>",
+          "top <h3>",
+          "top <h3>",
+          "top <h3>",
+          "top <h3>",
+          "top <h3>"
+        ]
+      },
+      {
+        "text": "Γιατί έχει σημασία",
+        "count": 6,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας.",
+        "count": 6,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Όρια κάλυψης",
+        "count": 6,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Νομικές απαιτήσεις",
+        "count": 6,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Σενάρια αυξημένου κινδύνου",
+        "count": 6,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Προβολή ασφαλιστηρίου",
+        "count": 6,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Δεν απαιτείται άμεση ενέργεια",
+        "count": 6,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Δεν έχει αξιολογηθεί",
+        "count": 3,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Χωρίς ασφαλιστήριο",
+        "count": 3,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Καρδιοπάθεια",
+        "count": 2,
+        "where": [
+          "top <label>",
+          "top <label>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 14 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Η προστασία μου Τι έχετε και τι παρακολουθούμε — ανά κλάδο και ανά κίνδυνο. Ανανέωση ανάλυσης Προτάσεις κάλυψης 11 προτάσεις βασισμένες στο προφίλ σας Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας ΚΡΙΣΙΜΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ ΚΕΝΟ ΠΡΟΣΤΑΣΙΑΣ Μεσαία βεβαιότητα 2 άτομα εξαρτώνται από το εισόδημά σας, και αυτή τη στιγμή εργάζεστε. Έλεγχος Ρωτήστε τον σύμβουλό μου Μη σχετικό για εμένα Το όχημά σας πρόκειται να μείνει ανασφάλιστο ΥΨΗΛΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ Η κυκλοφορία χωρίς ενεργή ασφάλιση είναι παράνομη στην Ελλάδα και ακόμα και μία ημέρα κενού σας αφήνει προσωπικά υπεύθυνους για οποιοδήποτε ατύχημα. ΑΠΟ ΤΑ ΣΤΟΙΧΕΙΑ ΣΑΣ Το ασφαλιστήριό σας Interamerican (ΣΥΜΒ-2025-MOT-EXP) λήγει στις 07/09/2026 — σε 13 ημέρες. Επόμενο βήμα: Ελέγξτε τους όρους ανανέωσης πριν από τη λήξη ή ζητήστε το ειδοποιητήριο ανανέωσης από τον ασφαλιστή σας. Έλεγχος Ρωτήστε τον σύμβουλό μου Μη σχετικό για εμένα Περισσότερα Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή) ΥΨΗΛΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ Ζητήστε από τον ασφαλιστή σας γραπτή επιβεβαίωση του ορίου. Έλεγχος Ρωτήστε τον σύμβουλό μου Μη σχετικό για εμένα Εμφάνιση όλων (11) Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν νομική ή ασφαλιστική συμβουλή. Συνιστάται επιβεβαίωση κρίσιμων αποφάσεων με εξουσιοδοτημένο επαγγελματία. ΣΥΝΟΨΗ ΚΑΛΥΨΗΣ Εντοπίστηκαν 33 σημεία προς έλεγχο στα ασφαλιστήριά σας. 13 υψηλά 16 μέτρια 4 χαμηλά Ληγμένα ασφαλιστήρια δεν προσμετρώνται στην κάλυψη Η εικόνα κάλυψης αφορά μόνο όσα ισχύουν σήμερα. Εκτός: Interamerican · Interamerican · Interamerican · Interamerican · Εθνική Ασφαλιστική ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ Υπάρχουν σημαντικά σημεία που αξίζει να ελέγξετε. ΑΣΦΑΛΙΣΤΗΡΙΑ ΜΕ ΣΗΜΕΙΑ ΕΛΕΓΧΟΥ 19 ΣΕ ΙΣΧΥ ΣΗΜΕΡΑ 24 Σημεία που αξίζει να ελέγξεις Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. MOTOR ΥΨΗΛΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ Σημείο κάλυψης προς έλεγχο ΓΙΑΤΙ ΕΧΕΙ ΣΗΜΑΣΙΑ Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας. ΤΙ ΕΛΕΓΞΑΜΕ Όρια κάλυψης Νομικές απαιτήσεις Σενάρια αυξημένου κινδύνου Προβολή ασφαλιστηρίου Σημείωση Αγνόηση Δεν απαιτείται άμεση ενέργεια Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. MOTOR ΥΨΗΛΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ Σημείο κάλυψης προς έλεγχο ΓΙΑΤΙ ΕΧΕΙ ΣΗΜΑΣΙΑ Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας. ΤΙ ΕΛΕΓΞΑΜΕ Όρια κάλυψης Νομικές απαιτήσεις Σενάρια αυξημένου κινδύνου Προβολή ασφαλιστηρίου Σημείωση Αγνόηση Δεν απαιτείται άμεση ενέργεια Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. MOTOR ΥΨΗΛΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ Σημείο κάλυψης προς έλεγχο ΓΙΑΤΙ ΕΧΕΙ ΣΗΜΑΣΙΑ Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας. ΤΙ ΕΛΕΓΞΑΜΕ Όρια κάλυψης Νομικές απαιτήσεις Σενάρια αυξημένου κινδύνου Προβολή ασφαλιστηρίου Σημείωση Αγνόηση Δεν απαιτείται άμεση ενέργεια Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. MOTOR ΥΨΗΛΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ Σημείο κάλυψης προς έλεγχο ΓΙΑΤΙ ΕΧΕΙ ΣΗΜΑΣΙΑ Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας. ΤΙ ΕΛΕΓΞΑΜΕ Όρια κάλυψης Νομικές απαιτήσεις Σενάρια αυξημένου κινδύνου Προβολή ασφαλιστηρίου Σημείωση Αγνόηση Δεν απαιτείται άμεση ενέργεια Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. MOTOR ΥΨΗΛΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ Σημείο κάλυψης προς έλεγχο ΓΙΑΤΙ ΕΧΕΙ ΣΗΜΑΣΙΑ Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας. ΤΙ ΕΛΕΓΞΑΜΕ Όρια κάλυψης Νομικές απαιτήσεις Σενάρια αυξημένου κινδύνου Προβολή ασφαλιστηρίου Σημείωση Αγνόηση Δεν απαιτείται άμεση ενέργεια Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. MOTOR ΥΨΗΛΗ ΠΡΟΤΕΡΑΙΟΤΗΤΑ Σημείο κάλυψης προς έλεγχο ΓΙΑΤΙ ΕΧΕΙ ΣΗΜΑΣΙΑ Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας. ΤΙ ΕΛΕΓΞΑΜΕ Όρια κάλυψης Νομικές απαιτήσεις Σενάρια αυξημένου κινδύνου Προβολή ασφαλιστηρίου Σημείωση Αγνόηση Δεν απαιτείται άμεση ενέργεια Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. ΤΙ ΕΛΕΓΞΑΜΕ ΚΑΙ ΕΙΝΑΙ ΕΝΤΑΞΕΙ motor Interamerican OK motor ΕΘΝΙΚΗ OK motor ΕΘΝΙΚΗ OK motor motor OK health Εθνική Ασφαλιστική OK Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν νομική ή ασφαλιστική συμβουλή. Συνιστάται επιβεβαίωση κρίσιμων αποφάσεων με εξουσιοδοτημένο επαγγελματία. Επόμενα βήματα Επιστροφή στο πορτοφόλι Ρυθμίσεις κάλυψης Το PolicyWallet παραμένει ανεξάρτητη πλατφόρμα που υποστηρίζει καλύτερες αποφάσεις κάλυψης. Ανά κλάδο Ανά κίνδυνο Χρειάζεται προσοχή Αυτοκίνητο Καταλάβετε τι πραγματικά καλύπτει το συμβόλαιο του αυτοκινήτου σας — πριν το χρειαστείτε. 22 ασφαλιστήρια Δεν έχει αξιολογηθεί Κατοικία Το σπίτι σας είναι πιθανότατα το μεγαλύτερο περιουσιακό σας στοιχείο — δείτε τι πραγματικά προστατεύει το συμβόλαιό σας. Χρειάζεται προσοχή Υγεία Μάθετε τι πληρώνετε εσείς και τι ο ασφαλιστής σας — πριν βρεθείτε στο νοσοκομείο. 7 ασφαλιστήρια Χωρίς ασφαλιστήριο Ζωή Σιγουρέψου ότι το συμβόλαιο ζωής προστατεύει τους ανθρώπους που θέλετε — με το σωστό κεφάλαιο και τους σωστούς δικαιούχους. Δεν έχει αξιολογηθεί Σύνταξη & Αποταμίευση Δείτε πού πηγαίνουν οι εισφορές σας, τι κοστίζει το πρόγραμμα και πότε ωριμάζει. Δεν έχει αξιολογηθεί Ταξιδιωτική Πριν φύγετε, μάθετε τι καλύπτει η ταξιδιωτική σας — προορισμός, ιατρικά, αποσκευές, ακύρωση. Χωρίς ασφαλιστήριο Κατοικίδιο Κτηνίατρος, ατύχημα, ασθένεια: δείτε τι καλύπτει το συμβόλαιο του κατοικιδίου σας — και με ποιες αναμονές. Χωρίς ασφαλιστήριο Cyber Οι online συναλλαγές σας έχουν κινδύνους — δείτε τι από αυτά καλύπτει το συμβόλαιό σας. Προφίλ κινδύνου Βοηθήστε μας να κατανοήσουμε τις ανάγκες σας για καλύτερη ανίχνευση κενών. Οικογενειακή κατάσταση Ανύπαντρος/η Παντρεμένος/η Διαζευγμένος/η Χήρος/α Εξαρτώμενα μέλη Κατάσταση απασχόλησης Μισθωτός Ελεύθερος επαγγελματίας Συνταξιούχος Άνεργος Επάγγελμα Ετήσιο εισόδημα (€) Κάπνισμα Επιλέξτε... Μη καπνιστής Καπνιστής Πρώην καπνιστής ΥΓΕΙΑ & ΤΡΟΠΟΣ ΖΩΗΣ Τα στοιχεία υγείας είναι προαιρετικά. Τα χρησιμοποιούμε μόνο για να προσαρμόσουμε τις προτάσεις κάλυψης υγείας και ζωής στις ανάγκες σας — δεν κοινοποιούνται σε ασφαλιστές χωρίς τη ρητή συγκατάθεσή σας. Μπορείτε να τα αφήσετε κενά ή να τα διαγράψετε αργότερα. Φύλο Επιλέξτε... Άνδρας Γυναίκα Προτιμώ να μην αναφέρω Επίπεδο δραστηριότητας Επιλέξτε... Καθιστικός Μέτρια ενεργός Ενεργός Πολύ ενεργός Ύψος (cm) Βάρος (kg) Χρόνιες παθήσεις Διαβήτης Υπέρταση Καρδιοπάθεια Άσθμα Καρκίνος Ψυχική διαταραχή Μυοσκελετικά Επιλέξτε όλα όσα ισχύουν. Αφήστε κενό εάν δεν υπάρχουν. Οικογενειακό ιατρικό ιστορικό Καρδιοπάθεια Καρκίνος Διαβήτης Εγκεφαλικό Υπέρταση Ψυχική ασθένεια Κληρονομικές παθήσεις σε γονείς ή αδέλφια. Οδηγικό ιστορικό Επιλέξτε... Καθαρό ιστορικό Μικρές παραβάσεις Σοβαρές παραβάσεις Ατυχήματα Ιδιόκτητη κατοικία Κατοικίδια Ταξιδεύω συχνά Δάνεια Διαχειριστής πολυκατοικίας Αριθμός οχημάτων Η ΚΑΤΑΣΤΑΣΗ ΣΑΣ Η κατοικία σας είναι Επιλέξτε… Ιδιόκτητη Ενοικιαζόμενη Οικογενειακή Παρέχεται από εργοδότη Παιδιά Αποταμιεύσεις (€) Αξία τιμαλφών (€) Διαδικτυακές συναλλαγές Επιλέξτε… Ελάχιστες Τακτικές Εκτεταμένες Εκμισθώνω ακίνητο Έχω σκάφος Έχω επιχείρηση Έχω συνταξιοδοτικό πρόγραμμα Αθλήματα και δραστηριότητες Πολλά ασφαλιστήρια ζωής και υγείας εξαιρούν τραυματισμούς από αυτές — γι' αυτό ρωτάμε. Μηχανοκίνητα σπορ Αναρρίχηση Σκι Καταδύσεις Αεροπορικές δραστηριότητες Πολεμικές τέχνες Ιππασία Ιστιοπλοΐα Αγωνιστική ποδηλασία Κυνήγι Γεγονότα ζωής Προσθήκη Προσθέστε σημαντικά γεγονότα ζωής για ακριβέστερη ανίχνευση κενών. Αποθήκευση & Ανανέωση ανάλυσης Τι άλλαξε στη ζωή σας; Κάθε αλλαγή μετακινεί τους κινδύνους σας. Πείτε μας μία και θα επαναξιολογήσουμε αμέσως. Όλα Οικογένεια Κατοικία Ακίνητα Οικονομικά Οχήματα Τρόπος ζωής Εργασία Υγεία Γάμος ή σύμφωνο συμβίωσης Διαζύγιο Γέννηση παιδιού Ένα παιδί ανεξαρτητοποιήθηκε Αγορά ακινήτου Πώληση ακινήτου Έναρξη ενοικίασης Λήψη στεγαστικού δανείου Εξόφληση στεγαστικού δανείου Έναρξη εκμίσθωσης ακινήτου Αγορά οχήματος Αγορά μοτοσυκλέτας Πώληση ή απόσυρση οχήματος Αγορά σκάφους Υιοθεσία κατοικιδίου Έναρξη συχνών ταξιδιών Απόκτηση αντικειμένου υψηλής αξίας Δημιουργία επιχείρησης Πρόσληψη προσωπικού Συνταξιοδότηση Σημαντική αύξηση εισοδήματος Μεταβολή στην υγεία σας Ό,τι μας πείτε αλλάζει μόνο την αξιολόγηση κινδύνου σας — δεν αποτελεί ασφαλιστική συμβουλή. Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "lens": "branch"
+}

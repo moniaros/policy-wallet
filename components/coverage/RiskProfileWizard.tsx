@@ -348,8 +348,13 @@ export function RiskProfileWizard({ initialData, language = "el" }: RiskProfileW
     // h-4 w-4 shrink-0: with no size of its own the UA default sat in a flex
     // row that squeezed it to 13x24 at 320px — a checkbox that is not square
     // reads as a rendering fault before it reads as a control.
+    // h-6 w-6 = 24x24, the WCAG 2.5.8 (AA) target floor. These measured 16x24
+    // on /protection — under the floor on width — nine of them. Not pushed to
+    // 44: each sits inside a `<label className="flex items-center gap-2">` with
+    // an icon and its text, so the whole row is the target; the box itself only
+    // has to clear AA. Same call as the quiet-hours checkbox.
     const checkboxClass =
-        "h-4 w-4 shrink-0 rounded border-black/20 dark:border-white/25 text-primary focus:ring-primary"
+        "h-6 w-6 shrink-0 rounded border-black/20 dark:border-white/25 text-primary focus:ring-primary"
     const labelClass = "block text-sm font-medium text-black/75 dark:text-white/75"
 
     return (

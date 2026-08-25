@@ -305,8 +305,11 @@ export function RecommendationCards({
                     const reviewHref = smart?.reviewHref ?? null
                     const isAgentCard = rec.ruleId === "no_agent_connected"
                     const reviewLabel = t("Έλεγχος", "Review this")
+                    // min-h-11: `py-1.5` on `text-micro` renders 28px tall, and this
+                    // is a real navigation control, not a badge — it measured
+                    // 88x28 on /protection at 320/390/430.
                     const reviewClasses =
-                        "inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                        "inline-flex min-h-11 items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-micro font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
 
                     return (
                         <div

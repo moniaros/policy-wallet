@@ -627,3 +627,38 @@ whether returning customers should actually get credits.
 Real, latent, and its caller is the frozen `lib/gap-detection.ts:203` — changing which policies gap
 detection sees is gap-detection logic. Six agent/admin surfaces carry failing contrast pairs, asserted
 still-failing so the exemption cannot outlive them.
+
+## V2-P2-04 — Phase 2 measured (2026-08-25)
+
+Phase 2 deleted four routes **and their four baseline specs**, leaving «Η προστασία μου» and the
+relocated history with no measurement coverage at all. `tests/measure/protection-baseline.spec.ts`
+restores it; the deleted surfaces' evidence stays committed as the before-picture.
+
+| capture @320 | height | sections | containers | sub-44 | dup-facts | text contrast | **overflow** |
+|---|---|---|---|---|---|---|---|
+| `/protection` ανά κλάδο | 13,917px (19.3 screens) | 20 | 211 | 22 | 0/0 | 0 | **0px** |
+| `/protection?lens=risk` | 15,397px (21.4 screens) | 26 | 219 | 22 | 0/0 | 0 | **0px** |
+| `/account/history` | 8,111px (11.3 screens) | 2 | 51 | 0 | 0/0 | 0 | **0px** |
+
+### The 22 are a reasoned exception, not debt
+
+Every one is a **24×24 checkbox inside a `<label>`** — 13 in the branch lens, 9 in the wizard form.
+24×24 is the WCAG **2.5.8 (AA)** target floor; the harness flags them because it applies the stricter
+**2.5.5 (AAA)** 44px floor. Each sits in a label with an icon and its text, so the row is the real
+target and the box only has to clear AA — the same call made for the quiet-hours checkbox.
+
+Two were **not** exceptions and are fixed: the wizard's checkboxes measured **16×24**, under the AA
+floor on width (`h-4 w-4` → `h-6 w-6`), and `RecommendationCards`' «Έλεγχος» review pill measured
+**88×28** (`min-h-11`). That link was located through the freeze's new **`call` arm** — it exists in
+the inventory only because of the shape added earlier today.
+
+### The number Phase 5 has to answer for
+
+**`/protection` is 19–21 screens tall at 320px.** §7.5 called `/coverage-insights` "the densest
+surface in the app" and asked for the most aggressive reduction; consolidation has now put three
+surfaces where it stood. Nothing is wrong — 0px overflow, no duplicate facts, no text-contrast
+failures — but density is the measured cost of the IA collapse, and it is Phase 5's problem, recorded
+here so it cannot be discovered as a surprise.
+
+`/account/history` at 2 sections and 51 containers is the shape the relocation was supposed to
+produce: the same capability, a tenth of the chrome.
