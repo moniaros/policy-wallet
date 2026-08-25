@@ -1482,3 +1482,43 @@ source. That case belongs to the harness's `contrastFailures`. Two halves, neith
 **Out of scope, recorded not fixed (§12.4):** six agent/admin surfaces carry the same failing pairs.
 The guard asserts they still fail, so the exemption set cannot outlive the defects and quietly excuse
 a new one. `NotificationBell` is exempt only while nothing imports it — asserted, not assumed.
+
+# Phase 2 — §4.2 IA consolidation
+
+**Target: 5 tabs + a bell.** Ten policyholder menu items today
+(`/dashboard`, `/wallet`, `/branches`, `/insights/risk-profile`, `/coverage-insights`, `/timeline`,
+`/benefits`, `/agent`, `/account`, `/notifications`).
+
+| tab | route | absorbs |
+|---|---|---|
+| Αρχική | `/dashboard` | — |
+| Ο φάκελός μου | `/wallet` | — |
+| **Η προστασία μου** | **`/protection`** (new) | `/branches` (*ανά κλάδο* lens), `/insights/risk-profile` (*ανά κίνδυνο* lens), `/coverage-insights` |
+| Ο σύμβουλός μου | `/agent` | — |
+| Ρυθμίσεις | `/account` | `/timeline` → activity history; `/benefits` stays a link from here |
+| *(bell)* | `/notifications` | — |
+
+**Four routes removed outright** — the owner chose removal over redirects. Verified in Phase 0: none
+is in `app/sitemap.ts`, none is in `proxy.ts`'s public allowlist, none is referenced from
+`app/(public)`, `lib/guides` or `lib/glossary`, so §12.1.7's halt condition is not met.
+
+### Ordering — build before remove, always
+
+- **V2-P2-01** build `/protection`, both lenses, old routes still alive. Must preserve
+  **B-01…B-06, R-01…R-08, A-05…A-09** from `LEDGER.md`.
+- **V2-P2-02** relocate the timeline into Ρυθμίσεις. **T-02** (filter) and **T-03** (cause link) must
+  survive or the move is a loss — T-03 especially, it is the only thing here the wallet cannot
+  already tell you. **T-06** (18 of 60 rows sharing one title) is fixed by grouping during the move.
+- **V2-P2-03** nav → 5 + bell; delete the four routes; `proxy.ts` lines 56 and 70 go with them.
+- **V2-P2-04** verify every ledger row against the new IA; re-measure; refresh the counts.
+
+### Decided under standing authority: B-06, the `business` line
+
+`/branches` renders a **business** line to consumers because `contentTier: 'rich'` carries no B2C/B2B
+filter. The ledger deferred it as "needs a product decision, not a fix".
+
+**Decision: show the line only when the customer holds a policy in it.** Hiding it outright would
+remove a real capability from anyone who does hold business cover; showing it to everyone is noise on
+a consumer surface. Conditioning on ownership keeps the capability exactly where it means something
+and is reversible in one predicate. Logged rather than escalated, per the standing rule to choose the
+reversible option and keep going.
