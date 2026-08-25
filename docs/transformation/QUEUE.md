@@ -1522,3 +1522,31 @@ remove a real capability from anyone who does hold business cover; showing it to
 a consumer surface. Conditioning on ownership keeps the capability exactly where it means something
 and is reversible in one predicate. Logged rather than escalated, per the standing rule to choose the
 reversible option and keep going.
+
+### V2-P2-03 prep — 62 sites, and one premise I got wrong in Phase 0
+
+| route | → | sites |
+|---|---|---|
+| `/coverage-insights` | `/protection` | **47** |
+| `/branches` | `/protection` / `/protection/[branch]` | 6 |
+| `/timeline` | `/account/history` | 5 |
+| `/insights/risk-profile` | `/protection?lens=risk` | 4 |
+
+The `/coverage-insights` count is dominated by **18 `lib/insurance/content/*.ts` branch-action links**
+plus 4 in `lib/services/timeline/build.ts`, 3 `revalidatePath` calls, the nav, the bottom nav, five
+dashboard widgets, `InstallPrompt`'s route list, `api-docs`, and
+`lib/notifications/links.ts:75`. `app/(protected)/coverage/page.tsx` redirects to it and is a **KEEP**
+row — repoint it, do not delete it.
+
+**The premise correction.** When the owner chose removal over redirects, I supported it with "no
+external links or bookmarks exist to break", having checked `app/sitemap.ts`, the `proxy.ts` public
+allowlist, `app/(public)`, `lib/guides` and `lib/glossary`. I did not consider **already-delivered
+email**: `buildNotificationEmail` bakes an absolute URL, and `notificationActionPath` returns
+`/coverage-insights` for every `recommendation` notification. Those links live in inboxes, where no
+code change can reach them.
+
+It happens not to matter — CLAUDE.md records that zero real users exist and every account belongs to
+the owner, so no such email is in anyone's inbox. But the reasoning I gave at the time was incomplete,
+and the general rule is worth keeping: **a delivered email is an external reference to a route.** The
+link itself is computed at render, not stored on the row, so changing that one line is enough for
+everything not yet sent.
