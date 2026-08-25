@@ -697,3 +697,45 @@ access. If the intent was always that Plus unlocks deep analysis, the fix is one
 gate and the copy follows it back.
 
 **Nothing blocks on this.** The dishonest half is being removed either way.
+
+---
+
+## H-010 — Extraction carries no insured-person name
+
+date: 2026-08-26 · raised_by: implementation (P5-wallet-01 pre-check)
+blocks: **W-02 partial closure for health and life only.** Motor, property and pet proceed.
+status: **open**
+
+### Context, verified against the schema rather than assumed
+
+`AcordData` has **no field naming the insured individual**. Every `*name*` field in the schema was
+checked: `insurerName`, `coordinationCentreName`, `pet.name`, `namedDrivers`, `beneficiaries.name`.
+`insuredPersons` is a **role/class benefit schedule** — its fields are `role`, `classLabel`, `count`,
+`benefits`, with schema examples "master", "chief engineer", "cashier" — not individuals.
+
+Health and life rows therefore cannot be distinguished from each other **on any surface**, and **5 of
+the 29 heavy-fixture duplicates are unresolvable for this reason**. `cyber`, `business` and `pension`
+have **no `AcordData` object at all**.
+
+### The question
+Should the extraction schema carry an insured-person name, and a minimal object for cyber / business /
+pension?
+
+### Options
+- **Add the field.** Resolves health and life identity across every surface. It is a schema change →
+  **§12.2 halt**. It is also **personal data on a health policy**, so scope and lawful basis need
+  stating, not assuming.
+- **Do not add.** Health and life rows stay indistinguishable. Acceptable at realistic portfolio
+  sizes — typical fixture is 3, production wallets are 3 and 1 — and degrades as health holdings grow.
+
+### Recommendation (raiser's, and I concur)
+**Do not add in this run.** The defect is confined to the tail, the field is personal data on a health
+policy, and §12.2 blocks it regardless. Revisit when a real capture shows non-zero health duplicates —
+which the `duplicate-identity-row` metric now checks continuously, so the revisit condition is
+measured rather than remembered.
+
+### Why this is worth a halt rather than a silent limitation
+Because the alternative is a substitute field. The nearest candidates all look like identifiers and
+are not: `beneficiaries.name` names the **beneficiary**, `insuredPersons.*` is a class schedule, and
+policy number / product name / sum insured are not identity at all. Recording the gap keeps someone
+from closing it cosmetically in six months.

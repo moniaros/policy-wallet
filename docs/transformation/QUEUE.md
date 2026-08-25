@@ -1633,3 +1633,33 @@ refused to argue the case: the wallet renders 29 policies as 29 rows and "hard t
 the measured defect list. This turns that into a number. **The asset reframe stays blocked until it
 lands** — and if the count is low, the reframe's premise is wrong and the phase should say so rather
 than build anyway.
+
+## P5-wallet-01 — amended acceptance (2026-08-26) · `blocked_by: P5-wallet-01a`
+
+**Targets revised on the identifier-availability finding:**
+
+| fixture | target |
+|---|---|
+| varied-household | motor, property, pet duplicates **= 0**. **Health duplicates are EXPECTED and are not a failure** — two health policies on one insured party are indistinguishable *by design*, because extraction carries no insured-person name. Report the count; do not treat it as a regression and do not close it with a substitute field. |
+| heavy (29) | motor **14 → 0**. Health **5 → unchanged, reported**. |
+| single-line-concentration | report the number, **no target**. This fixture measures whether `plateNumber` alone carries identity when every other field is constant — **a non-zero result there is a finding about EXTRACTION** (duplicate or missing plates), not about the row. |
+| typical (3), all-expired (4) | remain **0**. |
+
+**Per-line identifier availability — verified, and to be documented in the primitive as the canonical
+rule:**
+
+| line | identifier |
+|---|---|
+| motor | `plateNumber` — available |
+| property | short-form address — available |
+| pet | `pet.name` — available |
+| travel | `destinationScope` — available. **Trip dates are NOT extracted; `tripDurationDays` is a duration, not an identifier — do not use it.** |
+| health, life, cyber, business, pension | **NO IDENTIFIER AVAILABLE.** Render current identity unchanged; report in `PROGRESS.md`. |
+
+**Explicitly prohibited as substitutes:** `beneficiaries.name` (names the beneficiary, not the
+insured) · `insuredPersons.*` (role/class benefit schedule — schema examples "master", "chief
+engineer", "cashier") · policy number · product name · sum insured.
+
+**cyber, business and pension have no `AcordData` object at all.** Record as a **structured-identity
+gap**, not merely an identifier gap: `/branches` renders cards for both Cyber and Επιχείρηση with
+nothing behind them. See **H-010**.
