@@ -899,3 +899,39 @@ this.** Both real `lib/` offenders were fixed, not listed.
 **Process note.** Mid-proof I ran `git checkout --` on the test file to undo a probe and destroyed the
 agent's entire uncommitted rewrite along with my own fix. Recovered from a `/tmp` copy. `git checkout`
 is not an undo for uncommitted work in a shared tree — probe by copy-and-restore, never by checkout.
+
+## D-028 — The capability ledger's own universe was a hand-written list
+
+**Date:** 2026-08-25 · **Found opening Phase 2, by going to delete a route**
+
+`LEDGER.md` declared "**LEDGER STATUS: 20 of 20 surfaces + 7 overlays enumerated.**" The denominator
+was a list, so the claim was true of the list and false of the product.
+
+`/branches/[branch]` is **392 lines** — per-branch policies, upcoming renewals, `RecommendationCards`,
+branch actions, an empty state. It had **no rows**. The «Κλάδοι» section enumerates the listing page
+only; B-04 ("Open a line to see what you hold") names the *link* and stops at the door.
+`/collaboration/threads/[id]` has no rows either.
+
+**Why this one is worse than the guard instances.** §12 is the run's protection against silent
+capability loss: nothing is removed, merged or relocated without a ledger row. That protection is
+worth exactly as much as the ledger's coverage — and a capability with **no** row can be deleted with
+the rule reporting no violation at all. It fails silent, in the direction of loss, on precisely the
+surfaces nobody thought about. I was one item away from deleting `/branches` with a 392-line child
+whose contents had never been written down.
+
+**Two things could have caught it and neither did.** `SURFACES.md` verifies routes *exist* — it does
+not ask whether they are accounted for. And the ledger's own status line asserted completeness
+against itself, which is the shape of every vacuous check in this run.
+
+**Fix.** `tests/unit/ledger-covers-every-surface.test.ts` derives the route universe from
+`app/(protected)` and classifies B2C-versus-staff through **`resolveRouteOwner` imported from
+`proxy.ts`**, not a hardcoded list — so the ledger's scope and the live role gate cannot drift. That
+immediately paid for itself: it rejected my first `UNENUMERATED` entry, because `/insights` is
+agent-owned and I had guessed otherwise. `/wallet/[id]/review` is likewise agent-owned, which is why
+its absence is correct rather than a miss — an answer I would have got wrong by eye.
+
+Collectively-covered routes (the five `/account/*` subpages) point at the heading that covers them,
+and the heading is asserted to still exist (D-022). The known-gap list may only shrink; a new surface
+gets rows, not an entry.
+
+**Standing change:** a surface is enumerated when the filesystem says it is, never when a list does.

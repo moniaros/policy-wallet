@@ -340,7 +340,21 @@ unreadable-value work: a value that could not be read must link here.
 
 ---
 
-## LEDGER STATUS: **20 of 20 surfaces + 7 overlays enumerated.**
+## LEDGER STATUS: 20 of 20 surfaces + 7 overlays enumerated — **against a hand-written list of 20**
+
+**Corrected 2026-08-25 (D-028).** That denominator was a list someone maintained, not the filesystem,
+so the claim was true of the list and false of the product. `/branches/[branch]` — 392 lines of
+per-branch policies, renewals, recommendations and actions — had **no rows at all**, and surfaced
+only because Phase 2 went to delete its parent. `/collaboration/threads/[id]` has none either.
+
+This is the failure the guards kept having (D-005), now reaching the artifact meant to catch it, and
+it matters more here than anywhere: §12 says nothing is removed, merged or relocated without a ledger
+row — a protection worth exactly as much as the ledger's coverage, because a capability with **no**
+row can be deleted and the rule reports no violation. Nothing was measuring the coverage.
+
+`tests/unit/ledger-covers-every-surface.test.ts` now derives the universe from `app/(protected)` and
+resolves B2C-versus-staff through `resolveRouteOwner` in `proxy.ts`, so the ledger's scope and the
+role gate cannot drift apart. Its known-gap list may only shrink.
 
 Counts are provisional until T-015 baselines confirm what actually renders per state — an
 enumeration from source cannot see a capability that only appears on a paid tier or a degraded
