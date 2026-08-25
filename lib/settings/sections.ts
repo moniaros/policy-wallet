@@ -19,6 +19,7 @@ export type SettingsSectionId =
     | "security"
     | "notifications"
     | "privacy"
+    | "history"
     | "agency"
 
 export interface SettingsSectionDef {
@@ -36,6 +37,10 @@ export const SETTINGS_SECTIONS: SettingsSectionDef[] = [
     { id: "security", href: "/account/security", labelKey: "security" },
     { id: "notifications", href: "/account/notifications", labelKey: "notifications" },
     { id: "privacy", href: "/account/privacy", labelKey: "privacy" },
+    // The relocated timeline (V2-P2-02, ledger T-01): activity history is a
+    // thing you consult about your account, not a destination — it lives here
+    // rather than holding a menu slot.
+    { id: "history", href: "/account/history", labelKey: "history" },
     // Lives on its own route because the agent shell links straight to it and
     // the onboarding checklist deep-links two of its fields.
     { id: "agency", href: "/agent/settings", labelKey: "agency", requiresRole: "agent" },

@@ -15,10 +15,12 @@
  * flashes it, so the customer can check the claim rather than take it.
  */
 
-import { useCallback, useMemo, useRef, useState } from "react"
+import { Fragment, useCallback, useMemo, useRef, useState } from "react"
 import {
     ArrowUpRight,
     CalendarDays,
+    ChevronDown,
+    ChevronUp,
     CircleHelp,
     FileText,
     Handshake,
@@ -82,6 +84,66 @@ const KIND_ACCENT: Record<TimelineKind, string> = {
     advisor_action: "text-purple-600 dark:text-purple-400",
 }
 
+/**
+ * T-06 — the duplicate block.
+ *
+ * The baseline measured 18 of 60 rows reading the same sentence («Προστέθηκε
+ * ασφαλιστήριο Αυτοκίνητο — Interamerican»), differing only by date and target
+ * policy. Consecutive rows whose every visible claim is identical collapse
+ * into one row that states how many it stands for and expands on demand — the
+ * entries themselves are untouched (each keeps its own date and «Άνοιγμα»
+ * link behind the toggle), so grouping hides repetition, never information.
+ *
+ * A row with a cause link, or a score delta, is never groupable: those carry
+ * per-row claims a shared summary cannot honestly represent.
+ */
+const GROUP_MIN = 3
+
+interface RenderGroup {
+    id: string
+    /** Newest first, like the list they came from. */
+    entries: TimelineEntryView[]
+}
+
+function groupableKeyOf(entry: TimelineEntryView): string | null {
+    if (entry.cause || (typeof entry.delta === "number" && entry.delta !== 0)) return null
+    return [
+        entry.kind,
+        entry.title.el,
+        entry.title.en,
+        entry.detail?.el ?? "",
+        entry.detail?.en ?? "",
+    ].join("\u0000")
+}
+
+function groupConsecutive(list: TimelineEntryView[]): RenderGroup[] {
+    const out: RenderGroup[] = []
+    let run: TimelineEntryView[] = []
+    let runKey: string | null = null
+    const flush = () => {
+        if (run.length === 0) return
+        if (runKey !== null && run.length >= GROUP_MIN) {
+            out.push({ id: `group:${run[0].id}`, entries: run })
+        } else {
+            for (const entry of run) out.push({ id: entry.id, entries: [entry] })
+        }
+        run = []
+        runKey = null
+    }
+    for (const entry of list) {
+        const key = groupableKeyOf(entry)
+        if (key !== null && key === runKey) {
+            run.push(entry)
+            continue
+        }
+        flush()
+        run = [entry]
+        runKey = key
+    }
+    flush()
+    return out
+}
+
 export function LifeTimeline({ entries, language }: LifeTimelineProps) {
     const lang = language
     const t = (el: string, en: string) => (lang === "el" ? el : en)
@@ -124,23 +186,50 @@ export function LifeTimeline({ entries, language }: LifeTimelineProps) {
         [entries, filter]
     )
 
+    const [expandedGroups, setExpandedGroups] = useState<ReadonlySet<string>>(new Set())
+    const groups = useMemo(() => groupConsecutive(visible), [visible])
+
+    /**
+     * Which collapsed group holds each entry — over the UNFILTERED list,
+     * because showCause clears the filter before it scrolls, so the grouping
+     * that matters for reaching a cause is the one the cleared view renders.
+     */
+    const groupOfEntry = useMemo(() => {
+        const map = new Map<string, string>()
+        for (const group of groupConsecutive(entries)) {
+            if (group.entries.length > 1) for (const entry of group.entries) map.set(entry.id, group.id)
+        }
+        return map
+    }, [entries])
+
+    const toggleGroup = (groupId: string) =>
+        setExpandedGroups((prev) => {
+            const next = new Set(prev)
+            if (next.has(groupId)) next.delete(groupId)
+            else next.add(groupId)
+            return next
+        })
+
     /**
      * Jump to the cause and flash it.
      *
      * Clearing the filter first: the cause is very often a kind the reader has
      * filtered out — that is exactly why they could not see the connection — and
      * scrolling to an element that is not in the DOM does nothing at all, which
-     * reads as a broken button.
+     * reads as a broken button. A cause sitting inside a collapsed group is the
+     * same trap, so its group is expanded in the same update.
      */
     const showCause = useCallback((entryId: string) => {
         setFilter("all")
+        const groupId = groupOfEntry.get(entryId)
+        if (groupId) setExpandedGroups((prev) => new Set(prev).add(groupId))
         requestAnimationFrame(() => {
             const node = refs.current.get(entryId)
             node?.scrollIntoView({ behavior: "smooth", block: "center" })
             setFlashed(entryId)
             window.setTimeout(() => setFlashed((current) => (current === entryId ? null : current)), 2200)
         })
-    }, [])
+    }, [groupOfEntry])
 
     if (entries.length === 0) {
         return (
@@ -159,6 +248,98 @@ export function LifeTimeline({ entries, language }: LifeTimelineProps) {
     }
 
     const byKind = [...counts.entries()].sort((a, b) => b[1] - a[1])
+
+    const renderEntry = (entry: TimelineEntryView) => {
+        const Icon =
+            entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta < 0
+                ? TrendingDown
+                : KIND_ICON[entry.kind]
+        const accent =
+            entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta !== 0
+                ? entry.delta > 0
+                    ? "text-primary dark:text-mint"
+                    : "text-red-600 dark:text-red-400"
+                : KIND_ACCENT[entry.kind]
+
+        return (
+            <li
+                key={entry.id}
+                ref={(node) => {
+                    refs.current.set(entry.id, node)
+                }}
+                className={`relative rounded-xl pl-9 transition-colors duration-500 ${
+                    flashed === entry.id ? "bg-primary/8 dark:bg-primary/12" : ""
+                }`}
+            >
+                <span
+                    className={`absolute left-0 top-3 flex h-[22px] w-[22px] items-center justify-center rounded-full border border-black/10 bg-white dark:border-white/15 dark:bg-[#141A18] ${accent}`}
+                    aria-hidden="true"
+                >
+                    <Icon className="h-3 w-3" />
+                </span>
+
+                <div className="py-3">
+                    <p className="text-kicker uppercase tracking-wider text-muted-foreground">
+                        <time dateTime={entry.at}>{formatDate(entry.at, lang)}</time>
+                        <span className="mx-1.5" aria-hidden="true">
+                            ·
+                        </span>
+                        {kindLabel(entry.kind)}
+                    </p>
+
+                    <p className="mt-0.5 text-sm font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+                        {entry.title[lang] || entry.title.en}
+                        {entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta !== 0 && (
+                            <span
+                                className={`ml-1.5 font-bold ${accent}`}
+                                data-fact="timeline.scoreDelta"
+                                data-fact-subject={entry.id}
+                            >
+                                {entry.delta > 0 ? "+" : ""}
+                                {entry.delta}
+                            </span>
+                        )}
+                    </p>
+
+                    {entry.detail && (
+                        <p className="mt-1 text-caption leading-relaxed text-black/70 dark:text-white/70 [overflow-wrap:anywhere]">
+                            {entry.detail[lang] || entry.detail.en}
+                        </p>
+                    )}
+
+                    {(entry.cause || entry.href) && (
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                            {entry.cause && (
+                                <button
+                                    type="button"
+                                    onClick={() => showCause(entry.cause!.entryId)}
+                                    className="inline-flex min-h-11 cursor-pointer items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
+                                >
+                                    <CircleHelp className="h-3 w-3" aria-hidden="true" />
+                                    {t("Γιατί;", "Why this?")}
+                                </button>
+                            )}
+                            {entry.href && (
+                                <a
+                                    href={entry.href}
+                                    className="inline-flex min-h-11 items-center gap-1 text-caption text-muted-foreground hover:underline"
+                                >
+                                    {t("Άνοιγμα", "Open")}
+                                    <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                                </a>
+                            )}
+                        </div>
+                    )}
+
+                    {entry.cause && (
+                        <p className="mt-1 text-caption italic leading-relaxed text-black/55 dark:text-white/50 [overflow-wrap:anywhere]">
+                            {entry.cause.explanation[lang] || entry.cause.explanation.en}
+                        </p>
+                    )}
+                </div>
+            </li>
+        )
+    }
 
     return (
         <div className="pw-card pw-pad">
@@ -186,6 +367,7 @@ export function LifeTimeline({ entries, language }: LifeTimelineProps) {
                         onClick={() => setFilter("all")}
                         label={t("Όλα", "All")}
                         count={entries.length}
+                        countKey="timeline.entryCount"
                     />
                     {byKind.map(([kind, count]) => (
                         <Chip
@@ -194,6 +376,8 @@ export function LifeTimeline({ entries, language }: LifeTimelineProps) {
                             onClick={() => setFilter(kind)}
                             label={kindLabel(kind)}
                             count={count}
+                            countKey="timeline.kindCount"
+                            countSubject={kind}
                         />
                     ))}
                 </div>
@@ -207,91 +391,70 @@ export function LifeTimeline({ entries, language }: LifeTimelineProps) {
                     aria-hidden="true"
                 />
 
-                {visible.map((entry) => {
-                    const Icon =
-                        entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta < 0
-                            ? TrendingDown
-                            : KIND_ICON[entry.kind]
-                    const accent =
-                        entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta !== 0
-                            ? entry.delta > 0
-                                ? "text-primary dark:text-mint"
-                                : "text-red-600 dark:text-red-400"
-                            : KIND_ACCENT[entry.kind]
+                {groups.map((group) => {
+                    if (group.entries.length === 1) return renderEntry(group.entries[0])
+
+                    // A collapsed run of identical rows (T-06). Newest first,
+                    // so [0] is the group's place on the rail.
+                    const newest = group.entries[0]
+                    const oldest = group.entries[group.entries.length - 1]
+                    const isOpen = expandedGroups.has(group.id)
+                    const Icon = KIND_ICON[newest.kind]
 
                     return (
-                        <li
-                            key={entry.id}
-                            ref={(node) => {
-                                refs.current.set(entry.id, node)
-                            }}
-                            className={`relative rounded-xl pl-9 transition-colors duration-500 ${
-                                flashed === entry.id ? "bg-primary/8 dark:bg-primary/12" : ""
-                            }`}
-                        >
-                            <span
-                                className={`absolute left-0 top-3 flex h-[22px] w-[22px] items-center justify-center rounded-full border border-black/10 bg-white dark:border-white/15 dark:bg-[#141A18] ${accent}`}
-                                aria-hidden="true"
-                            >
-                                <Icon className="h-3 w-3" />
-                            </span>
+                        <Fragment key={group.id}>
+                            <li className="relative rounded-xl pl-9">
+                                <span
+                                    className={`absolute left-0 top-3 flex h-[22px] w-[22px] items-center justify-center rounded-full border border-black/10 bg-white dark:border-white/15 dark:bg-[#141A18] ${KIND_ACCENT[newest.kind]}`}
+                                    aria-hidden="true"
+                                >
+                                    <Icon className="h-3 w-3" />
+                                </span>
 
-                            <div className="py-3">
-                                <p className="text-kicker uppercase tracking-wider text-muted-foreground">
-                                    <time dateTime={entry.at}>{formatDate(entry.at, lang)}</time>
-                                    <span className="mx-1.5" aria-hidden="true">
-                                        ·
-                                    </span>
-                                    {kindLabel(entry.kind)}
-                                </p>
-
-                                <p className="mt-0.5 text-sm font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
-                                    {entry.title[lang] || entry.title.en}
-                                    {entry.kind === "score_change" && typeof entry.delta === "number" && entry.delta !== 0 && (
-                                        <span className={`ml-1.5 font-bold ${accent}`}>
-                                            {entry.delta > 0 ? "+" : ""}
-                                            {entry.delta}
+                                <div className="py-3">
+                                    <p className="text-kicker uppercase tracking-wider text-muted-foreground">
+                                        <time dateTime={newest.at}>{formatDate(newest.at, lang)}</time>
+                                        <span className="mx-1.5" aria-hidden="true">
+                                            ·
                                         </span>
-                                    )}
-                                </p>
-
-                                {entry.detail && (
-                                    <p className="mt-1 text-caption leading-relaxed text-black/70 dark:text-white/70 [overflow-wrap:anywhere]">
-                                        {entry.detail[lang] || entry.detail.en}
+                                        {kindLabel(newest.kind)}
                                     </p>
-                                )}
 
-                                {(entry.cause || entry.href) && (
-                                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                                        {entry.cause && (
-                                            <button
-                                                type="button"
-                                                onClick={() => showCause(entry.cause!.entryId)}
-                                                className="inline-flex min-h-11 cursor-pointer items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
-                                            >
-                                                <CircleHelp className="h-3 w-3" aria-hidden="true" />
-                                                {t("Γιατί;", "Why this?")}
-                                            </button>
-                                        )}
-                                        {entry.href && (
-                                            <a
-                                                href={entry.href}
-                                                className="inline-flex min-h-11 items-center gap-1 text-caption text-muted-foreground hover:underline"
-                                            >
-                                                {t("Άνοιγμα", "Open")}
-                                                <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
-                                            </a>
-                                        )}
-                                    </div>
-                                )}
-
-                                {entry.cause && (
-                                    <p className="mt-1 text-caption italic leading-relaxed text-black/55 dark:text-white/50 [overflow-wrap:anywhere]">
-                                        {entry.cause.explanation[lang] || entry.cause.explanation.en}
+                                    <p className="mt-0.5 text-sm font-semibold text-black dark:text-white [overflow-wrap:anywhere]">
+                                        {newest.title[lang] || newest.title.en}
                                     </p>
-                                )}
-                            </div>
-                        </li>
+
+                                    <p className="mt-1 text-caption leading-relaxed text-black/70 dark:text-white/70">
+                                        <span
+                                            className="font-semibold"
+                                            data-count="timeline.groupSize"
+                                            data-count-subject={group.id}
+                                        >
+                                            {group.entries.length}
+                                        </span>{" "}
+                                        {t("όμοιες καταχωρίσεις, από", "identical entries, from")}{" "}
+                                        <time dateTime={oldest.at}>{formatDate(oldest.at, lang)}</time>{" "}
+                                        {t("έως", "to")}{" "}
+                                        <time dateTime={newest.at}>{formatDate(newest.at, lang)}</time>
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleGroup(group.id)}
+                                        aria-expanded={isOpen}
+                                        className="inline-flex min-h-11 cursor-pointer items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
+                                    >
+                                        {isOpen ? (
+                                            <ChevronUp className="h-3 w-3" aria-hidden="true" />
+                                        ) : (
+                                            <ChevronDown className="h-3 w-3" aria-hidden="true" />
+                                        )}
+                                        {isOpen ? t("Σύμπτυξη", "Collapse") : t("Εμφάνιση όλων", "Show all")}
+                                    </button>
+                                </div>
+                            </li>
+                            {isOpen && group.entries.map(renderEntry)}
+                        </Fragment>
                     )
                 })}
             </ol>
@@ -304,11 +467,16 @@ function Chip({
     onClick,
     label,
     count,
+    countKey,
+    countSubject,
 }: {
     active: boolean
     onClick: () => void
     label: string
     count: number
+    /** §6.7 — a registered key from lib/instrumentation/count-keys.ts. */
+    countKey: string
+    countSubject?: string
 }) {
     return (
         <button
@@ -322,7 +490,13 @@ function Chip({
             }`}
         >
             {label}
-            <span className={active ? "opacity-80" : "text-muted-foreground"}>{count}</span>
+            <span
+                className={active ? "opacity-80" : "text-muted-foreground"}
+                data-count={countKey}
+                data-count-subject={countSubject}
+            >
+                {count}
+            </span>
         </button>
     )
 }

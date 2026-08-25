@@ -23,6 +23,9 @@ export async function refreshCoverageAnalysis(): Promise<{ ok: boolean; error?: 
         await runGapEngine(dbUser.id)
 
         revalidatePath("/coverage-insights")
+        // /protection (V2-P2-01) renders the same snapshot and reuses this
+        // action for its refresh affordance — a refresh must not leave it stale.
+        revalidatePath("/protection")
         return { ok: true }
     } catch (error) {
         console.error("refreshCoverageAnalysis failed:", error)

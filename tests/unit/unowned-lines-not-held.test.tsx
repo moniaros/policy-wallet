@@ -363,6 +363,14 @@ describe("§2.2 — every ownership-state surface is known to this guard", () =>
                 "app/(protected)/branches/page.tsx",
                 "app/(protected)/dashboard/PolicyholderHome.tsx",
                 "app/(protected)/insights/risk-profile/page.tsx",
+                "app/(protected)/protection/page.tsx",
+                // /protection lenses (V2-P2-01): render THROUGH ProductBranchCard
+                // and RiskGraphPanel (both asserted above); their own §2.2
+                // behaviour — not-held vs never-assessed registers, no finding
+                // vocabulary — is asserted on rendered output by
+                // protection-surface-ledger.test.tsx (B-05, R-03).
+                "components/protection/ProtectionBranchLens.tsx",
+                "components/protection/ProtectionRiskLens.tsx",
                 // Definitions and plumbing — no rendering.
                 "lib/insurance/branch-page.ts",
                 "lib/services/gap-engine/index.ts",

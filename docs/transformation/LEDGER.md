@@ -227,6 +227,29 @@ Source: `app/(protected)/coverage-insights/page.tsx` → `CoverageInsightsClient
 | A-08 | Refresh the analysis | action | **KEEP** | consent-gated path | — |
 | A-09 | Upgrade trigger | action | **KEEP** | monetization surface | — |
 
+### A-10…A-21 — `CoverageInsightsClient` itself. Added 2026-08-25; it had NO rows.
+
+Found by the V2-P2-01 agent while building `/protection`: A-01…A-09 name the score, the
+recommendation cards, life events, the wizard, refresh and upgrade — **and nothing at all for the
+findings surface those things sit around**. It is D-028's failure one layer in: the route was
+enumerated, the section exists, and the largest thing on it was never itemised. V2-P2-03 deletes this
+route. Without these rows the rule in §12 would have reported no violation.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| A-10 | The reviewed-findings list: per-gap card with title, severity, line of business, insurer | fact | **KEEP** | «Η προστασία μου» | V2-P2-01b |
+| A-11 | Severity tally that sums to `gap.openCount` on live cover | fact | **KEEP** | same | V2-P2-01b |
+| A-12 | «Εξαιρέθηκαν» — names the EXPIRED policies left out of the tally | fact | **KEEP — honesty feature** | same. This is the surface telling the reader what it did not count; losing it silently would be the §2.1 shape | V2-P2-01b |
+| A-13 | «Ελέγχθηκε και είναι εντάξει» — policies checked with no findings | fact | **KEEP** | same. The counterpart to A-12: checked-and-clear stated as such, distinct from never-looked | V2-P2-01b |
+| A-14 | Counts: policies with findings, total policies, total coverage | fact | **KEEP** | same, through registered `data-count` keys | V2-P2-01b |
+| A-15 | Per-finding actions: review the policy, add a note, dismiss | action | **KEEP** | same — real agency, and dismissal is a write path | V2-P2-01b |
+| A-16 | «Επόμενα βήματα» | fact | **KEEP** | same | V2-P2-01b |
+| A-17 | Never-analysed state, with a refresh hint and a locked CTA | fact | **KEEP** | same. Absence-is-not-reassurance depends on this state existing separately from A-13 | V2-P2-01b |
+| A-18 | Empty-wallet state with an add-first CTA | fact | **KEEP** | same | V2-P2-01b |
+| A-19 | All-good state | fact | **KEEP, CHECK** | same — must not read as reassurance when nothing was analysed (that is A-17's job) | V2-P2-01b |
+| A-20 | Free-tier lite view: partial list, unlock CTA | action | **KEEP** | same; monetization count must not rise (§10.1) | V2-P2-01b |
+| A-21 | Independence note, link to coverage settings | fact | **KEEP** | same | V2-P2-01b |
+
 **§7.5 calls this "the densest surface in the app" and wants the most aggressive reduction.** That
 claim is **unmeasured on current code** — no baseline exists for it. T-015 measures it before Phase
 2 sets a ceiling, because the dashboard's numbers turned out stale and this one may too.
@@ -399,7 +422,7 @@ Baseline: `evidence/timeline/BASELINE.md` (9,539px @320 paid, 68 containers, **1
 
 | id | capability | kind | disposition | destination | item |
 |---|---|---|---|---|---|
-| T-01 | See a chronological history of what happened | fact | **KEEP, RELOCATED** | §4.2 — becomes activity history **inside Ρυθμίσεις**; it does not warrant a menu slot | Phase 2 |
+| T-01 | See a chronological history of what happened | fact | **KEEP, RELOCATED** | §4.2 — activity history **inside Ρυθμίσεις**, at `/account/history` («Ιστορικό δραστηριότητας», V2-P2-02); it does not warrant a menu slot | Phase 2 |
 | T-02 | Filter by entry kind | action | **KEEP** | must survive the relocation | Phase 2 |
 | T-03 | See a cause link between entries | fact | **KEEP** | the surface's one genuinely distinctive idea — it clears the filter first because the cause is often a filtered-out kind | Phase 2 |
 | T-04 | Open the policy an entry concerns | action | **KEEP** | `href` per entry | — |
@@ -493,3 +516,56 @@ dead strings were sitting in it looking live. Someone improving the gap-detected
 edited these and shipped nothing. Dead copy is worse than no copy.
 
 Capability count unchanged at **109**. A tombstone comment stands where they were.
+
+---
+
+## Η προστασία μου — `/protection` (V2-P2-01 — built; sources still alive)
+
+Source: `app/(protected)/protection/page.tsx` → `components/protection/ProtectionSurface.tsx`
+(`ProtectionBranchLens` / `ProtectionRiskLens` + the surviving /coverage-insights components).
+Written by the implementing item because `ledger-covers-every-surface` enumerates routes from the
+filesystem; the run coordinator owns the final wording.
+
+**No capabilities of its own.** The route absorbs, per §4.2: **B-01…B-06** render on the *ανά
+κλάδο* lens, **R-01…R-08** on the *ανά κίνδυνο* lens, **A-05…A-09** as the lens-independent engine
+content. The lens switcher (`?lens=`) is navigation, not capability. Guard:
+`tests/unit/protection-surface-ledger.test.tsx` renders the surface and fails when any KEEP row
+stops rendering; expected content is enumerated from the taxonomy, the graph/watch assemblers and
+the §6.7 key registry, never from a hand-written list.
+
+Two facts a later phase must not lose:
+
+- **B-06 is decided here** (QUEUE.md Phase 2): the `business` line renders only when the customer
+  holds a policy in it — one predicate in `ProtectionBranchLens`, reversible.
+- **A-09 transitionally renders on two mounts** — /coverage-insights and /protection — until
+  V2-P2-03 deletes the old route. One monetization surface (one featureKey, one modal), two mounts;
+  the §10.1 count of 5 stands on surfaces, and the transitional state must collapse back to one
+  mount when the old route goes.
+
+## Κλάδος αναλυτικά — `/branches/[branch]` → `/protection/[branch]` (V2-P2-01)
+
+Source: `components/branches/BranchDetail.tsx` — extracted verbatim from
+`app/(protected)/branches/[branch]/page.tsx`, which had **no ledger rows** (D-028: Phase 0
+enumerated the listing page only). Both mounts render the same component; only the breadcrumb
+differs. Enumerated by the implementing item; rows below are the extraction's inventory, not a
+redesign.
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| BD-01 | Breadcrumb back to the line listing | action | **KEEP** | `/protection` on the new mount; `/branches` until V2-P2-03 | — |
+| BD-02 | Branch header: icon, name, short description | fact | **KEEP** | both mounts | — |
+| BD-03 | Policies held in this line (identity via policy-identity, LIFECYCLE status badge); empty state with CTA when none | fact | **KEEP** | both mounts | — |
+| BD-04 | Branch-filtered recommendations (`branch.recommendationCount`, subject-scoped — never `recommendation.openCount`) | fact | **KEEP** | both mounts | — |
+| BD-05 | «Γιατί έχει σημασία» editorial | fact | **KEEP** | both mounts | — |
+| BD-06 | «Τι αναλύει το PolicyWallet» editorial | fact | **KEEP** | both mounts | — |
+| BD-07 | «Συχνά κενά κάλυψης» editorial, engine-badged «Εντοπίστηκε στο χαρτοφυλάκιό σου» when the rule fired | fact | **KEEP** | both mounts | — |
+| BD-08 | «Πώς να το αξιοποιήσεις καλύτερα» editorial | fact | **KEEP** | both mounts | — |
+| BD-09 | Perks aggregated from analyzed policies, linking to `/wallet/[id]#coverage` | fact | **KEEP** | both mounts | — |
+| BD-10 | Upcoming renewals with `policy.daysRemaining` (subject-scoped, Athens-calendar via lifecycle) | fact | **KEEP** | both mounts | — |
+| BD-11 | Recommended-action chips (askAi deep-links into policy Q&A) | action | **KEEP** | both mounts | — |
+| BD-12 | Suggested AI questions (when a policy exists in the line) | action | **KEEP** | both mounts | — |
+| BD-13 | Agent CTA (connected/disconnected hint, link to `/agent`) | action | **KEEP** | both mounts | — |
+
+**Known debt carried, not created:** the status→translation-key bridge (P1-10 exemption in
+`policy-status-display-single-source.test.ts`, moved by name to `BranchDetail.tsx`), and B-03's
+`line-clamp-2` truncation, which the tagline shares (Phase 4 primitive).

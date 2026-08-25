@@ -78,6 +78,13 @@ export const COUNT_KEYS: Record<string, string> = {
     // review.* — a risk review's opening snapshot (historical, not live).
     "review.findingsAtOpen": "Findings recorded when the review opened.",
 
+    // timeline.* — the activity history (settings › Ιστορικό δραστηριότητας;
+    // also /timeline until its removal item lands). The universe is the
+    // getTimeline window (60 newest entries), NOT the account's lifetime.
+    "timeline.entryCount": "Entries in the activity-history window — the «Όλα» filter chip.",
+    "timeline.kindCount": "SUBJECT-SCOPED by entry kind: one kind's tally in the filter strip. The values sum to timeline.entryCount.",
+    "timeline.groupSize": "SUBJECT-SCOPED by group id: how many identical consecutive entries a collapsed row stands for (T-06 grouping).",
+
     // entitlement.* — plan limits. NEVER portfolio facts: «έως 10 ασφαλιστήρια»
     // grouped with the policy count is exactly the false contradiction the
     // value scan reported.
@@ -119,6 +126,9 @@ export const FACT_KEYS: Record<string, string> = {
     // review.*
     "review.scoreAtOpen": "Score recorded when the review opened (historical).",
 
+    // timeline.* — SUBJECT-SCOPED by entry id.
+    "timeline.scoreDelta": "The score movement a score_change entry states; only rendered when both sides were comparable (comparableScores).",
+
     // LEGACY — the policy-detail surface was instrumented before the plan's
     // names settled (docs/evidence/policy-detail-mobile baselines reference
     // these spellings). Registered as-is so the guard sees them; renaming them
@@ -151,6 +161,9 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "portfolio.branchPremium",
     "profile.healthComponent",
     "riskDimension.score",
+    "timeline.kindCount",
+    "timeline.groupSize",
+    "timeline.scoreDelta",
 ])
 
 export function isRegisteredCountKey(key: string): boolean {

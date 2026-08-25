@@ -89,6 +89,7 @@ describe('settings never renders a control nothing backs', () => {
         'components/settings/sections/SecuritySection.tsx',
         'components/settings/sections/NotificationsSection.tsx',
         'components/settings/sections/PrivacySection.tsx',
+        'components/settings/sections/HistorySection.tsx',
     ]
     const all = SECTIONS.map((f) => strip(readFileSync(f, 'utf-8'))).join('\n')
 

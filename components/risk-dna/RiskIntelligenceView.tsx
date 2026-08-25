@@ -95,6 +95,12 @@ export interface RiskIntelligenceViewProps {
      * first, then the specific things inside them.
      */
     graphPanel?: React.ReactNode
+    /**
+     * Where health.nextAction sends the reader. Defaults to the wizard on
+     * /coverage-insights (the pre-§4.2 home); /protection passes its own
+     * in-page anchor because the wizard renders on the same surface there.
+     */
+    wizardHref?: string
 }
 
 const BAND_TONE: Record<string, string> = {
@@ -120,6 +126,7 @@ export function RiskIntelligenceView({
     watch,
     predictions,
     graphPanel,
+    wizardHref,
 }: RiskIntelligenceViewProps) {
     const lang = language
     const t = (el: string, en: string) => (lang === "el" ? el : en)
@@ -187,7 +194,7 @@ export function RiskIntelligenceView({
                     first, so it has to be a control. */}
                 {health.nextAction && (
                     <Link
-                        href="/coverage-insights#risk-profile-wizard"
+                        href={wizardHref ?? "/coverage-insights#risk-profile-wizard"}
                         className="mt-3 inline-flex min-h-11 items-center gap-1 text-caption font-semibold text-primary hover:underline dark:text-mint"
                     >
                         {health.nextAction[lang] || health.nextAction.en}

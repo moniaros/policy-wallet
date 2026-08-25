@@ -27,7 +27,7 @@ import { resolveRouteOwner } from "@/proxy"
  * rule reports no violation. Nothing was measuring the coverage.
  *
  * Ownership is resolved through `resolveRouteOwner` from proxy.ts rather than a
- * hardcoded B2B list, so the two cannot drift: `/wallet/*​/review` is
+ * hardcoded B2B list, so the two cannot drift: `/wallet/∗/review` is
  * agent-owned there, which is why its absence from the ledger is correct rather
  * than a miss.
  */
@@ -62,7 +62,7 @@ function routes(dir = APP, prefix = ""): string[] {
     return out.sort()
 }
 
-/** `[id]` → a concrete segment, so proxy patterns like `/wallet/*​/review` match. */
+/** `[id]` → a concrete segment, so proxy patterns like `/wallet/∗/review` match. */
 const concrete = (r: string) => r.replace(/\[([^\]]+)\]/g, "x")
 
 /**
@@ -82,7 +82,8 @@ const COVERED_COLLECTIVELY: Record<string, string> = {
  * A new surface must get rows, not an entry here.
  */
 const UNENUMERATED: Record<string, string> = {
-    "/branches/[branch]": "V2-P2-01 — 392 lines, absorbed into /protection; rows to follow from that item",
+    // /branches/[branch] left this list in V2-P2-01: BD-01…BD-13 now enumerate
+    // it (shared BranchDetail, mounted at /protection/[branch] too).
     "/collaboration/threads/[id]": "not in Phase 2's path; rows owed before anything relocates it",
 }
 

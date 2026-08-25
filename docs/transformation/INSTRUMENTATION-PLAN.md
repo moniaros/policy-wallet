@@ -106,6 +106,15 @@ step indicators («1/3» in QuickStart) and pagination controls — control stat
 the portfolio; and dates rendered without a quantity (a date is a fact but not a count — it may
 carry `policy.endDate`/`policy.startDate` as data-fact where already composed as its own element).
 
+### Additions ratified 2026-08-25 (V2-P2-02, the timeline's relocation into Ρυθμίσεις)
+
+New count keys (definitions in the registry): `timeline.entryCount` (the activity history's «Όλα»
+chip — the getTimeline 60-entry window, never the account's lifetime) · `timeline.kindCount`
+*(subject-scoped by entry kind; sums to `timeline.entryCount`)* · `timeline.groupSize`
+*(subject-scoped by group id — how many identical consecutive rows a collapsed T-06 group stands
+for)*. New fact key: `timeline.scoreDelta` *(subject-scoped by entry id; renders only when
+`comparableScores` held on both sides)*.
+
 ## Action verbs
 
 `upload` · `analyse` · `viewPolicy` · `viewGap` · `renew` · `contactAdvisor` · `callClaims` ·

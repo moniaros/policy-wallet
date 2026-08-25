@@ -86,7 +86,10 @@ describe("the causal chain reaches every surface that shows a recommendation", (
         // the drift this guard exists to stop.
         for (const page of [
             "app/(protected)/wallet/[id]/page.tsx",
-            "app/(protected)/branches/[branch]/page.tsx",
+            // The branch detail was extracted from app/(protected)/branches/[branch]/
+            // page.tsx in V2-P2-01; BOTH mounts (/branches/[branch] and
+            // /protection/[branch]) render through this component.
+            "components/branches/BranchDetail.tsx",
         ]) {
             expect(readFileSync(page, "utf-8")).toMatch(/getEnrichedRecommendations/)
         }

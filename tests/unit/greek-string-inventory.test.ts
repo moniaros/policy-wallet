@@ -58,9 +58,13 @@
  *   - en.ts values, and the `en` side of inline pairs (English copy);
  *   - Greek outside the roots each arm names (tests/, scripts/, prisma/,
  *     docs/ and the other non-runtime roots);
- *   - bare Greek literals not shaped as a pair or a ternary branch —
- *     consts, enum members, object values under other key names, and
- *     `??` / `||` fallbacks;
+ *   - bare Greek literals not shaped as a pair, a ternary branch, or a
+ *     two-argument locale-helper call — consts, enum members, object values
+ *     under other key names, and `??` / `||` fallbacks. (The helper-call shape
+ *     WAS in this list until 2026-08-25, when measuring it found 981 sites,
+ *     ~390 of them on authenticated B2C surfaces including RiskProfileWizard
+ *     and onboarding — the largest body of customer-facing Greek no net could
+ *     see. It is now the `call` arm.);
  *   - ternaries in .tsx files (lint:i18n-changed's beat when touched);
  *   - Greek reaching a ternary branch only through a variable reference
  *     (the variable's own literal is a bare literal, above);
@@ -234,6 +238,48 @@ export function extractTernaryGreek(source: string, fileLabel: string): string[]
     return out
 }
 
+/**
+ * Greek reaching the reader through a two-argument locale helper.
+ *
+ * `t("Καλή εικόνα", "Well understood")`, `L("Σύσταση", "Recommendation")`. The
+ * shape is neither an {el, en} object nor a `?:` branch — the ternary is hidden
+ * inside the helper (`(el, en) => lang === "el" ? el : en`), so the arms above
+ * see a plain call and its arguments are bare literals, which this file's
+ * charter explicitly did not cover.
+ *
+ * Measured before adding it: **981 call sites, ~390 of them on authenticated
+ * B2C surfaces** — RiskProfileWizard 94, onboarding/flow 71, RecommendationCards
+ * 48, LifeTimeline 18. `lint:i18n-changed` does not catch it either; I injected
+ * one into a .tsx and the linter passed. So this was the largest body of
+ * customer-facing Greek in the product that no net could see, on the surfaces a
+ * new customer meets first.
+ *
+ * Callee must be a plain identifier, which keeps `.replace("Ελληνικά", "…")`
+ * out, and the second argument must NOT be Greek — a locale pair is (Greek,
+ * English), and requiring that discriminates a translation call from any other
+ * two-string call.
+ */
+export function extractLocaleCallPairs(source: string, fileLabel: string): string[] {
+    const sf = ts.createSourceFile(fileLabel, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX)
+    const out: string[] = []
+    const visit = (node: ts.Node) => {
+        if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.arguments.length === 2) {
+            const [first, second] = node.arguments
+            if (
+                ts.isStringLiteralLike(first) &&
+                ts.isStringLiteralLike(second) &&
+                GREEK_RE.test(first.text) &&
+                !GREEK_RE.test(second.text)
+            ) {
+                out.push(first.getText(sf).replace(/\s+/g, " ").trim())
+            }
+        }
+        ts.forEachChild(node, visit)
+    }
+    visit(sf)
+    return out
+}
+
 // ─── Bundle arm: walk the real module, not its source text ─────────────────
 
 export function collectBundleLeaves(
@@ -277,6 +323,9 @@ interface Universe {
     ternaryLines: string[]
     ternaryFileCount: number
     perFileTernary: Map<string, number>
+    callLines: string[]
+    callFileCount: number
+    perFileCall: Map<string, number>
 }
 
 function buildUniverse(): Universe {
@@ -290,6 +339,8 @@ function buildUniverse(): Universe {
     const perFile = new Map<string, number>()
     const ternaryLines: string[] = []
     const perFileTernary = new Map<string, number>()
+    const callLines: string[] = []
+    const perFileCall = new Map<string, number>()
     let filesEnumerated = 0
     const inlineRootSet = new Set<string>(INLINE_ROOTS)
     for (const root of TERNARY_ROOTS) {
@@ -309,6 +360,17 @@ function buildUniverse(): Universe {
                     for (const t of [...texts].sort(byCodeUnit)) inlineLines.push(`inline\t${rel}\t${t}`)
                 }
             }
+            // Locale-helper calls exist in .ts AND .tsx — unlike the ternary
+            // arm, whose .tsx half is lint:i18n-changed's beat. That linter
+            // does not see this shape (verified by injection), so nothing else
+            // covers the .tsx side.
+            if (couldContainGreek(source)) {
+                const texts = extractLocaleCallPairs(source, rel)
+                if (texts.length > 0) {
+                    perFileCall.set(rel, texts.length)
+                    for (const t of [...texts].sort(byCodeUnit)) callLines.push(`call\t${rel}\t${t}`)
+                }
+            }
             if (rel.endsWith(".ts") && !rel.endsWith(".tsx") && couldContainGreek(source)) {
                 const texts = extractTernaryGreek(source, rel)
                 if (texts.length > 0) {
@@ -320,6 +382,7 @@ function buildUniverse(): Universe {
     }
     inlineLines.sort(byCodeUnit)
     ternaryLines.sort(byCodeUnit)
+    callLines.sort(byCodeUnit)
     return {
         filesEnumerated,
         bundleLines,
@@ -329,6 +392,9 @@ function buildUniverse(): Universe {
         ternaryLines,
         ternaryFileCount: perFileTernary.size,
         perFileTernary,
+        callLines,
+        callFileCount: perFileCall.size,
+        perFileCall,
     }
 }
 
@@ -343,6 +409,10 @@ function serializeInventory(u: Universe): string {
         "# bundle — leaf values of `el` in lib/i18n/translations/el.ts, by dotted path, JSON-encoded.",
         "# inline — el side of every {el, en} object literal under app/, components/, lib/;",
         "#          exact initializer source, whitespace collapsed.",
+        "# call — Greek first argument of a two-argument locale helper, t(\"el\", \"en\") /",
+        "#        L(\"el\", \"en\"), in .ts AND .tsx under the same roots. The ternary is hidden",
+        "#        inside the helper, so neither the inline nor the ternary arm sees it, and",
+        "#        lint:i18n-changed does not either (verified by injection).",
         "# ternary — every ?: branch whose decoded string/template literals contain Greek,",
         "#           in .ts files under app/, components/, lib/, contexts/, hooks/, types/,",
         "#           utils/; branch source, whitespace collapsed. Skipped: branches that are",
@@ -354,9 +424,10 @@ function serializeInventory(u: Universe): string {
         `# bundle entries: ${u.bundleLines.length}`,
         `# inline entries: ${u.inlineLines.length} across ${u.inlineFileCount} files`,
         `# ternary entries: ${u.ternaryLines.length} across ${u.ternaryFileCount} files`,
+        `# call entries: ${u.callLines.length} across ${u.callFileCount} files`,
         "",
     ]
-    return [...header, ...u.bundleLines, ...u.inlineLines, ...u.ternaryLines, ""].join("\n")
+    return [...header, ...u.bundleLines, ...u.inlineLines, ...u.ternaryLines, ...u.callLines, ""].join("\n")
 }
 
 // ─── The guard ──────────────────────────────────────────────────────────────
@@ -535,5 +606,40 @@ describe("greek string inventory (§6.1.8 copy freeze)", () => {
         ])
         expect(() => collectBundleLeaves({ f: () => "χ" }, "", [])).toThrow(/unfreezable leaf/)
         expect(() => collectBundleLeaves({ v: null }, "", [])).toThrow(/unfreezable leaf/)
+    })
+})
+
+describe("probe: the locale-helper-call extractor", () => {
+    const callProbeSource = readFileSync(
+        join(REPO_ROOT, "tests/fixtures/guard-probes/locale-call-pairs.tsx.txt"),
+        "utf8"
+    )
+
+    it("extracts exactly the three matching shapes", () => {
+        const got = [...extractLocaleCallPairs(callProbeSource, "locale-call-pairs.tsx.txt")].sort(byCodeUnit)
+        expect(got).toEqual(
+            [
+                '"Καλή εικόνα"',
+                '"Σύσταση"',
+                "'Η ενέργεια είναι οριστική'",
+            ].sort(byCodeUnit)
+        )
+    })
+
+    it("does not match the five shapes that are not locale pairs", () => {
+        const got = extractLocaleCallPairs(callProbeSource, "locale-call-pairs.tsx.txt").join(" | ")
+        // Greek second argument, property-access callee, no Greek, arity 3, arity 1.
+        expect(got).not.toContain("Ελληνικά")
+        expect(got).not.toContain("Καλημέρα")
+        expect(got).not.toContain("Καληνύχτα")
+    })
+
+    it("the fixture really contains every shape it claims to probe", () => {
+        // A probe that stopped containing its own subject would pass vacuously.
+        for (const marker of ["MATCH:", "NO MATCH:"]) {
+            expect(callProbeSource).toContain(marker)
+        }
+        expect(callProbeSource.split("NO MATCH:").length - 1).toBe(5)
+        expect(callProbeSource.split(/\bMATCH:/).length - 1 - 5).toBe(3)
     })
 })

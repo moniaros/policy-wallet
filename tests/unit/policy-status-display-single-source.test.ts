@@ -112,11 +112,13 @@ const MAP_EXEMPTIONS: Record<string, string> = {
         'Vocabulary, not derivation — the words themselves live here.',
     'lib/i18n/translations/en.ts':
         'Vocabulary, not derivation — the words themselves live here.',
-    'app/(protected)/branches/[branch]/page.tsx':
-        'DEBT (found by this guard’s first enumeration, P1-10): the status KEY comes ' +
-        'from effectivePolicyStatus (sanctioned), but the page duplicates the ' +
-        'status→translation-key bridge policy-status-view keeps private. Migrating to ' +
-        'getPolicyStatusView is tidying, not a truth fix — the derivation is compliant.',
+    'components/branches/BranchDetail.tsx':
+        'DEBT (found by this guard’s first enumeration, P1-10, then extracted verbatim ' +
+        'from app/(protected)/branches/[branch]/page.tsx in V2-P2-01 so /protection/[branch] ' +
+        'shares it): the status KEY comes from effectivePolicyStatus (sanctioned), but the ' +
+        'component duplicates the status→translation-key bridge policy-status-view keeps ' +
+        'private. Migrating to getPolicyStatusView is tidying, not a truth fix — the ' +
+        'derivation is compliant.',
     'components/agent/tabs/ClientPoliciesTab.tsx':
         '§12.4 agent-facing surface, exempted BY NAME per the run rule. The key ' +
         'arrives lifecycle-derived (customer.service.ts effectivePolicyStatus) but the ' +

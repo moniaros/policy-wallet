@@ -1553,6 +1553,18 @@ export const el = {
         agentDisconnectedHint: 'Σύνδεσε τον ασφαλιστικό σου σύμβουλο για να ελέγξετε μαζί τις καλύψεις σου.',
     },
 
+    // «Η προστασία μου» — the §4.2 consolidated protection surface (/protection).
+    // Two lenses over one portfolio: by line of business, by risk. The subtitle
+    // states what the page SHOWS — never a verdict about how protected the
+    // reader is (absence of a detected problem is not evidence of no problem).
+    protection: {
+        title: 'Η προστασία μου',
+        subtitle: 'Τι έχετε και τι παρακολουθούμε — ανά κλάδο και ανά κίνδυνο.',
+        lensAria: 'Προβολή προστασίας',
+        lensByBranch: 'Ανά κλάδο',
+        lensByRisk: 'Ανά κίνδυνο',
+    },
+
     // Policy Status
     policyStatus: {
         // Neuter — the subject is «το ασφαλιστήριο», like ΛΗΓΜΕΝΟ / ΕΛΛΙΠΕΣ below.
@@ -2334,6 +2346,7 @@ export const el = {
             security: { label: 'Ασφάλεια', description: 'Κωδικός πρόσβασης και συσκευές' },
             notifications: { label: 'Ειδοποιήσεις', description: 'Τι σας στέλνουμε και πότε' },
             privacy: { label: 'Απόρρητο και δεδομένα', description: 'Συγκαταθέσεις, εξαγωγή, διαγραφή' },
+            history: { label: 'Ιστορικό δραστηριότητας', description: 'Τι άλλαξε στην προστασία σας, πότε και γιατί' },
             agency: { label: 'Προφίλ γραφείου', description: 'Στοιχεία πρακτορείου και προμήθειες' },
         },
 

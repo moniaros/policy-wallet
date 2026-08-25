@@ -1,0 +1,29 @@
+// Committed red-probe for extractLocaleCallPairs.
+// One entry per shape that exists in the codebase, plus shapes that must NOT match.
+
+const t = (el: string, en: string) => (lang === "el" ? el : en)
+const L = (el: string, en: string) => (language === "el" ? el : en)
+
+export function Probe() {
+    return (
+        <>
+            {/* MATCH: the ordinary shape */}
+            <p>{t("Καλή εικόνα", "Well understood")}</p>
+            {/* MATCH: a different helper name — callee is any plain identifier */}
+            <p>{L("Σύσταση", "Recommendation")}</p>
+            {/* MATCH: single quotes, punctuation, interpolation-free */}
+            <p>{t('Η ενέργεια είναι οριστική', 'This cannot be undone')}</p>
+
+            {/* NO MATCH: second argument is Greek too — not a locale pair */}
+            <p>{replaceAll("Ελληνικά", "Ελληνικά2")}</p>
+            {/* NO MATCH: property-access callee, e.g. String.prototype.replace */}
+            <p>{s.replace("Ελληνικά", "Greek")}</p>
+            {/* NO MATCH: no Greek in the first argument */}
+            <p>{t("Well understood", "Well understood")}</p>
+            {/* NO MATCH: three arguments — not the two-argument helper shape */}
+            <p>{t("Καλημέρα", "Good morning", "extra")}</p>
+            {/* NO MATCH: one argument */}
+            <p>{t("Καληνύχτα")}</p>
+        </>
+    )
+}

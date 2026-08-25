@@ -1538,6 +1538,16 @@ export const en: TranslationKeys = {
         agentDisconnectedHint: 'Connect your insurance advisor to review your covers together.',
     },
 
+    // «Η προστασία μου» — the §4.2 consolidated protection surface (/protection).
+    // Two lenses over one portfolio: by line of business, by risk.
+    protection: {
+        title: 'My protection',
+        subtitle: 'What you hold and what we are watching — by line of business and by risk.',
+        lensAria: 'Protection view',
+        lensByBranch: 'By line',
+        lensByRisk: 'By risk',
+    },
+
     // Policy Status
     policyStatus: {
         active: 'Active',
@@ -2307,6 +2317,7 @@ export const en: TranslationKeys = {
             security: { label: 'Security', description: 'Password and devices' },
             notifications: { label: 'Notifications', description: 'What we send you, and when' },
             privacy: { label: 'Privacy & data', description: 'Consents, export, deletion' },
+            history: { label: 'Activity history', description: 'What changed in your protection, when, and why' },
             agency: { label: 'Agency profile', description: 'Agency details and commission rates' },
         },
 
