@@ -543,3 +543,34 @@ minutes, but which of A/B/C you want is a commercial call, and B silently delete
 incentive somebody may have been counting on.
 
 answer: *(awaiting)*
+
+---
+
+## H-009 — «Ξεκλείδωμα με Plus» unlocks nothing. The gate requires Pro.
+
+**Raised 2026-08-25, from V2-P2-01b's out-of-scope list. The copy half is mine to fix; the gate is
+yours.**
+
+`isDeepAnalysisLocked = entitlements.tier !== 'pro'` — `app/(protected)/coverage-insights/page.tsx:141`
+and now `app/(protected)/protection/page.tsx:281`. Tiers are `free | plus | pro`. The locked branch
+renders a Crown and a CTA reading **«Ξεκλείδωμα με Plus» / "Unlock with Plus"**, pointing at
+`/upgrade?reason=feature_locked`.
+
+**Two things are wrong, and they are different kinds of wrong.**
+
+1. **The copy is false, for everybody.** Only `pro` clears that gate. A free customer who reads
+   "Unlock with Plus", buys Plus, and comes back is still locked out of the thing they bought it for.
+   That is CLAUDE.md's absolute — publishing a claim the code does not support — and it is worse than
+   the usual case because the claim is what induces the purchase. **This is copy, which is in scope,
+   and I will fix it to name the plan the gate actually requires.**
+2. **A paying Plus subscriber is shown an upgrade prompt for a plan they hold.** Whether deep
+   analysis *should* sit behind Pro or behind Plus is a commercial decision about what each plan is
+   worth, and §12.4 puts plan-gating mechanics out of this run's scope. **I am not touching the
+   gate.**
+
+Fixing (1) without (2) leaves a Plus subscriber correctly told that Pro unlocks it. That is honest,
+and it is the reversible half — copy reverts in one line, an entitlement change grants or removes
+access. If the intent was always that Plus unlocks deep analysis, the fix is one character in the
+gate and the copy follows it back.
+
+**Nothing blocks on this.** The dishonest half is being removed either way.
