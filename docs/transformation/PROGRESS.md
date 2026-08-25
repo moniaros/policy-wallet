@@ -662,3 +662,42 @@ here so it cannot be discovered as a surprise.
 
 `/account/history` at 2 sections and 51 containers is the shape the relocation was supposed to
 produce: the same capability, a tenth of the chrome.
+
+## Phase 3 §9 — closed, mostly by checking rather than building (2026-08-25)
+
+Three checks, two of which found nothing, and saying so is the result.
+
+1. **Is notification criticality §2.1's severity verdict renamed?** No — **D-031**. Priority never
+   renders; it routes. The six `critical` events are dated facts or security events.
+2. **Does every outbound prompt have a real, dated deadline (§9.5)?** 22 live non-transactional
+   outbound events; 13 carry no date, but almost all are *third-party actions* — an advisor asked
+   you for a document, a proposal arrived — not prompts. Two are engagement prompts without a
+   deadline: `weekly_digest` and `churn_prevention`.
+3. **Was H-002 = B implemented?** No — **and that is correct.** I had the finding written before I
+   read the boundary note already sitting in `QUEUE.md`:
+
+   > §12.4 puts notification **dispatch** logic (whether a message fires, to which channel, at what
+   > cadence) **out of scope for this run.** H-002 decides the *policy*; this run specifies it and
+   > builds the *controls*, and does not itself change the cron cadence or the send triggers. […]
+   > **B does not move it.**
+
+   The owner chose B — renewals and lapses, plus a **monthly** digest sent only when something
+   changed. The product ships **C-minus-the-score**: a weekly digest, the drip, the churn sequence.
+   That divergence is deliberate and bounded, and I nearly rewired three crons on the strength of
+   "the owner decided B" without checking whether this run was allowed to.
+
+### What was in scope, and is now done
+
+`tests/unit/outbound-policy-divergence.test.ts` inventories the five live outbound events option B
+would retire, each with why it is not B. It is **not** a guard that something is broken — it is a
+decided-but-unimplemented divergence held somewhere that **fails when it goes stale**, because a
+decision recorded only in a halt document quietly stops being true. The count may only fall; when the
+dispatch work is in scope, these go red one at a time and each deletion is the proof.
+
+It also pins the half that *did* ship — the §9.5 ceiling and off switch (P1-09b) — because the
+inventory is only meaningful if those controls are real, and asserts the option-A deadline events
+(`policy_expiring`, `renewal_overdue`, `obligation_due`) stay live, so outbound cannot quietly move
+in the wrong direction either.
+
+**§9.4** (perk prompts needing a clause link, conditions belonging to the review register) is a
+**Phase 4** row and stays there.
