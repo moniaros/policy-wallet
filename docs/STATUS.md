@@ -1,7 +1,7 @@
 # STATUS
 
-**Production: `5cc2c951`** — deployed 2026-08-25, CI green on all four jobs, Vercel `READY`,
-zero runtime errors in the hour after. Prod was on `11ec4987` before this; no branch divergence.
+**Production: `c7163c19`** — deployed 2026-08-25, CI green on all four jobs, Vercel `READY`,
+zero runtime errors after. **All five halts answered and implemented.**
 
 ## Current phase
 
@@ -20,12 +20,22 @@ zero runtime errors in the hour after. Prod was on `11ec4987` before this; no br
 - **Phase 3** — §6.11 truncation resolved as *reachability, not absence of clamping*; §9 checked and
   found sound.
 
-## Blocked
+## Halts — all five answered 2026-08-25
 
-- **Phase 2b (§8, the AI advisor)** — deliberately not started (**D-032**). H-006 (IDD Art. 20 advice
-  boundary) and H-007 (Art. 9 consent) are regulatory questions, and *not building is the reversible
-  option*: code reverts, collected health data and given advice do not.
-- **Phases 4–6** — design system, rebuild, guards. Not started.
+- **H-005** the second score → **removed** (index, verdict, tone map, component percentages).
+- **H-006 / H-007** → proceed with the disclosure. Implemented as **coverage**: nine B2C surfaces
+  rendering model prose had none, including the policy detail page. The Art. 9 notice on the wizard's
+  seven health fields is now held to its four promises.
+- **H-008** → **no grant.** Credits are the wrong lever for a dormant wallet; the day-30 email drives
+  the upload instead.
+- **H-009** → deep analysis sits on **both** paid tiers.
+
+## Not started
+
+- **§8's interview and consolidated demands-and-needs record.** Unblocked by H-006/H-007, not
+  specified by them (**D-033**). Most of §8's value already ships — comprehension, and the risk
+  graph's stated-requirement-versus-policy rows.
+- **Phases 4–6** — design system, rebuild, guards.
 
 ## Top risks, ranked
 
@@ -41,11 +51,15 @@ zero runtime errors in the hour after. Prod was on `11ec4987` before this; no br
 4. **`policy-detail-goal2`: 10 sections against a ≤8 budget** — unresolved, possibly a detector
    artifact (a heading counted twice while `SummaryCard` renders once). Not on the CI path. **Check
    the detector before editing the page on the strength of that number.**
-5. Five halts open: H-005, H-006, H-007, H-008's commercial half, H-009's tier gate.
+5. **Two guards state their own limits** rather than hiding them: the AI-disclosure check
+   over-approximates (an import is not a render — closed with a must-carry-their-own list), and the
+   truncation metric cannot see cross-page reachability.
 
 ## Next 3 actions
 
-1. Answer **H-006 / H-007** — they unblock Phase 2b and need no code first.
-2. Give `verify:gap-catalogue` a database in CI, or make a skipped step fail loudly.
-3. Start **Phase 4** (design system), whose first row is **P-08**: `PerksCard` renders no clause or
+1. Give `verify:gap-catalogue` a database in CI, or make a skipped step fail loudly. It caught a
+   live defect locally that CI structurally could not.
+2. Start **Phase 4** (design system), whose first row is **P-08**: `PerksCard` renders no clause or
    source link, so a customer is told they have a perk with no way to check where it came from.
+3. Decide whether §8's consolidated demands-and-needs record is worth building — it is the one part
+   of §8 the product does not already have, and it is a design question, not a blocked one.
