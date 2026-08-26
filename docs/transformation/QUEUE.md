@@ -1605,6 +1605,13 @@ twice — but I could not confirm it against the live DOM and **am not claiming 
 Not on the CI path, does not gate the deploy. Needs the section detector checked for nested matches
 before anyone edits the page on the strength of this number.
 
+> **RESOLVED 2026-08-26 (P5-detail-goal2-01) — see D-035.** Both halves were true: the duplicate WAS
+> the detector (nested-match artefact, proven from a render — the page mounts one summary card), and
+> the corrected count, 9, was still over budget by one real grouping (the standalone ask-AI dock,
+> since moved inside the head card — LEDGER P-13a). The page measures 8 = budget, and the budget is
+> now CI-enforced by `tests/unit/policy-detail-section-budget.test.tsx`, demonstrated red at 9
+> before the fix.
+
 
 ## P5-wallet-00 — the measurement the reframe is gated on · `in flight`
 
@@ -1663,3 +1670,40 @@ engineer", "cashier") · policy number · product name · sum insured.
 **cyber, business and pension have no `AcordData` object at all.** Record as a **structured-identity
 gap**, not merely an identifier gap: `/branches` renders cards for both Cyber and Επιχείρηση with
 nothing behind them. See **H-010**.
+
+
+## P5-measure-00 — the section-count discontinuity · `queued, held`
+
+**Held behind P5-infra-00**, which is live in `tests/measure/**` and `docs/transformation/**`. Two
+evidence agents writing the same trees is how the last collision produced a 13-row wallet capture
+that described neither fixture.
+
+### Feasibility check done up front, because acceptance #5 turns on it
+
+Acceptance #5 says do not re-run captures where the correction is **derivable from stored DOM**.
+**Stored captures contain no DOM.** A capture holds `sections: { count, ids }`, where `ids` are
+display strings like `"<div> Το πορτοφόλι μου"`. There is no `html`, no `outerHTML`.
+
+So the correction is **partly** derivable and not fully:
+
+- **Derivable signal.** The artefact counts one card twice — once as its spacing wrapper, once as its
+  internal header row — and **both entries carry the same label**. `heavy-320`'s stored `ids` already
+  show `"<div> Το πορτοφόλι μου"` twice. A repeated adjacent label is therefore strong evidence of a
+  double count.
+- **Why it is not proof.** Nesting is a DOM relationship and the stored list is flat. Two genuinely
+  distinct sections may legitimately share a label, and a nested pair may not be adjacent in the
+  list. Correcting by label-matching alone would be a *guess wearing a number's clothes* — the exact
+  failure this item exists to undo.
+
+**Proposed split, for the item to confirm:** publish the label-collision correction as a **lower
+bound** on the inflation ("at least N of the M counted were doubles"), re-run only the captures where
+a ceiling decision depends on the exact figure, and say per capture which of the two it is. That
+honours #5's intent — do not re-run what you can derive — without letting derivation quietly become
+estimation.
+
+### Also relevant
+`sectionCount`'s nesting fix already landed under **P5-detail-goal2-01**, in
+`tests/measure/section-collector.ts` — a single definition, imported, and run in both jsdom and
+`page.evaluate`. Acceptance #1 is therefore largely satisfied; this item should **verify** it rather
+than redo it, and own the parts goal2 did not: the historical re-derivation, the ceiling restatement,
+and the 0.5 discontinuity record.
