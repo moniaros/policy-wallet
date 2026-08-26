@@ -1,0 +1,9 @@
+// PROBE — a render site that retypes hook copy inline instead of reading the
+// register. hook-length.test.ts must flag this shape.
+export function BadHookCard() {
+    return (
+        <a href="/guides/prostimo-anasfalistou-oximatos">
+            Ήταν το όχημά σας ασφαλισμένο την ημέρα της διασταύρωσης;
+        </a>
+    )
+}

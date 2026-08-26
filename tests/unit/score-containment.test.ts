@@ -103,6 +103,26 @@ describe("the protection score value renders nowhere", () => {
         expect(FILES.some((f) => f.includes(`${path.sep}lib${path.sep}`))).toBe(true)
     })
 
+    it("walks the marketing and guides surfaces too (GROWTH-HOOKS-01 extension)", () => {
+        // The B2C policy this guard enforces does not stop at the app shell:
+        // the growth hooks put customer-facing renders under components/growth,
+        // lib/growth and the public guides tree, and a universe that silently
+        // lost any of them would pass while the score leaked from a marketing
+        // page. Each path is asserted PRESENT, the same way lib/ was pinned
+        // after the weekly-digest leak.
+        for (const mustCover of [
+            `app${path.sep}(public)${path.sep}guides`,
+            `components${path.sep}landing${path.sep}`,
+            `components${path.sep}growth${path.sep}HookTicker.tsx`,
+            `lib${path.sep}growth${path.sep}hooks.ts`,
+        ]) {
+            expect(
+                FILES.some((f) => f.includes(mustCover)),
+                `universe lost the marketing/guides path: ${mustCover}`
+            ).toBe(true)
+        }
+    })
+
     it("has no sanctioned surfaces left, and never regrows them silently", () => {
         expect(SANCTIONED.size).toBe(0)
     })
@@ -149,6 +169,10 @@ describe("the matcher itself is proven against committed probes", () => {
 
     it("flags the email template probe (the weekly-digest leak's shape)", () => {
         expect(rendersScoreValue(probe("score-render-email.ts.txt"))).toBe(true)
+    })
+
+    it("flags the marketing-surface probe — a hook card quoting the score (GROWTH-HOOKS-01)", () => {
+        expect(rendersScoreValue(probe("score-render-marketing.tsx.txt"))).toBe(true)
     })
 
     it("passes the internal-use probe — hashing and key paths are not renders", () => {

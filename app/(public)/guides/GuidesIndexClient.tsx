@@ -6,6 +6,7 @@ import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { guides } from "@/lib/guides/content"
 import { localizeHref } from "@/lib/seo/locale-links"
+import { HookTicker } from "@/components/growth/HookTicker"
 
 /**
  * The guides index, as an index.
@@ -87,6 +88,13 @@ export default function GuidesIndexClient() {
                     )}
                 </p>
             </section>
+
+            {/* Growth hooks — ROTATING here and only here: this page has
+                no other rotator (D-G05). Under prefers-reduced-motion the
+                component renders its static stack instead. */}
+            <div className="mx-auto max-w-[820px] px-6 pb-10 md:px-12">
+                <HookTicker locale={lang} mode="rotating" />
+            </div>
 
             <div className="mx-auto max-w-[820px] px-6 pb-24 md:px-12">
                 {/* Lead story. One item at full weight, so the page has a

@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { Pause, Play } from "lucide-react"
 import { type MarketingLocale } from "@/lib/marketing/positioning"
+import { useRotation } from "@/components/growth/use-rotation"
 
 /**
  * Three hero slides, each one benefit the product delivers.
@@ -124,50 +124,25 @@ const SLIDES: Slide[] = [
 
 export function HeroSlides({ locale }: { locale: MarketingLocale }) {
     const t = (el: string, en: string) => (locale === "el" ? el : en)
-    const [index, setIndex] = useState(0)
-    const [paused, setPaused] = useState(false)
-    const [tookControl, setTookControl] = useState(false)
-    const [reducedMotion, setReducedMotion] = useState(false)
-    const hovering = useRef(false)
-    const focused = useRef(false)
-
-    useEffect(() => {
-        const query = window.matchMedia("(prefers-reduced-motion: reduce)")
-        const apply = () => setReducedMotion(query.matches)
-        apply()
-        query.addEventListener("change", apply)
-        return () => query.removeEventListener("change", apply)
-    }, [])
-
-    const autoplaying = !paused && !reducedMotion
-
-    useEffect(() => {
-        if (!autoplaying) return
-        const timer = window.setInterval(() => {
-            if (hovering.current || focused.current) return
-            setIndex((i) => (i + 1) % SLIDES.length)
-        }, INTERVAL_MS)
-        return () => window.clearInterval(timer)
-    }, [autoplaying])
-
-    const goTo = (next: number) => {
-        setTookControl(true)
-        setIndex(next)
-    }
+    // The rotation + a11y machinery (interval, hover/focus holds, reduced
+    // motion, aria-live discipline, inert presence) lives in ONE primitive
+    // shared with HookTicker — see components/growth/use-rotation.ts for the
+    // reasoning each rule carries. This component keeps only its content and
+    // its layout; tests/unit/hero-slides-rotation-regression.test.tsx pins the
+    // extraction to byte-identical DOM against pre-refactor baselines.
+    const { index, paused, reducedMotion, goTo, togglePaused, rootPauseProps, liveRegion, itemPresence } =
+        useRotation({ count: SLIDES.length, intervalMs: INTERVAL_MS })
 
     return (
         <div
             role="group"
             aria-roledescription={t("καρουζέλ", "carousel")}
             aria-label={t("Τι κάνει το PolicyWallet", "What PolicyWallet does")}
-            onMouseEnter={() => (hovering.current = true)}
-            onMouseLeave={() => (hovering.current = false)}
-            onFocusCapture={() => (focused.current = true)}
-            onBlurCapture={() => (focused.current = false)}
+            {...rootPauseProps}
         >
             {/* One grid cell, three slides stacked in it: the box is always as
                 tall as the longest slide, so nothing below it moves. */}
-            <div className="grid" aria-live={autoplaying && !tookControl ? "off" : "polite"}>
+            <div className="grid" aria-live={liveRegion}>
                 {SLIDES.map((slide, i) => {
                     const active = i === index
                     return (
@@ -176,13 +151,11 @@ export function HeroSlides({ locale }: { locale: MarketingLocale }) {
                             className={`col-start-1 row-start-1 transition-opacity duration-500 motion-reduce:transition-none ${
                                 active ? "opacity-100" : "pointer-events-none opacity-0"
                             }`}
-                            aria-hidden={!active}
-                            // React 19 passes `inert` through as a real boolean
-                            // attribute. The empty-string spread this replaced
-                            // was the pre-19 workaround and React logged it on
-                            // every render: "Received an empty string for a
-                            // boolean attribute".
-                            inert={!active}
+                            // aria-hidden + React 19's boolean `inert`: in
+                            // the DOM, out of the a11y tree and tab order. The
+                            // primitive owns the rule; the spread keeps the
+                            // serialized attribute order the baselines pin.
+                            {...itemPresence(active)}
                         >
                             {/* Only the visible slide is an <h1>. All three used
                                 to be, so the homepage shipped three h1 elements:
@@ -233,7 +206,7 @@ export function HeroSlides({ locale }: { locale: MarketingLocale }) {
                 {!reducedMotion && (
                     <button
                         type="button"
-                        onClick={() => setPaused((p) => !p)}
+                        onClick={togglePaused}
                         className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-[#5B6A7A] transition-colors hover:text-[#0F172A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:text-slate-400 dark:hover:text-white dark:focus-visible:outline-[#A7F3D0]"
                     >
                         <span className="sr-only">

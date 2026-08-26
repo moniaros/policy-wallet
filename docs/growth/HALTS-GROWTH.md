@@ -74,6 +74,49 @@ The *underlying* fact survives and is verified: you are liable, and a home polic
 section may already respond. That is a legitimate hook. **It is not the hook that was briefed**, so
 it is recorded as a cut and a rewrite, not as a softening.
 
+
+---
+
+## HALT-G04 — The published fine amounts are wrong, and wrong in the direction that costs the reader
+
+**Found while writing H4's extension. Second defect in the same article as HALT-G02, verified from a
+verbatim ΦΕΚ excerpt rather than by inference — so the evidence here is stronger than G02's.**
+
+Live at `/guides/prostimo-anasfalistou-oximatos`, fetched 2026-08-26:
+
+> «παράβολο κλιμακούμενο **με τον κυβισμό** — ενδεικτικά **100 ευρώ** για δίκυκλα, **150 ευρώ** για
+> επιβατικά μικρά … **250 ευρώ** για μεγαλύτερα»
+
+ν. 5113/2024, άρθρο 23 §1α, verbatim (SRC-010):
+
+> «πρόστιμο **χιλίων (1.000)** ευρώ για τα λεωφορεία και φορτηγά δημόσιας χρήσης, **πεντακοσίων
+> (500)** ευρώ για τα επιβατηγά και άλλα οχήματα κάθε φύσης και **διακοσίων πενήντα (250)** ευρώ για
+> τα δίκυκλα»
+
+Two errors compounded:
+
+| | published | law |
+|---|---|---|
+| basis | engine size (κυβισμός) | **vehicle class** |
+| passenger car | €150 | **€500** |
+| bus / public-use lorry | (not covered; implies ≤€250) | **€1,000** |
+| two-wheeler | €100 | **€250** |
+
+**Every figure understates the liability**, a passenger car by €350. The article hedges with
+«ενδεικτικά», but an indicative figure three times too low is not a hedge — it is a wrong number
+with a disclaimer attached. A reader who budgets from this page is short.
+
+This ranks **above HALT-G02** for urgency. The attribution error sends someone to the wrong office;
+this one tells them the wrong amount, and money is the thing a reader of this page came for.
+
+**Not corrected on agent authority**, for the same reason as G02 and no other: it is a statutory
+figure, and the accountable read must confirm that άρ. 23 has not itself been amended since. But
+unlike G02 there is no ambiguity about *what the text says* — the excerpt is verbatim and the
+amounts are spelled out in words as well as digits, which is how ΦΕΚ guards against exactly this.
+
+**Recommended, and cheap:** correct the three figures and the basis, in the same pass as G02's
+attribution, since both sit in the same article and the same read of the same law resolves both.
+
 ---
 
 ## Two method findings worth keeping
