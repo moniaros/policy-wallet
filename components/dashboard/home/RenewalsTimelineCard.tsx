@@ -73,14 +73,22 @@ export function RenewalsTimelineCard({
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 {items.length > 0 && (
-                    <p className="text-micro font-semibold text-muted-foreground">
-                        {/* A DIFFERENT key from portfolio.policyCount on purpose:
-                            this counts renewals in the 180-day window, not the
-                            wallet — and the suffix label states the window, so
-                            the difference is readable, not just machine-checkable.
-                            (`renewals.upcoming` was this key's pre-plan spelling;
-                            the plan registers portfolio.renewalsNext180Count.) */}
-                        <span data-count="portfolio.renewalsNext180Count">{totalCount ?? items.length}</span>{" "}
+                    /* A DIFFERENT key from portfolio.policyCount on purpose:
+                       this counts renewals in the 180-day window, not the
+                       wallet — and the suffix label states the window, so
+                       the difference is readable, not just machine-checkable.
+                       (`renewals.upcoming` was this key's pre-plan spelling;
+                       the plan registers portfolio.renewalsNext180Count.)
+                       The attribute sits on the WHOLE phrase: the suffix states
+                       the window («…εντός 6 μηνών») and its 6 is copy, not a
+                       count — inside the instrumented element it is measured
+                       context (the collector extracts the FIRST number, the
+                       count), outside it it reads as an anonymous numeral. */
+                    <p
+                        data-count="portfolio.renewalsNext180Count"
+                        className="text-micro font-semibold text-muted-foreground"
+                    >
+                        {totalCount ?? items.length}{" "}
                         {(totalCount ?? items.length) === 1 ? labels.policiesSuffixOne : labels.policiesSuffix}
                     </p>
                 )}

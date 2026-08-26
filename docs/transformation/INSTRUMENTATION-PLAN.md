@@ -106,8 +106,15 @@ for one subject) is still caught.
 
 **Deliberately NOT instrumented** (recorded so the omission is a decision, not a gap): wizard
 step indicators («1/3» in QuickStart) and pagination controls — control state, not facts about
-the portfolio; and dates rendered without a quantity (a date is a fact but not a count — it may
-carry `policy.endDate`/`policy.startDate` as data-fact where already composed as its own element).
+the portfolio; dates rendered without a quantity (a date is a fact but not a count — it may
+carry `policy.endDate`/`policy.startDate` as data-fact where already composed as its own element);
+**historical notification bodies** («6 νέες προτάσεις για εσάς», «Εντοπίσαμε 2 κενά κάλυψης» on
+/notifications) — their numbers were true at SEND time, so labelling them with live keys would
+report history as contradiction; and **composed prose whose first numeral is not the fact**
+(the `motor_expiring_soon` smart card's evidence line embeds a policy ref like «ΣΥΜΒ-2025-MOT-EXP»
+before the day count, so the collector's first-number rule would read 2025 — instrumenting it
+would assert a wrong value; the real fix is composing that line in parts at the source, which is
+a lib/services change, not a label).
 
 ### Additions ratified 2026-08-25 (V2-P2-02, the timeline's relocation into Ρυθμίσεις)
 
@@ -117,6 +124,34 @@ chip — the getTimeline 60-entry window, never the account's lifetime) · `time
 *(subject-scoped by group id — how many identical consecutive rows a collapsed T-06 group stands
 for)*. New fact key: `timeline.scoreDelta` *(subject-scoped by entry id; renders only when
 `comparableScores` held on both sides)*.
+
+### Additions ratified 2026-08-27 (Phase 5 precondition — countConsistency corroboration)
+
+No new keys; four standing decisions:
+
+- **`notification.unreadCount` is LIVE** (was RESERVED). Render sites: the shell's mobile-header
+  bell badge, the agent nav's more-tab badge, the desktop user-menu row. The badges saturate at
+  «9+», which the collector extracts as **9** — the saturation threshold must stay identical on
+  every badge site, and a surface that renders the exact count above 9 beside a saturated badge
+  is a real disagreement to a reader, so the metric firing there is signal, not noise.
+- **`asset.identifier` extends to the wallet list** — the card's LOB line («Αυτοκίνητο ·
+  ΙΚΖ-4821») and the table's secondary line now mark the identifier, same key and subject
+  discipline as the renewal-timeline row. The plate is an IDENTIFIER, never a count: the fact
+  channel is what tells the scan so.
+- **Composed prose with a leading quantity maps through
+  `lib/instrumentation/reason-count-keys.ts`.** A recommendation's `personalReason` arrives
+  pre-composed from the risk engine; the map (keyed on `riskId`) names the count key for reasons
+  whose FIRST numeral is a registered quantity — today `life_dependents` →
+  `household.dependantCount`, which deliberately unifies the questionnaire derivation
+  (`totalDependents`) with the risk-graph one: a divergence is a §2.8 finding. A reason whose
+  first numeral is anything else stays unmapped and therefore honestly unmeasured.
+- **Window constants stay unmeasured on purpose.** «Εντός 30 ημερών» (the expiring tile's hint)
+  and any label whose ONLY numeral is the window is copy about a fact, not a fact render;
+  labelling it with the count's key would extract the window as the count and manufacture a
+  false contradiction. Where the window shares a sentence WITH the count («11 ασφαλιστήρια με
+  ανανέωση εντός 6 μηνών»), the attribute goes on the whole phrase — the collector's
+  first-number rule reads the count and the window becomes measured context. Standalone window
+  copy remains in the collector's `unmeasurable` list, which is the honest place for it.
 
 ## Action verbs
 

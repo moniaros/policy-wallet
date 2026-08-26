@@ -50,13 +50,26 @@ export const COUNT_KEYS: Record<string, string> = {
     // recommendation.* — active recommendation instances (getActiveRecommendations).
     "recommendation.openCount": "Active recommendation instances, deduplicated by concept.",
 
+    // notification.* — shared chrome, so the badge renders on EVERY page.
+    // Every badge site saturates identically («9+» above 9, which the collector
+    // extracts as 9); keep that threshold in lockstep across sites, because a
+    // surface rendering the EXACT count above 9 next to a saturated badge reads
+    // as 12-vs-9 — to the metric and to the customer alike.
+    "notification.unreadCount":
+        "Unread notifications. Render sites: the shell's mobile-header bell badge, the agent nav's " +
+        "more-tab badge (both saturated), and the desktop user-menu row (exact — the lg breakpoint " +
+        "keeps it from ever being visible beside a saturated badge).",
+
     // plan.* — the dashboard protection plan (setup steps only).
     "plan.stepsDone": "Setup steps completed.",
     "plan.stepsTotal": "Setup steps total (five).",
 
     // household.* — the customer's household as the risk graph records it.
     "household.memberCount": "1 + dependants.",
-    "household.dependantCount": "Dependants in the risk graph.",
+    "household.dependantCount":
+        "Dependants. Two derivations carry ONE key on purpose: the risk-graph stat (byType.dependent.length) " +
+        "and the life_dependents recommendation reason's leading numeral (totalDependents, via " +
+        "reason-count-keys.ts) — if they disagree on a page, that is a real finding.",
     "household.assetCount": "Asset nodes in the risk graph.",
     "household.obligationCount": "Obligation nodes in the risk graph.",
 
@@ -96,7 +109,6 @@ export const COUNT_KEYS: Record<string, string> = {
     // vocabulary; delete the RESERVED tag when a surface first uses one.
     "portfolio.analysedCount": "RESERVED — plan key; no surface renders it yet.",
     "portfolio.unreadCount": "RESERVED — plan key. NOTE: §2.8's dashboard «2 unread» was portfolio.neverAnalysedCount (policies the engine never read), not this.",
-    "notification.unreadCount": "RESERVED — the notification bell badge (shared chrome; instrument with the shell, not a surface item).",
     "document.count": "RESERVED — plan key; no surface renders a document count yet.",
     "gap.riskCategoryCount": "RESERVED — plan key. NOTE: §2.8's «9 κατηγορίες» line is recommendation.openCount (heroAreasMany counts recommendations, worded as categories).",
 }
@@ -124,7 +136,9 @@ export const FACT_KEYS: Record<string, string> = {
     // reframe; `identifier` went live first (P5-wallet-01): the plate /
     // address short form / pet's name, resolved ONLY by policyAssetIdentifier
     // (lib/wallet/policy-identity.ts). SUBJECT-SCOPED by the POLICY id — no
-    // asset entity exists yet, and the policy row is where it renders.
+    // asset entity exists yet, and the policy row is where it renders. Render
+    // sites: the renewal-timeline row, the wallet card's LOB line and the
+    // wallet table's secondary line — one identity, one key, all three.
     "asset.identifier": "The asset identifier (plate/address/pet name) via policyAssetIdentifier — never a raw acordData read.",
 
     // riskDimension.* — SUBJECT-SCOPED by dimension id.

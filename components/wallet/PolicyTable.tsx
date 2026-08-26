@@ -100,10 +100,26 @@ export function PolicyTable({
                             // presentations of one wallet cannot disagree about
                             // which row is which (P5-wallet-01).
                             const assetLabel = policyAssetIdentifier(policy)
-                            const secondaryIdentity = summary.assetTitle === displayInsurerName(policy.insurerName)
+                            const isInsurerTitled = summary.assetTitle === displayInsurerName(policy.insurerName)
+                            const secondaryIdentity = isInsurerTitled
                                 ? displayPolicyNumber(policy.policyNumber)
                                 : displayInsurerName(policy.insurerName)
-                            const secondaryLine = [assetLabel, secondaryIdentity].filter(Boolean).join(' · ')
+                            // Parts, not a pre-joined string: the identifier and
+                            // the second identity are distinct policy facts and
+                            // carry their own keys (the renewal timeline's
+                            // discipline), so the plate is measurable instead of
+                            // an anonymous numeral. Each branch spells its
+                            // factKey as a literal — that is what keeps the keys
+                            // visible to the registry guard's extractor.
+                            const secondaryParts: Array<{ factKey: string; value: string }> = []
+                            if (assetLabel) secondaryParts.push({ factKey: 'asset.identifier', value: assetLabel })
+                            if (secondaryIdentity) {
+                                secondaryParts.push(
+                                    isInsurerTitled
+                                        ? { factKey: 'policy.number', value: secondaryIdentity }
+                                        : { factKey: 'policy.insurer', value: secondaryIdentity }
+                                )
+                            }
 
                             // Athens-pinned via the shared helper — the same endDate
                             // the days-left count (below) is computed from in Athens.
@@ -149,7 +165,14 @@ export function PolicyTable({
                                                     identifier leads: it is the half that tells two rows
                                                     of one insurer apart. */}
                                                 <p className="truncate text-micro text-muted-foreground">
-                                                    {secondaryLine}
+                                                    {secondaryParts.map((part, i) => (
+                                                        <span key={part.factKey}>
+                                                            {i > 0 && <span aria-hidden> · </span>}
+                                                            <span data-fact={part.factKey} data-fact-subject={policy.id}>
+                                                                {part.value}
+                                                            </span>
+                                                        </span>
+                                                    ))}
                                                 </p>
                                             </div>
                                         </div>

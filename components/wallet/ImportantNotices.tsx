@@ -49,7 +49,12 @@ export function ImportantNotices({
                 <h2 className="text-body-sm font-semibold text-[#B91C1C] dark:text-red-300">
                     {t.wallet.notices.title}
                 </h2>
-                <span className="rounded-full bg-[#B91C1C]/10 px-1.5 py-0.5 text-kicker font-bold tabular-nums text-[#B91C1C] dark:bg-red-300/15 dark:text-red-300">
+                {/* The SAME fact as the KPI tile's «Χρειάζονται προσοχή»:
+                    PolicyWallet builds `notices` with the identical
+                    isAttentionKey filter that produces attentionCount, so this
+                    pill and the tile must always agree — same key, and the
+                    count metric now checks it instead of a human arguing it. */}
+                <span data-count="portfolio.attentionCount" className="rounded-full bg-[#B91C1C]/10 px-1.5 py-0.5 text-kicker font-bold tabular-nums text-[#B91C1C] dark:bg-red-300/15 dark:text-red-300">
                     {notices.length}
                 </span>
             </div>

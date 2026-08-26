@@ -127,7 +127,10 @@ export function UserMenu({
                         >
                             <span>{t.userMenu.notifications}</span>
                             {notificationCount > 0 && (
-                                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
+                                /* The one UNsaturated render of the unread count
+                                   (the shell badges cap at «9+»); desktop-only,
+                                   so it never co-renders with a saturated badge. */
+                                <span data-count="notification.unreadCount" className="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
                                     {notificationCount}
                                 </span>
                             )}

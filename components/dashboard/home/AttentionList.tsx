@@ -12,6 +12,12 @@ export interface AttentionItem {
     title: string
     /** Why it matters to THIS customer; null when no assessment backs it. */
     reason: string | null
+    /**
+     * Registered count key when the reason's LEADING numeral is a known
+     * quantity (lib/instrumentation/reason-count-keys.ts) — undefined renders
+     * no attribute, the honest state for prose we cannot vouch for.
+     */
+    reasonCountKey?: string
     urgency: "critical" | "high" | "medium" | "low"
     urgencyLabel: string
     /** How soon — resolved from the timing verdict; null for `no_deadline`. */
@@ -84,7 +90,10 @@ export function AttentionList({
                                             {item.title}
                                         </span>
                                         {item.reason && (
-                                            <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-black/65 dark:text-white/60">
+                                            <span
+                                                data-count={item.reasonCountKey}
+                                                className="mt-0.5 line-clamp-2 block text-xs leading-snug text-black/65 dark:text-white/60"
+                                            >
                                                 {item.reason}
                                             </span>
                                         )}

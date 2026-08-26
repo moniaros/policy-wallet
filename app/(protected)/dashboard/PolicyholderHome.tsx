@@ -36,6 +36,7 @@ import { buildBranchOverview } from "@/lib/insurance/branch-page"
 import { BranchCoverageMap } from "@/components/branches/BranchCoverageMap"
 import { ProtectionStatusHero } from "@/components/dashboard/home/ProtectionStatusHero"
 import { AttentionList, type AttentionItem } from "@/components/dashboard/home/AttentionList"
+import { reasonCountKey } from "@/lib/instrumentation/reason-count-keys"
 import { ProtectionPlanCard, type ProtectionPlanStepView } from "@/components/dashboard/home/ProtectionPlanCard"
 import { ProtectionMonitorCard, type MonitorSignalView } from "@/components/dashboard/home/ProtectionMonitorCard"
 import { LifeEventPromptCard } from "@/components/dashboard/home/LifeEventPromptCard"
@@ -357,6 +358,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         id: rec.id,
         title: rec.title[lang] || rec.title.en,
         reason: rec.personalReason ? rec.personalReason[lang] || rec.personalReason.en : null,
+        // The reason is pre-composed prose; when the risk that wrote it leads
+        // with a registered quantity («2 άτομα εξαρτώνται…» ← dependants), the
+        // shared map names the key so the count metric can compare it.
+        reasonCountKey: reasonCountKey(rec),
         urgency: rec.urgency,
         urgencyLabel: urgencyLabels[rec.urgency],
         timingLabel: rec.timing && rec.timing.level !== "no_deadline" ? timingLabels[rec.timing.level] ?? null : null,

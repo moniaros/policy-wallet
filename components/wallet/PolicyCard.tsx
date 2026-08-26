@@ -95,11 +95,14 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
     // «Αυτοκίνητο · ΙΖΤ-1234» — the asset identifier (plate / address / pet's
     // name), through the ONE module that knows which field identifies which
     // line and when it is safe to render (P5-wallet-01). Six near-identical
-    // rows were measured indistinguishable without it. Composed as a single
-    // string ON PURPOSE: one DOM text node, so the row's identity is one
-    // fact-bearing run of text, not fragments a screen reader or the
-    // duplicate-identity metric could split. A missing/unreadable identifier
-    // renders nothing — the row stands alone rather than borrowing a name.
+    // rows were measured indistinguishable without it. `lobLine` stays a
+    // single composed string for the ACCESSIBLE name (one run of text for a
+    // screen reader); the VISIBLE render marks the identifier with the same
+    // asset.identifier fact key the renewal timeline carries — an inline span
+    // keeps the text run continuous while making the plate measurable instead
+    // of a count-shaped numeral the consistency scan cannot vouch for.
+    // A missing/unreadable identifier renders nothing — the row stands alone
+    // rather than borrowing a name.
     const assetLabel = policyAssetIdentifier(policy)
     const lobLine = assetLabel ? `${localizedLob} · ${assetLabel}` : localizedLob
     const displayInsurer = displayInsurerName(policy.insurerName, localizedLob)
@@ -157,7 +160,15 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
 
                     {/* Row 2: LOB type (+ asset identifier) + expiry inline */}
                     <p className="text-micro text-muted-foreground">
-                        {lobLine}
+                        {localizedLob}
+                        {assetLabel && (
+                            <>
+                                {' · '}
+                                <span data-fact="asset.identifier" data-fact-subject={policy.id}>
+                                    {assetLabel}
+                                </span>
+                            </>
+                        )}
                         {expiryInline && (
                             <>
                                 {' · '}

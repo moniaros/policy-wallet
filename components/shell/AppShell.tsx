@@ -242,7 +242,11 @@ export function AppShell({
                     >
                         <Bell className="h-6 w-6" strokeWidth={2} />
                         {notificationCount > 0 && (
-                            <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.5625rem] font-bold leading-none text-white dark:text-[#1A2420]">
+                            /* data-count: the badge is a render of the unread
+                               count (saturated at «9+», which the collector
+                               reads as 9 — keep the threshold identical on
+                               every badge site, see count-keys.ts). */
+                            <span data-count="notification.unreadCount" className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.5625rem] font-bold leading-none text-white dark:text-[#1A2420]">
                                 {notificationCount > 9 ? '9+' : notificationCount}
                             </span>
                         )}
@@ -442,7 +446,9 @@ export function AppShell({
                                                 strokeWidth={2.5}
                                             />
                                             {item.showsNotificationBadge && notificationCount > 0 && (
-                                                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-kicker font-bold rounded-full flex items-center justify-center shadow-lg">
+                                                /* Same fact as the header bell badge —
+                                                   same key, same «9+» saturation. */
+                                                <span data-count="notification.unreadCount" className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-kicker font-bold rounded-full flex items-center justify-center shadow-lg">
                                                     {notificationCount > 9 ? '9+' : notificationCount}
                                                 </span>
                                             )}

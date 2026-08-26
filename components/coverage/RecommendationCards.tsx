@@ -29,6 +29,7 @@ import { formatCurrency } from "@/lib/i18n/format"
 import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyState"
 import type { SmartCardContent } from "@/lib/services/gap-engine/portfolio-rules"
 import { LockedInsightPreview } from "@/components/monetization/LockedInsightPreview"
+import { reasonCountKey } from "@/lib/instrumentation/reason-count-keys"
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -392,8 +393,16 @@ export function RecommendationCards({
                                         )}
                                     </div>
 
-                                    {/* Plain-language explanation */}
-                                    <p className="text-xs text-black/65 dark:text-white/65 leading-relaxed">
+                                    {/* Plain-language explanation. When the risk that
+                                        composed it leads with a registered quantity
+                                        («2 άτομα εξαρτώνται…» ← dependants), the shared
+                                        map names the count key — the SAME key the
+                                        dashboard's attention list carries for this
+                                        reason, so the two surfaces are comparable. */}
+                                    <p
+                                        data-count={reasonCountKey(rec)}
+                                        className="text-xs text-black/65 dark:text-white/65 leading-relaxed"
+                                    >
                                         {rec.personalReason[lang] || rec.personalReason.en}
                                     </p>
 
