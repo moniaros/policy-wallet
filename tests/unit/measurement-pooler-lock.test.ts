@@ -12,7 +12,7 @@ import { describe, expect, it } from "vitest"
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
 import path from "path"
 import os from "os"
-import { acquirePoolerLock } from "../measure/surface-harness"
+import { acquirePoolerLock } from "../measure/pooler-lock"
 
 /** Isolated per test — never the shared dir a real measurement run uses. */
 function tempLockDir(name: string): string {

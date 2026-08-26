@@ -13,6 +13,7 @@
 import { readFileSync } from 'fs'
 import path from 'path'
 import { E2E_POLICYHOLDER, E2E_POLICYHOLDER_FREE, E2E_POLICYHOLDER_DASH, E2E_AGENT, E2E_ADMIN } from './e2e-users'
+import { acquirePoolerLock } from './measure/pooler-lock'
 
 function loadEnvFromDotenvFiles() {
     for (const file of ['.env.local', '.env']) {
@@ -195,6 +196,13 @@ export default async function globalSetup() {
         throw new Error('global-setup: DATABASE_URL points at the PRODUCTION Supabase project — refusing to provision E2E users there.')
     }
 
+    // Provisioning is the heaviest DB user in a measurement run and it goes
+    // through the app's Prisma singleton, not `withDb` — so it must take the
+    // same lock, or two runs still collide here while the harness politely
+    // queues everywhere else. That is exactly what happened the first time:
+    // the lock guarded withDb, and the next run died in this function.
+    const releasePooler = await acquirePoolerLock()
+
     const { PrismaClient } = await import('@prisma/client')
     const db = new PrismaClient()
 
@@ -245,5 +253,6 @@ export default async function globalSetup() {
         throw error
     } finally {
         await db.$disconnect()
+        releasePooler()
     }
 }
