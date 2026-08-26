@@ -83,3 +83,37 @@ Both are waiting on the same tag.
   a literal nobody tokenised, and the inventory above counts definitions, not references.
 - Whether `.pw-*` utilities and Tailwind arbitrary values (`text-[#...]`) overlap or contradict.
 - Dark-mode parity: several literals appear in `dark:` variants and were counted once.
+
+---
+
+## Phase 5 precondition: two of its eight metrics do not exist
+
+Checked before opening Phase 5, because a rebuild that cannot measure its own acceptance is a
+rebuild that will report success from a check that never ran — the failure this programme has
+documented on three surfaces already.
+
+§11 measures every rebuilt surface on eight metrics. `tests/measure/metrics.ts` exports six of them:
+
+| §11 metric | harness export |
+|---|---|
+| scroll height | `scrollHeight` |
+| section count | `sectionCount` |
+| container depth ≤2 | `containerCount` |
+| duplicate-fact | `duplicateFacts` |
+| tap targets | `smallTapTargets` |
+| layout integrity | `clippedLabels` + `pageOverflow` |
+| **duplicate-action** | **MISSING** |
+| **count consistency** | **MISSING** |
+
+**Count consistency is not a minor gap.** `DECISIONS.md:807` calls it *"v2's headline defect (§2.8,
+five surfaces)"* and records it as **untouched**. Phase 5 would rebuild five surfaces carrying the
+run's headline defect with no metric able to detect it.
+
+Both must be built **before** the first surface rebuild, and each needs the treatment every guard in
+this run gets: universe enumerated from the filesystem, and a committed probe proven to turn it red.
+
+**A note on how this was found.** My first check reported all eight present. It was wrong: `grep -c`
+prints `0` *and* exits non-zero, so a `|| echo 0` fallback made every value truthy. The fourth
+measurement error in this phase, all four caught before acting on them — but the pattern is worth
+naming, because every one of them was a **checking tool that reported success while measuring the
+wrong thing**, which is precisely the defect class this programme exists to remove from the product.

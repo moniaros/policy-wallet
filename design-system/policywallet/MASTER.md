@@ -7,10 +7,12 @@
 ---
 
 **Project:** PolicyWallet
-**Updated:** 2026-07-23
+**Updated:** 2026-08-27
 **Category:** Insurance Platform
 
-> **Canonical value table:** [app/globals.css](../../app/globals.css) — every hex, radius, shadow, and utility below is defined there, as CSS custom properties (`--primary`, `--pw-*`) and `@layer components` utilities (`.pw-card`, `.pw-pill`, `.pw-primary-button`, `.pw-kicker`). If this document and `globals.css` ever disagree, **`globals.css` wins** — it is what actually ships.
+> **Canonical value table:** [app/globals.css](../../app/globals.css) — the runtime source of truth, and it is layered. `:root` / `.dark` hold the semantic values (`--primary`, `--foreground`, `--border`, …); the `@theme { --color-* }` block maps those into Tailwind's colour namespace; components consume the **generated utilities** (`bg-primary`, `text-foreground`, `border-border`). That generated-utility path is the recommended one and overwhelmingly the dominant one in the codebase. The `@layer components` recipes (`.pw-card`, `.pw-pill`, `.pw-primary-button`, `.pw-kicker`, `.pw-input`) are defined there too. If this document and `globals.css` ever disagree, **`globals.css` wins** — it is what actually ships.
+>
+> The `--pw-*` / `--brand-*` custom properties are a **legacy parallel path**: 27 tokens with ~55 direct `var()` references in components (measured 2026-08-27), next to thousands of references through the generated utilities. Do not write a new `var(--pw-…)` or `var(--brand-…)` in a component — use the semantic utilities, and treat the existing references as migration debt. (The `.pw-*` **class recipes are not legacy**; only direct consumption of the raw custom properties is.)
 >
 > There is **no `components/ui/design-tokens.ts`**; it was deleted in `834957c`. Do not import from it, and do not add a parallel TS token table — extend `globals.css` instead.
 >
@@ -24,16 +26,16 @@
 
 | Role | Hex | Token / Utility |
 |------|-----|-----------------|
-| Primary (brand deep green) | `#29685B` | `bg-primary` / `--primary` / `--pw-primary` |
+| Primary (brand deep green) | `#29685B` | `bg-primary` / `--primary` |
 | Primary hover | `#1C4E44` | `bg-primary-hover` / `--primary-hover` |
 | Mint accent (dark-mode primary) | `#89D9B2` | `text-mint` / `--color-mint` |
 | Primary soft tint | `#DCEBDA` | `bg-primary-soft` |
 | Primary pale tint | `#F0FDF4` | `bg-primary-tint` |
 | Canvas / page background | `#F8FAFC` | `bg-neutral-50` / `.pw-page-shell` |
-| Card border | `#E2E8F0` | `border-border` / `--pw-border` / `bg-neutral-200` |
+| Card border | `#E2E8F0` | `border-border` / `bg-neutral-200` |
 | Text — headings | `#0F172A` | `text-foreground` / `neutral-900` |
 | Text — body | `#475569` | `neutral-600` |
-| Text — muted | `#64748B` | `text-muted-foreground` / `--pw-text-muted` / `neutral-500` |
+| Text — muted | `#64748B` | `text-muted-foreground` / `neutral-500` |
 
 The `neutral-*` scale is remapped to slate in the `@theme` block (`--color-neutral-50 … --color-neutral-950`), so `neutral-N` **is** slate-N. Prefer the semantic role tokens (`text-foreground`, `text-muted-foreground`, `border-border`, `bg-muted`) over the numeric scale where a role exists — only they flip correctly in dark mode.
 
