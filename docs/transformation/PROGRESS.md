@@ -720,14 +720,38 @@ The watchdog kills backgrounded processes at 600s with no progress. Do this inst
 2. **Report rather than retry on pool contention** — the session pooler's 15-client ceiling is
    shared across all sessions on this machine. If a run dies with `max clients reached in session
    mode`, it is not a transient error; another run owns the pooler. Wait, or run the spec later.
+3. **The escalation ladder: two stalls escalates, three halts the item.** Not a suggestion. An
+   agent that keeps retrying burns its whole budget on a condition that resolves by itself, and
+   reports nothing. Say what stalled and stop.
+4. **Never route measurement around a wedged pooler.** Transaction mode (6543) answers when
+   session mode (5432) is wedged, and it is the wrong answer: different semantics produce a
+   capture that is not comparable with every prior one. A number you cannot compare is worse than
+   a number you do not have.
+
+**The wedge does not always look like exhaustion.** On 2026-08-26 the signature was Prisma's
+generic *"Timed out fetching a new connection from the connection pool"*, not `EMAXCONNSESSION`,
+while every obvious check said the database was healthy: TCP to the pooler opened in ~400 ms, the
+host has no AAAA records, and `pg_stat_activity` showed **3** upstream connections against a
+max of 60. Supavisor was still counting session slots whose clients had died without a clean
+close. Diagnose by racing both URLs in one script; if 6543 answers and 5432 does not, it is
+wedged, not down. It reaps itself — it recovered on its own the same day.
 
 ### Measurement harness changes
 
 Three fixes have been made to the harness so that this rule can be enforced:
 
-1. **Pooler lock** — `tests/measure/surface-harness.ts` now exports `acquirePoolerLock()`, a
-   file-based lock that ensures only one run holds active DB connections at a time. Second run
-   fails with a clear error naming the blocking PID instead of a cryptic pooler message.
+1. **Pooler lock** — `tests/measure/pooler-lock.ts` (its own module, so anything can take it
+   without importing the capture harness). Acquired inside `withDb()` **and** inside
+   `tests/global-setup.ts`, so no spec has to remember to ask.
+
+   *Corrected, and the correction is the point.* The first version lived in `surface-harness.ts`,
+   was **exported with zero call sites**, and its documentation described adoption as an
+   instruction for a caller that did not exist — green on `tsc`, lint and 5541 tests, because none
+   of them can see whether an exported function is ever called. The second version guarded
+   `withDb()` only, and the very next Playwright run died in `global-setup.ts`, which provisions
+   through the app's Prisma singleton and never calls `withDb`. It also had no stale-holder
+   detection, while the *documented normal* departure here is the 600s watchdog leaving the lock
+   file behind with nothing to release it; it now checks liveness and steals.
 
 2. **Refusal rules** — `captureSurface()` now structurally refuses to record:
    - A capture whose DOM contains the generic error boundary (the page did not render)
@@ -742,3 +766,45 @@ Three fixes have been made to the harness so that this rule can be enforced:
 These changes exist to prevent future runs from colliding on the pooler and to make refusals
 structural (every capture is checked, not just hand-written specs). The working rule itself must
 be remembered by the next agent: **do not background the harness.**
+
+---
+
+## The run's most repeated failure shape
+
+**A fix scoped to the callers you knew about is not a fix.**
+
+Stated once here because it has now produced defects on eight separate occasions in this run, and
+each time it looked like a different problem:
+
+- `scrubText` protected the sink it was written for (Sentry) and not the one that leaked (an
+  unhandled middleware throw straight to the platform log). It redacted email, IBAN, tax id and
+  file names, and would have passed an access token and a refresh token through untouched.
+- `acquirePoolerLock` protected the harness and not `tests/global-setup.ts` — the heaviest DB user
+  in a measurement run.
+- The `min-width: 0` narrow-viewport rule, the i18n key mapping, gap dedup and severity gating
+  each recurred on the next surface after being "fixed".
+- `getPolicyAccess` had four hand-rolled copies that had drifted in **both** directions.
+
+**Before closing a fix, enumerate every path that reaches the defect — not every path you were
+looking at.** From the filesystem or the schema, never from memory or from the diff in front of
+you. If you cannot enumerate them, say so in the commit rather than implying coverage you did not
+establish.
+
+The corollary, which has bitten just as often: **a guard's universe is part of the guard.** A check
+scoped to known locations guards those locations, not the invariant. Six distinct ways a guard in
+this repo has passed while what it protects was broken:
+
+1. universe too small · 2. adoption incomplete · 3. assertion weaker than the invariant ·
+4. the check cannot see the behaviour · 5. the reader cannot see the file · 6. the exemption is
+keyed on content the subject controls.
+
+To which this session added a seventh: **the check cannot see the state you are about to ship.**
+`no-credentials-in-tracked-files` enumerates *tracked* files, so running the suite before `git add`
+passes on a repository state that no longer exists by the time you push. Stage, then run.
+
+### Deferred, deliberately
+
+This lesson belongs in `CLAUDE.md` and its `AGENTS.md` mirror, and is **not** written there yet: a
+parallel session holds an in-progress rewrite of both files (107 insertions, 111 deletions,
+uncommitted). Appending mid-rewrite would either be clobbered or sweep another session's unfinished
+work into this run's commit. Move it once that lands, to **both** files.
