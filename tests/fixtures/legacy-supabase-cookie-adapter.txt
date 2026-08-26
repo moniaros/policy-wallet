@@ -1,0 +1,54 @@
+// PROBE FIXTURE — the Supabase cookie adapter exactly as proxy.ts shipped it to
+// production, extracted from 12deab09 before it was replaced. Committed rather
+// than read from git history: CI checks out shallow, so a probe that reaches for
+// an old commit passes locally and fails in CI. Kept as .txt so the guard's own
+// filesystem sweep for *.ts client files cannot pick it up as a live offender.
+//
+// tests/unit/supabase-cookie-adapter-single-shape.test.ts asserts the detector
+// reddens on this. If it ever stops doing so, the guard has gone blind.
+
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) {
+                    return request.cookies.get(name)?.value
+                },
+                set(name: string, value: string, options: any) {
+                    request.cookies.set({
+                        name,
+                        value,
+                        ...options,
+                    })
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    })
+                    response.cookies.set({
+                        name,
+                        value,
+                        ...options,
+                    })
+                },
+                remove(name: string, options: any) {
+                    request.cookies.set({
+                        name,
+                        value: "",
+                        ...options,
+                    })
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    })
+                    response.cookies.set({
+                        name,
+                        value: "",
+                        ...options,
+                    })
+                },
+            },
+        }
+    )

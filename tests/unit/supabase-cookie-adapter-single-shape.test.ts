@@ -93,12 +93,14 @@ describe("Supabase cookie adapter", () => {
         expect(usesLegacyCookieAdapter(commentOnly)).toBe(false)
     })
 
-    it("PROBE: reddens on the REAL pre-fix proxy.ts, read from history", () => {
-        // Not a synthetic sample — the actual file as it shipped to production,
-        // at the last commit before the adapter was replaced. Read out of git so
-        // nothing on disk is touched: restoring a working file to prove a point
-        // is how an agent's uncommitted work was destroyed earlier in this run.
-        const before = execFileSync("git", ["show", "12deab09:proxy.ts"], { encoding: "utf8" })
+    it("PROBE: reddens on the real pre-fix adapter, committed as a fixture", () => {
+        // The actual code that shipped to production, kept in the repo rather
+        // than read out of git history. The first version of this probe ran
+        // `git show 12deab09:proxy.ts`; it passed locally and failed in CI,
+        // because CI checks out shallow and that commit is not there. A probe
+        // that depends on history depth is not a probe — it is a second thing
+        // that can break.
+        const before = readFileSync("tests/fixtures/legacy-supabase-cookie-adapter.txt", "utf8")
         expect(usesLegacyCookieAdapter(before)).toBe(true)
     })
 
