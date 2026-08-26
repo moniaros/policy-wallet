@@ -146,7 +146,33 @@ export interface InconsistentCountKey {
     renders: CountRender[]
 }
 
+/**
+ * One key+subject group as seen on ONE page — every render, whatever the
+ * verdict. Exists for the CROSS-SURFACE comparator
+ * (cross-surface-count.ts): the per-page verdict only names the groups that
+ * contradict *within one document*, but a key rendering 3 on /dashboard and
+ * 4 on /wallet is invisible to any per-page number (D-025: "five surfaces"),
+ * so the comparator needs every group's values, consistent or not. Exposing
+ * them HERE keeps `valueOf` the single definition of value extraction —
+ * the alternative (a second collector with its own extraction rules) is the
+ * drift this directory exists to prevent.
+ */
+export interface CountGroup {
+    key: string
+    /** "" when the key is unscoped */
+    subject: string
+    channel: "count" | "fact"
+    renders: CountRender[]
+}
+
 export interface CountConsistencyMetricResult {
+    /**
+     * Every key+subject group on the page with all its renders and their
+     * canonical values — the cross-surface comparator's input (see
+     * CountGroup). Additive: nothing that consumed the pre-existing fields
+     * changes shape.
+     */
+    groups: CountGroup[]
     /** distinct key+subject groups seen on the page */
     totalKeys: number
     /** groups with at least one extractable value */
@@ -352,6 +378,14 @@ export function collectCountConsistency(opts?: CountConsistencyOptions): CountCo
                 : "consistent-but-unmeasured"
 
     return {
+        // channel comes off the first render: the composite key includes the
+        // channel, so every render in a group shares it by construction.
+        groups: Array.from(groupsByComposite.values()).map((g) => ({
+            key: g.key,
+            subject: g.subject,
+            channel: g.renders[0].channel,
+            renders: g.renders,
+        })),
         totalKeys: groupsByComposite.size,
         comparableKeys,
         corroboratedKeys,

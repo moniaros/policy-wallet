@@ -69,6 +69,36 @@ function main() {
       });
     }
 
+    // OTHER C0 CONTROL BYTES. The NUL check above exists because a literal NUL
+    // delimiter once shipped; it made grep treat the file as binary, so it was
+    // caught. Its quieter siblings were not: 0x01, 0x02 and the rest of C0 are
+    // valid UTF-8, do NOT make a file binary to grep, and slipped straight
+    // through both `lint:utf8` and `lint:encoding`.
+    //
+    // Not hypothetical. Two agents wrote literal control bytes as composite-key
+    // delimiters under tests/measure/ on 2026-08-27 — once as NUL (caught here,
+    // loudly) and once as 0x01/0x02 (caught by nothing, found only by a
+    // byte-level self-check). A delimiter is exactly the use that tempts the
+    // raw byte, and the escape is behaviourally identical.
+    //
+    // Tab, newline and carriage return are legitimate; the rest of C0 and DEL
+    // are refused.
+    for (let i = 0; i < bytes.length; i++) {
+      const b = bytes[i];
+      if (b === 0x00) continue; // reported above with its own message
+      if ((b < 0x20 && b !== 0x09 && b !== 0x0a && b !== 0x0d) || b === 0x7f) {
+        const line = bytes.subarray(0, i).toString("utf8").split("\n").length;
+        invalid.push({
+          filePath,
+          error:
+            `raw control byte 0x${b.toString(16).padStart(2, "0")} at offset ${i} (line ${line}) — ` +
+            `valid UTF-8 and invisible on screen, so nothing else in this repo refuses it. ` +
+            `Write the \\u00XX escape instead of the literal byte.`,
+        });
+        break;
+      }
+    }
+
     // Zero-width and invisible formatting characters. Same family as the NUL
     // above: valid UTF-8, and unreadable. This one is not hypothetical — I put
     // a ZERO WIDTH SPACE inside a block comment so that `/wallet/*<zwsp>/review`
