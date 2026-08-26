@@ -22,21 +22,53 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "fs"
 import { redactCredentials, scrubText } from "../../lib/observability/sentry-scrub"
 
-const FIXTURE = "tests/fixtures/session-shaped-error-message.txt"
-const leaked = () => readFileSync(FIXTURE, "utf8")
-
-/** The synthetic secrets planted in the fixture. */
-const SYNTHETIC_JWT_HEAD = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9"
+/**
+ * The probe payload is ASSEMBLED AT RUNTIME, deliberately, and is not stored in
+ * a tracked file.
+ *
+ * The first version of this test kept it in `tests/fixtures/` and CI went red:
+ * `no-credentials-in-tracked-files.test.ts` scans every tracked file for a
+ * JWT shape and cannot tell a synthetic token from a real one — which is
+ * correct, and it should not try. The two fixes available were to allowlist the
+ * fixture or to stop storing a token-shaped literal. Allowlisting wins the
+ * argument today and loses it later: an exempted file is unscanned forever, so
+ * the next credential added to it is invisible. Assembling from fragments keeps
+ * that guard's coverage total.
+ *
+ * Every fragment below is invented. The real leaked values are deliberately not
+ * reproduced anywhere, since committing them would repeat the incident inside
+ * the repository.
+ *
+ * (It also removes a blind spot that bit me: the tracked-files guard cannot see
+ * a file until it is committed, so a local run before `git add` passes while CI
+ * fails.)
+ */
+const SYNTHETIC_JWT_HEAD = "eyJ" + "hbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9"
+const SYNTHETIC_JWT = [SYNTHETIC_JWT_HEAD, "eyJzdWIiOiJGQUtFLVNVQkpFQ1QifQ", "FAKE0SIGNATURE0000000"].join(".")
 const SYNTHETIC_REFRESH = "fake9opaque2tok"
+
+/**
+ * The SHAPE of the message that leaked: `_recoverAndRefresh` interpolates the
+ * whole serialised session into its own message. Both credential shapes appear,
+ * and they need different arms of the redactor — the access token is a JWT and
+ * is recognisable from its value, the refresh token is a short opaque string
+ * findable only by its JSON key.
+ */
+const leaked = () =>
+    `TypeError: Cannot create property 'user' on string '{"access_token":"${SYNTHETIC_JWT}",` +
+    `"token_type":"bearer","expires_in":3600,"expires_at":1787511517,` +
+    `"refresh_token":"${SYNTHETIC_REFRESH}","user":{"id":"00000000-0000-0000-0000-000000000000",` +
+    `"aud":"authenticated","role":"authenticated"}}'\n` +
+    `    at an._recoverAndRefresh (.next/server/chunks/[root-of-the-server].js:648:23905)`
 
 function stripComments(source: string): string {
     return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1")
 }
 
 describe("SEC-01 credential redaction", () => {
-    it("PROBE: the fixture really does contain both credential shapes", () => {
-        // Without this, every assertion below could pass against an empty file.
-        // `toContain("")` is true of every document.
+    it("PROBE: the payload really does contain both credential shapes", () => {
+        // Without this, every assertion below could pass against an empty
+        // string. `toContain("")` is true of every document.
         const raw = leaked()
         expect(raw).toContain(SYNTHETIC_JWT_HEAD)
         expect(raw).toContain(SYNTHETIC_REFRESH)
