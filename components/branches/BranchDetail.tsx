@@ -10,7 +10,7 @@ import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { getBranchContent, type BranchAction } from "@/lib/insurance/content"
 import { policiesInBranch, upcomingRenewals } from "@/lib/insurance/branch-page"
 import { extractPolicySections, pickLang } from "@/lib/wallet/policy-detail"
-import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
+import { displayInsurerName, displayPolicyNumber, policyAssetIdentifier, warnOnHomoglyphNearMisses } from "@/lib/wallet/policy-identity"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { BranchEmptyState } from "@/components/branches/BranchEmptyState"
@@ -110,6 +110,14 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
     const firstPolicyId = branchPolicies[0]?.id ?? null
     const tier = entitlements.tier
 
+    // A branch page concentrates same-line policies, which is exactly where a
+    // Greek-plate/Latin-plate homoglyph pair («ΙΚΖ-4821» vs «IKZ-4821») is most
+    // confusable. Logged, never resolved — see warnOnHomoglyphNearMisses.
+    warnOnHomoglyphNearMisses(
+        branchPolicies.map((policy) => policyAssetIdentifier(policy)),
+        `/branches/${branch.id}`
+    )
+
     // Persisted gap-engine output, branch-filtered. Read-only — the engine
     // is never re-run from a page render (coverage-insights lesson).
     let recommendations: any[] = []
@@ -208,6 +216,14 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                 // an expired policy must never badge "Ενεργή".
                                 const statusKey = STATUS_I18N_KEY[effectivePolicyStatus(policy)] || policy.status
                                 const statusLabel = (t.policyStatus as Record<string, string>)[statusKey] || policy.status
+                                // Every row on this page shares the branch by
+                                // construction, so the asset identifier is the ONLY
+                                // field that can tell two same-insurer rows apart.
+                                // Same primitive as the wallet and the renewal
+                                // timeline (P5-wallet-01); identifier when one
+                                // exists, policy number otherwise — unchanged for
+                                // lines that have none.
+                                const assetLabel = policyAssetIdentifier(policy)
                                 return (
                                     <Link
                                         key={policy.id}
@@ -219,7 +235,7 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                                 {displayInsurerName(policy.insurerName) || "—"}
                                             </p>
                                             <p className="truncate text-xs text-muted-foreground">
-                                                {displayPolicyNumber(policy.policyNumber) || "—"}
+                                                {assetLabel || displayPolicyNumber(policy.policyNumber) || "—"}
                                             </p>
                                         </div>
                                         <div className="flex flex-shrink-0 items-center gap-3">
@@ -330,7 +346,12 @@ export async function BranchDetail({ branchParam }: { branchParam: string }) {
                                         className="flex items-center justify-between gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 transition-colors hover:border-primary/40 dark:border-white/15 dark:bg-black dark:hover:border-mint/40"
                                     >
                                         <p className="truncate text-sm font-bold text-black dark:text-white">
-                                            {displayInsurerName(policy.insurerName) || "—"}
+                                            {/* Insurer + asset identifier through the shared
+                                                primitive — two same-insurer renewals in one
+                                                branch are otherwise the same row twice. */}
+                                            {[displayInsurerName(policy.insurerName), policyAssetIdentifier(policy)]
+                                                .filter(Boolean)
+                                                .join(' · ') || "—"}
                                         </p>
                                         <span
                                             className="flex-shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-kicker font-bold text-amber-700 dark:bg-amber-900/25 dark:text-amber-300"

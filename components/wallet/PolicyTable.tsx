@@ -12,7 +12,7 @@ import { StatusPill } from '@/components/ui/StatusPill'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { getBranchIcon } from '@/lib/insurance/branch-icons'
 import { cn } from '@/lib/utils'
-import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, displayPolicyNumber, policyAssetIdentifier } from '@/lib/wallet/policy-identity'
 
 interface PolicyTableProps {
     policies: Policy[]
@@ -94,6 +94,16 @@ export function PolicyTable({
                             const summary = getDocumentPolicySummary(policy, lang, branch.label[lang])
                             const view = getPolicyStatusView(policy, t)
                             const isMenuOpen = openMenuId === policy.id
+                            // The asset identifier (plate / address / pet's name),
+                            // through the ONE module that owns the line→field rule —
+                            // the same identity the card renderer shows, so the two
+                            // presentations of one wallet cannot disagree about
+                            // which row is which (P5-wallet-01).
+                            const assetLabel = policyAssetIdentifier(policy)
+                            const secondaryIdentity = summary.assetTitle === displayInsurerName(policy.insurerName)
+                                ? displayPolicyNumber(policy.policyNumber)
+                                : displayInsurerName(policy.insurerName)
+                            const secondaryLine = [assetLabel, secondaryIdentity].filter(Boolean).join(' · ')
 
                             // Athens-pinned via the shared helper — the same endDate
                             // the days-left count (below) is computed from in Athens.
@@ -135,11 +145,11 @@ export function PolicyTable({
                                                     {summary.assetTitle}
                                                 </p>
                                                 {/* assetTitle falls back to the insurer when there is no
-                                                    vehicle/property to name — don't print it twice. */}
+                                                    vehicle/property to name — don't print it twice. The
+                                                    identifier leads: it is the half that tells two rows
+                                                    of one insurer apart. */}
                                                 <p className="truncate text-micro text-muted-foreground">
-                                                    {summary.assetTitle === displayInsurerName(policy.insurerName)
-                                                        ? displayPolicyNumber(policy.policyNumber)
-                                                        : displayInsurerName(policy.insurerName)}
+                                                    {secondaryLine}
                                                 </p>
                                             </div>
                                         </div>

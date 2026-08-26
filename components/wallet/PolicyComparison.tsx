@@ -13,7 +13,7 @@ import { calendarDaysUntil } from "@/lib/policy-status"
 import { branchFamilyId, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { motorSection, homeSection, lifeSection } from "@/lib/wallet/coverage-sections"
 import { classifyMotorCoverageTier } from "@/lib/wallet/motor-coverage-tier"
-import { displayInsurerName, displayPolicyNumber } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, displayPolicyNumber, policyAssetIdentifier } from '@/lib/wallet/policy-identity'
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 interface PolicyForComparison {
@@ -160,7 +160,13 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                 {
                     key: 'vehicle', label: c.rowVehicle, getValue: (p: PolicyForComparison) => {
                         const v = p.acordData?.vehicle
-                        return v ? `${v.make || ''} ${v.model || ''} (${v.plateNumber || ''})` : '—'
+                        // The plate through the shared identity primitive, so a
+                        // masked value («XXXX») renders as nothing rather than as
+                        // data, and no second file knows which field identifies
+                        // a motor policy (P5-wallet-01).
+                        const plate = policyAssetIdentifier(p)
+                        const name = v ? `${v.make || ''} ${v.model || ''}`.trim() : ''
+                        return [name, plate ? `(${plate})` : ''].filter(Boolean).join(' ') || '—'
                     }
                 },
                 { key: 'motorTier', label: c.rowCoverageTier, getValue: (p: PolicyForComparison) => {

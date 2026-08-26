@@ -22,9 +22,8 @@ Same schema as `docs/transformation/QUEUE.md`. This goal does **not** write that
 
 ## Draft row for `docs/transformation/HALTS.md` → `## Inbound dependency requests`
 
-**Deferred, not skipped.** A `P5-wallet-01` agent is live with `docs/transformation/**` in its file
-boundary; appending mid-run risks the collision class this run has already been bitten by. Move this
-across once it lands:
+**LANDED 2026-08-26**, once `P5-wallet-01` completed and released `docs/transformation/**`. Written to
+`HALTS.md` under `## Inbound dependency requests`. Text as filed:
 
 > **GROWTH-HOOKS-01 → Orchestrator.** Track C (in-app journeys H1, H2, H4, H5, H6, H8) needs
 > scheduling behind the Phase 4 design system; it is spec-only until then. Track C also needs the

@@ -49,6 +49,7 @@ import {
     displayPolicyNumber as safePolicyNumber,
     isPlaceholderInsurerName,
     isPlaceholderPolicyNumber,
+    policyAssetIdentity,
 } from "@/lib/wallet/policy-identity"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 import { derivePolicyBriefCoverage } from "@/lib/wallet/policy-brief"
@@ -697,9 +698,17 @@ export function PolicyDetailsClient({
     // what it just said matters.
     const openSection = forcedOpen ?? attention.target
 
-    // "What is insured?" — the object for motor, the person otherwise.
+    // "What is insured?" — the object for motor, the person otherwise. The
+    // plate comes through the shared identity primitive (the ONE line→field
+    // map); `.value` rather than `policyAssetIdentifier` on purpose: it keeps
+    // an extractor mask («XXXX») so PolicyHead's own unreadable pipeline can
+    // say "could not be read" and link the document, instead of silently
+    // dropping the line.
     const insuredSubject = branchFamilyId(coverageType) === "motor"
-        ? { label: detailsCopy.headInsuredVehicle, value: policy.acordData?.vehicle?.plateNumber ?? null }
+        ? {
+            label: detailsCopy.headInsuredVehicle,
+            value: policyAssetIdentity({ lineOfBusiness: coverageType, acordData: policy.acordData }).value,
+        }
         : { label: detailsCopy.headInsuredPerson, value: insuredNames[0] ?? null }
 
     const handlePrimaryAction = (action: typeof primaryAction) => {

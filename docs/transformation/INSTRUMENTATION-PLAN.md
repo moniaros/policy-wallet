@@ -41,7 +41,10 @@ the attributes are what make that disagreement measurable rather than arguable.
 **`gap.*`** — `title` · `severity` · `openCount` · `concept`
 **`score.*`** — `value` · `delta` · `basis`
 **`advisor.*`** — `name` · `firm` · `phone` · `email`
-**`asset.*`** — `label` · `identifier` · `policyCount` *(reserved for the §7.3 reframe)*
+**`asset.*`** — `label` · `policyCount` *(reserved for the §7.3 reframe)* · `identifier` *(LIVE
+since P5-wallet-01: the plate / address short form / pet's name on the renewal-timeline row,
+resolved only by `policyAssetIdentifier` — `lib/wallet/policy-identity.ts`. Subject-scoped by the
+POLICY id, because no asset entity exists yet and the policy row is where it renders.)*
 
 ## Count keys
 

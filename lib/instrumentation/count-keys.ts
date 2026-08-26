@@ -120,6 +120,13 @@ export const FACT_KEYS: Record<string, string> = {
     "profile.healthComponent": "SUBJECT-SCOPED by component id: one health-index component value.",
     "profile.daysSinceAssessment": "Days since the position was last assessed.",
 
+    // asset.* — the insured thing itself. Reserved by the plan for the §7.3
+    // reframe; `identifier` went live first (P5-wallet-01): the plate /
+    // address short form / pet's name, resolved ONLY by policyAssetIdentifier
+    // (lib/wallet/policy-identity.ts). SUBJECT-SCOPED by the POLICY id — no
+    // asset entity exists yet, and the policy row is where it renders.
+    "asset.identifier": "The asset identifier (plate/address/pet name) via policyAssetIdentifier — never a raw acordData read.",
+
     // riskDimension.* — SUBJECT-SCOPED by dimension id.
     "riskDimension.score": "One dimension's 0-100 reading.",
 
@@ -153,6 +160,7 @@ export const SUBJECT_SCOPED_KEYS: ReadonlySet<string> = new Set([
     "branch.policyCount",
     "branch.recommendationCount",
     "policy.renewalCheckpointCount",
+    "asset.identifier",
     "policy.daysRemaining",
     "policy.endDate",
     "policy.premium",

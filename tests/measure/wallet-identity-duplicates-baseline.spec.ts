@@ -52,6 +52,17 @@ test.beforeAll(async () => {
 
 test("P5-wallet-00: duplicate-identity rows, heavy (29-policy) wallet", async ({ page }) => {
     test.setTimeout(6 * 60_000)
+    // P5-wallet-01 acceptance 3: the heavy account genuinely contains a
+    // Greek/Latin homoglyph plate pair (E2E-MOT-001 carries Latin «IKZ-4821»,
+    // the ΣΥΜΒ-2025 motor fixtures Greek «ΙΚΖ-4821»), so the wallet list is
+    // expected to LOG the near-miss and render both rows unmerged. Collect the
+    // browser-console warnings so the log's firing is evidence, not a claim.
+    const homoglyphWarnings: string[] = []
+    page.on("console", (msg) => {
+        if (msg.type() === "warning" && msg.text().includes("[policy-identity]")) {
+            homoglyphWarnings.push(msg.text())
+        }
+    })
     for (const width of WIDTHS) {
         await openSurface(page, "/wallet", width)
         const result = await captureSurface(page, dirs, "heavy", width, [], { tier: "paid", state: "heavy-29-real" })
@@ -62,5 +73,11 @@ test("P5-wallet-00: duplicate-identity rows, heavy (29-policy) wallet", async ({
             `largestGroupSize=${result.identityDuplicates.largestGroupSize} ` +
             `unlocatable=${result.identityDuplicates.unlocatable.length}`
         )
+        for (const group of result.identityDuplicates.groups) {
+            console.log(`[P5-wallet-00] heavy@${width} group x${group.count}: ${group.display}`)
+        }
+    }
+    for (const warning of [...new Set(homoglyphWarnings)]) {
+        console.log(`[P5-wallet-01 homoglyph log] ${warning}`)
     }
 })

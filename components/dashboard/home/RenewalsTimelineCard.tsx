@@ -18,6 +18,16 @@ export interface RenewalItem {
     checkpointCount: number
     /** The policy number, scrubbed of sentinels — null when there isn't one. */
     policyRef?: string | null
+    /**
+     * The asset identifier — plate / address short form / pet's name —
+     * resolved by the server through `policyAssetIdentifier`
+     * (lib/wallet/policy-identity.ts), the ONE module that knows which field
+     * identifies which line. When present it replaces the policy number on
+     * the row: «ΙΖΤ-1234» is how the owner knows the car, «SYMB-2025-MOT-…»
+     * is how the insurer files it. Null for lines with no identifier
+     * (health, life, …) — those rows keep the policy number, unchanged.
+     */
+    assetLabel?: string | null
     /** "2 points to check" — resolved by the server; null when count is 0. */
     checkpointLabel: string | null
 }
@@ -146,7 +156,13 @@ export function RenewalsTimelineCard({
                                             {(
                                                 [
                                                     { factKey: "policy.insurer", value: displayInsurerName(item.insurerName) },
-                                                    { factKey: "policy.number", value: item.policyRef },
+                                                    // The asset identifier when one exists, else the
+                                                    // policy number — never both: one identity slot,
+                                                    // filled by the thing the customer recognizes
+                                                    // (P5-wallet-01, via lib/wallet/policy-identity).
+                                                    item.assetLabel
+                                                        ? { factKey: "asset.identifier", value: item.assetLabel }
+                                                        : { factKey: "policy.number", value: item.policyRef },
                                                     { factKey: "policy.endDate", value: item.endDateLabel },
                                                     { factKey: "policy.premium", value: item.premiumLabel },
                                                 ] as const

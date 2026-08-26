@@ -416,3 +416,107 @@ run.
 **Complete.** All three owed captures are in `docs/transformation/evidence/wallet/data/current/`
 (`varied-household-320.json`, `single-line-concentration-{320,390,430}.json`) with matching screenshots.
 The per-line breakdown is reported above with its coverage gaps stated rather than implied.
+
+---
+
+## P5-wallet-01 — the identifier on the row: AFTER capture (2026-08-26)
+
+**Change under measurement:** the asset identifier — `vehicle.plateNumber` / `property.address`
+(short form) / `pet.name` / `marineVessel.registryNumber` / `travel.destinationScope` — now renders
+on every list row, resolved ONLY by `policyAssetIdentifier` / `policyAssetIdentity`
+(`lib/wallet/policy-identity.ts`). Surfaces inheriting it in this change: the wallet card
+(`PolicyCard` row 2: «Αυτοκίνητο · ΙΝΤ-0001 · 22/02/2027»), the wallet table (`PolicyTable`
+secondary line), the dashboard renewal timeline (`RenewalsTimelineCard` — the identifier REPLACES
+the policy number when one exists; `data-fact="asset.identifier"`, the plan's reserved key, now
+live and registered), the branch page (`BranchDetail` policy rows and renewals), and the comparison
+modal's vehicle row (`PolicyComparison` — also closes a masked-plate «(XXXX)» render). A missing,
+sentinel or unreadable identifier renders NOTHING and the row stands alone.
+
+**Collector:** `tests/measure/section-collector.ts` sha256
+`4c708e16ff340b2c8506d0c55e074cd1d2dce6b8953b1e8a4604a1796e2094fc` — byte-identical to every
+baseline above (verified by `shasum` before the run). `duplicateIdentityRows()` in
+`tests/measure/metrics.ts` unmodified. The identifier reaches the metric through the card's LOB
+line, whose leading text node the collector already reads — the metric definition did not move,
+the page did.
+
+**Runs** (foreground, one worker, pooler verified clear at 1237ms first; `MEASURE_RUN=after-p5-wallet-01`
+so nothing under `data/current/` was overwritten; exit codes checked from file-redirected output, both 0):
+```
+MEASURE_RUN=after-p5-wallet-01 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=… \
+  npx playwright test tests/measure/dashboard-wallet-identity-household-fixtures.spec.ts --project=measure-dash --no-deps --workers=1
+MEASURE_RUN=after-p5-wallet-01 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=… \
+  npx playwright test tests/measure/wallet-identity-duplicates-baseline.spec.ts --project=measure --no-deps --workers=1
+```
+
+### Before/after, per fixture per width
+
+| fixture | width | rows | duplicate rows before → after | largest group before → after |
+|---|---|---|---|---|
+| single-line-concentration | 320 | 6 | **6 → 0** | **6 → 0** |
+| single-line-concentration | 390 | 6 | **6 → 0** | **6 → 0** |
+| single-line-concentration | 430 | 6 | **6 → 0** | **6 → 0** |
+| varied-household | 320 | 7 | 2 → 2 | 2 → 2 |
+| varied-household | 390 | 7 | 2 → 2 | 2 → 2 |
+| varied-household | 430 | 7 | 2 → 2 | 2 → 2 |
+| heavy (29, real accumulated) | 320 | 29 | 19 → 19 | **6 → 5** |
+| heavy | 390 | 29 | 19 → 19 | **6 → 5** |
+| heavy | 430 | 29 | 19 → 19 | **6 → 5** |
+
+Zero unlocatable fields on every capture; `pageOverflow.overflowPx = 0` on all nine (the longer
+identity line introduced no horizontal overflow at any width).
+
+### Per-line split
+
+- **single-line-concentration — 6 → 0, the fixture that proves the fix.** All six motor rows now
+  read «Αυτοκίνητο · ΙΝΤ-000n · 22/02/2027» with n = 1…6 (screenshots). The plates are GREEK
+  letters (Ι Ν Τ, U+0399/039D/03A4) rendered byte-honest — no transliteration was needed or done.
+- **varied-household — 2 → 2, both health, EXPECTED and correct.** The only group is still the
+  «Εθνική Ασφαλιστική · Υγεία · … · ΕΝΕΡΓΟ» family-scheme pair; health has no identifier field in
+  the schema, so per the item these rows are reported, not chased. Motor/property/pet/life lines
+  stay at 0 — the regression guard holds (their zero predates the change and is not evidence of it).
+- **heavy — motor 14 → 14 in count, and the briefed «motor 14 → 0» was NEVER REACHABLE from this
+  account's data.** Checked at the byte level before the run: **18 of the 21 motor rows carry the
+  SAME Greek plate «ΙΚΖ-4821»** (U+0399 U+039A U+0396), because they are D11-class fixtures built
+  by other specs precisely to have identical display values; one row carries the extractor mask
+  «XXXX»; one carries Latin «IKZ-4821»; one «IKZ3113»; one is empty. Rendering the identifier
+  cannot separate rows whose identifier is byte-identical — and must not pretend to. What DID
+  move is exactly what the data allows: the 6-row group split into a 5-row group plus
+  `ΣΥΜΒ-2025-DEF-XX` standing alone, because its stored plate is the mask «XXXX» and an
+  unreadable key renders nothing (acceptance 2, exercised on real data). The remaining motor
+  groups («… · ΙΚΖ-4821 · same date · same status») are now duplicates because the underlying
+  fixture rows are genuinely indistinguishable — same insurer, same line, same plate, same date —
+  which is the honest reading. Health 5 → 5, unchanged and reported (no identifier exists).
+  One movement NOT caused by this change: the baseline's expired group was «Έληξε στις
+  05/05/2026» ×3; today's data renders 2×05/05 + 2×08/05 (the account is shared and other specs
+  re-provision it) — net ±0 on the total.
+
+### Acceptance 3 — the homoglyph near-miss, observed live
+
+The heavy account genuinely contains the pair: `E2E-MOT-001` stores **Latin** `IKZ-4821`
+(U+0049 U+004B U+005A) while the ΣΥΜΒ-2025 motor rows store **Greek** `ΙΚΖ-4821`
+(U+0399 U+039A U+0396). During the heavy capture the browser console emitted (captured by the
+spec's console listener):
+
+```
+[policy-identity] /wallet list: asset identifiers «ΙΚΖ-4821» and «IKZ-4821» are visually
+identical but written in different alphabets (Greek/Latin homoglyphs). Rendered as separate
+rows on purpose — two different assets can legitimately produce this pair, and merging them
+silently would claim one asset where there may be two.
+```
+
+Both rows rendered, unmerged. `assetIdentityKey` trims and case-folds ONLY; the homoglyph map
+exists solely for detection/logging (`findHomoglyphNearMisses` / `warnOnHomoglyphNearMisses`).
+
+### Other surfaces, verified visually (screenshots in `screenshots/after-p5-wallet-01/`)
+
+- `dashboard-renewal-timeline-390.png` — the /dashboard renewal timeline's six rows read
+  «Interamerican · ΙΝΤ-0001…0006» in place of the former `WH-CONC-MOT…` policy numbers
+  (the row falls back to the policy number only when no identifier exists — health etc. unchanged).
+- `protection-motor-branch-390.png` — /protection/motor «ΤΑ ΑΣΦΑΛΙΣΤΗΡΙΑ ΣΟΥ» rows are
+  ΙΝΤ-0001…0006 under the insurer, six distinct rows.
+
+### Guardrails at time of capture
+
+`tsc --noEmit` 0 · full unit suite 5567/5567 (incl. `policy-sentinels-unrenderable`,
+`count-instrumentation-registry` after registering `asset.identifier`) · `lint` 0 ·
+`lint:i18n-changed` 0 · `lint:utf8` 0 — all run with the change staged.

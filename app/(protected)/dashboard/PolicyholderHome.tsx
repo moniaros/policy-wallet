@@ -20,7 +20,7 @@ import { gapsOnActiveCoverage } from "@/lib/gaps/gap-universe"
 import { declarableLifeEvents } from "@/lib/services/life-events/registry"
 import { Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
-import { displayPersonName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
+import { displayPersonName, displayPolicyNumber, policyAssetIdentifier } from "@/lib/wallet/policy-identity"
 import { resolvePolicyLifecycle, effectivePolicyStatus } from "@/lib/policy-status"
 import { selectPremiumBearingPolicies, calculatePremiumFootprintDetailed } from "@/lib/wallet/premium-footprint"
 import { premiumExclusionParts } from "@/lib/wallet/premium-exclusion-note"
@@ -551,6 +551,12 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             // another — the policy number is. Through policyLabel, so a
             // placeholder sentinel never reaches the row.
             policyRef: displayPolicyNumber(policy.policyNumber),
+            // P5-wallet-01: the asset identifier (plate / address / pet's name)
+            // through the ONE module that owns the line→field rule. When
+            // present the card renders it INSTEAD of the policy number — the
+            // owner knows «ΙΖΤ-1234», not «SYMB-2025-MOT-…». Null (health,
+            // life, …) leaves the row exactly as before.
+            assetLabel: policyAssetIdentifier(policy),
             icon: getBranchIcon(branch.id),
             titleLabel:
                 days === 0

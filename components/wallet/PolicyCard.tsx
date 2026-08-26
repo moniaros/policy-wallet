@@ -5,7 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { resolvePolicyLifecycle, type PolicyLifecycle } from '@/lib/policy-status'
 import { formatDate } from '@/lib/i18n/format'
 import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
-import { displayInsurerName, isPlaceholderInsurerName } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, isPlaceholderInsurerName, policyAssetIdentifier } from '@/lib/wallet/policy-identity'
 import { StatusPill } from '@/components/ui/StatusPill'
 import { BadgeCheck, Sparkles, Search, FileText, Share2, Trash2 } from 'lucide-react'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
@@ -92,6 +92,16 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
     const branch = normalizeBranch(policy.lineOfBusiness)
     const glyph = { Icon: getBranchIcon(branch.id) }
     const localizedLob = branch.label[locale]
+    // «Αυτοκίνητο · ΙΖΤ-1234» — the asset identifier (plate / address / pet's
+    // name), through the ONE module that knows which field identifies which
+    // line and when it is safe to render (P5-wallet-01). Six near-identical
+    // rows were measured indistinguishable without it. Composed as a single
+    // string ON PURPOSE: one DOM text node, so the row's identity is one
+    // fact-bearing run of text, not fragments a screen reader or the
+    // duplicate-identity metric could split. A missing/unreadable identifier
+    // renders nothing — the row stands alone rather than borrowing a name.
+    const assetLabel = policyAssetIdentifier(policy)
+    const lobLine = assetLabel ? `${localizedLob} · ${assetLabel}` : localizedLob
     const displayInsurer = displayInsurerName(policy.insurerName, localizedLob)
     // Lifecycle from the real (extracted) end date — the stored status string
     // is never recomputed as time passes, so it cannot be trusted for expiry.
@@ -118,7 +128,7 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                 id={id}
                 onClick={onView}
                 className="w-full text-left transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
-                aria-label={`${displayInsurer} — ${localizedLob}`}
+                aria-label={`${displayInsurer} — ${lobLine}`}
             >
                 <div className="flex items-center gap-3">
                 {/* LOB icon — status-semantic chip from the shared status pipeline */}
@@ -145,9 +155,9 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
                         <StatusPill tone={view.tone} label={view.label} icon={false} />
                     </div>
 
-                    {/* Row 2: LOB type + expiry inline */}
+                    {/* Row 2: LOB type (+ asset identifier) + expiry inline */}
                     <p className="text-micro text-muted-foreground">
-                        {localizedLob}
+                        {lobLine}
                         {expiryInline && (
                             <>
                                 {' · '}

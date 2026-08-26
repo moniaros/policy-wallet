@@ -15,7 +15,7 @@ import { ImportantNotices, type Notice } from './ImportantNotices'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { INSURANCE_BRANCHES, normalizeBranch } from '@/lib/insurance/taxonomy'
 import { formatDate } from '@/lib/i18n/format'
-import { displayInsurerName } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, policyAssetIdentifier, warnOnHomoglyphNearMisses } from '@/lib/wallet/policy-identity'
 
 export function PolicyWallet({
     policies,
@@ -74,12 +74,27 @@ export function PolicyWallet({
                 !query ||
                 policy.policyNumber?.toLowerCase().includes(query) ||
                 policy.insurerName?.toLowerCase().includes(query) ||
-                policy.lineOfBusiness?.toLowerCase().includes(query)
+                policy.lineOfBusiness?.toLowerCase().includes(query) ||
+                // The row shows the asset identifier (plate/address/pet), so
+                // typing what the row shows must find the row.
+                policyAssetIdentifier(policy)?.toLowerCase().includes(query)
 
             const byFilter = activeFilter === 'all' || normalizeBranch(policy.lineOfBusiness).id === activeFilter
             return byQuery && byFilter
         })
     }, [policies, searchQuery, activeFilter])
+
+    // Acceptance 3 (P5-wallet-01): Greek/Latin homoglyph pairs among the
+    // rendered identifiers («ΙΚΖ-4821» Greek vs «IKZ-4821» Latin) are LOGGED,
+    // never resolved — two different vehicles can legitimately produce that
+    // pair, so both rows render, byte-honest, and the log is the trace that a
+    // human should look at the pair.
+    useEffect(() => {
+        warnOnHomoglyphNearMisses(
+            policies.map((policy) => policyAssetIdentifier(policy)),
+            '/wallet list'
+        )
+    }, [policies])
 
     // KPI counts come from the computed lifecycle (real end dates), not the
     // stored status string — nothing ever recomputes the stored value, so an

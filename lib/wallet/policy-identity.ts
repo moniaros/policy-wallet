@@ -25,6 +25,9 @@
  * fails the build if another file learns them.
  */
 
+import { normalizeBranch } from '@/lib/insurance/taxonomy'
+import { isUnreadableValue } from '@/lib/wallet/unreadable-value'
+
 /** Insurer-name placeholders, in every form any layer has ever written. */
 export const PLACEHOLDER_INSURER_NAMES: readonly string[] = [
     '__PENDING_EXTRACTION__',
@@ -344,5 +347,218 @@ export function scrubPolicyIdentity<
         ...(policy.policyNumber !== undefined
             ? { policyNumber: displayPolicyNumber(policy.policyNumber) ?? '' }
             : {}),
+    }
+}
+
+// ── Asset identifiers — «which one is this?» on a list row ──────────────────
+//
+// P5-wallet-01. Six near-identical wallet rows («Interamerican · Αυτοκίνητο ·
+// 06/02/2027 · ΕΝΕΡΓΟ» × 6) were measured genuinely indistinguishable — the
+// customer's own name for the thing insured (the plate, the address, the
+// pet's name) was extracted and stored but never rendered. This section is
+// the ONE place that knows which extracted field identifies a policy of a
+// given line, and when that value is safe to show. Surfaces call
+// `policyAssetIdentifier` (or `policyAssetIdentity` when they run their own
+// unreadable-value copy) — no surface picks an `acordData` field itself.
+//
+// Per-line availability, verified against lib/schemas/acord-data.ts
+// (docs/transformation/P5-wallet-01-identifier-availability.md):
+//
+//   motor family     vehicle.plateNumber          — what an owner calls the car
+//   home family      property.address, SHORT FORM — the street line, not the
+//                                                   full postal record
+//   pet              pet.name
+//   marine family    marineVessel.registryNumber
+//   travel           travel.destinationScope      — weak (a scope is a
+//                                                   category), but the only
+//                                                   field the schema holds
+//   health · life · cyber · business · pension — NO identifier exists. Every
+//   candidate was examined and rejected: policyholder/insured name is the
+//   account holder's own profile on every row; insuredPersons[] is a
+//   role/class schedule that drops names by design; beneficiaries[].name
+//   names who gets PAID, not who is covered (a δικαιούχος is not an
+//   ασφαλισμένος — rendering it as the row's identity would repeat the harm
+//   lib/wallet/insured-people.ts exists to prevent). These lines render
+//   their current identity unchanged, and their rows may legitimately read
+//   alike — an honest collision, never papered over with a wrong name.
+//
+// A missing, sentinel or unreadable identifier means THE ROW STANDS ALONE:
+// it renders without one and is never merged with or matched to another row
+// (ASSET-REFRAME-SPEC.md §3 — two policies whose plate was read as the same
+// wrong string are not the same car).
+
+export interface PolicyAssetIdentitySource {
+    lineOfBusiness?: string | null
+    acordData?: unknown
+}
+
+export interface PolicyAssetIdentity {
+    /**
+     * The identifier as stored (trimmed), INCLUDING an extractor mask like
+     * «XXXX» — for surfaces with their own honest-unreadable rendering
+     * (the policy head's «δεν διαβάστηκε» + source-document link). Never a
+     * policy-identity sentinel: those are unrenderable everywhere.
+     */
+    value: string | null
+    /**
+     * False when the stored value is the extractor's mask for "could not
+     * read this" (lib/wallet/unreadable-value.ts). Rendering the mask as
+     * data makes "we hide this" and "we could not read this"
+     * indistinguishable — a surface without its own unreadable copy must
+     * render nothing (use {@link policyAssetIdentifier}).
+     */
+    readable: boolean
+}
+
+/**
+ * The address SHORT FORM: the street line, before the first comma —
+ * «Λεωφόρος Κηφισίας 123, Αθήνα 115 23» → «Λεωφόρος Κηφισίας 123». A list
+ * row identifies the home; the full postal record belongs on the detail page.
+ */
+function shortAddress(address: string): string {
+    const street = address.split(',')[0]?.trim()
+    return street || address.trim()
+}
+
+/** The one line→field map. Family = parent branch, so motorbike/truck are motor, renters is home. */
+function rawAssetIdentifier(policy: PolicyAssetIdentitySource): string | null {
+    const acord = (policy.acordData ?? null) as Record<string, any> | null
+    if (!acord || typeof acord !== 'object') return null
+
+    const branch = normalizeBranch(policy.lineOfBusiness)
+    const family = (branch.parentId ?? branch.id).toLowerCase()
+
+    if (family === 'motor') return acord.vehicle?.plateNumber ?? null
+    if (family === 'home') {
+        const address = normalized(acord.property?.address)
+        return address ? shortAddress(address) : null
+    }
+    if (family === 'pet') return acord.pet?.name ?? null
+    if (family === 'boat' || family.startsWith('marine')) {
+        return acord.marineVessel?.registryNumber ?? null
+    }
+    if (family === 'travel') return acord.travel?.destinationScope ?? null
+    return null
+}
+
+/**
+ * The full view: the stored identifier and whether it is readable. Most
+ * surfaces want {@link policyAssetIdentifier} instead; this exists for the
+ * one place (the policy head) that renders "could not be read" honestly and
+ * therefore needs the raw value to hand to its own unreadable pipeline.
+ */
+export function policyAssetIdentity(policy: PolicyAssetIdentitySource): PolicyAssetIdentity {
+    const text = normalized(rawAssetIdentifier(policy))
+    if (!text) return { value: null, readable: true }
+    // A policy-identity sentinel is unrenderable in ANY register — unlike a
+    // mask, it is not "we could not read this", it is "no data ever existed".
+    if (containsPlaceholderText(text)) return { value: null, readable: true }
+    if (isUnreadableValue(text)) return { value: text, readable: false }
+    return { value: text, readable: true }
+}
+
+/**
+ * The asset identifier to render on a list row, or `null` — in which case
+ * the row renders WITHOUT one and stands alone. Never a sentinel, never an
+ * extractor mask, never a substitute field.
+ */
+export function policyAssetIdentifier(policy: PolicyAssetIdentitySource): string | null {
+    const identity = policyAssetIdentity(policy)
+    return identity.readable ? identity.value : null
+}
+
+/**
+ * The comparison key for an asset identifier: TRIM AND CASE-FOLD ONLY.
+ * `null` when there is nothing to compare — a row with no key is never
+ * merged with and never matched to another row.
+ *
+ * Deliberately NOT normalised across alphabets: Greek plates use letters the
+ * Greek and Latin alphabets share glyphs for, so «ΑΒΕ-1234» (Greek) and
+ * «ABE-1234» (Latin) are visually identical and byte-different. Two
+ * DIFFERENT vehicles can legitimately produce that pair, so folding one into
+ * the other silently claims one asset where there may be two — worse than
+ * showing both. Near-misses are LOGGED ({@link warnOnHomoglyphNearMisses}),
+ * never resolved.
+ */
+export function assetIdentityKey(label: string | null | undefined): string | null {
+    const text = normalized(label)
+    if (!text) return null
+    return text.toLowerCase()
+}
+
+/**
+ * The Greek capitals that share a glyph with a Latin capital — the full set
+ * Greek registration plates are drawn from. DETECTION ONLY: this map exists
+ * so a near-miss can be noticed and logged; nothing may use it to fold one
+ * alphabet into the other (see {@link assetIdentityKey}).
+ */
+const GREEK_TO_LATIN_HOMOGLYPHS: Readonly<Record<string, string>> = {
+    Α: 'A', Β: 'B', Ε: 'E', Ζ: 'Z', Η: 'H', Ι: 'I', Κ: 'K',
+    Μ: 'M', Ν: 'N', Ο: 'O', Ρ: 'P', Τ: 'T', Υ: 'Y', Χ: 'X',
+}
+
+function homoglyphSkeleton(key: string): string {
+    return key
+        .toUpperCase()
+        .replace(/[ΑΒΕΖΗΙΚΜΝΟΡΤΥΧ]/g, (ch) => GREEK_TO_LATIN_HOMOGLYPHS[ch] ?? ch)
+}
+
+export interface HomoglyphNearMiss {
+    a: string
+    b: string
+}
+
+/**
+ * Pairs of identifiers in `labels` that are visually identical but written
+ * in different alphabets (byte-different, same homoglyph skeleton).
+ * Byte-equal identifiers (after trim + case-fold) are not near-misses —
+ * they are the same string.
+ */
+export function findHomoglyphNearMisses(
+    labels: ReadonlyArray<string | null | undefined>
+): HomoglyphNearMiss[] {
+    const bySkeleton = new Map<string, Map<string, string>>()
+    const out: HomoglyphNearMiss[] = []
+    for (const label of labels) {
+        const key = assetIdentityKey(label)
+        if (!key) continue
+        const skeleton = homoglyphSkeleton(key)
+        let bucket = bySkeleton.get(skeleton)
+        if (!bucket) {
+            bucket = new Map()
+            bySkeleton.set(skeleton, bucket)
+        }
+        if (bucket.has(key)) continue
+        for (const existing of bucket.values()) {
+            out.push({ a: existing, b: normalized(label) })
+        }
+        bucket.set(key, normalized(label))
+    }
+    return out
+}
+
+/** One warning per pair per process — a 29-row list re-rendering must not spam. */
+const warnedNearMisses = new Set<string>()
+
+/**
+ * Log every Greek/Latin homoglyph near-miss in a rendered list — and do
+ * NOTHING else. The rows stay separate: two different assets can
+ * legitimately carry a visually-identical Greek/Latin pair, and silently
+ * merging them is a false statement about what the customer owns.
+ */
+export function warnOnHomoglyphNearMisses(
+    labels: ReadonlyArray<string | null | undefined>,
+    context: string
+): void {
+    for (const { a, b } of findHomoglyphNearMisses(labels)) {
+        const dedupeKey = `${context}|${a}|${b}`
+        if (warnedNearMisses.has(dedupeKey)) continue
+        warnedNearMisses.add(dedupeKey)
+        console.warn(
+            `[policy-identity] ${context}: asset identifiers «${a}» and «${b}» are visually identical ` +
+                'but written in different alphabets (Greek/Latin homoglyphs). Rendered as separate rows ' +
+                'on purpose — two different assets can legitimately produce this pair, and merging them ' +
+                'silently would claim one asset where there may be two.'
+        )
     }
 }

@@ -830,3 +830,23 @@ preserves the IP in its pre-change record and would otherwise look like an unexa
 ### Status
 `docs/STATUS.md` reads **contained, not closed**, and stays that way until the drain question is
 answered by a human. The agent does not close this.
+
+
+---
+
+## Inbound dependency requests
+
+Requests from other goals that need Orchestrator scheduling. Not halts — no answer is needed before
+the named phase opens.
+
+### GROWTH-HOOKS-01 → Orchestrator (raised 2026-08-26)
+
+- **Track C (in-app journeys H1, H2, H4, H5, H6, H8)** needs scheduling behind the **Phase 4 design
+  system**. That goal's own gate is "Phase 1 green AND the design system exists"; Phase 1 is green
+  and tagged, the design system is not started, so Track C is **spec-only** until Phase 4 opens.
+  Build order when unblocked: **H4 first** — highest conviction, lowest complexity.
+- **hook→obligation mapping** needs scheduling against the §7.2 asset-obligation calendar owner.
+  Growth will **not** build a second calendar, reminder path or notification type; H4's ΑΑΔΕ timing
+  and the τέλη κυκλοφορίας / ΚΤΕΟ / ΕΝΦΙΑ context behind several hooks belong in the existing one.
+
+Full assessment: `docs/growth/STEP0_ASSESSMENT.md`. Queue: `docs/growth/QUEUE-GROWTH.md`.
