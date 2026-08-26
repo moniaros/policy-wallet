@@ -150,43 +150,37 @@ export async function proxy(request: NextRequest) {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
+            // ONE cookie adapter shape, the same one `lib/supabase/server.ts`
+            // uses. This was the legacy per-name `get`/`set`/`remove` trio, and
+            // it was broken in two independent ways that compounded:
+            //
+            //   1. Supabase CHUNKS an auth cookie past ~3.2KB into
+            //      `sb-<ref>-auth-token.0`, `.1`, … A `get(name)` reads the one
+            //      cookie it was asked for and can never reassemble the chunks,
+            //      so the library received a truncated value. That is the
+            //      production `TypeError: Cannot create property 'user' on
+            //      string '{"access_token":…'` — `_recoverAndRefresh` got a raw
+            //      string where a parsed session belonged.
+            //   2. `set` rebuilt `response` from scratch on EVERY call, so
+            //      writing a chunked session discarded the cookie written by the
+            //      previous call and only the last chunk survived onto the
+            //      response — which persisted the broken state for the next
+            //      request to trip over.
+            //
+            // Only an account whose serialised session clears the chunking
+            // threshold hits it, which is why it read as one user's problem
+            // rather than a middleware bug. Rebuild the response ONCE, after
+            // the whole batch.
             cookies: {
-                get(name: string) {
-                    return request.cookies.get(name)?.value
+                getAll() {
+                    return request.cookies.getAll()
                 },
-                set(name: string, value: string, options: any) {
-                    request.cookies.set({
-                        name,
-                        value,
-                        ...options,
-                    })
-                    response = NextResponse.next({
-                        request: {
-                            headers: request.headers,
-                        },
-                    })
-                    response.cookies.set({
-                        name,
-                        value,
-                        ...options,
-                    })
-                },
-                remove(name: string, options: any) {
-                    request.cookies.set({
-                        name,
-                        value: "",
-                        ...options,
-                    })
-                    response = NextResponse.next({
-                        request: {
-                            headers: request.headers,
-                        },
-                    })
-                    response.cookies.set({
-                        name,
-                        value: "",
-                        ...options,
-                    })
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+                    response = NextResponse.next({ request })
+                    cookiesToSet.forEach(({ name, value, options }) =>
+                        response.cookies.set(name, value, options)
+                    )
                 },
             },
         }
