@@ -52,7 +52,7 @@ export const PRODUCT_STATS = [
         // (SPEED_CLAIM in lib/marketing/positioning.ts).
         valueEl: "Λίγα λεπτά",
         valueEn: "A few minutes",
-        labelEl: "για να διαβαστεί ένα συμβόλαιο",
+        labelEl: "για να διαβαστούν τρία συμβόλαια",
         labelEn: "to read three policies",
     },
     {
@@ -85,7 +85,7 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Μπορώ να το δοκιμάσω δωρεάν;",
         qEn: "Can I try it for free?",
-        aEl: "Ναι. Στείλτε 1 συμβόλαιο και πάρτε βασική σύνοψη, χωρίς πιστωτική κάρτα και χωρίς δέσμευση.",
+        aEl: "Ναι. Στείλτε έως 3 συμβόλαια και πάρτε την πλήρη ανάλυση, χωρίς πιστωτική κάρτα και χωρίς δέσμευση.",
         aEn: "Yes. Send us up to 3 policies and get the full analysis, with no credit card and no commitment.",
     },
 ] as const

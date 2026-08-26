@@ -513,6 +513,13 @@ export const guides: Guide[] = [
                 },
                 href: "/guides/prostimo-anasfalistou-oximatos",
             },
+            {
+                label: {
+                    el: "Αναλογικός κανόνας και υπασφάλιση κατοικίας",
+                    en: "The average clause and underinsurance",
+                },
+                href: "/guides/analogikos-kanonas-ypasfalisi-katoikias",
+            },
         ],
         sections: [
             {
@@ -1542,8 +1549,16 @@ export const guides: Guide[] = [
             en: "Uninsured vehicles are detected through electronic cross-checks run by the General Secretariat of Information Systems and Digital Governance, and by traffic police stops. A cross-check triggers a fine set by vehicle class — €250 for two-wheelers, €500 for passenger cars and €1,000 for public-use buses and lorries — while a roadside stop adds a fine and confiscation of the plates and registration. In an accident, the Auxiliary Fund compensates the third party and then recovers the full amount from the owner.",
         },
         datePublished: "2026-07-13",
+        // 2026-08-26, two changes on the same day from two branches.
+        // 1. Extended with the objection window and the reader's own evidence
+        //    that cover was in force on the check date (SRC-012).
+        // 2. HALT-G02 and HALT-G04 RESOLVED — the growth-branch note that said
+        //    otherwise was written before the fix landed. The cross-check is
+        //    Γ.Γ.Π.Σ.Ψ.Δ.'s and the fine is Σ.Δ.Ο.Ε.'s — the tax authority
+        //    named here before runs road tax, not this check — and the
+        //    amounts are 1.000/500/250 by vehicle class — ν. 5113/2024, άρ. 22-24.
         dateModified: "2026-08-26",
-        readingMinutes: 5,
+        readingMinutes: 6,
         related: [
             {
                 label: {
@@ -1617,6 +1632,48 @@ export const guides: Guide[] = [
                     },
                 ],
             },
+            {
+                heading: {
+                    el: "Τι κρίνει μια ένσταση και πόσο χρόνο έχετε;",
+                    en: "What does an objection turn on, and how long do you have?",
+                },
+                paragraphs: [
+                    {
+                        el: "Ο ν. 5113/2024 (ΦΕΚ Α΄ 96/21.06.2024) προβλέπει δικαίωμα ένστασης κατά της πράξης επιβολής προστίμου. Η ένσταση υποβάλλεται ηλεκτρονικά, σε ειδική εφαρμογή της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης, εντός προθεσμίας δέκα (10) εργάσιμων ημερών από την κοινοποίηση της πράξης. Εξετάζεται από την αρχή που επιβάλλει το αντίστοιχο πρόστιμο, η οποία αποφαίνεται εντός τριάντα (30) εργάσιμων ημερών· σε περίπτωση αποδοχής, το πρόστιμο ή τα τέλη κυκλοφορίας διαγράφονται.",
+                        en: "Law 5113/2024 (Government Gazette A΄ 96/21.06.2024) provides a right to object to the penalty notice. The objection is filed electronically, through a dedicated application on the national digital portal, within ten (10) working days of the notice being served. It is examined by the authority that imposes the relevant fine, which decides within thirty (30) working days; where it is accepted, the fine or the road tax is written off.",
+                    },
+                    {
+                        el: "Ο νόμος ορίζει το δικαίωμα και τις προθεσμίες. Δεν απαριθμεί τι αποδεικνύει ότι υπήρχε κάλυψη — αυτό δεν γράφεται στο κείμενο, και δεν το συμπληρώνουμε εμείς. Αυτό που μπορείτε να συγκεντρώσετε είναι τα δικά σας έγγραφα και οι ημερομηνίες τους.",
+                        en: "The statute sets out the right and the deadlines. It does not enumerate what proves that cover was in force — the text does not say, and we do not fill that in. What you can gather is your own documents and the dates on them.",
+                    },
+                    {
+                        el: "Το ερώτημα είναι χρονικό, όχι διαδικαστικό: τι έδειχναν τα έγγραφά σας για τη συγκεκριμένη ημέρα. Κάθε ασφαλιστική περίοδος έχει αρχή και τέλος τυπωμένα πάνω της, και μια αλλαγή εταιρείας μέσα στη χρονιά αφήνει δύο ζεύγη ημερομηνιών αντί για ένα. Αν υπάρχει κενό, βρίσκεται ανάμεσά τους.",
+                        en: "The question is one about time, not about procedure: what your documents showed for that particular day. Every period of insurance has a start and an end printed on it, and switching insurer mid-year leaves two pairs of dates instead of one. If there is a gap, it sits between them.",
+                    },
+                ],
+                bullets: [
+                    {
+                        el: "«Ημερομηνία έναρξης» και «ημερομηνία λήξης» της ασφαλιστικής περιόδου (inception and expiry dates) — τυπωμένες στο ασφαλιστήριο και στη βεβαίωση ασφάλισης.",
+                        en: "«Ημερομηνία έναρξης» and «ημερομηνία λήξης» — the inception and expiry dates of the period of insurance, printed on the policy and on the certificate.",
+                    },
+                    {
+                        el: "Η «βεβαίωση ασφάλισης» (certificate of insurance) για κάθε περίοδο που ακουμπά την επίμαχη ημέρα, όχι μόνο για την τρέχουσα.",
+                        en: "The «βεβαίωση ασφάλισης» — certificate of insurance — for every period that touches the day in question, not only the current one.",
+                    },
+                    {
+                        el: "Οι αποδείξεις πληρωμής ασφαλίστρου (premium payment receipts) και οι ημερομηνίες τους.",
+                        en: "The «αποδείξεις πληρωμής ασφαλίστρου» — premium payment receipts — and their dates.",
+                    },
+                    {
+                        el: "Αν αλλάξατε εταιρεία: το τέλος της προηγούμενης περιόδου δίπλα στην αρχή της επόμενης — αν ακουμπούν ή αν αφήνουν ημέρες ανάμεσα.",
+                        en: "If you switched insurer: the end of the previous period beside the start of the next — whether they meet, or leave days between them.",
+                    },
+                    {
+                        el: "Η ημερομηνία κοινοποίησης της πράξης, από την οποία μετρούν οι δέκα εργάσιμες ημέρες.",
+                        en: "The date the notice was served, from which the ten working days are counted.",
+                    },
+                ],
+            },
         ],
         faq: [
             {
@@ -1649,6 +1706,16 @@ export const guides: Guide[] = [
                     en: "Via the vehicle insurance check service of the Information Center (through gov.gr) using the plate number. Worth checking after every insurer switch — delayed registry updates have caused erroneous notices.",
                 },
             },
+            {
+                question: {
+                    el: "Πόσο χρόνο έχω για να υποβάλω ένσταση;",
+                    en: "How long do I have to file an objection?",
+                },
+                answer: {
+                    el: "Δέκα (10) εργάσιμες ημέρες από την κοινοποίηση της πράξης επιβολής προστίμου, ηλεκτρονικά μέσω ειδικής εφαρμογής της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης. Η αρχή που επιβάλλει το πρόστιμο αποφαίνεται εντός τριάντα (30) εργάσιμων ημερών, και σε αποδοχή της ένστασης το πρόστιμο ή τα τέλη κυκλοφορίας διαγράφονται (ν. 5113/2024, άρθρο 24).",
+                    en: "Ten (10) working days from service of the penalty notice, filed electronically through a dedicated application on the national digital portal. The authority that imposes the fine decides within thirty (30) working days, and if the objection is accepted the fine or the road tax is written off (Law 5113/2024, article 24).",
+                },
+            },
         ],
         sources: [
             {
@@ -1671,6 +1738,13 @@ export const guides: Guide[] = [
                     en: "Auxiliary Fund for Motor Liability Insurance",
                 },
                 url: "https://www.epikef.gr",
+            },
+            {
+                label: {
+                    el: "ν. 5113/2024 (ΦΕΚ Α΄ 96/21.06.2024) — ηλεκτρονικοί διασταυρωτικοί έλεγχοι και ένσταση, άρθρα 22-24 (PDF)",
+                    en: "Law 5113/2024 (Gazette A΄ 96/21.06.2024) — electronic cross-checks and objections, articles 22-24 (PDF)",
+                },
+                url: "https://minfin.gov.gr/wp-content/uploads/2024/07/FEK-2024-Tefxos-A-00096-N.-5113-2024-ΑΝΑΣΦΑΛΙΣΤΑ-ΟΧΗΜΑΤΑ.pdf",
             },
         ],
     },
@@ -2456,6 +2530,895 @@ export const guides: Guide[] = [
                     en: "AI policy analysis",
                 },
                 href: "/product",
+            },
+        ],
+    },
+    /**
+     * H1 — the average clause (αναλογικός όρος) and underinsurance.
+     *
+     * Claims: SRC-001 (insurable value = rebuild cost less depreciation),
+     * SRC-002 (proportional reduction on underinsurance), SRC-003 (the motor
+     * wording's explicit formula), SRC-004 (wordings cite άρθρο 17 ν. 2496/1997;
+     * first-loss cover disapplies the term). See docs/growth/SOURCES.md.
+     *
+     * Two things this article deliberately does NOT say, because no source
+     * supports them: how COMMON underinsurance is in the Greek market (no
+     * primary source measures it), and what άρθρο 17 ν. 2496/1997 actually
+     * provides (ΦΕΚ Α΄ 87/1997 could not be retrieved — only that published
+     * wordings cite it).
+     */
+    {
+        slug: "analogikos-kanonas-ypasfalisi-katoikias",
+        title: {
+            el: "Αναλογικός κανόνας: τι συμβαίνει στην υπασφάλιση;",
+            en: "The average clause: what happens when you are underinsured?",
+        },
+        metaTitle: {
+            el: "Αναλογικός όρος και υπασφάλιση κατοικίας",
+            en: "The average clause and underinsurance",
+        },
+        metaDescription: {
+            el: "Πώς ορίζουν οι δημοσιευμένοι όροι κατοικίας την ασφαλιστική αξία, πότε ενεργοποιείται ο αναλογικός όρος και πού ακριβώς τον βρίσκετε στο ασφαλιστήριό σας.",
+            en: "How published Greek home policy wordings define insurable value, when the average clause reduces a claim, and exactly where to find it in your own policy.",
+        },
+        summary: {
+            el: "Ο αναλογικός κανόνας — στα κείμενα των όρων «αναλογικός όρος» — μειώνει την αποζημίωση στην ίδια αναλογία που το ασφαλιστικό ποσό υπολείπεται της ασφαλιστικής αξίας. Δημοσιευμένοι όροι κατοικίας ορίζουν αυτή την αξία ως τη δαπάνη ανοικοδόμησης με τα ίδια υλικά και τρόπο κατασκευής, μετά την αφαίρεση της μείωσης της κατασκευαστικής αξίας. Ο όρος γράφεται ως λόγος, οπότε αφορά κάθε ζημιά και όχι μόνο την ολική. Εδώ είναι τι λέει το κείμενο και πού το εντοπίζετε στο δικό σας έγγραφο.",
+            en: "The average clause reduces a claim in the same proportion as the sum insured falls short of the insurable value. Published Greek home wordings define that value as the cost of rebuilding with the same materials and construction method, less the reduction in construction value. Because the term is written as a ratio, it reaches every claim, not only a total loss. Here is what the text says and where to find it in your own document.",
+        },
+        datePublished: "2026-08-26",
+        dateModified: "2026-08-26",
+        readingMinutes: 7,
+        related: [
+            {
+                label: {
+                    el: "Τι είναι τα κενά κάλυψης και πώς τα εντοπίζετε;",
+                    en: "What are coverage gaps and how do you find them?",
+                },
+                href: "/guides/kena-kalypsis-ti-einai-pos-ta-vriskete",
+            },
+            {
+                label: {
+                    el: "Λίστα ελέγχου ανανέωσης ασφαλιστηρίου",
+                    en: "Policy renewal checklist",
+                },
+                href: "/guides/checklist-ananeosis-asfalistiriou",
+            },
+            {
+                label: { el: "Υπασφάλιση", en: "Underinsurance" },
+                href: "/lexiko/ypasfalisi",
+            },
+            {
+                label: {
+                    el: "Ασφάλεια κατοικίας στο PolicyWallet",
+                    en: "Home insurance in PolicyWallet",
+                },
+                href: "/product/property",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Τι λέει ο όρος και με ποια αξία συγκρίνεται;",
+                    en: "What does the clause say, and against which value?",
+                },
+                paragraphs: [
+                    {
+                        el: "Δημοσιευμένοι όροι ασφάλισης κατοικίας αυτής της κατηγορίας προβλέπουν ότι, όταν το ασφαλιστικό ποσό είναι μικρότερο της ασφαλιστικής αξίας, «το ασφάλισμα καθορίζεται (και περιορίζεται) με βάση το λόγο (αναλογία) μεταξύ ασφαλιστικού ποσού και της ασφαλιστικής αξίας». Δεν πρόκειται για ποινή ούτε για διακριτική ευχέρεια: είναι ένας λόγος δύο αριθμών, γραμμένος στους Γενικούς Όρους. Τα κείμενα τον ονομάζουν «αναλογικό όρο» ή «όρο αναλογίας»· είναι το ίδιο πράγμα με τον «αναλογικό κανόνα».",
+                        en: "Published Greek home insurance wordings of this class provide that where the sum insured is lower than the insurable value, «the indemnity is determined (and limited) on the basis of the ratio between the sum insured and the insurable value». It is neither a penalty nor a discretion: it is a ratio between two numbers, written into the general terms. The wordings call it «αναλογικός όρος» or «όρος αναλογίας»; it is the same thing as the average rule.",
+                    },
+                    {
+                        el: "Ο δεύτερος αριθμός είναι εκείνος που ξαφνιάζει. Στο ίδιο κείμενο, βάση υπολογισμού για τα κτίρια είναι «η αναγκαία δαπάνη ανοικοδόμησής τους με τα ίδια υλικά και τρόπο κατασκευής μετά την αφαίρεση της μείωσης της κατασκευαστικής αξίας». Δηλαδή το κόστος να ξαναχτιστεί το κτίσμα, μειωμένο κατά την παλαιότητα — όχι το ποσό που πληρώσατε για το ακίνητο και όχι κάποιο φορολογικό μέγεθος.",
+                        en: "It is the second number that surprises people. In the same document, the basis of calculation for buildings is «the necessary cost of rebuilding them with the same materials and construction method, after deducting the reduction in construction value». That is what it would cost to rebuild the structure, less depreciation — not the price you paid for the property, and not a tax figure.",
+                    },
+                    {
+                        el: "Ο ίδιος κανόνας εμφανίζεται και στο αυτοκίνητο, εκεί γραμμένος ως τύπος. Δημοσιευμένοι όροι ασφάλισης οχημάτων ορίζουν την υπασφάλιση ως «την ασφάλιση του αυτοκινήτου σε αξία μικρότερη της Τρέχουσας Εμπορικής Αξίας του» και δίνουν τον υπολογισμό: ΑΠΟΖΗΜΙΩΣΗ = ΑΣΦΑΛΙΖΟΜΕΝΟ ΚΕΦΑΛΑΙΟ / ΤΡΕΧΟΥΣΑ ΕΜΠΟΡΙΚΗ ΑΞΙΑ Χ ΖΗΜΙΑ.",
+                        en: "The same rule appears in motor cover, there written as a formula. Published motor wordings define underinsurance as «insuring the vehicle for a value lower than its Current Market Value» and give the calculation: INDEMNITY = SUM INSURED / CURRENT MARKET VALUE × LOSS.",
+                    },
+                    {
+                        el: "Και τα δύο κείμενα παραπέμπουν στο άρθρο 17 του ν. 2496/1997 ως πηγή του κανόνα, και το κείμενο της κατοικίας καταγράφει μια εξαίρεση: για κάλυψη γραμμένη σε Α΄ ζημιά ή Α΄ κίνδυνο «δε θα εφαρμόζεται για αυτόν τον κίνδυνο ο αναλογικός όρος». Αυτή η σελίδα δεν αποδίδει το περιεχόμενο του άρθρου 17 — καταγράφει μόνο ότι οι δημοσιευμένοι όροι το επικαλούνται.",
+                        en: "Both texts point to article 17 of Law 2496/1997 as the source of the rule, and the home wording records an exception: for cover written on a first-loss basis (Α΄ ζημιά / Α΄ κίνδυνο) «the average clause shall not be applied to that risk». This page does not report what article 17 provides — only that published wordings cite it.",
+                    },
+                    {
+                        el: "Επειδή ο όρος είναι λόγος, η αριθμητική του είναι απλή. Ο πίνακας δείχνει τι δίνει ο ίδιος λόγος σε μια ζημιά 20.000 ευρώ, για τρία ασφαλιστικά ποσά πάνω στην ίδια ασφαλιστική αξία.",
+                        en: "Because the term is a ratio, its arithmetic is simple. The table shows what the same ratio produces on a €20,000 loss, for three sums insured against one insurable value.",
+                    },
+                ],
+                table: {
+                    caption: {
+                        el: "Ο λόγος ασφαλιστικού ποσού προς ασφαλιστική αξία, πάνω σε ζημιά 20.000 ευρώ.",
+                        en: "The sum-insured to insurable-value ratio, applied to a €20,000 loss.",
+                    },
+                    columns: [
+                        { el: "Ασφαλιστικό ποσό", en: "Sum insured" },
+                        { el: "Ασφαλιστική αξία", en: "Insurable value" },
+                        { el: "Λόγος", en: "Ratio" },
+                        { el: "Ζημιά 20.000 €", en: "€20,000 loss" },
+                    ],
+                    rows: [
+                        {
+                            cells: [
+                                { el: "100.000 €", en: "€100,000" },
+                                { el: "200.000 €", en: "€200,000" },
+                                { el: "50%", en: "50%" },
+                                { el: "10.000 €", en: "€10,000" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "150.000 €", en: "€150,000" },
+                                { el: "200.000 €", en: "€200,000" },
+                                { el: "75%", en: "75%" },
+                                { el: "15.000 €", en: "€15,000" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "200.000 €", en: "€200,000" },
+                                { el: "200.000 €", en: "€200,000" },
+                                { el: "100%", en: "100%" },
+                                { el: "20.000 €", en: "€20,000" },
+                            ],
+                        },
+                    ],
+                    note: {
+                        el: "Απλή αριθμητική πάνω στον λόγο που περιγράφουν οι όροι, πριν από οποιαδήποτε απαλλαγή. Δεν είναι πρόβλεψη για συγκεκριμένη ζημιά: η ασφαλιστική αξία ορίζεται από το δικό σας κείμενο, και κάλυψη σε Α΄ κίνδυνο εξαιρείται από τον όρο.",
+                        en: "Plain arithmetic on the ratio the wordings describe, before any deductible. It is not a prediction for a particular claim: the insurable value is defined by your own text, and first-loss cover is outside the term.",
+                    },
+                },
+            },
+            {
+                heading: {
+                    el: "Γιατί ο όρος περνάει απαρατήρητος;",
+                    en: "Why does the clause go unnoticed?",
+                },
+                paragraphs: [
+                    {
+                        el: "Οι δύο αριθμοί δεν συναντιούνται ποτέ στην ίδια σελίδα. Το ασφαλιστικό ποσό είναι τυπωμένο μπροστά, στον πίνακα καλύψεων, και διαβάζεται σαν υπόσχεση. Η ασφαλιστική αξία δεν είναι αριθμός αλλά ορισμός, και ο ορισμός βρίσκεται βαθιά στους Γενικούς Όρους, στο άρθρο για τον υπολογισμό και την καταβολή του ασφαλίσματος. Κανένα σημείο του εγγράφου δεν συμφιλιώνει τα δύο.",
+                        en: "The two numbers never meet on the same page. The sum insured is printed at the front, on the schedule, and reads like a promise. The insurable value is not a number but a definition, and the definition sits deep in the general terms, in the article on calculating and paying the indemnity. Nothing in the document reconciles the two.",
+                    },
+                    {
+                        el: "Επειδή ο όρος είναι λόγος, δεν περιμένει την ολική καταστροφή. Μια σπασμένη σωλήνα ή μια μερική ζημιά από πυρκαγιά μειώνεται με το ίδιο κλάσμα — και οι μερικές ζημιές είναι οι συνηθισμένες. Έτσι, μια διαφορά που κανείς δεν πρόσεξε επί χρόνια εμφανίζεται για πρώτη φορά τη μέρα του συμβάντος, όταν πλέον δεν διορθώνεται αναδρομικά.",
+                        en: "Because the term is a ratio, it does not wait for a total loss. A burst pipe or a partial fire loss is reduced by the same fraction — and partial losses are the ordinary kind. So a difference nobody noticed for years shows up for the first time on the day of the incident, when it can no longer be corrected retrospectively.",
+                    },
+                    {
+                        el: "Δύο ασφαλιστήρια που μοιάζουν ίδια στον πίνακα καλύψεων μπορεί να συμπεριφέρονται διαφορετικά, γιατί μια κάλυψη γραμμένη σε Α΄ κίνδυνο εξαιρείται ρητά από τον όρο στο κείμενο που παραθέτουμε. Το ποιο ισχύει για εσάς δεν φαίνεται από το ποσό· φαίνεται από τη διατύπωση δίπλα του.",
+                        en: "Two policies that look alike on the schedule can behave differently, because cover written on a first-loss basis is expressly excluded from the term in the wording quoted here. Which applies to you is not visible from the amount; it is visible from the wording next to it.",
+                    },
+                    {
+                        el: "Πόσο συχνά συμβαίνει αυτό στην ελληνική αγορά δεν το μετρά καμία πηγή που μπορούμε να παραθέσουμε, οπότε δεν το ισχυριζόμαστε. Αυτό που μπορεί να ελεγχθεί δεν είναι η συχνότητα αλλά το δικό σας κείμενο.",
+                        en: "How often this happens in the Greek market is not measured by any source we can cite, so we do not claim it. What can be checked is not the frequency but your own document.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι κοιτάτε στο δικό σας ασφαλιστήριο;",
+                    en: "What do you look for in your own policy?",
+                },
+                paragraphs: [
+                    {
+                        el: "Πέντε σημεία, με τους όρους όπως τυπώνονται στα ελληνικά έγγραφα και την αγγλική τους απόδοση για όποιον διαβάζει το κείμενο σε δεύτερη γλώσσα.",
+                        en: "Five things to find, with the terms as they are printed on Greek documents and their English equivalents for anyone reading the text in a second language.",
+                    },
+                ],
+                table: {
+                    caption: {
+                        el: "Πού βρίσκεται το καθένα σε ένα ελληνικό ασφαλιστήριο κατοικίας ή αυτοκινήτου.",
+                        en: "Where each item sits in a Greek home or motor policy.",
+                    },
+                    columns: [
+                        { el: "Τι ψάχνετε", en: "What you are looking for" },
+                        { el: "Όρος στο έγγραφο", en: "Term on the document (Greek)" },
+                        { el: "Στα αγγλικά", en: "In English" },
+                        { el: "Πού βρίσκεται", en: "Where it sits" },
+                    ],
+                    rows: [
+                        {
+                            cells: [
+                                { el: "Το ποσό που ασφαλίσατε", en: "The amount you insured for" },
+                                { el: "Ασφαλιστικό ποσό / ασφαλιζόμενο κεφάλαιο", en: "Ασφαλιστικό ποσό / ασφαλιζόμενο κεφάλαιο" },
+                                { el: "Sum insured", en: "Sum insured" },
+                                { el: "Πίνακας καλύψεων, χωριστά για κτίριο και περιεχόμενο", en: "The schedule, separately for building and contents" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Η αξία με την οποία συγκρίνεται", en: "The value it is compared against" },
+                                { el: "Ασφαλιστική αξία", en: "Ασφαλιστική αξία" },
+                                { el: "Insurable value", en: "Insurable value" },
+                                { el: "Γενικοί Όροι, στο άρθρο για τον υπολογισμό και την καταβολή του ασφαλίσματος", en: "General terms, in the article on calculating and paying the indemnity" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Ο ίδιος ο όρος", en: "The clause itself" },
+                                { el: "Υπασφάλιση / αναλογικός όρος (αναλογικός κανόνας)", en: "Υπασφάλιση / αναλογικός όρος (αναλογικός κανόνας)" },
+                                { el: "Underinsurance / average clause", en: "Underinsurance / average clause" },
+                                { el: "Στο ίδιο άρθρο των Γενικών Όρων", en: "In the same article of the general terms" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Η εξαίρεση από τον όρο", en: "The carve-out from the clause" },
+                                { el: "Κάλυψη σε Α΄ ζημιά ή Α΄ κίνδυνο", en: "Κάλυψη σε Α΄ ζημιά ή Α΄ κίνδυνο" },
+                                { el: "First-loss cover", en: "First-loss cover" },
+                                { el: "Στους ειδικούς όρους ή στις πρόσθετες πράξεις, ανά κάλυψη", en: "In the special terms or endorsements, per cover" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Στο αυτοκίνητο", en: "On a motor policy" },
+                                { el: "Τρέχουσα εμπορική αξία", en: "Τρέχουσα εμπορική αξία" },
+                                { el: "Current market value", en: "Current market value" },
+                                { el: "Στους ορισμούς των όρων ασφάλισης οχήματος", en: "In the definitions of the motor wording" },
+                            ],
+                        },
+                    ],
+                    note: {
+                        el: "Οι ονομασίες διαφέρουν ανά εταιρεία και ανά έκδοση όρων. Αν κάποιος όρος υπάρχει στο δικό σας ασφαλιστήριο, και με ποια διατύπωση, το κρίνει μόνο το δικό σας κείμενο.",
+                        en: "Names vary by insurer and by edition of the wording. Whether a term exists in your own policy, and in what words, is settled only by your own text.",
+                    },
+                },
+            },
+            {
+                heading: {
+                    el: "Τι κάνει με αυτό το PolicyWallet;",
+                    en: "What does PolicyWallet do with this?",
+                },
+                paragraphs: [
+                    {
+                        el: "Διαβάζει το PDF του ασφαλιστηρίου και καταγράφει τα ποσά όπως είναι τυπωμένα: το ασφαλιστικό ποσό και, όταν το ίδιο το έγγραφο αναφέρει και κόστος ανακατασκευής, και τα δύο μαζί. Όταν τα δύο απέχουν ουσιωδώς, το εμφανίζει ως εύρημα προς έλεγχο και δείχνει τους δύο αριθμούς που το προκάλεσαν, ώστε να τους αντιπαραβάλετε με το κείμενό σας.",
+                        en: "It reads the policy PDF and records the amounts as printed: the sum insured and, where the document also states a rebuild cost, both of them together. When the two are materially apart it surfaces that as something to review, showing the two numbers that produced it, so you can hold them against your own text.",
+                    },
+                    {
+                        el: "Δεν υπολογίζει κόστος ανακατασκευής. Δεν υπάρχει πίνακας ευρώ ανά τετραγωνικό πίσω από αυτό, γιατί ένας αριθμός που η εφαρμογή δεν μπορεί να τεκμηριώσει είναι εκτίμηση αξίας και όχι αριθμητική. Αν το έγγραφο αναφέρει μόνο το ένα από τα δύο ποσά, το PolicyWallet το δηλώνει ως μη καταγεγραμμένο αντί να συμπληρώσει το άλλο.",
+                        en: "It does not compute a rebuild cost. There is no euros-per-square-metre table behind this, because a number the app cannot source is a valuation rather than an arithmetic. Where the document states only one of the two amounts, PolicyWallet says so instead of filling in the other.",
+                    },
+                    {
+                        el: "Ανεβάζετε το PDF και τα δύο ποσά, όπου το έγγραφο τα αναφέρει, εμφανίζονται μαζί σε μία σελίδα — μαζί με τις καλύψεις και τις εξαιρέσεις σε απλά ελληνικά, στην ίδια σελίδα με το πρωτότυπο έγγραφο, ώστε κάθε αριθμός να ελέγχεται πάνω στο κείμενο από το οποίο διαβάστηκε.",
+                        en: "You upload the PDF and both amounts, where the document states them, appear together on one page — alongside the covers and exclusions in plain language, on the same page as the original document, so every figure can be checked against the text it was read from.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Ο αναλογικός όρος ισχύει και σε μερική ζημιά;",
+                    en: "Does the average clause apply to a partial loss too?",
+                },
+                answer: {
+                    el: "Στο κείμενο που παραθέτουμε ο όρος δεν είναι γραμμένος ως κανόνας για την ολική ζημιά: το ασφάλισμα «καθορίζεται (και περιορίζεται) με βάση το λόγο» ασφαλιστικού ποσού προς ασφαλιστική αξία. Ένας λόγος εφαρμόζεται σε ό,τι πολλαπλασιάζει. Πώς είναι διατυπωμένος στο δικό σας ασφαλιστήριο το δείχνει το δικό σας κείμενο.",
+                    en: "In the wording quoted here the term is not written as a rule for total losses: the indemnity «is determined (and limited) on the basis of the ratio» of sum insured to insurable value. A ratio applies to whatever it multiplies. How it is worded in your own policy is shown by your own text.",
+                },
+            },
+            {
+                question: {
+                    el: "Αν η κάλυψη είναι σε Α΄ κίνδυνο, ισχύει ο όρος;",
+                    en: "If cover is on a first-loss basis, does the clause apply?",
+                },
+                answer: {
+                    el: "Το κείμενο κατοικίας που παραθέτουμε δηλώνει ρητά ότι για κάλυψη με όριο αποζημίωσης σε Α΄ ζημιά ή Α΄ κίνδυνο δεν εφαρμόζεται ο αναλογικός όρος για αυτόν τον κίνδυνο. Η διατύπωση αφορά συγκεκριμένη κάλυψη, όχι ολόκληρο το ασφαλιστήριο, οπότε το σημείο που έχει σημασία είναι δίπλα σε ποια κάλυψη γράφεται.",
+                    en: "The home wording quoted here states expressly that where a cover carries a first-loss limit, the average clause is not applied to that risk. The wording attaches to a specific cover rather than to the whole policy, so what matters is which cover it sits beside.",
+                },
+            },
+            {
+                question: {
+                    el: "Μετράει η αντικειμενική αξία του ακινήτου;",
+                    en: "Does the property's tax value count?",
+                },
+                answer: {
+                    el: "Οι όροι που παραθέτουμε δεν την αναφέρουν. Ορίζουν τη βάση υπολογισμού για τα κτίρια ως τη δαπάνη ανοικοδόμησης με τα ίδια υλικά και τρόπο κατασκευής, μετά την αφαίρεση της μείωσης της κατασκευαστικής αξίας. Πρόκειται για διαφορετικό μέγεθος από όποια φορολογική αποτίμηση.",
+                    en: "The wordings quoted here do not mention it. They define the basis for buildings as the cost of rebuilding with the same materials and construction method, less the reduction in construction value. That is a different quantity from any tax valuation.",
+                },
+            },
+            {
+                question: {
+                    el: "Στο αυτοκίνητο πώς υπολογίζεται;",
+                    en: "How is it calculated on a motor policy?",
+                },
+                answer: {
+                    el: "Δημοσιευμένοι όροι οχημάτων δίνουν τον τύπο ρητά: ΑΠΟΖΗΜΙΩΣΗ = ΑΣΦΑΛΙΖΟΜΕΝΟ ΚΕΦΑΛΑΙΟ / ΤΡΕΧΟΥΣΑ ΕΜΠΟΡΙΚΗ ΑΞΙΑ Χ ΖΗΜΙΑ, με την υπασφάλιση ορισμένη ως ασφάλιση σε αξία μικρότερη της τρέχουσας εμπορικής αξίας. Οι δύο αριθμοί που χρειάζεστε είναι στους ορισμούς και στον πίνακα του δικού σας ασφαλιστηρίου.",
+                    en: "Published motor wordings give the formula explicitly: INDEMNITY = SUM INSURED / CURRENT MARKET VALUE × LOSS, with underinsurance defined as insuring for a value below the current market value. The two numbers you need are in the definitions and on the schedule of your own policy.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "Γενικοί Όροι Ασφάλισης Κατοικίας — υπολογισμός ασφαλίσματος και υπασφάλιση (PDF)",
+                    en: "Home insurance general terms — indemnity calculation and underinsurance (PDF)",
+                },
+                url: "https://sales.europe-asfalistiki.gr/files/Europe_Insurance_Oroi_Katoikias.pdf",
+            },
+            {
+                label: {
+                    el: "Όροι ασφάλισης αυτοκινήτου — ορισμός υπασφάλισης και αναλογικού όρου (PDF)",
+                    en: "Motor insurance terms — definition of underinsurance and the average clause (PDF)",
+                },
+                url: "https://eu-healthcare.eopyy.gov.gr/wp-content/uploads/2024/11/AUTO_Oroi_Asfalisis.pdf",
+            },
+        ],
+    },
+    /**
+     * H3 — short-term letting and the disclosure duties a home wording creates.
+     *
+     * Claims: SRC-005 (duty at inception to declare what is objectively material),
+     * SRC-006 (negligence REDUCES in proportion to premium; fraud RELEASES inside a
+     * one-month cancellation window — the asymmetry must not be flattened),
+     * SRC-007 (14 days from becoming aware of a material aggravation),
+     * SRC-008 (theft cover commonly falls away after 30 consecutive days unoccupied).
+     * See docs/growth/SOURCES.md.
+     *
+     * The one thing this article must never say: that short-term letting IS an
+     * aggravation of the risk. That is a legal characterisation, no primary source
+     * states it, and it is cut in SOURCES.md. The wordings state the CRITERION; who
+     * applies it to a given let is the reader's own text and their insurer.
+     * Nor may it imply the product detects the letting — the engine has no such
+     * rule (docs/growth/proposals/H3-coverage-voiding-condition.md).
+     */
+    {
+        slug: "vraxychronia-misthosi-asfalisi-katoikias",
+        title: {
+            el: "Βραχυχρόνια μίσθωση και ασφάλιση κατοικίας: τι λένε οι όροι;",
+            en: "Short-term letting and home insurance: what do the terms say?",
+        },
+        metaTitle: {
+            el: "Βραχυχρόνια μίσθωση και ασφάλιση κατοικίας",
+            en: "Short-term letting and home insurance",
+        },
+        metaDescription: {
+            el: "Τι υποχρέωση δήλωσης δημιουργούν οι όροι κατοικίας κατά τη σύναψη και στη διάρκεια, τι προβλέπουν για ακατοίκητο ακίνητο, και πού βρίσκετε και τα δύο.",
+            en: "What Greek home policy wordings require you to declare at inception and mid-term, what they say about unoccupied premises, and where to find both in your text.",
+        },
+        summary: {
+            el: "Οι δημοσιευμένοι όροι κατοικίας ζητούν, κατά τη σύναψη, δήλωση κάθε στοιχείου αντικειμενικά ουσιώδους για την εκτίμηση του κινδύνου, και στη διάρκεια δήλωση μέσα σε δεκατέσσερις ημέρες για ό,τι επιτείνει σημαντικά τον κίνδυνο. Αν η βραχυχρόνια μίσθωση εμπίπτει σε αυτά, δεν το απαντά ένας οδηγός: το κριτήριο το ορίζουν οι όροι και το εφαρμόζει η εταιρεία σας. Εδώ είναι τι λέει το κείμενο και πού το βρίσκετε.",
+            en: "Published Greek home wordings require, at inception, disclosure of everything objectively material to the assessment of the risk, and mid-term a declaration within fourteen days of anything that materially aggravates it. Whether short-term letting falls inside that is not something a guide can answer: the wording sets the criterion and your insurer applies it. Here is what the text says and where to find it.",
+        },
+        datePublished: "2026-08-26",
+        dateModified: "2026-08-26",
+        readingMinutes: 7,
+        related: [
+            {
+                label: {
+                    el: "Αναλογικός όρος και υπασφάλιση κατοικίας",
+                    en: "The average clause and underinsurance",
+                },
+                href: "/guides/analogikos-kanonas-ypasfalisi-katoikias",
+            },
+            {
+                label: { el: "Εξαίρεση", en: "Exclusion" },
+                href: "/lexiko/exairesi",
+            },
+            {
+                label: {
+                    el: "Ασφάλεια κατοικίας στο PolicyWallet",
+                    en: "Home insurance in PolicyWallet",
+                },
+                href: "/product/property",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Ποια υποχρέωση δήλωσης δημιουργούν οι όροι;",
+                    en: "What disclosure duty do the terms create?",
+                },
+                paragraphs: [
+                    {
+                        el: "Δύο, σε δύο διαφορετικές χρονικές στιγμές. Κατά τη σύναψη, δημοσιευμένοι όροι κατοικίας αυτής της κατηγορίας ορίζουν ότι ο λήπτης της ασφάλισης «υποχρεούται να δηλώσει στην Εταιρία κάθε στοιχείο ή περιστατικό που γνωρίζει, το οποίο είναι αντικειμενικά ουσιώδες για την εκτίμηση του κινδύνου», και να απαντήσει σε κάθε σχετική ερώτηση.",
+                        en: "Two of them, at two different moments. At inception, published Greek home wordings of this class provide that the policyholder «is obliged to declare to the Company every fact or circumstance known to them which is objectively material to the assessment of the risk», and to answer every relevant question.",
+                    },
+                    {
+                        el: "Στη διάρκεια, το ίδιο κείμενο δίνει προθεσμία: δήλωση «μέσα σε δεκατέσσερεις (14) ημέρες από τότε που περιήλθε σε γνώση του» κάθε στοιχείου που μπορεί να επιφέρει σημαντική επίταση του κινδύνου — σε βαθμό που, αν η εταιρεία το γνώριζε, δεν θα είχε συνάψει την ασφάλιση ή δεν θα την είχε συνάψει με τους ίδιους όρους. Μόλις το μάθει, η εταιρεία μπορεί να καταγγείλει τη σύμβαση ή να ζητήσει την τροποποίησή της.",
+                        en: "Mid-term, the same text sets a deadline: a declaration «within fourteen (14) days of it coming to their knowledge» of anything that may materially aggravate the risk — to a degree at which, had the company known, it would not have written the insurance or would not have written it on the same terms. Once informed, the company may cancel the contract or ask for it to be varied.",
+                    },
+                    {
+                        el: "Καμία από τις πηγές αυτής της σελίδας δεν χαρακτηρίζει τη βραχυχρόνια μίσθωση επίταση του κινδύνου, και δεν το χαρακτηρίζουμε ούτε εμείς. Οι όροι δίνουν το κριτήριο και την προθεσμία· η υπαγωγή ενός συγκεκριμένου ακινήτου σε αυτό κρίνεται από το δικό σας κείμενο και από την εταιρεία σας, όχι από έναν οδηγό.",
+                        en: "None of the sources behind this page characterises short-term letting as an aggravation of the risk, and neither do we. The wordings give the criterion and the deadline; whether a particular property falls inside it is settled by your own text and by your insurer, not by a guide.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι προβλέπουν οι όροι αν κάτι δεν δηλωθεί;",
+                    en: "What do the terms provide when something is not declared?",
+                },
+                paragraphs: [
+                    {
+                        el: "Όχι ένα πράγμα, αλλά δύο διαφορετικά, και η διαφορά τους έχει σημασία. Στο κείμενο που παραθέτουμε, όταν η παράλειψη οφείλεται σε αμέλεια και ο κίνδυνος επέλθει πριν τροποποιηθεί η σύμβαση, «το ασφάλισμα μειώνεται κατά το λόγο του ασφαλίστρου που έχει καθορισθεί, αν δεν υπήρχε η παράβαση». Δηλαδή μείωση κατά την αναλογία του ασφαλίστρου, όχι κατάργηση της κάλυψης.",
+                        en: "Not one thing but two, and the difference matters. In the wording quoted here, where the omission is negligent and the risk occurs before the contract is varied, «the indemnity is reduced in the ratio of the premium that would have been set had the breach not occurred». That is a proportional reduction, not the removal of cover.",
+                    },
+                    {
+                        el: "Όταν η παράλειψη οφείλεται σε δόλο, το ίδιο κείμενο δίνει στην εταιρεία δικαίωμα καταγγελίας μέσα σε προθεσμία ενός μηνός, και αν ο κίνδυνος επέλθει μέσα σε αυτή την προθεσμία η εταιρεία «απαλλάσσεται της υποχρέωσης του προς καταβολή ασφαλίσματος». Οι δύο περιπτώσεις είναι γραμμένες χωριστά και δεν συγχέονται: το ένα μειώνει, το άλλο απαλλάσσει, και το δεύτερο είναι δεμένο με χρονικό παράθυρο.",
+                        en: "Where the omission is fraudulent, the same text gives the company a right to cancel within one month, and if the risk occurs inside that period the company «is released from its obligation to pay the indemnity». The two cases are written separately and do not merge: one reduces, the other releases, and the second is tied to a time window.",
+                    },
+                    {
+                        el: "Τρία πράγματα κάνουν αυτό το σημείο εύκολο να χαθεί. Η προθεσμία των δεκατεσσάρων ημερών μετρά από τη στιγμή που το μάθατε, όχι από τη στιγμή που θα το θυμηθείτε. Το κριτήριο είναι αντικειμενικό — «ουσιώδες για την εκτίμηση του κινδύνου» — και όχι το τι σας φάνηκε σημαντικό. Και η συνέπεια είναι αναλογική μείωση, που δεν εμφανίζεται πουθενά μέσα στη χρονιά: εμφανίζεται μόνο πάνω σε μια αποζημίωση.",
+                        en: "Three things make this easy to miss. The fourteen-day clock runs from when you learned of the fact, not from when you get round to it. The test is objective — «material to the assessment of the risk» — rather than whatever struck you as important. And the consequence is a proportional reduction, which appears nowhere during the year: it appears only on a claim.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι λένε οι όροι για ακίνητο που μένει άδειο;",
+                    en: "What do the terms say about premises left empty?",
+                },
+                paragraphs: [
+                    {
+                        el: "Χωριστό ζήτημα από τη δήλωση, και χωριστό σημείο του εγγράφου. Στους ειδικούς όρους του κειμένου που παραθέτουμε, στις εξαιρέσεις της κάλυψης κλοπής, δεν καλύπτεται ζημιά «εφόσον ο χώρος εντός του οποίου βρίσκεται η ασφαλισμένη περιουσία παραμένει, κατά τη διάρκεια της περιόδου ασφαλίσεως, ακατοίκητος για συνεχόμενο χρονικό διάστημα μεγαλύτερο των τριάντα (30) ημερών, εκτός εάν στο ασφαλιστήριο συμφωνήθηκε ρητά και γραπτά μεγαλύτερο χρονικό διάστημα».",
+                        en: "A separate question from disclosure, and a separate place in the document. In the special terms of the wording quoted here, among the theft exclusions, there is no cover for loss «where the premises containing the insured property remain, during the period of insurance, unoccupied for a continuous period exceeding thirty (30) days, unless a longer period was expressly agreed in writing in the policy».",
+                    },
+                    {
+                        el: "Δύο περιορισμοί, και οι δύο μέσα στο ίδιο απόσπασμα. Πρώτον, η ρήτρα βρίσκεται στις εξαιρέσεις της κλοπής και δεν λέει τίποτα για πυρκαγιά ή ζημιά από νερό — μην τη γενικεύσετε. Δεύτερον, το κείμενο προβλέπει ρητά ότι μπορεί να έχει συμφωνηθεί μεγαλύτερο διάστημα, γραπτά, στο ίδιο το ασφαλιστήριο. Το αν αυτό έγινε στη δική σας περίπτωση φαίνεται μόνο από το δικό σας έγγραφο.",
+                        en: "Two limits, both inside the same passage. First, the clause lives among the theft exclusions and says nothing about fire or water damage — do not generalise it. Second, the text expressly contemplates that a longer period may have been agreed, in writing, in the policy itself. Whether that happened in your case is visible only on your own document.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι κοιτάτε στο δικό σας ασφαλιστήριο;",
+                    en: "What do you look for in your own policy?",
+                },
+                paragraphs: [
+                    {
+                        el: "Έξι σημεία, με τους όρους όπως τυπώνονται στα ελληνικά έγγραφα και την αγγλική τους απόδοση.",
+                        en: "Six things to find, with the terms as printed on Greek documents and their English equivalents.",
+                    },
+                ],
+                table: {
+                    caption: {
+                        el: "Πού βρίσκεται το καθένα σε ένα ελληνικό ασφαλιστήριο κατοικίας.",
+                        en: "Where each item sits in a Greek home insurance policy.",
+                    },
+                    columns: [
+                        { el: "Τι ψάχνετε", en: "What you are looking for" },
+                        { el: "Όρος στο έγγραφο", en: "Term on the document (Greek)" },
+                        { el: "Στα αγγλικά", en: "In English" },
+                        { el: "Πού βρίσκεται", en: "Where it sits" },
+                    ],
+                    rows: [
+                        {
+                            cells: [
+                                { el: "Τι δηλώθηκε στην αρχή", en: "What was declared at the start" },
+                                { el: "Δήλωση λήπτη της ασφάλισης / πρόταση ασφάλισης", en: "Δήλωση λήπτη της ασφάλισης / πρόταση ασφάλισης" },
+                                { el: "Statement of the policyholder / proposal form", en: "Statement of the policyholder / proposal form" },
+                                { el: "Στην πρόταση ασφάλισης και στη σελίδα στοιχείων", en: "On the proposal form and the schedule" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Το κριτήριο της δήλωσης", en: "The disclosure test" },
+                                { el: "Αντικειμενικά ουσιώδες για την εκτίμηση του κινδύνου", en: "Αντικειμενικά ουσιώδες για την εκτίμηση του κινδύνου" },
+                                { el: "Objectively material to the assessment of the risk", en: "Objectively material to the assessment of the risk" },
+                                { el: "Γενικοί Όροι, στο άρθρο για τις υποχρεώσεις κατά τη σύναψη", en: "General terms, in the article on duties at inception" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Η προθεσμία στη διάρκεια", en: "The mid-term deadline" },
+                                { el: "Επίταση κινδύνου — δεκατέσσερεις (14) ημέρες", en: "Επίταση κινδύνου — δεκατέσσερεις (14) ημέρες" },
+                                { el: "Aggravation of the risk — 14 days", en: "Aggravation of the risk — 14 days" },
+                                { el: "Γενικοί Όροι, σε χωριστό άρθρο με αυτόν τον τίτλο", en: "General terms, in a separate article under that heading" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Οι δύο συνέπειες", en: "The two consequences" },
+                                { el: "Αμέλεια / δόλος", en: "Αμέλεια / δόλος" },
+                                { el: "Negligence / fraud", en: "Negligence / fraud" },
+                                { el: "Στις παραγράφους των συνεπειών, στα ίδια άρθρα", en: "In the consequence paragraphs of those same articles" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Το ακατοίκητο ακίνητο", en: "The unoccupied property" },
+                                { el: "Ακατοίκητο για συνεχόμενο διάστημα μεγαλύτερο των τριάντα (30) ημερών", en: "Ακατοίκητο για συνεχόμενο διάστημα μεγαλύτερο των τριάντα (30) ημερών" },
+                                { el: "Unoccupied for more than 30 consecutive days", en: "Unoccupied for more than 30 consecutive days" },
+                                { el: "Ειδικοί όροι, στις εξαιρέσεις της κάλυψης κλοπής", en: "Special terms, among the theft exclusions" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Πώς περιγράφεται η χρήση", en: "How the use is described" },
+                                { el: "Χρήση / περιγραφή ασφαλισμένου κινδύνου", en: "Χρήση / περιγραφή ασφαλισμένου κινδύνου" },
+                                { el: "Use / description of the insured risk", en: "Use / description of the insured risk" },
+                                { el: "Στη σελίδα στοιχείων του ασφαλιστηρίου", en: "On the policy schedule" },
+                            ],
+                        },
+                    ],
+                    note: {
+                        el: "Οι ονομασίες και η δομή διαφέρουν ανά εταιρεία και ανά έκδοση όρων. Αν ένας όρος υπάρχει στο δικό σας ασφαλιστήριο, και με ποια διατύπωση, το κρίνει μόνο το δικό σας κείμενο.",
+                        en: "Names and structure vary by insurer and by edition of the wording. Whether a term exists in your own policy, and in what words, is settled only by your own text.",
+                    },
+                },
+            },
+            {
+                heading: {
+                    el: "Τι κάνει με αυτό το PolicyWallet;",
+                    en: "What does PolicyWallet do with this?",
+                },
+                paragraphs: [
+                    {
+                        el: "Διαβάζει το ασφαλιστήριο και ξεχωρίζει τους όρους από τους οποίους κρέμεται η κάλυψη — προϋποθέσεις κάλυψης, απαράβατους όρους, υποχρεώσεις που το ίδιο το κείμενο συνδέει με τη διατήρησή της — και τους παρουσιάζει ως απαιτήσεις προς επιβεβαίωση: το ασφαλιστήριο ζητά αυτό, επιβεβαιώστε ότι ισχύει. Καταγράφει επίσης τις εξαιρέσεις όπως τις γράφει το έγγραφο.",
+                        en: "It reads the policy and separates out the terms that cover hangs on — conditions precedent, inviolable terms, obligations the text itself ties to keeping cover in force — and presents them as requirements to confirm: the policy asks for this, confirm it is true. It also records the exclusions as the document words them.",
+                    },
+                    {
+                        el: "Αυτό που δεν κάνει: δεν βλέπει πώς χρησιμοποιείται το ακίνητο. Δεν γνωρίζει αν μισθώνεται, δεν εντοπίζει βραχυχρόνια μίσθωση και δεν αποφαίνεται αν μια κάλυψη ισχύει. Ένας όρος λέει τι απαιτεί το ασφαλιστήριο· το αν αυτό συμβαίνει στην πράξη είναι ερώτημα προς εσάς, όχι διαπίστωση της εφαρμογής.",
+                        en: "What it does not do: it cannot see how the property is used. It does not know whether it is let, it does not detect short-term letting, and it reaches no verdict on whether cover responds. A condition states what the policy requires; whether that is actually the case is a question for you, not a finding of the app.",
+                    },
+                    {
+                        el: "Ανεβάζετε το PDF και οι όροι, οι προϋποθέσεις και οι εξαιρέσεις εμφανίζονται σε απλά ελληνικά, στην ίδια σελίδα με το πρωτότυπο έγγραφο — ώστε τα σημεία του πίνακα παραπάνω να τα ελέγξετε πάνω στο κείμενο, χωρίς να το διασχίσετε ολόκληρο.",
+                        en: "You upload the PDF and the terms, conditions and exclusions appear in plain language, on the same page as the original document — so the items in the table above can be checked against the text, without crossing the whole wording.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Η βραχυχρόνια μίσθωση είναι επίταση του κινδύνου;",
+                    en: "Is short-term letting an aggravation of the risk?",
+                },
+                answer: {
+                    el: "Δεν το λέει καμία πηγή που μπορούμε να παραθέσουμε, οπότε δεν το λέμε ούτε εμείς. Οι όροι ορίζουν το κριτήριο — στοιχείο που επιτείνει σημαντικά τον κίνδυνο — και την προθεσμία των δεκατεσσάρων ημερών. Η υπαγωγή σε αυτό κρίνεται από το δικό σας κείμενο και από την εταιρεία σας.",
+                    en: "No source we can cite says so, so neither do we. The wordings set the criterion — a fact that materially aggravates the risk — and the fourteen-day deadline. Whether a given case falls inside it is settled by your own text and by your insurer.",
+                },
+            },
+            {
+                question: {
+                    el: "Αν δεν το δήλωσα, χάνω την κάλυψη;",
+                    en: "If I did not declare it, do I lose my cover?",
+                },
+                answer: {
+                    el: "Δεν είναι αυτό που λέει το κείμενο που παραθέτουμε. Διακρίνει: σε αμέλεια το ασφάλισμα μειώνεται κατά τον λόγο του ασφαλίστρου που θα είχε καθοριστεί χωρίς την παράβαση· σε δόλο η εταιρεία μπορεί να καταγγείλει μέσα σε έναν μήνα και απαλλάσσεται αν ο κίνδυνος επέλθει μέσα σε αυτή την προθεσμία. Ποια διατύπωση έχει το δικό σας ασφαλιστήριο το δείχνει το δικό σας κείμενο.",
+                    en: "That is not what the wording quoted here says. It distinguishes: on negligence the indemnity is reduced in the ratio of the premium that would have been set without the breach; on fraud the company may cancel within one month and is released if the risk occurs inside that period. Which wording your own policy carries is shown by your own text.",
+                },
+            },
+            {
+                question: {
+                    el: "Το ακίνητο μένει άδειο ανάμεσα σε μισθώσεις — τι σημαίνει;",
+                    en: "The property sits empty between lets — what does that mean?",
+                },
+                answer: {
+                    el: "Σημαίνει ότι αξίζει να διαβάσετε τις εξαιρέσεις της κλοπής. Όροι αυτής της κατηγορίας εξαιρούν ζημιά όταν ο χώρος παραμένει ακατοίκητος για συνεχόμενο διάστημα μεγαλύτερο των τριάντα ημερών, εκτός αν έχει συμφωνηθεί ρητά και γραπτά μεγαλύτερο διάστημα. Η ρήτρα αφορά την κλοπή στο κείμενο που διαβάσαμε, όχι κάθε κάλυψη.",
+                    en: "It means the theft exclusions are worth reading. Wordings of this class exclude loss where the premises remain unoccupied for a continuous period exceeding thirty days, unless a longer period was expressly agreed in writing. In the text we read the clause attaches to theft, not to every cover.",
+                },
+            },
+            {
+                question: {
+                    el: "Πού γράφεται η χρήση του ακινήτου;",
+                    en: "Where is the property's use recorded?",
+                },
+                answer: {
+                    el: "Στη σελίδα στοιχείων του ασφαλιστηρίου και στην πρόταση ασφάλισης που προηγήθηκε. Είναι τα δύο σημεία όπου η περιγραφή του κινδύνου αποτυπώνεται με λέξεις και όχι με ποσά, και είναι εκεί που φαίνεται τι γνώριζε η εταιρεία όταν τιμολόγησε.",
+                    en: "On the policy schedule and on the proposal form that preceded it. Those are the two places where the risk is described in words rather than amounts, and they are where what the insurer knew when it priced the cover is visible.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "Γενικοί Όροι Ασφάλισης Κατοικίας — υποχρεώσεις κατά τη σύναψη και επίταση κινδύνου (PDF)",
+                    en: "Home insurance general terms — duties at inception and aggravation of the risk (PDF)",
+                },
+                url: "https://sales.europe-asfalistiki.gr/files/Europe_Insurance_Oroi_Katoikias.pdf",
+            },
+            {
+                label: {
+                    el: "Ειδικοί Όροι Ασφάλισης Κατοικίας — εξαιρέσεις της κάλυψης κλοπής (PDF)",
+                    en: "Home insurance special terms — theft cover exclusions (PDF)",
+                },
+                url: "https://sales.europe-asfalistiki.gr/files/Europe_Insurance_Oroi_Katoikias.pdf",
+            },
+        ],
+    },
+    /**
+     * H6 — how ELGA compensation is worked out, and what sits outside it.
+     *
+     * Claims: SRC-014 (closed peril list; production only, not the plant capital),
+     * SRC-015 (loss up to 20% pays nothing; above it, 88% of the part above 15% —
+     * a default the board may vary, so copy says «κατά κανόνα», never «πάντα»),
+     * SRC-016 (the insured value is administratively set: area x regional average
+     * yield x a per-unit value fixed by ministerial decision — the MECHANISM only,
+     * never a figure). See docs/growth/SOURCES.md.
+     *
+     * REGISTER (goal §2.5): factual and calm. This is a subject with recent loss of
+     * life and property behind it. No fear copy, no urgency, no disaster imagery.
+     *
+     * Two traps this article is written around. The operative text is the 2011
+     * regulation, not the 1998 one ELGA still publishes — their peril lists differ.
+     * And no per-kilo value is quoted anywhere: those are reissued by a separate
+     * ministerial decision and none was verified.
+     */
+    {
+        slug: "elga-apozimiosi-kai-pragmatiko-kostos",
+        title: {
+            el: "Πώς υπολογίζεται η αποζημίωση του ΕΛ.Γ.Α.;",
+            en: "How is ELGA compensation calculated?",
+        },
+        metaTitle: {
+            el: "Αποζημίωση ΕΛ.Γ.Α.: πώς υπολογίζεται",
+            en: "ELGA compensation: how it is calculated",
+        },
+        metaDescription: {
+            el: "Ποιους κινδύνους καλύπτει ο Κανονισμός Ασφάλισης Φυτικής Παραγωγής, πώς προκύπτει το ποσό της αποζημίωσης και τι μένει εκτός, με παραπομπή στο ΦΕΚ.",
+            en: "Which perils the Greek crop insurance regulation covers, how the compensation figure is worked out and what stays outside it, cited to the government gazette.",
+        },
+        summary: {
+            el: "Η υποχρεωτική ασφάλιση του ΕΛ.Γ.Α. καλύπτει κλειστό κατάλογο ζημιογόνων αιτίων και αφορά την παραγωγή της χρονιάς, όχι το φυτικό κεφάλαιο. Ζημιά έως και είκοσι τοις εκατό της παραγωγής του αγροτεμαχίου κατά κανόνα δεν αποζημιώνεται· πάνω από αυτό, ο Κανονισμός δίνει ογδόντα οκτώ τοις εκατό του πάνω από δεκαπέντε τοις εκατό ποσοστού. Η ασφαλιζόμενη αξία ορίζεται διοικητικά. Εδώ είναι πώς προκύπτει το ποσό.",
+            en: "Greece's compulsory crop insurance scheme covers a closed list of causes and insures the season's production, not the plant capital. A loss of up to twenty per cent of the parcel's production is, as a rule, not compensated; above that, the regulation pays eighty-eight per cent of the portion above fifteen per cent. The insured value is set administratively. Here is how the figure is arrived at.",
+        },
+        datePublished: "2026-08-26",
+        dateModified: "2026-08-26",
+        readingMinutes: 7,
+        related: [
+            {
+                label: {
+                    el: "Τι είναι τα κενά κάλυψης και πώς τα εντοπίζετε;",
+                    en: "What are coverage gaps and how do you find them?",
+                },
+                href: "/guides/kena-kalypsis-ti-einai-pos-ta-vriskete",
+            },
+            {
+                label: { el: "Απαλλαγή", en: "Deductible" },
+                href: "/lexiko/apallagi",
+            },
+            {
+                label: { el: "Αποζημίωση", en: "Claim payout" },
+                href: "/lexiko/apozimiosi",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Τι καλύπτει ο Κανονισμός και τι όχι;",
+                    en: "What does the regulation cover, and what not?",
+                },
+                paragraphs: [
+                    {
+                        el: "Ο Κανονισμός Ασφάλισης Φυτικής Παραγωγής του ΕΛ.Γ.Α. δεν καλύπτει «κάθε ζημιά στην καλλιέργεια». Απαριθμεί ζημιογόνα αίτια, και ό,τι δεν είναι στον κατάλογο βρίσκεται εκτός. Τα φυσικά αίτια που ονομάζει είναι χαλάζι, παγετός, ανεμοθύελλα, πλημμύρα, καύσωνας και ηλιακή ακτινοβολία, υπερβολικές ή άκαιρες βροχοπτώσεις, χιόνι και θάλασσα. Προστίθενται ζημιές από άγρια ζώα: αρκούδα, αγριογούρουνα και άγρια κουνέλια σε καθορισμένες περιοχές.",
+                        en: "ELGA's crop insurance regulation does not cover «any damage to the crop». It enumerates causes of loss, and anything not on the list is outside it. The natural causes it names are hail, frost, windstorm, flood, heatwave and solar radiation, excessive or untimely rainfall, snow and sea spray. Damage by wild animals is added: bear, wild boar and wild rabbits in defined areas.",
+                    },
+                    {
+                        el: "Το δεύτερο όριο είναι λιγότερο γνωστό και πιο καθοριστικό: ασφαλίζεται η παραγωγή, όχι το φυτό. Το άρθρο 4 του Κανονισμού ορίζει ότι «οι ζημιές που προκαλούνται στο φυτικό κεφάλαιο ή που επιδρούν μειωτικά στην παραγωγή της επόμενης καλλιεργητικής περιόδου, δεν καλύπτονται ασφαλιστικά, εκτός της καλλιέργειας των σπαραγγιών». Ένα δέντρο που καταστρέφεται και η επόμενη σοδειά που χάνεται μαζί του είναι δύο διαφορετικά μεγέθη, και ο Κανονισμός αποζημιώνει μόνο τη σοδειά της χρονιάς.",
+                        en: "The second limit is less well known and more decisive: it is the production that is insured, not the plant. Article 4 of the regulation provides that «damage caused to the plant capital, or which reduces the production of the following growing season, is not insured, save for asparagus». A tree that is destroyed and the following harvest lost with it are two different quantities, and the regulation compensates only the current season's harvest.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πώς προκύπτει το ποσό της αποζημίωσης;",
+                    en: "How is the compensation figure arrived at?",
+                },
+                paragraphs: [
+                    {
+                        el: "Από δύο ξεχωριστά βήματα, και τα δύο γραμμένα στον Κανονισμό. Το πρώτο ορίζει την ασφαλιζόμενη αξία της παραγωγής: τον αριθμό των στρεμμάτων όπως δηλώνονται στην Ενιαία Δήλωση Καλλιέργειας/Εκτροφής, τη μέση παραγωγή κατά στρέμμα και είδος ανά γεωγραφική περιοχή, και την αξία του παραγόμενου προϊόντος ανά κιλό ή τεμάχιο, όπως καθορίζεται στην εκάστοτε ισχύουσα κοινή υπουργική απόφαση. Είναι δηλαδή διοικητικά καθορισμένο μέγεθος, όχι η τιμή στην οποία πουλάτε ούτε το κόστος να ξαναφυτέψετε.",
+                        en: "In two separate steps, both written into the regulation. The first sets the insured value of the production: the number of stremmata as declared in the Single Crop and Livestock Declaration, the average yield per stremma and per crop for the geographical area, and the value of the product per kilo or unit as fixed by the ministerial decision in force at the time. It is therefore an administratively determined quantity — not the price you sell at, and not the cost of replanting.",
+                    },
+                    {
+                        el: "Το δεύτερο βήμα εφαρμόζει το ελάχιστο όριο απαλλαγής. Ζημιά έως και 20% της συνολικής παραγωγής του αγροτεμαχίου που ζημιώθηκε, κατ' είδος και ποικιλία καλλιέργειας, δεν καλύπτεται ασφαλιστικά. Αν η ζημιά είναι μεγαλύτερη από 20%, ο ΕΛ.Γ.Α. «καταβάλλει αποζημίωση ίση προς το ποσοστό 88%, του πάνω από 15% ποσοστού ζημιάς». Το κατώφλι μετριέται ανά αγροτεμάχιο και ανά είδος και ποικιλία — όχι στο σύνολο της εκμετάλλευσης. Το ίδιο άρθρο επιτρέπει το όριο αυτό να αυξηθεί ή να μειωθεί για συγκεκριμένες καλλιέργειες ή ασφαλισμένους, με απόφαση του Δ.Σ. του ΕΛ.Γ.Α. εγκεκριμένη από τον Υπουργό, οπότε τα ποσοστά είναι ο κανόνας και όχι σταθερά.",
+                        en: "The second step applies the minimum deductible. A loss of up to 20% of the total production of the damaged parcel, by crop and variety, is not insured. Where the loss exceeds 20%, ELGA «pays compensation equal to 88% of the portion of the loss above 15%». The threshold is measured per parcel and per crop and variety — not across the holding as a whole. The same article allows that threshold to be raised or lowered for particular crops or insureds, by a decision of ELGA's board approved by the Minister, so the percentages are the rule rather than a constant.",
+                    },
+                    {
+                        el: "Τα δύο βήματα μαζί εξηγούν γιατί το ποσό που καταβάλλεται δεν ταυτίζεται με το ποσό της ζημιάς, ακόμη και σε ολική απώλεια της σοδειάς. Ο πίνακας κάνει την αριθμητική πάνω σε μια υποθετική ασφαλιζόμενη αξία 10.000 ευρώ.",
+                        en: "The two steps together explain why the amount paid does not equal the amount of the loss, even on a total loss of the harvest. The table works the arithmetic through on a hypothetical insured value of €10,000.",
+                    },
+                ],
+                table: {
+                    caption: {
+                        el: "Τι δίνουν τα ποσοστά του Κανονισμού σε ασφαλιζόμενη αξία 10.000 ευρώ.",
+                        en: "What the regulation's percentages produce on an insured value of €10,000.",
+                    },
+                    columns: [
+                        { el: "Ποσοστό ζημιάς", en: "Loss as % of production" },
+                        { el: "Ποσοστό αποζημίωσης", en: "Compensated %" },
+                        { el: "Αποζημίωση", en: "Compensation" },
+                        { el: "Μη αποζημιούμενο μέρος", en: "Not compensated" },
+                    ],
+                    rows: [
+                        {
+                            cells: [
+                                { el: "15%", en: "15%" },
+                                { el: "0% — κάτω από το κατώφλι", en: "0% — below the threshold" },
+                                { el: "0 €", en: "€0" },
+                                { el: "1.500 €", en: "€1,500" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "20%", en: "20%" },
+                                { el: "0% — έως και 20% δεν καλύπτεται", en: "0% — up to 20% is not insured" },
+                                { el: "0 €", en: "€0" },
+                                { el: "2.000 €", en: "€2,000" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "30%", en: "30%" },
+                                { el: "13,2%", en: "13.2%" },
+                                { el: "1.320 €", en: "€1,320" },
+                                { el: "1.680 €", en: "€1,680" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "50%", en: "50%" },
+                                { el: "30,8%", en: "30.8%" },
+                                { el: "3.080 €", en: "€3,080" },
+                                { el: "1.920 €", en: "€1,920" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "100%", en: "100%" },
+                                { el: "74,8%", en: "74.8%" },
+                                { el: "7.480 €", en: "€7,480" },
+                                { el: "2.520 €", en: "€2,520" },
+                            ],
+                        },
+                    ],
+                    note: {
+                        el: "Απλή αριθμητική πάνω στα ποσοστά του Κανονισμού, με υποθετική ασφαλιζόμενη αξία. Δεν είναι πρόβλεψη για συγκεκριμένη υπόθεση: η ασφαλιζόμενη αξία ορίζεται διοικητικά, και το όριο απαλλαγής μπορεί να μεταβληθεί με απόφαση του Δ.Σ. του ΕΛ.Γ.Α. εγκεκριμένη από τον Υπουργό.",
+                        en: "Plain arithmetic on the regulation's percentages, using a hypothetical insured value. It is not a prediction for a particular case: the insured value is set administratively, and the same article allows the deductible to be raised or lowered by a decision of ELGA's board approved by the Minister.",
+                    },
+                },
+            },
+            {
+                heading: {
+                    el: "Τι κοιτάτε στα δικά σας έγγραφα;",
+                    en: "What do you look for in your own documents?",
+                },
+                paragraphs: [
+                    {
+                        el: "Έξι σημεία, με τους όρους όπως τυπώνονται στα ελληνικά έγγραφα και την αγγλική τους απόδοση.",
+                        en: "Six things to find, with the terms as printed on Greek documents and their English equivalents.",
+                    },
+                ],
+                table: {
+                    caption: {
+                        el: "Πού βρίσκεται το καθένα, στη δήλωση, στον Κανονισμό ή σε ιδιωτικό ασφαλιστήριο.",
+                        en: "Where each item sits — in the declaration, in the regulation, or in a private policy.",
+                    },
+                    columns: [
+                        { el: "Τι ψάχνετε", en: "What you are looking for" },
+                        { el: "Όρος στο έγγραφο", en: "Term on the document (Greek)" },
+                        { el: "Στα αγγλικά", en: "In English" },
+                        { el: "Πού βρίσκεται", en: "Where it sits" },
+                    ],
+                    rows: [
+                        {
+                            cells: [
+                                { el: "Οι εκτάσεις που δηλώθηκαν", en: "The areas you declared" },
+                                { el: "Ενιαία Δήλωση Καλλιέργειας/Εκτροφής", en: "Ενιαία Δήλωση Καλλιέργειας/Εκτροφής" },
+                                { el: "Single crop and livestock declaration", en: "Single crop and livestock declaration" },
+                                { el: "Στη δήλωση της χρονιάς, σε στρέμματα κατ' είδος και ποικιλία", en: "In that year's declaration, in stremmata by crop and variety" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Η βάση του ποσού", en: "The basis of the amount" },
+                                { el: "Ασφαλιζόμενη αξία της φυτικής παραγωγής", en: "Ασφαλιζόμενη αξία της φυτικής παραγωγής" },
+                                { el: "Insured value of the crop production", en: "Insured value of the crop production" },
+                                { el: "Κανονισμός, άρθρο 3", en: "Regulation, article 3" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Το κατώφλι", en: "The threshold" },
+                                { el: "Ελάχιστο όριο απαλλαγής", en: "Ελάχιστο όριο απαλλαγής" },
+                                { el: "Minimum deductible", en: "Minimum deductible" },
+                                { el: "Κανονισμός, άρθρο 7", en: "Regulation, article 7" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Πάνω σε τι μετριέται", en: "What it is measured against" },
+                                { el: "Συνολική παραγωγή του αγροτεμαχίου, κατ' είδος και ποικιλία", en: "Συνολική παραγωγή του αγροτεμαχίου, κατ' είδος και ποικιλία" },
+                                { el: "Total production of the damaged parcel, by crop and variety", en: "Total production of the damaged parcel, by crop and variety" },
+                                { el: "Κανονισμός, άρθρο 7", en: "Regulation, article 7" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Τι μένει εκτός", en: "What stays outside" },
+                                { el: "Ζημιές στο φυτικό κεφάλαιο", en: "Ζημιές στο φυτικό κεφάλαιο" },
+                                { el: "Damage to the plant capital", en: "Damage to the plant capital" },
+                                { el: "Κανονισμός, άρθρο 4", en: "Regulation, article 4" },
+                            ],
+                        },
+                        {
+                            cells: [
+                                { el: "Αν υπάρχει και ιδιωτικό ασφαλιστήριο", en: "If a private policy also exists" },
+                                { el: "Καλυπτόμενοι κίνδυνοι / εξαιρέσεις", en: "Καλυπτόμενοι κίνδυνοι / εξαιρέσεις" },
+                                { el: "Covered perils / exclusions", en: "Covered perils / exclusions" },
+                                { el: "Στον πίνακα καλύψεων και στις εξαιρέσεις του δικού σας ασφαλιστηρίου", en: "On the schedule and in the exclusions of your own policy" },
+                            ],
+                        },
+                    ],
+                    note: {
+                        el: "Ο Κανονισμός είναι δημόσιο κείμενο και παρατίθεται στις πηγές. Τι ισχύει για μια συγκεκριμένη δήλωση ή ένα συγκεκριμένο αγροτεμάχιο φαίνεται μόνο από τα δικά σας έγγραφα.",
+                        en: "The regulation is a public text and is cited in the sources. What applies to a particular declaration or parcel is visible only on your own documents.",
+                    },
+                },
+            },
+            {
+                heading: {
+                    el: "Τι κάνει με αυτό το PolicyWallet;",
+                    en: "What does PolicyWallet do with this?",
+                },
+                paragraphs: [
+                    {
+                        el: "Λιγότερα από όσα ίσως περιμένετε, και αξίζει να ειπωθεί καθαρά. Το PolicyWallet διαβάζει ασφαλιστήρια που ανεβάζετε εσείς. Δεν συνδέεται με τον ΕΛ.Γ.Α., δεν υπολογίζει αποζημίωση ΕΛ.Γ.Α. και δεν γνωρίζει τι θα καταβληθεί σε μια συγκεκριμένη υπόθεση. Τα ποσοστά αυτής της σελίδας είναι του Κανονισμού, όχι δικά μας.",
+                        en: "Less than you might expect, and that is worth saying plainly. PolicyWallet reads insurance policies that you upload. It has no connection to ELGA, it does not calculate ELGA compensation, and it does not know what will be paid in any particular case. The percentages on this page are the regulation's, not ours.",
+                    },
+                    {
+                        el: "Αν υπάρχει ιδιωτικό ασφαλιστήριο για την εκμετάλλευση ή για την ίδια καλλιέργεια, αυτό είναι το έγγραφο που μπορεί να διαβάσει: ποιους κινδύνους ονομάζει, ποια ποσά και απαλλαγές ορίζει, τι καταγράφει ως εξαιρέσεις — και πού σιωπά. Όταν το έγγραφο δεν αναφέρει κάτι, το PolicyWallet το δηλώνει ως μη καταγεγραμμένο· δεν το συμπεραίνει και δεν το εκλαμβάνει ως κάλυψη.",
+                        en: "Where a private policy exists for the holding or for the same crop, that is the document it can read: which perils it names, which amounts and deductibles it sets, what it records as exclusions — and where it is silent. When the document does not say something, PolicyWallet records it as not stated; it does not infer it, and it does not read silence as cover.",
+                    },
+                    {
+                        el: "Ανεβάζετε το PDF και οι καλύψεις, τα όρια και οι εξαιρέσεις εμφανίζονται σε απλά ελληνικά, στην ίδια σελίδα με το πρωτότυπο έγγραφο — ώστε να δείτε δίπλα-δίπλα τι αναλαμβάνει το ιδιωτικό κείμενο και τι αφήνει στον κλειστό κατάλογο του Κανονισμού.",
+                        en: "You upload the PDF and the covers, limits and exclusions appear in plain language, on the same page as the original document — so you can see side by side what the private wording takes on and what it leaves to the regulation's closed list.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Γιατί μια ζημιά 20% δεν αποζημιώνεται;",
+                    en: "Why is a 20% loss not compensated?",
+                },
+                answer: {
+                    el: "Γιατί ο Κανονισμός ορίζει, κατά κανόνα, ελάχιστο όριο απαλλαγής: ζημιά έως και 20% της συνολικής παραγωγής του αγροτεμαχίου, κατ' είδος και ποικιλία, δεν καλύπτεται ασφαλιστικά. Πάνω από αυτό το όριο καταβάλλεται αποζημίωση ίση προς το 88% του πάνω από 15% ποσοστού ζημιάς, οπότε η μετάβαση από το 20% προς τα πάνω δεν είναι σταδιακή.",
+                    en: "Because the regulation sets, as a rule, a minimum deductible: a loss of up to 20% of the parcel's total production, by crop and variety, is not insured. Above that line compensation is paid equal to 88% of the portion of the loss above 15%, so the step up from 20% is not gradual.",
+                },
+            },
+            {
+                question: {
+                    el: "Η ασφαλιζόμενη αξία είναι η τιμή που πουλάω;",
+                    en: "Is the insured value the price I sell at?",
+                },
+                answer: {
+                    el: "Όχι κατά τον Κανονισμό. Ορίζεται από τρία μεγέθη: τα στρέμματα όπως δηλώθηκαν, τη μέση παραγωγή κατά στρέμμα και είδος ανά γεωγραφική περιοχή, και την αξία ανά κιλό ή τεμάχιο που καθορίζεται με κοινή υπουργική απόφαση. Οι τιμές ανά κιλό επανεκδίδονται περιοδικά, οπότε δεν παραθέτουμε κάποια εδώ.",
+                    en: "Not under the regulation. It is set by three quantities: the stremmata as declared, the average yield per stremma and crop for the geographical area, and the per-kilo or per-unit value fixed by ministerial decision. Those per-kilo values are reissued periodically, so we quote none here.",
+                },
+            },
+            {
+                question: {
+                    el: "Βρήκα διαφορετική λίστα κινδύνων — ποια ισχύει;",
+                    en: "I found a different list of perils — which one applies?",
+                },
+                answer: {
+                    el: "Αξίζει να κοιτάξετε τη χρονολογία του κειμένου που διαβάζετε. Η σελίδα αυτή στηρίζεται στον Κανονισμό του 2011 (ΦΕΚ Β΄ 1668/27.07.2011) και στις τροποποιήσεις του έως τις 20-06-2025. Κυκλοφορεί και παλαιότερο κείμενο του 1998 με διαφορετικό κατάλογο ζημιογόνων αιτίων — δεν περιλαμβάνει την ηλιακή ακτινοβολία. Ο κατάλογος των ισχυόντων κειμένων και των τροποποιήσεων είναι στο θεσμικό πλαίσιο του ΕΛ.Γ.Α., στις πηγές παρακάτω.",
+                    en: "It is worth checking the date of the text you are reading. This page rests on the 2011 regulation (Gazette B΄ 1668/27.07.2011) and its amendments through 20-06-2025. An older 1998 text also circulates with a different list of causes — it does not include solar radiation. The index of texts in force and their amendments is in ELGA's legal-framework page, in the sources below.",
+                },
+            },
+            {
+                question: {
+                    el: "Καλύπτεται η ζημιά στα ίδια τα δέντρα;",
+                    en: "Is damage to the trees themselves covered?",
+                },
+                answer: {
+                    el: "Ο Κανονισμός λέει ότι δεν καλύπτονται ασφαλιστικά οι ζημιές που προκαλούνται στο φυτικό κεφάλαιο ή που επιδρούν μειωτικά στην παραγωγή της επόμενης καλλιεργητικής περιόδου, με εξαίρεση την καλλιέργεια των σπαραγγιών. Η αποζημίωση αφορά την παραγωγή της χρονιάς που ζημιώθηκε.",
+                    en: "The regulation provides that damage to the plant capital, or which reduces the production of the following growing season, is not insured, with the exception of asparagus. Compensation attaches to the production of the season that was damaged.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "ΕΛ.Γ.Α. — Κανονισμός Ασφάλισης Φυτικής Παραγωγής 2011 (ΦΕΚ Β΄ 1668/27.07.2011, PDF)",
+                    en: "ELGA — Crop Production Insurance Regulation 2011 (Gazette B΄ 1668/27.07.2011, PDF)",
+                },
+                url: "https://elga.gr/wp-content/uploads/2024/01/kanonismos-asfalisis-fitikis-2011.pdf",
+            },
+            {
+                label: {
+                    el: "ΕΛ.Γ.Α. — Θεσμικό πλαίσιο: ισχύοντες κανονισμοί και οι τροποποιήσεις τους",
+                    en: "ELGA — Legal framework: regulations in force and their amendments",
+                },
+                url: "https://elga.gr/thesmiko-plaisio/",
             },
         ],
     },

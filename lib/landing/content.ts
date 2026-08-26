@@ -159,7 +159,7 @@ export const landingContent: LandingContentModel = {
             path: "/",
             title: "PolicyWallet | Δείτε τι δεν καλύπτει η ασφάλειά σας",
             description:
-                "Ανεξάρτητος έλεγχος ρίσκου με AI. Δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλειες. Δωρεάν βασική σύνοψη για 1 συμβόλαιο.",
+                "Ανεξάρτητος έλεγχος ρίσκου με AI. Δείτε πού είστε καλυμμένοι και πού έχετε κενά. Δεν πουλάμε ασφάλειες. Δωρεάν πλήρης ανάλυση για 3 συμβόλαια.",
             keywords: [
                 "έλεγχος ασφάλισης",
                 "κενά κάλυψης",
@@ -178,7 +178,7 @@ export const landingContent: LandingContentModel = {
             path: "/en",
             title: "PolicyWallet | See what your insurance does not cover",
             description:
-                "An independent risk check powered by AI. See where you are covered and where the gaps are. We do not sell insurance. Free basic summary for 1 policy.",
+                "An independent risk check powered by AI. See where you are covered and where the gaps are. We do not sell insurance. Free full analysis for 3 policies.",
             keywords: [
                 "insurance check",
                 "coverage gaps",

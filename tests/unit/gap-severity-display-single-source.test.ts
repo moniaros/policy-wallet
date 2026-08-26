@@ -281,6 +281,42 @@ describe("no new hand-rolled severity presentation", () => {
         expect(walked).toContain("lib/gaps/severity-display.ts")
         expect(walked).toContain("lib/gap-detection.ts")
         expect(walked).toContain("lib/services/reports/savings-report.ts")
+        // GROWTH-HOOKS-01: the marketing/guides surfaces are inside this
+        // universe and must stay there — a hook card that colour-codes a
+        // severity is exactly the hand-rolled verdict this guard exists to
+        // stop, and marketing is where it would read most like authority.
+        expect(walked).toContain("app/(public)/guides/GuidesIndexClient.tsx")
+        expect(walked).toContain("components/growth/HookTicker.tsx")
+        expect(walked).toContain("components/landing/HeroSlides.tsx")
+        expect(walked).toContain("lib/growth/hooks.ts")
+    })
+
+    it("fires on a marketing-surface offender — a growth hook card with its own severity map (GROWTH-HOOKS-01)", () => {
+        // The wiring probe for the marketing paths just pinned above: a
+        // components/growth file that colour-codes gap severity must be an
+        // offender under the SAME decision function the walk uses — no
+        // marketing exemption exists or may ever be added.
+        const probeSource = `
+            const SEVERITY_STYLE = {
+                critical: "bg-red-100 text-red-800",
+                high: "bg-orange-100 text-orange-800",
+                medium: "bg-amber-100 text-amber-800",
+                low: "bg-slate-100 text-slate-800",
+            }
+            export function HookGapBadge({ gap }: { gap: { severity: string } }) {
+                return <span className={SEVERITY_STYLE[gap.severity]}>{gap.severity}</span>
+            }
+        `
+        expect(isSeverityOffender("components/growth/HookGapBadge.tsx", probeSource, "0".repeat(64))).toBe(true)
+        // …and the compliant shape stays clean: routing through the primitive.
+        const compliant = `
+            import { describeSeverity } from "@/lib/gaps/severity-display"
+            export function HookGapBadge({ gap }: { gap: { severity: string } }) {
+                const d = describeSeverity(gap.severity)
+                return <span data-tone={d.tone}>{d.labelKey}</span>
+            }
+        `
+        expect(isSeverityOffender("components/growth/HookGapBadge.tsx", compliant, "0".repeat(64))).toBe(false)
     })
 
     it("the colour matcher fires on a hand-rolled map, and not on a compliant surface", () => {

@@ -12,6 +12,7 @@ import { WhyDifferent } from "@/components/landing/WhyDifferent"
 import { WhyNow } from "@/components/landing/WhyNow"
 import { ClearLimits } from "@/components/landing/ClearLimits"
 import { HomeContact } from "@/components/landing/HomeContact"
+import { HookTicker } from "@/components/growth/HookTicker"
 import { HeroSlides } from "@/components/landing/HeroSlides"
 import { PricingPreview } from "@/components/landing/PricingPreview"
 import { HomeFaq } from "@/components/landing/HomeFaq"
@@ -303,6 +304,15 @@ export function WorldClassLanding({
 
                 {/* ── 6b. CLEAR LIMITS ─────────────────────────────── */}
                 <ClearLimits locale={locale} />
+
+                {/* ── 6c. GROWTH HOOKS ─────────────────────────────── */}
+                {/* STATIC, deliberately: HeroSlides already rotates on this
+                    page and a second rotator is forbidden (D-G05). The same
+                    component rotates on /guides, where no rotator exists.
+                    Copy comes from the hook register, never from here. */}
+                <div className="px-6 py-16 lg:px-12 lg:py-20">
+                    <HookTicker locale={locale} mode="static" className="mx-auto max-w-[760px]" />
+                </div>
 
                 {/* ── 7. WHO IT IS FOR ─────────────────────────────── */}
                 <section

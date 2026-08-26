@@ -1,0 +1,11 @@
+// PROBE — the marketing-surface shape of the score leak: a growth/guides
+// component quoting the protection score as social proof. The score renders
+// NOWHERE (halt H-001), marketing included; score-containment.test.ts must
+// flag this shape on the marketing/guides paths exactly as it does in the app.
+export function HookScoreCard({ healthScore }: { healthScore: number }) {
+    return (
+        <a href="/guides/kena-kalypsis-ti-einai-pos-ta-vriskete">
+            Η βαθμολογία προστασίας σας: <strong>{healthScore}</strong>
+        </a>
+    )
+}
