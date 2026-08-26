@@ -700,7 +700,13 @@ gate and the copy follows it back.
 
 ---
 
-## H-010 — Extraction carries no insured-person name
+## H-010 — Two structured-extraction gaps, ONE decision
+
+*(insured-person name · cyber/business/pension `AcordData` objects)*
+
+**Decide these together or not at all.** Both are the same §12.2 schema change. Split into two
+tickets, one gets approved and the other is forgotten — and the forgotten one is indistinguishable
+from a working feature on the surface, which is how it survived this long.
 
 date: 2026-08-26 · raised_by: implementation (P5-wallet-01 pre-check)
 blocks: **W-02 partial closure for health and life only.** Motor, property and pet proceed.
@@ -728,11 +734,19 @@ pension?
 - **Do not add.** Health and life rows stay indistinguishable. Acceptable at realistic portfolio
   sizes — typical fixture is 3, production wallets are 3 and 1 — and degrades as health holdings grow.
 
-### Recommendation (raiser's, and I concur)
-**Do not add in this run.** The defect is confined to the tail, the field is personal data on a health
-policy, and §12.2 blocks it regardless. Revisit when a real capture shows non-zero health duplicates —
-which the `duplicate-identity-row` metric now checks continuously, so the revisit condition is
-measured rather than remembered.
+### Recommendation (raiser's, and I concur) — covers BOTH halves
+**Do not add in this run.** §12.2 blocks the schema change regardless; the insured-person field is
+personal data on a health policy; and both defects are confined to lines with negligible real
+holdings (production wallets hold 3 policies and 1).
+
+**Revisit when EITHER trigger fires** — both are observed, not remembered:
+1. a real capture shows **non-zero health duplicates**, which the `duplicate-identity-row` metric
+   now checks continuously; or
+2. a real **cyber, business or pension policy is uploaded**, at which point the customer is looking
+   at an editorial card with nothing extracted behind it.
+
+Trigger 2 has no automated watch. It fires on a human noticing an upload in one of those three
+lines, which is weaker than trigger 1 and is stated so rather than dressed up.
 
 ### The cyber / business / pension half, verified 2026-08-26
 
@@ -757,3 +771,62 @@ Because the alternative is a substitute field. The nearest candidates all look l
 are not: `beneficiaries.name` names the **beneficiary**, `insuredPersons.*` is a class schedule, and
 policy number / product name / sum insured are not identity at all. Recording the gap keeps someone
 from closing it cosmetically in six months.
+
+---
+
+## SEC-01 — Is a Vercel log drain configured? (the single open question)
+
+**Raised 2026-08-26. Everything else in SEC-01 is closed; this is the only thing that decides
+whether containment is established.** It cannot be answered by any tooling available to the agent —
+there is no MCP tool for drains and the REST drains API is not reachable from here. It is a
+dashboard check: **Vercel → project `policy-wallet` → Settings → Log Drains** (and the team-level
+drains list, since a team drain covers the project without appearing under it).
+
+### What happened, in one paragraph
+A Supabase session object reached the Vercel runtime logs **8 times**, counted two independent ways
+(error grouping 7+1; a text-filtered log aggregation over 3 days). Each entry carried a live
+access-token JWT and a live refresh token, because `_recoverAndRefresh` interpolates the whole
+serialised session into its error message and nothing between that throw and the sink removed it.
+
+### Exposure window
+**2026-08-23 20:47:10 UTC → 2026-08-26**, closing with deployment `60087bb7`, which shipped the
+`proxy.ts` cookie-adapter fix and made the throw unreachable. The belt-and-braces half — catching
+the throw and redacting it before anything logs it — lands with `385bc0b8`.
+
+Whether occurrences predate 2026-08-23 **could not be established**: the 7-day log aggregate times
+out and a 30-day query is rejected outright, so the window's left edge is the limit of
+observability, not a proven start.
+
+### The question
+Was a log drain configured on this project or team at any point inside that window?
+
+### What each answer implies
+
+- **No drain → SEC-01 CLOSES.** Exposure is confined to Vercel's own runtime logs. Those cannot be
+  deleted (Vercel exposes no delete endpoint for runtime logs) but they age out with retention, and
+  every credential in them is already dead: both access-token JWTs expired ~68 hours before
+  remediation, neither leaked refresh token still existed in `auth.refresh_tokens` (GoTrue rotates
+  on use), and the account's live session was revoked — prod verified at 0 sessions / 0 unrevoked.
+
+- **Drain configured → SEC-01 STAYS OPEN, with a new scope item.** The 8 entries were forwarded
+  verbatim to a third party with **its own retention and its own access list**, neither of which is
+  bounded by anything done here. Containment is then *not* established, and the follow-up is: name
+  the destination, determine its retention, determine who can read it, and purge there if it
+  permits deletion. Revoking the Supabase session does not reach it.
+
+### Deliberately NOT done
+The only lever that would purge the Vercel entries early is deleting the two deployments that
+produced them (`dpl_AV89m5aD82rRT4XDcWVpocCMGChD`, `dpl_HACe2hPXeXHWGvQ3EtLH7Ure52Ws`). That is
+irreversible, destroys rollback targets, and buys nothing while the credentials are already dead.
+Not done on the agent's authority.
+
+### CLOSED — the IP origin line is not a finding
+The revoked session carried IP `186.247.46.50`, which geolocates to Brazil on a Greek-market
+product, and was flagged during review because it sat on the only live session on the affected
+account. **Confirmed a VPN. Not a finding, not an indicator of compromise.** Recorded here so that
+nobody re-opens it from `docs/archive/2026-08-26-sec-01-admin-session-revocation.sql`, which
+preserves the IP in its pre-change record and would otherwise look like an unexamined lead.
+
+### Status
+`docs/STATUS.md` reads **contained, not closed**, and stays that way until the drain question is
+answered by a human. The agent does not close this.

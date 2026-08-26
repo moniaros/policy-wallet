@@ -1269,3 +1269,60 @@ count individually.
 jsdom caveat, declared: no layout and no stylesheet there, so the collector takes
 `{ assumeVisible, boundedFallback }` — `.pw-card` and bare interactive controls stand in for
 boundaries a class would paint. The Playwright measure runs the same function with neither flag.
+
+---
+
+## D-036 — The ceiling register: which ceilings are VERIFIED, which are ASSUMED, and one premise that was wrong
+
+The `P5-measure-00` brief asserted **"dashboard ≤6, neither half has been done"** — no measurement
+correction and no page fix. **That was wrong, and wrong in the safe direction.** Verified before
+accepting it:
+
+- The dashboard's six landmarks are real `<section id>` elements — `overview`, `attention`, `plan`,
+  `coverage`, `portfolio`, `activity` — and the collector's `section[id]` arm is an **exact query
+  into a `Set`**. The nested double-count lived only in the shell/columns fallback arm, which never
+  sees them. **No measurement fix was needed because this page was never exposed to the bug.**
+- The **13 → 6 consolidation was the page fix**, and it already happened.
+
+And a further correction the brief itself did not contain: there is **no written "≤6" ceiling**.
+The documented ceiling is **≤7, achieved at 6**. If a later note rounded the achieved number down
+into a forward ceiling, it was not found. Quoting "≤6" hardens an achievement into a budget nobody
+set — a small drift, and exactly the kind that becomes unauditable once repeated.
+
+**Second time in this run a ceiling assumption was wrong in the safe direction** (the first: the
+policy-detail 10, where the detector was over-counting *and* the page was over budget). Both times
+the number was worse than reality, never better. Worth noting because the reflex on hearing "the
+measurement was wrong" is to assume something was being hidden.
+
+### The register
+
+No row merges against a ceiling still marked **ASSUMED**.
+
+| Ceiling | Value | Status | Basis |
+|---|---|---|---|
+| Policy detail — sections | **≤8** | **VERIFIED** | D-035. CI-path jsdom guard on the real component across 4 states, plus a live Playwright batch: 6 fixtures × 3 widths, all ≤8. Both halves separable: 10→9 detector, 9→8 page. |
+| Dashboard — sections | **≤7**, achieved **6** | **VERIFIED** | Six real `section[id]` landmarks; exact-query arm, structurally immune to the nested-match artefact. Page fix (13→6) already landed. |
+| Policy detail — AI entry points | **≤2** (§7.5) | **ASSUMED** | The test that asserts it (`policy-detail-goal2.spec.ts`, "at most two AI entry points") is one of the **14 that never ran** — see `P5-INFRA-00-tests-not-run.md`. The cap is a design intent with no passing measurement behind it. |
+| §10.2 — container count | **≤50% of baseline** | **ASSUMED** | Evaluated on fixtures and not re-derived since the collector fix. |
+| `/protection` — sections (2 lenses) | stored **20 / 26** → **≤18 / ≤23** | **ASSUMED** | A derived bound, not a measurement. Re-capture still owed. |
+| Dashboard — historical "13" | — | **UNRELIABLE, do not quote** | The 13-heuristic-div page no longer exists (Goal 2 replaced it) and the capture is not re-runnable. It may already have been ≤12. |
+
+### The bound keeps its direction
+
+A repeated label proves **AT MOST N** doubles, never at least N — two genuinely distinct sections
+may legitimately share a label, and the stored capture is a flat list with no nesting information.
+`/protection`'s branch-lens is therefore **2 deterministic doubles (20−2 = 18)** separated from
+**1 unconfirmed suspect** (hence **≤18**, since the suspect could take it to 17). The analysis
+document's phrasing governs; the summary's looser "confirmably inflated to ≤18" reads as a *ceiling
+on the corrected value* and must not be propagated. **A weak collision never becomes a bound
+anywhere in the record.**
+
+### Outstanding
+
+`/protection`'s re-capture is the **only actionable finding still outstanding** from `P5-measure-00`
+— a ceiling baseline, Phase-5-queued, at any width. It was blocked on the session pooler, which
+**recovered 2026-08-26** (1298 ms on 5432). It is now queued behind `P5-wallet-01a-FINISH`, which
+holds the same tree.
+
+The other 137 stale capture files across 9 surfaces are recorded, derivable as bounds, and not
+actionable: none is a ceiling baseline and none lands within 1 of one.
