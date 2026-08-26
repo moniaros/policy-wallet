@@ -50,20 +50,20 @@ export function PricingPreview({
         <section
             id="pricing-preview"
             aria-labelledby="pricing-preview-heading"
-            className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
+            className="scroll-mt-28 border-y border-neutral-200 bg-neutral-50 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
         >
             <div className="mx-auto max-w-page">
                 <div className="mb-12 text-center">
                     <h2
                         id="pricing-preview-heading"
-                        className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white"
+                        className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white"
                     >
                         {t(
                             "Μία συνδρομή, όλα τα ασφαλιστήριά σας διαβασμένα.",
                             "One subscription, every policy of yours read.",
                         )}
                     </h2>
-                    <p className="mx-auto max-w-[560px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                    <p className="mx-auto max-w-[560px] text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
                         {t(
                             "Πλήρης ανάλυση, κενά κάλυψης και υπενθυμίσεις πριν λήξει κάτι. Καμία κρυφή χρέωση, ακυρώνετε όποτε θέλετε.",
                             "Full analysis, coverage gaps and reminders before something runs out. No hidden charges, cancel whenever you want.",
@@ -79,15 +79,15 @@ export function PricingPreview({
                                 key={plan.key}
                                 className={`flex flex-col rounded-2xl border bg-white p-7 dark:bg-slate-950 ${
                                     plan.isHighlighted
-                                        ? "border-[#29685B] dark:border-[#A7F3D0]/60"
-                                        : "border-[#E2E8F0] dark:border-slate-800"
+                                        ? "border-primary dark:border-[#A7F3D0]/60"
+                                        : "border-neutral-200 dark:border-slate-800"
                                 }`}
                             >
                                 {/* Wraps: at 768 the English "RECOMMENDED" badge
                                     sat beside a long plan name and pushed the
                                     document 2px wider than the viewport. */}
                                 <div className="mb-4 flex flex-wrap items-center gap-2">
-                                    <h3 className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                                    <h3 className="text-title font-semibold tracking-tight text-neutral-900 dark:text-white">
                                         {pick(plan.name)}
                                     </h3>
                                     {plan.badge ? (
@@ -98,23 +98,23 @@ export function PricingPreview({
                                 </div>
 
                                 <p className="mb-4 flex items-baseline gap-1">
-                                    <span className="text-h2 font-bold tracking-tight text-[#0F172A] dark:text-white">
+                                    <span className="text-h2 font-bold tracking-tight text-neutral-900 dark:text-white">
                                         {plan.pricing.monthly.amount}
                                     </span>
-                                    <span className="text-body text-[#5B6A7A] dark:text-slate-400">
+                                    <span className="text-body text-muted-foreground dark:text-slate-400">
                                         {pick(plan.pricing.monthly.period)}
                                     </span>
                                 </p>
 
-                                <p className="mb-4 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                                <p className="mb-4 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                     {pick(plan.description)}
                                 </p>
 
                                 {topFeature ? (
-                                    <p className="mt-auto flex items-start gap-2 text-body-lg font-medium text-[#0F172A] dark:text-white">
+                                    <p className="mt-auto flex items-start gap-2 text-body-lg font-medium text-neutral-900 dark:text-white">
                                         <Check
                                             aria-hidden
-                                            className="mt-1 h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]"
+                                            className="mt-1 h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]"
                                         />
                                         {pick(topFeature.label)}
                                     </p>
@@ -130,9 +130,9 @@ export function PricingPreview({
                     exists has to be findable, and the honesty rule does not
                     bend for conversion. */}
                 {freePlan ? (
-                    <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-2xl border border-dashed border-[#E2E8F0] px-6 py-5 dark:border-slate-700">
-                        <p className="text-body text-[#475569] dark:text-slate-300">
-                            <span className="font-semibold text-[#0F172A] dark:text-white">
+                    <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-2xl border border-dashed border-neutral-200 px-6 py-5 dark:border-slate-700">
+                        <p className="text-body text-neutral-600 dark:text-slate-300">
+                            <span className="font-semibold text-neutral-900 dark:text-white">
                                 {pick(freePlan.name)}
                             </span>{" "}
                             · {freePlan.pricing.monthly.amount}
@@ -141,7 +141,7 @@ export function PricingPreview({
                         </p>
                         <Link
                             href={localizeHref("/pricing", locale)}
-                            className="inline-flex min-h-11 items-center gap-1.5 text-body font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
+                            className="inline-flex min-h-11 items-center gap-1.5 text-body font-semibold text-primary underline-offset-4 hover:underline dark:text-[#A7F3D0]"
                         >
                             {t("Ξεκινήστε δωρεάν", "Start free")}
                             <ArrowRight aria-hidden className="h-4 w-4" />

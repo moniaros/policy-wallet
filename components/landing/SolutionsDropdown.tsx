@@ -91,7 +91,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         close(true)
                     }
                 }}
-                className="inline-flex min-h-11 items-center gap-1 transition-colors hover:text-[#0F172A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] dark:hover:text-white"
+                className="inline-flex min-h-11 items-center gap-1 transition-colors hover:text-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:focus-visible:outline-[#A7F3D0] dark:hover:text-white"
             >
                 <span>{label}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -117,21 +117,21 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                 >
                     <div className="grid gap-x-6 gap-y-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
                     <div>
-                        <p className="mb-1 px-3 text-kicker font-semibold uppercase tracking-widest text-[#5B6A7A] dark:text-slate-400">
+                        <p className="mb-1 px-3 text-kicker font-semibold uppercase tracking-widest text-muted-foreground dark:text-slate-400">
                             {t("Για ποιον", "Who it is for")}
                         </p>
                     <Link
                         ref={firstItemRef}
                         href={localizeHref("/product", language)}
                         onClick={() => setIsOpen(false)}
-                        className="flex min-h-11 items-center rounded-lg px-3 text-body font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
+                        className="flex min-h-11 items-center rounded-lg px-3 text-body font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:focus-visible:outline-[#A7F3D0] dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         {individualsLabel}
                     </Link>
                     <Link
                         href={localizeHref("/solutions/agents", language)}
                         onClick={() => setIsOpen(false)}
-                        className="flex min-h-11 items-center rounded-lg px-3 text-body font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:focus-visible:outline-[#A7F3D0] dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
+                        className="flex min-h-11 items-center rounded-lg px-3 text-body font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:focus-visible:outline-[#A7F3D0] dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         {agentsLabel}
                     </Link>
@@ -143,7 +143,7 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                         a scroll. Sourced from the catalog rather than retyped,
                         so a new branch appears here the day it is added. */}
                     <div>
-                        <p className="mb-1 px-3 text-kicker font-semibold uppercase tracking-widest text-[#5B6A7A] dark:text-slate-400">
+                        <p className="mb-1 px-3 text-kicker font-semibold uppercase tracking-widest text-muted-foreground dark:text-slate-400">
                             {t("Κλάδοι", "Branches")}
                         </p>
                         <div className="grid grid-cols-2 gap-x-2">
@@ -152,9 +152,9 @@ export function SolutionsDropdown({ language, className = "" }: SolutionsDropdow
                                     key={category.id}
                                     href={localizeHref(category.href, language)}
                                     onClick={() => setIsOpen(false)}
-                                    className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-body-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white dark:focus-visible:outline-[#A7F3D0]"
+                                    className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-body-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white dark:focus-visible:outline-[#A7F3D0]"
                                 >
-                                    <category.icon aria-hidden className="h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
+                                    <category.icon aria-hidden className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
                                     <span className="truncate">
                                         {language === "el" ? category.labelEl : category.labelEn}
                                     </span>

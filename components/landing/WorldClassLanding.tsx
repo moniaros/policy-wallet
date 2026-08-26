@@ -72,7 +72,7 @@ export function WorldClassLanding({
 
     return (
         <div
-            className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:bg-slate-900 dark:text-white`}
+            className={`${inter.className} min-h-screen bg-white text-neutral-900 selection:bg-[#29685B]/20 selection:text-neutral-900 dark:bg-slate-900 dark:text-white`}
         >
             {/* The header floats 16px from the top and is 56px tall, so the
                 browser's scroll-on-focus could park a focused control right
@@ -148,7 +148,7 @@ export function WorldClassLanding({
                             leading with it sold the floor. No price here: the
                             plan catalog is admin-managed and PricingPreview
                             renders the live figures a few sections down. */}
-                        <p className="mx-auto mt-5 max-w-[540px] text-body-lg font-medium leading-relaxed text-[#334155] dark:text-slate-200">
+                        <p className="mx-auto mt-5 max-w-[540px] text-body-lg font-medium leading-relaxed text-neutral-700 dark:text-slate-200">
                             {t(
                                 "Με το Family διαβάζουμε κάθε ασφαλιστήριό σας, βρίσκουμε τι δεν καλύπτεται και σας ειδοποιούμε πριν λήξει κάτι.",
                                 "With Family we read every one of your policies, find what is not covered, and warn you before something runs out.",
@@ -157,7 +157,7 @@ export function WorldClassLanding({
 
                         {/* The free tier, kept accurate and kept findable, in the
                             size it earns. */}
-                        <p className="mt-4 text-micro text-[#5B6A7A] dark:text-slate-400">
+                        <p className="mt-4 text-micro text-muted-foreground dark:text-slate-400">
                             {pick(CTA_REASSURANCE, locale)}
                         </p>
                     </div>
@@ -174,12 +174,12 @@ export function WorldClassLanding({
                 >
                     <div className="mx-auto max-w-page">
                         <div className="mb-12 max-w-[680px]">
-                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-primary dark:text-[#A7F3D0]">
                                 {t("Τι παίρνετε", "What you get")}
                             </p>
                             <h2
                                 id="services-heading"
-                                className="mb-4 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
+                                className="mb-4 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-neutral-900 lg:text-h1 dark:text-white"
                             >
                                 {/* The Greek used to say something else entirely —
                                     "Αναλυτικές αναφορές σε γλώσσα που δεν χρειαζεται
@@ -195,7 +195,7 @@ export function WorldClassLanding({
                                     "Five things about exactly what you bought.",
                                 )}
                             </h2>
-                            <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                            <p className="text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
                                 {/* The Greek was missing the English lead's first
                                     sentence, which is the one that says what the
                                     five cards are actually about. */}
@@ -230,7 +230,7 @@ export function WorldClassLanding({
                     <div className="mx-auto max-w-[900px] space-y-7 rounded-3xl border border-[#A7F3D0] bg-[#ECFDF5] px-6 py-14 text-center sm:px-12 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
                         <h2
                             id="coverage-heading"
-                            className="mx-auto max-w-[720px] text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h2 dark:text-white"
+                            className="mx-auto max-w-[720px] text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-balance text-neutral-900 lg:text-h2 dark:text-white"
                         >
                             {t(
                                 "Δουλεύει με ό,τι κι αν έχετε, από όποια εταιρεία κι αν το πήρατε.",
@@ -238,7 +238,7 @@ export function WorldClassLanding({
                             )}
                         </h2>
                         <TrustBadges isGreek={isGreek} />
-                        <p className="mx-auto max-w-[620px] text-body-lg leading-relaxed text-[#334155] dark:text-slate-300">
+                        <p className="mx-auto max-w-[620px] text-body-lg leading-relaxed text-neutral-700 dark:text-slate-300">
                             {t(
                                 `${productCategories.length} είδη ασφάλισης. Δεν συνεργαζόμαστε με καμία ασφαλιστική — γι' αυτό μπορούμε να σας πούμε την αλήθεια.`,
                                 `${productCategories.length} types of insurance. We do not work with any insurance company — that is why we can tell you the truth.`,
@@ -264,18 +264,18 @@ export function WorldClassLanding({
                 >
                     <div className="mx-auto max-w-page">
                         <div className="mb-14 text-center">
-                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-primary dark:text-[#A7F3D0]">
                                 {t("Πώς λειτουργεί", "How it works")}
                             </p>
                             <h2
                                 id="how-it-works-heading"
-                                className="text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
+                                className="text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-neutral-900 lg:text-h1 dark:text-white"
                             >
                                 {t("Τρία βήματα. Λίγα λεπτά.", "Three steps. A few minutes.")}
                             </h2>
                         </div>
 
-                        <ol className="mx-auto max-w-[760px] divide-y divide-[#E2E8F0] dark:divide-slate-800">
+                        <ol className="mx-auto max-w-[760px] divide-y divide-neutral-200 dark:divide-slate-800">
                             {steps.map((step, index) => {
                                 const Icon = stepIcons[index] ?? FileText
                                 return (
@@ -285,13 +285,13 @@ export function WorldClassLanding({
                                             five times over. A numbered row needs
                                             no box to read as a step. */}
                                         <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#ECFDF5] dark:bg-[#29685B]/20">
-                                            <Icon aria-hidden className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
+                                            <Icon aria-hidden className="h-5 w-5 text-primary dark:text-[#A7F3D0]" />
                                         </span>
                                         <div>
-                                        <h3 className="mb-2 text-lead font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                                        <h3 className="mb-2 text-lead font-semibold tracking-tight text-neutral-900 dark:text-white">
                                             {isGreek ? step.title.el : step.title.en}
                                         </h3>
-                                        <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                                        <p className="text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                             {isGreek ? step.description.el : step.description.en}
                                         </p>
                                         </div>
@@ -322,16 +322,16 @@ export function WorldClassLanding({
                 >
                     <div className="mx-auto max-w-page">
                         <div className="mb-12 text-center">
-                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-[#29685B] dark:text-[#A7F3D0]">
+                            <p className="mb-3 text-caption font-semibold tracking-widest uppercase text-primary dark:text-[#A7F3D0]">
                                 {t("Για ποιον", "Who it is for")}
                             </p>
                             <h2
                                 id="solutions-heading"
-                                className="mb-4 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
+                                className="mb-4 text-h2 leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-neutral-900 lg:text-h1 dark:text-white"
                             >
                                 {t("Ασφαλισμένος ή ασφαλιστής;", "Are you insured, or do you insure others?")}
                             </h2>
-                            <p className="mx-auto max-w-[520px] text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                            <p className="mx-auto max-w-[520px] text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
                                 {t(
                                     "Δύο διαφορετικές εμπειρίες, φτιαγμένες για τη δουλειά που κάνετε.",
                                     "Two different experiences, built for the job you are doing.",
@@ -362,7 +362,7 @@ export function WorldClassLanding({
                         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(41,104,91,0.30),transparent)]" />
 
                         <div className="relative">
-                            <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-[#89D9B2]">
+                            <p className="mb-4 text-caption font-semibold tracking-widest uppercase text-mint">
                                 PolicyWallet
                             </p>
                             <h2 className="mb-4 text-h2 leading-tight font-semibold tracking-[-0.03em] text-balance text-white lg:text-h1">

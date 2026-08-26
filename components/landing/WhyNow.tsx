@@ -23,7 +23,7 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                three white bands in a row and the page read as one long column
                with no joints. The site's rhythm is white/tint alternating, and
                this is the band that restores it. */
-            className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
+            className="scroll-mt-28 border-y border-neutral-200 bg-neutral-50 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
         >
             {/* Two columns from lg: the argument on the left, the result of it
                 on the right. The product shot used to sit in a band of its own
@@ -35,17 +35,17 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                 <div className="mb-10 max-w-[640px]">
                     <h2
                         id="why-now-heading"
-                        className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white"
+                        className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white"
                     >
                         {t("Το πρόβλημα δεν είναι να μην έχετε ασφάλεια.", "The problem is not having no insurance.")}
                         <br className="hidden sm:block" />{" "}
-                        <span className="text-[#29685B] dark:text-[#A7F3D0]">
+                        <span className="text-primary dark:text-[#A7F3D0]">
                             {t("Είναι να νομίζετε ότι έχετε.", "It is thinking you have it.")}
                         </span>
                     </h2>
                 </div>
 
-                <ol className="divide-y divide-[#E2E8F0] dark:divide-slate-800">
+                <ol className="divide-y divide-neutral-200 dark:divide-slate-800">
                     {WHY_NOW.map((item, index) => (
                         <li
                             key={item.title.en}
@@ -53,15 +53,15 @@ export function WhyNow({ locale }: { locale: MarketingLocale }) {
                         >
                             <span
                                 aria-hidden
-                                className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF5] text-body font-bold text-[#29685B] dark:bg-[#29685B]/20 dark:text-[#A7F3D0]"
+                                className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#ECFDF5] text-body font-bold text-primary dark:bg-[#29685B]/20 dark:text-[#A7F3D0]"
                             >
                                 {index + 1}
                             </span>
                             <div>
-                            <h3 className="mb-1.5 text-lead font-semibold leading-snug tracking-tight text-[#0F172A] dark:text-white">
+                            <h3 className="mb-1.5 text-lead font-semibold leading-snug tracking-tight text-neutral-900 dark:text-white">
                                 {pick(item.title, locale)}
                             </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                            <p className="text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                 {pick(item.body, locale)}
                             </p>
                             </div>

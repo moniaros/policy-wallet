@@ -72,7 +72,7 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                 <div
                     role="tablist"
                     aria-label={t("Επιλογή κοινού", "Audience selection")}
-                    className="flex rounded-full border border-[#E2E8F0] dark:border-slate-800 bg-[#F1F5F9] dark:bg-slate-800 p-1"
+                    className="flex rounded-full border border-neutral-200 dark:border-slate-800 bg-neutral-100 dark:bg-slate-800 p-1"
                 >
                     <button
                         type="button"
@@ -87,7 +87,7 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
                             activeTab === "policyholders"
                                 ? "bg-[#29685B] text-white shadow-sm"
-                                : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-slate-400 dark:hover:text-white"
+                                : "text-muted-foreground hover:text-neutral-900 dark:text-slate-400 dark:hover:text-white"
                         }`}
                     >
                         {t("Ιδιώτες", "Individuals")}
@@ -105,7 +105,7 @@ export function AudienceTabs({ isGreek }: AudienceTabsProps) {
                         className={`inline-flex min-h-11 items-center rounded-full px-6 text-body font-semibold transition-all duration-200 ${
                             activeTab === "agents"
                                 ? "bg-[#29685B] text-white shadow-sm"
-                                : "text-[#5B6A7A] hover:text-[#0F172A] dark:text-slate-400 dark:hover:text-white"
+                                : "text-muted-foreground hover:text-neutral-900 dark:text-slate-400 dark:hover:text-white"
                         }`}
                     >
                         {t("Ασφαλιστές", "Agents")}
@@ -178,13 +178,13 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             {/* Copy */}
             <div>
-                <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h2">
+                <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-neutral-900 dark:text-white lg:text-h2">
                     {t(
                         "Για ανθρώπους που θέλουν ηρεμία, όχι εκπλήξεις.",
                         "For people who want peace of mind, not surprises."
                     )}
                 </h3>
-                <p className="mb-7 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                <p className="mb-7 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                     {t(
                         "Τέλος το ψάξιμο στα συρτάρια. Όλα σε ένα μέρος, πάντα ενημερωμένα.",
                         "No more digging through drawers. Everything in one place, always up to date."
@@ -193,8 +193,8 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                 <ul className="mb-8 space-y-3.5">
                     {benefits.map((b, i) => (
                         <li key={i} className="flex items-start gap-3">
-                            <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
-                            <span className="text-body text-[#334155] dark:text-slate-300">{t(b.el, b.en)}</span>
+                            <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
+                            <span className="text-body text-neutral-700 dark:text-slate-300">{t(b.el, b.en)}</span>
                         </li>
                     ))}
                 </ul>
@@ -227,10 +227,10 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     "Παράδειγμα: τρεις ασφάλειες σε μία οθόνη — αυτοκίνητο και υγεία εντάξει, στην κατοικία λείπει η κάλυψη πλημμύρας.",
                     "Example: three policies on one screen — car and health are fine, the home is missing flood cover."
                 )}
-                className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-5"
+                className="rounded-2xl border border-neutral-200 dark:border-slate-800 bg-neutral-50 dark:bg-slate-900 p-5"
             >
                 <div className="mb-4 flex items-center justify-between">
-                    <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">
+                    <p className="text-body-sm font-semibold text-neutral-900 dark:text-white">
                         {t("Τα συμβόλαιά μου", "My Policies")}
                     </p>
                     <span className="rounded-full bg-[#FEF3C7] dark:bg-amber-500/15 px-2.5 py-1 text-micro font-semibold text-[#92400E] dark:text-amber-200">
@@ -241,20 +241,20 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     {miniPolicies.map((p) => (
                         <div
                             key={p.name}
-                            className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2.5"
+                            className="flex items-center gap-3 rounded-xl border border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2.5"
                         >
                             <div
                                 className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${
-                                    p.type === "warn" ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-[#F0FDF4] dark:bg-[#29685B]/15"
+                                    p.type === "warn" ? "bg-[#FEF3C7] dark:bg-amber-900/30" : "bg-primary-tint dark:bg-[#29685B]/15"
                                 }`}
                             >
                                 <p.Icon
                                     className={`h-4 w-4 ${
-                                        p.type === "warn" ? "text-[#92400E] dark:text-amber-200" : "text-[#29685B] dark:text-[#A7F3D0]"
+                                        p.type === "warn" ? "text-[#92400E] dark:text-amber-200" : "text-primary dark:text-[#A7F3D0]"
                                     }`}
                                 />
                             </div>
-                            <span className="flex-1 text-body-sm font-medium text-[#0F172A] dark:text-white">
+                            <span className="flex-1 text-body-sm font-medium text-neutral-900 dark:text-white">
                                 {p.name}
                             </span>
                             {p.type === "warn" ? (
@@ -265,7 +265,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                                     </span>
                                 </div>
                             ) : (
-                                <span className="text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0]">
+                                <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
                                     {p.status}
                                 </span>
                             )}
@@ -292,7 +292,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                 so an unattributed mock reads as a free-tier promise. It sits
                 OUTSIDE the role="img" wrapper so assistive tech hears it as a
                 caption instead of having it swallowed by the image label. */}
-            <p className="mt-3 text-center text-micro text-[#5B6A7A] dark:text-slate-400">
+            <p className="mt-3 text-center text-micro text-muted-foreground dark:text-slate-400">
                 {t(
                     "Παράδειγμα αποτελέσματος με το Family.",
                     "Example result with Family.",
@@ -341,13 +341,13 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             {/* Copy */}
             <div>
-                <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h2">
+                <h3 className="mb-4 text-h3 font-semibold leading-[1.15] tracking-[-0.03em] text-neutral-900 dark:text-white lg:text-h2">
     {t(
         "Δείτε ολόκληρο το risk profile του πελάτη σας — όχι απλώς τα μεμονωμένα συμβόλαιά του.",
         "See your client's entire risk profile — not just their individual policies."
     )}
 </h3>
-<p className="mb-7 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+<p className="mb-7 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
     {t(
         "Συγκεντρώστε τις καλύψεις του πελάτη σε μία ενιαία εικόνα, εντοπίστε κενά και επικαλύψεις και κατανοήστε τι πραγματικά χρειάζεται.",
         "Bring your client's coverage into one complete view, identify gaps and overlaps, and understand what they actually need."
@@ -356,8 +356,8 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 <ul className="mb-8 space-y-3.5">
                     {benefits.map((b, i) => (
                         <li key={i} className="flex items-start gap-3">
-                            <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
-                            <span className="text-body text-[#334155] dark:text-slate-300">{t(b.el, b.en)}</span>
+                            <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
+                            <span className="text-body text-neutral-700 dark:text-slate-300">{t(b.el, b.en)}</span>
                         </li>
                     ))}
                 </ul>
@@ -382,7 +382,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     "Παράδειγμα: μία οθόνη με τους πελάτες σας, ποιανού η ασφάλεια λήγει σύντομα, και μια πρόταση για το τι λείπει σε έναν από αυτούς.",
                     "Example: one screen with your clients, whose cover runs out soon, and a suggestion for what one of them is missing."
                 )}
-                className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-900 p-5"
+                className="rounded-2xl border border-neutral-200 dark:border-slate-800 bg-neutral-50 dark:bg-slate-900 p-5"
             >
                 {/* The three KPI tiles that led this mock — "47 Πελάτες · 8
                     Ανανεώσεις · 12 Ευκαιρίες" — are gone. They were a portfolio
@@ -395,12 +395,12 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     {clients.map((c) => (
                         <div
                             key={c.name}
-                            className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2.5"
+                            className="flex items-center gap-3 rounded-xl border border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2.5"
                         >
-                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#29685B]/10 text-kicker font-bold text-[#29685B] dark:text-[#A7F3D0]">
+                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#29685B]/10 text-kicker font-bold text-primary dark:text-[#A7F3D0]">
                                 {c.initials}
                             </div>
-                            <span className="flex-1 truncate text-caption font-medium text-[#0F172A] dark:text-white">
+                            <span className="flex-1 truncate text-caption font-medium text-neutral-900 dark:text-white">
                                 {c.name}
                             </span>
                             {c.alert ? (
@@ -409,7 +409,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                                     {t(`${c.renewal} ημ.`, `${c.renewal}d`)}
                                 </span>
                             ) : (
-                                <span className="text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0]">
+                                <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
                                     {t("Εντάξει", "All good")}
                                 </span>
                             )}
@@ -422,7 +422,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     nowhere else on the public site, whose light border had no
                     dark-mode pair. Brand green, both themes. */}
                 <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] p-3 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
-                    <TrendingUp className="h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]" />
+                    <TrendingUp className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]" />
                     <p className="text-caption font-medium text-[#166534] dark:text-[#A7F3D0]">
                         {t(
                             "Πελάτης Α — του λείπει ασφάλεια ζωής",
@@ -436,7 +436,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 role="img" label only, so the one group told it was an example
                 was the one that could not see it. The client names here are
                 invented, and this is the line that says so. */}
-            <p className="mt-3 text-center text-micro text-[#5B6A7A] dark:text-slate-400">
+            <p className="mt-3 text-center text-micro text-muted-foreground dark:text-slate-400">
                 {t(
                     "Παράδειγμα οθόνης συμβούλου. Τα ονόματα είναι φανταστικά.",
                     "Example advisor screen. The names are fictional.",

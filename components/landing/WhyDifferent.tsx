@@ -52,20 +52,20 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
         <section
             id="difference"
             aria-labelledby="difference-heading"
-            className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
+            className="scroll-mt-28 border-y border-neutral-200 bg-neutral-50 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
         >
             <div className="mx-auto max-w-page">
                 <div className="mb-10 max-w-[640px]">
                     <h2
                         id="difference-heading"
-                        className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white"
+                        className="mb-4 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white"
                     >
                         {t(
                             "Κανείς δεν μας πληρώνει για να σας πούμε κάτι συγκεκριμένο.",
                             "Nobody pays us to tell you a particular thing.",
                         )}
                     </h2>
-                    <p className="text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                    <p className="text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
                         {t(
                             "Γι' αυτό η απάντηση που παίρνετε είναι απλώς η αλήθεια για την κάλυψή σας.",
                             "That is why the answer you get is simply the truth about your cover.",
@@ -78,10 +78,10 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                 <ul className="mb-10 grid gap-x-8 gap-y-4 sm:grid-cols-3">
                     {DIFFERENTIATORS.map((item) => (
                         <li key={item.title.en}>
-                            <p className="text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                            <p className="text-title font-semibold tracking-tight text-neutral-900 dark:text-white">
                                 {pick(item.title, locale)}
                             </p>
-                            <p className="mt-1.5 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                            <p className="mt-1.5 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                 {pick(item.body, locale)}
                             </p>
                         </li>
@@ -99,7 +99,7 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                     nesting the craft floor bans. Above it the rows are plain
                     table rows again and the white ground is what separates the
                     table from the tinted section behind it. */}
-                <div className="lg:rounded-2xl lg:border lg:border-[#E2E8F0] lg:bg-white lg:p-6 lg:dark:border-slate-800 lg:dark:bg-slate-950">
+                <div className="lg:rounded-2xl lg:border lg:border-neutral-200 lg:bg-white lg:p-6 lg:dark:border-slate-800 lg:dark:bg-slate-950">
                     <table className="pw-stacked-table w-full border-collapse text-left">
                         <caption className="sr-only">
                             {t(
@@ -108,15 +108,15 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                             )}
                         </caption>
                         <thead>
-                            <tr className="border-b border-[#E2E8F0] dark:border-slate-800">
-                                <th scope="col" className="py-3 pr-4 text-caption font-semibold text-[#5B6A7A] dark:text-slate-400">
+                            <tr className="border-b border-neutral-200 dark:border-slate-800">
+                                <th scope="col" className="py-3 pr-4 text-caption font-semibold text-muted-foreground dark:text-slate-400">
                                     {t("Τι θέλετε να ξέρετε", "What you want to know")}
                                 </th>
                                 {COMPARISON_COLUMNS.map((col) => (
                                     <th
                                         key={col.key}
                                         scope="col"
-                                        className="py-3 pr-4 text-caption font-semibold text-[#5B6A7A] dark:text-slate-400"
+                                        className="py-3 pr-4 text-caption font-semibold text-muted-foreground dark:text-slate-400"
                                     >
                                         {pick(col.label, locale)}
                                     </th>
@@ -127,11 +127,11 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                             {rows.map((row) => (
                                 <tr
                                     key={row.job.en}
-                                    className="border-b border-[#E2E8F0] last:border-0 dark:border-slate-800"
+                                    className="border-b border-neutral-200 last:border-0 dark:border-slate-800"
                                 >
                                     <th
                                         scope="row"
-                                        className="py-4 pr-4 text-left align-middle text-body-lg font-medium text-[#0F172A] dark:text-white"
+                                        className="py-4 pr-4 text-left align-middle text-body-lg font-medium text-neutral-900 dark:text-white"
                                     >
                                         {pick(row.job, locale)}
                                     </th>
@@ -153,7 +153,7 @@ export function WhyDifferent({ locale }: { locale: MarketingLocale }) {
                 <div className="mt-6">
                     <Link
                         href={localizeHref("/compare", locale)}
-                        className="inline-flex min-h-11 items-center gap-1.5 text-body-lg font-semibold text-[#0F172A] underline-offset-4 hover:underline dark:text-white"
+                        className="inline-flex min-h-11 items-center gap-1.5 text-body-lg font-semibold text-neutral-900 underline-offset-4 hover:underline dark:text-white"
                     >
                         {t("Δείτε τη σύγκριση με τις άλλες επιλογές", "See how this compares with the alternatives")}
                         <ArrowRight aria-hidden className="h-4 w-4" />

@@ -53,16 +53,16 @@ export function ClearLimits({ locale }: { locale: MarketingLocale }) {
         <section
             id="limits"
             aria-labelledby="limits-heading"
-            className="scroll-mt-28 border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
+            className="scroll-mt-28 border-y border-neutral-200 bg-neutral-50 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800 dark:bg-slate-900"
         >
             <div className="mx-auto max-w-[760px]">
                 <h2
                     id="limits-heading"
-                    className="mb-4 text-center text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
+                    className="mb-4 text-center text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-balance text-neutral-900 lg:text-h1 dark:text-white"
                 >
                     {t("Ξεκάθαρα όρια.", "Clear limits.")}
                 </h2>
-                <p className="mx-auto mb-14 max-w-[560px] text-center text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                <p className="mx-auto mb-14 max-w-[560px] text-center text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
                     {t(
                         "Τι δεν κάνουμε, γραμμένο πριν μας δώσετε το email σας.",
                         "What we do not do, written down before you give us your email.",
@@ -71,13 +71,13 @@ export function ClearLimits({ locale }: { locale: MarketingLocale }) {
 
                 {/* A list, not cards. Four bordered boxes would make these read
                     as features, which is the opposite of what they are. */}
-                <dl className="divide-y divide-[#E2E8F0] border-y border-[#E2E8F0] dark:divide-slate-800 dark:border-slate-800">
+                <dl className="divide-y divide-neutral-200 border-y border-neutral-200 dark:divide-slate-800 dark:border-slate-800">
                     {limits.map((limit) => (
                         <div key={limit.title} className="py-7">
-                            <dt className="mb-2 text-title font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                            <dt className="mb-2 text-title font-semibold tracking-tight text-neutral-900 dark:text-white">
                                 {limit.title}
                             </dt>
-                            <dd className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                            <dd className="text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                 {limit.body}
                             </dd>
                         </div>

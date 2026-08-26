@@ -43,13 +43,13 @@ export function TrustBadges({ isGreek }: { isGreek: boolean }) {
             {BRANCHES.map((branch) => (
                 <li
                     key={branch.en}
-                    className="flex h-10 items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-3.5 dark:border-slate-700 dark:bg-slate-800"
+                    className="flex h-10 items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3.5 dark:border-slate-700 dark:bg-slate-800"
                 >
                     <branch.Icon
                         aria-hidden
-                        className="h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]"
+                        className="h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]"
                     />
-                    <span className="text-body-sm font-semibold text-[#334155] dark:text-slate-100">
+                    <span className="text-body-sm font-semibold text-neutral-700 dark:text-slate-100">
                         {isGreek ? branch.el : branch.en}
                     </span>
                 </li>

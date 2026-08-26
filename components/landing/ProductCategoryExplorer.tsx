@@ -13,7 +13,7 @@ interface ProductCategoryExplorerProps {
     locale: "el" | "en"
 }
 
-// NOTE ON COLOUR: `category.surface` is a FIXED light tint (bg-[#DCEBDA] and
+// NOTE ON COLOUR: `category.surface` is a FIXED light tint (bg-primary-soft and
 // friends) declared in lib/product/catalog.tsx, which the authenticated app
 // shares — it has no dark-mode variant. The card text used to carry
 // `dark:text-white` / `dark:text-slate-300`, which in dark mode painted white
@@ -29,17 +29,17 @@ export function ProductCategoryExplorer({
     const currentCategory = getProductCategory(currentCategoryId)
 
     return (
-        <section className="bg-[#F8FAFC] dark:bg-slate-900 py-20 px-6 lg:px-12">
+        <section className="bg-neutral-50 dark:bg-slate-900 py-20 px-6 lg:px-12">
             <div className="mx-auto max-w-page">
                 <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-[720px]">
-                        <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] text-[#0F172A] dark:text-white">
+                        <h2 className="text-h2 lg:text-h1 font-semibold tracking-[-0.03em] leading-[1.1] text-neutral-900 dark:text-white">
                             {t(
                                 "Δείτε και τις υπόλοιπες ασφαλιστικές κατηγορίες.",
                                 "Browse the rest of the insurance categories."
                             )}
                         </h2>
-                        <p className="mt-4 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                        <p className="mt-4 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                             {t(
                                 "Η ίδια ανάλυση ισχύει για κάθε συμβόλαιο που έχετε.",
                                 "The same analysis applies to every policy you have."
@@ -49,7 +49,7 @@ export function ProductCategoryExplorer({
 
                     <Link
                         href={localizeHref("/product", locale)}
-                        className="inline-flex min-h-11 items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-body font-semibold text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC] dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
+                        className="inline-flex min-h-11 items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-body font-semibold text-neutral-900 transition-colors duration-150 hover:border-neutral-300 hover:bg-neutral-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
                     >
                         {t("Όλες οι κατηγορίες", "All categories")}
                         <ArrowRight aria-hidden className="h-4 w-4" />
@@ -73,17 +73,17 @@ export function ProductCategoryExplorer({
                                 >
                                     <div className="mb-5 flex items-start justify-between gap-3">
                                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
-                                            <Icon className="h-5 w-5 text-[#0F172A]" />
+                                            <Icon className="h-5 w-5 text-neutral-900" />
                                         </div>
                                         <span className="rounded-full bg-[#29685B] px-3 py-1 text-micro font-semibold uppercase tracking-wide text-white">
                                             {t("Τρέχουσα κατηγορία", "Current category")}
                                         </span>
                                     </div>
 
-                                    <h3 className="text-title font-semibold tracking-tight text-[#0F172A]">
+                                    <h3 className="text-title font-semibold tracking-tight text-neutral-900">
                                         {t(category.labelEl, category.labelEn)}
                                     </h3>
-                                    <p className="mt-3 text-body font-semibold leading-snug text-[#0F172A]">
+                                    <p className="mt-3 text-body font-semibold leading-snug text-neutral-900">
                                         {t(category.headlineEl, category.headlineEn)}
                                     </p>
                                     <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569]">
@@ -104,23 +104,23 @@ export function ProductCategoryExplorer({
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">
                                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/85 shadow-sm">
-                                        <Icon className="h-5 w-5 text-[#0F172A]" />
+                                        <Icon className="h-5 w-5 text-neutral-900" />
                                     </div>
                                     <span className={`rounded-full px-2.5 py-1 text-micro font-semibold uppercase tracking-wide ${category.tagBg}`}>
                                         {t(category.tagEl, category.tagEn)}
                                     </span>
                                 </div>
 
-                                <h3 className="text-title font-semibold tracking-tight text-[#0F172A]">
+                                <h3 className="text-title font-semibold tracking-tight text-neutral-900">
                                     {t(category.labelEl, category.labelEn)}
                                 </h3>
-                                <p className="mt-3 text-body font-semibold leading-snug text-[#0F172A]">
+                                <p className="mt-3 text-body font-semibold leading-snug text-neutral-900">
                                     {t(category.headlineEl, category.headlineEn)}
                                 </p>
                                 <p className="mt-3 flex-1 text-body leading-relaxed text-[#475569]">
                                     {t(category.descEl, category.descEn)}
                                 </p>
-                                <div className="mt-5 inline-flex items-center gap-2 text-body font-semibold text-[#0F172A] transition-all duration-150 group-hover:gap-3">
+                                <div className="mt-5 inline-flex items-center gap-2 text-body font-semibold text-neutral-900 transition-all duration-150 group-hover:gap-3">
                                     {t("Δείτε την κατηγορία", "See this category")}
                                     <ArrowRight aria-hidden className="h-4 w-4" />
                                 </div>

@@ -26,7 +26,7 @@ const VERDICT_TONE: Record<ComparisonVerdict, string> = {
     yes: "bg-[#ECFDF5] text-[#166534] dark:bg-[#29685B]/25 dark:text-[#A7F3D0]",
     plus: "bg-[#ECFDF5] text-[#166534] dark:bg-[#29685B]/25 dark:text-[#A7F3D0]",
     partial: "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-500/15 dark:text-amber-200",
-    no: "bg-[#F1F5F9] text-[#5B6A7A] dark:bg-slate-800 dark:text-slate-400",
+    no: "bg-neutral-100 text-muted-foreground dark:bg-slate-800 dark:text-slate-400",
 }
 
 const VERDICT_LABEL: Record<ComparisonVerdict, { el: string; en: string }> = {

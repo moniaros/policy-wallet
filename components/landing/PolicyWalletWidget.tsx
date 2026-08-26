@@ -87,15 +87,15 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
     return (
         <div className="mx-auto w-full max-w-[480px] lg:mr-0 lg:ml-auto">
             <div role="img" aria-label={alternative} className="relative px-5 pb-8 pt-5">
-                <div className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_24px_64px_rgba(0,0,0,0.09),0_0_0_1px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-slate-900">
+                <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_24px_64px_rgba(0,0,0,0.09),0_0_0_1px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-slate-900">
                     {/* Browser bar */}
-                    <div className="flex items-center gap-2 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex items-center gap-2 border-b border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
                         <div className="flex gap-1.5">
                             <span className="h-3 w-3 rounded-full bg-[#FF5F57]" />
                             <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                             <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                         </div>
-                        <div className="ml-3 min-w-0 flex-1 truncate rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-micro text-[#5B6A7A] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+                        <div className="ml-3 min-w-0 flex-1 truncate rounded-md border border-neutral-200 bg-white px-3 py-1 font-mono text-micro text-muted-foreground dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
                             {`${PRODUCT_DISPLAY_HOST}/wallet`}
                         </div>
                     </div>
@@ -104,10 +104,10 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         {/* Header */}
                         <div className="mb-4 flex items-center justify-between gap-3">
                             <div className="min-w-0">
-                                <p className="text-body-sm font-semibold text-[#0F172A] dark:text-white">
+                                <p className="text-body-sm font-semibold text-neutral-900 dark:text-white">
                                     {t("Η εικόνα ρίσκου σας", "Your risk picture")}
                                 </p>
-                                <p className="text-micro text-[#5B6A7A] dark:text-slate-400">
+                                <p className="text-micro text-muted-foreground dark:text-slate-400">
                                     {t("3 ασφάλειες, 1 κενό", "3 policies, 1 gap")}
                                 </p>
                             </div>
@@ -116,8 +116,8 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                 like every other fintech health grade. This one is
                                 the tiles below, added up. */}
                             <div className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2.5 py-1 dark:border-[#29685B]/50 dark:bg-[#29685B]/15">
-                                <ShieldCheck className="h-3 w-3 text-[#29685B] dark:text-[#A7F3D0]" />
-                                <span className="text-micro font-semibold text-[#29685B] dark:text-[#A7F3D0]">
+                                <ShieldCheck className="h-3 w-3 text-primary dark:text-[#A7F3D0]" />
+                                <span className="text-micro font-semibold text-primary dark:text-[#A7F3D0]">
                                     {t(
                                         `${okCount} στα ${covers.length} εντάξει`,
                                         `${okCount} of ${covers.length} all good`,
@@ -136,7 +136,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                         className={`flex items-center gap-3 rounded-xl border p-3 ${
                                             cover.type === "gap"
                                                 ? "border-[#FDE68A] dark:border-amber-500/40"
-                                                : "border-[#E2E8F0] dark:border-slate-800"
+                                                : "border-neutral-200 dark:border-slate-800"
                                         } ${anim.className}`}
                                         style={anim.style}
                                     >
@@ -144,33 +144,33 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                             className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
                                                 cover.type === "gap"
                                                     ? "bg-[#FEF3C7] dark:bg-amber-900/30"
-                                                    : "bg-[#F0FDF4] dark:bg-[#29685B]/15"
+                                                    : "bg-primary-tint dark:bg-[#29685B]/15"
                                             }`}
                                         >
                                             <cover.Icon
                                                 className={`h-5 w-5 ${
                                                     cover.type === "gap"
                                                         ? "text-[#92400E] dark:text-amber-200"
-                                                        : "text-[#29685B] dark:text-[#A7F3D0]"
+                                                        : "text-primary dark:text-[#A7F3D0]"
                                                 }`}
                                             />
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <div className="mb-0.5 flex items-center justify-between gap-2">
-                                                <span className="truncate text-body-sm font-semibold text-[#0F172A] dark:text-white">
+                                                <span className="truncate text-body-sm font-semibold text-neutral-900 dark:text-white">
                                                     {cover.name}
                                                 </span>
                                                 <span
                                                     className={`flex-shrink-0 rounded-full px-2 py-0.5 text-kicker font-semibold ${
                                                         cover.type === "gap"
                                                             ? "bg-[#FEF3C7] text-[#92400E] dark:bg-amber-500/15 dark:text-amber-200"
-                                                            : "bg-[#F0FDF4] text-[#166534] dark:bg-[#29685B]/15 dark:text-[#A7F3D0]"
+                                                            : "bg-primary-tint text-[#166534] dark:bg-[#29685B]/15 dark:text-[#A7F3D0]"
                                                     }`}
                                                 >
                                                     {cover.status}
                                                 </span>
                                             </div>
-                                            <p className="truncate text-micro text-[#5B6A7A] dark:text-slate-400">
+                                            <p className="truncate text-micro text-muted-foreground dark:text-slate-400">
                                                 {cover.note}
                                             </p>
                                         </div>
@@ -204,11 +204,11 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                     reads as a speed claim — the only claim the site makes is
                     "minutes", so the chip states completion, not a stopwatch. */}
                 <div
-                    className={`absolute top-0 right-0 flex items-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-3 py-1.5 shadow-md dark:border-slate-800 dark:bg-slate-900 ${reveal(1100).className}`}
+                    className={`absolute top-0 right-0 flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 shadow-md dark:border-slate-800 dark:bg-slate-900 ${reveal(1100).className}`}
                     style={reveal(1100).style}
                 >
                     <span className="h-2 w-2 rounded-full bg-[#29685B] dark:bg-[#A7F3D0]" />
-                    <span className="text-micro text-[#5B6A7A] dark:text-slate-400">
+                    <span className="text-micro text-muted-foreground dark:text-slate-400">
                         {t("Η ανάλυση ολοκληρώθηκε", "Analysis complete")}
                     </span>
                 </div>
@@ -231,7 +231,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                 it is or it reads as a free-tier promise. It sits OUTSIDE the
                 role="img" wrapper so assistive tech hears it as a caption
                 rather than having it swallowed by the image label. */}
-            <p className="text-center text-micro text-[#5B6A7A] dark:text-slate-400">
+            <p className="text-center text-micro text-muted-foreground dark:text-slate-400">
                 {t(
                     "Παράδειγμα αποτελέσματος με το Family.",
                     "Example result with Family.",

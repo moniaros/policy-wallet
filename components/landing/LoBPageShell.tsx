@@ -62,21 +62,21 @@ export function LoBPageShell({ children, locale, audience = "policyholder" }: Lo
     const isAgentAudience = audience === "agent"
 
     return (
-        <div className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:bg-slate-950 dark:text-white`}>
+        <div className={`${inter.className} min-h-screen bg-white text-neutral-900 selection:bg-[#29685B]/20 selection:text-neutral-900 dark:bg-slate-950 dark:text-white`}>
             <PublicHeader locale={locale} />
 
             <main id={SKIP_LINK_TARGET_ID} tabIndex={-1} className="pt-28 lg:pt-36">
                 {children}
 
                 {/* Pricing funnel — every LoB page routes to /pricing from the body, not only the nav */}
-                <section className="border-t border-[#E2E8F0] bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
+                <section className="border-t border-neutral-200 bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
                     <div className="mx-auto max-w-[760px]">
-                        <h2 className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white">
+                        <h2 className="mb-4 text-h2 font-medium leading-[1.15] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white">
                             {isAgentAudience
                                 ? t("Πλήρης ανάλυση κάθε ασφαλιστηρίου με το Family.", "Full analysis of every policy with Family.")
                                 : t("Δωρεάν για 3 ασφαλιστήρια. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 3 policies. Upgrade whenever you need it.")}
                         </h2>
-                        <p className="mb-8 text-body-lg leading-relaxed text-[#475569] dark:text-slate-400">
+                        <p className="mb-8 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-400">
                             {isAgentAudience
                                 ? AGENT_FUNNEL_PLANS
                                     ? t(

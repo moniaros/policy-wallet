@@ -26,29 +26,29 @@ export function HomeFaq({ locale }: { locale: MarketingLocale }) {
         <section
             id="faq"
             aria-labelledby="faq-heading"
-            className="scroll-mt-28 border-t border-[#E2E8F0] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800"
+            className="scroll-mt-28 border-t border-neutral-200 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800"
         >
             <div className="mx-auto max-w-[820px]">
                 <div className="mb-10 text-center">
                     <h2
                         id="faq-heading"
-                        className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-h1 dark:text-white"
+                        className="text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-neutral-900 lg:text-h1 dark:text-white"
                     >
                         {locale === "el" ? title.el : title.en}
                     </h2>
                 </div>
 
-                <div className="divide-y divide-[#E2E8F0] border-y border-[#E2E8F0] dark:divide-slate-800 dark:border-slate-800">
+                <div className="divide-y divide-neutral-200 border-y border-neutral-200 dark:divide-slate-800 dark:border-slate-800">
                     {items.map((item) => (
                         <details key={item.id} id={item.id} className="group scroll-mt-28 lg:scroll-mt-36">
-                            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-body-lg font-semibold text-[#0F172A] transition-colors hover:text-[#29685B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#29685B] [&::-webkit-details-marker]:hidden dark:text-white dark:hover:text-[#A7F3D0] dark:focus-visible:outline-[#A7F3D0]">
+                            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-body-lg font-semibold text-neutral-900 transition-colors hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden dark:text-white dark:hover:text-[#A7F3D0] dark:focus-visible:outline-[#A7F3D0]">
                                 {locale === "el" ? item.question.el : item.question.en}
                                 <ChevronDown
                                     aria-hidden
-                                    className="h-5 w-5 flex-shrink-0 text-[#5B6A7A] transition-transform duration-200 group-open:rotate-180 dark:text-slate-400"
+                                    className="h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180 dark:text-slate-400"
                                 />
                             </summary>
-                            <p className="pb-5 pr-9 text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                            <p className="pb-5 pr-9 text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                 {locale === "el" ? item.answer.el : item.answer.en}
                             </p>
                         </details>

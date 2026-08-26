@@ -68,23 +68,23 @@ export function HomeContact({ locale }: { locale: "el" | "en" }) {
     }
 
     const field =
-        "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-body text-[#0F172A] transition-colors placeholder:text-[#94A3B8] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#29685B] dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:outline-[#A7F3D0]"
-    const label = "mb-1.5 block text-body-sm font-semibold text-[#0F172A] dark:text-white"
+        "w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-body text-neutral-900 transition-colors placeholder:text-[#94A3B8] focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:outline-[#A7F3D0]"
+    const label = "mb-1.5 block text-body-sm font-semibold text-neutral-900 dark:text-white"
 
     return (
         <section
             id="contact"
             aria-labelledby="contact-heading"
-            className="scroll-mt-28 border-t border-[#E2E8F0] px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800"
+            className="scroll-mt-28 border-t border-neutral-200 px-6 py-20 lg:scroll-mt-36 lg:px-12 lg:py-28 dark:border-slate-800"
         >
             <div className="mx-auto max-w-[680px]">
                 <h2
                     id="contact-heading"
-                    className="mb-4 text-center text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-balance text-[#0F172A] lg:text-h1 dark:text-white"
+                    className="mb-4 text-center text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-balance text-neutral-900 lg:text-h1 dark:text-white"
                 >
                     {t("Πείτε μας πώς μπορούμε να βοηθήσουμε", "Tell us how we can help")}
                 </h2>
-                <p className="mx-auto mb-12 max-w-[560px] text-center text-lead leading-relaxed text-[#475569] dark:text-slate-300">
+                <p className="mx-auto mb-12 max-w-[560px] text-center text-lead leading-relaxed text-neutral-600 dark:text-slate-300">
                     {t(
                         "Θέλετε να μάθετε περισσότερα για την πλατφόρμα, έχετε κάποια πρόταση ή χρειάζεστε βοήθεια; Στείλτε μας μήνυμα και θα επικοινωνήσουμε σύντομα μαζί σας.",
                         "Want to know more about the platform, have a suggestion, or need help? Send us a message and we will get back to you shortly.",
@@ -94,7 +94,7 @@ export function HomeContact({ locale }: { locale: "el" | "en" }) {
                 {sent ? (
                     <p
                         role="status"
-                        className="rounded-2xl border border-[#DCEBDA] bg-[#F0FDF4] px-5 py-6 text-center text-body-lg text-[#166534] dark:border-[#29685B]/40 dark:bg-[#29685B]/15 dark:text-[#A7F3D0]"
+                        className="rounded-2xl border border-primary-soft bg-primary-tint px-5 py-6 text-center text-body-lg text-[#166534] dark:border-[#29685B]/40 dark:bg-[#29685B]/15 dark:text-[#A7F3D0]"
                     >
                         {t(
                             "Το μήνυμά σας στάλθηκε. Θα σας απαντήσουμε σύντομα.",
@@ -184,7 +184,7 @@ export function HomeContact({ locale }: { locale: "el" | "en" }) {
                             />
                             {/* The server rejects anything shorter, so the
                                 requirement is stated before it is enforced. */}
-                            <p id="hc-message-hint" className="mt-1.5 text-body-sm text-[#5B6A7A] dark:text-slate-400">
+                            <p id="hc-message-hint" className="mt-1.5 text-body-sm text-muted-foreground dark:text-slate-400">
                                 {t(
                                     `Τουλάχιστον ${MIN_MESSAGE} χαρακτήρες.`,
                                     `At least ${MIN_MESSAGE} characters.`,

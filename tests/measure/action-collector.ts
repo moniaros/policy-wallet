@@ -378,7 +378,7 @@ export function collectDuplicateActions(opts?: DuplicateActionsOptions): Duplica
     // Group by identity + subject (the duplicateFacts composite convention).
     const byGroup = new Map<string, Working[]>()
     for (const inst of offered) {
-        const key = inst.identity + " " + inst.subject
+        const key = inst.identity + "\u0000" + inst.subject
         const arr = byGroup.get(key) || []
         arr.push(inst)
         byGroup.set(key, arr)

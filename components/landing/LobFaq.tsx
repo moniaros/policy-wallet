@@ -36,7 +36,7 @@ export function LobFaq({
             <div className="mx-auto max-w-[860px]">
                 <h2
                     id={`lob-faq-heading-${categoryId}`}
-                    className="mb-10 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-balance text-[#0F172A] dark:text-white"
+                    className="mb-10 text-h2 font-semibold leading-[1.1] tracking-[-0.03em] text-balance text-neutral-900 dark:text-white"
                 >
                     {t("Αυτά που ρωτούν οι περισσότεροι.", "What most people ask.")}
                 </h2>
@@ -44,12 +44,12 @@ export function LobFaq({
                     {items.map((item) => (
                         <div
                             key={item.q.en}
-                            className="rounded-2xl border border-[#E2E8F0] bg-white p-7 dark:border-slate-800 dark:bg-slate-900"
+                            className="rounded-2xl border border-neutral-200 bg-white p-7 dark:border-slate-800 dark:bg-slate-900"
                         >
-                            <h3 className="mb-3 text-lead font-semibold text-[#0F172A] dark:text-white">
+                            <h3 className="mb-3 text-lead font-semibold text-neutral-900 dark:text-white">
                                 {pick(item.q, locale)}
                             </h3>
-                            <p className="text-body-lg leading-relaxed text-[#475569] dark:text-slate-300">
+                            <p className="text-body-lg leading-relaxed text-neutral-600 dark:text-slate-300">
                                 {pick(item.a, locale)}
                             </p>
                         </div>
@@ -59,9 +59,9 @@ export function LobFaq({
                 {related.length > 0 && (
                     <nav
                         aria-label={t("Σχετικοί οδηγοί και όροι", "Related guides and terms")}
-                        className="mt-10 border-t border-[#E2E8F0] pt-6 dark:border-slate-800"
+                        className="mt-10 border-t border-neutral-200 pt-6 dark:border-slate-800"
                     >
-                        <p className="mb-3 text-body-sm font-semibold text-[#0F172A] dark:text-white">
+                        <p className="mb-3 text-body-sm font-semibold text-neutral-900 dark:text-white">
                             {t("Διαβάστε περισσότερα", "Read more")}
                         </p>
                         <ul className="flex flex-wrap gap-x-6 gap-y-2">

@@ -87,7 +87,7 @@ ${LIFE_CHANGE_EFFECTS.map(
             {/* The H1 above already asks the question; this is the invitation. */}
             <h2
                 id="life-changes-heading"
-                className="mb-3 text-body-lg font-semibold text-[#0F172A] sm:text-lead dark:text-white"
+                className="mb-3 text-body-lg font-semibold text-neutral-900 sm:text-lead dark:text-white"
             >
                 {t("Διαλέξτε τι άλλαξε φέτος.", "Pick what changed this year.")}
             </h2>
@@ -103,11 +103,11 @@ ${LIFE_CHANGE_EFFECTS.map(
                         <input type="checkbox" id={`lc-${i}`} className="peer sr-only" />
                         <label
                             htmlFor={`lc-${i}`}
-                            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-3 text-body-sm font-semibold text-[#334155] transition-colors select-none hover:border-[#29685B]/40 peer-checked:border-[#29685B] peer-checked:bg-[#29685B] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#29685B] sm:px-4 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:peer-checked:border-[#A7F3D0] dark:peer-checked:bg-[#29685B] dark:peer-focus-visible:outline-[#A7F3D0]"
+                            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 text-body-sm font-semibold text-neutral-700 transition-colors select-none hover:border-[#29685B]/40 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary sm:px-4 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:peer-checked:border-[#A7F3D0] dark:peer-checked:bg-[#29685B] dark:peer-focus-visible:outline-[#A7F3D0]"
                         >
                             <span
                                 aria-hidden
-                                className="lc-dot h-1.5 w-1.5 rounded-full bg-[#CBD5E1] transition-colors dark:bg-slate-600"
+                                className="lc-dot h-1.5 w-1.5 rounded-full bg-neutral-300 transition-colors dark:bg-slate-600"
                             />
                             {pick(entry.change, locale)}
                         </label>
@@ -127,7 +127,7 @@ ${LIFE_CHANGE_EFFECTS.map(
                         data-lc-effect={i}
                         /* `flex` is for the no-`:has()` fallback, where the ID
                            rules above never apply and this class governs. */
-                        className="flex items-start gap-2.5 py-1 text-body text-[#0F172A] dark:text-white"
+                        className="flex items-start gap-2.5 py-1 text-body text-neutral-900 dark:text-white"
                     >
                         <span
                             aria-hidden
@@ -149,7 +149,7 @@ ${LIFE_CHANGE_EFFECTS.map(
                 including the ones who never touch a chip. */}
             <Link
                 href={localizeHref("/product", locale)}
-                className="lc-more mt-2 inline-flex min-h-11 items-center gap-1 text-body-sm font-semibold text-[#29685B] underline-offset-4 hover:underline dark:text-[#A7F3D0]"
+                className="lc-more mt-2 inline-flex min-h-11 items-center gap-1 text-body-sm font-semibold text-primary underline-offset-4 hover:underline dark:text-[#A7F3D0]"
             >
                 {t("Δείτε τι μετράει", "See what matters")}
                 <ArrowRight aria-hidden className="h-3.5 w-3.5" />

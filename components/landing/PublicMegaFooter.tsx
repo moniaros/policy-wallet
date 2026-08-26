@@ -134,12 +134,12 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     }
 
     return (
-        <footer className="border-t border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900">
+        <footer className="border-t border-neutral-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <div className="px-6 pb-14 pt-12 lg:px-12">
-                <div className="mx-auto max-w-page-wide rounded-3xl border border-[#DCEBDA] dark:border-[#29685B]/40 bg-[#F0FDF4] dark:bg-[#29685B]/15 px-6 py-7 md:px-8">
+                <div className="mx-auto max-w-page-wide rounded-3xl border border-primary-soft dark:border-[#29685B]/40 bg-primary-tint dark:bg-[#29685B]/15 px-6 py-7 md:px-8">
                     <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <h3 className="text-h3 font-medium leading-tight tracking-tight text-[#0F172A] dark:text-white">
+                            <h3 className="text-h3 font-medium leading-tight tracking-tight text-neutral-900 dark:text-white">
                                 {t(
                                     "Ασφαλίζεστε ή ασφαλίζετε άλλους;",
                                     "Are you insured, or do you insure others?"
@@ -163,10 +163,10 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                 <div className="mx-auto grid max-w-page-wide gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1.25fr]">
                     <div>
                         <Link href={l("/")} className="inline-flex min-h-11 items-center text-title font-bold tracking-tight">
-                            <span className="text-[#0F172A] dark:text-white">Policy</span>
-                            <span className="text-[#5B6A7A] dark:text-slate-400">Wallet</span>
+                            <span className="text-neutral-900 dark:text-white">Policy</span>
+                            <span className="text-muted-foreground dark:text-slate-400">Wallet</span>
                         </Link>
-                        <p className="mt-4 max-w-[320px] text-body leading-relaxed text-[#475569] dark:text-slate-300">
+                        <p className="mt-4 max-w-[320px] text-body leading-relaxed text-neutral-600 dark:text-slate-300">
                             {t(
                                 "Η ζωή σας αλλάζει και τα ρίσκα σας μαζί της. Σας λέμε αν η ασφάλειά σας κράτησε τον ρυθμό. Δεν πουλάμε ασφάλειες.",
                                 "Your life changes and your risks change with it. We tell you whether your insurance kept up. We do not sell insurance."
@@ -175,7 +175,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     </div>
 
                     <div>
-                        <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-[#0F172A] dark:text-white">
+                        <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
                             {t("Προϊόντα", "Products")}
                         </p>
                         <ul className="space-y-2.5">
@@ -183,7 +183,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="inline-flex min-h-11 items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-11 items-center text-body text-neutral-600 dark:text-slate-300 transition-colors hover:text-neutral-900 dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>
@@ -193,7 +193,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     </div>
 
                     <div>
-                        <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-[#0F172A] dark:text-white">
+                        <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
                             {t("Λύσεις", "Solutions")}
                         </p>
                         <ul className="space-y-2.5">
@@ -201,14 +201,14 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="inline-flex min-h-11 items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-11 items-center text-body text-neutral-600 dark:text-slate-300 transition-colors hover:text-neutral-900 dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
-                        <p className="mt-4 text-caption leading-relaxed text-[#5B6A7A] dark:text-slate-400">
+                        <p className="mt-4 text-caption leading-relaxed text-muted-foreground dark:text-slate-400">
                             {t(
                                 "Οι σελίδες που βοηθούν να αποφασίσετε.",
                                 "The pages that help you decide."
@@ -217,7 +217,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     </div>
 
                     <div>
-                        <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-[#0F172A] dark:text-white">
+                        <p className="mb-4 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
                             {t("Εταιρεία", "Company")}
                         </p>
                         <ul className="space-y-2.5">
@@ -225,7 +225,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 <li key={link.href}>
                                     <Link
                                         href={link.href}
-                                        className="inline-flex min-h-11 items-center text-body text-[#475569] dark:text-slate-300 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                        className="inline-flex min-h-11 items-center text-body text-neutral-600 dark:text-slate-300 transition-colors hover:text-neutral-900 dark:hover:text-white"
                                     >
                                         {link.label}
                                     </Link>
@@ -235,10 +235,10 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                     </div>
 
                     <div>
-                        <p className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-[#0F172A] dark:text-white">
+                        <p className="mb-3 text-body-sm font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">
                             {t("Ενημερώσεις", "Newsletter")}
                         </p>
-                        <p className="mb-4 text-body leading-relaxed text-[#475569] dark:text-slate-300">
+                        <p className="mb-4 text-body leading-relaxed text-neutral-600 dark:text-slate-300">
                             {t(
                                 "Τι αλλάζει στην ασφάλιση και τι σημαίνει για εσάς. Λίγα email, χωρίς πωλήσεις.",
                                 "What changes in insurance, and what it means for you. Few emails, no selling."
@@ -269,7 +269,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                     aria-invalid={status === "error" ? true : undefined}
                                     aria-describedby={status === "error" ? "footer-newsletter-status" : undefined}
                                     placeholder={t("Το email σας", "Your email")}
-                                    className="pw-input pw-input-sm text-[#0F172A] dark:text-white"
+                                    className="pw-input pw-input-sm text-neutral-900 dark:text-white"
                                     autoComplete="email"
                                 />
                                 <button
@@ -297,13 +297,13 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                 </div>
             </div>
 
-            <div className="border-t border-[#E2E8F0] dark:border-slate-800 px-6 py-5 lg:px-12">
-                <div className="mx-auto max-w-page-wide pb-4 text-body-sm leading-relaxed text-[#5B6A7A] dark:text-slate-400">
+            <div className="border-t border-neutral-200 dark:border-slate-800 px-6 py-5 lg:px-12">
+                <div className="mx-auto max-w-page-wide pb-4 text-body-sm leading-relaxed text-muted-foreground dark:text-slate-400">
                     {/* Category identity line — the one place EVERY page names
                         the category and decodes it in the same breath. */}
-                    <p className="mb-2 font-semibold text-[#0F172A] dark:text-white">
+                    <p className="mb-2 font-semibold text-neutral-900 dark:text-white">
                         PolicyWallet — {t("η", "the")} {t(CATEGORY_NAME.el, CATEGORY_NAME.en)}.{" "}
-                        <span className="font-normal text-[#5B6A7A] dark:text-slate-400">
+                        <span className="font-normal text-muted-foreground dark:text-slate-400">
                             {t(CATEGORY.el, CATEGORY.en)}
                         </span>
                     </p>
@@ -314,7 +314,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         )}
                     </p>
                 </div>
-                <div className="mx-auto flex max-w-page-wide flex-col gap-3 text-body-sm text-[#5B6A7A] dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mx-auto flex max-w-page-wide flex-col gap-3 text-body-sm text-muted-foreground dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
                     <p>
                         © {new Date().getFullYear()} PolicyWallet.{" "}
                         {t("Με επιφύλαξη παντός δικαιώματος.", "All rights reserved.")}
@@ -329,23 +329,23 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                     target="_blank"
                                     rel="noreferrer noopener"
                                     aria-label={profile.label}
-                                    className="inline-flex items-center gap-1.5 transition-colors hover:text-[#0F172A] dark:hover:text-white"
+                                    className="inline-flex items-center gap-1.5 transition-colors hover:text-neutral-900 dark:hover:text-white"
                                 >
                                     {Icon ? <Icon className="h-4 w-4" aria-hidden /> : null}
                                     {profile.label}
                                 </a>
                             )
                         })}
-                        <Link href={l("/privacy")} className="inline-flex min-h-11 items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/privacy")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
                             {t("Απόρρητο", "Privacy")}
                         </Link>
-                        <Link href={l("/terms")} className="inline-flex min-h-11 items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/terms")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
                             {t("Όροι", "Terms")}
                         </Link>
-                        <Link href={l("/contact")} className="inline-flex min-h-11 items-center transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/contact")} className="inline-flex min-h-11 items-center transition-colors hover:text-neutral-900 dark:hover:text-white">
                             {t("Επικοινωνία", "Contact")}
                         </Link>
-                        <span className="inline-flex items-center gap-1.5 text-[#29685B] dark:text-[#A7F3D0]">
+                        <span className="inline-flex items-center gap-1.5 text-primary dark:text-[#A7F3D0]">
                             <ShieldCheck className="h-4 w-4" />
                             {t("GDPR & AES-256", "GDPR & AES-256")}
                         </span>

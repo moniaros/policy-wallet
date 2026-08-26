@@ -27,13 +27,13 @@ export function TrustRow({ locale }: { locale: MarketingLocale }) {
                     return (
                         <li
                             key={fact.label.en}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E8F0] px-2.5 py-1 dark:border-slate-700"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-2.5 py-1 dark:border-slate-700"
                         >
                             <Icon
                                 aria-hidden
-                                className="h-3.5 w-3.5 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]"
+                                className="h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-[#A7F3D0]"
                             />
-                            <span className="text-body-sm font-semibold text-[#334155] dark:text-slate-200">
+                            <span className="text-body-sm font-semibold text-neutral-700 dark:text-slate-200">
                                 {pick(fact.label, locale)}
                             </span>
                         </li>
@@ -49,10 +49,10 @@ export function TrustRow({ locale }: { locale: MarketingLocale }) {
                         <li key={fact.label.en} className="flex items-start gap-2.5">
                             <Icon
                                 aria-hidden
-                                className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#29685B] dark:text-[#A7F3D0]"
+                                className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-[#A7F3D0]"
                             />
-                            <span className="text-body-sm leading-snug text-[#475569] dark:text-slate-300">
-                                <span className="font-semibold text-[#0F172A] dark:text-white">
+                            <span className="text-body-sm leading-snug text-neutral-600 dark:text-slate-300">
+                                <span className="font-semibold text-neutral-900 dark:text-white">
                                     {pick(fact.label, locale)}
                                 </span>{" "}
                                 — {pick(fact.detail, locale)}

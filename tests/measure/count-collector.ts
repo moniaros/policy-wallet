@@ -238,7 +238,7 @@ export function collectCountConsistency(opts?: CountConsistencyOptions): CountCo
         const key = el.getAttribute(attr) || ""
         if (!key) return
         const subject = el.getAttribute(attr + "-subject") || ""
-        const composite = channel + " " + key + " " + subject
+        const composite = channel + "\u0000" + key + "\u0000" + subject
         const text = (el.textContent || "").replace(/\s+/g, " ").trim()
         const g = groupsByComposite.get(composite) || { key, subject, renders: [] }
         g.renders.push({ text: text.slice(0, 80), where: whereOf(el), channel, value: valueOf(text) })
