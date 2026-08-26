@@ -2,8 +2,18 @@ import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 
 const SCHEMA = readFileSync("prisma/schema.prisma", "utf-8")
-const ERASER = readFileSync("lib/services/gdpr-erasure.service.ts", "utf-8")
-const EXPORTER = readFileSync("lib/services/compliance.service.ts", "utf-8")
+
+/**
+ * Comments are stripped before either service is matched. A TODO naming
+ * `tx.pushDevice.deleteMany` is prose, not erasure — the same mention-vs-use
+ * hole the authorization guard closed with a lexer. Verified safe before
+ * tightening: no delegate in either file lives only in a comment, so this
+ * strictly hardens the match without changing today's result.
+ */
+const stripComments = (s: string) =>
+    s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "")
+const ERASER = stripComments(readFileSync("lib/services/gdpr-erasure.service.ts", "utf-8"))
+const EXPORTER = stripComments(readFileSync("lib/services/compliance.service.ts", "utf-8"))
 
 /**
  * The trap this file exists for.
@@ -48,8 +58,8 @@ interface Model {
     body: string
 }
 
-function models(): Model[] {
-    return [...SCHEMA.matchAll(/model\s+(\w+)\s*\{([\s\S]*?)\n\}/g)].map((m) => ({
+function models(schema: string = SCHEMA): Model[] {
+    return [...schema.matchAll(/model\s+(\w+)\s*\{([\s\S]*?)\n\}/g)].map((m) => ({
         name: m[1],
         body: m[2],
     }))
@@ -81,6 +91,24 @@ function holdsSubjectData(model: Model): boolean {
 }
 
 const lowerFirst = (name: string) => name[0].toLowerCase() + name.slice(1)
+
+/**
+ * The decision itself, extracted so the probe at the bottom exercises the same
+ * machinery the main test runs: a subject model is handled when the eraser
+ * touches its Prisma delegate, exempted when a human wrote down a reason, and
+ * UNHANDLED — the failure this file exists for — otherwise.
+ */
+function unhandledAfterErasure(
+    subjectNames: string[],
+    eraser: string,
+    exempt: Record<string, string>
+): string[] {
+    return subjectNames.filter((name) => {
+        if (name === "User") return false // anonymized in place, by design
+        if (exempt[name]) return false
+        return !new RegExp(`\\btx\\.${lowerFirst(name)}\\.(deleteMany|updateMany)\\b`).test(eraser)
+    })
+}
 
 /**
  * Models that legitimately need no erasure line, each with the reason.
@@ -148,15 +176,7 @@ describe("every personal-data store is erased or explicitly exempt", () => {
     })
 
     it("leaves nothing behind after an erasure request", () => {
-        const unhandled = subjects
-            .map((m) => m.name)
-            .filter((name) => {
-                if (name === "User") return false // anonymized in place, by design
-                if (ERASURE_EXEMPT[name]) return false
-                return !new RegExp(`\\btx\\.${lowerFirst(name)}\\.(deleteMany|updateMany)\\b`).test(
-                    ERASER
-                )
-            })
+        const unhandled = unhandledAfterErasure(subjects.map((m) => m.name), ERASER, ERASURE_EXEMPT)
 
         expect(
             unhandled,
@@ -244,5 +264,88 @@ describe("what we erase, we also disclose", () => {
         )
         expect(block).not.toMatch(/\bp256dh:\s*true/)
         expect(block).not.toMatch(/\bauth:\s*true/)
+    })
+})
+
+/**
+ * PROBES — the derivation proven against a synthetic schema (CLAUDE.md: a
+ * guard without a probe in the repo is not a guard). The three models encode
+ * the three ways this guard has actually failed or nearly failed:
+ *
+ *   · LeakyDiary       — a new table with a plain `userId` string, the
+ *                        push_devices shape that outlived erasure silently;
+ *   · OddlyNamedCustody — a real @relation to User under a field name no
+ *                        hand-kept list would ever have contained: the
+ *                        `requestedByUserId`/`sentToUserId` hole that made
+ *                        eleven B2B models INVISIBLE rather than exempt;
+ *   · PureConfig       — no subject at all, which must stay out of the
+ *                        universe or the exemption list fills with noise.
+ */
+describe("the derivation is proven against a synthetic schema", () => {
+    const SYNTHETIC = `
+model LeakyDiary {
+  id     String @id
+  userId String
+  notes  String
+}
+
+model OddlyNamedCustody {
+  id              String @id
+  custodianUserId String
+  keeper          User   @relation(fields: [custodianUserId], references: [id])
+}
+
+model PureConfig {
+  id    String @id
+  value String
+}
+`
+    const synthetic = models(SYNTHETIC)
+
+    it("parses all three models (the parser is not vacuous)", () => {
+        expect(synthetic.map((m) => m.name)).toEqual(["LeakyDiary", "OddlyNamedCustody", "PureConfig"])
+    })
+
+    it("sees the plain userId AND the relation under a name no list would carry", () => {
+        const subjects = synthetic.filter(holdsSubjectData).map((m) => m.name)
+        expect(subjects).toEqual(["LeakyDiary", "OddlyNamedCustody"])
+        // The relation matcher specifically — not the name list — is what finds it.
+        expect(userRelationFields(synthetic[1])).toEqual(["custodianUserId"])
+    })
+
+    it("RED: an eraser that never touches them reports both as unhandled, by name", () => {
+        const subjects = synthetic.filter(holdsSubjectData).map((m) => m.name)
+        expect(unhandledAfterErasure(subjects, "/* erases nothing */", {})).toEqual([
+            "LeakyDiary",
+            "OddlyNamedCustody",
+        ])
+    })
+
+    it("GREEN: erasing one and exempting the other with a reason clears the list", () => {
+        const subjects = synthetic.filter(holdsSubjectData).map((m) => m.name)
+        expect(
+            unhandledAfterErasure(subjects, "await tx.leakyDiary.deleteMany({ where: { userId } })", {
+                OddlyNamedCustody: "synthetic probe reason",
+            })
+        ).toEqual([])
+    })
+
+    it("a MENTION of the delegate in a comment does not count as erasure", () => {
+        const subjects = synthetic.filter(holdsSubjectData).map((m) => m.name)
+        // The wrong delegate never matches…
+        expect(
+            unhandledAfterErasure(subjects, "await tx.someOtherModel.deleteMany({})", {
+                OddlyNamedCustody: "synthetic probe reason",
+            })
+        ).toEqual(["LeakyDiary"])
+        // …and a TODO naming the right one is prose, not erasure, once the
+        // eraser source is comment-stripped the way the main test strips it.
+        expect(
+            unhandledAfterErasure(
+                subjects,
+                stripComments("// TODO: tx.leakyDiary.deleteMany before launch"),
+                { OddlyNamedCustody: "synthetic probe reason" }
+            )
+        ).toEqual(["LeakyDiary"])
     })
 })

@@ -53,8 +53,22 @@ const MOCK_FILES = [
  * two names that were live on /solutions/agents. A browser pass caught them;
  * this regex had not.
  */
+/**
+ * AND note ΐδης/ΐδου (dialytika-tonos iota, U+0390) beside ίδης/ίδου. The
+ * suffix list started with the plain-tonos forms only, so «Νικολαΐδης» — one
+ * of the four REAL offenders this file was written about — did not match:
+ * re-running the matcher against the pre-fix source (15e95fa3~1) during the
+ * Phase 6 guard audit reported it clean. The probe block at the bottom keeps
+ * that exact line red.
+ */
 const SURNAME =
-    /[Α-ΩΆΈΉΊΌΎΏ][α-ωάέήίόύώϊϋΐΰ]+(ίδης|ίδου|όπουλος|οπούλου|άκης|άκη|ίου|ιάδης|ιάδου|ίδη|οπούλου)(?![α-ωάέήίόύώϊϋΐΰ])/
+    /[Α-ΩΆΈΉΊΌΎΏ][α-ωάέήίόύώϊϋΐΰ]+(ίδης|ΐδης|ίδου|ΐδου|όπουλος|οπούλου|άκης|άκη|ίου|ιάδης|ιάδου|ίδη|οπούλου)(?![α-ωάέήίόύώϊϋΐΰ])/
+
+/** The three evidence shapes the main tests scan for, hoisted so the probes
+ *  below exercise the very expressions the guard runs — not copies. */
+const SCORE_FIELD = /\bscore:\s*\d+/
+const SCORE_PERCENT = /\$\{[^}]*score[^}]*\}%/
+const PORTFOLIO_SIZE = /\b47\b|\b12 (ευκαιρ|opportunit)/i
 
 describe('public product mocks invent no evidence', () => {
     it('has the mock files it is guarding', () => {
@@ -82,8 +96,8 @@ describe('public product mocks invent no evidence', () => {
             const src = strip(readFileSync(file, 'utf-8'))
             src.split('\n').forEach((line, i) => {
                 // A score field, or a percentage bound to one.
-                if (/\bscore:\s*\d+/.test(line)) offenders.push(`${file}:${i + 1} → ${line.trim().slice(0, 70)}`)
-                if (/\$\{[^}]*score[^}]*\}%/.test(line)) offenders.push(`${file}:${i + 1} → percentage from a score`)
+                if (SCORE_FIELD.test(line)) offenders.push(`${file}:${i + 1} → ${line.trim().slice(0, 70)}`)
+                if (SCORE_PERCENT.test(line)) offenders.push(`${file}:${i + 1} → percentage from a score`)
             })
         }
         expect(offenders, `unverifiable score in a product mock:\n${offenders.join('\n')}`).toEqual([])
@@ -96,7 +110,7 @@ describe('public product mocks invent no evidence', () => {
         for (const file of MOCK_FILES) {
             const src = strip(readFileSync(file, 'utf-8'))
             src.split('\n').forEach((line, i) => {
-                if (/\b47\b|\b12 (ευκαιρ|opportunit)/i.test(line)) {
+                if (PORTFOLIO_SIZE.test(line)) {
                     offenders.push(`${file}:${i + 1} → ${line.trim().slice(0, 70)}`)
                 }
             })
@@ -138,9 +152,58 @@ describe('no public page shows a protection score', () => {
         for (const file of files) {
             const src = strip(readFileSync(file, 'utf-8'))
             src.split('\n').forEach((line, i) => {
-                if (/\bscore:\s*\d+/.test(line)) offenders.push(`${file}:${i + 1}`)
+                if (SCORE_FIELD.test(line)) offenders.push(`${file}:${i + 1}`)
             })
         }
         expect(offenders, `score on a public page:\n${offenders.join('\n')}`).toEqual([])
+    })
+})
+
+/**
+ * PROBES — the matchers proven red against the exact source this guard was
+ * written to keep out: components/landing/AgentWidgets.tsx as it stood before
+ * 15e95fa3 removed the invented book. Quoted verbatim (client rows, KPI tiles),
+ * not paraphrased — a paraphrase proves the paraphrase.
+ *
+ * The dialytika case is the reason this block exists: «Νικολαΐδης Γ.» is one
+ * of the four names the file's own docstring records, and the original suffix
+ * list (ίδης only) reported it CLEAN. A matcher can only be trusted against
+ * the offender it failed on.
+ */
+describe('the matchers are proven against the pre-fix source (15e95fa3~1)', () => {
+    const PRE_FIX_LINES = [
+        '{ name: t("Νικολαΐδης Γ.", "Nikolaidis G."), policies: t("Αυτοκίνητο + Σπίτι", "Car + Home"), score: 94, badge: t("Ενεργό", "Active"), type: "ok" as const },',
+        '{ name: t("Παπαδοπούλου Μ.", "Papadopoulou M."), policies: t("Υγεία", "Health"), score: 68, badge: t("Λήγει σε 8 μέρες", "Runs out in 8 days"), type: "warn" as const },',
+        '{ name: t("Καλογεράκης Π.", "Kalogerakis P."), policies: t("Αυτοκίνητο", "Car"), score: 82, badge: t("Ενεργό", "Active"), type: "ok" as const },',
+        '{ name: t("Δημητρίου Α.", "Dimitriou A."), policies: t("Κατοικία", "Home"), score: 41, badge: t("Κενό κάλυψης", "Cover gap"), type: "critical" as const },',
+    ]
+
+    it('flags every invented person — including the dialytika surname the first list missed', () => {
+        for (const line of PRE_FIX_LINES) {
+            expect(SURNAME.test(line), line.slice(0, 40)).toBe(true)
+        }
+        // The one that slipped: plain-tonos ίδης never matches ΐδης.
+        expect(SURNAME.test('Νικολαΐδης Γ.')).toBe(true)
+        expect(/ίδης/.test('Νικολαΐδης'), 'if this ever matches, Unicode changed under us').toBe(false)
+    })
+
+    it('flags the scores and the invented portfolio size', () => {
+        for (const line of PRE_FIX_LINES) {
+            expect(SCORE_FIELD.test(line), line.slice(0, 40)).toBe(true)
+        }
+        expect(PORTFOLIO_SIZE.test('{ label: t("Πελάτες", "Clients"), value: "47" },')).toBe(true)
+        expect(SCORE_PERCENT.test('style={{ width: `${c.score}%` }}')).toBe(true)
+    })
+
+    it('does not flag the placeholder convention that replaced them', () => {
+        for (const clean of [
+            't("Πελάτης Α", "Client A")',
+            't("Ασφαλιστική Α", "Insurer A")',
+            '{ label: t("Ανανεώσεις", "Renewals") },',
+        ]) {
+            expect(SURNAME.test(clean), clean).toBe(false)
+            expect(SCORE_FIELD.test(clean), clean).toBe(false)
+            expect(PORTFOLIO_SIZE.test(clean), clean).toBe(false)
+        }
     })
 })

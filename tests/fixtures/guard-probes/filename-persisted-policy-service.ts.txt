@@ -1,0 +1,25 @@
+// PROBE FIXTURE — lib/services/policy.service.ts as it stood before commits
+// 1057ab7d / 9e6e2e12 (feat(privacy): the user's file name is kept nowhere):
+// the user's own file name written straight into Prisma via the ES6 SHORTHAND,
+// which the first version of the guard could not see (it matched only
+// `fileName: <expr>`). tests/unit/filename-never-persisted.test.ts must stay
+// red on this shape forever. Suffix .txt so no compiler, linter or test glob
+// picks it up as source.
+export async function createWithDocuments(tx: Tx, created: Policy, data: CreateInput) {
+    if (data.documents && data.documents.length > 0) {
+        for (const doc of data.documents) {
+            const rawFileName = doc.name || 'Document'
+            const fileName = rawFileName.replace(/[^a-zA-Z0-9._-]/g, '_')
+
+            await tx.policyDocument.create({
+                data: {
+                    policyId: created.id,
+                    fileUrl: doc.url,
+                    fileName,
+                    fileSize: doc.size,
+                    source: 'policyholder',
+                },
+            })
+        }
+    }
+}
