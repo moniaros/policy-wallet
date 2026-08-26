@@ -72,7 +72,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         // "Free basic summary" — the meta must not fuse Plus-only outputs
         // (gaps, fix-first) with the free offer in one extractable span.
         description:
-            "Στείλτε το ασφαλιστήριό σας και δείτε σε λίγα λεπτά τι καλύπτει και τι όχι, σε απλά ελληνικά. Δωρεάν βασική σύνοψη για 1 συμβόλαιο, χωρίς κάρτα.",
+            "Στείλτε το ασφαλιστήριό σας και δείτε σε λίγα λεπτά τι καλύπτει και τι όχι, σε απλά ελληνικά. Δωρεάν πλήρης ανάλυση για 3 συμβόλαια, χωρίς κάρτα.",
         keywords: [
             "έλεγχος ασφάλισης",
             "ανάλυση ασφαλιστηρίου AI",
@@ -83,7 +83,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         en: {
             title: "AI insurance check: coverages and gaps",
             description:
-                "Send us your insurance policy and see in minutes what it covers and what it does not, in plain words. Free basic summary for 1 policy, no card needed.",
+                "Send us your insurance policy and see in minutes what it covers and what it does not, in plain words. Free full analysis for 3 policies, no card needed.",
             breadcrumb: "Product",
         },
     },

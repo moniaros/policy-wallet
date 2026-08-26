@@ -170,7 +170,13 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             {
                 category: { el: "Όρια χρήσης", en: "Usage limits" },
                 name: { el: "Αριθμός ασφαλιστηρίων", en: "Number of policies" },
-                values: { free: "1", plus: "5", pro: { el: "Απεριόριστα", en: "Unlimited" } },
+                // Capacity ladder, pricing v2. These MUST equal
+                // DEFAULT_ENTITLEMENT_LIMITS.{free,plus,pro}.policies in
+                // lib/pricing/plan-defaults.ts. The plan cards higher up this
+                // same page state 3 / 10 / 25; until 2026-08-26 this row still
+                // carried the v1 figures (1 / 5 / Unlimited), so /pricing
+                // contradicted itself. No B2C tier is unlimited in v2.
+                values: { free: "3", plus: "10", pro: "25" },
             },
             {
                 name: { el: "Βασική σύνοψη ασφαλιστηρίου", en: "Basic policy summary" },
@@ -179,7 +185,11 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             {
                 category: { el: "AI & ειδοποιήσεις", en: "AI & notifications" },
                 name: { el: "Πλήρης ανάλυση AI", en: "Full AI analysis" },
-                values: { free: false, plus: false, pro: true },
+                // `aiAnalysisPerMonth` is null (uncapped) on free, plus AND pro
+                // — see plan-defaults.ts. The free plan card above and the
+                // pricing FAQ below both say the analysis is included on every
+                // plan; this row said the opposite until 2026-08-26.
+                values: { free: true, plus: true, pro: true },
             },
             {
                 name: { el: "Διαδραστικές ερωτήσεις AI", en: "Interactive AI Q&A" },
