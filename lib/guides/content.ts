@@ -1538,11 +1538,11 @@ export const guides: Guide[] = [
             en: "How uninsured vehicles are detected in Greece, the fines per vehicle category, what happens after an accident and how to resolve a notice immediately.",
         },
         summary: {
-            el: "Τα ανασφάλιστα οχήματα εντοπίζονται με ηλεκτρονικές διασταυρώσεις της ΑΑΔΕ και ελέγχους της Τροχαίας. Η διασταύρωση επιφέρει διοικητικό παράβολο κλιμακούμενο ανά κατηγορία οχήματος — ενδεικτικά από 100 έως 250 ευρώ — ενώ ο έλεγχος στον δρόμο προσθέτει πρόστιμο και αφαίρεση στοιχείων κυκλοφορίας. Σε ατύχημα, το Επικουρικό Κεφάλαιο αποζημιώνει τον τρίτο και αναζητά το σύνολο από τον ιδιοκτήτη.",
-            en: "Uninsured vehicles are detected through AADE electronic cross-checks and traffic police stops. A cross-check triggers an administrative fee scaled by vehicle category — indicatively €100 to €250 — while a roadside stop adds a fine and confiscation of the plates and registration. In an accident, the Auxiliary Fund compensates the third party and then recovers the full amount from the owner.",
+            el: "Τα ανασφάλιστα οχήματα εντοπίζονται με ηλεκτρονικές διασταυρώσεις της Γ.Γ.Π.Σ.Ψ.Δ. και ελέγχους της Τροχαίας. Η διασταύρωση επιφέρει πρόστιμο ανά κατηγορία οχήματος — 250 ευρώ για δίκυκλα, 500 ευρώ για επιβατηγά και 1.000 ευρώ για λεωφορεία και φορτηγά δημόσιας χρήσης — ενώ ο έλεγχος στον δρόμο προσθέτει πρόστιμο και αφαίρεση στοιχείων κυκλοφορίας. Σε ατύχημα, το Επικουρικό Κεφάλαιο αποζημιώνει τον τρίτο και αναζητά το σύνολο από τον ιδιοκτήτη.",
+            en: "Uninsured vehicles are detected through electronic cross-checks run by the General Secretariat of Information Systems and Digital Governance, and by traffic police stops. A cross-check triggers a fine set by vehicle class — €250 for two-wheelers, €500 for passenger cars and €1,000 for public-use buses and lorries — while a roadside stop adds a fine and confiscation of the plates and registration. In an accident, the Auxiliary Fund compensates the third party and then recovers the full amount from the owner.",
         },
         datePublished: "2026-07-13",
-        dateModified: "2026-07-13",
+        dateModified: "2026-08-26",
         readingMinutes: 5,
         related: [
             {
@@ -1568,8 +1568,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Δύο μηχανισμοί λειτουργούν παράλληλα. Ο πρώτος είναι ηλεκτρονικός: η ΑΑΔΕ διασταυρώνει περιοδικά το μητρώο οχημάτων με το Κέντρο Πληροφοριών ασφαλισμένων οχημάτων· όποιο όχημα με ενεργή άδεια κυκλοφορίας δεν εμφανίζεται ασφαλισμένο, εντοπίζεται χωρίς να χρειαστεί έλεγχος στον δρόμο. Ο δεύτερος είναι ο κλασικός έλεγχος από την Τροχαία.",
-                        en: "Two mechanisms run in parallel. The first is electronic: AADE periodically cross-references the vehicle registry with the insured-vehicle Information Center; any vehicle with active registration that does not appear insured is flagged without a roadside stop. The second is the classic traffic police check.",
+                        el: "Δύο μηχανισμοί λειτουργούν παράλληλα. Ο πρώτος είναι ηλεκτρονικός: η Γενική Γραμματεία Πληροφοριακών Συστημάτων και Ψηφιακής Διακυβέρνησης (Γ.Γ.Π.Σ.Ψ.Δ.) του Υπουργείου Ψηφιακής Διακυβέρνησης διασταυρώνει, τουλάχιστον μία φορά ανά ημερολογιακό εξάμηνο, το μητρώο οχημάτων με το Κέντρο Πληροφοριών ασφαλισμένων οχημάτων· όποιο όχημα με ενεργή άδεια κυκλοφορίας δεν εμφανίζεται ασφαλισμένο, εντοπίζεται χωρίς να χρειαστεί έλεγχος στον δρόμο. Ο δεύτερος είναι ο κλασικός έλεγχος από την Τροχαία.",
+                        en: "Two mechanisms run in parallel. The first is electronic: the General Secretariat of Information Systems and Digital Governance, at least once every calendar half-year, cross-references the vehicle registry with the insured-vehicle Information Center; any vehicle with active registration that does not appear insured is flagged without a roadside stop. The second is the classic traffic police check.",
                     },
                     {
                         el: "Η ακινησία δεν τεκμαίρεται: αν δεν κυκλοφορείτε το όχημα, πρέπει να έχετε καταθέσει πινακίδες ή να έχετε δηλώσει ψηφιακή ακινησία — αλλιώς η υποχρέωση ασφάλισης παραμένει.",
@@ -1584,8 +1584,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Από την ηλεκτρονική διασταύρωση επιβάλλεται διοικητικό παράβολο κλιμακούμενο με τον κυβισμό — ενδεικτικά 100 ευρώ για δίκυκλα, 150 ευρώ για επιβατικά μικρότερου κυβισμού και 250 ευρώ για μεγαλύτερα. Τα ακριβή κλιμάκια ορίζονται από την κείμενη νομοθεσία και δημοσιεύονται από την ΑΑΔΕ. Η πληρωμή του παραβόλου δεν «νομιμοποιεί»: πρέπει και να ασφαλίσετε το όχημα εντός της ταχθείσας προθεσμίας, αλλιώς ακολουθούν αυστηρότερες κυρώσεις.",
-                        en: "The electronic cross-check triggers an administrative fee scaled by engine size — indicatively €100 for motorcycles, €150 for smaller-displacement cars, and €250 for larger ones. The exact brackets are set by current legislation and published by AADE. Paying the fee does not legalize you: the vehicle must also be insured within the set deadline, or stricter penalties follow.",
+                        el: "Από την ηλεκτρονική διασταύρωση επιβάλλεται πρόστιμο από τη Γενική Διεύθυνση Σώματος Δίωξης Οικονομικού Εγκλήματος (Γ.Δ. Σ.Δ.Ο.Ε.), κλιμακούμενο ανά κατηγορία οχήματος και όχι ανά κυβισμό: 250 ευρώ για τα δίκυκλα, 500 ευρώ για τα επιβατηγά και κάθε άλλο όχημα, και 1.000 ευρώ για τα λεωφορεία και τα φορτηγά δημόσιας χρήσης. Τα ποσά ορίζονται στο άρθρο 23 του ν. 5113/2024. Η πληρωμή του παραβόλου δεν «νομιμοποιεί»: πρέπει και να ασφαλίσετε το όχημα εντός της ταχθείσας προθεσμίας, αλλιώς ακολουθούν αυστηρότερες κυρώσεις.",
+                        en: "The electronic cross-check triggers a fine imposed by the Financial Crime Directorate (Γ.Δ. Σ.Δ.Ο.Ε.), set by vehicle class rather than by engine size: €250 for two-wheelers, €500 for passenger cars and any other vehicle, and €1,000 for public-use buses and lorries. The amounts are set in article 23 of law 5113/2024. Paying the fee does not legalize you: the vehicle must also be insured within the set deadline, or stricter penalties follow.",
                     },
                     {
                         el: "Σε έλεγχο της Τροχαίας, οι κυρώσεις είναι βαρύτερες και άμεσες: χρηματικό πρόστιμο, αφαίρεση πινακίδων, άδειας κυκλοφορίας και διπλώματος, ενώ η οδήγηση ανασφάλιστου οχήματος συνιστά και ποινικό αδίκημα.",
@@ -1612,8 +1612,8 @@ export const guides: Guide[] = [
                 },
                 paragraphs: [
                     {
-                        el: "Αν λάβετε ειδοποίηση: ασφαλίστε το όχημα άμεσα — η κάλυψη ενεργοποιείται από την έκδοση του συμβολαίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται με τη διαδικασία που περιγράφει η ΑΑΔΕ, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο.",
-                        en: "If you receive a notice: insure the vehicle immediately — cover activates upon policy issuance — and pay the fee within the stated deadline. If the vehicle is off the road, declare immobility so it stops appearing in future cross-checks. If you believe the notice is wrong (e.g. you were insured), file an objection through AADE's published process with proof of insurance for the disputed period.",
+                        el: "Αν λάβετε ειδοποίηση: ασφαλίστε το όχημα άμεσα — η κάλυψη ενεργοποιείται από την έκδοση του συμβολαίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται ηλεκτρονικά, μέσω ειδικής εφαρμογής της Ενιαίας Ψηφιακής Πύλης της Δημόσιας Διοίκησης, εντός δέκα (10) εργάσιμων ημερών από την κοινοποίηση, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο.",
+                        en: "If you receive a notice: insure the vehicle immediately — cover activates upon policy issuance — and pay the fee within the stated deadline. If the vehicle is off the road, declare immobility so it stops appearing in future cross-checks. If you believe the notice is wrong (e.g. you were insured), file an objection electronically through the national digital portal within 10 working days of notification, with proof of insurance for the disputed period.",
                     },
                 ],
             },
@@ -1653,10 +1653,10 @@ export const guides: Guide[] = [
         sources: [
             {
                 label: {
-                    el: "ΑΑΔΕ — Διασταυρώσεις ανασφάλιστων οχημάτων",
-                    en: "AADE — Uninsured vehicle cross-checks",
+                    el: "ν. 5113/2024 (ΦΕΚ Α΄ 96) — ανασφάλιστα οχήματα, άρθρα 22–24",
+                    en: "Law 5113/2024 (Gazette A 96) — uninsured vehicles, articles 22–24",
                 },
-                url: "https://www.aade.gr",
+                url: "https://minfin.gov.gr/wp-content/uploads/2024/07/FEK-2024-Tefxos-A-00096-N.-5113-2024-ΑΝΑΣΦΑΛΙΣΤΑ-ΟΧΗΜΑΤΑ.pdf",
             },
             {
                 label: {
