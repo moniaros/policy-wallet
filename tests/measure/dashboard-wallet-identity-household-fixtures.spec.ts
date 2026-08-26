@@ -28,12 +28,20 @@ import {
 import { evidenceDirs, ensureDirs, openSurface, captureSurface, withDb } from "./surface-harness"
 
 const WIDTHS = [320, 390, 430] as const
+
+// P5-wallet-01a-FINISH: varied-household@390/430 already landed (BASELINE.md,
+// "What is already landed") — 2 duplicates, largest group 2, both health.
+// Re-running those two would waste a slot and risk contaminating an already-
+// agreed record, so this run captures ONLY what BASELINE.md's "Still owed"
+// section names: varied-household@320, and single-line-concentration at all
+// three widths. Restore WIDTHS on both rows if this file is ever re-run for a
+// full re-measurement instead of finishing this item.
 const DASH_EMAIL = "e2e-ph-dash@policywallet.test"
 const dirs = evidenceDirs("wallet")
 
 const FIXTURES = [
-    { label: "varied-household", apply: applyVariedHouseholdFixture, expectedCount: () => variedHouseholdPolicies().length },
-    { label: "single-line-concentration", apply: applySingleLineConcentrationFixture, expectedCount: () => singleLineConcentrationPolicies().length },
+    { label: "varied-household", apply: applyVariedHouseholdFixture, expectedCount: () => variedHouseholdPolicies().length, widths: [320] as const },
+    { label: "single-line-concentration", apply: applySingleLineConcentrationFixture, expectedCount: () => singleLineConcentrationPolicies().length, widths: WIDTHS },
 ] as const
 
 test.describe.configure({ mode: "serial" })
@@ -70,7 +78,7 @@ for (const fixture of FIXTURES) {
         await withDb((db) => fixture.apply(db, DASH_EMAIL))
         const expectedCount = fixture.expectedCount()
 
-        for (const width of WIDTHS) {
+        for (const width of fixture.widths) {
             await openSurface(page, "/wallet", width)
             const result = await captureSurface(page, dirs, fixture.label, width, [], {
                 tier: "unknown",

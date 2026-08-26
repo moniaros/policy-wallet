@@ -262,3 +262,157 @@ reason. 390 and 430 agree exactly, so the shape's result is not in doubt; the mi
 
 Re-run when the pooler is quiet:
 `npx playwright test tests/measure/dashboard-wallet-identity-household-fixtures.spec.ts --project=measure-dash --no-deps --workers=1`
+
+---
+
+## P5-wallet-01a-FINISH — the three owed captures, and the per-line split (2026-08-26)
+
+**Collector:** `tests/measure/section-collector.ts`, sha256
+`4c708e16ff340b2c8506d0c55e074cd1d2dce6b8953b1e8a4604a1796e2094fc` (the corrected collector landed in
+`f66dd435`, unchanged since — same file, same hash, as every other capture in this run). **Duplicate-
+identity definition:** `duplicateIdentityRows()` imported unmodified from `tests/measure/metrics.ts`
+(via `captureSurface` → `identityDuplicates`, `surface-harness.ts:314`); no local variant exists in
+either edited file.
+
+**Run:** pooler verified clear first (`select 1` against `DIRECT_URL`, 1655ms — comparable to the
+1298ms baseline the item cites, not a new wedge). Then, foreground, one spec, one worker:
+```
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  npx playwright test tests/measure/dashboard-wallet-identity-household-fixtures.spec.ts \
+    --project=measure-dash --no-deps --workers=1
+```
+Exit code checked directly against a file-redirected run (no pipe to swallow it): `0`. 2 passed, 1.8m.
+
+**Scope correction before running — the spec as it stood would have re-run varied-household@390/430,
+which the item explicitly forbids** ("wastes a slot and risks contaminating the record"). Fixed by
+giving each `FIXTURES` entry its own `widths` array instead of the shared `WIDTHS` constant:
+`varied-household: [320]`, `single-line-concentration: WIDTHS` (all three). This is the only behavioural
+change to the spec file; the fixture-apply functions, the capture call and the row-count assertion are
+untouched.
+
+**Fixture-hygiene bug found and fixed before running.** The item's acceptance criteria states each
+apply function must clear BOTH prefixes; `applyVariedHouseholdFixture` already did (visible in the
+existing source), but `applySingleLineConcentrationFixture` cleared only its own `WH-CONC-` prefix, not
+`WH-VARIED-`. Since the DB held 7 live `WH-VARIED-*` rows from the already-landed capture going into
+this run, applying `single-line-concentration` next — exactly this run's sequence — would have
+reproduced the 13-row collision the BASELINE.md history already describes once, from the opposite
+direction. Fixed in `tests/measure/dashboard-fixtures.ts` (`applySingleLineConcentrationFixture` now
+clears `VARIED_HOUSEHOLD_PREFIX` before `SINGLE_LINE_CONCENTRATION_PREFIX`) before the run, not after a
+bad capture.
+
+### Row-count verification (fixture hygiene, per the acceptance criteria)
+
+| step | expected | DB before this run | after `varied-household` apply | after `single-line-concentration` apply |
+|---|---|---|---|---|
+| starting state | — | 7 × `WH-VARIED-*`, 0 × `WH-CONC-*` (the already-landed capture) | — | — |
+| varied-household@320 | 7 | — | 7 × `WH-VARIED-*`, 0 × `WH-CONC-*` — matches | — |
+| single-line-concentration@{320,390,430} | 6 | — | — | 0 × `WH-VARIED-*`, 6 × `WH-CONC-*` — matches |
+
+Confirmed twice: once by the spec's own in-test assertion (`identityDuplicates.totalRows` must equal
+`policiesFor(fixture).length`, which is why the run would have failed loudly rather than publish a
+wrong number), and independently by a direct `db.policy.findMany` query after the run completed —
+`WH-CONC-MOT1..MOT6` only, 6 rows, no `WH-VARIED-*` survivor. Nothing was discarded; both checks agreed
+with the fixture applied.
+
+### Results — the three owed captures
+
+| fixture | width | rows | comparable | duplicate rows | largest group | unlocatable |
+|---|---|---|---|---|---|---|
+| varied-household | **320** | 7 | 7 | **2** | **2** | 0 |
+| single-line-concentration | **320** | 6 | 6 | **6** | **6** | 0 |
+| single-line-concentration | **390** | 6 | 6 | **6** | **6** | 0 |
+| single-line-concentration | **430** | 6 | 6 | **6** | **6** | 0 |
+
+`varied-household@320` (2 duplicate rows, largest group 2, both health) is **identical in shape** to the
+already-landed 390/430 result — the only group is the same `Εθνική Ασφαλιστική · Υγεία · … · ΕΝΕΡΓΟ` pair
+(the relative-days text reads 40 at 320 vs 39 at 390/430 only because the three captures ran on different
+days/hours against the same `endInDays: 40` fixture row — `formatRelativeExpiry` recomputing against
+"now", not a data difference). All three widths of `single-line-concentration` are also identical: one
+group of all 6 rows, `Interamerican · Αυτοκίνητο · 22/02/2027 · ΕΝΕΡΓΟ` — confirming the metric is
+width-invariant here too, consistent with every other fixture measured under P5-wallet-00/01a.
+
+### `single-line-concentration` has NO target — read this result as an extraction/data question, not a rendering defect
+
+The fixture holds line, insurer, status and date constant by construction, so a 6/6 collision on the
+CURRENT four-field identity definition (`insurer · lineOfBusiness · date · status` — `plateNumber`
+deliberately excluded, see `metrics.ts`'s own doc comment) is not new information about the row: nothing
+today renders the plate, so of course the six cards read identically. **What this fixture actually
+tests is whether the one remaining candidate identifier — `vehicle.plateNumber` — is even present and
+distinct in the underlying data**, since that is the only field left that COULD distinguish these rows
+if a future change exposed it. Checked directly against the DB after capture:
+
+```
+WH-CONC-MOT1 -> ΙΝΤ-0001      WH-CONC-MOT4 -> ΙΝΤ-0004
+WH-CONC-MOT2 -> ΙΝΤ-0002      WH-CONC-MOT5 -> ΙΝΤ-0005
+WH-CONC-MOT3 -> ΙΝΤ-0003      WH-CONC-MOT6 -> ΙΝΤ-0006
+```
+
+All six present, all six distinct. **This is not evidence that real extraction reliably produces unique
+plates** — this fixture writes `plateNumber` directly into `acordData` (`createIdentityFixturePolicy`,
+`dashboard-fixtures.ts`), the same synthetic path every other field in this measurement takes; no
+document was ever parsed. Whether AI extraction produces duplicate or missing plates for six real
+uploaded schedules is a separate, **unmeasured** question this fixture cannot answer either way — it
+only establishes that IF plates are extracted, the schema has room for them to be distinct, and that a
+plate-based identifier rule would resolve this fixture's 6-way collision to 6 distinct rows.
+
+### The per-line duplicate breakdown, both fixtures
+
+Built from the fixture source (`variedHouseholdPolicies()` / `singleLineConcentrationPolicies()`,
+`dashboard-fixtures.ts`) cross-checked against the captured `identityDuplicates.groups` — every group
+that appears names its line-of-business as the second `·`-separated segment of `display`, and a line
+with zero rows in `groups` was independently confirmed distinct by comparing its rows' insurer+date
+(motor's two rows carry different insurers AND different dates, which alone rules out a shared identity
+key without needing a group entry to say so).
+
+| fixture | line | rows | duplicate rows | largest group | resolvable per H-010? |
+|---|---|---|---|---|---|
+| varied-household | motor | 2 | 0 | 0 | yes (`plateNumber`/`vin` exist) — but not exercised here: these two never collided on insurer+date in the first place |
+| varied-household | property (home) | 1 | 0 | 0 | yes (`property.address` exists) — only one row, not exercised |
+| varied-household | health | 3 | **2** | **2** | **no** — no insured-party field exists in the schema (`insuredPersons` is a crew/class schedule, not named people) |
+| varied-household | life | 1 | 0 | 0 | **no** (`beneficiaries.name` names the beneficiary, not the insured) — only one row, not exercised |
+| single-line-concentration | motor | 6 | **6** | **6** | yes — `plateNumber` exists and is populated/distinct in this fixture's data (see above), but is not read by the current identity definition |
+
+Rows sum correctly against the measured totals: varied-household 2+1+3+1 = 7 rows, 0+0+2+0 = 2 duplicate
+rows, max(0,0,2,0) = 2 largest group — all match the captured result exactly.
+
+**This is a total, not full coverage of H-010's line list.** Both fixtures together exercise only
+**motor, property/home, health and life**. `travel`, `cyber`, `business` and `pension` — the other lines
+H-010 predicts as unresolvable — appear in **neither** fixture and are **not measured** anywhere in this
+item; `pet` and `marine` — predicted resolvable — are likewise absent from both. Motor and property's
+"resolvable" cells above are the schema claim carried over from H-010's audit of
+`lib/schemas/acord-data.ts`, not a collision this run actually produced and then broke with an
+identifier — the varied-household motor rows never collided at all (different insurer, different date),
+so no fixture in this item demonstrates an identifier ACTUALLY resolving a collision. That demonstration
+would need a fixture with two motor (or property) rows sharing insurer+date+status — nobody has built
+one.
+
+### What this item did NOT measure — stated explicitly
+
+- **The per-line breakdown for heavy/typical/all-expired** (P5-wallet-00's three fixtures) — not
+  requested by this item's "still owed" list, and not attempted.
+- **Whether an identifier rule actually resolves a collision** — no fixture in this run (or P5-wallet-00)
+  contains two motor or two property rows that collide on insurer+date+status, so "motor/property are
+  resolvable" remains a schema-availability claim from H-010, not something this measurement watched
+  happen.
+- **`pet`, `marine`, `travel`, `cyber`, `business`, `pension`** — zero rows of any of these six lines
+  exist in either fixture. H-010's resolvable/unresolvable claim for them is untouched by this item.
+- **Whether real (non-fixture) AI extraction produces unique, populated plates** for a genuine set of
+  near-identical motor uploads — `single-line-concentration`'s plates are hand-written fixture data, not
+  extracted from a document; this item cannot speak to extraction reliability.
+- **The TABLE-shape (`PolicyTable.tsx`) extraction path** in `duplicateIdentityRows()` — still unverified,
+  as recorded under P5-wallet-00 above; nothing in the 320/390/430 matrix reaches `xl`.
+
+### Anything changed outside `tests/measure/**` / `docs/transformation/evidence/wallet/**`
+
+None. Two files edited, both inside the file boundary: `tests/measure/dashboard-fixtures.ts` (the
+prefix-clearing fix on `applySingleLineConcentrationFixture`) and
+`tests/measure/dashboard-wallet-identity-household-fixtures.spec.ts` (per-fixture `widths`, to avoid
+re-running the already-landed captures). No application code, no other item's evidence directory.
+`lib/gap-detection.ts` was not touched. `npx tsc --noEmit` passed clean on the edited files before the
+run.
+
+### Gate status
+
+**Complete.** All three owed captures are in `docs/transformation/evidence/wallet/data/current/`
+(`varied-household-320.json`, `single-line-concentration-{320,390,430}.json`) with matching screenshots.
+The per-line breakdown is reported above with its coverage gaps stated rather than implied.

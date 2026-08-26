@@ -1,0 +1,146 @@
+{
+  "capture": "single-line-concentration",
+  "width": 430,
+  "url": "http://localhost:3000/wallet",
+  "scrollHeight": 2147,
+  "viewportsOfContent": 2.3,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 3,
+    "ids": [
+      "<div> Το πορτοφόλι μου",
+      "<div> Τα ασφαλιστήρια μου",
+      "<div> Ξεκλείδωσε την πλήρη ανάλυση"
+    ]
+  },
+  "containers": {
+    "count": 53,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.flex flex-col sm:flex-row gap-4 justify-",
+      "div.flex bg-black/5 dark:bg-black p-1 rounde",
+      "button.px-3 py-1.5 rounded-md text-xs font-bold"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 6,
+    "comparableRows": 6,
+    "duplicateRowCount": 6,
+    "largestGroupSize": 6,
+    "groups": [
+      {
+        "display": "Interamerican · Αυτοκίνητο · 22/02/2027 · ΕΝΕΡΓΟ",
+        "count": 6,
+        "rows": [
+          {
+            "index": 0,
+            "subject": "cmta8bqva000xaa6a318vw42c"
+          },
+          {
+            "index": 1,
+            "subject": "cmta8bow6000taa6aft5u6nr1"
+          },
+          {
+            "index": 2,
+            "subject": "cmta8byuv001daa6ay06tqmxe"
+          },
+          {
+            "index": 3,
+            "subject": "cmta8bwsh0019aa6a1fpiwtaz"
+          },
+          {
+            "index": 4,
+            "subject": "cmta8bsu90011aa6a91rbno5t"
+          },
+          {
+            "index": 5,
+            "subject": "cmta8butd0015aa6a108vbwz4"
+          }
+        ]
+      }
+    ],
+    "unlocatable": []
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:unmeasured] <button> \"Σύγκριση ασφαλιστηρίων\" boundary 1.41:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <input> \"Αναζήτηση ασφαλιστηρίων...\" boundary 1.31:1 (needs 3) inside=#f8fafc outside=#fefeff",
+      "[1.4.11:control] <button> \"Χειροκίνητη προσθήκη\" boundary 1.03:1 (needs 3) inside=#fefeff outside=#fbfbfc",
+      "[1.4.11:control] <button> \"Μεταφόρτωση εγγράφου\" boundary 1.04:1 (needs 3) inside=#fefeff outside=#f8fafc",
+      "[1.4.11:control] <button> \"Μαζική μεταφόρτωση\" boundary 1.04:1 (needs 3) inside=#888989 outside=#848585",
+      "[1.4.11:surface] <div> \"Ενεργή προστασία66/6 προστεθέντα\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfd",
+      "[1.4.11:surface] <div> \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ0Εντός 30 ημερών\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fbfb",
+      "[1.4.11:surface] <div> \"Χρειάζεται προσοχή0Προς έλεγχο\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:surface] <div> \"Ασφαλιστικό αποτύπωμα1.875 €\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 22\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 22\" boundary 1.01:1 (needs 3) inside=#f7f9f9 outside=#f5f8f7",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 22\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 22\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 22\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 22\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"Ξεκλείδωσε την πλήρη ανάλυσηΤο βασ\" boundary 1.20:1 (needs 3) inside=#f4f7f7 outside=#fbfcfd",
+      "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 430,
+    "viewportWidth": 430,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "top: 22/02/2027 — \"22/02/2027\""
+      ],
+      "dayCounts": [],
+      "statusChips": [
+        "top: \"ΛΗΓΕΙ ΣΥΝΤΟΜΑ\"",
+        "top: \"ΕΝΕΡΓΟ\""
+      ]
+    },
+    "repeatedStrings": [
+      {
+        "text": "Interamerican",
+        "count": 6,
+        "where": [
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>",
+          "top <span>"
+        ]
+      },
+      {
+        "text": "Αυτοκίνητο ·",
+        "count": 6,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 6 6/6 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 0 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 0 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 1.875 € Όλα εντάξει — κανένα ασφαλιστήριο δεν χρειάζεται ενέργεια. Όλα Αυτοκίνητο Τα ασφαλιστήρια μου Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 22/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 22/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 22/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 22/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 22/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 22/02/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Ξεκλείδωσε την πλήρη ανάλυση Το βασικό summary είναι έτοιμο. Ξεκλείδωσε την πλήρη ανάλυση για να δεις κενά, εξαιρέσεις, όρια και προτεινόμενες ενέργειες. Ξεκλείδωμα πλήρους ανάλυσης Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "tier": "unknown",
+  "state": "single-line-concentration-6-policies"
+}

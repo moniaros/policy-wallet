@@ -1012,6 +1012,15 @@ export async function applySingleLineConcentrationFixture(db: any, ownerEmail: s
     const owner = await db.user.findUnique({ where: { email: ownerEmail }, select: { id: true } })
     if (!owner) throw new Error(`applySingleLineConcentrationFixture: ${ownerEmail} not provisioned — run global-setup first`)
 
+    // Both identity fixtures clear BOTH prefixes, not just their own — see the
+    // matching comment on applyVariedHouseholdFixture above. This function was
+    // found missing the VARIED_HOUSEHOLD_PREFIX half of the clear during
+    // P5-wallet-01a-FINISH: applyVariedHouseholdFixture already cleared both,
+    // but this direction did not, so a varied-household capture followed by a
+    // single-line-concentration capture would have unioned 7 WH-VARIED- rows
+    // onto the 6 WH-CONC- rows — the exact 13-row contamination this pair of
+    // fixtures already hit once, just approached from the other fixture.
+    await db.policy.deleteMany({ where: { ownerUserId: owner.id, policyNumber: { startsWith: VARIED_HOUSEHOLD_PREFIX } } })
     await db.policy.deleteMany({ where: { ownerUserId: owner.id, policyNumber: { startsWith: SINGLE_LINE_CONCENTRATION_PREFIX } } })
 
     const created: string[] = []
