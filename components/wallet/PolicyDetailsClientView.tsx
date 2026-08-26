@@ -14,7 +14,7 @@ import { CollaborationTimeline } from "@/components/collaboration/CollaborationT
 import { CoverageTabView } from "@/components/wallet/coverage-details/CoverageTabView"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { PolicySection } from "@/components/wallet/policy-detail/PolicySection"
-import { PolicyHead, AskAiDock } from "@/components/wallet/policy-detail/PolicyHead"
+import { PolicyHead } from "@/components/wallet/policy-detail/PolicyHead"
 import { SummaryCard } from "@/components/wallet/policy-detail/SummaryCard"
 import { RenewalOutlookCard } from "@/components/wallet/policy-detail/RenewalOutlookCard"
 import { KeyDatesCard } from "@/components/wallet/policy-detail/KeyDatesCard"
@@ -799,14 +799,17 @@ export function PolicyDetailsClient({
                         action: detailsCopy.headAction,
                         analyzing: t.policyStatus.analyzing,
                     }}
+                    /* The PERSISTENT AI affordance — one of the two entry points
+                       this page keeps (the other is the point-of-use label inside
+                       the sections). It replaces the hero CTA, the standalone Q&A
+                       card, the suggested-question pills and the claims ask-AI
+                       button, which were four doors to one room. Rendered INSIDE
+                       the head card since 2026-08-26: standing alone it was a
+                       ninth top-level grouping on a page budgeted for eight
+                       (LEDGER: P5-detail-goal2-01). */
+                    askAi={{ label: detailsCopy.headAskAi, onOpen: () => setAskAiOpen((v) => !v) }}
                 />
 
-                {/* The PERSISTENT AI affordance — one of the two entry points
-                    this page keeps (the other is the point-of-use label inside
-                    the sections). It replaces the hero CTA, the standalone Q&A
-                    card, the suggested-question pills and the claims ask-AI
-                    button, which were four doors to one room. */}
-                <AskAiDock label={detailsCopy.headAskAi} onOpen={() => setAskAiOpen((v) => !v)} />
                 {askAiOpen && (
                     <div id="policy-qa" className="mt-3 scroll-mt-20">
                         <PolicyQA

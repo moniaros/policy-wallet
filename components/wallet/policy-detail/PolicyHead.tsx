@@ -24,7 +24,9 @@ import type { Attention, PrimaryAction } from "@/lib/wallet/policy-attention"
  * The old hero's four-button action row is gone: three of those buttons were
  * secondary actions competing with the one that matters, and at 320px they
  * stacked into four full-width blocks before any content. Share and download
- * live in the documents section; asking the AI is the persistent affordance.
+ * live in the documents section; asking the AI is the persistent affordance —
+ * rendered at the foot of THIS card (see `askAi` below), not as a free-standing
+ * block between the head and the summary.
  */
 
 export type HeadCopy = {
@@ -69,6 +71,17 @@ export interface PolicyHeadProps {
     locale: string
     copy: HeadCopy
     onPrimaryAction: (action: PrimaryAction) => void
+    /**
+     * The persistent ask-AI affordance, rendered INSIDE the head card since
+     * 2026-08-26 (P5-detail-goal2-01). It used to stand alone between the head
+     * and the summary — a ninth top-level grouping on a page budgeted for
+     * eight, and a stray block belonging to no group. It is Q4's other half:
+     * the head answers "what do I do next" with one DO action and one ASK
+     * action, in one boundary. Optional so the head stays renderable on
+     * surfaces with no Q&A; the primary action must remain the header's FIRST
+     * button (the ten-second test reads it positionally).
+     */
+    askAi?: { label: string; onOpen: () => void }
 }
 
 /** Attention states that are informational, not alarming. `clear` gets a tick. */
@@ -105,6 +118,7 @@ export function PolicyHead({
     locale,
     copy,
     onPrimaryAction,
+    askAi,
 }: PolicyHeadProps) {
     const policyNumberField = extractedField(displayPolicyNumber)
     const subjectField = extractedField(insuredSubject.value)
@@ -229,6 +243,11 @@ export function PolicyHead({
                 <ActionIcon className="h-4 w-4" aria-hidden />
                 {copy.action[primaryAction.kind]}
             </button>
+
+            {/* Q4's other half — the ASK action, inside the same boundary as
+                the DO action. Always AFTER the primary button: the ten-second
+                test reads the header's first <button> as "what do I do next". */}
+            {askAi && <AskAiDock label={askAi.label} onOpen={askAi.onOpen} />}
         </header>
     )
 }
