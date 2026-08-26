@@ -21,6 +21,14 @@ export { internalTokenLeaks, findInternalTokens } from "./metrics"
 /**
  * COUNT-CONSISTENCY FAILURES.
  *
+ * NOTE (Phase 5 precondition, 2026-08-27): this is the dashboard's
+ * BASELINE-ERA scan - `data-count` only, plus the label-noun value scan
+ * below - kept byte-stable because committed captures under
+ * docs/evidence/dashboard-mobile/ depend on its exact output shape (the
+ * clippedContent precedent). The shared §11 metric is `countConsistency`
+ * in ./metrics (definition: ./count-collector.ts, both attribute channels,
+ * honest unmeasurable reporting); NEW callers use that one.
+ *
  * The dashboard states the same quantity in several places — "12 policies" in
  * the hero and "6 policies" on the renewal timeline, "6 areas" beside
  * "4 high · 7 medium · 3 low". Some of those disagreements are legitimate

@@ -27,6 +27,10 @@ import type { Page } from "@playwright/test"
 import sharp from "sharp"
 
 import { collectSections } from "./section-collector"
+import { collectDuplicateActions } from "./action-collector"
+import type { DuplicateActionsOptions, DuplicateActionsResult } from "./action-collector"
+import { collectCountConsistency } from "./count-collector"
+import type { CountConsistencyOptions, CountConsistencyMetricResult } from "./count-collector"
 
 export const WIDTHS = [320, 390, 430] as const
 export type Width = (typeof WIDTHS)[number]
@@ -1335,4 +1339,64 @@ export async function pageOverflow(page: Page): Promise<PageOverflow> {
         }
         return { documentScrollWidth, viewportWidth, overflowPx, offenders }
     })
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// §11 metrics 7 and 8 (Phase 5 precondition, PHASE4-ASSESSMENT.md).
+//
+// Both definitions live in their own self-contained collector files —
+// ./action-collector.ts and ./count-collector.ts — on the section-collector
+// pattern: `page.evaluate` serialises the function source into the browser,
+// so the SAME definition also runs directly under jsdom, which is where their
+// red-proof probe lives (phase5-metrics-probe.test.ts). Every design decision
+// (identity rule, visibility discipline, nav policy, value extraction, the
+// deliberate exclusions) and every stated blind spot is documented in those
+// files, next to the code that implements it.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type {
+    DuplicateActionsOptions,
+    DuplicateActionsResult,
+    DuplicateActionGroup,
+    ActionInstanceRecord,
+    ActionIdentitySource,
+    ActionGroupClassification,
+} from "./action-collector"
+
+export type {
+    CountConsistencyOptions,
+    CountConsistencyMetricResult,
+    InconsistentCountKey,
+    CountRender,
+} from "./count-collector"
+
+/**
+ * DUPLICATE ACTIONS — the same action offered more than once on one page.
+ * Identity: `data-action` verb, else normalised destination, else accessible
+ * name (tagged by confidence); subject-scoped so per-row controls do not read
+ * as page-level repeats; nav overlap reported-not-gated by default
+ * (`navPolicy: "count"` gates it). Full rule + blind spots: action-collector.ts.
+ */
+export async function duplicateActions(
+    page: Page,
+    opts?: DuplicateActionsOptions
+): Promise<DuplicateActionsResult> {
+    return page.evaluate(collectDuplicateActions, opts)
+}
+
+/**
+ * COUNT CONSISTENCY — one `data-count`/`data-fact` key rendering more than one
+ * distinct value (grouped by key + subject). A numeral rendered WITHOUT
+ * instrumentation is reported as UNMEASURABLE, never as consistent — the
+ * verdict is three-valued so silence cannot read as a pass. Value-extraction
+ * rules (Greek thousands, «Απεριόριστα», dates, first-number-in-prose) and
+ * blind spots: count-collector.ts. The dashboard's own baseline-era
+ * `countConsistency` in ./dashboard.ts is unchanged (committed captures depend
+ * on its shape); THIS is the shared §11 metric for new callers.
+ */
+export async function countConsistency(
+    page: Page,
+    opts?: CountConsistencyOptions
+): Promise<CountConsistencyMetricResult> {
+    return page.evaluate(collectCountConsistency, opts)
 }
