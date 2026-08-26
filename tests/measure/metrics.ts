@@ -26,6 +26,8 @@
 import type { Page } from "@playwright/test"
 import sharp from "sharp"
 
+import { collectSections } from "./section-collector"
+
 export const WIDTHS = [320, 390, 430] as const
 export type Width = (typeof WIDTHS)[number]
 
@@ -60,78 +62,21 @@ export async function scrollHeight(page: Page): Promise<number> {
 /**
  * SECTION COUNT — the operationalization promised in the evidence file.
  *
- * A "section" is a distinct top-level content grouping a customer perceives:
- *   (a) every `section[id]` on the page (the page's own idiom for a headed
- *       content grouping), PLUS
- *   (b) every direct child of a top-level layout column (the page shell's
- *       inner wrapper, the main content column, and the <aside>) that is not
- *       itself inside a `section[id]` and either contains a heading (h1–h3)
- *       or has a visible boundary (background/border/shadow).
- * Nested `section[id]` (e.g. #renewal inside #key-dates) count individually —
- * the customer perceives them as separate groups; that is the point.
+ * The definition (and the collector that implements it) lives in
+ * ./section-collector.ts, because it now runs in two runtimes: serialised
+ * into the browser here, and directly against jsdom by the CI budget guard
+ * (tests/unit/policy-detail-section-budget.test.tsx). One definition, or the
+ * CI ceiling and the measured number drift apart.
+ *
+ * In short: a "section" is a distinct top-level content grouping a customer
+ * perceives — every `section[id]`, plus every heading-bearing or visibly
+ * bounded direct child of a top-level layout column. Nested `section[id]`
+ * count individually; nested HEURISTIC matches collapse into their outermost
+ * counted ancestor (the 2026-08-26 fix — one rendered card used to produce
+ * two entries, see the collector's header note).
  */
 export async function sectionCount(page: Page): Promise<{ count: number; ids: string[] }> {
-    return page.evaluate(() => {
-        const visible = (el: Element) => {
-            const r = (el as HTMLElement).getBoundingClientRect()
-            const cs = getComputedStyle(el as HTMLElement)
-            if (r.width <= 0 || r.height <= 0 || cs.display === "none" || cs.visibility === "hidden") return false
-            // Off-canvas chrome (the app shell's closed drawer sits at
-            // translate-x:-100%) is not something a customer perceives.
-            if (r.right <= 0 || r.bottom <= 0 || r.left >= document.documentElement.clientWidth) return false
-            return true
-        }
-        const alphaOf = (color: string): number => {
-            if (!color || color === "transparent") return 0
-            const slash = color.match(/\/\s*([0-9.]+%?)\s*\)$/)
-            if (slash) return slash[1].endsWith("%") ? parseFloat(slash[1]) / 100 : parseFloat(slash[1])
-            const rgba = color.match(/^rgba\([^,]+,[^,]+,[^,]+,\s*([0-9.]+)\s*\)$/)
-            if (rgba) return parseFloat(rgba[1])
-            return 1 // rgb()/oklab() without alpha channel = opaque
-        }
-        const bounded = (el: HTMLElement) => {
-            const cs = getComputedStyle(el)
-            if (alphaOf(cs.backgroundColor) > 0.02) return true
-            if (cs.boxShadow && cs.boxShadow !== "none") return true
-            const sides = [
-                [cs.borderTopWidth, cs.borderTopStyle, cs.borderTopColor],
-                [cs.borderRightWidth, cs.borderRightStyle, cs.borderRightColor],
-                [cs.borderBottomWidth, cs.borderBottomStyle, cs.borderBottomColor],
-                [cs.borderLeftWidth, cs.borderLeftStyle, cs.borderLeftColor],
-            ]
-            return sides.some(([w, s, c]) => parseFloat(w) > 0 && s !== "none" && alphaOf(c) > 0.02)
-        }
-
-        const out = new Set<Element>()
-        document.querySelectorAll("section[id]").forEach((s) => visible(s) && out.add(s))
-
-        // Top-level layout columns: page shell inner wrapper + its grid columns.
-        const shell = document.querySelector(".pw-page-shell > div")
-        const columns: Element[] = []
-        if (shell) {
-            columns.push(shell)
-            shell.querySelectorAll(":scope > div").forEach((d) => {
-                d.querySelectorAll(":scope > div, :scope > aside").forEach((c) => columns.push(c))
-            })
-        }
-        for (const col of columns) {
-            for (const child of Array.from(col.children)) {
-                if (!visible(child)) continue
-                if (child.matches("section[id]") || child.querySelector("section[id]")) continue
-                if (child.closest("section[id]")) continue
-                const hasHeading = !!child.querySelector("h1,h2,h3") || /^H[1-3]$/.test(child.tagName)
-                if (hasHeading || bounded(child as HTMLElement)) out.add(child)
-            }
-        }
-        const ids = Array.from(out).map((el) => {
-            const id = (el as HTMLElement).id
-            if (id) return `#${id}`
-            const h = el.querySelector("h1,h2,h3")
-            const t = (h?.textContent || el.textContent || "").trim().slice(0, 40)
-            return `<${el.tagName.toLowerCase()}> ${t}`
-        })
-        return { count: out.size, ids }
-    })
+    return page.evaluate(collectSections, undefined)
 }
 
 /**

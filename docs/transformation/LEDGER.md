@@ -220,6 +220,10 @@ system can address all sections after the §7.5 reduction to ≤8, at 320px, wit
 14-pill strip must use `.pw-scroll-strip` if it survives — that primitive exists precisely because
 the global `min-width: 0` rule collapsed it into slivers.
 
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| P-13a | The persistent ask-AI dock (P-13's surviving entry point) | action | **MOVED 2026-08-26** | inside `header.pw-card`, after the primary action (`PolicyHead`'s `askAi` prop). Standing alone between the head and the summary it was a ninth top-level grouping on a page budgeted for eight (D-035); it is Q4's other half — one DO action, one ASK action, one boundary. Behaviour, label, tap target and the `#policy-qa` disclosure it opens are unchanged; the primary action remains the header's first button | P5-detail-goal2-01 |
+
 **Doc debt found:** `BASELINE.md` cites `tests/measure/policy-detail.ts`, renamed to `metrics.ts` in
 T-011. Harmless but it should be corrected when T-015 republishes.
 

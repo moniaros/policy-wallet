@@ -701,3 +701,44 @@ in the wrong direction either.
 
 **§9.4** (perk prompts needing a clause link, conditions belonging to the review register) is a
 **Phase 4** row and stays there.
+
+---
+
+## Measurement harness execution discipline (P5-INFRA-00)
+
+**Added:** 2026-08-26 · **Agent:** Evidence (Haiku 4.5)
+
+Five agents on this run backgrounded Playwright measurements and then waited, dying at 600s with no
+progress. **Rule for future runs:**
+
+### Do not background a Playwright run and then wait on it
+
+The watchdog kills backgrounded processes at 600s with no progress. Do this instead:
+
+1. **Foreground one spec at a time** — `npx playwright test --project=measure --grep "pattern"` with
+   a specific pattern, not `--project=measure` which runs everything in parallel/background
+2. **Report rather than retry on pool contention** — the session pooler's 15-client ceiling is
+   shared across all sessions on this machine. If a run dies with `max clients reached in session
+   mode`, it is not a transient error; another run owns the pooler. Wait, or run the spec later.
+
+### Measurement harness changes
+
+Three fixes have been made to the harness so that this rule can be enforced:
+
+1. **Pooler lock** — `tests/measure/surface-harness.ts` now exports `acquirePoolerLock()`, a
+   file-based lock that ensures only one run holds active DB connections at a time. Second run
+   fails with a clear error naming the blocking PID instead of a cryptic pooler message.
+
+2. **Refusal rules** — `captureSurface()` now structurally refuses to record:
+   - A capture whose DOM contains the generic error boundary (the page did not render)
+   - A capture with unlocatable identity fields, unless the surface/field pair is explicitly
+     documented in `UNLOCATABLE_EXEMPT` (a measurement problem or a schema gap that must be named)
+
+3. **Test accounting** — `docs/transformation/P5-INFRA-00-tests-not-run.md` records which 14 tests
+   in `policy-detail-goal2.spec.ts` could not run (the "duplicate facts", "navigation", "AI
+   entry points", and "ten-second test" batches all died at pooler exhaustion in global-setup).
+   The "sections ≤ 8" batch that DID run stands independently — 6 fixtures × 3 widths, all passed.
+
+These changes exist to prevent future runs from colliding on the pooler and to make refusals
+structural (every capture is checked, not just hand-written specs). The working rule itself must
+be remembered by the next agent: **do not background the harness.**

@@ -1180,3 +1180,92 @@ groups are `insurer · line · date · status`, so what makes rows identical is 
 asset identifier** — already extracted. Putting the plate or address on the row makes them distinct
 with no grouping and none of the capability-loss exposure. That is a field addition, which is what
 this decision's title calls it, and it does not require the reframe.
+
+---
+
+## D-035 — The 10-against-8 section count: one entry was the detector, one was real, and the budget stands at 8
+
+**Date:** 2026-08-26 · **Item:** P5-detail-goal2-01 · **Run:** PW-MOBILE-TRANSFORM-02
+
+The 2026-08-25 re-measure reported `/wallet/[id]` at **10 sections against the ≤ 8 budget**, with
+«Το ασφαλιστήριό σας σε απλά ελληνικά» listed **twice**, and was correctly left UNRESOLVED with the
+instruction to check the detector for nested matches before editing the page on the strength of the
+number. Checked. The answer is **both**: the duplicate was a measurement artefact, and the corrected
+count — **9** — was still over budget by one real grouping.
+
+### The duplicate was the detector, not the page — evidence from a render
+
+`tests/unit/policy-detail-section-budget.test.tsx` renders the REAL `PolicyDetailsClient` in jsdom
+and pins three facts at once:
+
+1. the rendered DOM contains **exactly one** heading «Το ασφαλιστήριό σας σε απλά ελληνικά» —
+   `SummaryCard` is not rendered twice;
+2. the **pre-fix traversal** (inlined verbatim as `legacyCollect`) reports that one card as **two**
+   entries;
+3. the fixed collector reports it as **one**.
+
+Mechanism: `sectionCount`'s column derivation pushes every div-grandchild of the shell wrapper as a
+"layout column" and scans its children, so it reaches one level inside any div-in-div. The summary
+card sits as `div.mt-4 (spacing wrapper) > div.pw-card > div.mb-3 (header row with the h2)`. The
+wrapper was counted (category (b), heading found by descendant search) AND the card's own header row
+was counted (scanned as a child of the card-as-"column"). Two entries, one perceived card. The head
+escaped the same fate only by being a `<header>`, which the `:scope > div` selector never descends
+into — the artefact was structural luck away from firing on every card on every surface.
+
+### The measurement fix, and its blast radius
+
+The collector now collapses nested **heuristic** matches into their outermost counted ancestor;
+nested `section[id]` still count individually (that has always been the definition's point, and a
+probe pins it). The implementation moved to `tests/measure/section-collector.ts`, self-contained so
+the SAME function runs serialised into the browser by `metrics.ts#sectionCount` and directly against
+jsdom by the CI guard — one definition, two runtimes.
+
+Blast radius, stated rather than discovered later: `sectionCount` is consumed by
+`dashboard-baseline`, `policy-detail-baseline`, `policy-detail-free`, `policy-detail-goal2`,
+`pro-home`, `agent-view-baseline`, `agent-view-free`, `wallet-add-baseline` and `surface-harness`
+(i.e. every `captureSurface` caller). The dedupe can only LOWER a count — it removes nested
+double-entries and adds nothing — so no historical number is undercut by it, but any published
+section count taken before 2026-08-26 is a **ceiling** that may include nested doubles (the
+policy-detail Goal 0 "20 sections" and T-015 "10 sections" figures included). Per `metrics.ts`'s own
+rule, a metric bugfix invalidates cross-fix before/after comparison of that metric: section-count
+deltas that straddle this fix must be re-derived, not quoted.
+
+`duplicateIdentityRows` and its `surface-harness` wiring are untouched (P5-wallet-01a's comparison
+depends on byte-identity there).
+
+### The real overage, and the resolution: option (a), reduce to 8
+
+Corrected, the default page had **9** top-level groupings: the head, the standalone ask-AI dock
+button, the summary card, and the six disclosure sections. Resolution: **the dock moved inside the
+head card** — `PolicyHead` takes an `askAi` prop and renders the affordance after the primary
+action, inside `header.pw-card`. Nothing was removed; LEDGER carries the destination row (see the
+Ασφαλιστήριο table note, P-13a). The page now measures **8 = budget**.
+
+Why this merge and not the others considered:
+
+- **Summary into the head** — rejected. The head is four questions scannable in seconds; a prose
+  paragraph plus the health donut inside it pushes Q3/Q4 down and dilutes exactly what Goal 2 built
+  the head to do. The summary stays a sibling card and a grouping of its own.
+- **Merging two of the six sections** — rejected. Six-under-one-disclosure is the surface's ONE
+  navigation system, chosen deliberately over tabs and the 14-pill strip (P-17); collapsing e.g.
+  #terms into #coverage rebuilds the overloaded section that restructure took apart.
+- The dock, by contrast, was a stray: a full-width bordered control belonging to no group, sitting
+  between two cards. It is Q4's other half — the head answers «τι κάνω τώρα» with one DO action and
+  one ASK action, now in one boundary. The primary action remains the header's FIRST button, which
+  the ten-second test reads positionally; AI entry points remain ≤ 2.
+
+### The budget is now ON the CI path
+
+`tests/unit/policy-detail-section-budget.test.tsx` (runs in `vitest --run tests/unit`, which CI
+blocks on): renders the real page across active / expiring / expired / analyzing, asserts ≤ 8 with
+the shared collector, refuses an all-clear on a broken render (≥ 6 groupings and the four
+state-independent section ids must be present before the budget assertion means anything), and pins
+the canonical active composition at EXACTLY 8 so two future additions cannot hide under a page that
+dropped to 6. Failure was demonstrated before the page fix — red at **9** on active, expiring and
+expired, exactly the corrected over-budget number — and the committed probes prove the guard can
+turn red (a synthetic 9-group shell fails the shared assertion) and that nested `section[id]` still
+count individually.
+
+jsdom caveat, declared: no layout and no stylesheet there, so the collector takes
+`{ assumeVisible, boundedFallback }` — `.pw-card` and bare interactive controls stand in for
+boundaries a class would paint. The Playwright measure runs the same function with neither flag.

@@ -21,8 +21,9 @@
  * (PROGRESS.md, Checkpoint 4) — hiding it is `settle()`'s job, done once.
  */
 import type { Page } from "@playwright/test"
-import { mkdirSync, writeFileSync, readFileSync } from "fs"
+import { mkdirSync, writeFileSync, readFileSync, existsSync, unlinkSync } from "fs"
 import path from "path"
+import os from "os"
 import { dismissCookieBanner } from "../helpers/ui"
 import {
     type Width,
@@ -80,8 +81,96 @@ export function loadEnv() {
     }
 }
 
+/**
+ * P5-INFRA-00: Pooler concurrency lock.
+ *
+ * The session pooler's 15-client ceiling is shared across all sessions on this machine.
+ * Multiple measurement runs assume they own the pooler and exhaust it. This lock ensures
+ * that only one run holds active DB connections at a time. File-based lock in OS temp
+ * directory; held for the duration of the test run.
+ *
+ * Failure mode: second run exits with a clear error message naming the blocking PID,
+ * rather than a cryptic `PrismaClientInitializationError: max clients reached in session mode`
+ * followed by an error boundary in a capture (which makes a bad measurement look like data).
+ */
+function readLockPid(lockFile: string): string {
+    try { return readFileSync(lockFile, "utf8").trim() } catch { return "" }
+}
+
+/** Liveness only — signal 0 performs the permission/existence check and sends nothing. */
+function isProcessAlive(pid: number): boolean {
+    try { process.kill(pid, 0); return true } catch (err: any) { return err?.code === "EPERM" }
+}
+
+export async function acquirePoolerLock(
+    timeoutMs = 300_000,
+    lockDir = path.join(os.tmpdir(), "pw-measurement-pooler-lock")
+): Promise<() => void> {
+    const lockFile = path.join(lockDir, "lock")
+    const startTime = Date.now()
+
+    // Create lock directory if needed
+    try {
+        mkdirSync(lockDir, { recursive: true })
+    } catch { /* exists */ }
+
+    // Poll for lock availability
+    while (true) {
+        try {
+            // Attempt exclusive creation (fails if file exists)
+            writeFileSync(lockFile, process.pid.toString(), {
+                flag: "wx", // write exclusive
+                encoding: "utf8",
+            })
+            // Lock acquired
+            return () => {
+                try {
+                    unlinkSync(lockFile)
+                } catch { /* cleanup */ }
+            }
+        } catch {
+            // STALE LOCK. The documented normal failure on this harness is the
+            // 600s watchdog killing a backgrounded Playwright run — which leaves
+            // the lock file behind with no process left to release it. A lock
+            // that deadlocks on its own most common failure mode is worse than
+            // no lock at all, so verify the holder is alive and steal the lock
+            // when it is not. Signal 0 tests liveness without signalling.
+            const holder = Number.parseInt(readLockPid(lockFile), 10)
+            if (Number.isFinite(holder) && holder > 0 && !isProcessAlive(holder)) {
+                try { unlinkSync(lockFile) } catch { /* another waiter won the race */ }
+                continue
+            }
+            if (Date.now() - startTime > timeoutMs) {
+                // Say only what was established. Reaching here with an
+                // unreadable holder means liveness was never determined, and a
+                // message asserting "still alive" would be inventing the one
+                // fact the operator needs.
+                const raw = readLockPid(lockFile)
+                const parsed = Number.parseInt(raw, 10)
+                const known = Number.isFinite(parsed) && parsed > 0
+                throw new Error(
+                    `Pooler lock timeout (${timeoutMs}ms). ` +
+                    (known
+                        ? `Another measurement run holds the lock (PID ${parsed}) and that process is alive. ` +
+                          `Only one run may use the session pooler at a time — wait for it, or stop it.`
+                        : `The lock file ${lockFile} names no readable holder (${JSON.stringify(raw)}), so it ` +
+                          `could not be checked for liveness or safely stolen. Delete it if no run is active.`)
+                )
+            }
+            await new Promise((r) => setTimeout(r, 100))
+        }
+    }
+}
+
 export async function withDb<T>(fn: (db: any) => Promise<T>): Promise<T> {
     loadEnv()
+    // SERIALISE POOLER ACCESS. Fixture provisioning is where this run actually
+    // exhausted the 15-client session pooler — three times — because two
+    // measurement processes provisioned at once while `next dev` already held
+    // connections. Acquired HERE, not per-spec, so every caller is covered
+    // without having to remember to ask: the lock shipped exported-and-never-
+    // called, which is the adoption-incomplete failure this run keeps finding.
+    const release = await acquirePoolerLock()
     const base = process.env.DATABASE_URL || ""
     const url = base.replace(/connection_limit=\d+/, "connection_limit=1").replace(/pool_timeout=\d+/, "pool_timeout=120")
     const { PrismaClient } = await import("@prisma/client")
@@ -90,6 +179,7 @@ export async function withDb<T>(fn: (db: any) => Promise<T>): Promise<T> {
         return await fn(db)
     } finally {
         await db.$disconnect()
+        release()
     }
 }
 
@@ -217,7 +307,54 @@ export interface CaptureResult {
  * un-tel'd phone numbers, date/status-consistency facts, repeated strings,
  * internal-token leaks). `floor` forwards to `assertRendered` for surfaces
  * whose honest minimum content is short.
+ *
+ * P5-INFRA-00: REFUSAL RULES
+ * Two structural refusals live here, not in individual specs:
+ * 1. Error boundaries: a capture whose DOM contains the generic error boundary is
+ *    REFUSED, not recorded — the page did not render.
+ * 2. Unlocatable fields: a run whose `identityDuplicates.unlocatable` count is > 0
+ *    is REFUSED unless the surface/field pair is exempted in UNLOCATABLE_EXEMPT.
+ *    The exemption must be explicit and named, not a blanket allowance.
  */
+
+/** P5-INFRA-00: Documented schema gaps where fields are intentionally unlocatable. */
+const UNLOCATABLE_EXEMPT: Record<string, string[]> = {
+    // H-010 (HALTS.md): health and life policies carry no insured-person name
+    // (policyholders, not named individuals). The field is absent by design.
+    "policy-detail": ["subject"],
+}
+
+/**
+ * Which unlocatable rows are NOT covered by a documented exemption.
+ *
+ * Exported and PURE so the decision can be probed without a browser.
+ * `captureSurface` needs a live `Page`, so a bug in this decision is invisible
+ * to `tsc`, to lint, and to the entire unit suite — which is exactly how the
+ * first version shipped: it derived the surface by dropping the last label
+ * segment, turning "policy-detail-motor-active-320" into
+ * "policy-detail-motor-active", matching no exemption at all, and would have
+ * refused every policy-detail capture the moment a run reached one.
+ *
+ * Matching is by label PREFIX on a segment boundary, never by counting
+ * segments off the end: capture labels carry a variable number of state
+ * segments before the width, so there is no fixed offset to count back from.
+ */
+export function undocumentedUnlocatable(
+    label: string,
+    unlocatable: { index: number; missingFields: string[] }[],
+    exemptions: Record<string, string[]> = UNLOCATABLE_EXEMPT
+): { index: number; missingFields: string[] }[] {
+    const surface = Object.keys(exemptions)
+        .filter((key) => label === key || label.startsWith(`${key}-`))
+        .sort((a, b) => b.length - a.length)[0]
+    const exempt = surface ? exemptions[surface]! : []
+    // EVERY missing field must be exempt. Testing only `missingFields[0]` waves
+    // a row missing ["subject", "insurer"] straight through because its first
+    // entry happens to be documented — the absent insurer goes unmeasured and
+    // unreported, which is the failure this refusal exists to prevent.
+    return unlocatable.filter((row) => !row.missingFields.every((f) => exempt.includes(f)))
+}
+
 export async function captureSurface(
     page: Page,
     dirs: { SHOTS: string; DATA: string },
@@ -251,6 +388,28 @@ export async function captureSurface(
         h1: document.querySelectorAll("h1").length,
         mainLandmark: document.querySelectorAll("main, [role='main']").length,
     }))
+
+    const identityDuplicates = await duplicateIdentityRows(page)
+
+    // P5-INFRA-00: REFUSE UNLOCATABLE FIELDS (unless documented). An unlocatable field
+    // is a field that the harness could not locate on the page (e.g., identity fields
+    // on a policy card). This is a structural refusal: if it happens, either the page
+    // layout changed (a measurement problem) or the field is legitimately absent (a
+    // schema gap that must be documented in UNLOCATABLE_EXEMPT). A bare
+    // `unlocatable > 0` is a measurement failure; a documented exemption is OK.
+    if (identityDuplicates.unlocatable.length > 0) {
+        const undocumented = undocumentedUnlocatable(label, identityDuplicates.unlocatable)
+        if (undocumented.length > 0) {
+            const details = undocumented
+                .map((item) => `row ${item.index}: ${item.missingFields.join(", ")}`)
+                .join("; ")
+            throw new Error(
+                `${label}@${width}: unlocatable fields (${undocumented.length} rows): ${details}. ` +
+                `If this is a documented schema gap, add it to UNLOCATABLE_EXEMPT in surface-harness.ts.`
+            )
+        }
+    }
+
     const data: CaptureResult = {
         capture: label,
         width,
@@ -261,7 +420,7 @@ export async function captureSurface(
         sections: sec,
         containers: await containerCount(page),
         duplicateFacts: await duplicateFacts(page, facts),
-        identityDuplicates: await duplicateIdentityRows(page),
+        identityDuplicates,
         tapTargets: await smallTapTargets(page),
         contrast: {
             text: await contrastFailures(page),
