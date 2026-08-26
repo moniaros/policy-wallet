@@ -4,28 +4,39 @@
 an assessment that overturned a premise; this one is no exception, and the premise it overturns is
 that the design system needs *building*.
 
-## The design system already exists. It is not adopted.
+## CORRECTION (same day): the first version of this section was wrong twice
 
-| | |
-|---|---|
-| CSS custom properties in `app/globals.css` | **117** |
-| `.pw-*` utility classes | **24** |
-| Hardcoded `#rrggbb` literals in B2C + landing `.tsx` | **754** |
+Published, then re-measured. Both original claims fail, and both failed the same way — **the
+measurement's universe did not match the thing being measured.** Recorded rather than quietly
+edited, because the errors are more instructive than the conclusion.
 
-Eight values account for 739 of the 754. **The top two are already tokens.**
+| original claim | status | why it was wrong |
+|---|---|---|
+| "`#29685B` has three names; collapse to one" | **WRONG** | `--primary` and `--ring` sharing a value is *correct* semantic tokening. The role is the name, and roles legitimately share values. Collapsing them would have destroyed the semantics. |
+| "35 `--color-*` tokens have zero references" | **WRONG** | They are declared inside `@theme { }` — Tailwind 4's CSS-first config — so they **generate utility classes**. I grepped for `var(--color-` when the consumption path is `bg-primary` / `text-foreground`. Those 1,186 utility references *are* the `--color-*` references. Acting on this would have deleted 35 live tokens. |
 
-`#29685B` — the brand accent — is defined **three times** in `globals.css`, as
-`--brand-accent-primary`, `--brand-accent-cta` and `--pw-primary`, and is hardcoded **164 times**
-across components. `#0F172A` is a token and is hardcoded **107 times**.
+A third error was caught mid-measurement: counting token names across light *and* dark blocks made
+`#0f172a` look like it had nine names, when being `--foreground` in light and `--card` in dark is
+how theming works.
 
-This is **D-007, adoption incomplete**, at scale and inside the design system itself: the definition
-exists, the callers do not use it. Seventh instance of that shape in this programme, and the largest.
+## What the design system actually is
 
-**One name per value would have helped.** A component author choosing between
-`--brand-accent-primary`, `--brand-accent-cta` and `--pw-primary` for the same colour has three ways
-to be right and no way to know which, and `#29685B` is unambiguous. Ambiguity in a primitive is not
-a cosmetic problem — it is a reason adoption fails, and the fix is to collapse the three to one with
-the other two as documented aliases, not to add a fourth.
+Coherent, and largely correct Tailwind 4 practice:
+
+| layer | tokens | how components consume it | references |
+|---|---|---|---|
+| `:root` semantic values (`--primary`, `--foreground`, `--border`…) | 55 | indirectly, via the layer below | — |
+| `@theme { --color-* }` → generates Tailwind utilities | 35 | `bg-primary`, `text-foreground`, `border-border` | **1,186** |
+| `:root { --pw-*, --brand-* }` | 27 | direct `var()` | **55** |
+| hardcoded `#rrggbb` | — | nothing; bypasses all of the above | **754** |
+
+**The system works and is adopted.** The defects are narrower than "not adopted", and there are
+exactly two:
+
+1. **754 hardcoded literals bypass it entirely** — the real problem, and unchanged by the correction.
+2. **`--pw-*` / `--brand-*` are a parallel legacy path**: 27 tokens, 55 references, alongside a
+   working system with 1,186. Not urgent, but it is a second way to be right, and a second way to be
+   right is how the 754 got written.
 
 ## Distribution decides the work, and it is lopsided
 
@@ -46,8 +57,9 @@ visual-regression risk with no measurement to catch it — this repo has no visu
 
 Phase 4's job is therefore:
 
-1. **Make the primitive unambiguous.** Collapse the three names for `#29685B` to one, keep the
-   others as documented aliases, and do the same wherever a value has more than one token name.
+1. **Converge the legacy path.** Migrate the 55 `--pw-*` / `--brand-*` references onto the semantic
+   utilities that already carry 1,186. Do **not** collapse semantic roles that share a value — that
+   was the corrected error above.
 2. **Stop the bleeding.** A guard that fails on a **new** hardcoded literal in the Phase 5 surfaces
    — enumerated from the filesystem, with the existing 226 carried as an exact debt list that can
    only shrink. That is the shape `sources-freshness` already uses for the 30 legacy citations, and
