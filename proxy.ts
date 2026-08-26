@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server"
 import { rateLimit } from "@/lib/rate-limit"
 import { getPostLoginRedirectByRole, getPrimaryRole, type AppRole } from "@/lib/auth/role-routing"
 import { isIndexableDeployment } from "@/lib/seo/site"
+import { redactCredentials } from "@/lib/observability/sentry-scrub"
 
 // ---------------------------------------------------------------------------
 // Role ownership of authenticated routes — ONE declared table, matched on
@@ -186,9 +187,28 @@ export async function proxy(request: NextRequest) {
         }
     )
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+    // SEC-01. `getUser()` can THROW, and its throw is the leak.
+    //
+    // `_recoverAndRefresh` interpolates the entire session into the error
+    // message, so an escaping throw hands the platform's log sink a live access
+    // token and a live refresh token. That happened eight times before this
+    // catch existed: the message went to the Vercel runtime log verbatim,
+    // where it is neither redactable nor deletable.
+    //
+    // Nothing here is a place to be clever about the error. Anonymous is the
+    // correct and safe interpretation of "we could not establish a session" —
+    // the caller gets the signin redirect the rest of this function already
+    // knows how to produce, and the reason is recorded WITHOUT its payload.
+    let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] = null
+    try {
+        const result = await supabase.auth.getUser()
+        user = result.data.user
+    } catch (error) {
+        console.error(
+            "[proxy] session could not be resolved; treating request as anonymous:",
+            redactCredentials(error instanceof Error ? error.message : String(error))
+        )
+    }
     const isLoggedIn = Boolean(user)
 
     const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")

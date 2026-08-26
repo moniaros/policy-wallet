@@ -42,8 +42,45 @@ const IBAN_PATTERN = /\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/g
  */
 const FILE_NAME_PATTERN = /\b[\p{L}\p{N}_ .()[\]-]{1,120}\.(?:pdf|jpe?g|png|webp|heic|docx?)\b/giu
 
-export function scrubText(value: string): string {
+/**
+ * Credentials. SEC-01.
+ *
+ * A Supabase session object reached the Vercel runtime logs eight times because
+ * `_recoverAndRefresh` throws with the whole session interpolated into the
+ * message, and nothing between that throw and the platform's log sink removed
+ * it. `scrubText` redacted email, IBAN, tax id and file names — and would have
+ * passed an access token and a refresh token straight through.
+ *
+ * Two shapes are needed, not one. The access token is a JWT and is recognisable
+ * on sight; the refresh token is a SHORT OPAQUE STRING (`t3lrjaccdywa`) with no
+ * distinguishing shape whatsoever. Only its JSON key identifies it, so pattern
+ * matching on the value alone can never find it — the key/value form below is
+ * the arm that catches the credential that actually matters, since a refresh
+ * token outlives the 1-hour access token it mints.
+ */
+const JWT_PATTERN = /\beyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}/g
+const TOKEN_FIELD_PATTERN =
+    /("(?:access_token|refresh_token|provider_token|provider_refresh_token|id_token|api_key|apikey|client_secret|service_role_key)"\s*:\s*)"[^"]*"/gi
+const BEARER_PATTERN = /\bBearer\s+[A-Za-z0-9._~+/=-]{8,}/gi
+const SUPABASE_SECRET_PATTERN = /\b(?:sb_secret_|sbp_|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9)[A-Za-z0-9._-]{8,}/g
+
+/**
+ * Remove anything that could be replayed as a credential.
+ *
+ * Exported on its own because the sink that leaked was NOT Sentry — it was an
+ * unhandled throw in middleware going straight to the platform's log. Anything
+ * that logs an error outside Sentry has to be able to reach this directly.
+ */
+export function redactCredentials(value: string): string {
     return value
+        .replace(TOKEN_FIELD_PATTERN, '$1"<redacted:credential>"')
+        .replace(JWT_PATTERN, "<redacted:jwt>")
+        .replace(SUPABASE_SECRET_PATTERN, "<redacted:key>")
+        .replace(BEARER_PATTERN, "Bearer <redacted:credential>")
+}
+
+export function scrubText(value: string): string {
+    return redactCredentials(value)
         .replace(EMAIL_PATTERN, "<redacted:email>")
         .replace(IBAN_PATTERN, "<redacted:iban>")
         .replace(GREEK_TAX_ID_PATTERN, "<redacted:taxid>")

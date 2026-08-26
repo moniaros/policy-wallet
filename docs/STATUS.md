@@ -21,15 +21,26 @@ signin. **All five halts answered and implemented.**
   unlocatable-field captures.
 - **The section-count discontinuity is recorded.** Break point `f66dd435`. Policy detail ≤8 with
   its two halves separable: 10→9 was the measurement fix, 9→8 the page fix.
+- **SEC-01 handled end to end** — rotation, redaction at both sinks, and a guard with red-probes
+  for each arm. The cookie bug only made the throw reachable; the leak was that nothing between
+  the throw and the log sink removed the payload.
 - **Gap catalogue verified on BOTH databases by content, not counts** — dev and prod return the
   identical hash `e7ffd876eeb8a58ce1d1ccab1525bad3` over 29 active rows, 0 inactive, 0 AI-minted.
 
 ## Top risks, ranked
 
-1. **Credentials are sitting in the Vercel runtime logs.** The middleware TypeError embedded the
-   whole session object, so two live admin refresh tokens were written to logs across 8
-   occurrences (2026-08-23 and 2026-08-26). The throw is fixed; the log entries are not, and
-   nothing has rotated those tokens.
+1. **SEC-01 — session objects reached the Vercel runtime logs. LAUNCH RISK, not post-GA debt.**
+   **Contained, not fully closed.** The middleware TypeError embedded the whole session in its
+   message; **8 occurrences confirmed** in production (2026-08-23 ×7, 2026-08-26 ×1), counted two
+   independent ways. Done: the affected admin session is **revoked** (prod verified 0 sessions /
+   0 unrevoked); both leaked access-token JWTs had already expired and neither leaked refresh
+   token still existed in `auth.refresh_tokens`; the throw is caught and redacted in `proxy.ts`;
+   `scrubText` now redacts credentials, which it never did; Sentry holds **no** copy.
+   **Still open:** the log entries themselves. Vercel exposes no delete endpoint for runtime logs
+   — they age out with retention, and the only lever that would purge them early is deleting the
+   two deployments that produced them, deliberately not done because it is irreversible and the
+   credentials are already dead. Whether occurrences predate 2026-08-23 **cannot be established**:
+   the 7-day aggregate times out and 30 days is rejected outright.
 2. **The local session pooler (5432) is wedged.** `verify:gap-catalogue` passed at 04:44 and failed
    at 05:10 on the same invocation. TCP is healthy (~400ms, no IPv6 records) and the database is
    idle at 3 upstream connections, but new *session-mode* connections stall past the 20s pool
@@ -46,7 +57,8 @@ signin. **All five halts answered and implemented.**
 
 ## Next 3 actions
 
-1. Rotate the exposed refresh tokens, or decide explicitly not to and record why.
+1. Confirm who can read the Vercel runtime logs — team `moniaros' projects` (Pro, no SAML) is the
+   access boundary, and its member list could not be enumerated from the tooling here.
 2. Re-capture `/protection` once the session pooler recovers; it is the only measurement that
    changes a ceiling.
 3. **P5-wallet-01** is unblocked: motor, property, pet and marine carry strong identifiers in
