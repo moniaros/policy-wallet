@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { issueRefund, cancelSubscriptionAsAdmin, applyCredit } from "@/app/(protected)/admin/billing-actions"
 import { AdminDialog } from "@/components/admin/AdminDialog"
+import { formatEur } from "@/lib/pricing/pricing-view-model"
 
 type ConfirmState = {
     title: string
@@ -89,7 +90,7 @@ export default function BillingOpsPanel() {
                             const amt = refundAmount.trim() ? Number(refundAmount) : undefined
                             setConfirm({
                                 title: "Confirm refund",
-                                description: `Refund ${amt ? `€${amt.toFixed(2)}` : "the full amount"} on ${refundPi.trim()}? This cannot be undone.`,
+                                description: `Refund ${amt ? formatEur(amt) : "the full amount"} on ${refundPi.trim()}? This cannot be undone.`,
                                 successMessage: "Refund issued.",
                                 run: () => issueRefund({ paymentIntentId: refundPi.trim(), amountEur: amt, reason: refundReason.trim() || undefined }),
                             })
@@ -148,7 +149,7 @@ export default function BillingOpsPanel() {
                             const amt = Number(creditAmount)
                             setConfirm({
                                 title: "Confirm credit",
-                                description: `Apply €${Number.isFinite(amt) ? amt.toFixed(2) : "0.00"} credit to user ${creditUserId.trim()}?`,
+                                description: `Apply ${formatEur(Number.isFinite(amt) ? amt : 0)} credit to user ${creditUserId.trim()}?`,
                                 successMessage: "Credit applied.",
                                 run: () => applyCredit({ userId: creditUserId.trim(), amountEur: amt, memo: creditMemo.trim() }),
                             })

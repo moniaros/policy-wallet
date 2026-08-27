@@ -11,6 +11,8 @@
  */
 
 import { useState } from "react"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { formatCurrency } from "@/lib/i18n/format"
 import { calculateMedicScore } from "@/lib/medic/score"
 import type { MedicData, MedicStakeholder } from "@/lib/medic/types"
 import type { MedicPatch } from "@/lib/medic/patch"
@@ -55,6 +57,7 @@ export function MedicScorecard({
     /** When provided, the Metrics € figure and EB/Champion identification become editable (§F inline fields). */
     onPatch?: (patch: MedicPatch) => Promise<void>
 }) {
+    const { language } = useLanguage()
     const result = calculateMedicScore(medic)
     const hasAnyEvidence = medic && Object.keys(medic).length > 0
 
@@ -115,9 +118,18 @@ export function MedicScorecard({
     const miniBtnClass =
         "rounded-lg border border-black/15 px-2 py-1 text-kicker font-bold uppercase tracking-wider text-black/70 transition hover:bg-black/5 disabled:opacity-50 dark:border-white/20 dark:text-white/70 dark:hover:bg-white/10"
 
+    // An insurance amount: localised suffix formatting, cents only when the
+    // advisor actually typed them (saveValueAtRisk accepts decimals).
+    const valueAtRiskLabel =
+        medic?.metrics?.valueAtRisk != null
+            ? formatCurrency(medic.metrics.valueAtRisk, language, {
+                  decimals: Number.isInteger(medic.metrics.valueAtRisk) ? 0 : 2,
+              })
+            : medic?.metrics?.targetOutcome
+
     const rows: Array<{ label: string; rating: 0 | 1 | 2; detail?: string }> = [
         { label: copy.dimIdentifyPain, rating: result.ratings.identifyPain, detail: medic?.pain?.summary ?? undefined },
-        { label: copy.dimMetrics, rating: result.ratings.metrics, detail: medic?.metrics?.valueAtRisk != null ? `€${medic.metrics.valueAtRisk}` : medic?.metrics?.targetOutcome },
+        { label: copy.dimMetrics, rating: result.ratings.metrics, detail: valueAtRiskLabel },
         { label: copy.dimEconomicBuyer, rating: result.ratings.economicBuyer, detail: medic?.stakeholders?.find((s) => s.stance === "economic_buyer")?.name },
         { label: copy.dimChampion, rating: result.ratings.champion, detail: medic?.stakeholders?.find((s) => s.stance === "champion")?.name },
         { label: copy.dimDecisionCriteria, rating: result.ratings.decisionCriteria, detail: medic?.criteria?.length ? String(medic.criteria.length) : undefined },

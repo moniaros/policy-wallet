@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import type { PlanTier } from "@/types/subscription-entitlements"
 import { TOKEN_PACKAGES as SHARED_TOKEN_PACKAGES } from "@/lib/billing/token-packages"
+import { formatEur } from "@/lib/pricing/pricing-view-model"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 
@@ -25,7 +26,7 @@ interface TokenUsageData {
 const TOKEN_PACKAGE_LIST = Object.entries(SHARED_TOKEN_PACKAGES).map(([key, pkg]) => ({
     key,
     tokens: pkg.tokens,
-    price: `€${pkg.priceEur.toFixed(2)}`,
+    price: formatEur(pkg.priceEur),
     label: pkg.tokens >= 1_000_000 ? `${pkg.tokens / 1_000_000}M` : `${pkg.tokens / 1_000}K`,
     popular: "popular" in pkg && Boolean((pkg as { popular?: boolean }).popular),
 }))

@@ -12,6 +12,13 @@ import { join } from 'node:path'
  *   - subscription prices → formatEur (the €-prefix pricing convention)
  * Never a hand-rolled `€{n}`. This guard pins the whole class tree-wide so a new
  * raw euro interpolation anywhere fails a unit test.
+ *
+ * Scope: rendered UI (.tsx). The audit-log description strings in
+ * app/(protected)/admin/billing-actions.ts keep a raw `€${n.toFixed(2)}` on
+ * purpose — they are stored records, where a deterministic, locale-independent,
+ * cent-exact shape (uniform with rows already written) beats display
+ * convention, and the exact figure sits in structured metadata beside each
+ * message. See the docblock there before "fixing" them.
  */
 const ROOTS = ['components', 'app']
 
@@ -47,25 +54,19 @@ export function rawEuroOffenders(file: string, src: string): string[] {
 }
 
 /**
- * LIVE DEBT, found the moment the matcher learned the template shape
- * (Phase 6 guard audit, 2026-08-27): seven files render money as €${expr}
- * today and the guard had been green over every one of them. Recorded rather
- * than silently fixed — none belongs to this audit's write scope, and a debt
- * row that must be DELETED on fix is how the repo's other guards keep a fix
- * from regressing (see KNOWN_DEAD in no-dead-internal-links).
+ * LIVE DEBT found the moment the matcher learned the template shape (Phase 6
+ * guard audit, 2026-08-27): seven files rendered money as €${expr} while the
+ * guard sat green over every one of them. All seven were routed through the
+ * formatters the same day (subscription/billing money → formatEur; the
+ * MedicScorecard value-at-risk, an insurance amount → formatCurrency; the
+ * 4-decimal AI cost → formatCurrency with decimals: 4, because formatEur's
+ * 2dp rounding would show €0.00 for a real sub-cent charge).
  *
- * This list may only SHRINK. Each entry is asserted still-red below, so fixing
- * a file forces its row out, and no NEW offender can hide behind an old one.
+ * The ratchet stays: this list may only SHRINK. Each entry is asserted
+ * still-red below, so fixing a file forces its row out, and no NEW offender
+ * can hide behind an old one. It is empty today — keep it that way.
  */
-const KNOWN_RAW_EURO_DEBT = [
-    'components/account/TokenUsageCard.tsx',
-    'components/admin/BillingOpsPanel.tsx',
-    'components/agent/MedicScorecard.tsx',
-    'app/(protected)/admin/ai/page.tsx',
-    'app/(protected)/admin/dashboard/DashboardClient.tsx',
-    'app/(protected)/admin/plans/page.tsx',
-    'app/(protected)/agent/pricing/AgentPricingClient.tsx',
-]
+const KNOWN_RAW_EURO_DEBT: string[] = []
 
 describe('no raw €{…} money interpolation anywhere in the UI', () => {
     const files = ROOTS.flatMap(tsxFiles)

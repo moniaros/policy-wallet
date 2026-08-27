@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Check, Loader2, Users, Zap, Crown, Building2, ChevronLeft } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { formatEur } from "@/lib/pricing/pricing-view-model"
 import { upgradeSubscription } from "../../account/actions"
 
 const PRICING_COPY = {
@@ -264,7 +265,7 @@ export function AgentPricingClient({
 
                                 <div className="mb-6">
                                     <span className="text-3xl font-black text-foreground">
-                                        {priceFor(plan) === 0 ? t.free : `€${priceFor(plan)}`}
+                                        {priceFor(plan) === 0 ? t.free : formatEur(priceFor(plan))}
                                     </span>
                                     {priceFor(plan) > 0 && (
                                         <span className="text-muted-foreground text-sm">

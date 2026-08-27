@@ -9,6 +9,13 @@
  *  - writes a logAdminAction audit row (actor, target, action, metadata).
  *
  * The Stripe secret stays server-side (this is a "use server" module).
+ *
+ * The audit descriptions below write raw `€${n.toFixed(2)}` ON PURPOSE and are
+ * exempt from the no-raw-euro-money-interpolation rule: they are stored log
+ * records, not UI. A log wants a deterministic, locale-independent, cent-exact
+ * shape (and uniformity with the rows already written); display formatting
+ * belongs to whatever surface renders them, and the exact figure is carried in
+ * the structured metadata beside each message anyway.
  */
 
 import { z } from "zod"

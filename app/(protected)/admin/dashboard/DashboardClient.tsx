@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Users, FileText, TrendingUp, UserCheck, AlertCircle, Activity } from "lucide-react"
 import { formatDateTime } from "@/lib/i18n/format"
+import { formatEur } from "@/lib/pricing/pricing-view-model"
 
 interface DashboardMetrics {
     users: {
@@ -173,7 +174,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                 {/* Monthly Revenue */}
                 <MetricsCard
                     title="Monthly Revenue"
-                    value={`€${metrics.subscriptions.mrr.toFixed(2)}`}
+                    value={formatEur(metrics.subscriptions.mrr)}
                     change={metrics.subscriptions.active}
                     changeLabel="active subscriptions"
                     icon={<TrendingUp className="w-6 h-6" />}

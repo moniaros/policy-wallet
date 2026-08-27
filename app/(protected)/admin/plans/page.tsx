@@ -2,10 +2,11 @@ export const runtime = 'nodejs'
 
 import Link from "next/link"
 import { db } from "@/lib/db"
+import { formatEur } from "@/lib/pricing/pricing-view-model"
 
 function euro(value: unknown): string {
     if (value == null) return "—"
-    return `€${Number(value)}`
+    return formatEur(Number(value))
 }
 
 export default async function AdminPlansPage() {

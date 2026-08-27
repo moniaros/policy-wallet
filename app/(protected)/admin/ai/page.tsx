@@ -4,7 +4,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
-import { formatDateTime } from "@/lib/i18n/format"
+import { formatCurrency, formatDateTime } from "@/lib/i18n/format"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { OPERATION_LABELS } from "@/lib/admin/ai-prompt-update"
 import { getAiPerformance } from "../actions"
@@ -16,7 +16,10 @@ function fmtInt(n: number): string {
     return new Intl.NumberFormat("en-US").format(Math.round(n))
 }
 function fmtEur(n: number): string {
-    return `€${n.toFixed(4)}`
+    // AI costs are fractions of a cent: keep 4 decimals through the shared
+    // formatter so a real charge can never round to €0.00. formatEur (2dp)
+    // is deliberately NOT used here.
+    return formatCurrency(n, "en", { decimals: 4 })
 }
 function fmtMs(n: number): string {
     return n >= 1000 ? `${(n / 1000).toFixed(1)}s` : `${Math.round(n)}ms`
