@@ -1,6 +1,7 @@
 # STATUS
 
-**Production: `9659e2e6`** — deployed 2026-08-27, CI green on all four jobs, Vercel `READY`.
+**Production: `7425ef9b`** — deployed 2026-08-28, CI green, Vercel `READY`. Three owner-reported
+defects fixed and verified live (see below).
 Public surface smoked; `/wallet`, `/dashboard`, `/account` all redirect anonymous callers to
 signin. **All five halts answered and implemented.**
 
@@ -14,6 +15,25 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 `P5-wallet-00/01a` measured, `P5-infra-00` and `P5-measure-00` landed.
 
 ## Done since the last entry
+
+- **Greek public pages could render English, per device, with no way back.** `/guides` and six
+  siblings never pinned a locale, so they rendered whatever `localStorage` on THAT device last
+  chose — which is why it looked like a mobile bug when nothing in the locale path is
+  device-dependent. The ΕΛ toggle pointed at the page you were already on, so it was unrecoverable
+  in place. Seven routes pinned; **verified on production with `language:'en'` stored — renders
+  Greek, `langOwner="static"`.** Guard enumerates twins from the filesystem (both manual sweeps
+  missed `/for-agents`; the guard caught it).
+- **A renewal upload left a stale «Το ασφαλιστήριο έχει λήξει» until repeated refreshes.** Three
+  defects: the path never marked the policy `analyzing`, so nothing had an honest state to show;
+  `after()` deferred the run while `revalidatePath` fired ahead of it and nothing revalidated when
+  it landed; and **on free/Starter the dates never moved at all** — the evidence gate rejects
+  `renewal_notice` by definition, so those users would never have seen an update, ever. New
+  `renewal_under_review` attention state claims neither verdict.
+- **A renewal is now checked against the policy it is attached to**, comparing numbers
+  presentation-insensitively (punctuation, and Greek/Latin capitals that render identically). A
+  mismatch refuses to apply and names both numbers; the document is always kept.
+- **The insured person is updated, not duplicated.** `deriveInsuredNames` unioned four keys holding
+  one party; a renewal that restated the name listed the old and new spelling as two covered people.
 
 - **GROWTH-HOOKS-01 Track A is live** — hook ticker on `/guides`, three new sourced guides, one
   extended, verified on the production site.
