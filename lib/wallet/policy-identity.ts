@@ -468,6 +468,79 @@ export function policyAssetIdentifier(policy: PolicyAssetIdentitySource): string
 }
 
 /**
+ * The SUBJECT key: does this policy cover the same physical thing as another?
+ *
+ * This is a different question from {@link policyAssetIdentifier}, which asks
+ * "what tells these two ROWS apart on screen", and the two must not be
+ * collapsed into one map:
+ *
+ *  - **Display identity** may be coarse. «Ευρώπη» is a perfectly good label for
+ *    telling two travel rows apart in a list.
+ *  - **Subject identity** must be exact, because a match here asserts that two
+ *    contracts insure ONE thing, and the product acts on that by suggesting the
+ *    customer may drop one. Two travel policies to «Ευρώπη» are two different
+ *    trips. So travel is a display identifier and deliberately NOT a subject.
+ *
+ *  - Address uses the FULL postal string here, not the street short form the
+ *    row renders. The short form is for recognition; folding «Κηφισίας 12,
+ *    Αθήνα» together with «Κηφισίας 12, Λάρισα» would assert one home where
+ *    there are two.
+ *
+ * THE MASK GATE IS THE POINT. `gap-engine/portfolio-rules` carried its own copy
+ * of this map and omitted it, so two motor policies whose plates the extractor
+ * could not read both keyed on «(XXXX)» and were reported as duplicate cover on
+ * the same vehicle — advice to drop one, on compulsory third-party insurance.
+ * An unreadable value is the absence of an identifier, never a shared one.
+ *
+ * `null` means the subject is unknown, and a policy with no subject is never
+ * matched to anything.
+ */
+export function policyAssetSubjectKey(policy: PolicyAssetIdentitySource): string | null {
+    const acord = (policy.acordData ?? null) as Record<string, any> | null
+    if (!acord || typeof acord !== 'object') return null
+
+    const branch = normalizeBranch(policy.lineOfBusiness)
+    const family = (branch.parentId ?? branch.id).toLowerCase()
+
+    let prefix: string
+    let raw: string | null | undefined
+    if (family === 'motor') {
+        prefix = 'plate'
+        raw = acord.vehicle?.plateNumber
+    } else if (family === 'home') {
+        prefix = 'address'
+        raw = acord.property?.address
+    } else if (family === 'pet') {
+        prefix = 'pet'
+        raw = acord.pet?.name
+    } else if (family === 'boat' || family.startsWith('marine')) {
+        prefix = 'vessel'
+        raw = acord.marineVessel?.registryNumber
+    } else {
+        // health, life, cyber, business, pension — no subject the extraction
+        // captures. travel — captured, but not a subject. See above.
+        return null
+    }
+
+    const text = normalized(raw)
+    if (!text) return null
+    // Neither a sentinel ("no data ever existed") nor a mask ("we could not
+    // read this") identifies anything, and two of them are not each other.
+    if (containsPlaceholderText(text)) return null
+    if (isUnreadableValue(text)) return null
+
+    // Whitespace is transcription noise, not identity: the same address is
+    // typed «Ερμού 12, Αθήνα» and «Ερμού 12,  Αθήνα», and the same plate with
+    // and without separators. Plates lose whitespace entirely; everything else
+    // collapses runs to one space. Case-folding is assetIdentityKey's, and it
+    // never folds Greek capitals into Latin — two visually identical plates can
+    // be two different vehicles.
+    const value =
+        prefix === 'plate' ? text.replace(/\s+/g, '') : text.replace(/\s+/g, ' ').trim()
+    return `${prefix}:${assetIdentityKey(value)}`
+}
+
+/**
  * The comparison key for an asset identifier: TRIM AND CASE-FOLD ONLY.
  * `null` when there is nothing to compare — a row with no key is never
  * merged with and never matched to another row.

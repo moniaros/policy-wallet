@@ -15,6 +15,7 @@
 import type { GapSeverity } from "./profile-gap-rules"
 import { normalizeBranch, branchFamilyId } from "@/lib/insurance/taxonomy"
 import { calendarDaysUntil } from "@/lib/policy-status"
+import { policyAssetSubjectKey } from "@/lib/wallet/policy-identity"
 import { formatDate as formatDateShared } from "@/lib/i18n/format"
 import {
     isPlaceholderInsurerName,
@@ -213,16 +214,14 @@ function lowHealthCoverageRule(
  * copy is how the brief and the recommendation would come to disagree.
  */
 export function insuredSubject(p: PortfolioPolicyFacts): string | null {
-    const family = branchFamilyId(p.lineOfBusiness)
-    if (family === "motor") {
-        const plate = clean(p.acordData?.vehicle?.plateNumber)
-        return plate ? `plate:${plate.replace(/\s+/g, "").toUpperCase()}` : null
-    }
-    if (family === "home") {
-        const address = clean(p.acordData?.property?.address)
-        return address ? `address:${address.replace(/\s+/g, " ").trim().toLowerCase()}` : null
-    }
-    return null
+    // Delegated, not reimplemented. This function used to carry its own copy of
+    // the line→field map and had already drifted from the primitive in a way
+    // that mattered: it never rejected the extractor's "could not read this"
+    // masks, so two motor policies whose plates came back «(XXXX)» keyed on the
+    // same subject and were reported as one vehicle insured twice — with advice
+    // to keep only one, on compulsory third-party cover. It also knew nothing
+    // about pets or vessels, so genuine duplicates there were never found.
+    return policyAssetSubjectKey({ lineOfBusiness: p.lineOfBusiness, acordData: p.acordData })
 }
 
 /** "Interamerican (POL-123)" — the label the brief shows for an overlap partner. */
