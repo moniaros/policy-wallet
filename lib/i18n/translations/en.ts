@@ -514,8 +514,14 @@ export const en: TranslationKeys = {
             headExpiredOn: 'Expired on',
             headUnknownDuration: 'No end date could be read',
             headAttentionTitle: 'Needs attention',
+            // Some states are not a call for the reader's attention at all. A
+            // renewal we are still reading is work in progress on our side.
+            headAttentionTitleByKind: {
+                renewal_under_review: 'In progress',
+            },
             headAttention: {
                 analysis_failed: 'The latest analysis did not complete — the items below may be out of date.',
+                renewal_under_review: 'Renewal received — we are checking it. Your cover will update once the check completes.',
                 expired: 'This policy has expired. It provides no cover.',
                 expiring: 'Expires in {count} days.',
                 items_to_review: '{count} items are worth checking with your advisor or insurer.',

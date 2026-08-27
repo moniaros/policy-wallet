@@ -67,6 +67,8 @@ import {
 } from "./step-telemetry"
 import { documentMimeType } from "@/lib/security/file-upload"
 import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
+import { isPlaceholderInsurerName, isPlaceholderPolicyNumber } from "@/lib/wallet/policy-identity"
+import { closeSupersededRenewals } from "@/lib/services/renewal.service"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 
 const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
@@ -2525,6 +2527,53 @@ export class PolicyAnalysisOrchestratorService {
      */
     private buildMetadata(policy: any, extraction: AIPolicyExtractionResponse): PolicyMetadata {
         if (extraction.evidence && !extraction.evidence.sufficient) {
+            // NARROW EXCEPTION — a renewal notice on an ALREADY-IDENTIFIED policy.
+            //
+            // The gate above exists to stop a document that is NOT a policy from
+            // overwriting one that is. A renewal notice attached to a policy the
+            // customer named is not that case: they told us it renews THIS
+            // contract by choosing the action, and the one fact it genuinely
+            // establishes is the new PERIOD.
+            //
+            // Without this, every non-pro renewal was silently discarded here —
+            // `assessExtractionEvidence` rejects `renewal_notice` by definition
+            // (POLICY_BEARING_KINDS is schedule + certificate only), so the
+            // dates never moved and the wallet went on saying «έχει λήξει» for
+            // ever. Not "until you refresh": for ever. Only the deep pipeline
+            // survived, because it writes dates from the raw extraction.
+            //
+            // Identity is deliberately NOT taken from the notice: it names a
+            // policy, it does not define one. That is what keeps the booklet and
+            // blank-forms cases the gate was built for still closed.
+            const renewsAnIdentifiedPolicy =
+                extraction.evidence.reason === "not_a_policy_document" &&
+                extraction.documentKind === "renewal_notice" &&
+                !isPlaceholderInsurerName(policy.insurerName) &&
+                !isPlaceholderPolicyNumber(policy.policyNumber)
+
+            if (renewsAnIdentifiedPolicy) {
+                logger("info", "Renewal notice accepted for period only — identity kept from the stored policy", {
+                    policyId: policy.id,
+                    documentKind: extraction.documentKind,
+                })
+                return {
+                    insurerName: policy.insurerName,
+                    policyNumber: policy.policyNumber,
+                    lineOfBusiness: normalizeLineOfBusiness(policy.lineOfBusiness),
+                    startDate: parseDateMaybe(extraction.startDate, policy.startDate),
+                    endDate: parseDateMaybe(extraction.endDate, policy.endDate),
+                    premiumAmount:
+                        typeof extraction.premiumAmount === "number"
+                            ? extraction.premiumAmount
+                            : policy.premiumAmount
+                              ? Number(policy.premiumAmount)
+                              : null,
+                    // A notice quotes a price for the next term; it does not
+                    // restate the cover. The stored summary remains the truth.
+                    coverageSummary: policy.coverageSummary,
+                }
+            }
+
             logger("warn", "Extraction rejected as non-policy evidence — keeping stored metadata", {
                 policyId: policy.id,
                 reason: extraction.evidence.reason,
@@ -2900,6 +2949,31 @@ export class PolicyAnalysisOrchestratorService {
                     status: "active",
                 },
             })
+
+            // THE THIRD DATE-MOVING PATH.
+            //
+            // The other two — the auto-dedupe in policy.service and the approved
+            // merge in policy-merge.service — close out the PolicyRenewal row
+            // keyed to the date the policy has just moved past. This one did
+            // not, even though `closeSupersededRenewals` names "a renewal
+            // document is attached" as the exact case it exists for.
+            //
+            // Left open, that row stays pending/overdue for ever: it keeps
+            // counting toward /renewals and /insights, and because remindersSent
+            // is still its own array the reminder ladder can fire again. The
+            // customer renewed, and the product goes on telling them — and their
+            // adviser — that they did not. In the transaction deliberately: the
+            // close-out lands or rolls back with the date change that caused it.
+            const movedEndDate = parseDateMaybe(extraction.endDate, policy.endDate)
+            if (movedEndDate && (!policy.endDate || movedEndDate.getTime() > policy.endDate.getTime())) {
+                await closeSupersededRenewals(
+                    tx,
+                    policy.id,
+                    movedEndDate,
+                    (extraction.insurerName || metadata.insurerName || "").trim().toLowerCase() ===
+                        (policy.insurerName || "").trim().toLowerCase()
+                )
+            }
 
             await tx.policyDocument.updateMany({
                 where: { policyId: policy.id },

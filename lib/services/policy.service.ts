@@ -479,24 +479,43 @@ export class PolicyService extends BaseService {
         }
 
         try {
-            const document = await this.db.policyDocument.create({
-                data: {
-                    policyId,
-                    fileUrl,
-                    // Generated. The renewal's own period is not known until
-                    // extraction, so the label starts as the renewal base and
-                    // the render path fills the period in.
-                    fileName: storedDocumentLabel({ documentKind: 'renewal_notice' }),
-                    fileSize: file.size,
-                    source: 'policyholder',
-                    processingStatus: 'pending',
-                    uploadedByUserId: userId,
-                    // Stated up front rather than inferred later: the user told
-                    // us this is a renewal by choosing this action, and that is
-                    // better evidence than a classifier guess.
-                    documentKind: 'renewal_notice',
-                },
-                select: { id: true },
+            const document = await this.db.$transaction(async (tx) => {
+                const created = await tx.policyDocument.create({
+                    data: {
+                        policyId,
+                        fileUrl,
+                        // Generated. The renewal's own period is not known until
+                        // extraction, so the label starts as the renewal base and
+                        // the render path fills the period in.
+                        fileName: storedDocumentLabel({ documentKind: 'renewal_notice' }),
+                        fileSize: file.size,
+                        source: 'policyholder',
+                        processingStatus: 'processing',
+                        uploadedByUserId: userId,
+                        // Stated up front rather than inferred later: the user told
+                        // us this is a renewal by choosing this action, and that is
+                        // better evidence than a classifier guess.
+                        documentKind: 'renewal_notice',
+                    },
+                    select: { id: true },
+                })
+
+                // The renewal is in hand and NOTHING has read it yet. Mark the
+                // policy `analyzing` in the same write, synchronously — before
+                // the caller's `after()` defers the actual run.
+                //
+                // Without this the action returns, revalidatePath flushes, and
+                // the page re-renders the pre-renewal dates: it goes on saying
+                // «Το ασφαλιστήριο έχει λήξει. Δεν έχετε κάλυψη από αυτό.» — a
+                // verdict that is no longer established, over a document that
+                // may well disprove it. `retryAnalysis` has always set this
+                // before deferring; the renewal path was the one that skipped
+                // it, so every surface keyed on `status === 'analyzing'` (the
+                // head chip, AnalysisCard's progress, the wallet-list poller)
+                // stayed dark and the page had nothing honest to show.
+                await tx.policy.update({ where: { id: policyId }, data: { status: 'analyzing' } })
+
+                return created
             })
 
             logger('info', 'Renewal document attached', { userId, policyId, documentId: document.id })

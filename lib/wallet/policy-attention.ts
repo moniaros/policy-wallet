@@ -23,6 +23,7 @@
 
 export type AttentionKind =
     | "analysis_failed"
+    | "renewal_under_review"
     | "expired"
     | "expiring"
     | "items_to_review"
@@ -40,6 +41,12 @@ export interface AttentionInput {
     unverified: boolean
     /** No trustworthy end date exists at all. */
     unknownDuration?: boolean
+    /**
+     * A renewal document is in hand and the run that will read it has not
+     * finished. The stored dates therefore describe the period the customer has
+     * just replaced, and no verdict drawn from them is established yet.
+     */
+    renewalUnderReview?: boolean
 }
 
 export interface Attention {
@@ -58,6 +65,8 @@ export interface Attention {
  *
  *  1. `analysis_failed` — everything else on the page may be stale, so it is
  *     the precondition for trusting any other line.
+ *  1b. `renewal_under_review` — a renewal is in hand but unread, so both date
+ *     verdicts below describe a period that may already have been replaced.
  *  2. `expired` — there is no cover at all; nothing else competes.
  *  3. `expiring` — a deadline the reader can still act on.
  *  4. `items_to_review` — findings, framed as items rather than verdicts.
@@ -70,6 +79,13 @@ export interface Attention {
  */
 export function resolveAttention(input: AttentionInput): Attention {
     if (input.analysisFailed) return { kind: "analysis_failed", target: "review" }
+    // Outranks BOTH date verdicts, and deliberately claims neither of them.
+    // The customer uploaded an ανανεωτήριο; until the run reads it, "expired"
+    // is a statement about a period they have just replaced, and "active" is a
+    // statement nothing has established. Saying so is the honest third option —
+    // the same rule as the protection score and the monitoring card: a check
+    // that has not run does not get to report an outcome.
+    if (input.renewalUnderReview) return { kind: "renewal_under_review", target: "documents" }
     if (input.daysLeft !== null && input.daysLeft < 0) return { kind: "expired", target: "dates" }
     if (input.daysLeft !== null && input.daysLeft <= 30) {
         return { kind: "expiring", target: "dates", count: input.daysLeft }

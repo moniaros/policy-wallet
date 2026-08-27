@@ -873,9 +873,22 @@ export async function addRenewalDocument(policyId: string, formData: FormData) {
                 await policyService.runBackgroundAnalysis(policyId, userId, language)
             } catch (e) {
                 logger("error", "Deferred renewal analysis failed", { policyId, error: e })
+            } finally {
+                // Revalidate AGAIN, here, once the run has actually moved the
+                // dates. The pair below runs while `after()` is still queued —
+                // by construction it can only ever flush the pre-renewal state.
+                // Without this second pass nothing invalidates when the work
+                // lands, which is why the page kept its stale expiry verdict
+                // until the reader refreshed by hand. `finally`, not the try:
+                // a failed run also changes what the page should say.
+                revalidatePath("/wallet")
+                revalidatePath(`/wallet/${policyId}`)
             }
         })
 
+        // The first pass publishes the `analyzing` state that
+        // attachRenewalDocument just wrote — so the page immediately stops
+        // asserting a verdict it can no longer support.
         revalidatePath("/wallet")
         revalidatePath(`/wallet/${policyId}`)
         return { success: true, policyId, documentId: result.documentId }

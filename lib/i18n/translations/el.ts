@@ -514,8 +514,14 @@ export const el = {
             headExpiredOn: 'Έληξε στις',
             headUnknownDuration: 'Δεν διαβάσαμε ημερομηνία λήξης',
             headAttentionTitle: 'Χρειάζεται προσοχή',
+            // Some states are not a call for the reader's attention at all. A
+            // renewal we are still reading is work in progress on our side.
+            headAttentionTitleByKind: {
+                renewal_under_review: 'Σε εξέλιξη',
+            },
             headAttention: {
                 analysis_failed: 'Η τελευταία ανάλυση δεν ολοκληρώθηκε — τα ευρήματα παρακάτω μπορεί να μην είναι επικαιροποιημένα.',
+                renewal_under_review: 'Ανανεωτήριο παρελήφθη — το ελέγχουμε. Η κάλυψη θα ενημερωθεί μόλις ολοκληρωθεί ο έλεγχος.',
                 expired: 'Το ασφαλιστήριο έχει λήξει. Δεν έχετε κάλυψη από αυτό.',
                 expiring: 'Λήγει σε {count} ημέρες.',
                 items_to_review: '{count} σημεία αξίζουν έλεγχο με τον σύμβουλο ή τον ασφαλιστή σας.',

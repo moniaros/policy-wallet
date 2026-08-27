@@ -40,6 +40,8 @@ export type HeadCopy = {
     unknownDuration: string
     attention: Record<string, string>
     attentionTitle: string
+    /** Per-kind override for the kicker, when "needs attention" would misdescribe the state. */
+    attentionTitleByKind?: Record<string, string>
     action: Record<string, string>
     analyzing: string
 }
@@ -87,6 +89,7 @@ export interface PolicyHeadProps {
 /** Attention states that are informational, not alarming. `clear` gets a tick. */
 const ATTENTION_ICON: Record<string, typeof AlertTriangle> = {
     analysis_failed: RefreshCw,
+    renewal_under_review: RefreshCw,
     expired: CalendarClock,
     expiring: CalendarClock,
     items_to_review: AlertTriangle,
@@ -226,7 +229,7 @@ export function PolicyHead({
                 />
                 <div className="min-w-0 flex-1">
                     <p className="text-kicker font-black uppercase tracking-widest text-black/60 dark:text-white/60">
-                        {copy.attentionTitle}
+                        {copy.attentionTitleByKind?.[attention.kind] ?? copy.attentionTitle}
                     </p>
                     <p className="mt-0.5 text-sm font-semibold leading-snug text-black dark:text-white">
                         {attentionText}

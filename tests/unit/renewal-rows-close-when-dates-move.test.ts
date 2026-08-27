@@ -18,7 +18,8 @@
  * drift the same way with nothing to notice.
  */
 import { describe, expect, it } from "vitest"
-import { readFileSync } from "fs"
+import { readFileSync, readdirSync } from "fs"
+import { join } from "path"
 import { closeSupersededRenewals } from "../../lib/services/renewal.service"
 
 type Captured = { where: Record<string, any>; data: Record<string, any> }
@@ -87,24 +88,69 @@ describe("closeSupersededRenewals", () => {
     })
 })
 
-describe("both date-moving paths call it", () => {
-    // Source-level: neither path is reachable from a unit test without a
+describe("every date-moving path calls it", () => {
+    // Source-level: none of these paths is reachable from a unit test without a
     // database. A guard that only tests the helper guards the helper, not the
-    // invariant — and the invariant is that NEITHER path forgets.
+    // invariant — and the invariant is that NO path forgets.
+    //
+    // THE UNIVERSE IS ENUMERATED FROM THE FILESYSTEM. This guard used to name
+    // two files, and passed for months while a THIRD path — the orchestrator's
+    // `persistAnalysisArtifacts`, the one the renewal-upload feature actually
+    // drives — moved policy end dates and closed nothing. A customer who
+    // renewed by attaching their ανανεωτήριο stayed "awaiting renewal" for ever.
+    // Naming the paths is what let a new one appear unnoticed, so it now derives
+    // them: any service file whose `policy.update` writes an `endDate` is a
+    // date-moving path and must close out the superseded row.
     const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1")
 
-    it("the auto-dedupe path in policy.service", () => {
-        const src = strip(readFileSync("lib/services/policy.service.ts", "utf8"))
-        expect(src).toMatch(/closeSupersededRenewals\s*\(/)
+    const serviceFiles = (): string[] => {
+        const walk = (dir: string): string[] =>
+            readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+                const full = join(dir, e.name)
+                if (e.isDirectory()) return walk(full)
+                return e.name.endsWith(".ts") && !e.name.includes(".test.") ? [full] : []
+            })
+        return walk("lib/services")
+    }
+
+    /** A `policy.update({ ... endDate: ... })` anywhere in the file. */
+    const movesPolicyEndDate = (src: string) => /policy\.update\(\s*\{[\s\S]*?endDate:/.test(src)
+
+    const movers = serviceFiles()
+        .map((file) => ({ file, src: strip(readFileSync(file, "utf8")) }))
+        .filter(({ src }) => movesPolicyEndDate(src))
+
+    it("the scan finds the known date-moving paths", () => {
+        // Floor, not an allowlist: three were known when this was written. If the
+        // scan silently stops matching, the guard below passes vacuously.
+        expect(movers.length).toBeGreaterThanOrEqual(3)
+        const names = movers.map((m) => m.file)
+        expect(names).toContain("lib/services/policy.service.ts")
+        expect(names).toContain("lib/services/policy-merge.service.ts")
+        expect(names).toContain("lib/services/analysis/policy-analysis-orchestrator.service.ts")
     })
 
-    it("the approved-merge path in policy-merge.service", () => {
+    it("every file that moves a policy end date closes the superseded renewal row", () => {
+        const forgot = movers
+            .filter(({ src }) => !/closeSupersededRenewals\s*\(/.test(src))
+            .map(({ file }) => file)
+        expect(
+            forgot,
+            `these move a policy's end date and leave its PolicyRenewal row open:\n  ${forgot.join("\n  ")}`
+        ).toEqual([])
+    })
+
+    it("the approved-merge path closes it INSIDE the transaction", () => {
         const src = strip(readFileSync("lib/services/policy-merge.service.ts", "utf8"))
-        expect(src).toMatch(/closeSupersededRenewals\s*\(/)
-        // Inside the transaction: the close-out must land or roll back with the
-        // date change that caused it, never as a separate write that can fail on
-        // its own and leave the row open against a moved date.
+        // The close-out must land or roll back with the date change that caused
+        // it, never as a separate write that can fail on its own.
         const tx = src.slice(src.indexOf("db.$transaction"))
         expect(tx.slice(0, tx.indexOf("logger("))).toMatch(/closeSupersededRenewals\s*\(\s*tx/)
+    })
+
+    it("the orchestrator persist closes it inside its transaction too", () => {
+        const src = strip(readFileSync("lib/services/analysis/policy-analysis-orchestrator.service.ts", "utf8"))
+        const tx = src.slice(src.indexOf("db.$transaction(async (tx)"))
+        expect(tx.slice(0, tx.indexOf("gapInstance.deleteMany"))).toMatch(/closeSupersededRenewals\s*\(\s*tx/)
     })
 })

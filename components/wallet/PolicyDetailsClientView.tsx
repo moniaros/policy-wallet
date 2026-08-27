@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePolling } from "@/hooks/usePolling"
 import { toast } from "sonner"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
 import { DeletePolicyDialog } from "@/components/wallet/DeletePolicy"
@@ -705,12 +706,29 @@ export function PolicyDetailsClient({
     // The page used to render every state simultaneously — expired banner,
     // renewal outlook, failed-run banner, gap count, unverified note, three
     // quote CTAs — and leave the reader to rank them.
+    // While a run is in flight the server tree is what changes, not this
+    // component's state — so re-fetch it on the shared schedule (2s → 5s → 10s,
+    // paused on a hidden tab) instead of asking the reader to refresh. The
+    // renewal path had no poller at all: it fired one router.refresh() that
+    // raced the deferred run and lost, and every subsequent update waited on a
+    // manual reload. Same call the wallet list already makes.
+    const detailRouter = useRouter()
+    usePolling(() => detailRouter.refresh(), { enabled: policy.status === "analyzing" })
+
+    // A renewal is in hand but unread: the policy is mid-run AND the newest
+    // document is the ανανεωτήριο the customer just attached. Until that run
+    // finishes, the stored dates describe the period they have just replaced,
+    // so neither «έχει λήξει» nor «ενεργό» is established.
+    const renewalUnderReview =
+        policy.status === "analyzing" && documentsNewestFirst[0]?.documentKind === "renewal_notice"
+
     const attention = resolveAttention({
         daysLeft: computedDaysLeft,
         analysisFailed: Boolean(policy.acordData?.processingError) || lastRun?.status === "failed",
         reviewItemCount: gapReportItems.length,
         unverified: policy.reviewState === "unconfirmed" || policy.reviewState === "flagged",
         unknownDuration: computedDaysLeft === null,
+        renewalUnderReview,
     })
     const primaryAction = resolvePrimaryAction({ attention, hasDocument: Boolean(firstDocumentHref) })
 
@@ -827,6 +845,7 @@ export function PolicyDetailsClient({
                         expiredOn: detailsCopy.headExpiredOn,
                         unknownDuration: detailsCopy.headUnknownDuration,
                         attentionTitle: detailsCopy.headAttentionTitle,
+                        attentionTitleByKind: detailsCopy.headAttentionTitleByKind,
                         attention: detailsCopy.headAttention,
                         action: detailsCopy.headAction,
                         analyzing: t.policyStatus.analyzing,
