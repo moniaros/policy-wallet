@@ -23,6 +23,44 @@ export function isTermBearing(doc: ChainDocument): boolean {
     return TERM_BEARING.includes((doc.documentKind ?? "") as DocumentKind)
 }
 
+/**
+ * Which document represents the POLICY — for analysis, and for every "open the
+ * source document" link.
+ *
+ * Both call sites used to take the newest upload (`orderBy: uploadedAt desc`,
+ * then `[0]`). That is right only while every document on a policy is a policy
+ * schedule. Once a customer can attach a terms booklet (όροι) to an analysed
+ * policy, the newest file is not the policy: the next analysis run spends
+ * metered tokens reading the booklet and caches against it, and every
+ * «Άνοιγμα εγγράφου» on the detail page points at a document that does not
+ * contain the figure the customer clicked to check.
+ *
+ * The predicate is TERM-bearing, not POLICY-bearing. They differ on exactly one
+ * kind and it is the one that matters here: `isPolicyBearing` excludes
+ * `renewal_notice`, because it answers a different question — "is this evidence
+ * of a policy at all", for the extraction-refusal gate. An ανανεωτήριο very
+ * much carries the terms of the period it renews, so analysis must read it.
+ *
+ * A NULL kind counts, matching `isPolicyBearing`'s rule: rows predating the
+ * field must behave exactly as they did before. So this changes behaviour only
+ * for a document explicitly classified as carrying no terms.
+ *
+ * Falling back to the newest keeps a policy whose only file is a booklet
+ * analysable and linkable, rather than failing MISSING_DOCUMENT or rendering
+ * no source link at all.
+ *
+ * @param newestFirst documents ordered `uploadedAt` descending
+ */
+export function selectSourceDocument<T extends { documentKind?: string | null }>(
+    newestFirst: readonly T[]
+): T | undefined {
+    return (
+        newestFirst.find(
+            (doc) => doc.documentKind == null || TERM_BEARING.includes(doc.documentKind as DocumentKind)
+        ) ?? newestFirst[0]
+    )
+}
+
 /** The base contract: the document that carries the full terms. */
 export function originalDocument(docs: ChainDocument[]): ChainDocument | null {
     return docs.find((d) => d.documentKind === "policy_schedule") ?? null

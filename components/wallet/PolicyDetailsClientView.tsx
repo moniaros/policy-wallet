@@ -65,6 +65,7 @@ import { coverageSectionKeys } from "@/lib/wallet/coverage-sections"
 import { resolveClaimsContact } from "@/lib/wallet/claims-contact"
 import { deriveInsuredNames } from "@/lib/wallet/insured-people"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
 // Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
 // so the changed-file i18n lint stays clean.
 const EXPORT_COPY = {
@@ -300,9 +301,22 @@ export function PolicyDetailsClient({
     // could never have worked, and it put a raw storage URL in the markup on the
     // way to failing. The documents card below has always used this endpoint;
     // this button simply did not.
-    const firstDocumentId = policy.documents?.[0]?.id
-    const firstDocumentHref = firstDocumentId
-        ? `/api/v1/policies/${policy.id}/documents/${firstDocumentId}`
+    // AND IT MUST NOT BE "THE NEWEST FILE". The list arrives ordered
+    // uploadedAt desc, so `[0]` was whatever was uploaded last. Attach a terms
+    // booklet (όροι) to an analysed policy and every «Άνοιγμα εγγράφου» on this
+    // page — the head's primary action, the summary card, each unreadable-value
+    // CTA — would quietly point at the booklet instead of the policy. The
+    // customer clicks "show me where this figure comes from" and lands in a
+    // document that does not contain it.
+    //
+    // `isPolicyBearing(null)` is deliberately true, so unclassified and legacy
+    // documents keep the old behaviour exactly; only a document explicitly
+    // classified as not policy-bearing is skipped. Falling back to `[0]` keeps
+    // a policy whose only file is a booklet linkable rather than link-less.
+    const documentsNewestFirst: { id: string; documentKind?: string | null }[] = policy.documents ?? []
+    const sourceDocument = selectSourceDocument(documentsNewestFirst)
+    const firstDocumentHref = sourceDocument
+        ? `/api/v1/policies/${policy.id}/documents/${sourceDocument.id}`
         : null
 
     // ── Extracted section data (perks / exclusions / conditions / fine print) ──

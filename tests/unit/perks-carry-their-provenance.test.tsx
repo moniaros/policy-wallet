@@ -98,7 +98,14 @@ describe("the call site passes a real document href, not null", () => {
     it("that href is still derived from the policy's stored document", () => {
         // Non-vacuity: `firstDocumentHref` must still be computed from a real
         // document id, not left as a stale identifier pointing nowhere.
-        expect(view).toMatch(/firstDocumentId\s*=\s*policy\.documents/)
+        //
+        // The derivation moved from `policy.documents[0]` — the NEWEST upload —
+        // to `selectSourceDocument`, which prefers the newest term-bearing
+        // document. That change is the point: once a customer can attach a terms
+        // booklet, "newest" and "the policy" stop being the same document, and
+        // a provenance link that points at the booklet proves nothing about
+        // where the perk came from.
+        expect(view).toMatch(/sourceDocument\s*=\s*selectSourceDocument\(/)
         expect(view).toMatch(/firstDocumentHref\s*=/)
     })
 })

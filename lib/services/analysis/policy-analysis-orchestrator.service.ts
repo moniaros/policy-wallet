@@ -66,6 +66,7 @@ import {
     emitAnalysisStepTelemetry,
 } from "./step-telemetry"
 import { documentMimeType } from "@/lib/security/file-upload"
+import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 
 const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
@@ -2400,10 +2401,31 @@ export class PolicyAnalysisOrchestratorService {
         documentId: string
         documentHash: string
     }> {
-        const document = await db.policyDocument.findFirst({
+        // THE NEWEST DOCUMENT IS NOT NECESSARILY THE POLICY.
+        //
+        // This read used to be `findFirst(orderBy: uploadedAt desc)` with no
+        // filter, which was correct only while every document on a policy was a
+        // policy schedule. A customer attaching a terms booklet (όροι) — or any
+        // reference file — to an already-analysed policy would make that booklet
+        // the analysed document on the next run, whatever triggered it:
+        // `retryPolicyAnalysis`, a renewal attach, or the process-policy job.
+        //
+        // `assessExtractionEvidence` would stop the booklet OVERWRITING the
+        // stored facts, so the damage was not corrupted data — it was a run
+        // spending tokens on the wrong file and caching the extraction against
+        // it, while the customer saw an analysis that had not read their policy.
+        //
+        // `isPolicyBearing(null)` is deliberately TRUE (document-kind.ts): rows
+        // predating the field must behave exactly as before. So this changes
+        // behaviour ONLY for a document explicitly classified as not
+        // policy-bearing, and falls back to the newest overall when nothing
+        // qualifies — a policy with only a booklet still gets analysed rather
+        // than failing MISSING_DOCUMENT.
+        const candidates = await db.policyDocument.findMany({
             where: { policyId },
             orderBy: { uploadedAt: "desc" },
         })
+        const document = selectSourceDocument(candidates) ?? null
         if (!document) {
             throw new OrchestrationError("No policy document uploaded", {
                 code: "MISSING_DOCUMENT",
@@ -2459,7 +2481,19 @@ export class PolicyAnalysisOrchestratorService {
         // From the upload allowlist — see documentMimeType. This chain omitted
         // HEIC, so a phone photo reached the model labelled as a PDF and the
         // extraction had nothing it could read.
-        const mimeType = documentMimeType(document.fileName)
+        // ...but the fix above could never fire, because `fileName` is not a
+        // file name. It is a GENERATED LABEL — «Έγγραφο σε επεξεργασία»,
+        // «Ανανεωτήριο» — with no extension (document-label.ts, enforced by
+        // `filename-never-persisted`). `documentMimeType` matches on a trailing
+        // extension, so every stored document resolved to the
+        // `application/pdf` fallback no matter what it was. Verified for every
+        // documentKind: all four labels return application/pdf.
+        //
+        // The row already carries the answer: `mimeType` is derived from the
+        // VERIFIED CONTENT at upload (schema.prisma:441-443), not from what the
+        // customer named the file. Prefer it, and keep the label-derived guess
+        // only for legacy rows written before that column existed.
+        const mimeType = document.mimeType || documentMimeType(document.fileName)
 
         // Compute document hash for extraction caching
         const docHash = await hashDocumentBuffer(buffer)
