@@ -77,20 +77,17 @@ function unpinnedIntlCalls(code: string): number[] {
 }
 
 /**
- * Live offenders found by the Phase 6 guard audit, the day the Intl matcher
- * was added — each was invisible to the toLocale*-only matcher. SHRINK-ONLY:
- * fixing a file must delete its row (a stale row fails below). Do not add
- * rows; new code pins its timezone.
+ * SHRINK-ONLY, and now EMPTY. Fixing a file must delete its row; a stale row
+ * fails below. Do not add rows — new code pins its timezone.
  *
- * - admin/submissions: server-rendered `dateStyle`+`timeStyle` → every
- *   submission timestamp renders in UTC, 2–3h behind Athens.
- * - action-resolvers: `isoDate()` renders bilingual dates with no pin; an
- *   instant near the Athens midnight boundary renders as the previous day.
+ * Cleared 2026-08-28. Both offenders are fixed: admin/submissions delegates to
+ * the shared `formatDateTime` (which pins APP_TIME_ZONE) instead of building
+ * its own formatter, and `action-resolvers.isoDate()` pins the zone directly.
+ * Both were invisible to the original matcher, which knew `toLocale*` and not
+ * `Intl.DateTimeFormat` — a guard over the codebase's most-stated invariant
+ * that could not see the other way of writing the same bug.
  */
-const KNOWN_UNPINNED_INTL_DEBT = [
-    "app/(protected)/admin/submissions/page.tsx",
-    "lib/insurance/content/action-resolvers.ts",
-]
+const KNOWN_UNPINNED_INTL_DEBT: string[] = []
 
 describe("no server-rendered date resolves against the runtime zone", () => {
     it("scans a realistic number of server files", () => {

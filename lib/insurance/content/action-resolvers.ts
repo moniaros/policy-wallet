@@ -46,6 +46,7 @@
  * things about a user's policy.
  */
 import type { AcordData } from '@/lib/schemas/acord-data'
+import { APP_TIME_ZONE } from '@/lib/i18n/format'
 
 import type { Bilingual, BranchAction } from './types'
 
@@ -95,8 +96,15 @@ function isoDate(value: unknown): Bilingual | null {
     if (!raw) return null
     const parsed = new Date(raw)
     if (Number.isNaN(parsed.getTime())) return null
+    // Pinned to Athens: without it this renders in the server's zone, so a
+    // timestamped input near midnight shows the wrong DAY to the reader.
     const format = (locale: string) =>
-        new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short', year: 'numeric' }).format(parsed)
+        new Intl.DateTimeFormat(locale, {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            timeZone: APP_TIME_ZONE,
+        }).format(parsed)
     return { el: format('el-GR'), en: format('en-GB') }
 }
 

@@ -1,6 +1,7 @@
 export const runtime = 'nodejs'
 
 import { redirect } from "next/navigation"
+import { formatDateTime } from "@/lib/i18n/format"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { logAdminRead } from "@/lib/admin/admin-guard"
@@ -13,11 +14,14 @@ const FILTERS = [
     { key: "newsletter", label: "Newsletter" },
 ] as const
 
+// Athens, not the server's clock. This built its own Intl formatter with no
+// timeZone, so on Vercel every submission timestamp rendered UTC — two to
+// three hours behind the Athens time the admin reading it assumes. The shared
+// formatter pins APP_TIME_ZONE; the local copy could not, because it did not
+// know it had to. `server-dates-are-athens-pinned` never saw it: its matcher
+// knew toLocaleDateString and not Intl.DateTimeFormat.
 function formatDate(value: Date) {
-    return new Intl.DateTimeFormat("el-GR", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(value)
+    return formatDateTime(value, "el", { dateStyle: "medium", timeStyle: "short" })
 }
 
 export default async function AdminSubmissionsPage({ searchParams }: { searchParams: SearchParams }) {

@@ -22,7 +22,7 @@
 # bundle entries: 2816
 # inline entries: 4673 across 208 files
 # ternary entries: 285 across 44 files
-# call entries: 1134 across 71 files
+# call entries: 1138 across 72 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -8211,6 +8211,10 @@ call	app/auth/handover/page.tsx	"Πατήστε παρακάτω για να σ�
 call	app/auth/handover/page.tsx	"Συνέχεια στο Πορτοφόλι"
 call	app/auth/handover/page.tsx	"Συνέχεια στον browser"
 call	app/auth/handover/page.tsx	"Συνέχεια στον browser"
+call	app/auth/reset-password/page.tsx	"Απόκρυψη κωδικού"
+call	app/auth/reset-password/page.tsx	"Απόκρυψη κωδικού"
+call	app/auth/reset-password/page.tsx	"Εμφάνιση κωδικού"
+call	app/auth/reset-password/page.tsx	"Εμφάνιση κωδικού"
 call	app/auth/signup/SignupForm.tsx	" και το "
 call	app/auth/signup/SignupForm.tsx	"Email (προαιρετικό)"
 call	app/auth/signup/SignupForm.tsx	"Έχετε ήδη λογαριασμό;"

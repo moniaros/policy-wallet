@@ -42,16 +42,16 @@ function hardcodedAriaLabels(src: string, file: string): string[] {
 }
 
 /**
- * Live offenders found by the Phase 6 guard audit the day the universe was
- * widened to app/. SHRINK-ONLY: localising a file must delete its row (a
- * stale row fails below). Do not add rows.
+ * SHRINK-ONLY, and now EMPTY. Localising a file must delete its row; a stale
+ * row fails below. Do not add rows.
  *
- * - reset-password: the show/hide-password toggles announce English to every
- *   Greek screen-reader user; SignupForm localises the identical control.
+ * Cleared 2026-08-28. The one offender — reset-password's show/hide-password
+ * toggles, announcing English to every Greek screen-reader user while
+ * SignupForm localised the identical control one page away — is fixed. It was
+ * invisible until this guard's universe was widened from `components/` to
+ * include `app/`, which is the whole reason the audit found it.
  */
-const KNOWN_ENGLISH_ARIA_DEBT = [
-    'app/auth/reset-password/page.tsx',
-]
+const KNOWN_ENGLISH_ARIA_DEBT: string[] = []
 
 describe('no hardcoded English aria-label in customer-facing components', () => {
     const files = [
