@@ -1,31 +1,34 @@
 # STATUS
 
-**Production: `60087bb7`** — deployed 2026-08-26 02:07, CI green on all four jobs, Vercel `READY`.
+**Production: `9659e2e6`** — deployed 2026-08-27, CI green on all four jobs, Vercel `READY`.
 Public surface smoked; `/wallet`, `/dashboard`, `/account` all redirect anonymous callers to
 signin. **All five halts answered and implemented.**
 
 ## Current phase
 
-`PW-MOBILE-TRANSFORM-02`, **Phases 0–3 complete and tagged**. Phase 5 evidence in progress:
+`PW-MOBILE-TRANSFORM-02`, **Phases 0–4 complete, Phase 6's guard audit done, Phase 5 in progress**.
+Phase 4 did not need building — the design system already existed and was adopted (1,186 utility
+references); its defects were 754 hardcoded literals bypassing it and a legacy `--pw-*`/`--brand-*`
+path. 274 landing literals migrated with a shrink-only debt guard over the rest. Phase 5's first two
+surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, still true:
 `P5-wallet-00/01a` measured, `P5-infra-00` and `P5-measure-00` landed.
 
 ## Done since the last entry
 
-- **A production auth defect, found while verifying a deploy rather than by a test.** `proxy.ts`
-  used the legacy per-name Supabase cookie adapter while `lib/supabase/server.ts` used
-  `getAll`/`setAll`. Supabase chunks an auth cookie past ~3.2KB; a reader that fetches one cookie
-  by name cannot reassemble it, and `set` rebuilt the response per call so only the last chunk
-  survived. One adapter now, with a guard whose universe comes from the filesystem.
-- **The measurement harness survives a shared machine** — a pooler lock in `withDb()` *and* in
-  `global-setup.ts`, stale-holder stealing, and structural refusal of error-boundary and
-  unlocatable-field captures.
-- **The section-count discontinuity is recorded.** Break point `f66dd435`. Policy detail ≤8 with
-  its two halves separable: 10→9 was the measurement fix, 9→8 the page fix.
-- **SEC-01 remediated, not closed** — rotation, redaction at both sinks, and a guard with a
-  red-probe per arm. The cookie bug only made the throw reachable; the leak was that nothing
-  between the throw and the log sink removed the payload. Closure waits on one human check.
-- **Gap catalogue verified on BOTH databases by content, not counts** — dev and prod return the
-  identical hash `e7ffd876eeb8a58ce1d1ccab1525bad3` over 29 active rows, 0 inactive, 0 AI-minted.
+- **GROWTH-HOOKS-01 Track A is live** — hook ticker on `/guides`, three new sourced guides, one
+  extended, verified on the production site.
+- **Two live consumer-facing errors corrected and deployed.** The uninsured-vehicle guide named the
+  wrong authority (ΑΑΔΕ, not Γ.Γ.Π.Σ.Ψ.Δ./Σ.Δ.Ο.Ε.) *and* understated every fine — €150 published
+  against €500 in law for a passenger car. Both from ν. 5113/2024, verified verbatim.
+- **Phase 4** — design-token debt guard (321 keys, shrink-only, red-proved both directions), 274
+  landing literals migrated with before/after computed-style verification across 24 captures,
+  MASTER.md's real drift fixed.
+- **Phase 5 preconditions** — the two missing §11 metrics built (`duplicateActions`,
+  `countConsistency`), counts instrumented, and a **cross-surface** detector that catches a
+  contradiction the per-page metric structurally cannot see. Proven red live, not just in jsdom.
+- **Phase 6 guard audit** — all 45 guard files read. **Two were green over live defects.**
+- **`check-utf8` now refuses C0 control bytes**, and immediately found a corrupted hostname in a
+  March governance evidence record.
 
 ## Top risks, ranked
 
@@ -64,7 +67,11 @@ signin. **All five halts answered and implemented.**
 
 ## Next 3 actions
 
-1. Confirm who can read the Vercel runtime logs — team `moniaros' projects` (Pro, no SAML) is the
+1. **`no-raw-euro-money-interpolation` was green over seven live offenders**, including
+   `components/account/TokenUsageCard.tsx` — B2C-facing, `toFixed(2)`, so Greek users see
+   English-formatted currency. The guard is widened and the seven are pinned as a shrink-only
+   ratchet, but **the seven files are not yet fixed**.
+2. Confirm who can read the Vercel runtime logs — team `moniaros' projects` (Pro, no SAML) is the
    access boundary, and its member list could not be enumerated from the tooling here.
 2. Re-capture `/protection` once the session pooler recovers; it is the only measurement that
    changes a ceiling.
