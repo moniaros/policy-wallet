@@ -16,6 +16,12 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 
 ## Done since the last entry
 
+- **The gap engine was inventing duplicate motor cover.** `insuredSubject` kept a hand-rolled copy
+  of the asset-identity map and never rejected the extractor's unreadable masks, so two different
+  cars whose plates both read «(XXXX)» were reported as one vehicle insured twice — advice to drop a
+  policy, on compulsory third-party cover. Measured against the shipped code before fixing. Now
+  delegated to `policyAssetSubjectKey`, which also makes the dead `assetIdentityKey` live and adds
+  pet and vessel subjects the old copy could not see.
 - **Greek public pages could render English, per device, with no way back.** `/guides` and six
   siblings never pinned a locale, so they rendered whatever `localStorage` on THAT device last
   chose — which is why it looked like a mobile bug when nothing in the locale path is
@@ -105,10 +111,10 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 
 ## Next 3 actions
 
-1. **`no-raw-euro-money-interpolation` was green over seven live offenders**, including
-   `components/account/TokenUsageCard.tsx` — B2C-facing, `toFixed(2)`, so Greek users see
-   English-formatted currency. The guard is widened and the seven are pinned as a shrink-only
-   ratchet, but **the seven files are not yet fixed**.
+1. ~~`no-raw-euro-money-interpolation` — seven files not yet fixed.~~ **STALE, verified
+   2026-08-28: all seven were routed through the formatters, `KNOWN_RAW_EURO_DEBT` is empty and the
+   tree is clean of BOTH shapes** — the guard's `€{expr}` / `€${expr}` forms and the suffix shape
+   `{expr.toFixed(2)} €` it structurally cannot see (swept separately, 0 matches).
 3. Confirm who can read the Vercel runtime logs — team `moniaros' projects` (Pro, no SAML) is the
    access boundary, and its member list could not be enumerated from the tooling here.
 2. Re-capture `/protection` once the session pooler recovers; it is the only measurement that
