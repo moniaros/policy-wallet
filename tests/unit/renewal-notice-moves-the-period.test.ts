@@ -60,7 +60,10 @@ const RENEWAL = {
     startDate: "2026-07-11",
     endDate: "2027-07-11",
     insurerName: "Κάποιος Άλλος",
-    policyNumber: "DIFFERENT-9999",
+    // The SAME policy, punctuated the way the renewal happens to print it —
+    // which also proves the number comparison is presentation-insensitive
+    // end to end, not just in its own unit test.
+    policyNumber: "165-1622",
     premiumAmount: 355,
     coverageSummary: "Prose the notice happens to carry",
 }
@@ -119,5 +122,33 @@ describe("the gate stays closed everywhere else", () => {
     it("a no-identifying-evidence verdict is still refused, whatever the kind says", () => {
         const empty = { ...RENEWAL, evidence: { sufficient: false, reason: "no_identifying_evidence" } }
         expect(buildMetadata(IDENTIFIED, empty).endDate).toEqual(IDENTIFIED.endDate)
+    })
+})
+
+/**
+ * ...and only when it names THIS policy.
+ *
+ * Nothing verifies the pairing: the customer picks the policy and attaches a
+ * file. Attach the wrong ανανεωτήριο and, because a renewal is trusted
+ * precisely to move dates, the period of a different contract lands here
+ * silently.
+ */
+describe("a renewal that names a different policy", () => {
+    const WRONG = { ...RENEWAL, policyNumber: "9999999" }
+
+    it("does not move the period", () => {
+        const m = buildMetadata(IDENTIFIED, WRONG)
+        expect(m.endDate).toEqual(IDENTIFIED.endDate)
+        expect(m.startDate).toEqual(IDENTIFIED.startDate)
+    })
+
+    it("does not take its premium either — nothing on it describes this policy", () => {
+        expect(buildMetadata(IDENTIFIED, WRONG).premiumAmount).toBe(320)
+    })
+
+    it("leaves the identity exactly as recorded", () => {
+        const m = buildMetadata(IDENTIFIED, WRONG)
+        expect(m.insurerName).toBe("Εθνική Ασφαλιστική")
+        expect(m.policyNumber).toBe("1651622")
     })
 })

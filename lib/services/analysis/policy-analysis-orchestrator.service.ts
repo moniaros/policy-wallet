@@ -69,6 +69,7 @@ import { documentMimeType } from "@/lib/security/file-upload"
 import { selectSourceDocument } from "@/lib/wallet/renewal-chain"
 import { isPlaceholderInsurerName, isPlaceholderPolicyNumber } from "@/lib/wallet/policy-identity"
 import { closeSupersededRenewals } from "@/lib/services/renewal.service"
+import { assessRenewalMatch, type RenewalMatch } from "@/lib/wallet/renewal-match"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 
 const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
@@ -382,6 +383,22 @@ export class PolicyAnalysisOrchestratorService {
             })
             const metadata = this.buildMetadata(policy, extraction)
 
+            // A renewal that names a different policy is refused above (the
+            // period does not move) and reported here, so the wallet can say
+            // WHY nothing changed instead of quietly looking unchanged. Written
+            // on every renewal run, so a corrected re-upload clears a stale
+            // mismatch rather than leaving the customer reading an old error.
+            const renewalReview =
+                extraction.documentKind === "renewal_notice"
+                    ? { acordData: {
+                          ...(((policy.acordData as Record<string, unknown>) || {})),
+                          // undefined rather than null: JSON.stringify drops the
+                          // key, which is how a corrected re-upload clears it.
+                          renewalReview:
+                              this.renewalReviewRecord(this.assessRenewal(policy, extraction), new Date()) ?? undefined,
+                      } as any }
+                    : {}
+
             await db.policy.update({
                 where: { id: policyId },
                 data: {
@@ -392,6 +409,7 @@ export class PolicyAnalysisOrchestratorService {
                     ...(metadata.endDate ? { endDate: metadata.endDate } : {}),
                     ...(metadata.premiumAmount != null ? { premiumAmount: metadata.premiumAmount } : {}),
                     ...(metadata.coverageSummary ? { coverageSummary: metadata.coverageSummary } : {}),
+                    ...renewalReview,
                     status: "active",
                 },
             })
@@ -2525,6 +2543,36 @@ export class PolicyAnalysisOrchestratorService {
      * When the evidence is insufficient the stored values stand unchanged. The
      * document is still kept; it is simply not treated as a contract.
      */
+    /**
+     * Is this renewal document about THIS policy?
+     *
+     * The customer asserts the pairing by choosing the policy and attaching the
+     * file; nothing verifies it. Attach the wrong ανανεωτήριο and the period of
+     * a different contract is written over this one — silently, because a
+     * renewal is trusted precisely to move dates.
+     *
+     * Only renewal notices are checked. A schedule re-upload is the policy
+     * itself and is allowed to restate its own number.
+     */
+    private assessRenewal(policy: any, extraction: AIPolicyExtractionResponse): RenewalMatch {
+        if (extraction.documentKind !== "renewal_notice") return { matches: true }
+        return assessRenewalMatch({
+            storedPolicyNumber: policy.policyNumber,
+            extractedPolicyNumber: extraction.policyNumber,
+        })
+    }
+
+    /** The record the wallet reads to explain a refused renewal. */
+    private renewalReviewRecord(match: RenewalMatch, now: Date): Record<string, unknown> | null {
+        if (match.matches) return null
+        return {
+            status: "policy_number_mismatch",
+            expectedPolicyNumber: match.expected,
+            foundPolicyNumber: match.found,
+            at: now.toISOString(),
+        }
+    }
+
     private buildMetadata(policy: any, extraction: AIPolicyExtractionResponse): PolicyMetadata {
         if (extraction.evidence && !extraction.evidence.sufficient) {
             // NARROW EXCEPTION — a renewal notice on an ALREADY-IDENTIFIED policy.
@@ -2545,11 +2593,15 @@ export class PolicyAnalysisOrchestratorService {
             // Identity is deliberately NOT taken from the notice: it names a
             // policy, it does not define one. That is what keeps the booklet and
             // blank-forms cases the gate was built for still closed.
+            // ...and only when it names THIS policy. A renewal that names a
+            // different contract must not move this one's period; that is the
+            // whole point of trusting it with the dates in the first place.
             const renewsAnIdentifiedPolicy =
                 extraction.evidence.reason === "not_a_policy_document" &&
                 extraction.documentKind === "renewal_notice" &&
                 !isPlaceholderInsurerName(policy.insurerName) &&
-                !isPlaceholderPolicyNumber(policy.policyNumber)
+                !isPlaceholderPolicyNumber(policy.policyNumber) &&
+                this.assessRenewal(policy, extraction).matches
 
             if (renewsAnIdentifiedPolicy) {
                 logger("info", "Renewal notice accepted for period only — identity kept from the stored policy", {
@@ -2734,8 +2786,22 @@ export class PolicyAnalysisOrchestratorService {
             priorityActions: clarity.priorityActions,
         }
 
+        // Does this renewal name THIS policy? Computed once and used three ways
+        // below: it withholds the period, withholds the identity, and skips the
+        // renewal close-out. The deep path writes dates straight from the raw
+        // extraction, so without this check attaching the wrong ανανεωτήριο
+        // silently rewrites the period of a contract it does not describe.
+        const renewalMatch = this.assessRenewal(policy, extraction)
+        const renewalReview = this.renewalReviewRecord(renewalMatch, new Date())
+
         const mergedAcord = {
             ...enriched.acordData,
+            ...(extraction.documentKind === "renewal_notice"
+                // Written on every renewal run — including a matching one, where
+                // it is undefined — so a corrected re-upload clears the error the
+                // customer is reading rather than leaving it stranded.
+                ? { renewalReview: renewalReview ?? undefined }
+                : {}),
             // A fresh extraction supersedes any earlier user confirmation or
             // flag — the user must review the new values.
             extraction: {
@@ -2934,11 +3000,22 @@ export class PolicyAnalysisOrchestratorService {
             await tx.policy.update({
                 where: { id: policy.id },
                 data: {
-                    insurerName: extraction.insurerName || metadata.insurerName,
-                    policyNumber: extraction.policyNumber || metadata.policyNumber,
+                    // On a mismatch the document describes some OTHER contract,
+                    // so none of its identity or period may land here. Everything
+                    // stays as recorded and the wallet explains why.
+                    insurerName: renewalMatch.matches
+                        ? extraction.insurerName || metadata.insurerName
+                        : policy.insurerName,
+                    policyNumber: renewalMatch.matches
+                        ? extraction.policyNumber || metadata.policyNumber
+                        : policy.policyNumber,
                     lineOfBusiness: normalizedLob,
-                    startDate: parseDateMaybe(extraction.startDate, policy.startDate),
-                    endDate: parseDateMaybe(extraction.endDate, policy.endDate),
+                    startDate: renewalMatch.matches
+                        ? parseDateMaybe(extraction.startDate, policy.startDate)
+                        : policy.startDate,
+                    endDate: renewalMatch.matches
+                        ? parseDateMaybe(extraction.endDate, policy.endDate)
+                        : policy.endDate,
                     premiumAmount:
                         typeof extraction.premiumAmount === "number"
                             ? extraction.premiumAmount
@@ -2964,7 +3041,9 @@ export class PolicyAnalysisOrchestratorService {
             // customer renewed, and the product goes on telling them — and their
             // adviser — that they did not. In the transaction deliberately: the
             // close-out lands or rolls back with the date change that caused it.
-            const movedEndDate = parseDateMaybe(extraction.endDate, policy.endDate)
+            const movedEndDate = renewalMatch.matches
+                ? parseDateMaybe(extraction.endDate, policy.endDate)
+                : policy.endDate
             if (movedEndDate && (!policy.endDate || movedEndDate.getTime() > policy.endDate.getTime())) {
                 await closeSupersededRenewals(
                     tx,

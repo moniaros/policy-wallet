@@ -23,8 +23,49 @@
  * name into both `policyholder.name` and `insured.name`, so those two collapse
  * in practice; the beneficiary is the one that genuinely names someone else.
  */
+/**
+ * Compare two names as the same person, not as the same bytes.
+ *
+ * Greek schedules print names in accented mixed case, in unaccented capitals,
+ * and with the final sigma written either way — «Ιωάννης Μονιάρος»,
+ * «ΙΩΑΝΝΗΣ ΜΟΝΙΑΡΟΣ», «Ιωαννης Μονιαροσ» are one person three times. An exact
+ * Set could not tell, so a renewal that restated the name in a different case
+ * listed the insured twice.
+ */
+function personKey(name: string): string {
+    return name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // combining accents, incl. the Greek tonos
+        .toUpperCase()
+        .replace(/Σ$/g, "Σ")
+        .replace(/\s+/g, " ")
+        .trim()
+}
+
+/**
+ * Everyone this policy covers.
+ *
+ * THE FIRST FOUR SOURCES ARE ONE PARTY, NOT FOUR. `insured.name`,
+ * `policyholder.name`, the legacy `policy.insuredName` and the
+ * customerName/customerSurname pair are four places different pipeline versions
+ * have written THE SAME person's name into. Unioning them was only ever
+ * invisible because the extractor writes the same string to each — as the note
+ * above says, they "collapse in practice".
+ *
+ * A renewal breaks that assumption. It restates the insured, `mergeAcordData`
+ * writes the new value over whichever keys the new document speaks to, and any
+ * key it is silent about keeps the OLD value. Union the four and the card lists
+ * the customer's old name and their new one side by side, as two covered
+ * people. That is what "it added a person instead of updating the name" is.
+ *
+ * So they are a PRECEDENCE CHAIN — the first that speaks wins, and the newest
+ * extraction has already won the write. Only `insureds[]` is a genuine list of
+ * distinct people, and it is the only source allowed to add rows.
+ */
 export function deriveInsuredNames(acord: any): string[] {
-    const candidates: unknown[] = [
+    const clean = (v: unknown) => String(v ?? "").trim()
+
+    const primary = [
         acord?.insured?.name,
         acord?.policyholder?.name,
         // Legacy shape; `policy.insuredName` is in no schema and written by
@@ -33,13 +74,23 @@ export function deriveInsuredNames(acord: any): string[] {
         acord?.customerName && acord?.customerSurname
             ? `${acord.customerName} ${acord.customerSurname}`
             : null,
-        ...(Array.isArray(acord?.insureds)
-            ? acord.insureds.map((i: any) => i?.name || `${i?.firstName || ""} ${i?.lastName || ""}`)
-            : []),
-        // NOT acord.beneficiaries — see above.
     ]
+        .map(clean)
+        .find(Boolean)
 
-    return Array.from(
-        new Set(candidates.map((v) => String(v || "").trim()).filter(Boolean))
-    )
+    const listed: string[] = Array.isArray(acord?.insureds)
+        ? acord.insureds.map((i: any) => clean(i?.name || `${i?.firstName || ""} ${i?.lastName || ""}`))
+        : []
+    // NOT acord.beneficiaries — see above.
+
+    const seen = new Set<string>()
+    const out: string[] = []
+    for (const name of [primary, ...listed]) {
+        if (!name) continue
+        const key = personKey(name)
+        if (!key || seen.has(key)) continue
+        seen.add(key)
+        out.push(name)
+    }
+    return out
 }

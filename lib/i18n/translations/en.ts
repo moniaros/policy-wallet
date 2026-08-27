@@ -517,10 +517,12 @@ export const en: TranslationKeys = {
             // Some states are not a call for the reader's attention at all. A
             // renewal we are still reading is work in progress on our side.
             headAttentionTitleByKind: {
+                renewal_mismatch: 'Not applied',
                 renewal_under_review: 'In progress',
             },
             headAttention: {
                 analysis_failed: 'The latest analysis did not complete — the items below may be out of date.',
+                renewal_mismatch: 'The renewal you uploaded names a different policy number ({found}) from the one on record ({expected}). We have not applied it — the document has been kept. Check that you uploaded the right file; if your insurer issued a new number, update the policy details.',
                 renewal_under_review: 'Renewal received — we are checking it. Your cover will update once the check completes.',
                 expired: 'This policy has expired. It provides no cover.',
                 expiring: 'Expires in {count} days.',

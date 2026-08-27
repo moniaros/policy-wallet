@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2818
+# bundle entries: 2820
 # inline entries: 4673 across 208 files
 # ternary entries: 285 across 44 files
 # call entries: 1138 across 72 files
@@ -2557,9 +2557,11 @@ bundle	wallet.policyDetailsPage.headAttention.clear	"Δεν εντοπίσαμε
 bundle	wallet.policyDetailsPage.headAttention.expired	"Το ασφαλιστήριο έχει λήξει. Δεν έχετε κάλυψη από αυτό."
 bundle	wallet.policyDetailsPage.headAttention.expiring	"Λήγει σε {count} ημέρες."
 bundle	wallet.policyDetailsPage.headAttention.items_to_review	"{count} σημεία αξίζουν έλεγχο με τον σύμβουλο ή τον ασφαλιστή σας."
+bundle	wallet.policyDetailsPage.headAttention.renewal_mismatch	"Το ανανεωτήριο που ανεβάσατε αναφέρει άλλο αριθμό ασφαλιστηρίου ({found}) από αυτόν που έχουμε καταχωρημένο ({expected}). Δεν το εφαρμόσαμε — το έγγραφο φυλάχθηκε. Ελέγξτε ότι ανεβάσατε το σωστό αρχείο· αν ο ασφαλιστής σας εξέδωσε νέο αριθμό, ενημερώστε τα στοιχεία του ασφαλιστηρίου."
 bundle	wallet.policyDetailsPage.headAttention.renewal_under_review	"Ανανεωτήριο παρελήφθη — το ελέγχουμε. Η κάλυψη θα ενημερωθεί μόλις ολοκληρωθεί ο έλεγχος."
 bundle	wallet.policyDetailsPage.headAttention.unverified	"Τα στοιχεία διαβάστηκαν αυτόματα και δεν έχουν επαληθευτεί."
 bundle	wallet.policyDetailsPage.headAttentionTitle	"Χρειάζεται προσοχή"
+bundle	wallet.policyDetailsPage.headAttentionTitleByKind.renewal_mismatch	"Δεν εφαρμόστηκε"
 bundle	wallet.policyDetailsPage.headAttentionTitleByKind.renewal_under_review	"Σε εξέλιξη"
 bundle	wallet.policyDetailsPage.headExpiredOn	"Έληξε στις"
 bundle	wallet.policyDetailsPage.headInForceUntil	"Ισχύει έως"

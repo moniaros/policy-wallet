@@ -67,3 +67,69 @@ describe('who the policy covers', () => {
         expect(deriveInsuredNames({ insured: { name: '   ' } })).toEqual([])
     })
 })
+
+/**
+ * A renewal restates the insured. It must UPDATE the name, not add a person.
+ *
+ * `insured.name`, `policyholder.name`, the legacy `policy.insuredName` and the
+ * customerName/customerSurname pair are four keys holding ONE party. Unioning
+ * them was invisible while the extractor wrote the same string to each. A
+ * renewal breaks that: mergeAcordData writes the new value over the keys the
+ * new document speaks to and leaves the rest, so the card listed the customer's
+ * old name and their new one as two covered people.
+ */
+describe("a renewal updates the insured, it does not add one", () => {
+    it("keeps ONE person when the renewal updated only some of the keys", () => {
+        const names = deriveInsuredNames({
+            insured: { name: "Ιωάννα Παπαδοπούλου" }, // the renewal wrote this
+            policyholder: { name: "Ιωάννα Γεωργίου" }, // stale: maiden name
+            customerName: "Ιωάννα",
+            customerSurname: "Γεωργίου",
+        })
+        expect(names).toEqual(["Ιωάννα Παπαδοπούλου"])
+    })
+
+    it("prefers insured.name over every other single-party key", () => {
+        expect(
+            deriveInsuredNames({
+                insured: { name: "Α" },
+                policyholder: { name: "Β" },
+                policy: { insuredName: "Γ" },
+                customerName: "Δ",
+                customerSurname: "Ε",
+            })
+        ).toEqual(["Α"])
+    })
+
+    it("falls down the chain when the preferred key is silent", () => {
+        expect(deriveInsuredNames({ policyholder: { name: "Β" }, policy: { insuredName: "Γ" } })).toEqual(["Β"])
+        expect(deriveInsuredNames({ policy: { insuredName: "Γ" } })).toEqual(["Γ"])
+        expect(deriveInsuredNames({ customerName: "Δ", customerSurname: "Ε" })).toEqual(["Δ Ε"])
+    })
+
+    it("treats the same name in different case or accents as one person", () => {
+        // Greek schedules print names accented, unaccented and in full capitals.
+        const names = deriveInsuredNames({
+            insured: { name: "Ιωάννης Μονιάρος" },
+            insureds: [{ name: "ΙΩΑΝΝΗΣ ΜΟΝΙΑΡΟΣ" }, { name: "Ιωαννης Μονιαρος" }],
+        })
+        expect(names).toEqual(["Ιωάννης Μονιάρος"])
+    })
+
+    it("still lists genuinely different people from insureds[]", () => {
+        // The fix must not collapse a real family policy into one name.
+        const names = deriveInsuredNames({
+            insured: { name: "Ιωάννης Μονιάρος" },
+            insureds: [{ name: "Ιωάννης Μονιάρος" }, { firstName: "Μαρία", lastName: "Μονιάρου" }],
+        })
+        expect(names).toEqual(["Ιωάννης Μονιάρος", "Μαρία Μονιάρου"])
+    })
+
+    it("still refuses to call a beneficiary an insured person", () => {
+        const names = deriveInsuredNames({
+            insured: { name: "Γιώργος" },
+            beneficiaries: [{ name: "Μαρία", share: 100 }],
+        })
+        expect(names).toEqual(["Γιώργος"])
+    })
+})

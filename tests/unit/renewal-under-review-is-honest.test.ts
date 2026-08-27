@@ -115,3 +115,46 @@ describe("the write that makes the state reachable", () => {
         expect(afterCallbackBody(fn)).toMatch(/revalidatePath/)
     })
 })
+
+/**
+ * A renewal that names a DIFFERENT policy is refused, and the refusal is
+ * explained. Nothing verifies the pairing today — the customer asserts it by
+ * choosing the policy and attaching a file — so the wrong ανανεωτήριο would
+ * rewrite the period of a contract it does not describe, silently, because a
+ * renewal is trusted precisely to move dates.
+ */
+describe("a renewal that names another policy", () => {
+    const MISMATCH = { expected: "1651622", found: "9999999" }
+
+    it("outranks every date verdict, and the in-progress state", () => {
+        expect(resolveAttention({ ...EXPIRED, renewalMismatch: MISMATCH }).kind).toBe("renewal_mismatch")
+        expect(
+            resolveAttention({ ...EXPIRED, renewalUnderReview: true, renewalMismatch: MISMATCH }).kind
+        ).toBe("renewal_mismatch")
+    })
+
+    it("carries BOTH numbers, so the reader can compare two pieces of paper", () => {
+        const a = resolveAttention({ ...EXPIRED, renewalMismatch: MISMATCH })
+        expect(a.values).toEqual({ expected: "1651622", found: "9999999" })
+    })
+
+    it("points at the documents section, where the offending file is", () => {
+        expect(resolveAttention({ ...EXPIRED, renewalMismatch: MISMATCH }).target).toBe("documents")
+    })
+
+    it("no mismatch means no change to the existing ordering", () => {
+        expect(resolveAttention({ ...EXPIRED, renewalMismatch: null }).kind).toBe("expired")
+    })
+
+    it("both locales explain it with both numbers, and say the file was kept", () => {
+        for (const locale of ["el", "en"]) {
+            const src = readFileSync(`lib/i18n/translations/${locale}.ts`, "utf-8")
+            const line = src.split("\n").find((l) => l.includes("renewal_mismatch:") && l.includes("{found}"))
+            expect.soft(line, `${locale} mismatch copy`).toBeTruthy()
+            expect.soft(line, `${locale} names both numbers`).toContain("{expected}")
+        }
+        // KEEP-AND-INFORM: the upload is never discarded over a mismatch.
+        const el = readFileSync("lib/i18n/translations/el.ts", "utf-8")
+        expect(el).toMatch(/renewal_mismatch:.*φυλάχθηκε/)
+    })
+})

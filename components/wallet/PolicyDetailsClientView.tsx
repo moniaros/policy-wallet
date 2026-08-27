@@ -722,6 +722,18 @@ export function PolicyDetailsClient({
     const renewalUnderReview =
         policy.status === "analyzing" && documentsNewestFirst[0]?.documentKind === "renewal_notice"
 
+    // A renewal that was read and refused, recorded by the analysis run. Both
+    // numbers travel with it so the head can print the two the reader has to
+    // compare, rather than telling them something did not match and stopping.
+    const renewalReview = (policy.acordData as any)?.renewalReview
+    const renewalMismatch =
+        renewalReview?.status === "policy_number_mismatch"
+            ? {
+                  expected: String(renewalReview.expectedPolicyNumber ?? ""),
+                  found: String(renewalReview.foundPolicyNumber ?? ""),
+              }
+            : null
+
     const attention = resolveAttention({
         daysLeft: computedDaysLeft,
         analysisFailed: Boolean(policy.acordData?.processingError) || lastRun?.status === "failed",
@@ -729,6 +741,7 @@ export function PolicyDetailsClient({
         unverified: policy.reviewState === "unconfirmed" || policy.reviewState === "flagged",
         unknownDuration: computedDaysLeft === null,
         renewalUnderReview,
+        renewalMismatch,
     })
     const primaryAction = resolvePrimaryAction({ attention, hasDocument: Boolean(firstDocumentHref) })
 

@@ -90,6 +90,7 @@ export interface PolicyHeadProps {
 const ATTENTION_ICON: Record<string, typeof AlertTriangle> = {
     analysis_failed: RefreshCw,
     renewal_under_review: RefreshCw,
+    renewal_mismatch: AlertTriangle,
     expired: CalendarClock,
     expiring: CalendarClock,
     items_to_review: AlertTriangle,
@@ -130,9 +131,9 @@ export function PolicyHead({
     const isClear = attention.kind === "clear"
 
     // The attention copy carries {count} for the two states that have one.
-    const attentionText = (copy.attention[attention.kind] || "").replace(
-        "{count}",
-        String(attention.count ?? "")
+    const attentionText = Object.entries(attention.values ?? {}).reduce(
+        (text, [key, value]) => text.split(`{${key}}`).join(value),
+        (copy.attention[attention.kind] || "").replace("{count}", String(attention.count ?? ""))
     )
 
     return (

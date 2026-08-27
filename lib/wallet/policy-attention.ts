@@ -23,6 +23,7 @@
 
 export type AttentionKind =
     | "analysis_failed"
+    | "renewal_mismatch"
     | "renewal_under_review"
     | "expired"
     | "expiring"
@@ -47,6 +48,11 @@ export interface AttentionInput {
      * just replaced, and no verdict drawn from them is established yet.
      */
     renewalUnderReview?: boolean
+    /**
+     * The renewal that was read named a DIFFERENT policy. Carries both numbers
+     * so the reader can compare them against the paper in front of them.
+     */
+    renewalMismatch?: { expected: string; found: string } | null
 }
 
 export interface Attention {
@@ -55,6 +61,8 @@ export interface Attention {
     target: string | null
     /** Substituted into the copy key by the caller (count / days). */
     count?: number
+    /** Named placeholders substituted into the copy, for states with more than a count. */
+    values?: Record<string, string>
 }
 
 /**
@@ -65,6 +73,8 @@ export interface Attention {
  *
  *  1. `analysis_failed` — everything else on the page may be stale, so it is
  *     the precondition for trusting any other line.
+ *  1a. `renewal_mismatch` — a renewal was read and refused; nothing moves until
+ *     the reader resolves it.
  *  1b. `renewal_under_review` — a renewal is in hand but unread, so both date
  *     verdicts below describe a period that may already have been replaced.
  *  2. `expired` — there is no cover at all; nothing else competes.
@@ -79,6 +89,16 @@ export interface Attention {
  */
 export function resolveAttention(input: AttentionInput): Attention {
     if (input.analysisFailed) return { kind: "analysis_failed", target: "review" }
+    // A renewal was read and REFUSED. This is a dead end the reader has to
+    // resolve — nothing else on the page changes until they do — and it outranks
+    // the in-progress state because the check has already finished.
+    if (input.renewalMismatch) {
+        return {
+            kind: "renewal_mismatch",
+            target: "documents",
+            values: { expected: input.renewalMismatch.expected, found: input.renewalMismatch.found },
+        }
+    }
     // Outranks BOTH date verdicts, and deliberately claims neither of them.
     // The customer uploaded an ανανεωτήριο; until the run reads it, "expired"
     // is a statement about a period they have just replaced, and "active" is a

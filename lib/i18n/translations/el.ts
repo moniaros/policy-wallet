@@ -517,10 +517,12 @@ export const el = {
             // Some states are not a call for the reader's attention at all. A
             // renewal we are still reading is work in progress on our side.
             headAttentionTitleByKind: {
+                renewal_mismatch: 'Δεν εφαρμόστηκε',
                 renewal_under_review: 'Σε εξέλιξη',
             },
             headAttention: {
                 analysis_failed: 'Η τελευταία ανάλυση δεν ολοκληρώθηκε — τα ευρήματα παρακάτω μπορεί να μην είναι επικαιροποιημένα.',
+                renewal_mismatch: 'Το ανανεωτήριο που ανεβάσατε αναφέρει άλλο αριθμό ασφαλιστηρίου ({found}) από αυτόν που έχουμε καταχωρημένο ({expected}). Δεν το εφαρμόσαμε — το έγγραφο φυλάχθηκε. Ελέγξτε ότι ανεβάσατε το σωστό αρχείο· αν ο ασφαλιστής σας εξέδωσε νέο αριθμό, ενημερώστε τα στοιχεία του ασφαλιστηρίου.',
                 renewal_under_review: 'Ανανεωτήριο παρελήφθη — το ελέγχουμε. Η κάλυψη θα ενημερωθεί μόλις ολοκληρωθεί ο έλεγχος.',
                 expired: 'Το ασφαλιστήριο έχει λήξει. Δεν έχετε κάλυψη από αυτό.',
                 expiring: 'Λήγει σε {count} ημέρες.',
