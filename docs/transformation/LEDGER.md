@@ -49,8 +49,8 @@ Source: `app/(protected)/notifications/page.tsx`, `actions.ts`, `components/noti
 | N-04 | See which CHANNEL delivered it (`Email` / `in_app` chip) | fact | **REMOVE** | none — delivery is not customer-facing information (§2.7) | P1-04 |
 | N-05 | See the same event once per channel | — | **REMOVE** | collapsed to one row on the base `dedupeKey` (D-002) | P1-04 |
 | N-06 | See read/unread state | fact | **KEEP** | unchanged | — |
-| N-07 | Navigate from a row to the thing it is about | action | **KEEP, must become total** | every row resolves to a route that exists (§11.2 destination guard) | P1-04 |
-| N-08 | Filter by related policy | action | **KEEP** | verify it survives grouping — filtering a grouped list is not the same query | P1-04 |
+| N-07 | Navigate from a row to the thing it is about | action | **KEEP — implemented in the Phase 5 rebuild** | «Προβολή ασφαλιστηρίου» link on every row whose related policy the server verified to still exist and belong to the reader (`actions.ts` nulls the id otherwise), so every rendered destination resolves. Rows about no object render no link — a destination cannot be total over events that have none | P5 notifications rebuild |
+| N-08 | Filter by related policy | action | **DEFERRED — was silently absent since the P1-04 rework** | The rebuilt page renders ≤24 rows with per-row policy links; a filter over a one-screen-per-state list was not rebuilt. Follow-up: restore a policy filter if/when the list paginates beyond its 50-row read window. Recorded here because the P1-04 pass dropped it without a ledger row | P5 notifications rebuild |
 | N-09 | Read a score change as a notification | fact | **REMOVE** | none — §2.2; the event type itself is deleted at `risk-events.ts:176-190` | P1-01 |
 | N-10 | Read English internal prose in a Greek feed | — | **REMOVE** | Greek from the registry, derived not hand-mapped | P1-05 |
 
@@ -58,6 +58,14 @@ Source: `app/(protected)/notifications/page.tsx`, `actions.ts`, `components/noti
 customer can currently see, and both are removals of *delivery metadata*, not of events. No event
 becomes unreachable: N-05 collapses duplicates of the same event, and any row lacking a
 `dedupeKey` renders ungrouped rather than being merged away (§12.2 forbids the heuristic).
+
+**Phase 5 rebuild rows (2026-08-27).**
+
+| id | capability | kind | disposition | destination | item |
+|---|---|---|---|---|---|
+| N-11 | Mark ONE notification read by tapping anywhere on its card | action | **KEEP, relocated** | the card was one big `role="button"` WRAPPING the show-more button — invalid ARIA, and the §11 action collector excluded all 20 toggles as `nested-in-command`. Replaced by two explicit per-item paths: the unread indicator is itself a 44×44 native button («Σήμανση ως αναγνωσμένο»), and opening the full message marks the item read. Mark-all unchanged | P5 notifications rebuild |
+| N-12 | `NotificationBell` dropdown (unmounted since the shell dropped UserMenu's `compact` branch) | — | **DELETED — dead code, not a capability** | zero importers verified by grep + tsc; its orphaned fetch test deleted with it; guard entries in `clamped-text-reachability` (2 debt rows) and `solid-panel-contrast` (exemption) removed — both ratchets shrank | P5 notifications rebuild |
+| N-13 | `NotificationCard` (unmounted legacy renderer; carried the raw `event.channel` chip) | — | **DELETED — dead code, not a capability** | zero importers; `components/notifications/index.ts` + `types.ts` (both dead barrel/type files nothing imported) deleted with it | P5 notifications rebuild |
 
 **Ledger note on N-09.** This removes a whole notification type. Under H-001 option B (score
 survives behind a disclosure) the customer could still reach the score in-product, so the

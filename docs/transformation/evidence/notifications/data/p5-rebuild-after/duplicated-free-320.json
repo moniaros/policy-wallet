@@ -1,0 +1,83 @@
+{
+  "capture": "duplicated-free",
+  "width": 320,
+  "url": "http://localhost:3000/notifications",
+  "scrollHeight": 1142,
+  "viewportsOfContent": 1.6,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 2,
+    "ids": [
+      "#history",
+      "<header> Ειδοποιήσεις"
+    ]
+  },
+  "containers": {
+    "count": 9,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
+      "span.absolute right-1.5 top-1.5 flex h-4 min-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:surface] <header> \"ΕιδοποιήσειςΤι σας έχουμε στείλει \" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfd",
+      "[1.4.11:surface] <li> \"24/8/26, 2:03 μ.μ.9 νέες προτάσεις\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <li> \"23/8/26, 6:59 μ.μ.Νέο ερωτηματολόγ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:unmeasured] <li> \"23/8/26, 6:59 μ.μ.Ο σύμβουλός σας \" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <li> \"23/8/26, 6:59 μ.μ.Η ανανέωση του σ\" boundary 1.17:1 (needs 3) inside=#efefef outside=#dcdddd"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 320,
+    "viewportWidth": 320,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [
+        "#history: \"Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "23/8/26, 6:59 μ.μ.",
+        "count": 3,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 3 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 3 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ειδοποιήσεις Τι σας έχουμε στείλει πρόσφατα. Προτιμήσεις Σήμανση όλων ως αναγνωσμένα 24/8/26, 2:03 μ.μ. 9 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. 23/8/26, 6:59 μ.μ. Νέο ερωτηματολόγιο από τον σύμβουλό σας Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας. 23/8/26, 6:59 μ.μ. Ο σύμβουλός σας ζήτησε ένα έγγραφο Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας. 23/8/26, 6:59 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "tier": "free",
+  "state": "duplicated"
+}

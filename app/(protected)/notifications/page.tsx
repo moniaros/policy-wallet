@@ -26,6 +26,11 @@ export default async function NotificationsPage() {
                 // One entry per EVENT, no channel: delivery records are
                 // grouped server-side (see getNotificationData) and which
                 // pipe carried a notification is not customer-facing.
+                //
+                // Deliberately NOT passed: the user row. The client renders
+                // nothing from it, and serialising the whole dbUser (email,
+                // roles, consent versions) into the RSC payload of a page
+                // that never reads it is data the HTML does not need.
                 history: data.history.map(e => ({
                     event_id: e.event_id,
                     event_type: e.event_type,
@@ -36,7 +41,6 @@ export default async function NotificationsPage() {
                     related_policy_id: e.related_policy_id,
                     related_policy_name: e.related_policy_name,
                 })),
-                user: dbUser
             }}
             userLanguage={dbUser.preferredLanguage || 'en'}
         />

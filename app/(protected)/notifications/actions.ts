@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import type { RecentNotification } from "@/lib/notifications/watcher"
 import { resolveStoredNotification } from "@/lib/notifications/stored-content"
-import { policyLabel } from "@/lib/wallet/policy-identity"
+import { policyLabel, scrubRenderableText } from "@/lib/wallet/policy-identity"
 import { groupNotificationEventRows } from "@/lib/notifications/event-grouping"
 
 export async function getNotificationData() {
@@ -101,10 +101,24 @@ export async function getNotificationData() {
     // in-app arm HAS no read state — surfacing its arm's forever-null readAt
     // would render an unread badge that markAllNotificationsRead (which
     // stamps in_app rows only) could never clear.
+    // Stored history is DATA, and stale data leaks: two legacy
+    // `policy_analysis_failed` rows on the shared fixture account still carry
+    // «PENDING-… (__PENDING_EXTRACTION__)» verbatim in their message text —
+    // written before emit() learned to scrub, and this table is never pruned,
+    // so no upstream fix can ever reach them. The render boundary scrubs
+    // rather than trusts: scrubRenderableText (policy placeholders + fixture
+    // identifiers, punctuation tidied) — the scrubbing form, not
+    // assertRenderableText, because a years-old stored row is not an upstream
+    // defect this page can fail loudly about; the customer's history must
+    // render, minus the tokens.
     const readerLang = uiUser.preferred_language === "el" ? "el" as const : "en" as const
     const uiEvents = eventGroups.map(g => {
         const e = g.representative
-        const presented = resolveStoredNotification(e.eventType, e.title, e.message, readerLang)
+        const raw = resolveStoredNotification(e.eventType, e.title, e.message, readerLang)
+        const presented = {
+            title: scrubRenderableText(raw.title),
+            message: scrubRenderableText(raw.message),
+        }
         return ({
         event_id: e.id,
         user_id: e.userId,
@@ -122,15 +136,23 @@ export async function getNotificationData() {
         created_at: e.createdAt.toISOString()
     })})
 
-    // Enrich event names
+    // Enrich event names. A related_policy_id survives to the client ONLY
+    // when the policy still exists and belongs to this reader — the row's
+    // «Προβολή ασφαλιστηρίου» link renders from it, and every rendered
+    // destination must resolve (§11.2 destination guard, ledger N-07). A
+    // deleted policy's events keep their text and lose the link.
     uiEvents.forEach(e => {
         if (e.related_policy_id) {
             const p = policies.find(p => p.id === e.related_policy_id)
-            // Through the primitive: both columns can hold extraction sentinels
-            // ("Unknown Insurer", "PENDING-…") on a healthy policy, and this
-            // string renders verbatim in NotificationCard. policyLabel degrades
-            // to whichever half is real, or to nothing.
-            if (p) e.related_policy_name = policyLabel(p) || null
+            if (p) {
+                // Through the primitive: both columns can hold extraction
+                // sentinels ("Unknown Insurer", "PENDING-…") on a healthy
+                // policy. policyLabel degrades to whichever half is real, or
+                // to nothing.
+                e.related_policy_name = policyLabel(p) || null
+            } else {
+                e.related_policy_id = null
+            }
         }
         if (e.related_customer_relationship_id) {
             const r = customerRelationships.find(r => r.id === e.related_customer_relationship_id)
@@ -203,7 +225,14 @@ export async function getRecentNotifications(limit = 10): Promise<{ items: Recen
 
     const readerLang = authResult.dbUser.preferredLanguage === "en" ? "en" as const : "el" as const
     const items: RecentNotification[] = events.map((e) => {
-        const presented = resolveStoredNotification(e.eventType, e.title, e.message, readerLang)
+        // Same render-boundary scrub as getNotificationData above: these
+        // strings become live toasts, and a stale stored row must not put a
+        // PENDING sentinel or a fixture identifier on screen.
+        const raw = resolveStoredNotification(e.eventType, e.title, e.message, readerLang)
+        const presented = {
+            title: scrubRenderableText(raw.title),
+            message: scrubRenderableText(raw.message),
+        }
         return ({
         id: e.id,
         eventType: e.eventType,

@@ -1,0 +1,127 @@
+{
+  "capture": "rebuild-empty",
+  "width": 320,
+  "url": "http://localhost:3000/notifications",
+  "scrollHeight": 864,
+  "viewportsOfContent": 1.2,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 2,
+    "ids": [
+      "#history",
+      "<header> Ειδοποιήσεις"
+    ]
+  },
+  "containers": {
+    "count": 5,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.pw-card pw-pad mb-5 flex flex-col gap-4 ",
+      "a.pw-secondary-button pw-btn-sm inline-fle"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:surface] <header> \"ΕιδοποιήσειςΤι σας έχουμε στείλει \" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:surface] <div> \"Δεν υπάρχουν ειδοποιήσεις ακόμη\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 320,
+    "viewportWidth": 320,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ειδοποιήσεις Τι σας έχουμε στείλει πρόσφατα. Προτιμήσεις Δεν υπάρχουν ειδοποιήσεις ακόμη Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "state": "empty",
+  "duplicateActions": {
+    "totalCandidates": 24,
+    "offeredInstances": 9,
+    "excluded": [
+      {
+        "reason": "off-canvas",
+        "count": 14
+      },
+      {
+        "reason": "zero-size",
+        "count": 1
+      }
+    ],
+    "unidentifiable": 0,
+    "groups": [
+      {
+        "identity": "href:/dashboard",
+        "identitySource": "href",
+        "subject": "",
+        "count": 2,
+        "contentCount": 1,
+        "navCount": 1,
+        "classification": "nav-overlap",
+        "gated": false,
+        "instances": [
+          {
+            "label": "PolicyWallet",
+            "href": "/dashboard",
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Αρχική",
+            "href": "/dashboard",
+            "region": "nav",
+            "where": "nav"
+          }
+        ]
+      }
+    ],
+    "duplicateActionCount": 0,
+    "navOverlapCount": 1,
+    "navPolicy": "separate"
+  },
+  "countConsistency": {
+    "groups": [],
+    "totalKeys": 0,
+    "comparableKeys": 0,
+    "corroboratedKeys": 0,
+    "inconsistent": [],
+    "nonComparable": [],
+    "textualFacts": [],
+    "unmeasurable": [],
+    "excludedByDesign": [],
+    "failures": 0,
+    "fullyMeasured": true,
+    "verdict": "consistent-and-fully-measured"
+  },
+  "clippedLabels": []
+}

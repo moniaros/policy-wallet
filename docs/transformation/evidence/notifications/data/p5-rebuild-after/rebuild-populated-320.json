@@ -1,0 +1,433 @@
+{
+  "capture": "rebuild-populated",
+  "width": 320,
+  "url": "http://localhost:3000/notifications",
+  "scrollHeight": 4010,
+  "viewportsOfContent": 5.6,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 2,
+    "ids": [
+      "#history",
+      "<header> Ειδοποιήσεις"
+    ]
+  },
+  "containers": {
+    "count": 29,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
+      "span.absolute right-1.5 top-1.5 flex h-4 min-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:surface] <header> \"ΕιδοποιήσειςΤι σας έχουμε στείλει \" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fafc",
+      "[1.4.11:surface] <li> \"24/8/26, 1:57 μ.μ.Άλλαξε η εικόνα \" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fbfd",
+      "[1.4.11:surface] <li> \"24/8/26, 1:57 μ.μ.Εντοπίσαμε ένα κ\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfd",
+      "[1.4.11:surface] <li> \"24/8/26, 1:57 μ.μ.6 νέες προτάσεις\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafcfd",
+      "[1.4.11:surface] <li> \"23/8/26, 6:56 μ.μ.Νέο ερωτηματολόγ\" boundary 1.32:1 (needs 3) inside=#ffffff outside=#dde0e4",
+      "[1.4.11:surface] <li> \"23/8/26, 6:56 μ.μ.Ο σύμβουλός σας \" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <li> \"23/8/26, 6:56 μ.μ.Η ανανέωση του σ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <li> \"23/8/26, 12:33 π.μ.Η προστασία σας\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <li> \"23/8/26, 12:33 π.μ.Ένας κίνδυνος έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <li> \"23/8/26, 12:33 π.μ.6 νέες προτάσει\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <li> \"14/8/26, 11:31 μ.μ.Η ανάλυση ολοκλ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:unmeasured] <li> \"14/8/26, 11:31 μ.μ.Η ανάλυση ολοκλ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <li> \"14/8/26, 11:31 μ.μ.Η ανάλυση ολοκλ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <li> \"14/8/26, 11:19 μ.μ.Η ανάλυση δεν ο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <li> \"14/8/26, 11:19 μ.μ.Η ανάλυση δεν ο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <li> \"14/8/26, 10:53 μ.μ.Η ανάλυση δεν ο\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <li> \"14/8/26, 10:53 μ.μ.Η ανάλυση δεν ο\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <li> \"14/8/26, 10:49 μ.μ.Η προστασία σας\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <li> \"14/8/26, 10:49 μ.μ.Ένας κίνδυνος έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <li> \"14/8/26, 10:49 μ.μ.Εντοπίσαμε 2 κε\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <li> \"14/8/26, 10:48 μ.μ.2 νέες προτάσει\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <li> \"14/8/26, 1:50 π.μ.Ζητήθηκε προσφορ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
+      "[1.4.11:surface] <li> \"14/8/26, 1:50 π.μ.Ζητήθηκε προσφορ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
+      "[1.4.11:surface] <li> \"12/8/26, 2:34 μ.μ.Άλλαξε η εικόνα \" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fbfbfc",
+      "[1.4.11:surface] <li> \"12/8/26, 2:34 μ.μ.Εντοπίσαμε 3 κεν\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 320,
+    "viewportWidth": 320,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "scrollWidth": 262,
+        "clientWidth": 262,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "scrollWidth": 216,
+        "clientWidth": 216,
+        "reason": "css-truncation",
+        "scrollHeight": 100,
+        "clientHeight": 60
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [
+        "#history: \"Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "24/8/26, 1:57 μ.μ.",
+        "count": 3,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Άλλαξε η εικόνα κινδύνου σας",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "6 νέες προτάσεις για εσάς",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.",
+        "count": 3,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "23/8/26, 6:56 μ.μ.",
+        "count": 3,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "23/8/26, 12:33 π.μ.",
+        "count": 3,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Ένας κίνδυνος έκλεισε",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 11:31 μ.μ.",
+        "count": 3,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση ολοκληρώθηκε",
+        "count": 3,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Εμφάνιση ολόκληρου μηνύματος",
+        "count": 2,
+        "where": [
+          "#history <button>",
+          "#history <button>"
+        ]
+      },
+      {
+        "text": "Προβολή ασφαλιστηρίου",
+        "count": 4,
+        "where": [
+          "#history <a>",
+          "#history <a>",
+          "#history <a>",
+          "#history <a>"
+        ]
+      },
+      {
+        "text": "14/8/26, 11:19 μ.μ.",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση δεν ολοκληρώθηκε",
+        "count": 4,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση του συμβολαίου δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.",
+        "count": 4,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 10:53 μ.μ.",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 10:49 μ.μ.",
+        "count": 3,
+        "where": [
+          "#history <p>",
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 1:50 π.μ.",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Ζητήθηκε προσφορά ανανέωσης",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "Ασφαλιστήριο: ζητήθηκε προσφορά ανανέωσης",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      },
+      {
+        "text": "12/8/26, 2:34 μ.μ.",
+        "count": 2,
+        "where": [
+          "#history <p>",
+          "#history <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 16 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ειδοποιήσεις Τι σας έχουμε στείλει πρόσφατα. Προτιμήσεις Σήμανση όλων ως αναγνωσμένα 24/8/26, 1:57 μ.μ. Άλλαξε η εικόνα κινδύνου σας Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας και 3 ακόμη αλλαγές. 24/8/26, 1:57 μ.μ. Εντοπίσαμε ένα κενό κάλυψης Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας 24/8/26, 1:57 μ.μ. 6 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. 23/8/26, 6:56 μ.μ. Νέο ερωτηματολόγιο από τον σύμβουλό σας Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας. 23/8/26, 6:56 μ.μ. Ο σύμβουλός σας ζήτησε ένα έγγραφο Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας. 23/8/26, 6:56 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. 23/8/26, 12:33 π.μ. Η προστασία σας μειώθηκε Το σκορ προστασίας σας πήγε από 83% σε 74%. 23/8/26, 12:33 π.μ. Ένας κίνδυνος έκλεισε Αναμονή για θεραπεία τη στιγμή που μετράει και 1 ακόμη αλλαγές. 23/8/26, 12:33 π.μ. 6 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. 14/8/26, 11:31 μ.μ. Η ανάλυση ολοκληρώθηκε Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ «Η ΕΘΝΙΚΗ») αναλύθηκε επιτυχώς. Εμφάνιση ολόκληρου μηνύματοςΠροβολή ασφαλιστηρίου 14/8/26, 11:31 μ.μ. Η ανάλυση ολοκληρώθηκε Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ «Η ΕΘΝΙΚΗ») αναλύθηκε επιτυχώς. Εμφάνιση ολόκληρου μηνύματοςΠροβολή ασφαλιστηρίου 14/8/26, 11:31 μ.μ. Η ανάλυση ολοκληρώθηκε Το ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς. 14/8/26, 11:19 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. 14/8/26, 11:19 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. 14/8/26, 10:53 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. 14/8/26, 10:53 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. 14/8/26, 10:49 μ.μ. Η προστασία σας βελτιώθηκε Το σκορ προστασίας σας πήγε από 44% σε 86%. 14/8/26, 10:49 μ.μ. Ένας κίνδυνος έκλεισε Ζημιά σε ακίνητο που σας ανήκει και 3 ακόμη αλλαγές. 14/8/26, 10:49 μ.μ. Εντοπίσαμε 2 κενά κάλυψης Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη. 14/8/26, 10:48 μ.μ. 2 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. 14/8/26, 1:50 π.μ. Ζητήθηκε προσφορά ανανέωσης Ασφαλιστήριο: ζητήθηκε προσφορά ανανέωσης Προβολή ασφαλιστηρίου 14/8/26, 1:50 π.μ. Ζητήθηκε προσφορά ανανέωσης Ασφαλιστήριο: ζητήθηκε προσφορά ανανέωσης Προβολή ασφαλιστηρίου 12/8/26, 2:34 μ.μ. Άλλαξε η εικόνα κινδύνου σας Ζημιά σε ακίνητο που σας ανήκει και 1 ακόμη αλλαγές. 12/8/26, 2:34 μ.μ. Εντοπίσαμε 3 κενά κάλυψης Ζημιά σε ακίνητο που σας ανήκει και 2 ακόμη. Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "state": "populated",
+  "duplicateActions": {
+    "totalCandidates": 45,
+    "offeredInstances": 30,
+    "excluded": [
+      {
+        "reason": "off-canvas",
+        "count": 14
+      },
+      {
+        "reason": "zero-size",
+        "count": 1
+      }
+    ],
+    "unidentifiable": 0,
+    "groups": [
+      {
+        "identity": "href:/dashboard",
+        "identitySource": "href",
+        "subject": "",
+        "count": 2,
+        "contentCount": 1,
+        "navCount": 1,
+        "classification": "nav-overlap",
+        "gated": false,
+        "instances": [
+          {
+            "label": "PolicyWallet",
+            "href": "/dashboard",
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Αρχική",
+            "href": "/dashboard",
+            "region": "nav",
+            "where": "nav"
+          }
+        ]
+      }
+    ],
+    "duplicateActionCount": 0,
+    "navOverlapCount": 1,
+    "navPolicy": "separate"
+  },
+  "countConsistency": {
+    "groups": [
+      {
+        "key": "notification.unreadCount",
+        "subject": "",
+        "channel": "count",
+        "renders": [
+          {
+            "text": "9+",
+            "where": "top",
+            "channel": "count",
+            "value": "9"
+          }
+        ]
+      }
+    ],
+    "totalKeys": 1,
+    "comparableKeys": 1,
+    "corroboratedKeys": 0,
+    "inconsistent": [],
+    "nonComparable": [],
+    "textualFacts": [],
+    "unmeasurable": [
+      {
+        "text": "Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας και 3 ακόμη αλλ",
+        "where": "#history"
+      },
+      {
+        "text": "6 νέες προτάσεις για εσάς",
+        "where": "#history"
+      },
+      {
+        "text": "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        "where": "#history"
+      },
+      {
+        "text": "Αναμονή για θεραπεία τη στιγμή που μετράει και 1 ακόμη αλλαγές.",
+        "where": "#history"
+      },
+      {
+        "text": "6 νέες προτάσεις για εσάς",
+        "where": "#history"
+      },
+      {
+        "text": "Ζημιά σε ακίνητο που σας ανήκει και 3 ακόμη αλλαγές.",
+        "where": "#history"
+      },
+      {
+        "text": "Εντοπίσαμε 2 κενά κάλυψης",
+        "where": "#history"
+      },
+      {
+        "text": "Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη.",
+        "where": "#history"
+      },
+      {
+        "text": "2 νέες προτάσεις για εσάς",
+        "where": "#history"
+      },
+      {
+        "text": "Ζημιά σε ακίνητο που σας ανήκει και 1 ακόμη αλλαγές.",
+        "where": "#history"
+      },
+      {
+        "text": "Εντοπίσαμε 3 κενά κάλυψης",
+        "where": "#history"
+      },
+      {
+        "text": "Ζημιά σε ακίνητο που σας ανήκει και 2 ακόμη.",
+        "where": "#history"
+      }
+    ],
+    "excludedByDesign": [
+      {
+        "reason": "date",
+        "count": 24
+      },
+      {
+        "reason": "time",
+        "count": 24
+      },
+      {
+        "reason": "percent",
+        "count": 4
+      },
+      {
+        "reason": "long-numeral",
+        "count": 2
+      }
+    ],
+    "failures": 0,
+    "fullyMeasured": false,
+    "verdict": "consistent-but-unmeasured"
+  },
+  "clippedLabels": []
+}

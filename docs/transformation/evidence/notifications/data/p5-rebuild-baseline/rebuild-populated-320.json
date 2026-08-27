@@ -1,0 +1,719 @@
+{
+  "capture": "rebuild-populated",
+  "width": 320,
+  "url": "http://localhost:3000/notifications",
+  "scrollHeight": 5262,
+  "viewportsOfContent": 7.3,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 1,
+    "ids": [
+      "<div> Ειδοποιήσεις"
+    ]
+  },
+  "containers": {
+    "count": 30,
+    "maxDepth": 2,
+    "deepestChain": [
+      "header.lg:hidden sticky top-0 z-40 w-full h-16 ",
+      "span.absolute right-1.5 top-1.5 flex h-4 min-"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:control] <div> \"Άλλαξε η εικόνα κινδύνου σαςΑπώλει\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#f9fbfc",
+      "[1.4.11:control] <div> \"Εντοπίσαμε ένα κενό κάλυψηςΑπώλεια\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fafbfd",
+      "[1.4.11:control] <div> \"6 νέες προτάσεις για εσάςΜε βάση ό\" boundary 1.67:1 (needs 3) inside=#e7e7e7 outside=#ffffff",
+      "[1.4.11:control] <div> \"Νέο ερωτηματολόγιο από τον σύμβουλ\" boundary 1.36:1 (needs 3) inside=#f0f4f5 outside=#fbfcfd",
+      "[1.4.11:control] <div> \"Ο σύμβουλός σας ζήτησε ένα έγγραφο\" boundary 1.36:1 (needs 3) inside=#f0f4f5 outside=#fbfcfd",
+      "[1.4.11:control] <div> \"Η ανανέωση του συμβολαίου σας πλησ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:control] <div> \"Η προστασία σας μειώθηκεΤο σκορ πρ\" boundary 1.24:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:control] <div> \"Ένας κίνδυνος έκλεισεΑναμονή για θ\" boundary 1.24:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:control] <div> \"6 νέες προτάσεις για εσάςΜε βάση ό\" boundary 1.37:1 (needs 3) inside=#f2f6f6 outside=#fdfefe",
+      "[1.4.11:unmeasured] <div> \"Η ανάλυση ολοκληρώθηκεΤο ασφαλιστή\" boundary 1.25:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <div> \"Η ανάλυση ολοκληρώθηκεΤο ασφαλιστή\" boundary 1.36:1 (needs 3) inside=#f3f6f7 outside=#fefeff",
+      "[1.4.11:control] <div> \"Η ανάλυση ολοκληρώθηκεΤο ασφαλιστή\" boundary 1.37:1 (needs 3) inside=#f4f7f7 outside=#ffffff",
+      "[1.4.11:unmeasured] <div> \"Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυσ\" boundary 1.26:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <div> \"Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυσ\" boundary 1.36:1 (needs 3) inside=#f3f6f7 outside=#fefeff",
+      "[1.4.11:unmeasured] <div> \"Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυσ\" boundary 1.25:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:control] <div> \"Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυσ\" boundary 1.37:1 (needs 3) inside=#f2f6f6 outside=#fdfefe",
+      "[1.4.11:control] <div> \"Η προστασία σας βελτιώθηκεΤο σκορ \" boundary 1.36:1 (needs 3) inside=#f2f5f6 outside=#fdfdfe",
+      "[1.4.11:control] <div> \"Ένας κίνδυνος έκλεισεΖημιά σε ακίν\" boundary 1.37:1 (needs 3) inside=#f2f5f5 outside=#fdfdfd",
+      "[1.4.11:control] <div> \"Εντοπίσαμε 2 κενά κάλυψηςΔιαδικτυα\" boundary 1.37:1 (needs 3) inside=#f1f5f5 outside=#fcfdfd",
+      "[1.4.11:control] <div> \"2 νέες προτάσεις για εσάςΜε βάση ό\" boundary 1.37:1 (needs 3) inside=#f1f4f5 outside=#fcfcfd",
+      "[1.4.11:control] <div> \"Ζητήθηκε προσφορά ανανέωσηςΑσφαλισ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:control] <div> \"Ζητήθηκε προσφορά ανανέωσηςΑσφαλισ\" boundary 1.36:1 (needs 3) inside=#f0f4f4 outside=#fbfcfc",
+      "[1.4.11:control] <div> \"Άλλαξε η εικόνα κινδύνου σαςΖημιά \" boundary 1.36:1 (needs 3) inside=#eff3f4 outside=#fafbfc",
+      "[1.4.11:control] <div> \"Εντοπίσαμε 3 κενά κάλυψηςΖημιά σε \" boundary 1.36:1 (needs 3) inside=#eff3f4 outside=#fafbfc"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 320,
+    "viewportWidth": 320,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας και 3 ακόμη αλλ",
+        "scrollWidth": 139,
+        "clientWidth": 139,
+        "reason": "css-truncation",
+        "scrollHeight": 100,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας",
+        "scrollWidth": 139,
+        "clientWidth": 139,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.",
+        "scrollWidth": 139,
+        "clientWidth": 139,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας.",
+        "scrollWidth": 134,
+        "clientWidth": 134,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        "scrollWidth": 136,
+        "clientWidth": 136,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Το σκορ προστασίας σας πήγε από 83% σε 74%.",
+        "scrollWidth": 131,
+        "clientWidth": 131,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Αναμονή για θεραπεία τη στιγμή που μετράει και 1 ακόμη αλλαγές.",
+        "scrollWidth": 131,
+        "clientWidth": 131,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.",
+        "scrollWidth": 129,
+        "clientWidth": 129,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "scrollWidth": 136,
+        "clientWidth": 136,
+        "reason": "css-truncation",
+        "scrollHeight": 200,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "scrollWidth": 134,
+        "clientWidth": 134,
+        "reason": "css-truncation",
+        "scrollHeight": 200,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Το ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς.",
+        "scrollWidth": 134,
+        "clientWidth": 134,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "scrollWidth": 136,
+        "clientWidth": 136,
+        "reason": "css-truncation",
+        "scrollHeight": 180,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "scrollWidth": 134,
+        "clientWidth": 134,
+        "reason": "css-truncation",
+        "scrollHeight": 180,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "scrollWidth": 132,
+        "clientWidth": 132,
+        "reason": "css-truncation",
+        "scrollHeight": 180,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "scrollWidth": 130,
+        "clientWidth": 130,
+        "reason": "css-truncation",
+        "scrollHeight": 180,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Το σκορ προστασίας σας πήγε από 44% σε 86%.",
+        "scrollWidth": 130,
+        "clientWidth": 130,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη.",
+        "scrollWidth": 130,
+        "clientWidth": 130,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.",
+        "scrollWidth": 130,
+        "clientWidth": 130,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης",
+        "scrollWidth": 139,
+        "clientWidth": 139,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      },
+      {
+        "selector": "p.mt-1.text-sm",
+        "text": "Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης",
+        "scrollWidth": 137,
+        "clientWidth": 137,
+        "reason": "css-truncation",
+        "scrollHeight": 80,
+        "clientHeight": 60
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [
+        "top: \"Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Άλλαξε η εικόνα κινδύνου σας",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Εμφάνιση ολόκληρου μηνύματος",
+        "count": 20,
+        "where": [
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>",
+          "top <button>"
+        ]
+      },
+      {
+        "text": "24/8/26, 1:57 μ.μ.",
+        "count": 3,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "6 νέες προτάσεις για εσάς",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας.",
+        "count": 3,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "23/8/26, 6:56 μ.μ.",
+        "count": 3,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "23/8/26, 12:33 π.μ.",
+        "count": 3,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Ένας κίνδυνος έκλεισε",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση ολοκληρώθηκε",
+        "count": 3,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ ",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 11:31 μ.μ.",
+        "count": 3,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση δεν ολοκληρώθηκε",
+        "count": 4,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 11:19 μ.μ.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκ",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 10:53 μ.μ.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 10:49 μ.μ.",
+        "count": 3,
+        "where": [
+          "top <p>",
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Ζητήθηκε προσφορά ανανέωσης",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "14/8/26, 1:50 π.μ.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      },
+      {
+        "text": "12/8/26, 2:34 μ.μ.",
+        "count": 2,
+        "where": [
+          "top <p>",
+          "top <p>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [
+      "pending/sentinel marker: \"Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκ\"",
+      "pending/sentinel marker: \"Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκ\"",
+      "E2E fixture identifier: \"Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης\""
+    ],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 16 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Ειδοποιήσεις Τι σας έχουμε στείλει πρόσφατα. Προτιμήσεις Σήμανση όλων ως αναγνωσμένα Άλλαξε η εικόνα κινδύνου σας Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας και 3 ακόμη αλλαγές. Εμφάνιση ολόκληρου μηνύματος 24/8/26, 1:57 μ.μ. Εντοπίσαμε ένα κενό κάλυψης Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας Εμφάνιση ολόκληρου μηνύματος 24/8/26, 1:57 μ.μ. 6 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. Εμφάνιση ολόκληρου μηνύματος 24/8/26, 1:57 μ.μ. Νέο ερωτηματολόγιο από τον σύμβουλό σας Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας. 23/8/26, 6:56 μ.μ. Ο σύμβουλός σας ζήτησε ένα έγγραφο Ανεβάστε το έγγραφο για να συνεχίσει ο σύμβουλός σας. Εμφάνιση ολόκληρου μηνύματος 23/8/26, 6:56 μ.μ. Η ανανέωση του συμβολαίου σας πλησιάζει Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης. Εμφάνιση ολόκληρου μηνύματος 23/8/26, 6:56 μ.μ. Η προστασία σας μειώθηκε Το σκορ προστασίας σας πήγε από 83% σε 74%. Εμφάνιση ολόκληρου μηνύματος 23/8/26, 12:33 π.μ. Ένας κίνδυνος έκλεισε Αναμονή για θεραπεία τη στιγμή που μετράει και 1 ακόμη αλλαγές. Εμφάνιση ολόκληρου μηνύματος 23/8/26, 12:33 π.μ. 6 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. Εμφάνιση ολόκληρου μηνύματος 23/8/26, 12:33 π.μ. Η ανάλυση ολοκληρώθηκε Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ «Η ΕΘΝΙΚΗ») αναλύθηκε επιτυχώς. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 11:31 μ.μ. Η ανάλυση ολοκληρώθηκε Το ασφαλιστήριο συμβόλαιο 64504715 (ΑΝΩΝΥΜΟΣ ΕΛΛΗΝΙΚΗ ΕΤΑΙΡΙΑ ΓΕΝΙΚΩΝ ΑΣΦΑΛΕΙΩΝ «Η ΕΘΝΙΚΗ») αναλύθηκε επιτυχώς. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 11:31 μ.μ. Η ανάλυση ολοκληρώθηκε Το ασφαλιστήριο διαβάστηκε και αναλύθηκε επιτυχώς. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 11:31 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 11:19 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου PENDING-1786738708923 (__PENDING_EXTRACTION__) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 11:19 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 10:53 μ.μ. Η ανάλυση δεν ολοκληρώθηκε Η ανάλυση του συμβολαίου PENDING-1786737112558 (__PENDING_EXTRACTION__) δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 10:53 μ.μ. Η προστασία σας βελτιώθηκε Το σκορ προστασίας σας πήγε από 44% σε 86%. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 10:49 μ.μ. Ένας κίνδυνος έκλεισε Ζημιά σε ακίνητο που σας ανήκει και 3 ακόμη αλλαγές. 14/8/26, 10:49 μ.μ. Εντοπίσαμε 2 κενά κάλυψης Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 10:49 μ.μ. 2 νέες προτάσεις για εσάς Με βάση όσα ξέρουμε για τη ζωή σας και τα συμβόλαιά σας. Εμφάνιση ολόκληρου μηνύματος 14/8/26, 10:48 μ.μ. Ζητήθηκε προσφορά ανανέωσης Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης Εμφάνιση ολόκληρου μηνύματος 14/8/26, 1:50 π.μ. Ζητήθηκε προσφορά ανανέωσης Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης Εμφάνιση ολόκληρου μηνύματος 14/8/26, 1:50 π.μ. Άλλαξε η εικόνα κινδύνου σας Ζημιά σε ακίνητο που σας ανήκει και 1 ακόμη αλλαγές. 12/8/26, 2:34 μ.μ. Εντοπίσαμε 3 κενά κάλυψης Ζημιά σε ακίνητο που σας ανήκει και 2 ακόμη. 12/8/26, 2:34 μ.μ. Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "tier": "paid",
+  "state": "populated",
+  "duplicateActions": {
+    "totalCandidates": 69,
+    "offeredInstances": 34,
+    "excluded": [
+      {
+        "reason": "off-canvas",
+        "count": 14
+      },
+      {
+        "reason": "zero-size",
+        "count": 1
+      },
+      {
+        "reason": "nested-in-command",
+        "count": 20
+      }
+    ],
+    "unidentifiable": 0,
+    "groups": [
+      {
+        "identity": "href:/dashboard",
+        "identitySource": "href",
+        "subject": "",
+        "count": 2,
+        "contentCount": 1,
+        "navCount": 1,
+        "classification": "nav-overlap",
+        "gated": false,
+        "instances": [
+          {
+            "label": "PolicyWallet",
+            "href": "/dashboard",
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Αρχική",
+            "href": "/dashboard",
+            "region": "nav",
+            "where": "nav"
+          }
+        ]
+      },
+      {
+        "identity": "label:η ανάλυση ολοκληρώθηκετο ασφαλιστήριο συμβόλαιο 64504715 (ανωνυμος ελληνικη εταιρια γενικων ασφαλειων «η εθνικη») αναλύθηκε επιτυχώς.εμφάνιση ολόκληρου μηνύματος14/8/26, 11:31 μ.μ.",
+        "identitySource": "label",
+        "subject": "",
+        "count": 2,
+        "contentCount": 2,
+        "navCount": 0,
+        "classification": "content-repeat",
+        "gated": true,
+        "instances": [
+          {
+            "label": "Η ανάλυση ολοκληρώθηκεΤο ασφαλιστήριο συμβόλαιο 64504715 (ΑΝ",
+            "href": null,
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Η ανάλυση ολοκληρώθηκεΤο ασφαλιστήριο συμβόλαιο 64504715 (ΑΝ",
+            "href": null,
+            "region": "content",
+            "where": "top"
+          }
+        ]
+      },
+      {
+        "identity": "label:η ανάλυση δεν ολοκληρώθηκεη ανάλυση του συμβολαίου pending-1786738708923 (__pending_extraction__) δεν ολοκληρώθηκε. μπορείτε να δοκιμάσετε ξανά.εμφάνιση ολόκληρου μηνύματος14/8/26, 11:19 μ.μ.",
+        "identitySource": "label",
+        "subject": "",
+        "count": 2,
+        "contentCount": 2,
+        "navCount": 0,
+        "classification": "content-repeat",
+        "gated": true,
+        "instances": [
+          {
+            "label": "Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυση του συμβολαίου PENDING-1",
+            "href": null,
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυση του συμβολαίου PENDING-1",
+            "href": null,
+            "region": "content",
+            "where": "top"
+          }
+        ]
+      },
+      {
+        "identity": "label:η ανάλυση δεν ολοκληρώθηκεη ανάλυση του συμβολαίου pending-1786737112558 (__pending_extraction__) δεν ολοκληρώθηκε. μπορείτε να δοκιμάσετε ξανά.εμφάνιση ολόκληρου μηνύματος14/8/26, 10:53 μ.μ.",
+        "identitySource": "label",
+        "subject": "",
+        "count": 2,
+        "contentCount": 2,
+        "navCount": 0,
+        "classification": "content-repeat",
+        "gated": true,
+        "instances": [
+          {
+            "label": "Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυση του συμβολαίου PENDING-1",
+            "href": null,
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Η ανάλυση δεν ολοκληρώθηκεΗ ανάλυση του συμβολαίου PENDING-1",
+            "href": null,
+            "region": "content",
+            "where": "top"
+          }
+        ]
+      },
+      {
+        "identity": "label:ζητήθηκε προσφορά ανανέωσηςασφαλιστήριο e2e-mot-001: ζητήθηκε προσφορά ανανέωσηςεμφάνιση ολόκληρου μηνύματος14/8/26, 1:50 π.μ.",
+        "identitySource": "label",
+        "subject": "",
+        "count": 2,
+        "contentCount": 2,
+        "navCount": 0,
+        "classification": "content-repeat",
+        "gated": true,
+        "instances": [
+          {
+            "label": "Ζητήθηκε προσφορά ανανέωσηςΑσφαλιστήριο E2E-MOT-001: ζητήθηκ",
+            "href": null,
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Ζητήθηκε προσφορά ανανέωσηςΑσφαλιστήριο E2E-MOT-001: ζητήθηκ",
+            "href": null,
+            "region": "content",
+            "where": "top"
+          }
+        ]
+      }
+    ],
+    "duplicateActionCount": 4,
+    "navOverlapCount": 1,
+    "navPolicy": "separate"
+  },
+  "countConsistency": {
+    "groups": [
+      {
+        "key": "notification.unreadCount",
+        "subject": "",
+        "channel": "count",
+        "renders": [
+          {
+            "text": "9+",
+            "where": "top",
+            "channel": "count",
+            "value": "9"
+          }
+        ]
+      }
+    ],
+    "totalKeys": 1,
+    "comparableKeys": 1,
+    "corroboratedKeys": 0,
+    "inconsistent": [],
+    "nonComparable": [],
+    "textualFacts": [],
+    "unmeasurable": [
+      {
+        "text": "Απώλεια του εισοδήματος από το οποίο εξαρτάται το νοικοκυριό σας και 3 ακόμη αλλ",
+        "where": "top"
+      },
+      {
+        "text": "6 νέες προτάσεις για εσάς",
+        "where": "top"
+      },
+      {
+        "text": "Το συμβόλαιό σας λήγει σε 15 ημέρες. Ελέγξτε τις επιλογές ανανέωσης.",
+        "where": "top"
+      },
+      {
+        "text": "Αναμονή για θεραπεία τη στιγμή που μετράει και 1 ακόμη αλλαγές.",
+        "where": "top"
+      },
+      {
+        "text": "6 νέες προτάσεις για εσάς",
+        "where": "top"
+      },
+      {
+        "text": "Ζημιά σε ακίνητο που σας ανήκει και 3 ακόμη αλλαγές.",
+        "where": "top"
+      },
+      {
+        "text": "Εντοπίσαμε 2 κενά κάλυψης",
+        "where": "top"
+      },
+      {
+        "text": "Διαδικτυακή απάτη και παραβίαση λογαριασμού και 1 ακόμη.",
+        "where": "top"
+      },
+      {
+        "text": "2 νέες προτάσεις για εσάς",
+        "where": "top"
+      },
+      {
+        "text": "Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης",
+        "where": "top"
+      },
+      {
+        "text": "Ασφαλιστήριο E2E-MOT-001: ζητήθηκε προσφορά ανανέωσης",
+        "where": "top"
+      },
+      {
+        "text": "Ζημιά σε ακίνητο που σας ανήκει και 1 ακόμη αλλαγές.",
+        "where": "top"
+      },
+      {
+        "text": "Εντοπίσαμε 3 κενά κάλυψης",
+        "where": "top"
+      },
+      {
+        "text": "Ζημιά σε ακίνητο που σας ανήκει και 2 ακόμη.",
+        "where": "top"
+      }
+    ],
+    "excludedByDesign": [
+      {
+        "reason": "date",
+        "count": 24
+      },
+      {
+        "reason": "time",
+        "count": 24
+      },
+      {
+        "reason": "percent",
+        "count": 4
+      },
+      {
+        "reason": "long-numeral",
+        "count": 6
+      }
+    ],
+    "failures": 0,
+    "fullyMeasured": false,
+    "verdict": "consistent-but-unmeasured"
+  },
+  "clippedLabels": []
+}

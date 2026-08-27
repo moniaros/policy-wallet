@@ -333,24 +333,10 @@ const REGISTER: RegisterEntry[] = [
         kind: "reachable",
         note: "copy.body clamps on the teaser card; tapping opens UpgradeModal, which renders the same copy.body unclamped.",
     },
-    {
-        file: "components/notifications/NotificationBell.tsx",
-        clamps: { truncate: 1, "line-clamp-2": 1 },
-        kind: "debt",
-        note:
-            "Title truncates and body clamps to two lines in the dropdown; /notifications " +
-            "clamps the same body to three lines and NO notification detail page exists — " +
-            "a long body is unreachable end to end.",
-    },
-    {
-        file: "components/notifications/NotificationCard.tsx",
-        clamps: { "line-clamp-2": 1 },
-        kind: "debt",
-        note:
-            "Body clamps with no fuller render anywhere. The component currently has no " +
-            "importer (unmounted legacy) so the clamp is moot today — kept as debt so " +
-            "remounting it cannot silently ship the unreachable clamp.",
-    },
+    // NotificationBell.tsx and NotificationCard.tsx were DELETED in the Phase 5
+    // notifications rebuild (both unmounted dead code — zero importers,
+    // verified by grep and by tsc). Their two debt entries left with them; the
+    // debt list shrinking is the ratchet working as designed.
     {
         file: "components/notifications/NotificationsClient.tsx",
         clamps: { "line-clamp-3": 1 },
@@ -474,8 +460,6 @@ const DEBT_BASELINE = [
     "app/(protected)/agent/AgentClient.tsx",
     "components/account/Achievements.tsx",
     "components/collaboration/AgentCard.tsx",
-    "components/notifications/NotificationBell.tsx",
-    "components/notifications/NotificationCard.tsx",
     "components/wallet/CollaborationPanel.tsx",
 ]
 

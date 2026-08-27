@@ -138,7 +138,6 @@ describe("a panel that names its own foreground and background is readable", () 
     it("every in-scope pair clears 4.5:1", () => {
         const bad = pairs
             .filter((p) => !OUT_OF_SCOPE_B2B.has(p.file))
-            .filter((p) => p.file !== "components/notifications/NotificationBell.tsx")
             .filter((p) => p.ratio < 4.5)
             .map((p) => `${p.file}:${p.line} ${p.bg} + ${p.fg} = ${p.ratio.toFixed(2)}:1`)
         expect(bad).toEqual([])
@@ -151,16 +150,17 @@ describe("a panel that names its own foreground and background is readable", () 
         expect(ratio(PALETTE.white, PALETTE["red-600"])).toBeGreaterThanOrEqual(4.5)
     })
 
-    it("NotificationBell is exempt only while nothing renders it", () => {
-        // D-022: the exemption asserts the reason that makes it safe. The
-        // component has a red-500 badge that would fail if it ever mounted; it
-        // has had zero call sites since the shell dropped its `compact`
-        // UserMenu branch. The day something imports it, this fails and the
-        // badge must be fixed before it can ship.
+    it("NotificationBell stays deleted — nothing imports it", () => {
+        // D-022 epilogue: the component (dead since the shell dropped its
+        // `compact` UserMenu branch, carrying a bg-red-500 badge that would
+        // fail the 4.5:1 scan if it ever mounted) was DELETED in the Phase 5
+        // notifications rebuild, and its exemption above left with it. This
+        // asserts the deletion holds: no file may import it, and a restored
+        // copy would re-enter the main scan with no exemption to hide behind.
         const importers = [...globSync("app/**/*.tsx"), ...globSync("components/**/*.tsx")]
             .filter((f) => !f.endsWith("NotificationBell.tsx"))
             .filter((f) => /from\s+["'][^"']*NotificationBell["']/.test(readFileSync(f, "utf-8")))
-        expect(importers, "NotificationBell is rendered again — fix its bg-red-500 badge").toEqual([])
+        expect(importers, "NotificationBell is back — it died unmounted; do not remount it").toEqual([])
     })
 
     it("records the out-of-scope B2B failures rather than forgetting them", () => {

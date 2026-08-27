@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { BellRing, CheckCheck, Settings2 } from "lucide-react"
+import { BellRing, CheckCheck, ChevronRight, Settings2 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
@@ -22,8 +21,24 @@ import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
  * The toggle appears only when the text is ACTUALLY clipped, measured after
  * layout rather than guessed from a character count — a "show more" that
  * reveals nothing is its own small lie.
+ *
+ * `onFirstExpand` fires when the reader opens the full message: reading the
+ * whole of a notification IS reading it, so the caller marks it read there —
+ * one of the two per-item paths that replaced the old card-as-one-big-button
+ * (a role="button" wrapping this very toggle, which is invalid ARIA and was
+ * measured as 20 `nested-in-command` exclusions in the Phase 5 baseline).
  */
-function ClampedMessage({ text, moreLabel, lessLabel }: { text: string; moreLabel: string; lessLabel: string }) {
+function ClampedMessage({
+    text,
+    moreLabel,
+    lessLabel,
+    onFirstExpand,
+}: {
+    text: string
+    moreLabel: string
+    lessLabel: string
+    onFirstExpand?: () => void
+}) {
     const [expanded, setExpanded] = useState(false)
     const [clipped, setClipped] = useState(false)
     const ref = useRef<HTMLParagraphElement | null>(null)
@@ -50,7 +65,12 @@ function ClampedMessage({ text, moreLabel, lessLabel }: { text: string; moreLabe
             {(clipped || expanded) && (
                 <button
                     type="button"
-                    onClick={() => setExpanded((v) => !v)}
+                    onClick={() => {
+                        setExpanded((v) => {
+                            if (!v) onFirstExpand?.()
+                            return !v
+                        })
+                    }}
                     aria-expanded={expanded}
                     className="mt-1 inline-flex min-h-11 items-center text-xs font-semibold text-primary underline-offset-2 hover:underline dark:text-mint"
                 >
@@ -68,6 +88,11 @@ function ClampedMessage({ text, moreLabel, lessLabel }: { text: string; moreLabe
 // raw enum `in_app` (BASELINE.md, N1). `unread` is a server decision too: it
 // reflects the event's in-app arm alone, so an event delivered only by email
 // can never show an unread badge that "mark all as read" cannot clear.
+//
+// `related_policy_id` arrives only when the server VERIFIED the policy still
+// exists and belongs to this reader (actions.ts) — the row's «Προβολή
+// ασφαλιστηρίου» link renders only then, so every rendered destination
+// resolves (§11.2, the destination guard; ledger N-07).
 interface NotificationsClientProps {
     initialData: {
         history: Array<{
@@ -80,7 +105,6 @@ interface NotificationsClientProps {
             related_policy_id?: string | null
             related_policy_name?: string | null
         }>
-        user: { id?: string; user_id?: string }
     }
     userLanguage?: string
 }
@@ -95,12 +119,29 @@ interface NotificationsClientProps {
  * group. Both wrote the same `NotificationPreference` table, so a stream
  * switched off in settings could be half-revived here. Preferences now live in
  * one place, and this shows what was sent.
+ *
+ * Phase 5 rebuild (PW-MOBILE-TRANSFORM-02), each change measurement-driven:
+ *
+ * - Cards go through `.pw-card`, not a hand-rolled border recipe. The old
+ *   `border-black/10` edge measured 1.21–1.37:1 on 24 interactive cards —
+ *   below the 3:1 SC 1.4.11 asks of a control's boundary (the same defect the
+ *   dashboard measured 20× at its Goal 4, fixed by the element-scoped
+ *   `--pw-border-control` rule in globals.css).
+ * - The card is no longer one big `role="button"`. A button wrapping the
+ *   show-more button is invalid ARIA (no interactive descendants inside a
+ *   control), and the baseline measured all 20 expand toggles excluded as
+ *   `nested-in-command`. Mark-as-read now has two explicit per-item paths:
+ *   the unread indicator is itself a 44×44 button, and opening the full
+ *   message marks the item read.
+ * - Rows are `<li>` in a real list: structure for free (each row is its own
+ *   action subject, so 24 «Εμφάνιση ολόκληρου μηνύματος» toggles are 24
+ *   subjects, not one action offered 24 times) and semantics for screen
+ *   readers.
  */
 export function NotificationsClient({ initialData, userLanguage = "en" }: NotificationsClientProps) {
     const { t, language } = useLanguage()
     const locale = language || userLanguage || "en"
     const isGreek = locale === "el"
-    const tr = (el: string, en: string) => (isGreek ? el : en)
 
     const [readIds, setReadIds] = useState<Set<string>>(() => {
         const set = new Set<string>()
@@ -142,141 +183,165 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
         try {
             const { markAllNotificationsRead } = await import("@/app/(protected)/notifications/actions")
             await markAllNotificationsRead()
-            toast.success(tr("Όλες σημάνθηκαν ως αναγνωσμένες.", "All marked as read."))
+            toast.success(t.notifications.allMarkedRead)
         } catch {
             setReadIds(new Set())
-            toast.error(tr("Αποτυχία σήμανσης.", "Could not mark as read."))
+            toast.error(t.notifications.markAllReadFailed)
         } finally {
             setMarkingRead(false)
         }
-    }, [historyItems, tr])
+    }, [historyItems, t])
 
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-4xl px-4 py-6 pb-28 sm:px-6 lg:pb-10">
-                <div className="mb-5 flex flex-col gap-4 rounded-2xl border border-black/10 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between dark:border-white/15 dark:bg-black">
-                    <div className="flex items-center gap-3">
-                        <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint">
-                            <BellRing aria-hidden="true" className="h-5 w-5" />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-semibold text-black dark:text-white">
-                                {tr("Ειδοποιήσεις", "Notifications")}
-                            </h1>
-                            <p className="text-sm text-black/65 dark:text-white/70">
-                                {tr("Τι σας έχουμε στείλει πρόσφατα.", "What we have sent you recently.")}
-                            </p>
-                        </div>
+                {/* No icon tile: it was a decorative bounded box on a page whose
+                    §11 container budget is 50% of a baseline the 24 event rows
+                    already consume — the one page-owned box that carried no
+                    information was this decoration. */}
+                <header className="pw-card pw-pad mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-lg font-semibold text-black dark:text-white">
+                            {t.notifications.pageTitle}
+                        </h1>
+                        <p className="text-sm text-black/65 dark:text-white/70">
+                            {t.notifications.pageSubtitle}
+                        </p>
                     </div>
-                    {/* Preferences live in settings — one screen, one source of truth. */}
+                    {/* Preferences live in settings — one screen, one source of truth.
+                        Not t.settings.nav.notifications.label: that is «Ειδοποιήσεις»,
+                        the same word as the page title two lines up — a button that
+                        repeats the heading tells the reader nothing about what it
+                        DOES. It opens the notification PREFERENCES. */}
                     <Link
                         href="/account/notifications"
                         className="pw-secondary-button pw-btn-sm inline-flex shrink-0 items-center gap-2"
                     >
                         <Settings2 aria-hidden="true" className="h-3.5 w-3.5" />
-                        {/* Not t.settings.nav.notifications.label: that is
-                            «Ειδοποιήσεις», the same word as the page title two
-                            lines up — a button that repeats the heading tells
-                            the reader nothing about what it DOES. It opens the
-                            notification PREFERENCES. */}
-                        {tr("Προτιμήσεις", "Preferences")}
+                        {t.notifications.preferences}
                     </Link>
-                </div>
+                </header>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-3"
-                >
+                <section id="history" aria-label={t.notifications.pageTitle} className="space-y-3">
                     {historyItems.length > 0 && unreadCount > 0 && (
                         <div className="flex justify-end">
                             <button
                                 type="button"
                                 onClick={() => void handleMarkAllRead()}
                                 disabled={markingRead}
-                                className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/10 disabled:opacity-60 dark:text-mint"
+                                data-action="dismiss"
+                                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold text-primary transition hover:bg-primary/10 disabled:opacity-60 dark:text-mint"
                             >
                                 <CheckCheck aria-hidden="true" className="h-3.5 w-3.5" />
-                                {markingRead
-                                    ? tr("Σήμανση...", "Marking...")
-                                    : tr("Σήμανση όλων ως αναγνωσμένα", "Mark all as read")}
+                                {markingRead ? t.notifications.markingAllRead : t.notifications.markAllRead}
                             </button>
                         </div>
                     )}
 
                     {historyItems.length === 0 ? (
-                        <div className="rounded-2xl border border-black/10 bg-white p-6 text-center shadow-sm dark:border-white/15 dark:bg-black">
+                        <div className="pw-card pw-pad-roomy text-center">
                             <BellRing aria-hidden="true" className="mx-auto h-5 w-5 text-muted-foreground" />
+                            {/* An empty history says it is empty — never "all clear".
+                                No notification having been sent is not evidence that
+                                nothing needs attention (CLAUDE.md, absence-is-not-
+                                reassurance). */}
                             <p className="mt-2 text-sm text-black/65 dark:text-white/70">
-                                {tr("Δεν υπάρχουν πρόσφατες ειδοποιήσεις.", "No recent notification activity.")}
+                                {t.notifications.noNotificationsYet}
                             </p>
                         </div>
                     ) : (
-                        historyItems.map((event) => {
-                            const createdAtDate = new Date(event.created_at)
-                            const createdAtText = Number.isNaN(createdAtDate.getTime())
-                                ? event.created_at
-                                : createdAtDate.toLocaleString(isGreek ? "el-GR" : "en-GB", {
-                                      dateStyle: "short",
-                                      timeStyle: "short",
-                                  })
-                            const isRead = readIds.has(event.event_id)
+                        <ul role="list" className="space-y-3">
+                            {historyItems.map((event) => {
+                                const createdAtDate = new Date(event.created_at)
+                                const createdAtText = Number.isNaN(createdAtDate.getTime())
+                                    ? event.created_at
+                                    : createdAtDate.toLocaleString(isGreek ? "el-GR" : "en-GB", {
+                                          dateStyle: "short",
+                                          timeStyle: "short",
+                                      })
+                                const isRead = readIds.has(event.event_id)
 
-                            return (
-                                <div
-                                    key={event.event_id}
-                                    onClick={() => void handleMarkRead(event.event_id)}
-                                    role="button"
-                                    tabIndex={0}
-                                    // A role="button" must activate on Space as well as Enter
-                                    // (WAI-ARIA button pattern). preventDefault stops Space
-                                    // from scrolling the page instead of marking as read.
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter" || e.key === " ") {
-                                            e.preventDefault()
-                                            void handleMarkRead(event.event_id)
-                                        }
-                                    }}
-                                    className={`cursor-pointer rounded-2xl border p-4 shadow-sm transition ${
-                                        isRead
-                                            ? "border-black/10 bg-white dark:border-white/15 dark:bg-black"
-                                            : "border-l-[3px] border-l-primary border-t-black/10 border-r-black/10 border-b-black/10 bg-primary/5 dark:border-b-white/15 dark:bg-primary/10"
-                                    }`}
-                                >
-                                    {/* min-w-0 + shrink-0, and in that order of
-                                        blame: the timestamp is `whitespace-nowrap`,
-                                        so when this row ran out of width it was
-                                        compressed to 54px with 103px of unbreakable
-                                        date inside it, and the ink — not any element
-                                        box — spilled to 340px in a 320px viewport.
-                                        The wrappable text column absorbs the squeeze
-                                        instead. */}
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div className="min-w-0">
-                                            <p
-                                                className={`text-sm text-black dark:text-white ${isRead ? "font-medium" : "font-bold"}`}
-                                            >
-                                                {fixMojibakeText(event.subject || "")}
-                                            </p>
-                                            <ClampedMessage
-                                                text={fixMojibakeText(event.message || "")}
-                                                moreLabel={t.notifications.showFullMessage}
-                                                lessLabel={t.notifications.showLessMessage}
-                                            />
-                                            {/* No channel chip. One card is one EVENT; which
-                                                pipe delivered it (email, push, in-app) is not
-                                                customer-facing information — and the chip's
-                                                fallback leaked the raw enum `in_app`. */}
+                                return (
+                                    <li key={event.event_id} className="pw-card pw-pad-tight">
+                                        {/* The timestamp sits ABOVE the title, not beside
+                                            it. Beside it, its ~95px of unbreakable
+                                            `whitespace-nowrap` date shared a 272px card
+                                            interior with the 44px mark-read button and a
+                                            12px gap, and the measured 320px capture showed
+                                            unread titles wrapping one word per line. A
+                                            full-width metadata line costs ~16px of height
+                                            per card and returns the whole width to the
+                                            title. */}
+                                        <div className="flex items-start gap-3">
+                                            {!isRead && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => void handleMarkRead(event.event_id)}
+                                                    aria-label={t.notifications.markRead}
+                                                    data-action="dismiss"
+                                                    data-action-subject={event.event_id}
+                                                    className="-my-2.5 -ml-2.5 flex h-11 w-11 shrink-0 items-center justify-center"
+                                                >
+                                                    {/* Unread is never colour alone: the dot
+                                                        pairs with the bold title, and the
+                                                        control names itself for a reader
+                                                        who cannot see either. 6px, not 10:
+                                                        a bounded element ≥8×8 reads as a
+                                                        CONTAINER to the §11 density metric,
+                                                        and 14 unread dots measured as 14
+                                                        extra containers on one list. */}
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className="h-1.5 w-1.5 rounded-full bg-primary dark:bg-mint"
+                                                    />
+                                                </button>
+                                            )}
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-xs font-medium text-black/60 dark:text-white/60">
+                                                    {createdAtText}
+                                                </p>
+                                                <p
+                                                    className={`mt-0.5 text-sm text-black dark:text-white ${isRead ? "font-medium" : "font-bold"}`}
+                                                >
+                                                    {fixMojibakeText(event.subject || "")}
+                                                </p>
+                                                <ClampedMessage
+                                                    text={fixMojibakeText(event.message || "")}
+                                                    moreLabel={t.notifications.showFullMessage}
+                                                    lessLabel={t.notifications.showLessMessage}
+                                                    onFirstExpand={() => void handleMarkRead(event.event_id)}
+                                                />
+                                                {/* No channel chip. One card is one EVENT; which
+                                                    pipe delivered it (email, push, in-app) is not
+                                                    customer-facing information — and the chip's
+                                                    fallback leaked the raw enum `in_app`. */}
+                                                {event.related_policy_id && (
+                                                    <Link
+                                                        href={`/wallet/${event.related_policy_id}`}
+                                                        data-action="viewPolicy"
+                                                        // Subject = the EVENT, not the policy:
+                                                        // the offer is row-scoped («view the
+                                                        // policy this notification is about»),
+                                                        // and two notifications about one
+                                                        // policy are two rows, not one action
+                                                        // offered twice — the same discipline
+                                                        // that keeps 29 wallet «Προβολή»
+                                                        // controls from reading as 29 repeats.
+                                                        data-action-subject={event.event_id}
+                                                        className="mt-1 inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-primary underline-offset-2 hover:underline dark:text-mint"
+                                                    >
+                                                        {t.notifications.viewPolicy}
+                                                        <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
+                                                    </Link>
+                                                )}
+                                            </div>
                                         </div>
-                                        <p className="shrink-0 whitespace-nowrap text-xs font-medium text-black/60 dark:text-white/60">
-                                            {createdAtText}
-                                        </p>
-                                    </div>
-                                </div>
-                            )
-                        })
+                                    </li>
+                                )
+                            })}
+                        </ul>
                     )}
-                </motion.div>
+                </section>
             </div>
         </div>
     )
