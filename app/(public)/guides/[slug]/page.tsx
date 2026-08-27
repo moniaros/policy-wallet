@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import { notFound } from "next/navigation"
 import GuideArticleClient from "./GuideArticleClient"
 import { getGuide, guides } from "@/lib/guides/content"
@@ -62,7 +63,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
     const path = `/guides/${guide.slug}`
 
     return (
-        <>
+        <StaticLanguageProvider language="el" counterpartPath={`/en/guides/${guide.slug}`}>
             <GuideArticleClient guide={guide} />
             <JsonLd
                 data={[
@@ -109,6 +110,6 @@ export default async function GuidePage({ params }: GuidePageProps) {
                     ]),
                 ]}
             />
-        </>
+        </StaticLanguageProvider>
     )
 }

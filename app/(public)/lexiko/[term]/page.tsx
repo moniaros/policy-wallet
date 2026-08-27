@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import { notFound } from "next/navigation"
 import GlossaryTermClient from "./GlossaryTermClient"
 import { getGlossaryTerm, glossaryTerms } from "@/lib/glossary/content"
@@ -59,7 +60,7 @@ export default async function GlossaryTermPage({ params }: GlossaryTermPageProps
     const path = `/lexiko/${entry.slug}`
 
     return (
-        <>
+        <StaticLanguageProvider language="el" counterpartPath={`/en/lexiko/${entry.slug}`}>
             <GlossaryTermClient entry={entry} />
             <JsonLd
                 data={[
@@ -84,6 +85,6 @@ export default async function GlossaryTermPage({ params }: GlossaryTermPageProps
                     ]),
                 ]}
             />
-        </>
+        </StaticLanguageProvider>
     )
 }

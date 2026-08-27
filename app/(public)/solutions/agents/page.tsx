@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import AgentsSolutionPageClient from "./AgentsSolutionPageClient"
 import { AGENT_FAQS } from "./faqs"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
@@ -8,7 +9,7 @@ export const metadata: Metadata = buildMarketingMetadata("solutions-agents")
 
 export default function AgentsSolutionPage() {
     return (
-        <>
+        <StaticLanguageProvider language="el" counterpartPath="/en/solutions/agents">
             <AgentsSolutionPageClient />
             <JsonLd
                 data={[
@@ -20,6 +21,6 @@ export default function AgentsSolutionPage() {
                     ),
                 ]}
             />
-        </>
+        </StaticLanguageProvider>
     )
 }

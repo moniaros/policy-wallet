@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import GlossaryIndexClient from "./GlossaryIndexClient"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
 import { JsonLd, breadcrumbJsonLd, definedTermSetJsonLd } from "@/lib/seo/jsonld"
@@ -8,7 +9,7 @@ export const metadata: Metadata = buildMarketingMetadata("lexiko")
 
 export default function GlossaryPage() {
     return (
-        <>
+        <StaticLanguageProvider language="el" counterpartPath="/en/lexiko">
             <GlossaryIndexClient />
             <JsonLd
                 data={[
@@ -23,6 +24,6 @@ export default function GlossaryPage() {
                     }),
                 ]}
             />
-        </>
+        </StaticLanguageProvider>
     )
 }

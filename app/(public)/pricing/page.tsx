@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import PricingPageClient from "./PricingPageClient"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
 import {
@@ -32,7 +33,7 @@ export default async function PricingPage() {
     const { plans, faqItems } = pricingContent.policyholder
 
     return (
-        <>
+        <StaticLanguageProvider language="el" counterpartPath="/en/pricing">
             <PricingPageClient pricingContent={pricingContent} partnerOffers={partnerOffers} stripeMode={stripeMode} />
             <JsonLd
                 data={[
@@ -54,6 +55,6 @@ export default async function PricingPage() {
                     ),
                 ]}
             />
-        </>
+        </StaticLanguageProvider>
     )
 }

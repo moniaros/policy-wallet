@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import GuidesIndexClient from "./GuidesIndexClient"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
 import { JsonLd, breadcrumbJsonLd, guideIndexJsonLd } from "@/lib/seo/jsonld"
@@ -9,7 +10,7 @@ export const metadata: Metadata = buildMarketingMetadata("guides")
 
 export default function GuidesPage() {
     return (
-        <>
+        <StaticLanguageProvider language="el" counterpartPath="/en/guides">
             <GuidesIndexClient />
             <JsonLd
                 data={[
@@ -37,6 +38,6 @@ export default function GuidesPage() {
                     }),
                 ]}
             />
-        </>
+        </StaticLanguageProvider>
     )
 }

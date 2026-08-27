@@ -1,0 +1,13 @@
+// PROBE FIXTURE — not a route. The corrected shape, mirroring
+// app/(public)/product/page.tsx.
+import type { Metadata } from "next"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
+import GuidesIndexClient from "./GuidesIndexClient"
+
+export default function ProbePage() {
+    return (
+        <StaticLanguageProvider language="el" counterpartPath="/en/guides">
+            <GuidesIndexClient />
+        </StaticLanguageProvider>
+    )
+}

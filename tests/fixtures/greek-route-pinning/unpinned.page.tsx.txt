@@ -1,0 +1,14 @@
+// PROBE FIXTURE — not a route. Proves the pinning guard can still go red.
+// This is the exact shape /guides shipped to production with: a Greek public
+// page whose client subtree reads useLanguage() from the GLOBAL provider, so
+// the rendered language is whatever that DEVICE last stored.
+import type { Metadata } from "next"
+import GuidesIndexClient from "./GuidesIndexClient"
+
+export default function ProbePage() {
+    return (
+        <>
+            <GuidesIndexClient />
+        </>
+    )
+}
