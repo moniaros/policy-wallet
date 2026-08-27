@@ -111,11 +111,11 @@ export const EVIDENCE_REFUSAL_COPY: Record<
     { el: string; en: string }
 > = {
     not_a_policy_document: {
-        el: 'Το αρχείο δεν φαίνεται να είναι ασφαλιστήριο συμβόλαιο. Αποθηκεύτηκε, αλλά δεν αναλύθηκε ως συμβόλαιο — ανέβασε τη σελίδα με τα στοιχεία του συμβολαίου για ανάλυση.',
+        el: 'Το αρχείο δεν φαίνεται να είναι ασφαλιστήριο. Αποθηκεύτηκε, αλλά δεν αναλύθηκε ως ασφαλιστήριο — ανεβάστε τη σελίδα με τα στοιχεία του ασφαλιστηρίου για ανάλυση.',
         en: 'This file does not appear to be a policy schedule. It has been stored but not analysed as a policy — upload the page carrying the policy details to analyse it.',
     },
     no_identifying_evidence: {
-        el: 'Δεν εντοπίστηκαν επαρκή στοιχεία ταυτοποίησης συμβολαίου — ούτε αριθμός συμβολαίου, ούτε ασφαλισμένος, ούτε περίοδος ασφάλισης.',
+        el: 'Δεν εντοπίστηκαν επαρκή στοιχεία ταυτοποίησης ασφαλιστηρίου — ούτε αριθμός ασφαλιστηρίου, ούτε ασφαλισμένος, ούτε περίοδος ασφάλισης.',
         en: 'No identifying policy evidence was found — no policy number, no insured party and no period of cover.',
     },
 }

@@ -7,6 +7,7 @@
  */
 
 import { BaseService } from './base.service'
+import { closeSupersededRenewals } from "./renewal.service"
 import { mergeAcordData } from './acord-merge'
 import { storedDocumentLabel } from '@/lib/wallet/document-label'
 import { emit } from '@/lib/notifications/dispatch'
@@ -727,6 +728,36 @@ export class PolicyService extends BaseService {
                             status: 'active',
                         }
                     })
+
+                    // CLOSE OUT THE RENEWAL ROW THE OLD DATE BELONGED TO.
+                    //
+                    // `PolicyRenewal` is unique on [policyId, policyEndDate]. Move
+                    // a policy's end date forward and the daily cron finds no row
+                    // for the NEW date and creates a second one — while the old
+                    // row, keyed to the date that just stopped being true, stays
+                    // `pending`/`overdue` for ever. It keeps counting toward
+                    // /renewals and /insights, and because `remindersSent` is
+                    // still its own array the reminder ladder can fire again. The
+                    // customer renewed; the product goes on saying they did not.
+                    //
+                    // Nothing closed these before, because until now nothing moved
+                    // a policy's dates outside the agent-driven outcome flow.
+                    //
+                    // The outcome is DERIVED FROM A DOCUMENT, not judged by a
+                    // person, and `outcomeNotes` says so: an agent setting
+                    // `renewed_same_insurer` in /renewals has decided it; this has
+                    // only observed that a later-dated document arrived. Same
+                    // enum, different provenance, and the note is the only place
+                    // that distinction survives.
+                    if (shouldPromoteIncoming && currentPolicy.endDate) {
+                        await closeSupersededRenewals(
+                            this.db,
+                            existingPolicy.id,
+                            currentPolicy.endDate,
+                            (currentPolicy.insurerName || "").trim().toLowerCase() ===
+                                (existingPolicyFull?.insurerName || "").trim().toLowerCase()
+                        )
+                    }
 
                     // Move documents to the existing policy
                     await this.db.policyDocument.updateMany({

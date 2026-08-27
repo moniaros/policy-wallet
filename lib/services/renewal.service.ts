@@ -10,6 +10,62 @@ import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { RENEWAL_MILESTONES, BASIC_MILESTONES, type Milestone } from "@/lib/renewals/milestones"
 
 /**
+ * Close out the renewal rows whose end date a policy has just moved past.
+ *
+ * `PolicyRenewal` is unique on [policyId, policyEndDate]. When a policy's dates
+ * roll forward — a renewal document is attached, or a duplicate upload is
+ * merged — the daily cron finds no row for the NEW date and creates a second
+ * one, while the row keyed to the date that just stopped being true stays
+ * `pending`/`overdue` for ever. It keeps counting toward /renewals and
+ * /insights, and since `remindersSent` is still its own array the reminder
+ * ladder can fire again. The customer renewed; the product goes on saying they
+ * did not.
+ *
+ * Takes a client rather than importing `db`, because one caller runs inside a
+ * `$transaction` and the close-out must land or roll back with the date change
+ * that caused it.
+ *
+ * ONE DEFINITION ON PURPOSE. Two separate code paths move a policy's dates —
+ * `PolicyService.runBackgroundAnalysis`'s auto-dedupe and
+ * `policy-merge.service`'s approved merge — and they have already drifted once
+ * (only one of them calls `mergeAcordData`). A second copy of this rule would
+ * drift the same way, and the failure would be silent.
+ *
+ * The outcome is DERIVED, not judged. An adviser setting `renewed_same_insurer`
+ * in /renewals has decided it; this has only observed that a later-dated
+ * document arrived. Same enum, different provenance, and `outcomeNotes` is the
+ * only place that distinction survives.
+ */
+export async function closeSupersededRenewals(
+    client: {
+        policyRenewal: {
+            updateMany: (args: {
+                where: Record<string, unknown>
+                data: Record<string, unknown>
+            }) => Promise<{ count: number }>
+        }
+    },
+    policyId: string,
+    newEndDate: Date,
+    sameInsurer: boolean
+): Promise<number> {
+    const { count } = await client.policyRenewal.updateMany({
+        where: {
+            policyId,
+            policyEndDate: { lt: newEndDate },
+            status: { in: ["pending", "overdue"] },
+        },
+        data: {
+            status: "completed",
+            outcome: sameInsurer ? "renewed_same_insurer" : "renewed_different_insurer",
+            outcomeAt: new Date(),
+            outcomeNotes: "Derived from an uploaded renewal document, not set by an adviser.",
+        },
+    })
+    return count
+}
+
+/**
  * Which milestone reminder to MAIL, and which milestones to MARK sent, for a
  * policy that is `daysUntilExpiry` days out given the milestones already sent.
  *

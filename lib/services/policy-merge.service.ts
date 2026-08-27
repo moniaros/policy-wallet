@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { closeSupersededRenewals } from "./renewal.service"
 import { emit } from "@/lib/notifications/dispatch"
 import { logger } from "@/lib/logger"
 import { resolveCoverageEndDate } from "@/lib/policy-status"
@@ -180,6 +181,25 @@ export async function mergePolicyRecords(
                     : {}),
             },
         })
+        // The surviving policy's end date just moved, so the renewal row keyed
+        // to the OLD date is now about a period that ended. Left open it stays
+        // pending/overdue for ever, keeps counting toward /renewals and
+        // /insights, and can re-fire its reminder ladder — the customer
+        // renewed and the product goes on saying they did not. Inside the
+        // transaction deliberately: the close-out must land or roll back with
+        // the date change that caused it. Shared with the auto-dedupe path in
+        // policy.service, because these two are the only code that moves a
+        // policy's dates and they have drifted from each other before.
+        if (promoteIncoming && incoming.endDate) {
+            await closeSupersededRenewals(
+                tx,
+                existing.id,
+                incoming.endDate,
+                (incoming.insurerName || "").trim().toLowerCase() ===
+                    (existing.insurerName || "").trim().toLowerCase()
+            )
+        }
+
         // The duplicate row goes; its documents and period now live on the
         // surviving policy. (Cascade removes the merge request row too.)
         await tx.policy.delete({ where: { id: incoming.id } })

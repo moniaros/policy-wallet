@@ -69,6 +69,37 @@ describe('policy term is «ασφαλιστήριο», never «συμβόλαι�
         }
     })
 
+    /**
+     * KNOWN GAP, measured 2026-08-27 — this guard's universe stops at
+     * `components/*` (minus landing) plus the two translation files. Customer-
+     * facing Greek copy also lives in `lib/**` and `app/(protected)/**`, and
+     * none of it is scanned.
+     *
+     * That is not hypothetical. `lib/services/ai/document-kind.ts` shipped
+     * «δεν αναλύθηκε ως συμβόλαιο» in the extraction-refusal message a customer
+     * reads, and it was found only because an agent copied its register into a
+     * new string and the *translation-file* half of this guard fired on the copy.
+     * The original was invisible. Fixed at the same time as this note.
+     *
+     * NOT widened here, deliberately: a naive scan of `lib/` and `app/` matches
+     * **75 files**. Most are legitimate — this file's own rule ratifies
+     * «συμβόλαιο» as prose in public marketing narrative, which covers
+     * `app/(public)/**`, `lib/guides/`, `lib/glossary/` and the editorial
+     * content modules. Turning that into a failing assertion would either be
+     * red on day one or need a 60-entry allowlist, and an allowlist that large
+     * is a second place for the rule to rot.
+     *
+     * The in-app subset that a widened guard SHOULD cover, from that scan:
+     * `app/(protected)/protection/page.tsx` («Άλλο Συμβόλαιο»),
+     * `app/(protected)/renewals/actions.ts`, `lib/i18n/role-copy.ts`
+     * («Ενεργά Συμβόλαια»), `lib/subscription-copy.ts`,
+     * `lib/wallet/document-insights.ts`, `lib/notifications/registry.ts`,
+     * `lib/needs/outcome.ts` and the gap-engine copy modules.
+     *
+     * Closing it properly means separating "in-app product copy" from "public
+     * editorial prose" at the directory level first. That is a real piece of
+     * work, and it is recorded rather than half-done.
+     */
     it('policy-number labels lowercase «ασφαλιστηρίου» after the «Αρ.» abbreviation', () => {
         // «Αρ.» is an abbreviation, not a sentence end, so the next word stays
         // lowercase — and the greek-sentence-case guard misses this (it treats «.»

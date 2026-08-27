@@ -8,6 +8,7 @@ const notificationCreate = vi.fn()
 const policyDelete = vi.fn()
 const policyUpdate = vi.fn()
 const documentUpdateMany = vi.fn()
+const renewalUpdateMany = vi.fn(async (..._a: any[]) => ({ count: 1 }))
 
 vi.mock('@/lib/db', () => ({
     db: {
@@ -38,6 +39,10 @@ vi.mock('@/lib/db', () => ({
                 },
                 policyMergeRequest: { update: (...a: any[]) => mergeUpdate(...a) },
                 policyDocument: { updateMany: (...a: any[]) => documentUpdateMany(...a) },
+                // A merge that promotes the incoming period moves the surviving
+                // policy's end date, so the renewal row keyed to the OLD date is
+                // closed out in the same transaction.
+                policyRenewal: { updateMany: (...a: any[]) => renewalUpdateMany(...a) },
             }),
     },
 }))
@@ -173,6 +178,17 @@ describe('decidePolicyMerge', () => {
         // Two policies became one — the owner's duplicate-coverage gap and score
         // must recompute, for the OWNER, not whoever approved.
         expect(mockRefresh).toHaveBeenCalledWith(OWNER)
+        // The surviving policy's end date moved, so the renewal row keyed to the
+        // date it moved past is closed out — in this transaction, not after it.
+        // Left open it stays pending/overdue for ever, keeps counting toward
+        // /renewals and /insights, and can re-fire its reminder ladder: the
+        // customer renewed and the product goes on saying they did not.
+        expect(renewalUpdateMany).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: expect.objectContaining({ policyId: 'pol_existing' }),
+                data: expect.objectContaining({ status: 'completed' }),
+            })
+        )
     })
 
     it('does not recompute when a merge is rejected (both records kept)', async () => {
