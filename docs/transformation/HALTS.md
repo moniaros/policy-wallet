@@ -850,3 +850,62 @@ the named phase opens.
   and the τέλη κυκλοφορίας / ΚΤΕΟ / ΕΝΦΙΑ context behind several hooks belong in the existing one.
 
 Full assessment: `docs/growth/STEP0_ASSESSMENT.md`. Queue: `docs/growth/QUEUE-GROWTH.md`.
+
+---
+
+## H-011 — A document reaches a model provider before anyone consents. CLAUDE.md says this cannot happen.
+
+**Raised 2026-08-27, found while wiring the extra-documents feature. Verified in code, not inferred.**
+
+`CLAUDE.md` states the invariant plainly:
+
+> **Nothing reaches a model provider without AI-processing consent — on every path.** … Check
+> `aiProcessingConsentVersion` **before reading the request body**, so a refusal never touches the
+> document.
+
+That claim does not hold. The agent scan path sends the document first and records consent after.
+
+### What the code does
+
+| | |
+|---|---|
+| `parsePolicyPdfWithGemini` (`app/(protected)/agent/actions.ts:1077`) | **93 lines, zero consent references.** Checks agent role, validates the upload, enforces the billable-call policy, then base64s the document and calls `extractPolicyData`. |
+| `scanPolicyForResolution` (`:1171`) | Calls it. **Zero consent references in code** — its single mention is a comment. |
+| `commitScannedPolicy` (`:1232`) | Takes `attestedAiConsent` as a **parameter**. Consent is attested at COMMIT — after the scan already sent the document. |
+| `components/agent/AddCustomerModal.tsx:113` | Calls `parsePolicyPdfWithGemini` **directly from the client**, bypassing both wrappers. |
+
+So the ordering is: **document → model provider → (later, maybe) consent attested.** The deep
+pipeline and the upload-extract route both get this right — `createRun` and `extract/route.ts` check
+before touching the document, and `ai-processing-consent-gate.test.ts` pins both. This third path was
+never in that test's universe.
+
+### The argument FOR the current design, stated fairly
+
+At scan time the subject is genuinely unknown — resolving whose policy it is *is the purpose of the
+call*. You cannot check "the owner's consent" before you know who the owner is. That is a real
+structural constraint, not laziness, and it may be why it was built this way.
+
+### Why it still needs a decision
+
+A lawful basis is required at the moment of **processing**, not at the moment of record-keeping. The
+document belongs to a person who has not agreed to it being sent to a model provider, and the agent's
+attestation arrives afterwards — if the flow is ever abandoned mid-way, it never arrives at all while
+the processing has already happened.
+
+There is also no exemption recorded anywhere. An accepted gap that nobody wrote down is
+indistinguishable from an oversight, which is why this is a halt rather than a backlog row.
+
+### The options
+
+1. **Accept it, and record the rationale** — then **fix CLAUDE.md**, because "on every path" is
+   currently false and a future agent will trust it. Cheapest, and honest.
+2. **Attest before the scan** — the agent confirms they have the customer's authority *before* the
+   document is sent, not at commit. Moves one call earlier; no new capability needed.
+3. **Resolve identity without a model** — deterministic extraction first, model only after a subject
+   is known and consent checked. Most correct, most expensive.
+
+### Also missing, and cheap to add whichever option wins
+
+**No test pins "consent is checked before the request body is read."** The ordering in
+`extract/route.ts` is correct today and held only by a comment at `:124`. A guard that enumerates
+every path reaching a provider — rather than the two currently known — would have caught this one.

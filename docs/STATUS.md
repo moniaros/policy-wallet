@@ -32,7 +32,17 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
 
 ## Top risks, ranked
 
-1. **SEC-01 — session objects reached the Vercel runtime logs. LAUNCH RISK, not post-GA debt.**
+1. **H-011 — a document reaches a model provider BEFORE anyone consents.** The agent scan path
+   (`parsePolicyPdfWithGemini`, 93 lines, zero consent references) sends the document, and
+   `commitScannedPolicy` takes `attestedAiConsent` as a parameter — consent is attested *after* the
+   processing. `AddCustomerModal` calls the scan directly from the client, bypassing both wrappers.
+   **CLAUDE.md claims this cannot happen "on every path"; that claim is false.** There is a fair
+   structural argument (the subject is unknown at scan time — resolving it is the point), but a
+   lawful basis is needed when processing happens, not when it is recorded, and no exemption is
+   written down anywhere. Three options in `HALTS.md → H-011`; the cheapest is to accept it and fix
+   the doc, because a future agent will trust the invariant as written.
+
+2. **SEC-01 — session objects reached the Vercel runtime logs. LAUNCH RISK, not post-GA debt.**
    **Contained, not closed**, and not closable by the agent. The middleware TypeError embedded the
    whole session in its message; **8 occurrences confirmed** in production (2026-08-23 ×7,
    2026-08-26 ×1), counted two independent ways.
@@ -71,7 +81,7 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
    `components/account/TokenUsageCard.tsx` — B2C-facing, `toFixed(2)`, so Greek users see
    English-formatted currency. The guard is widened and the seven are pinned as a shrink-only
    ratchet, but **the seven files are not yet fixed**.
-2. Confirm who can read the Vercel runtime logs — team `moniaros' projects` (Pro, no SAML) is the
+3. Confirm who can read the Vercel runtime logs — team `moniaros' projects` (Pro, no SAML) is the
    access boundary, and its member list could not be enumerated from the tooling here.
 2. Re-capture `/protection` once the session pooler recovers; it is the only measurement that
    changes a ceiling.
