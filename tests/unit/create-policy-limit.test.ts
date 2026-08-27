@@ -9,7 +9,14 @@ vi.mock('next/navigation', () => ({ redirect: vi.fn() }))
 vi.mock('next/server', () => ({ after: vi.fn() }))
 vi.mock('@/lib/logger', () => ({ logger: vi.fn() }))
 vi.mock('@/lib/storage', () => ({ uploadFile: vi.fn(), deleteFile: vi.fn() }))
-vi.mock('@/lib/security/file-upload', () => ({ sanitizeDisplayName: (s: string) => s }))
+// Keep the REAL exports (MAX_DOCUMENTS_PER_POLICY and friends — actions.ts now
+// imports the shared cap instead of re-declaring 20) and stub only the name
+// sanitiser. A hand-listed factory hides every export it forgets, and the
+// failure surfaces in whichever suite happens to import the changed file.
+vi.mock('@/lib/security/file-upload', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@/lib/security/file-upload')>()),
+    sanitizeDisplayName: (s: string) => s,
+}))
 vi.mock('@/lib/supabase/storage-download', () => ({ isOwnedStorageUrl: vi.fn(() => true) }))
 vi.mock('@/lib/auth-helpers', () => ({ getAuthenticatedUserOrNull: vi.fn() }))
 vi.mock('@/lib/api-auth', () => ({ hasAnyRole: vi.fn(() => false) }))

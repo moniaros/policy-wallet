@@ -11,6 +11,7 @@ import {
     validateUploadFile,
     REJECTION_MESSAGES,
     MAX_DOCUMENTS_PER_POLICY,
+    MAX_UPLOAD_SIZE_BYTES,
 } from "@/lib/security/file-upload"
 import { DOCUMENT_KINDS } from "@/lib/services/ai/document-kind"
 
@@ -18,7 +19,14 @@ const policyDocumentParamsSchema = z.object({
     id: z.string().min(1),
 })
 
-const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024
+// ONE size limit for "attach a document to my policy", whichever door it
+// enters through. This route carried its own 10 MB literal while the renewal
+// server action (PolicyService.attachRenewalDocument) validated with the
+// product-wide 15 MB default — the same user action got a different limit
+// depending on which button they pressed, and the UI copy could only state
+// one number. The validator's default (MAX_UPLOAD_SIZE_BYTES) is the single
+// source; the old 10 MB had no stated rationale and rejected scanned policy
+// booklets that every other upload surface accepts.
 
 export const POST = withApiGuard(
     {
@@ -42,14 +50,20 @@ export const POST = withApiGuard(
                 return createApiError("BAD_REQUEST", "No file provided", 400)
             }
 
-            // Full validation: size (10MB here), extension allowlist, content-type
-            // cross-check, and magic-byte signature — content, not just the header.
+            // Full validation: size (the product-wide 15 MB), extension allowlist,
+            // content-type cross-check, and magic-byte signature — content, not
+            // just the header.
             const validation = await validateUploadFile(file, {
                 category: "policy",
-                maxBytes: MAX_DOCUMENT_BYTES,
+                maxBytes: MAX_UPLOAD_SIZE_BYTES,
             })
             if (!validation.ok) {
-                return createApiError("BAD_REQUEST", REJECTION_MESSAGES[validation.reason], 400)
+                // `details.reason` is the machine-readable UploadRejectionReason:
+                // the message is English-only by design (API responses and logs),
+                // so a client localises off the code via uploadRejectionMessage.
+                return createApiError("BAD_REQUEST", REJECTION_MESSAGES[validation.reason], 400, {
+                    reason: validation.reason,
+                })
             }
 
             // Optional, and validated against the closed vocabulary rather than
@@ -83,7 +97,9 @@ export const POST = withApiGuard(
             // patient caller could attach unbounded files to one policy.
             const documentCount = await db.policyDocument.count({ where: { policyId: id } })
             if (documentCount >= MAX_DOCUMENTS_PER_POLICY) {
-                return createApiError("BAD_REQUEST", "Document limit reached for this policy", 400)
+                return createApiError("BAD_REQUEST", "Document limit reached for this policy", 400, {
+                    reason: "document_limit",
+                })
             }
 
             // Derive source from the uploader's actual role in this policy —

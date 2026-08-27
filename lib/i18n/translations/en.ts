@@ -87,6 +87,7 @@ export const en: TranslationKeys = {
         mime_mismatch: 'That file type is not supported. Upload a PDF or a photo of the policy.',
         content_mismatch: 'The file contents do not match a supported format. It may be damaged.',
         infected: 'That file did not pass our security screening and was not uploaded.',
+        encrypted: 'This PDF is password-protected. Save an unlocked copy and upload that.',
     },
     nav: {
         navigation: 'Navigation',
@@ -543,6 +544,26 @@ export const en: TranslationKeys = {
             sectionClaimsSummary: 'Steps, deadlines and phone numbers',
             sectionDocuments: 'Documents, notes & sharing',
             sectionDocumentsSummary: 'Your file, your advisor and access',
+            // Attach a document to an existing policy. TRUTH FIRST: this path
+            // only STORES the file — no analysis runs, so the copy must never
+            // imply the document will be read.
+            addDocumentTitle: 'Add a document',
+            addDocumentNote: 'The document is stored in this policy’s file for reference — it is not analysed as a policy.',
+            addDocumentKindLabel: 'What kind of document is this?',
+            addDocumentDropTitle: 'Choose or drop a file',
+            addDocumentDropHint: 'PDF or photo, up to {maxMb} MB',
+            addDocumentUploading: 'Storing document…',
+            addDocumentStored: 'The document was stored in your file. It was not analysed as a policy.',
+            addDocumentFailed: 'The upload failed. Please try again.',
+            addDocumentLimitReached: 'This policy has reached its document limit.',
+            // Renewal notice on an expired/expiring policy. This path DOES
+            // re-run the analysis, so the copy is allowed to say so.
+            renewalUploadTitle: 'Renewed? Upload the renewal notice',
+            renewalUploadNote: 'Upload the new renewal notice and we will re-run the analysis with the updated terms.',
+            renewalUploadDropTitle: 'Choose or drop the renewal notice',
+            renewalUploading: 'Uploading renewal notice…',
+            renewalUploaded: 'Renewal notice uploaded — the analysis is running again.',
+            renewalUploadFailed: 'The renewal upload failed. Please try again.',
             summaryTitle: 'Your policy in plain language',
             summaryAiChip: 'AI summary',
             summaryLanguageMismatch: 'This policy\'s summary was produced in another language, so it is not shown here. Re-run the analysis to generate it in your language.',

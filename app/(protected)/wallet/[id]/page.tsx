@@ -369,6 +369,7 @@ export default async function PolicyDetailPage({
             aiUsageStats={aiUsageStats}
             statusLabel={statusLabel}
             resolvedEndDate={resolvedEndDate}
+            lifecycleStatus={status}
             statusColor={statusColor}
             statusColorOnDark={statusColorOnDark}
             daysLeft={daysLeft}

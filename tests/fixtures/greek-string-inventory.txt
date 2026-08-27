@@ -19,7 +19,7 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2800
+# bundle entries: 2816
 # inline entries: 4673 across 208 files
 # ternary entries: 285 across 44 files
 # call entries: 1134 across 71 files
@@ -1993,6 +1993,7 @@ bundle	uploadRejection.bad_extension	"Ο τύπος αρχείου δεν υπο
 bundle	uploadRejection.content_mismatch	"Το περιεχόμενο του αρχείου δεν αντιστοιχεί σε υποστηριζόμενη μορφή. Ίσως έχει καταστραφεί."
 bundle	uploadRejection.double_extension	"Ο τύπος αρχείου δεν υποστηρίζεται."
 bundle	uploadRejection.empty	"Το αρχείο είναι κενό. Επιλέξτε άλλο."
+bundle	uploadRejection.encrypted	"Το PDF είναι κλειδωμένο με κωδικό. Αποθηκεύστε ένα αντίγραφο χωρίς κωδικό και ανεβάστε το."
 bundle	uploadRejection.illegal_filename	"Το όνομα του αρχείου δεν υποστηρίζεται. Μετονομάστε το και δοκιμάστε ξανά."
 bundle	uploadRejection.infected	"Το αρχείο δεν πέρασε τον έλεγχο ασφαλείας και δεν ανέβηκε."
 bundle	uploadRejection.mime_mismatch	"Ο τύπος αρχείου δεν υποστηρίζεται. Ανεβάστε PDF ή φωτογραφία του ασφαλιστηρίου."
@@ -2438,6 +2439,15 @@ bundle	wallet.policyDetailsPage.actionsTaskSaved	"Αποθηκεύτηκε στ�
 bundle	wallet.policyDetailsPage.actionsTitle	"Ενέργειες για αυτό το ασφαλιστήριο"
 bundle	wallet.policyDetailsPage.actionsTodoHeading	"Αξίζει να ελέγξετε"
 bundle	wallet.policyDetailsPage.actionsWorking	"Γίνεται αποστολή…"
+bundle	wallet.policyDetailsPage.addDocumentDropHint	"PDF ή φωτογραφία, έως {maxMb} MB"
+bundle	wallet.policyDetailsPage.addDocumentDropTitle	"Επιλέξτε ή σύρετε ένα αρχείο"
+bundle	wallet.policyDetailsPage.addDocumentFailed	"Το ανέβασμα απέτυχε. Δοκιμάστε ξανά."
+bundle	wallet.policyDetailsPage.addDocumentKindLabel	"Τι είδους έγγραφο είναι;"
+bundle	wallet.policyDetailsPage.addDocumentLimitReached	"Συμπληρώθηκε το μέγιστο πλήθος εγγράφων για αυτό το ασφαλιστήριο."
+bundle	wallet.policyDetailsPage.addDocumentNote	"Το έγγραφο αποθηκεύεται στον φάκελο του ασφαλιστηρίου για αναφορά — δεν αναλύεται ως ασφαλιστήριο."
+bundle	wallet.policyDetailsPage.addDocumentStored	"Το έγγραφο αποθηκεύτηκε στον φάκελό σας. Δεν αναλύθηκε ως ασφαλιστήριο."
+bundle	wallet.policyDetailsPage.addDocumentTitle	"Προσθήκη εγγράφου"
+bundle	wallet.policyDetailsPage.addDocumentUploading	"Αποθήκευση εγγράφου…"
 bundle	wallet.policyDetailsPage.agentLockedHint	"Η συνεργασία με τον σύμβουλό σας είναι διαθέσιμη στα Plus και Pro."
 bundle	wallet.policyDetailsPage.agentSectionTitle	"Σημειώσεις συμβούλου & συνεργασία"
 bundle	wallet.policyDetailsPage.analysisBlockedConsentHint	"Η ανάλυση δεν απέτυχε — χρειάζεται πρώτα η ρητή συγκατάθεση του κατόχου για επεξεργασία των εγγράφων από AI. Δώστε τη συγκατάθεση και ξεκινήστε ξανά την ανάλυση."
@@ -2643,6 +2653,12 @@ bundle	wallet.policyDetailsPage.renewalReminders.statuses.pending	"Σε αναμ
 bundle	wallet.policyDetailsPage.renewalReminders.statuses.renewed	"Ανανεώθηκε"
 bundle	wallet.policyDetailsPage.renewalReminders.title	"Υπενθυμίσεις ανανέωσης"
 bundle	wallet.policyDetailsPage.renewalStatusLabel	"Κατάσταση ανανέωσης"
+bundle	wallet.policyDetailsPage.renewalUploadDropTitle	"Επιλέξτε ή σύρετε το ανανεωτήριο"
+bundle	wallet.policyDetailsPage.renewalUploadFailed	"Το ανέβασμα του ανανεωτηρίου απέτυχε. Δοκιμάστε ξανά."
+bundle	wallet.policyDetailsPage.renewalUploadNote	"Ανεβάστε το νέο ανανεωτήριο και θα εκτελέσουμε ξανά την ανάλυση με τους ενημερωμένους όρους."
+bundle	wallet.policyDetailsPage.renewalUploadTitle	"Ανανέωσα — ανέβασμα ανανεωτηρίου"
+bundle	wallet.policyDetailsPage.renewalUploaded	"Το ανανεωτήριο ανέβηκε — η ανάλυση εκτελείται ξανά."
+bundle	wallet.policyDetailsPage.renewalUploading	"Ανέβασμα ανανεωτηρίου…"
 bundle	wallet.policyDetailsPage.requestQuote	"Ζήτησε προσφορά ανανέωσης"
 bundle	wallet.policyDetailsPage.requestingQuote	"Αποστολή αιτήματος…"
 bundle	wallet.policyDetailsPage.reviewRenewal	"Έλεγχος λήξης και ανανέωσης"
@@ -6519,8 +6535,8 @@ inline	lib/services/ai/anthropic-ai.service.ts	z.string()
 inline	lib/services/ai/anthropic-ai.service.ts	z.string()
 inline	lib/services/ai/anthropic-ai.service.ts	z.string()
 inline	lib/services/ai/anthropic-ai.service.ts	z.string().describe("Greek risk summary (2-3 sentences)")
-inline	lib/services/ai/document-kind.ts	'Δεν εντοπίστηκαν επαρκή στοιχεία ταυτοποίησης συμβολαίου — ούτε αριθμός συμβολαίου, ούτε ασφαλισμένος, ούτε περίοδος ασφάλισης.'
-inline	lib/services/ai/document-kind.ts	'Το αρχείο δεν φαίνεται να είναι ασφαλιστήριο συμβόλαιο. Αποθηκεύτηκε, αλλά δεν αναλύθηκε ως συμβόλαιο — ανέβασε τη σελίδα με τα στοιχεία του συμβολαίου για ανάλυση.'
+inline	lib/services/ai/document-kind.ts	'Δεν εντοπίστηκαν επαρκή στοιχεία ταυτοποίησης ασφαλιστηρίου — ούτε αριθμός ασφαλιστηρίου, ούτε ασφαλισμένος, ούτε περίοδος ασφάλισης.'
+inline	lib/services/ai/document-kind.ts	'Το αρχείο δεν φαίνεται να είναι ασφαλιστήριο. Αποθηκεύτηκε, αλλά δεν αναλύθηκε ως ασφαλιστήριο — ανεβάστε τη σελίδα με τα στοιχεία του ασφαλιστηρίου για ανάλυση.'
 inline	lib/services/ai/gemini-ai.service.ts	z.string()
 inline	lib/services/ai/gemini-ai.service.ts	z.string().describe('Greek insight')
 inline	lib/services/ai/gemini-ai.service.ts	z.string().describe('Greek reason this coverage is needed')

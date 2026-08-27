@@ -21,6 +21,7 @@ import { KeyDatesCard } from "@/components/wallet/policy-detail/KeyDatesCard"
 import { ExclusionsCard } from "@/components/wallet/policy-detail/ExclusionsCard"
 import { PerksCard } from "@/components/wallet/policy-detail/PerksCard"
 import { ClaimsGuidanceCard } from "@/components/wallet/policy-detail/ClaimsGuidanceCard"
+import { AddDocumentCard } from "@/components/wallet/policy-detail/AddDocumentCard"
 import { BranchGuideCard } from "@/components/wallet/policy-detail/BranchGuideCard"
 import { BranchActionsCard, type BranchActionItem } from "@/components/wallet/policy-detail/BranchActionsCard"
 import { PolicyQaPrefillProvider } from "@/components/wallet/policy-detail/PolicyQaPrefillContext"
@@ -112,6 +113,13 @@ interface PolicyDetailsClientProps {
      * disagreeing — see the B4 note in lib/policy-status.ts.
      */
     resolvedEndDate?: string | null
+    /**
+     * The raw lifecycle status from that SAME resolvePolicyLifecycle call —
+     * gates the "upload the renewal notice" entry point (expired /
+     * expiring_soon only). Passed rather than re-derived from `daysLeft` so a
+     * client recomputation can never disagree with the server's verdict.
+     */
+    lifecycleStatus?: string | null
     isOwner: boolean
     relationshipId?: string | null
     t: any
@@ -151,6 +159,7 @@ export function PolicyDetailsClient({
     statusColorOnDark,
     daysLeft,
     resolvedEndDate = null,
+    lifecycleStatus = null,
     isOwner,
     relationshipId,
     t,
@@ -1233,6 +1242,38 @@ export function PolicyDetailsClient({
                                     previewLabels: t.wallet.documentPreview,
                                 }}
                             />
+
+                            {/* Attach an extra document to THIS policy. Inside the
+                                #documents section on purpose: a card in here costs
+                                nothing against the 8-grouping budget, and the head
+                                keeps its one primary action. The renewal entry
+                                point inside gates on the SERVER's lifecycle
+                                status, never a recomputed day count. */}
+                            {isOwner && (
+                                <AddDocumentCard
+                                    policyId={policy.id}
+                                    lifecycleStatus={lifecycleStatus}
+                                    t={t}
+                                    copy={{
+                                        title: detailsCopy.addDocumentTitle,
+                                        note: detailsCopy.addDocumentNote,
+                                        kindLabel: detailsCopy.addDocumentKindLabel,
+                                        kindLabels: t.wallet.documentKindLabels,
+                                        dropTitle: detailsCopy.addDocumentDropTitle,
+                                        dropHint: detailsCopy.addDocumentDropHint,
+                                        uploading: detailsCopy.addDocumentUploading,
+                                        stored: detailsCopy.addDocumentStored,
+                                        failed: detailsCopy.addDocumentFailed,
+                                        limitReached: detailsCopy.addDocumentLimitReached,
+                                        renewalTitle: detailsCopy.renewalUploadTitle,
+                                        renewalNote: detailsCopy.renewalUploadNote,
+                                        renewalDropTitle: detailsCopy.renewalUploadDropTitle,
+                                        renewalUploading: detailsCopy.renewalUploading,
+                                        renewalUploaded: detailsCopy.renewalUploaded,
+                                        renewalFailed: detailsCopy.renewalUploadFailed,
+                                    }}
+                                />
+                            )}
 
                             {/* Share and download: the head keeps ONE primary
                                 action, so the secondary ones live with the file

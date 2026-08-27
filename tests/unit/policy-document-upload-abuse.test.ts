@@ -44,7 +44,7 @@ vi.mock('@/lib/supabase/storage-download', () => ({
 vi.mock('@/lib/logger', () => ({ logger: vi.fn() }))
 
 import { POST } from '@/app/api/v1/policies/[id]/documents/route'
-import { MAX_DOCUMENTS_PER_POLICY } from '@/lib/security/file-upload'
+import { MAX_DOCUMENTS_PER_POLICY, MAX_UPLOAD_SIZE_BYTES } from '@/lib/security/file-upload'
 
 const STORED_URL = 'https://x.supabase.co/storage/v1/object/public/policies/uuid.pdf'
 
@@ -113,14 +113,37 @@ describe('POST /api/v1/policies/[id]/documents — abuse & failure handling', ()
     })
 
     it('rejects an oversized upload before it reaches storage', async () => {
-        // 10MB route cap — 10MB+1 must be refused with nothing stored.
-        const file = new File([pdfBytes(10 * 1024 * 1024 + 1)], 'big.pdf', { type: 'application/pdf' })
+        // The boundary is DERIVED from the shared constant, not hardcoded:
+        // the route validates with the product-wide MAX_UPLOAD_SIZE_BYTES
+        // (15 MB) — the same ceiling the renewal server action uses — so one
+        // byte over it must be refused with nothing stored, whatever the
+        // constant's value becomes.
+        const file = new File([pdfBytes(MAX_UPLOAD_SIZE_BYTES + 1)], 'big.pdf', { type: 'application/pdf' })
 
         const response = await POST(makeUploadRequest(file), ctx as any)
 
         expect(response.status).toBe(400)
         expect(uploadFileDetailed).not.toHaveBeenCalled()
         expect(createDocument).not.toHaveBeenCalled()
+
+        // The rejection names its machine-readable reason so clients can
+        // localise it (uploadRejectionMessage), instead of parsing prose.
+        const payload = await response.json()
+        expect(payload?.error?.details?.reason).toBe('too_large')
+    })
+
+    it('accepts a file over the OLD 10 MB route cap — one limit for one user action', async () => {
+        // Until 2026-08 this route carried its own 10 MB literal while the
+        // renewal path validated with the 15 MB default, so the same "attach
+        // a document" action got a different limit depending on the button.
+        // Reconciled on the shared constant; this pins the reconciliation.
+        expect(MAX_UPLOAD_SIZE_BYTES).toBeGreaterThan(10 * 1024 * 1024)
+        const file = new File([pdfBytes(10 * 1024 * 1024 + 1)], 'formerly-too-big.pdf', { type: 'application/pdf' })
+
+        const response = await POST(makeUploadRequest(file), ctx as any)
+
+        expect(response.status).toBe(200)
+        expect(uploadFileDetailed).toHaveBeenCalledTimes(1)
     })
 
     it('returns 429 when the caller exceeds the upload rate limit', async () => {

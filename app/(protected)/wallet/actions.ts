@@ -13,7 +13,7 @@ import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
 import { uploadFile, deleteFile } from "@/lib/storage"
-import { sanitizeDisplayName } from "@/lib/security/file-upload"
+import { sanitizeDisplayName, MAX_DOCUMENTS_PER_POLICY } from "@/lib/security/file-upload"
 import { isOwnedStorageUrl, storageColumnsFor } from "@/lib/supabase/storage-download"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { hasAnyRole } from "@/lib/api-auth"
@@ -105,10 +105,10 @@ export async function createPolicy(formData: FormData) {
     // Validate documents FIRST — the status must derive from the documents
     // that actually survive validation, or an all-invalid submission commits
     // an 'analyzing' policy with zero documents (the eternal-spinner state).
-    // Bounded to the same cap the documents API enforces.
-    const MAX_DOCUMENTS = 20
+    // Bounded to the SAME IMPORTED cap the documents API enforces — this used
+    // to re-declare the literal 20, which drifts the day either side changes.
     const validDocuments: Array<{ fileUrl: string; fileName: string; fileSize: number }> = []
-    for (let i = 0; i < Math.min(documentUrls.length, MAX_DOCUMENTS); i++) {
+    for (let i = 0; i < Math.min(documentUrls.length, MAX_DOCUMENTS_PER_POLICY); i++) {
         const fileUrl = documentUrls[i]
         // Display metadata only — sanitized (Greek-safe), never used as a key.
         // GENERATED. `documentNames` still arrives in the form because the
@@ -155,10 +155,10 @@ export async function createPolicy(formData: FormData) {
 
         validDocuments.push({ fileUrl, fileName, fileSize })
     }
-    if (documentUrls.length > MAX_DOCUMENTS) {
+    if (documentUrls.length > MAX_DOCUMENTS_PER_POLICY) {
         logger('warn', 'Policy submission exceeded the document cap; extra entries dropped', {
             submitted: documentUrls.length,
-            cap: MAX_DOCUMENTS,
+            cap: MAX_DOCUMENTS_PER_POLICY,
         })
     }
 

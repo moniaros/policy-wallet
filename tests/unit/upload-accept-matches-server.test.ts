@@ -80,6 +80,11 @@ describe('each picker names its own server category', () => {
         ['components/wallet/BatchUploadModal.tsx', 'policy', 'lib/services/policy.service.ts'],
         ['components/agent/AddCustomerModal.tsx', 'policy', 'app/(protected)/agent/actions.ts'],
         ['components/agent/UploadPolicyModal.tsx', 'policy', 'app/(protected)/agent/actions.ts'],
+        // Policy-detail "add a document" card. Its booklet arm posts to the
+        // documents REST route; its renewal arm goes through
+        // PolicyService.attachRenewalDocument, which also validates 'policy'
+        // (already asserted via the pairs above that name policy.service.ts).
+        ['components/wallet/policy-detail/AddDocumentCard.tsx', 'policy', 'app/api/v1/policies/[id]/documents/route.ts'],
     ]
 
     it.each(PAIRS)('%s asks for "%s"', (picker, category) => {
