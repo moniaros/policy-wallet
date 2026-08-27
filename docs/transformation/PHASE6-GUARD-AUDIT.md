@@ -228,3 +228,160 @@ named = hardcoded file list, n/a = no universe (pure behaviour).
 
 No file outside `tests/unit/`, `tests/fixtures/guard-probes/` and this
 document was written. Nothing was committed.
+
+---
+
+# Part II — the sixteen §5 named as unreached
+
+**PW-MOBILE-TRANSFORM-02, Phase 6 continuation · 2026-08-27 · second adversarial reviewer**
+
+Part I probed 6 of the unprobed scanner guards and named sixteen remaining
+targets by name. This part took all sixteen: the 13 whole scanner guards it
+had not reached, and the 5 scanner arms. Method unchanged: read, recover the
+authentic pre-fix source from git history, bind the probe to the SAME matcher
+the live scan runs (extracted where it was inline), demonstrate red by
+mutation, restore, leave the probe committed. Every red demo below was run
+and observed; every restore was re-run green. Final full gate green.
+
+## 1. Guards found green over live defects (the audit's yield)
+
+### 1.1 `server-dates-are-athens-pinned` — scanner arm blind to `Intl.DateTimeFormat`; two live offenders
+
+The scan knew `.toLocaleDateString/.toLocaleString` only. `new
+Intl.DateTimeFormat(...)` — the other way to render a date, and the one the
+repo's own canonical formatter uses — was invisible. Live today, both in
+SERVER files (no `"use client"`), both therefore rendering UTC on Vercel:
+
+```
+app/(protected)/admin/submissions/page.tsx:16-21   formatDate(): dateStyle+timeStyle,
+                                                   no timeZone → every submission
+                                                   timestamp 2-3h behind Athens
+lib/insurance/content/action-resolvers.ts:93-101   isoDate(): bilingual el/en date
+                                                   render, no timeZone → previous-day
+                                                   render near the Athens midnight
+                                                   boundary for timestamped inputs
+```
+
+Disposition: matcher added (`unpinnedIntlCalls`, balanced-paren argument
+capture so a `timeZone:` in later unrelated code cannot vouch for a call);
+tree-wide sweep confirmed exactly these two and nothing else (policy-status,
+format.ts, promotions pin Athens; orchestrator.localHour takes the reader's
+zone as a parameter, which is its purpose); both pinned as
+`KNOWN_UNPINNED_INTL_DEBT`, shrink-only, each row asserted still-red. The
+offending files are outside this audit's write boundary and were not touched.
+Red demos: debt-skip removed → guard fails naming both offenders with line
+numbers; timeZone predicate gutted → probe fails on the authentic shapes.
+
+### 1.2 `no-hardcoded-aria-label` — universe excluded `app/`; two live offenders
+
+Exactly as Part I diagnosed. The class is alive under `app/`:
+
+```
+app/auth/reset-password/page.tsx:197   aria-label={showPassword ? "Hide password" : "Show password"}
+app/auth/reset-password/page.tsx:219   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+```
+
+Greek screen-reader users hear English on the password-reset page while
+`app/auth/signup/SignupForm.tsx:347` localises the IDENTICAL toggle
+(`t("Απόκρυψη κωδικού", "Hide password")`) — the correct pattern exists one
+page away. Universe widened to `components/ + app/` (admin excluded, as
+before); the file pinned as `KNOWN_ENGLISH_ARIA_DEBT`, shrink-only,
+asserted still-red. Red demo: debt row removed → guard fails naming both
+lines. Not touched — outside the write boundary. The multi-line braced-label
+limitation Part I noted was swept: no live instance.
+
+### 1.3 `no-raw-lob-in-notifications` — the matcher could not see one of the two offenders it was written about
+
+Found while probing, which is the point of probing: the regex required the
+interpolation to END in `.lineOfBusiness}`. The guard's own docstring records
+two fixed offenders (f9362ed1); the second was
+
+```
+${policy?.lineOfBusiness || 'insurance'}
+```
+
+whose fallback pushes `.lineOfBusiness` away from the closing brace — the
+authentic "policy shared" message did NOT match the guard's matcher. Had that
+exact shipped line been reintroduced, the guard stayed green. Matcher rebuilt
+(per-`${…}`-segment: raw field present, no resolver in the same segment);
+email guard's matcher had the same end-anchor and was widened identically.
+Tree swept for the fallback shape: one hit, a `className` conditional in
+AddPolicyClient.tsx — not user text, no live offender. Red demo: matcher
+regressed to the end-anchored form → probe fails on the authentic line.
+
+## 2. Probed and hardened, no live defect behind them
+
+| guard | probe now in repo | red demo run | hardening |
+|---|---|---|---|
+| `no-server-modules-in-client-bundle` | committed fixture graph `tests/fixtures/guard-probes/client-bundle-graph/` — the authentic defect chain (client → tier-constant module whose first line imports db) in BOTH relative and `@/` alias spellings, plus the two must-not-report shapes (chain through `"use server"`, type-only import) | blind the `use client` detector → 4 tests red (live tripwire included); lose the alias branch → alias chain vanishes, probe red | walker parameterised over source dirs so the fixture graph runs through the identical machinery |
+| `ledger-covers-every-surface` | committed fixture route tree (`(group)` elision, `[id]`, page-less dir) + in-file ledger probe proving heading/row counts and PROSE DOES NOT (the D-028 lesson held red) | `isEnumerated` degraded to substring → red; recursion dropped from `routes()` → red | `isEnumerated` parameterised |
+| `no-scaffold-routes` | authentic scaffold route verbatim (b1500fc7~1) + its async/param spelling + re-export-shim control | matcher regressed to `export function GET()` only → async probe red | matcher widened to async/params/all five methods; live sweep clean |
+| `no-english-task-in-greek-copy` | authentic `el: "Δημιουργία Task"` line (9a602925~1) in all three quote styles; `label:`-boundary and εργασία controls | matcher regressed to double-quote-only → red | matcher knows `'` and `` ` ``; live sweep for single-quoted/backtick offenders clean |
+| `landing-primary-cta-single-source` | committed fixture `landing-recursive/` with a nested `.tsx` | recursion dropped → red | collector now recursive (was flat readdir; live dir still has no subdirs — the probe keeps the day one appears red) |
+| `no-raw-lob-in-ui` | authentic pre-fix renders (727394a4): renewals-table cell, questionnaire subtitle, template position; attribute/label/resolver controls | matcher blinded → red | dot-form-only limit recorded in-file; bare `{lob}` sweep found only /admin taxonomy pages rendering the code deliberately in font-mono beside the label |
+| `no-raw-lob-in-email` | authentic digest cell + renewal title (4e3e6b75) | matcher blinded → red | widened per-segment (same hole as 1.3) |
+| `no-raw-lob-branch-match` | authentic parent-literal comparisons (d1086032) + record-to-record; resolver/child-literal/comment controls | matcher blinded → red | — |
+| `no-overpromise-copy` (mail/report arms) | authentic pre-fix gap-alert sentence, renewal sentence and the `(85% βεβαιότητα)` report line (c496710b~1) | `PSEUDO_CERTAINTY` gutted → red | pins now share one regex constant per class with the probe, so a pin cannot be narrowed without the probe failing |
+| `protection-score-single-source` (arm) | the authentic ladder copies (8f125fd5): dashboard/digest spellings + the weight-map spelling | arithmetic arm gutted → red | weight-map spelling added to the matcher (live-verified: exists only in the canonical file) |
+| `i18n-no-hardcoded-full-tree` | the checker's own exported `scanContent` probed against the authentic offline/online toasts (962af969) + ternary/fallback classes + allow-cases (locale pair, em-dash, ignore marker) | checker's toast regex gutted (temporarily, restored byte-identical, md5-verified) → red | limit recorded: `scanFiles` filters to `.tsx`, so `.ts` files are outside the checker's universe by design |
+| `agent-policy-no-fake-coverage-highlights` | authentic pre-fix block (8bb532e3~1) — all five markers fire; mention-without-render controls | one marker dropped → red | closed-world caveat recorded in-file; catalogue swept: retired `pd.*` keys gone; `emergencyAssistance` ("24/7 emergency assistance via insurer") still in BOTH catalogues but rendered nowhere — dead key, flagged below |
+| `file-format-single-source` (arm) | the three hand-list spellings incl. the `['jpg','png'].includes(ext)` evasion Part I predicted; shared-helper and roles-array controls | includes-arm dropped → red | evasion matcher added (live-verified absent first) |
+| `identity-values-are-not-guessed` (arm) | authentic open-ended slices (BatchUploadModal id, `PENDING-…` suffix) + fixed-width/UUID controls | regex gutted → red | — |
+| `primary-action-single-source` | authentic retired wording in code vs in comments; retyped-canonical case | matcher gutted → red | matcher extracted (`literalsIn`), strip-first behaviour pinned |
+
+## 3. Findings that are not guard changes (for the defect backlog, not fixed here)
+
+- **`app/(protected)/admin/submissions/page.tsx:16`** — admin submission
+  timestamps render in UTC (see 1.1). Staff-facing; fix is one
+  `timeZone: "Europe/Athens"` or `formatDateTime` from lib/i18n/format.
+- **`app/auth/reset-password/page.tsx:197,219`** — English aria-labels on a
+  B2C auth page (see 1.2). SignupForm's `t()` helper is the in-file pattern
+  to copy.
+- **`lib/insurance/content/action-resolvers.ts:93-101`** — `isoDate()`
+  unpinned (see 1.1). Inputs that are date-only ISO strings render stably;
+  timestamped inputs are off by one near Athens midnight.
+- **`lib/i18n/translations/{el,en}.ts` `emergencyAssistance`** — the "24/7
+  emergency assistance via insurer" filler survives as a DEAD translation key
+  (`el.ts:313`, `en.ts:316`); nothing renders it. It is the exact claim class
+  `agent-policy-no-fake-coverage-highlights` exists for, one wiring away from
+  returning. Delete the key.
+- **`app/api/v1/policies/[id]/route.ts:67`** — the v1 policy payload's
+  `highlights` array ships `` `LOB: ${policy.lineOfBusiness}` `` — a raw
+  taxonomy code in an API field named "highlights". Not UI copy, so no
+  raw-lob guard claims it; noted so the next consumer of that field knows.
+- **Checker scope**: `scripts/check-i18n-hardcoded.js` scans `.tsx` only —
+  documented behaviour, but user-facing strings composed in `.ts` (hooks,
+  services) have no i18n guard at all.
+
+## 4. Harness lies caught this run (continuing Part I §3.1's note)
+
+- `nvm use` printed "Now using node v20.20.2" while `node -v` in the same
+  shell printed v20.11.0 (stale hash table; `hash -r` or a fresh lookup
+  fixes it). Every vitest run in this audit re-sourced nvm in-call.
+- Two perl in-place mutations SILENTLY matched nothing (escaped-regex
+  mismatch), which would have "demonstrated" a red proof that never ran —
+  caught because the runs were required to actually fail before counting.
+  All subsequent mutations went through python with an `assert old in s`
+  precondition. A mutation harness that cannot prove it mutated is the same
+  trap as a grep that cannot prove it searched.
+
+## 5. Status of the §5 list
+
+All sixteen named targets reached; none remain. Files changed, all under
+`tests/unit/`, `tests/fixtures/guard-probes/` and this document:
+
+- `tests/unit/no-server-modules-in-client-bundle.test.ts` + 7 fixture modules under `tests/fixtures/guard-probes/client-bundle-graph/`
+- `tests/unit/ledger-covers-every-surface.test.ts` + 4 fixture files under `tests/fixtures/guard-probes/ledger-routes/`
+- `tests/unit/server-dates-are-athens-pinned.test.ts` (Intl arm + debt ratchet + probes)
+- `tests/unit/no-hardcoded-aria-label.test.ts` (universe + debt ratchet + probes)
+- `tests/unit/no-scaffold-routes.test.ts`, `tests/unit/no-english-task-in-greek-copy.test.ts`
+- `tests/unit/landing-primary-cta-single-source.test.ts` + 2 fixture files under `tests/fixtures/guard-probes/landing-recursive/`
+- `tests/unit/no-raw-lob-in-ui.test.ts`, `-in-email`, `-in-notifications`, `-branch-match`
+- `tests/unit/no-overpromise-copy.test.ts`, `tests/unit/protection-score-single-source.test.ts`
+- `tests/unit/i18n-no-hardcoded-full-tree.test.ts`, `tests/unit/agent-policy-no-fake-coverage-highlights.test.ts`
+- `tests/unit/file-format-single-source.test.ts`, `tests/unit/identity-values-are-not-guessed.test.ts`
+- `tests/unit/primary-action-single-source.test.ts`
+
+No file under `app/`, `components/` or `lib/` was modified.
+(`scripts/check-i18n-hardcoded.js` was mutated for one red demo and restored
+byte-identical, md5-verified, within the same run.) Nothing was committed.

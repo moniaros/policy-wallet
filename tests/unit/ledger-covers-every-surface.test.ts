@@ -40,9 +40,9 @@ const LEDGER = readFileSync("docs/transformation/LEDGER.md", "utf-8")
  * which names `/branches/[branch]` as the surface that had no rows, made the
  * route look enumerated to a plain substring test. A mention is not coverage.
  */
-function isEnumerated(route: string): boolean {
+function isEnumerated(route: string, ledger: string = LEDGER): boolean {
     const needle = `\`${route}\``
-    return LEDGER.split("\n").some(
+    return ledger.split("\n").some(
         (line) => (line.startsWith("## ") || line.startsWith("|")) && line.includes(needle)
     )
 }
@@ -131,5 +131,41 @@ describe("every B2C surface has ledger rows", () => {
                 `${route} now has ledger rows — delete its UNENUMERATED entry (${reason})`
             ).toBe(false)
         }
+    })
+})
+
+/**
+ * RED-PROOF (Phase 6 guard audit). Both halves of this guard are machinery
+ * that can rot silently: `routes()` decides the denominator (a walker bug
+ * shrinks the universe and every missing surface "passes"), and
+ * `isEnumerated()` decides what counts as coverage (the D-028 lesson — a
+ * prose MENTION must not count). Each is proven on committed material.
+ */
+describe("the enumerator and the matcher are themselves proven", () => {
+    it("routes() enumerates from the filesystem: groups elide, page.tsx decides, no-page dirs vanish", () => {
+        expect(routes("tests/fixtures/guard-probes/ledger-routes", "")).toEqual([
+            "/[id]",
+            "/inner",
+            "/plain",
+        ])
+    })
+
+    const LEDGER_PROBE = [
+        "## Surface: `/probe/heading`",
+        "| `/probe/row` | reads policies | writes nothing |",
+        "The D-028 correction names `/probe/prose` as the surface that had no rows.",
+    ].join("\n")
+
+    it("a section heading or a table row counts as enumerated", () => {
+        expect(isEnumerated("/probe/heading", LEDGER_PROBE)).toBe(true)
+        expect(isEnumerated("/probe/row", LEDGER_PROBE)).toBe(true)
+    })
+
+    it("a prose mention is NOT coverage — a substring test would have said it was", () => {
+        expect(isEnumerated("/probe/prose", LEDGER_PROBE)).toBe(false)
+        // The trap the matcher exists to avoid, kept red so a "simplification"
+        // back to .includes() fails here first.
+        expect(LEDGER_PROBE.includes("`/probe/prose`")).toBe(true)
+        expect(isEnumerated("/probe/absent", LEDGER_PROBE)).toBe(false)
     })
 })

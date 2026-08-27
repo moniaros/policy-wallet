@@ -90,10 +90,10 @@ function readImports(source: string, fromFile: string): string[] {
         .filter((resolved): resolved is string => resolved !== null)
 }
 
-function buildGraph(): Map<string, ModuleInfo> {
+function buildGraph(sourceDirs: string[] = SOURCE_DIRS): Map<string, ModuleInfo> {
     const graph = new Map<string, ModuleInfo>()
 
-    for (const dir of SOURCE_DIRS) {
+    for (const dir of sourceDirs) {
         const absolute = path.join(ROOT, dir)
         if (!fs.existsSync(absolute)) continue
 
@@ -172,4 +172,58 @@ describe("client bundle boundary", () => {
             expect(report, `${relativeTarget} is reachable from a client component:\n\n${report}`).toBe("")
         })
     }
+})
+
+/**
+ * RED-PROOF (Phase 6 guard audit). The live test above can only ever pass or
+ * fail on the REAL tree, so a silent walker bug — a resolver that returns null
+ * for every alias, a "use client" regex that stops matching, a BFS that stops
+ * one hop early — leaves it green over a shipped leak. The >50-client-modules
+ * tripwire catches only total breakage of the client detector; it says nothing
+ * about the resolver or the boundary logic.
+ *
+ * So the same machinery is run over a committed fixture graph that encodes the
+ * AUTHENTIC defect (a "use client" component importing a tier-ordering
+ * constant from a module whose first line imports the db — the exact shape
+ * that shipped Prisma to the browser on /dashboard/agent), in both the
+ * relative and the "@/" alias form, alongside the two shapes that must NOT be
+ * reported: a chain through a "use server" boundary, and a type-only import.
+ * Crippling any piece of the walker turns at least one assertion red.
+ */
+describe("the walker is proven on a committed fixture graph", () => {
+    const FIXTURE = "tests/fixtures/guard-probes/client-bundle-graph"
+    const graph = buildGraph([FIXTURE])
+    const target = path.join(ROOT, FIXTURE, "db.ts")
+
+    it("indexes all seven fixture modules", () => {
+        expect(graph.size).toBe(7)
+    })
+
+    it("classifies the fixture's client and boundary modules", () => {
+        expect(graph.get(path.join(ROOT, FIXTURE, "Widget.tsx"))?.isClient).toBe(true)
+        expect(graph.get(path.join(ROOT, FIXTURE, "action.ts"))?.isServerBoundary).toBe(true)
+        expect(graph.get(path.join(ROOT, FIXTURE, "entitlements.ts"))?.isClient).toBe(false)
+    })
+
+    it("finds the authentic defect chain in both import spellings", () => {
+        const chains = clientImportersOf(target, graph)
+        const heads = chains.map((chain) => chain[0])
+        expect(heads).toContain(path.join(FIXTURE, "AliasWidget.tsx"))
+
+        const viaConstant = chains.find((chain) => chain[0] === path.join(FIXTURE, "Widget.tsx"))
+        expect(viaConstant, "the client → entitlements → db chain was not found").toEqual([
+            path.join(FIXTURE, "Widget.tsx"),
+            path.join(FIXTURE, "entitlements.ts"),
+            path.join(FIXTURE, "db.ts"),
+        ])
+    })
+
+    it("stops at the server-action boundary and ignores type-only imports", () => {
+        const chains = clientImportersOf(target, graph)
+        const heads = chains.map((chain) => chain[0])
+        expect(heads).not.toContain(path.join(FIXTURE, "ClientViaAction.tsx"))
+        expect(heads).not.toContain(path.join(FIXTURE, "TypesOnly.tsx"))
+        // Exactly the two real leaks, nothing more.
+        expect(chains).toHaveLength(2)
+    })
 })

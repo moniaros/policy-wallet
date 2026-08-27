@@ -18,11 +18,24 @@ import { PRIMARY_ACTION } from '@/lib/marketing/positioning'
  * a ratified choice, not drift. The invariant here is narrow — anything under
  * components/landing that opens a signup speaks with the single source.
  */
+/**
+ * Recursive on purpose. The first version used a flat readdir — complete on
+ * the day it was written only because components/landing happened to have no
+ * subdirectories, and silently losing coverage the day one appeared. The
+ * probe fixture below keeps that day red.
+ */
+function tsxFilesUnder(dir: string): string[] {
+    let out: string[] = []
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const full = join(dir, entry.name)
+        if (entry.isDirectory()) out = out.concat(tsxFilesUnder(full))
+        else if (entry.name.endsWith('.tsx')) out.push(full)
+    }
+    return out
+}
+
 describe('landing signup CTAs come from one source', () => {
-    const dir = 'components/landing'
-    const files = readdirSync(dir)
-        .filter((name) => name.endsWith('.tsx'))
-        .map((name) => join(dir, name))
+    const files = tsxFilesUnder('components/landing')
 
     it('scans a real component tree', () => {
         expect(files.length).toBeGreaterThan(5)
@@ -59,5 +72,21 @@ describe('landing signup CTAs come from one source', () => {
                 /Δείτε αν είστε καλυμμένοι|See if you are covered/
             )
         }
+    })
+})
+
+/**
+ * RED-PROOF (Phase 6 guard audit): the collector recurses. Proven on a
+ * committed fixture tree with one file at the top and one inside a
+ * subdirectory — a return to the flat readdir loses the nested one and
+ * fails here before it can silently shrink the live universe.
+ */
+describe('the collector is proven recursive', () => {
+    it('finds files in subdirectories', () => {
+        const found = tsxFilesUnder('tests/fixtures/guard-probes/landing-recursive').sort()
+        expect(found).toEqual([
+            join('tests/fixtures/guard-probes/landing-recursive', 'nested/deep.tsx'),
+            join('tests/fixtures/guard-probes/landing-recursive', 'top.tsx'),
+        ])
     })
 })

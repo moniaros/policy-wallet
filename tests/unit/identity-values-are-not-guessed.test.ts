@@ -26,6 +26,22 @@ import { globSync } from "glob"
  * condition the collision needs.
  */
 
+/**
+ * `substring(2, 9)` and friends take a FIXED-WIDTH slice and are safe; the
+ * open-ended `substring(7)` / `slice(7)` is the one whose length depends on
+ * the value it happened to draw. Comments are stripped by the caller.
+ */
+const OPEN_ENDED_RANDOM_SLICE =
+    /Math\.random\(\)\s*\.toString\(\s*36\s*\)\s*\.(?:substring|slice|substr)\(\s*\d+\s*\)/g
+
+function openEndedRandomSlices(code: string): number[] {
+    const lines: number[] = []
+    for (const match of code.matchAll(OPEN_ENDED_RANDOM_SLICE)) {
+        lines.push(code.slice(0, match.index).split("\n").length)
+    }
+    return lines
+}
+
 describe("random values that are matched on come from a real generator", () => {
     const FILES = globSync("{app,lib,components}/**/*.{ts,tsx}", {
         ignore: ["**/node_modules/**", "**/*.test.*"],
@@ -41,14 +57,7 @@ describe("random values that are matched on come from a real generator", () => {
         for (const file of FILES) {
             const src = readFileSync(file, "utf-8")
             const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "")
-
-            // `substring(2, 9)` and friends take a FIXED-WIDTH slice and are
-            // safe; the open-ended `substring(7)` / `slice(7)` is the one whose
-            // length depends on the value it happened to draw.
-            for (const match of code.matchAll(
-                /Math\.random\(\)\s*\.toString\(\s*36\s*\)\s*\.(?:substring|slice|substr)\(\s*\d+\s*\)/g
-            )) {
-                const line = code.slice(0, match.index).split("\n").length
+            for (const line of openEndedRandomSlices(code)) {
                 offenders.push(`${file}:${line}`)
             }
         }
@@ -93,5 +102,28 @@ describe("the failure mode is real, not theoretical", () => {
         )
         expect(slices.size).toBeGreaterThan(4_990)
         for (const s of slices) expect(s).toHaveLength(8)
+    })
+})
+
+/**
+ * RED-PROOF (Phase 6 guard audit): the slice matcher against the AUTHENTIC
+ * pre-fix expressions — BatchUploadModal's row id and PolicyService's
+ * `PENDING-…` placeholder both built identity from
+ * `Math.random().toString(36).substring(7)` — and the fixed-width or
+ * UUID shapes that must stay silent.
+ */
+describe("the slice matcher is proven on the authentic expressions", () => {
+    it("flags the open-ended slices that shipped", () => {
+        expect(openEndedRandomSlices("const id = Math.random().toString(36).substring(7)")).toHaveLength(1)
+        expect(
+            openEndedRandomSlices("policyNumber: `PENDING-${Math.random().toString(36).substring(7).toUpperCase()}`,")
+        ).toHaveLength(1)
+        expect(openEndedRandomSlices("const key = Math.random().toString(36).slice(2)")).toHaveLength(1)
+    })
+
+    it("stays silent on fixed-width slices and randomUUID", () => {
+        expect(openEndedRandomSlices("const id = Math.random().toString(36).substring(2, 9)")).toEqual([])
+        expect(openEndedRandomSlices("const id = crypto.randomUUID()")).toEqual([])
+        expect(openEndedRandomSlices("policyNumber: `PENDING-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,")).toEqual([])
     })
 })

@@ -16,6 +16,13 @@ import { readFileSync } from 'node:fs'
  * - Dead "Full protection based on policy specifications" keys deleted before
  *   anything could wire them.
  */
+// One regex per conduct-risk class, shared by the live pin AND the red-proof
+// below — so the pin cannot be quietly narrowed without the authentic pre-fix
+// line in the probe going green and failing the probe's assertion.
+const GAP_ALERT_OVERPROMISE = /fully protected|πλήρη προστασία/
+const RENEWAL_OVERPROMISE = /ensure continuous coverage/
+const PSEUDO_CERTAINTY = /βεβαιότητα|% confidence/
+
 const MAIL = readFileSync('lib/mail-templates.ts', 'utf-8')
 const REPORT = readFileSync('lib/services/reports/savings-report.ts', 'utf-8')
 const EL = readFileSync('lib/i18n/translations/el.ts', 'utf-8')
@@ -23,14 +30,14 @@ const EN = readFileSync('lib/i18n/translations/en.ts', 'utf-8')
 
 describe('customer emails do not overpromise outcomes', () => {
     it('gap alert does not claim reviewing ensures full protection', () => {
-        expect(MAIL).not.toMatch(/fully protected|πλήρη προστασία/)
-        expect(MAIL).not.toMatch(/ensure continuous coverage/)
+        expect(MAIL).not.toMatch(GAP_ALERT_OVERPROMISE)
+        expect(MAIL).not.toMatch(RENEWAL_OVERPROMISE)
     })
 })
 
 describe('savings report presents estimates as estimates', () => {
     it('no pseudo-certainty percentage on AI estimates', () => {
-        expect(REPORT).not.toMatch(/βεβαιότητα|% confidence/)
+        expect(REPORT).not.toMatch(PSEUDO_CERTAINTY)
         expect(REPORT).toContain('Ενδεικτική εκτίμηση')
     })
 
@@ -103,5 +110,39 @@ describe('no "full protection" claims wait in the translations', () => {
         expect(EL).not.toContain('standardCoverageDesc')
         expect(EN).not.toContain('standardCoverageDesc')
         expect(EN).not.toMatch(/Full protection based on policy/)
+    })
+})
+
+/**
+ * RED-PROOF (Phase 6 guard audit). The mail and report arms above are
+ * negative pins over one file each — they can silently stop matching the
+ * defect class if the regexes rot. Each regex is proven here against the
+ * AUTHENTIC pre-fix line it exists for (recovered at c496710b~1), so gutting
+ * a pattern fails here before it can go blind on the live file.
+ */
+describe('the mail/report patterns are proven on the authentic pre-fix copy', () => {
+    it('the gap-alert pattern catches the sentence that shipped', () => {
+        // lib/mail-templates.ts, verbatim, pre-c496710b.
+        const shipped =
+            '                    : `Our AI has identified a potential coverage gap in your <strong>${data.policyName}</strong> policy: <strong>${data.gapTitle}</strong>. Review this now to ensure you are fully protected.`,'
+        expect(GAP_ALERT_OVERPROMISE.test(shipped)).toBe(true)
+
+        const renewal =
+            '                    : `Your <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Review your renewal options now to ensure continuous coverage.`,'
+        expect(RENEWAL_OVERPROMISE.test(renewal)).toBe(true)
+    })
+
+    it('the report pattern catches the pseudo-certainty line that shipped', () => {
+        // lib/services/reports/savings-report.ts, verbatim, pre-c496710b: an
+        // LLM self-assessment rendered as "(85% βεβαιότητα)" on a printable,
+        // client-facing document.
+        const shipped =
+            '  ${s.estimatedAnnualSavingsEur ? `<div class="estimate">${L("Εκτιμώμενη εξοικονόμηση", "Estimated saving")}: ${escapeHtml(formatCurrency(Number(s.estimatedAnnualSavingsEur), language, { currency: "EUR", decimals: 0 }))}/${L("έτος", "year")} (${Math.round(s.confidence * 100)}% ${L("βεβαιότητα", "confidence")})</div>` : ""}'
+        expect(PSEUDO_CERTAINTY.test(shipped)).toBe(true)
+    })
+
+    it('and stays silent on the sanctioned framing', () => {
+        expect(PSEUDO_CERTAINTY.test('Ενδεικτική εκτίμηση — όχι δεσμευτική προσφορά')).toBe(false)
+        expect(GAP_ALERT_OVERPROMISE.test('Δείτε το εύρημα και συζητήστε το με τον ασφαλιστή σας')).toBe(false)
     })
 })

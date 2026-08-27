@@ -6,6 +6,17 @@ import { isAcceptedImageFile, isPdfFile, acceptAttribute, documentMimeType } fro
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 
 /**
+ * The three spellings of "I decide file formats myself": a character-class
+ * regex, an endsWith chain, and an array-includes list (the third was a known
+ * evasion of the first two until the Phase 6 audit added it — verified absent
+ * from the live tree the day it was added).
+ */
+const handWrittenFormatList = (src: string) =>
+    /\\\.\(jpe\?g\|png/.test(src) ||
+    /endsWith\(['"]\.jpe?g['"]\)/.test(src) ||
+    /\[[^\]\n]*['"]jpe?g['"][^\]\n]*\]\s*\.includes\(/.test(src)
+
+/**
  * Three places classified a file by extension with their own hand-written list.
  * Each listed gif, bmp and svg — none of which the server accepts — and each
  * omitted heic, which it does, and which iPhones produce by default.
@@ -62,9 +73,7 @@ describe('one source decides what a file is', () => {
             ...globSync('lib/**/*.ts'),
         ]) {
             if (f.endsWith('lib/security/file-upload.ts')) continue
-            const src = strip(readFileSync(f, 'utf-8'))
-            if (/\\\.\(jpe\?g\|png/.test(src)) offenders.push(f)
-            if (/endsWith\(['"]\.jpe?g['"]\)/.test(src)) offenders.push(f)
+            if (handWrittenFormatList(strip(readFileSync(f, 'utf-8')))) offenders.push(f)
         }
         expect(offenders, `hand-written format lists:\n${offenders.join('\n')}`).toEqual([])
     })
@@ -137,5 +146,24 @@ describe('the AI is told what the document actually is', () => {
         // shared mapping and its own place in the test above.
         const src = strip(readFileSync('lib/services/gap-analysis.service.ts', 'utf-8'))
         expect(src).not.toMatch(/aiService\.|getAIService\(/)
+    })
+})
+
+/**
+ * RED-PROOF (Phase 6 guard audit): the hand-list matcher against the shapes
+ * the docstring records (each hand-written list knew gif/bmp/svg and not
+ * heic), the includes-list evasion, and the shared-helper calls that must
+ * stay silent.
+ */
+describe('the hand-list matcher is proven', () => {
+    it('flags all three spellings of a private format list', () => {
+        expect(handWrittenFormatList('const isImage = /\\.(jpe?g|png|gif|bmp|svg)$/i.test(name)')).toBe(true)
+        expect(handWrittenFormatList("if (name.endsWith('.jpg') || name.endsWith('.png')) {")).toBe(true)
+        expect(handWrittenFormatList("const ok = ['jpg', 'png', 'webp'].includes(ext)")).toBe(true)
+    })
+
+    it('stays silent on the shared helpers and unrelated arrays', () => {
+        expect(handWrittenFormatList('const ok = isAcceptedImageFile(storageKey) || isPdfFile(storageKey)')).toBe(false)
+        expect(handWrittenFormatList("const roles = ['agent', 'admin'].includes(role)")).toBe(false)
     })
 })

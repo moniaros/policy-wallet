@@ -19,6 +19,14 @@ const read = (f: string) => strip(readFileSync(f, 'utf-8'))
  * So the same portfolio read one number in the Monday email and another on the
  * dashboard, with nothing to explain the difference.
  */
+// The deduction ladder, however the locals are named — and BOTH spellings:
+// the arithmetic form the four copies used, and the weight-map form the
+// canonical implementation itself uses (a fifth copy could arrive that way).
+const LADDER_ARITHMETIC = /\*\s*25\s*\+[^)]*\*\s*15\s*\+[^)]*\*\s*8\s*\+[^)]*\*\s*3/
+const LADDER_WEIGHT_MAP = /critical:\s*25\s*,\s*high:\s*15\s*,\s*medium:\s*8\s*,\s*low:\s*3/
+const handRolledLadder = (code: string) =>
+    LADDER_ARITHMETIC.test(code) || LADDER_WEIGHT_MAP.test(code)
+
 describe('one provisional score, computed in one place', () => {
     it('is not reimplemented anywhere', () => {
         const offenders: string[] = []
@@ -29,8 +37,7 @@ describe('one provisional score, computed in one place', () => {
             ...globSync('components/**/*.tsx'),
         ].filter((f) => !f.endsWith('gap-engine/protection-score.ts'))
         for (const file of files) {
-            // the deduction ladder, however the locals are named
-            if (/\*\s*25\s*\+[^)]*\*\s*15\s*\+[^)]*\*\s*8\s*\+[^)]*\*\s*3/.test(read(file))) {
+            if (handRolledLadder(read(file))) {
                 offenders.push(file)
             }
         }
@@ -65,3 +72,28 @@ describe('one provisional score, computed in one place', () => {
  * value renders NOWHERE — while the arithmetic above stays single-source for
  * the non-rendering consumers that survive it.
  */
+
+/**
+ * RED-PROOF (Phase 6 guard audit): the ladder matcher against the AUTHENTIC
+ * hand-copied implementations (8f125fd5 deleted exactly these — dashboard,
+ * digest, drip, onboarding spellings), the weight-map spelling, and
+ * arithmetic that must stay silent.
+ */
+describe('the ladder matcher is proven on the authentic copies', () => {
+    it('flags every spelling that shipped', () => {
+        expect(handRolledLadder(
+            'healthScore = Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))',
+        )).toBe(true)
+        expect(handRolledLadder(
+            'const score = Math.max(0, Math.min(100, 100 - (c * 25 + h * 15 + m * 8 + l * 3)))',
+        )).toBe(true)
+        expect(handRolledLadder(
+            'const weight: Record<string, number> = { critical: 25, high: 15, medium: 8, low: 3 }',
+        )).toBe(true)
+    })
+
+    it('stays silent on unrelated arithmetic', () => {
+        expect(handRolledLadder('const px = cols * 25 + gutter')).toBe(false)
+        expect(handRolledLadder('const priorities = { critical: 4, high: 3, medium: 2, low: 1 }')).toBe(false)
+    })
+})
