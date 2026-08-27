@@ -42,7 +42,15 @@ surfaces (`/notifications`, `/dashboard`) are being rebuilt now. Earlier note, s
    written down anywhere. Three options in `HALTS.md → H-011`; the cheapest is to accept it and fix
    the doc, because a future agent will trust the invariant as written.
 
-2. **SEC-01 — session objects reached the Vercel runtime logs. LAUNCH RISK, not post-GA debt.**
+2. **The E2E suite has rotted, and it is the only thing that checks journeys.** `money-path.spec.ts`
+   — the PAID CONVERSION journey — fails at `#premium-insights`, an element removed on 2026-08-23 in
+   `5705289b` (the GOAL 2 restructure). It has been red for four days and nobody knew, because
+   **Playwright is not in CI**. This repo's own rule is that the gate checks code and journeys check
+   the product; the journey check is currently broken on the path that takes money. Found while
+   verifying the new upload UI — the failure is NOT a regression from that work, confirmed by
+   dating the removal.
+
+3. **SEC-01 — session objects reached the Vercel runtime logs. LAUNCH RISK, not post-GA debt.**
    **Contained, not closed**, and not closable by the agent. The middleware TypeError embedded the
    whole session in its message; **8 occurrences confirmed** in production (2026-08-23 ×7,
    2026-08-26 ×1), counted two independent ways.
