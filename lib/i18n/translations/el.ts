@@ -1403,6 +1403,12 @@ export const el = {
     },
 
     notifications: {
+        pageTitle: 'Ειδοποιήσεις',
+        pageSubtitle: 'Τι σας έχουμε στείλει πρόσφατα.',
+        preferences: 'Προτιμήσεις',
+        markRead: 'Σήμανση ως αναγνωσμένο',
+        markingAllRead: 'Σήμανση...',
+        allMarkedRead: 'Όλες σημάνθηκαν ως αναγνωσμένες.',
         showFullMessage: 'Εμφάνιση ολόκληρου μηνύματος',
         showLessMessage: 'Εμφάνιση λιγότερων',
         markAllReadFailed: 'Τα μηνύματα δεν σημάνθηκαν ως αναγνωσμένα. Δοκιμάστε ξανά.',

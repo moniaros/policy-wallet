@@ -22,11 +22,11 @@ const item = (overrides: Partial<AttentionItem> = {}): AttentionItem => ({
     ...overrides,
 })
 
-function renderList(items: AttentionItem[]) {
+function renderList(items: AttentionItem[], totalCount = items.length) {
     return render(
         <LanguageProvider>
             <TranslationsProvider>
-                <AttentionList items={items} language="en" labels={LABELS} />
+                <AttentionList items={items} totalCount={totalCount} language="en" labels={LABELS} />
             </TranslationsProvider>
         </LanguageProvider>
     )
@@ -60,6 +60,18 @@ describe('what needs my attention — framing', () => {
     it('shows the timing chip only when the verdict carries one', () => {
         renderList([item({ timingLabel: 'Within weeks' })])
         expect(screen.getByText('Within weeks')).toBeTruthy()
+    })
+
+    it('offers «view all» only when the list is truncated', () => {
+        // Everything already on screen: a view-all here is the hero CTA's
+        // destination offered a second time — the §11 duplicate-action defect
+        // measured on /dashboard (four bare /protection offers in content).
+        renderList([item()], 1)
+        expect(screen.queryByText(LABELS.viewAll)).toBeNull()
+
+        // A truncated list: view-all is the continuation of THIS list.
+        renderList([item()], 4)
+        expect(screen.getByText(LABELS.viewAll)).toBeTruthy()
     })
 
     it('empty state is positive and states its evidence boundary', () => {

@@ -19,10 +19,10 @@
 #           copy, .tsx ternaries (lint:i18n-changed's beat), bare literals and
 #           ??/|| fallbacks, Greek outside these roots.
 #
-# bundle entries: 2794
+# bundle entries: 2800
 # inline entries: 4673 across 208 files
 # ternary entries: 285 across 44 files
-# call entries: 1142 across 72 files
+# call entries: 1134 across 71 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
 bundle	a11yLabels.emailClient	"Αποστολή email στον πελάτη"
@@ -1567,6 +1567,7 @@ bundle	nav.team	"Ομάδα"
 bundle	nav.users	"Χρήστες & ρόλοι"
 bundle	nav.wallet	"Ο φάκελός μου"
 bundle	nav.walletShort	"Φάκελος"
+bundle	notifications.allMarkedRead	"Όλες σημάνθηκαν ως αναγνωσμένες."
 bundle	notifications.alwaysActiveEmail	"Πάντα ενεργό μέσω email"
 bundle	notifications.backToNotifications	"Πίσω στις ειδοποιήσεις"
 bundle	notifications.catIntelligence	"Ανάλυση κάλυψης"
@@ -1579,7 +1580,12 @@ bundle	notifications.communicationCenter	"Κέντρο επικοινωνίας"
 bundle	notifications.dualRole	"Διπλός ρόλος"
 bundle	notifications.markAllRead	"Σήμανση όλων ως αναγνωσμένα"
 bundle	notifications.markAllReadFailed	"Τα μηνύματα δεν σημάνθηκαν ως αναγνωσμένα. Δοκιμάστε ξανά."
+bundle	notifications.markRead	"Σήμανση ως αναγνωσμένο"
+bundle	notifications.markingAllRead	"Σήμανση..."
 bundle	notifications.noNotificationsYet	"Δεν υπάρχουν ειδοποιήσεις ακόμη"
+bundle	notifications.pageSubtitle	"Τι σας έχουμε στείλει πρόσφατα."
+bundle	notifications.pageTitle	"Ειδοποιήσεις"
+bundle	notifications.preferences	"Προτιμήσεις"
 bundle	notifications.pwaInstallCta	"Εγκατάσταση εφαρμογής"
 bundle	notifications.pwaInstallIos	"Πατήστε Κοινή χρήση και επιλέξτε «Προσθήκη στην αρχική οθόνη»."
 bundle	notifications.pwaInstallSubtitle	"Ταχύτερη πρόσβαση από την αρχική οθόνη σας."
@@ -8774,14 +8780,6 @@ call	components/needs/NeedsCheck.tsx	"Συνέχεια"
 call	components/needs/NeedsCheck.tsx	"Τι αξίζει να ελέγξετε"
 call	components/needs/NeedsCheck.tsx	"Τι σημαίνει αυτή η κάλυψη"
 call	components/needs/NeedsCheck.tsx	"Φτιάξτε λογαριασμό και ανεβάστε τα ασφαλιστήριά σας. Κρατάμε αυτές τις απαντήσεις — δεν θα τις ξαναδώσετε — και σας λέμε ποια από τα παραπάνω τα έχετε ήδη και ποια όχι."
-call	components/notifications/NotificationsClient.tsx	"Όλες σημάνθηκαν ως αναγνωσμένες."
-call	components/notifications/NotificationsClient.tsx	"Αποτυχία σήμανσης."
-call	components/notifications/NotificationsClient.tsx	"Δεν υπάρχουν πρόσφατες ειδοποιήσεις."
-call	components/notifications/NotificationsClient.tsx	"Ειδοποιήσεις"
-call	components/notifications/NotificationsClient.tsx	"Προτιμήσεις"
-call	components/notifications/NotificationsClient.tsx	"Σήμανση όλων ως αναγνωσμένα"
-call	components/notifications/NotificationsClient.tsx	"Σήμανση..."
-call	components/notifications/NotificationsClient.tsx	"Τι σας έχουμε στείλει πρόσφατα."
 call	components/onboarding/QuickStart.tsx	"Από όσα μας είπατε"
 call	components/onboarding/QuickStart.tsx	"Από όσα μας είπατε, δεν προκύπτει κάτι που να χρειάζεται προσοχή τώρα. Αυτό είναι καλό νέο."
 call	components/onboarding/QuickStart.tsx	"Ας ξεκινήσουμε"

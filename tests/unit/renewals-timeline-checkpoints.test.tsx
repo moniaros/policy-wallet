@@ -11,7 +11,6 @@ const LABELS = {
     policiesSuffix: "policies",
     trackExpirationsTitle: "We track your expirations for you",
     trackExpirationsBody: "Add policies and we will remind you before every renewal.",
-    addPolicy: "Add a policy",
     noExpirationsTitle: "No expirations in the next 6 months",
     noExpirationsBody: "We will alert you well before every renewal.",
 }
@@ -84,7 +83,7 @@ describe("the renewals count agrees with its noun", () => {
         kicker: "Renewal timeline",
         policiesSuffixOne: "policy renewing soon",
         policiesSuffix: "policies renewing soon",
-        trackExpirationsTitle: "t", trackExpirationsBody: "b", addPolicy: "a",
+        trackExpirationsTitle: "t", trackExpirationsBody: "b",
         noExpirationsTitle: "nt", noExpirationsBody: "nb",
     }
     const row = (id: string) => ({

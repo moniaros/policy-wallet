@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { ShieldAlert } from "lucide-react"
 import { GAP_SEVERITIES, describeSeverity } from "@/lib/gaps/severity-display"
 import { toneDotClass } from "@/components/gaps/severity-tone"
@@ -11,7 +10,18 @@ export interface GapSeverityCounts {
 }
 
 
-/** Open coverage gaps by severity — links into coverage insights. */
+/**
+ * Open coverage gaps by severity — a TALLY, deliberately not a link.
+ *
+ * This card used to wrap itself in `<Link href="/protection">`, one of the
+ * four bare `/protection` offers the duplicate-actions metric gated on this
+ * page (§11 metric 7). It sits in the SAME section as the attention list,
+ * whose rows and «Όλες» continuation already navigate to the finding set —
+ * a second, implicit whole-card link one card down offered the same act
+ * again with less affordance (and put a `role="list"` inside an anchor,
+ * which no screen reader announces cleanly). The numbers are the content;
+ * the section's explicit links own the navigation.
+ */
 export function CoverageGapsWidget({
     counts,
     labels,
@@ -31,7 +41,7 @@ export function CoverageGapsWidget({
     const total = counts.critical + counts.high + counts.medium + counts.low
 
     return (
-        <Link href="/protection" className="pw-card pw-pad">
+        <div className="pw-card pw-pad">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 <ShieldAlert className="h-4 w-4 text-muted-foreground" aria-hidden />
@@ -78,6 +88,6 @@ export function CoverageGapsWidget({
                     </>
                 )}
             </div>
-        </Link>
+        </div>
     )
 }

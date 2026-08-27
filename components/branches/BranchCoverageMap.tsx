@@ -42,7 +42,14 @@ export function BranchCoverageMap({
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
                 <Link
-                    href="/protection"
+                    // The lens NAMED, not implied. «Όλοι οι κλάδοι» continues
+                    // this map into the branch lens that absorbed /branches
+                    // (V2-P2-03) — the same convention the monitor card uses
+                    // for its lens (`?lens=risk`). Bare `/protection` here was
+                    // one of the four undifferentiated offers of that page the
+                    // duplicate-actions metric gated on /dashboard (§11
+                    // metric 7); the hero CTA is the page's one generic entry.
+                    href="/protection?lens=branch"
                     className="inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
                 >
                     {labels.viewAll}

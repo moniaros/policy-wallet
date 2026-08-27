@@ -101,7 +101,15 @@ export function UpgradeTriggerCard({
         return (
             <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-primary/20 bg-primary-soft/60 p-3 dark:border-mint/20 dark:bg-primary/10 ${className}`}>
                 <Crown className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
-                <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">
+                {/* basis-40, not basis-0: `flex-1` alone gives the body a 0
+                    basis, so on a phone the CTA's max-content width claimed
+                    the line and the body got only the leftover ~40px — Greek
+                    copy rendered one syllable per line inside the renewals
+                    card (found on /dashboard@390, PW-MOBILE-TRANSFORM-02
+                    Phase 5; pre-existing, identical in the before run). With
+                    a real minimum the flex-wrap does its job: the CTA wraps
+                    UNDER the copy when the two cannot share a line. */}
+                <p className="min-w-0 flex-1 basis-40 text-xs leading-relaxed text-muted-foreground">
                     {copy.body}
                 </p>
                 <button

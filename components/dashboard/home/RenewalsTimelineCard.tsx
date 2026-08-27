@@ -63,7 +63,6 @@ export function RenewalsTimelineCard({
         policiesSuffix: string
         trackExpirationsTitle: string
         trackExpirationsBody: string
-        addPolicy: string
         noExpirationsTitle: string
         noExpirationsBody: string
     }
@@ -103,14 +102,15 @@ export function RenewalsTimelineCard({
                             {!hasPolicies ? (
                                 <>
                                     <p className="text-sm font-semibold text-black/75 dark:text-white/85">{labels.trackExpirationsTitle}</p>
+                                    {/* No «Προσθέστε ασφαλιστήριο» link here. On an empty
+                                        wallet this card, the portfolio card and the hero
+                                        all offered the same upload — three asks on a
+                                        three-screen page, measured as a gated duplicate
+                                        (§11 metric 7, href:/wallet/add ×2 + the hero's
+                                        data-action). The empty state's ONE primary is
+                                        the hero CTA; this card explains what the
+                                        timeline will do, it does not re-ask. */}
                                     <p className="mt-0.5 text-xs text-muted-foreground">{labels.trackExpirationsBody}</p>
-                                    <Link
-                                        href="/wallet/add"
-                                        className="pw-inline-action mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
-                                    >
-                                        {labels.addPolicy}
-                                        <ArrowRight className="h-3 w-3" />
-                                    </Link>
                                 </>
                             ) : (
                                 <>
@@ -185,19 +185,29 @@ export function RenewalsTimelineCard({
                                                     </span>
                                                 ))}
                                         </p>
-                                    </div>
-                                    <div className="flex flex-shrink-0 items-center gap-2">
+                                        {/* The checkpoint chip lives in the CONTENT column, not in
+                                            a right-hand cluster beside the arrow. As a flex sibling
+                                            of the title column its max-content width («2 σημεία για
+                                            έλεγχο» is ~140px of non-wrapping chip) came off the
+                                            title's share first: at 320 the headline column shrank
+                                            to ~17px and «Υγεία: ανανέωση σε 18 ημέρες» rendered one
+                                            syllable per line — without clipping and without page
+                                            overflow, so every §11 metric read clean (recorded in
+                                            PHASE4-ASSESSMENT.md, "Phase 5 precondition"; found by
+                                            eye in the P5-before captures). Stacked under the meta
+                                            line the chip costs one row of height at every width and
+                                            the title keeps the full column. */}
                                         {item.checkpointLabel && (
                                             <span
                                                 data-count="policy.renewalCheckpointCount"
                                                 data-count-subject={item.id}
-                                                className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-micro font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
+                                                className="mt-1.5 inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-micro font-semibold text-amber-800 dark:bg-amber-500/15 dark:text-amber-300"
                                             >
                                                 {item.checkpointLabel}
                                             </span>
                                         )}
-                                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
                                     </div>
+                                    <ArrowRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" aria-hidden />
                                 </Link>
                             )
                         })}

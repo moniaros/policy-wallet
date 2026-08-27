@@ -1,0 +1,200 @@
+{
+  "capture": "single-unanalysed",
+  "width": 390,
+  "url": "http://localhost:3000/dashboard",
+  "scrollHeight": 2779,
+  "viewportsOfContent": 3.3,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 6,
+    "ids": [
+      "#overview",
+      "#attention",
+      "#plan",
+      "#coverage",
+      "#portfolio",
+      "#activity"
+    ]
+  },
+  "containers": {
+    "count": 47,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.pw-card pw-pad lg:col-span-2",
+      "div.flex items-start gap-3 rounded-xl border",
+      "span.grid h-9 w-9 flex-shrink-0 place-items-c"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:subpixel] <a> \"Κατοικία\" boundary 2.01:1 (needs 3) inside=#fafafa outside=#ffffff — declared 3.35:1, rendered across two device rows",
+      "[1.4.11:subpixel] <a> \"Υγεία\" boundary 1.61:1 (needs 3) inside=#fbfbfb outside=#feffff — declared 3.35:1, rendered across two device rows",
+      "[1.4.11:surface] <section> \"Κατάσταση προστασίας1 ασφαλιστήριο\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#f9fbfd",
+      "[1.4.11:unmeasured] <div> \"Χρειάζεται την προσοχή σαςΤίποτα δ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Χρονοδιάγραμμα ανανεώσεωνΚαμία λήξ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <section> \"Το πλάνο προστασίας σας2 από 5 ολο\" boundary 1.13:1 (needs 3) inside=#eaecee outside=#dee1e4",
+      "[1.4.11:surface] <div> \"Διαρκής επίβλεψη της προστασίας σα\" boundary 1.23:1 (needs 3) inside=#f4f7f7 outside=#feffff",
+      "[1.4.11:unmeasured] <div> \"Χάρτης κάλυψηςΌλοι οι κλάδοιΑυτοκί\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Χαρτοφυλάκιο ασφαλίσεωνΠροσθέστε ν\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:shell] <a> \"Αρχική\" boundary 1.25:1 (needs 3) inside=#dfe8e7 outside=#ffffff"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 390,
+    "viewportWidth": 390,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [],
+      "dayCounts": [],
+      "statusChips": []
+    },
+    "repeatedStrings": [],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση ΑΡΧΙΚΗ Η ασφαλιστική σας εικόνα ΚΑΤΑΣΤΑΣΗ ΠΡΟΣΤΑΣΙΑΣ 1 ασφαλιστήριο · 1 δεν έχει αναλυθεί Έλεγχος της προστασίας μου ΧΡΕΙΑΖΕΤΑΙ ΤΗΝ ΠΡΟΣΟΧΗ ΣΑΣ Τίποτα δεν χρειάζεται την προσοχή σας αυτή τη στιγμή Με βάση τα ασφαλιστήρια και τις απαντήσεις που έχουμε. Πείτε μας όταν αλλάξει κάτι και θα το ξανακοιτάξουμε. ΚΕΝΑ ΚΑΛΥΨΗΣ Δεν εντοπίζονται ανοιχτά κενά. ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ ΑΝΑΝΕΩΣΕΩΝ Καμία λήξη τους επόμενους 6 μήνες Θα σας ειδοποιήσουμε εγκαίρως πριν από κάθε ανανέωση. ΤΟ ΠΛΑΝΟ ΠΡΟΣΤΑΣΙΑΣ ΣΑΣ 2 από 5 ολοκληρωμένα Ανεβάστε ένα ασφαλιστήριο Δείτε την ανάλυση AI Δείτε τι εντοπίσαμε στην κάλυψή σας. Ελέγξτε τα κενά κάλυψης Δείτε αν κάτι σημαντικό μένει ακάλυπτο. Συνδεθείτε με σύμβουλο Ενεργοποιήστε τις ειδοποιήσεις Λάβετε ειδοποιήσεις για ανανεώσεις και αλλαγές. Διαρκής επίβλεψη της προστασίας σας Το Plus συνεχίζει να παρακολουθεί ανάμεσα στις επισκέψεις σας — μετά από κάθε αλλαγή και σε τακτικούς ελέγχους — και σας ενημερώνει όταν κάτι αξίζει μια ματιά. Ενεργοποίηση παρακολούθησης προστασίας ΑΛΛΑΞΕ ΚΑΤΙ; Νέο σπίτι, παιδί, νέα δουλειά — οι αλλαγές της ζωής μετακινούν την προστασία σας. Πείτε μας και θα την επανεκτιμήσουμε. Γάμος ή σύμφωνο συμβίωσης Διαζύγιο Γέννηση παιδιού Ένα παιδί ανεξαρτητοποιήθηκε Δηλώστε μια αλλαγή ΧΑΡΤΗΣ ΚΑΛΥΨΗΣ Όλοι οι κλάδοι Αυτοκίνητο Κατοικία Υγεία Ζωή Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Επιχείρηση ΧΑΡΤΟΦΥΛΑΚΙΟ ΑΣΦΑΛΙΣΕΩΝ Προσθέστε νέο ασφαλιστήριο 312 € Συνολικό ετήσιο ασφάλιστρο Αυτοκίνητο 312 € Πρόσφατα έγγραφα Δεν βρέθηκαν έγγραφα. ΤΙ ΑΛΛΑΞΕ ΠΡΟΣΦΑΤΑ Προστέθηκε ασφαλιστήριο Αυτοκίνητο — Interamerican Συνδέθηκε σύμβουλος Δείτε όλο το χρονολόγιο ΚΑΤΑΣΤΑΣΗ ΣΥΜΒΟΥΛΟΥ Συνδεδεμένος: Παναγιώτης-Ευστράτιος Οικονομόπουλος-Παπαδημητρίου ΒΟΗΘΕΙΑ ΚΑΙ ΥΠΟΣΤΗΡΙΞΗ Άνοιγμα κέντρου βοήθειας Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "portfolioState": "single-unanalysed",
+  "duplicateActions": {
+    "totalCandidates": 47,
+    "offeredInstances": 25,
+    "excluded": [
+      {
+        "reason": "off-canvas",
+        "count": 20
+      },
+      {
+        "reason": "zero-size",
+        "count": 1
+      },
+      {
+        "reason": "hidden",
+        "count": 1
+      }
+    ],
+    "unidentifiable": 0,
+    "groups": [
+      {
+        "identity": "href:/protection",
+        "identitySource": "href",
+        "subject": "",
+        "count": 3,
+        "contentCount": 2,
+        "navCount": 1,
+        "classification": "content-repeat",
+        "gated": true,
+        "instances": [
+          {
+            "label": "Κενά κάλυψηςΔεν εντοπίζονται ανοιχτά κενά.",
+            "href": "/protection",
+            "region": "content",
+            "where": "#attention"
+          },
+          {
+            "label": "Όλοι οι κλάδοι",
+            "href": "/protection",
+            "region": "content",
+            "where": "#coverage"
+          },
+          {
+            "label": "Προστασία",
+            "href": "/protection",
+            "region": "nav",
+            "where": "nav"
+          }
+        ]
+      },
+      {
+        "identity": "href:/dashboard",
+        "identitySource": "href",
+        "subject": "",
+        "count": 2,
+        "contentCount": 1,
+        "navCount": 1,
+        "classification": "nav-overlap",
+        "gated": false,
+        "instances": [
+          {
+            "label": "PolicyWallet",
+            "href": "/dashboard",
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Αρχική",
+            "href": "/dashboard",
+            "region": "nav",
+            "where": "nav"
+          }
+        ]
+      },
+      {
+        "identity": "href:/agent",
+        "identitySource": "href",
+        "subject": "",
+        "count": 2,
+        "contentCount": 1,
+        "navCount": 1,
+        "classification": "nav-overlap",
+        "gated": false,
+        "instances": [
+          {
+            "label": "Κατάσταση συμβούλουΣυνδεδεμένος: Παναγιώτης-Ευστράτιος Οικον",
+            "href": "/agent",
+            "region": "content",
+            "where": "#activity"
+          },
+          {
+            "label": "Σύμβουλος",
+            "href": "/agent",
+            "region": "nav",
+            "where": "nav"
+          }
+        ]
+      }
+    ],
+    "duplicateActionCount": 1,
+    "navOverlapCount": 2,
+    "navPolicy": "separate"
+  },
+  "countConsistencyShared": {
+    "verdict": "consistent-but-unmeasured",
+    "failures": 0,
+    "totalKeys": 7,
+    "comparableKeys": 7,
+    "corroboratedKeys": 0,
+    "inconsistent": [],
+    "nonComparable": [],
+    "unmeasurableCount": 1,
+    "unmeasurable": [
+      {
+        "text": "Καμία λήξη τους επόμενους 6 μήνες",
+        "where": "#attention"
+      }
+    ],
+    "excludedByDesign": []
+  },
+  "clippedLabels": []
+}

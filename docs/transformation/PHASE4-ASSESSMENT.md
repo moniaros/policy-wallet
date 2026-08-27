@@ -117,3 +117,33 @@ prints `0` *and* exits non-zero, so a `|| echo 0` fallback made every value trut
 measurement error in this phase, all four caught before acting on them — but the pattern is worth
 naming, because every one of them was a **checking tool that reported success while measuring the
 wrong thing**, which is precisely the defect class this programme exists to remove from the product.
+
+### Addendum (2026-08-27, from the Phase 5 `/dashboard` series): the eight metrics are blind to degenerate wrap
+
+Both missing metrics above were built; a hole in the OTHER six surfaced during the dashboard
+consolidation. **Text that wraps one syllable per line clips nothing and overflows nothing**, so
+`clippedLabels` and `pageOverflow` — the two halves of the layout-integrity metric — both read
+clean while a row title renders as a vertical ribbon of letters. The layout-integrity metric
+measures whether content ESCAPED its box, not whether the box was fit to hold it: a flex column
+starved to 17px by a non-shrinking sibling passes every §11 assertion while being unreadable.
+
+Two instances in this series, both found by a human reviewing the P5 capture screenshots, neither
+by any metric or assertion:
+
+1. **`RenewalsTimelineCard` row titles at 320** — the checkpoint chip's max-content width in a
+   `flex-shrink-0` right cluster starved the title column; «Υγεία: ανανέωση σε 18 ημέρες»
+   rendered one syllable per line. Only machine trace: a non-§11 diagnostic probe recorded
+   `css-truncation` with scrollHeight 383 against clientHeight 32. Fixed by moving the chip into
+   the content column (evidence: `evidence/dashboard/PROTECTION-ACTIONS.md`).
+2. **`UpgradeTriggerCard` inline variant at 390** — `flex-1` with its default 0 basis let the
+   CTA's max-content width claim the line, leaving the body copy ~40px; fixed with a real basis
+   (`basis-40`) so the CTA wraps under the copy. Pre-existing, identical in the before run,
+   affects all four call sites.
+
+Same shape as this file's other findings: a check that reports the good outcome for a situation
+it never covered. **Deliberately NOT built now**: a degenerate-wrap metric (e.g. flag any text
+node whose rendered height exceeds k× its single-line height at its container's width, or any
+text column narrower than ~4ch) — recorded here instead, so whoever owns the §11 acceptance
+criteria decides with the hole visible rather than papered over. Until then, human review of
+captures is the only guard this class has, and any surface signed off on metrics alone carries
+this blind spot in its sign-off.

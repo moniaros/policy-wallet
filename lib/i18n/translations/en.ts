@@ -1392,6 +1392,12 @@ export const en: TranslationKeys = {
     },
 
     notifications: {
+        pageTitle: 'Notifications',
+        pageSubtitle: 'What we have sent you recently.',
+        preferences: 'Preferences',
+        markRead: 'Mark as read',
+        markingAllRead: 'Marking...',
+        allMarkedRead: 'All marked as read.',
         showFullMessage: 'Show the full message',
         showLessMessage: 'Show less',
         markAllReadFailed: 'Could not mark everything as read. Please try again.',

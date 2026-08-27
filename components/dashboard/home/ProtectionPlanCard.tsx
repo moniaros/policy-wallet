@@ -146,8 +146,19 @@ export function ProtectionPlanCard({
                 })}
             </ul>
             {moreOpenLabel && (
-                <Link
-                    href="/protection"
+                <a
+                    // The findings this counts render in «Χρειάζεται την προσοχή
+                    // σας», one section up on THIS page (PolicyholderHome's
+                    // `section#attention` — which carries scroll-mt for this
+                    // anchor). The card's own header comment already said the
+                    // plan "links there rather than restating them", but the
+                    // href said `/protection` — a third bare offer of the same
+                    // destination the hero CTA and the attention list's «Όλες»
+                    // continuation already carry (§11 metric 7, gated
+                    // content-repeat). A cross-reference points at where the
+                    // findings actually are; it does not re-offer navigation
+                    // the attention section owns.
+                    href="#attention"
                     // The «+N ακόμη» count IS the open recommendation set — the
                     // same fact the hero's areas line states, under one key.
                     data-count={moreOpenCount !== undefined ? "recommendation.openCount" : undefined}
@@ -155,7 +166,7 @@ export function ProtectionPlanCard({
                 >
                     {moreOpenLabel}
                     <ArrowRight className="h-3 w-3" aria-hidden />
-                </Link>
+                </a>
             )}
         </section>
     )

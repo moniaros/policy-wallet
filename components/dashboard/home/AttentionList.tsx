@@ -35,10 +35,20 @@ export interface AttentionItem {
  */
 export function AttentionList({
     items,
+    totalCount,
     language,
     labels,
 }: {
     items: AttentionItem[]
+    /**
+     * The full open-finding set behind the truncated `items`. «Όλες» renders
+     * only when this exceeds what is on screen: a view-all over a list that
+     * already shows everything is not a continuation of anything — it is the
+     * hero's «Δείτε την κάλυψή σας» offered a second time in different words,
+     * which is exactly the duplicate-action defect (§11 metric 7) this page
+     * measured live: four bare `/protection` offers in one page's content.
+     */
+    totalCount: number
     language: Language
     labels: {
         kicker: string
@@ -52,7 +62,7 @@ export function AttentionList({
         <div className="pw-card pw-pad lg:col-span-2">
             <div className="flex items-center justify-between">
                 <p className="pw-kicker">{labels.kicker}</p>
-                {items.length > 0 && (
+                {totalCount > items.length && (
                     <Link
                         href="/protection"
                         className="pw-inline-action inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"

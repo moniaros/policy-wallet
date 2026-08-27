@@ -728,13 +728,19 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     used to sit at ~70% page depth, below the plan and the
                     portfolio, so the only items on the page with a DEADLINE
                     were the hardest to reach. */}
-                <section id="attention" aria-label={home.attentionKicker} className="space-y-4">
+                {/* scroll-mt-20: the plan card's «+N ακόμη» cross-reference
+                    anchors here (ProtectionPlanCard renders href="#attention"),
+                    and the sticky shell header would otherwise cover the
+                    kicker on arrival — the same offset the /protection
+                    anchors use. */}
+                <section id="attention" aria-label={home.attentionKicker} className="scroll-mt-20 space-y-4">
 
 
                     {/* What needs my attention + the severity tally beside it */}
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                         <AttentionList
                             items={attentionItems}
+                            totalCount={activeRecommendations.length}
                             language={lang}
                             labels={{
                                 kicker: home.attentionKicker,
@@ -779,7 +785,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             policiesSuffix: home.policiesSuffix,
                             trackExpirationsTitle: home.trackExpirationsTitle,
                             trackExpirationsBody: home.trackExpirationsBody,
-                            addPolicy: home.addPolicy,
                             noExpirationsTitle: home.noExpirationsTitle,
                             noExpirationsBody: home.noExpirationsBody,
                         }}

@@ -1,0 +1,198 @@
+{
+  "capture": "typical-recs-few",
+  "width": 320,
+  "url": "http://localhost:3000/dashboard",
+  "scrollHeight": 3956,
+  "viewportsOfContent": 5.5,
+  "headingCounts": {
+    "h1": 1,
+    "mainLandmark": 1
+  },
+  "sections": {
+    "count": 6,
+    "ids": [
+      "#overview",
+      "#attention",
+      "#plan",
+      "#coverage",
+      "#portfolio",
+      "#activity"
+    ]
+  },
+  "containers": {
+    "count": 59,
+    "maxDepth": 3,
+    "deepestChain": [
+      "div.pw-card pw-pad lg:col-span-2",
+      "a.pw-control-boundary flex items-start gap",
+      "span.mt-1.5 h-2 w-2 flex-shrink-0 rounded-ful"
+    ]
+  },
+  "duplicateFacts": {
+    "dataFactDuplicates": [],
+    "valueScanDuplicates": [],
+    "duplicateFactCount": 0
+  },
+  "identityDuplicates": {
+    "totalRows": 0,
+    "comparableRows": 0,
+    "duplicateRowCount": 0,
+    "largestGroupSize": 0,
+    "groups": [],
+    "unlocatable": []
+  },
+  "tapTargets": [],
+  "contrast": {
+    "text": [],
+    "nonText": [
+      "[1.4.11:surface] <section> \"Κατάσταση προστασίας3 ασφαλιστήρια\" boundary 1.18:1 (needs 3) inside=#ffffff outside=#f9fbfc",
+      "[1.4.11:unmeasured] <div> \"Χρειάζεται την προσοχή σαςΗ κατοικ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Κενά κάλυψης2 μέτρια1 χαμηλά\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"Χρονοδιάγραμμα ανανεώσεων2 ασφαλισ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:unmeasured] <section> \"Το πλάνο προστασίας σας3 από 5 ολο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Διαρκής επίβλεψη της προστασίας σα\" boundary 1.23:1 (needs 3) inside=#f4f7f7 outside=#feffff",
+      "[1.4.11:surface] <div> \"Χάρτης κάλυψηςΌλοι οι κλάδοιΑυτοκί\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfd",
+      "[1.4.11:unmeasured] <div> \"Χαρτοφυλάκιο ασφαλίσεωνΠροσθέστε ν\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:shell] <a> \"Αρχική\" boundary 1.25:1 (needs 3) inside=#dee7e6 outside=#fefefe"
+    ]
+  },
+  "pageOverflow": {
+    "documentScrollWidth": 320,
+    "viewportWidth": 320,
+    "overflowPx": 0,
+    "offenders": []
+  },
+  "probes": {
+    "truncation": [
+      {
+        "selector": "p.line-clamp-2.text-micro",
+        "text": "Εθνική Ασφαλιστική · ΣΥΜΒ-2026-T2 · 14/09/2026 · 1.138 €",
+        "scrollWidth": 150,
+        "clientWidth": 150,
+        "reason": "css-truncation",
+        "scrollHeight": 48,
+        "clientHeight": 32
+      }
+    ],
+    "latinSentences": [],
+    "nonTelPhoneNumbers": [],
+    "dateFacts": {
+      "dates": [
+        "#attention: 14/09/2026 — \"14/09/2026\"",
+        "#attention: 25/12/2026 — \"25/12/2026\""
+      ],
+      "dayCounts": [
+        "#overview: \"1 λήγει μέσα σε 30 ημέρες\"",
+        "#attention: \"Υγεία: ανανέωση σε 18 ημέρες\"",
+        "#attention: \"Κατοικία: ανανέωση σε 120 ημέρες\""
+      ],
+      "statusChips": []
+    },
+    "repeatedStrings": [
+      {
+        "text": "Η κατοικία σας μπορεί να είναι ασφαλισμένη κάτω από το κόστος ανακατασκευής",
+        "count": 2,
+        "where": [
+          "#attention <span>",
+          "#activity <span>"
+        ]
+      },
+      {
+        "text": "Το νοικοκυριό σας ίσως εκτεθεί αν σταματήσει το εισόδημά σας",
+        "count": 2,
+        "where": [
+          "#attention <span>",
+          "#activity <span>"
+        ]
+      }
+    ],
+    "internalTokenLeaks": [],
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 2 PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 2 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση ΑΡΧΙΚΗ Η ασφαλιστική σας εικόνα ΚΑΤΑΣΤΑΣΗ ΠΡΟΣΤΑΣΙΑΣ 3 ασφαλιστήρια · 1 λήγει μέσα σε 30 ημέρες · 1 δεν διαβάστηκε 2 ευρήματα ίσως χρειάζονται έλεγχο Έλεγχος της προστασίας μου Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν επαγγελματική, νομική ή ασφαλιστική συμβουλή. Συζητήστε κάθε σημαντική απόφαση με τον ασφαλιστικό σας σύμβουλο. ΧΡΕΙΑΖΕΤΑΙ ΤΗΝ ΠΡΟΣΟΧΗ ΣΑΣ Η κατοικία σας μπορεί να είναι ασφαλισμένη κάτω από το κόστος ανακατασκευής Δηλώσατε ιδιόκτητη κατοικία και το ποσό κάλυψης δεν έχει επιβεβαιωθεί. Κρίσιμη προτεραιότητα Το νοικοκυριό σας ίσως εκτεθεί αν σταματήσει το εισόδημά σας Μέλη της οικογένειάς σας εξαρτώνται από το εισόδημά σας. Υψηλή προτεραιότητα Οι προτεραιότητες βασίζονται στο προφίλ σας και στα κενά που εντοπίστηκαν — δεν αποτελούν οριστική αξιολόγηση κινδύνου. ΚΕΝΑ ΚΑΛΥΨΗΣ 2 μέτρια 1 χαμηλά ΧΡΟΝΟΔΙΑΓΡΑΜΜΑ ΑΝΑΝΕΩΣΕΩΝ 2 ασφαλιστήρια με ανανέωση εντός 6 μηνών Υγεία: ανανέωση σε 18 ημέρες Εθνική Ασφαλιστική · ΣΥΜΒ-2026-T2 · 14/09/2026 · 1.138 € 2 σημεία για έλεγχο Κατοικία: ανανέωση σε 120 ημέρες Generali · ΣΥΜΒ-2026-T3 · 25/12/2026 · 240 € 1 σημείο για έλεγχο Μην περιμένεις τη λήξη για να ψάξεις το ασφαλιστήριό σου. Ξεκλείδωσε έξυπνες υπενθυμίσεις ανανέωσης. Ενεργοποίηση έξυπνων υπενθυμίσεων ΤΟ ΠΛΑΝΟ ΠΡΟΣΤΑΣΙΑΣ ΣΑΣ 3 από 5 ολοκληρωμένα Ανεβάστε ένα ασφαλιστήριο Δείτε την ανάλυση AI Ελέγξτε τα κενά κάλυψης Δείτε αν κάτι σημαντικό μένει ακάλυπτο. Συνδεθείτε με σύμβουλο Ενεργοποιήστε τις ειδοποιήσεις Λάβετε ειδοποιήσεις για ανανεώσεις και αλλαγές. +2 ακόμη στις προτάσεις σας Διαρκής επίβλεψη της προστασίας σας Το Plus συνεχίζει να παρακολουθεί ανάμεσα στις επισκέψεις σας — μετά από κάθε αλλαγή και σε τακτικούς ελέγχους — και σας ενημερώνει όταν κάτι αξίζει μια ματιά. Ενεργοποίηση παρακολούθησης προστασίας ΑΛΛΑΞΕ ΚΑΤΙ; Νέο σπίτι, παιδί, νέα δουλειά — οι αλλαγές της ζωής μετακινούν την προστασία σας. Πείτε μας και θα την επανεκτιμήσουμε. Γάμος ή σύμφωνο συμβίωσης Διαζύγιο Γέννηση παιδιού Ένα παιδί ανεξαρτητοποιήθηκε Δηλώστε μια αλλαγή ΧΑΡΤΗΣ ΚΑΛΥΨΗΣ Όλοι οι κλάδοι Αυτοκίνητο Κατοικία Υγεία Ζωή Σύνταξη & Αποταμίευση Ταξιδιωτική Κατοικίδιο Cyber Επιχείρηση ΧΑΡΤΟΦΥΛΑΚΙΟ ΑΣΦΑΛΙΣΕΩΝ Προσθέστε νέο ασφαλιστήριο 1.691 € Συνολικό ετήσιο ασφάλιστρο Υγεία 1.138 € Αυτοκίνητο 312 € Κατοικία 240 € Πρόσφατα έγγραφα Δεν βρέθηκαν έγγραφα. ΤΙ ΑΛΛΑΞΕ ΠΡΟΣΦΑΤΑ Το νοικοκυριό σας ίσως εκτεθεί αν σταματήσει το εισόδημά σας Η κατοικία σας μπορεί να είναι ασφαλισμένη κάτω από το κόστος ανακατασκευής Προστέθηκε ασφαλιστήριο Κατοικία — Generali Δείτε όλο το χρονολόγιο ΚΑΤΑΣΤΑΣΗ ΣΥΜΒΟΥΛΟΥ Συνδεδεμένος: Παναγιώτης-Ευστράτιος Οικονομόπουλος-Παπαδημητρίου ΒΟΗΘΕΙΑ ΚΑΙ ΥΠΟΣΤΗΡΙΞΗ Άνοιγμα κέντρου βοήθειας Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+  },
+  "portfolioState": "typical-recs-few",
+  "duplicateActions": {
+    "totalCandidates": 52,
+    "offeredInstances": 30,
+    "excluded": [
+      {
+        "reason": "off-canvas",
+        "count": 20
+      },
+      {
+        "reason": "zero-size",
+        "count": 1
+      },
+      {
+        "reason": "hidden",
+        "count": 1
+      }
+    ],
+    "unidentifiable": 0,
+    "groups": [
+      {
+        "identity": "href:/dashboard",
+        "identitySource": "href",
+        "subject": "",
+        "count": 2,
+        "contentCount": 1,
+        "navCount": 1,
+        "classification": "nav-overlap",
+        "gated": false,
+        "instances": [
+          {
+            "label": "PolicyWallet",
+            "href": "/dashboard",
+            "region": "content",
+            "where": "top"
+          },
+          {
+            "label": "Αρχική",
+            "href": "/dashboard",
+            "region": "nav",
+            "where": "nav"
+          }
+        ]
+      },
+      {
+        "identity": "href:/agent",
+        "identitySource": "href",
+        "subject": "",
+        "count": 2,
+        "contentCount": 1,
+        "navCount": 1,
+        "classification": "nav-overlap",
+        "gated": false,
+        "instances": [
+          {
+            "label": "Κατάσταση συμβούλουΣυνδεδεμένος: Παναγιώτης-Ευστράτιος Οικον",
+            "href": "/agent",
+            "region": "content",
+            "where": "#activity"
+          },
+          {
+            "label": "Σύμβουλος",
+            "href": "/agent",
+            "region": "nav",
+            "where": "nav"
+          }
+        ]
+      }
+    ],
+    "duplicateActionCount": 0,
+    "navOverlapCount": 2,
+    "navPolicy": "separate"
+  },
+  "countConsistencyShared": {
+    "verdict": "consistent-and-fully-measured",
+    "failures": 0,
+    "totalKeys": 26,
+    "comparableKeys": 24,
+    "corroboratedKeys": 1,
+    "inconsistent": [],
+    "nonComparable": [],
+    "unmeasurableCount": 0,
+    "unmeasurable": [],
+    "excludedByDesign": []
+  },
+  "clippedLabels": []
+}
