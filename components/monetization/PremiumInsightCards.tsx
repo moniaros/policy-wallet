@@ -74,7 +74,20 @@ export function PremiumInsightCards({
     }
 
     return (
-        <div className={className}>
+        /* `id` is the money path's only stable hook.
+         *
+         * This grid IS the free→paid conversion surface — the page's one
+         * advertising slot. `money-path.spec.ts` locates it by `#premium-insights`,
+         * and when the GOAL 2 restructure moved the cards into the plan slot the id
+         * was dropped with the old wrapper. The spec went red on 2026-08-23 and
+         * nobody noticed for five days, because Playwright is not in CI: the gate
+         * checks code, journeys check the product, and the journey check was down
+         * on the path that takes money.
+         *
+         * So the hook lives on the COMPONENT now, not on whatever container
+         * happens to hold it this week. Move the cards again and the test follows
+         * them. */
+        <div id="premium-insights" className={className}>
             <div className="mb-3">
                 <h3 className="flex items-center gap-2 text-base font-black text-black dark:text-white">
                     <Lock className="h-4 w-4 text-primary dark:text-mint" />

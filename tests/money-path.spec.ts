@@ -11,7 +11,7 @@
  */
 import { test, expect, type Page } from '@playwright/test'
 import { dismissCookieBanner } from './helpers/ui'
-import { E2E_POLICYHOLDER } from './e2e-users'
+import { E2E_POLICYHOLDER, E2E_POLICYHOLDER_FREE } from './e2e-users'
 
 /**
  * Serial for the whole FILE, not per describe.
@@ -34,6 +34,8 @@ import { E2E_POLICYHOLDER } from './e2e-users'
 test.describe.configure({ mode: 'default' })
 
 const FIXTURE_POLICY = 'E2E-MOT-001'
+/** The FREE policyholder's own motor policy — provisioned by global-setup. */
+const FREE_FIXTURE_POLICY = 'E2E-PDF-MOT-ACT'
 const EXTRA_POLICY = 'E2E-MOT-002'
 
 async function prismaClient() {
@@ -41,19 +43,30 @@ async function prismaClient() {
     return new PrismaClient()
 }
 
+/**
+ * The policy these tests browse must belong to the session that browses it.
+ *
+ * This resolved `E2E_POLICYHOLDER`'s policy while the file's own docblock said
+ * it runs as the FREE policyholder — and the config gave it the PRO session, so
+ * the mismatch was invisible. The spec could not pass in either configuration:
+ * under the pro session the free-tier gates never render (`tier !== 'pro'`),
+ * and under the free session the pro user's policy is correctly a 404. That
+ * contradiction is why the money path rotted without anyone reading a failure
+ * that meant anything.
+ */
 async function fixturePolicyId(): Promise<string> {
     const db = await prismaClient()
     try {
         const owner = await db.user.findUnique({
-            where: { email: E2E_POLICYHOLDER.email },
+            where: { email: E2E_POLICYHOLDER_FREE.email },
             select: { id: true },
         })
-        if (!owner) throw new Error('E2E policyholder missing — global setup did not run?')
+        if (!owner) throw new Error('E2E free policyholder missing — global setup did not run?')
         const policy = await db.policy.findFirst({
-            where: { ownerUserId: owner.id, policyNumber: FIXTURE_POLICY },
+            where: { ownerUserId: owner.id, policyNumber: FREE_FIXTURE_POLICY },
             select: { id: true },
         })
-        if (!policy) throw new Error('E2E fixture policy missing — global setup did not run?')
+        if (!policy) throw new Error('E2E free fixture policy missing — global setup did not run?')
         return policy.id
     } finally {
         await db.$disconnect()
@@ -410,6 +423,13 @@ test.describe('Billing management (cancel honesty)', () => {
     // A grandfathered (non-Stripe) paid subscription: the in-app cancel must
     // flip autoRenew locally. The Stripe-side cancel path is unit-tested
     // (tests/unit/billing-integrity.test.ts) — no Stripe in E2E by design.
+    //
+    // The ONE block in this file that is not about the free tier: it creates a
+    // subscription for E2E_POLICYHOLDER and then cancels it through the UI, so
+    // it must browse as that user. The rest of the file runs as the free
+    // policyholder (project `money-free`) — a free account has no subscription
+    // to cancel, and pointing this at one would test nothing.
+    test.use({ storageState: 'playwright/.auth/user.json' })
     test.describe.configure({ mode: 'serial' })
 
     async function ownerId(db: Awaited<ReturnType<typeof prismaClient>>) {

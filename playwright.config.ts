@@ -19,6 +19,12 @@ const policyholderIgnores = [
     // ever fail here — four "failures" that said nothing about the insurer
     // console. It belongs to `admin-chromium`, which has the admin session.
     '**/admin-insurers.spec.ts',
+    // money-path asserts the FREE tier's gates and upsells — its own docblock
+    // has always said so — but it sat in `chromium`, which carries the PRO
+    // policyholder. `PremiumInsightCards` renders only when `tier !== 'pro'`, so
+    // the locked-card journey could not pass here whatever it selected on.
+    // It belongs to `money-free`, which has the free session.
+    '**/money-path.spec.ts',
     // public-marketing asserts ANONYMOUS behavior (own `public-anon` project);
     // a signed-in header state would audit a page no anonymous visitor sees.
     '**/public-marketing.spec.ts',
@@ -173,6 +179,19 @@ export default defineConfig({
                 launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
             dependencies: ['setup'],
+        },
+        {
+            // The money path — checkout return states, the free tier's feature
+            // gates, and the upsell surfaces. Runs as the FREE policyholder,
+            // which is what the spec always claimed and never had.
+            name: 'money-free',
+            testMatch: /money-path\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: 'playwright/.auth/free.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
+            dependencies: ['free-setup'],
         },
         {
             // The FREE-tier half of the policy-detail matrix. Tier is a property
