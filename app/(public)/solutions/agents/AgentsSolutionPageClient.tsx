@@ -261,6 +261,74 @@ export default function AgentSolutionsPage() {
                 </div>
             </section>
 
+            {/* The market context an intermediary already lives in, landed on the
+                three things this product actually provides.
+
+                DELIBERATELY NOT a claim about commercial or specialty lines.
+                H-010 records that `AcordData` has objects for motor, property and
+                health and NONE for cyber, business or pension — a customer who
+                uploads a cyber policy gets editorial and nothing extracted. So
+                the interconnected-exposure framing stays FRAMING, and every
+                promise below is one the product demonstrably keeps: a shared
+                record, plain-language cover, and access the client controls. */}
+            <section className="bg-[#F8FAFC] dark:bg-slate-900 px-6 py-20 lg:px-12 lg:py-28">
+                <div className="mx-auto max-w-[1040px]">
+                    <h2 className="mb-4 text-center text-h2 font-semibold tracking-[-0.03em] text-[#0F172A] dark:text-white lg:text-h1">
+                        {t("Το τοπίο του κινδύνου αλλάζει.", "The risk landscape is changing.")}
+                    </h2>
+                    <p className="mx-auto mb-4 max-w-[720px] text-center text-body text-[#475569] dark:text-slate-300">
+                        {t(
+                            "Γεωπολιτική, κλιματική αλλαγή, εξαρτήσεις εφοδιαστικής αλυσίδας και νέες τεχνολογίες κάνουν τις εκθέσεις σε κίνδυνο όλο και πιο αλληλένδετες.",
+                            "Geopolitics, climate change, supply chain dependencies and emerging technologies are making exposures increasingly interconnected."
+                        )}
+                    </p>
+                    <p className="mx-auto mb-10 max-w-[720px] text-center text-body font-semibold text-[#0F172A] dark:text-white">
+                        {t(
+                            "Η ανθεκτικότητα δεν χτίζεται μόνο με ασφαλιστική ικανότητα. Χτίζεται με διάλογο, διαφάνεια και συνεργασία ανάμεσα στον πελάτη, τον διαμεσολαβητή και την ασφαλιστική.",
+                            "Resilience is not built on capacity alone. It is built on dialogue, transparency and collaboration between the client, the intermediary and the insurer."
+                        )}
+                    </p>
+
+                    <div className="grid gap-4 md:grid-cols-3">
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+                            <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
+                                {t("Διάλογος", "Dialogue")}
+                            </h3>
+                            <p className="text-body text-[#475569] dark:text-slate-300">
+                                {t(
+                                    "Ο πελάτης βλέπει τα ίδια στοιχεία με εσάς. Η κουβέντα ξεκινά από κοινή βάση, όχι από ένα PDF που δεν άνοιξε ποτέ.",
+                                    "Your client sees what you see. The conversation starts from a shared record, not from a PDF they never opened."
+                                )}
+                            </p>
+                        </div>
+
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+                            <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
+                                {t("Διαφάνεια", "Transparency")}
+                            </h3>
+                            <p className="text-body text-[#475569] dark:text-slate-300">
+                                {t(
+                                    "Τι καλύπτεται, τι δεν καλύπτεται και πότε λήγει — σε απλά ελληνικά, με παραπομπή στο ίδιο το έγγραφο.",
+                                    "What is covered, what is not, and when it ends — in plain language, pointing back to the document itself."
+                                )}
+                            </p>
+                        </div>
+
+                        <div className="rounded-2xl border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+                            <h3 className="mb-2 text-title font-semibold text-[#0F172A] dark:text-white">
+                                {t("Συνεργασία", "Collaboration")}
+                            </h3>
+                            <p className="text-body text-[#475569] dark:text-slate-300">
+                                {t(
+                                    "Ο πελάτης σάς δίνει πρόσβαση με ένα κλικ και τη διακόπτει όποτε θέλει. Η σχέση παραμένει δική του — και δική σας.",
+                                    "Your client grants you access with one click and withdraws it whenever they choose. The relationship stays theirs — and yours."
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Answers to the questions an agent (and an answer engine) actually
                 asks — including the CRM negative this page most needs. */}
             <section aria-labelledby="agents-faq-heading" className="px-6 pb-24 lg:px-12">
