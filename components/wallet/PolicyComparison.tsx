@@ -13,7 +13,7 @@ import { calendarDaysUntil } from "@/lib/policy-status"
 import { branchFamilyId, normalizeBranch } from "@/lib/insurance/taxonomy"
 import { motorSection, homeSection, lifeSection } from "@/lib/wallet/coverage-sections"
 import { classifyMotorCoverageTier } from "@/lib/wallet/motor-coverage-tier"
-import { displayInsurerName, displayPolicyNumber, policyAssetIdentifier } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, displayPolicyNumber, policyAssetIdentifier, policyRowIdentity } from '@/lib/wallet/policy-identity'
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 interface PolicyForComparison {
@@ -290,6 +290,23 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                     <p className="text-xs text-muted-foreground font-mono">
                                                         {displayPolicyNumber(policy.policyNumber)}
                                                     </p>
+                                                    {/* WHICH policy is this? The picker showed only
+                                                        insurer + number, so choosing between two
+                                                        motor policies meant choosing between two
+                                                        identical cards — on the one screen whose
+                                                        whole job is telling them apart. */}
+                                                    {(() => {
+                                                        const identity = policyRowIdentity(policy)
+                                                        return identity.kind === "asset" || identity.kind === "person" ? (
+                                                            <p
+                                                                className="text-xs text-muted-foreground truncate"
+                                                                data-fact="asset.identifier"
+                                                                data-fact-subject={policy.id}
+                                                            >
+                                                                {identity.value}
+                                                            </p>
+                                                        ) : null
+                                                    })()}
                                                     <div className="flex items-center gap-2 mt-2">
                                                         {(() => {
                                                             const view = getPolicyStatusView(policy, t)

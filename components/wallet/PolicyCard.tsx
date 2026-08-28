@@ -5,7 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { resolvePolicyLifecycle, type PolicyLifecycle } from '@/lib/policy-status'
 import { formatDate } from '@/lib/i18n/format'
 import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
-import { displayInsurerName, isPlaceholderInsurerName, policyAssetIdentifier } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, isPlaceholderInsurerName, policyAssetIdentifier, policyRowIdentity } from '@/lib/wallet/policy-identity'
 import { StatusPill } from '@/components/ui/StatusPill'
 import { BadgeCheck, Sparkles, Search, FileText, Share2, Trash2 } from 'lucide-react'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
@@ -103,7 +103,12 @@ export function PolicyCard({ policy, onView, onShare, onViewDocuments, onRunAnal
     // of a count-shaped numeral the consistency scan cannot vouch for.
     // A missing/unreadable identifier renders nothing — the row stands alone
     // rather than borrowing a name.
-    const assetLabel = policyAssetIdentifier(policy)
+    // EVERY line gets something, not just the ones insuring a thing.
+    // `policyAssetIdentifier` answers for motor/home/pet/vessel/travel
+    // and null for the rest, so two health policies at one insurer
+    // rendered identically. `policyRowIdentity` falls through to the
+    // insured person, then the policy number.
+    const assetLabel = policyRowIdentity(policy).value
     const lobLine = assetLabel ? `${localizedLob} · ${assetLabel}` : localizedLob
     const displayInsurer = displayInsurerName(policy.insurerName, localizedLob)
     // Lifecycle from the real (extracted) end date — the stored status string

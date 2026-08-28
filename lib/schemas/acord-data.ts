@@ -114,7 +114,20 @@ export const AcordDataSchema = z.object({
 
     // ─── Property & Home ────────────────────────────────────────────────
     property: z.object({
-        address: z.string().optional(),
+        /**
+         * The RISK ADDRESS — the building the policy covers.
+         *
+         * This carried no `.describe()` while its siblings did, so the model saw
+         * a bare key name and nothing telling it what to look for. Measured
+         * 2026-08-28: populated in ZERO home policies across both databases,
+         * which is why the wallet could not tell two home policies apart even
+         * though `policyAssetIdentifier` has read this field all along.
+         *
+         * Greek schedules label it «Διεύθυνση κινδύνου» or «Ασφαλιζόμενο
+         * ακίνητο», never "address" — the hint names both.
+         */
+        address: z.string().optional()
+            .describe("Διεύθυνση κινδύνου / ασφαλιζόμενο ακίνητο — οδός, αριθμός, πόλη, Τ.Κ. as printed on the schedule"),
         type: z.string().optional().describe("e.g. apartment, house, office"),
         squareMeters: z.number().optional(),
         yearBuilt: z.number().optional(),

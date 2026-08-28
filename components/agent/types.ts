@@ -21,6 +21,13 @@ export interface Policy {
     policyNumber: string
     insurerName: string
     lineOfBusiness: 'motor' | 'health' | 'home' | 'life' | 'travel'
+    /**
+     * What tells this policy apart from the client's other one on the same
+     * line — plate, address, insured person, or policy number. Resolved
+     * server-side by `policyRowIdentity`.
+     */
+    assetLabel?: string
+    /** @deprecated never populated by the read path — use `assetLabel`. */
     carPlate?: string
     startDate: string
     endDate: string

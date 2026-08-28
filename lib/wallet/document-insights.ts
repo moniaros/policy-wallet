@@ -1,4 +1,5 @@
 import { calendarDaysUntil } from '@/lib/policy-status'
+import { policyRowIdentity } from "./policy-identity"
 import type { Policy } from "@/components/wallet/types"
 import { parseDocumentDate } from "@/lib/dates/document-date"
 import { displayInsurerName, displayPolicyNumber } from "@/lib/wallet/policy-identity"
@@ -58,9 +59,14 @@ export function getDocumentPolicySummary(
         compactText(property?.address) ||
         displayInsurerName(policy.insurerName, policyTypeLabel)
 
+    // The identifier comes from the primitive, not from a raw read. This
+    // fell back to `vehicle?.plateNumber` directly, so an extractor mask
+    // («XXXX») or a sentinel rendered here as though it were the plate — and
+    // only motor got a subtitle at all. `policyRowIdentity` rejects both and
+    // answers for every line.
     const insuredSubtitle =
         policy.insuredItem?.subtitle ||
-        compactText(vehicle?.plateNumber) ||
+        policyRowIdentity(policy as any).value ||
         (language === "el" ? "Ασφαλιστήριο" : "Policy")
 
     const coverageTypeRaw =

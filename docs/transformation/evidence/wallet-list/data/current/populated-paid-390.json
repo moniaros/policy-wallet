@@ -32,7 +32,7 @@
   "identityDuplicates": {
     "totalRows": 30,
     "comparableRows": 30,
-    "duplicateRowCount": 12,
+    "duplicateRowCount": 9,
     "largestGroupSize": 3,
     "groups": [
       {
@@ -41,33 +41,15 @@
         "rows": [
           {
             "index": 5,
-            "subject": "cmt5jzdf8000bmm5l9edtrj6h"
+            "subject": "cmt5jzdhe000b121d71hd5728"
           },
           {
             "index": 6,
-            "subject": "cmt5jzdf8000bx92v21nu15i6"
+            "subject": "cmt5jzdf8000bmm5l9edtrj6h"
           },
           {
             "index": 7,
-            "subject": "cmt5jzdhe000b121d71hd5728"
-          }
-        ]
-      },
-      {
-        "display": "Εθνική Ασφαλιστική · Υγεία · 09/02/2027 · ΕΝΕΡΓΟ",
-        "count": 3,
-        "rows": [
-          {
-            "index": 18,
-            "subject": "cmt5k0jtd000v121dwokv731m"
-          },
-          {
-            "index": 21,
-            "subject": "cmt5z1ml3000y510sywyxdwmm"
-          },
-          {
-            "index": 23,
-            "subject": "cmt5k1pd80025uer6pcdctp9e"
+            "subject": "cmt5jzdf8000bx92v21nu15i6"
           }
         ]
       },
@@ -77,11 +59,11 @@
         "rows": [
           {
             "index": 0,
-            "subject": "cmt5jzrse000lmm5lhqsvetv3"
+            "subject": "cmt5jzrsf000l121dc38kjdfx"
           },
           {
             "index": 1,
-            "subject": "cmt5jzrsf000l121dc38kjdfx"
+            "subject": "cmt5jzrse000lmm5lhqsvetv3"
           }
         ]
       },
@@ -90,12 +72,12 @@
         "count": 2,
         "rows": [
           {
-            "index": 11,
-            "subject": "cmt5k0j0q000vx92vzogjmtzc"
-          },
-          {
             "index": 12,
             "subject": "cmt5k0i8i000vuer6gyk0vihy"
+          },
+          {
+            "index": 13,
+            "subject": "cmt5k0j0q000vx92vzogjmtzc"
           }
         ]
       },
@@ -105,11 +87,11 @@
         "rows": [
           {
             "index": 14,
-            "subject": "cmt5jyvgp0001uer6hrgvk4gw"
+            "subject": "cmt5jyvgn0001x92v03hgqooh"
           },
           {
             "index": 15,
-            "subject": "cmt5jyvgn0001x92v03hgqooh"
+            "subject": "cmt5jyvgp0001uer6hrgvk4gw"
           }
         ]
       }
@@ -133,32 +115,32 @@
       "[1.4.11:surface] <div> \"Ασφαλιστικό αποτύπωμα8.224 €1 ασφα\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · I\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΛΗΓΜΕΝΟΥγεία · Έ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · Ι\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΛΗΓΜΕΝΟΥγεία · Σ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΛΗΓΜΕΝΟΑυτοκίνητο · I\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfdfe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
       "[1.4.11:surface] <div> \"InteramericanΛΗΓΕΙ ΣΥΝΤΟΜΑΑυτοκίνη\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΛΗΓΕΙ ΣΥΝΤΟΜΑΥγε\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefeff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 04\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · ΣΥ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · ΣΥ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#ffffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#feffff — inside and outside identical: no edge crossed, reading discarded",
       "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.23:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΗΝ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΕΗ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · 09\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
-      "[1.4.11:surface] <div> \"ΑυτοκίνητοΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑΑυτοκ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfd",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΟΚ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 09\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΜΟ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
-      "[1.4.11:surface] <div> \"Δεύτερος Αλληλασφαλιστικός Συνεται\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
-      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfbfc",
-      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · 22\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
+      "[1.4.11:unmeasured] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΣΥ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:unmeasured] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · ΣΥ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fefefe — inside and outside identical: no edge crossed, reading discarded",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · ΣΥ\" boundary 1.22:1 (needs 3) inside=#ffffff outside=#fdfefe",
+      "[1.4.11:surface] <div> \"ΑυτοκίνητοΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑΑυτοκ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfe",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΟΚ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fdfdfd",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΕΗ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΙΚ\" boundary 1.21:1 (needs 3) inside=#ffffff outside=#fcfdfd",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΜΟ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fcfcfd",
+      "[1.4.11:surface] <div> \"Δεύτερος Αλληλασφαλιστικός Συνεται\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfd",
+      "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · ΗΝ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfcfc",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · ΣΥ\" boundary 1.20:1 (needs 3) inside=#ffffff outside=#fbfbfc",
+      "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΥγεία · ΑΡ\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
       "[1.4.11:surface] <div> \"Εθνική ΑσφαλιστικήΕΝΕΡΓΟΑυτοκίνητο\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
       "[1.4.11:surface] <div> \"InteramericanΕΝΕΡΓΟΑυτοκίνητο · IK\" boundary 1.19:1 (needs 3) inside=#ffffff outside=#fafbfc",
       "[1.4.11:shell] <a> \"Φάκελος\" boundary 1.25:1 (needs 3) inside=#dfe7e6 outside=#fffefe"
@@ -252,8 +234,10 @@
       },
       {
         "text": "Αυτοκίνητο · ·",
-        "count": 20,
+        "count": 22,
         "where": [
+          "top <p>",
+          "top <p>",
           "top <p>",
           "top <p>",
           "top <p>",
@@ -327,16 +311,17 @@
         ]
       },
       {
-        "text": "Αυτοκίνητο ·",
-        "count": 2,
+        "text": "ΣΥΜΒ-2025-HL-ACT",
+        "count": 3,
         "where": [
-          "top <p>",
-          "top <p>"
+          "top <span>",
+          "top <span>",
+          "top <span>"
         ]
       }
     ],
     "internalTokenLeaks": [],
-    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 19 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 19 19/30 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 5 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 11 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 8.224 € 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Σημαντικές ειδοποιήσεις 11 Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. +9 ακόμη Όλα Αυτοκίνητο Υγεία Τα ασφαλιστήρια μου Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · IKZ-4821 · Έληξε στις 10/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 10/05/2026 Εθνική Ασφαλιστική ΛΗΓΜΕΝΟ Υγεία · Έληξε στις 10/05/2026 Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΒΖΝ-8520 · σε 15 ημέρες Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · σε 15 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · IKZ3113 · σε 39 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΗΝΡ-2885 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΕΗΤ-6941 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · 09/02/2027 Αυτοκίνητο ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ Αυτοκίνητο · ΚΜΥ-4769 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΟΚΜ-8338 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΜΟΚ-1839 · 09/02/2027 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΕΝΕΡΓΟ Αυτοκίνητο · ΗΝΡ-9285 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · 22/05/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · 25/05/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · IKZ-4821 · 01/06/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
+    "fullText": "Μετάβαση στο περιεχόμενο PolicyWallet 9+ PolicyWallet ΠΛΟΗΓΗΣΗ Αρχική Ο φάκελός μου Η προστασία μου Ο σύμβουλός μου Ρυθμίσεις Ειδοποιήσεις 19 Χρειάζεστε βοήθεια; Ρυθμίσεις ΕΛ EN Αποσύνδεση Το πορτοφόλι μου Διαχειριστείτε και παρακολουθήστε όλα τα ασφαλιστικά σας στοιχεία σε ένα μέρος. Σύγκριση ασφαλιστηρίων ΕΝΕΡΓΗ ΠΡΟΣΤΑΣΙΑ 19 19/30 προστεθέντα ΛΗΓΕΙ ΣΥΝΤΟΜΑ 5 Εντός 30 ημερών ΧΡΕΙΑΖΕΤΑΙ ΠΡΟΣΟΧΗ 11 Προς έλεγχο ΑΣΦΑΛΙΣΤΙΚΟ ΑΠΟΤΥΠΩΜΑ 8.224 € 1 ασφαλιστήριο χωρίς καταγεγραμμένο ασφάλιστρο δεν προσμετράται στο σύνολο Σημαντικές ειδοποιήσεις 11 Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. Αυτοκίνητο · Interamerican: έληξε στις 05/05/2026. +9 ακόμη Όλα Αυτοκίνητο Υγεία Τα ασφαλιστήρια μου Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 05/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · ΙΚΖ-4821 · Έληξε στις 10/05/2026 Εθνική Ασφαλιστική ΛΗΓΜΕΝΟ Υγεία · ΣΥΜΒ-2025-HL-XPD · Έληξε στις 10/05/2026 Interamerican ΛΗΓΜΕΝΟ Αυτοκίνητο · IKZ-4821 · Έληξε στις 10/05/2026 Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΙΚΖ-4821 · σε 10 ημέρες Interamerican ΛΗΓΕΙ ΣΥΝΤΟΜΑ Αυτοκίνητο · ΒΖΝ-8520 · σε 15 ημέρες Εθνική Ασφαλιστική ΛΗΓΕΙ ΣΥΝΤΟΜΑ Υγεία · ΣΥΜΒ-2025-HL-EXP · σε 15 ημέρες Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · IKZ3113 · σε 39 ημέρες Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · ΣΥΜΒ-2025-HL-ACT · 04/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · ΣΥΜΒ-2025-HL-ACT · 04/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 05/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΣΥΜΒ-2025-DEF-XX · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · ΣΥΜΒ-2025-DEF-FA · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · ΣΥΜΒ-2025-DEF-ND · 09/02/2027 Αυτοκίνητο ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ Αυτοκίνητο · ΚΜΥ-4769 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΟΚΜ-8338 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΕΗΤ-6941 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΙΚΖ-4821 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΜΟΚ-1839 · 09/02/2027 Δεύτερος Αλληλασφαλιστικός Συνεταιρισμός Επαγγελματιών Ιδιοκτητών Αυτοκινήτων Δημόσιας Χρήσεως Βορείου Ελλάδος και Θεσσαλίας ΣΥΝ. Π.Ε. ΕΝΕΡΓΟ Αυτοκίνητο · ΗΝΡ-9285 · 09/02/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · ΗΝΡ-2885 · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · ΣΥΜΒ-2025-HL-ACT · 09/02/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Υγεία · ΑΡΤΕΜΙΣ ΚΟΚΚΑΛΙΑ · 22/05/2027 Εθνική Ασφαλιστική ΕΝΕΡΓΟ Αυτοκίνητο · 63708952 · 25/05/2027 Interamerican ΕΝΕΡΓΟ Αυτοκίνητο · IKZ-4821 · 01/06/2027 Χειροκίνητη προσθήκη Μεταφόρτωση εγγράφου Μαζική μεταφόρτωση + Αρχική Φάκελος Προστασία Σύμβουλος Ρυθμίσεις"
   },
   "tier": "paid",
   "state": "populated-15-policies"

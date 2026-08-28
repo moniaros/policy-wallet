@@ -5,6 +5,7 @@ import { effectivePolicyStatus, isPolicyCoverageActive, isCoveredByEndDate, reso
 import { normalizeTaxId } from "@/lib/identity/tax-id";
 import { Prisma } from "@prisma/client";
 import { AppError } from "@/lib/errors";
+import { policyRowIdentity } from "@/lib/wallet/policy-identity"
 
 export interface CustomerFilters {
     search?: string;
@@ -237,6 +238,11 @@ export class CustomerService extends BaseService {
                 expiresAt: resolvePolicyLifecycle(p).endDate ?? p.endDate,
                 gaps: p.gapInstances.length,
                 hasAnalysis: p.analysisRuns.length > 0,
+                // What tells THIS policy apart from the client's other one on the
+                // same line. Resolved here, server-side, the way the dashboard
+                // does it — the client view had a `carPlate` field that nothing
+                // ever populated, so its plate line could not render.
+                assetLabel: policyRowIdentity(p).value,
                 createdByUserId: p.createdByUserId
             })),
             opportunities: relationship.opportunities.map(o => ({

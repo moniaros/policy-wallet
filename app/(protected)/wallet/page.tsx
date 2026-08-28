@@ -12,6 +12,7 @@ import {
     displayPersonName,
     displayPolicyNumber,
     fileNameLabel,
+    policyRowIdentity,
 } from "@/lib/wallet/policy-identity"
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 
@@ -122,12 +123,19 @@ export default async function WalletPage() {
             // details that tell you which policy you are looking at.
             const branch = normalizeBranch(p.lineOfBusiness)
             const family = (branch.parentId ?? branch.id).toLowerCase()
+            // The SUBTITLE is the identifier, and it goes through the primitive.
+            // This read `v.plateNumber` / `prop.postalCode` raw — a second
+            // identity path outside `lib/wallet/policy-identity.ts`, which meant
+            // an extractor mask («XXXX») or a sentinel rendered here as though
+            // it were data. The TITLE is a label (make/model, address) and stays
+            // composed here; only identity is delegated.
+            const identifier = policyRowIdentity(p).value ?? undefined
             if (family === 'motor' && (p.acordData as any)?.vehicle) {
                 const v = (p.acordData as any).vehicle
                 return {
                     type: 'vehicle' as const,
                     title: `${v.make || ''} ${v.model || ''}`.trim() || roleCopy.defaults.vehicle,
-                    subtitle: v.plateNumber || undefined
+                    subtitle: identifier
                 }
             }
             if (family === 'home' && (p.acordData as any)?.property) {
@@ -135,7 +143,7 @@ export default async function WalletPage() {
                 return {
                     type: 'property' as const,
                     title: prop.address || roleCopy.defaults.property,
-                    subtitle: prop.postalCode || undefined
+                    subtitle: identifier
                 }
             }
             // Default fallback

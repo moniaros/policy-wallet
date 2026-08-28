@@ -1126,6 +1126,43 @@ that page also imports a component carrying one. Closed with a short must-carry-
 the surfaces where the prose is the point. The health guard matches promises by substance rather than
 wording, because a guard here has already pinned a false claim by asserting a literal.
 
+## D-035 — Person names DO identify a health row, and the prohibition rested on a false premise
+
+**Date 2026-08-28 · decided by the owner · overrides `QUEUE.md:1721`, `P5-wallet-01-identifier-availability.md:59-68`, `HALTS.md:768-773`**
+
+The owner asked for every policy row to be tellable apart: motor by plate, home by address, health by
+insured person. The last of those was explicitly prohibited, so the prohibition was re-read rather
+than worked around. Two of its three reasons stand. One does not.
+
+**Stands — and is honoured.** `beneficiaries[].name` names the δικαιούχος, not the ασφαλισμένος; a row
+reading «Ζωή · Μαρία» tells the customer Μαρία is covered when Μαρία is merely who gets paid. That is
+the exact harm `lib/wallet/insured-people.ts` exists to prevent, and it is not used.
+
+**Stands.** `insuredPersons[]` is a role/class schedule — "master", "chief engineer" — whose names the
+schema drops on purpose. Not usable.
+
+**FALSE, verified in code.** The docs say `insured.name` is "the account holder's own profile… zero
+discriminating power *by construction*". `extraction-enrichment.ts:171-173` builds it from the model's
+`customerName`/`customerSurname`, which `extraction-schema.ts:52-53` describes as fields read off the
+DOCUMENT. That file performs zero profile or database lookups. The claim is repeated verbatim in
+`lib/wallet/policy-identity.ts` and both copies are corrected.
+
+**The real limit, which is narrower and must not be overstated.** Those fields name the *policyholder*
+— the λήπτης — not necessarily the covered person. Where one parent is λήπτης on a household's whole
+book, every health row shows that same name and nothing is disambiguated. So this ships as **"say
+whose policy this is"**, not as "make every health row unique", and the duplicate metric must not be
+read as if it had solved collisions it cannot.
+
+**Privacy, stated rather than assumed.** `HALTS.md:733` flags an insured name on a health policy as
+personal data needing a lawful basis. This adds no collection — the value is already stored and
+already rendered on the detail page. The genuinely new exposure is that a SHARED or agent-uploaded
+policy puts that name in an adviser's list view via `lib/agent-visibility.ts`. Flagged, not widened.
+`displayPersonName()` is fixture/sentinel hygiene, **not** a privacy control.
+
+**H-010 stays open.** A real per-insured-person field, plus the missing cyber/business/pension
+objects, remains a §12.2 schema halt to be decided as one unit. This work deliberately does not
+pre-empt it.
+
 ## D-034 — Asset reframe deferred; wallet identity resolved by field addition
 
 **Date:** 2026-08-26 · **Owner decision, on P5-wallet-00's evidence**

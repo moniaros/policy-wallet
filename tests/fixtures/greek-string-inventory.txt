@@ -21,7 +21,7 @@
 #
 # bundle entries: 2820
 # inline entries: 4673 across 208 files
-# ternary entries: 285 across 44 files
+# ternary entries: 286 across 45 files
 # call entries: 1138 across 72 files
 
 bundle	a11yLabels.callClient	"Κλήση πελάτη"
@@ -7802,6 +7802,7 @@ ternary	lib/wallet/document-insights.ts	`Λήγει σε ${daysUntilExpiry} ημ
 ternary	lib/wallet/document-label.ts	"Έγγραφο σε επεξεργασία"
 ternary	lib/wallet/document-label.ts	"Ανανεωτήριο"
 ternary	lib/wallet/document-label.ts	"Ασφαλιστήριο"
+ternary	lib/wallet/policy-identity.ts	`${sqm} τ.μ.`
 call	app/(public)/company/CompanyPageClient.tsx	"Όσοι έχουν ιδιωτική ασφάλιση στην Ελλάδα σπάνια ξέρουν τι ακριβώς καλύπτει το συμβόλαιό τους. Οι όροι είναι μακροσκελείς, οι εξαιρέσεις κρυμμένες και η σύγκριση σχεδόν αδύνατη για έναν μη ειδικό."
 call	app/(public)/company/CompanyPageClient.tsx	"Αν μια πρόταση χρειάζεται ασφαλιστικές γνώσεις για να τη διαβάσετε, την ξαναγράφουμε."
 call	app/(public)/company/CompanyPageClient.tsx	"Γιατί το φτιάξαμε"

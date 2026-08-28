@@ -420,6 +420,26 @@ function shortAddress(address: string): string {
     return street || address.trim()
 }
 
+/**
+ * A home with no address still has a shape the owner recognises.
+ *
+ * `property.address` is the designated identifier and it is populated in NONE
+ * of the home policies in either database — the schema field carries no
+ * `.describe()` hint, so the extractor was never told to look for it (fixed
+ * separately in `lib/schemas/acord-data.ts`). That fix cannot reach policies
+ * already stored and never re-analysed, so a second, weaker discriminator is
+ * used when the address is absent: «Διαμέρισμα 85 τ.μ.».
+ *
+ * Deliberately NOT used as a subject key — two 85 m² flats are two homes.
+ */
+function propertyShape(acord: Record<string, any>): string | null {
+    const type = normalized(acord.property?.type)
+    const sqm = acord.property?.squareMeters
+    const size = typeof sqm === 'number' && sqm > 0 ? `${sqm} τ.μ.` : null
+    const parts = [type, size].filter(Boolean)
+    return parts.length ? parts.join(' ') : null
+}
+
 /** The one line→field map. Family = parent branch, so motorbike/truck are motor, renters is home. */
 function rawAssetIdentifier(policy: PolicyAssetIdentitySource): string | null {
     const acord = (policy.acordData ?? null) as Record<string, any> | null
@@ -427,14 +447,21 @@ function rawAssetIdentifier(policy: PolicyAssetIdentitySource): string | null {
 
     const branch = normalizeBranch(policy.lineOfBusiness)
     const family = (branch.parentId ?? branch.id).toLowerCase()
+    // Commercial marine keys off the BRANCH ID, not the family. All three
+    // marine_* branches carry `parentId: 'business'`, so the old
+    // `family.startsWith('marine')` test could never be true and every
+    // commercial marine policy fell through to `null` — dead code, while the
+    // marine_hull pack was populating `marineVessel` all along. `money` shares
+    // that same family, which is why this cannot simply widen to 'business'.
+    const id = String(branch.id ?? '').toLowerCase()
 
     if (family === 'motor') return acord.vehicle?.plateNumber ?? null
     if (family === 'home') {
         const address = normalized(acord.property?.address)
-        return address ? shortAddress(address) : null
+        return address ? shortAddress(address) : propertyShape(acord)
     }
     if (family === 'pet') return acord.pet?.name ?? null
-    if (family === 'boat' || family.startsWith('marine')) {
+    if (family === 'boat' || id.startsWith('marine')) {
         return acord.marineVessel?.registryNumber ?? null
     }
     if (family === 'travel') return acord.travel?.destinationScope ?? null
@@ -465,6 +492,89 @@ export function policyAssetIdentity(policy: PolicyAssetIdentitySource): PolicyAs
 export function policyAssetIdentifier(policy: PolicyAssetIdentitySource): string | null {
     const identity = policyAssetIdentity(policy)
     return identity.readable ? identity.value : null
+}
+
+export type PolicyRowIdentityKind =
+    | 'asset'   // plate / address / pet name / vessel registry / destination
+    | 'person'  // the insured person named on the document
+    | 'number'  // the policy number, when nothing better exists
+    | 'none'
+
+export interface PolicyRowIdentity {
+    /** What to render beside the line-of-business label, or null. */
+    value: string | null
+    kind: PolicyRowIdentityKind
+}
+
+export interface PolicyRowIdentitySource extends PolicyAssetIdentitySource {
+    policyNumber?: string | null
+}
+
+/**
+ * What tells THIS row apart from the one above it.
+ *
+ * Every row in the wallet used to read
+ * «Interamerican · Αυτοκίνητο · 09/02/2027 · ΕΝΕΡΓΟ», and two policies of the
+ * same line at the same insurer were indistinguishable. {@link policyAssetIdentifier}
+ * answers this for lines that insure a THING; this answers it for every line.
+ *
+ * Precedence, and why each step is where it is:
+ *
+ *  1. **The asset**, when the line insures one. A plate or an address is the
+ *     strongest answer because it names the thing the cover is about.
+ *  2. **The insured person**, for health and life. Owner decision 2026-08-28,
+ *     which overrides a written prohibition — see below.
+ *  3. **The policy number**, for everything else. Not new behaviour:
+ *     `BranchDetail` and `RenewalsTimelineCard` already fall back to it. This
+ *     makes two local improvisations one documented rule.
+ *
+ * WHY THE PERSON STEP OVERRIDES A PROHIBITION, AND WHAT IT DOES NOT CLAIM.
+ * `QUEUE.md`, `P5-wallet-01-identifier-availability.md` and `HALTS.md` all bar
+ * person names here. Two of their reasons stand and are honoured: a
+ * `beneficiaries[].name` is the δικαιούχος and not the ασφαλισμένος (the exact
+ * harm `lib/wallet/insured-people.ts` exists to prevent), and `insuredPersons[]`
+ * is a role schedule whose names the schema drops on purpose. Neither is used.
+ *
+ * The third reason was FALSE and was verified false: the docs say `insured.name`
+ * is the account holder's own profile and so has "zero discriminating power by
+ * construction". `extraction-enrichment.ts` builds it from the model's
+ * `customerName`/`customerSurname` — read off the DOCUMENT — and performs no
+ * profile lookup at all.
+ *
+ * The real limit is narrower and must not be overstated: those fields are
+ * described to the model as the *policyholder's* name, the λήπτης, not
+ * necessarily the covered person. Where one parent is λήπτης on a household's
+ * whole book, every row shows that same name and nothing is disambiguated. So
+ * this says WHOSE POLICY THIS IS; it does not promise that two health rows can
+ * always be told apart, and the duplicate metric must not be read as if it did.
+ *
+ * Names go through {@link displayPersonName}, which blanks fixture and sentinel
+ * values. That is hygiene, NOT a privacy control — do not cite it as one.
+ */
+export function policyRowIdentity(policy: PolicyRowIdentitySource): PolicyRowIdentity {
+    const asset = policyAssetIdentifier(policy)
+    if (asset) return { value: asset, kind: 'asset' }
+
+    const acord = (policy.acordData ?? null) as Record<string, any> | null
+    if (acord && typeof acord === 'object') {
+        const branch = normalizeBranch(policy.lineOfBusiness)
+        const family = (branch.parentId ?? branch.id).toLowerCase()
+        if (family === 'health' || family === 'life') {
+            // ONE party, in precedence order — never a union. These keys are
+            // four places different pipeline versions wrote the same name, and
+            // unioning them is what listed one person twice on the detail page
+            // (see lib/wallet/insured-people.ts). NOT `beneficiaries`.
+            const named =
+                displayPersonName(acord.insured?.name) ||
+                displayPersonName(acord.policyholder?.name)
+            if (named) return { value: named, kind: 'person' }
+        }
+    }
+
+    const number = displayPolicyNumber(policy.policyNumber)
+    if (number) return { value: number, kind: 'number' }
+
+    return { value: null, kind: 'none' }
 }
 
 /**

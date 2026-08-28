@@ -225,7 +225,7 @@ export function ClientPoliciesTab({
                                     </div>
                                     <p className="text-xs text-muted-foreground">
                                         {displayInsurerName(policy.insurerName)}
-                                        {policy.carPlate && ` · ${policy.carPlate}`}
+                                        {policy.assetLabel && ` · ${policy.assetLabel}`}
                                     </p>
                                 </div>
 

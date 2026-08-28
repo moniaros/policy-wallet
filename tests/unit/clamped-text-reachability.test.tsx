@@ -417,9 +417,14 @@ const REGISTER: RegisterEntry[] = [
     },
     {
         file: "components/wallet/PolicyComparison.tsx",
-        clamps: { truncate: 1 },
+        clamps: { truncate: 2 },
         kind: "reachable",
-        note: "Insurer name truncates in the comparison picker; the policy page renders full identity.",
+        note:
+            "Insurer name and the row identifier truncate in the comparison picker; the policy page " +
+            "renders full identity. The identifier was ADDED 2026-08-28 — the picker previously showed " +
+            "only insurer + policy number, so choosing between two motor policies meant choosing " +
+            "between two identical cards. A clamped plate or insured name is still more than nothing, " +
+            "and the card opens /wallet/[id].",
     },
     {
         file: "components/wallet/PolicyReviewScreen.tsx",

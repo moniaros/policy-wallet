@@ -128,11 +128,39 @@ describe("the engine does not keep its own copy", () => {
         const ALLOWED = new Set([
             "lib/wallet/policy-identity.ts", // the primitive itself
         ])
+        // TWO patterns, because scope alone was not the limitation.
+        //
+        // The contiguous form is what the guard always matched. It would NOT
+        // have caught the real second path: `app/(protected)/wallet/page.tsx`
+        // destructured `const v = acordData.vehicle` and then read
+        // `v.plateNumber`, and `lib/wallet/document-insights.ts` read
+        // `vehicle?.plateNumber` — both invisible to a pattern anchored on
+        // `acordData.`. Widening the DIRECTORIES without widening the PATTERN
+        // would have been a guard that looked stronger and caught nothing new.
+        //
+        // The second pattern matches the leaf field on ANY receiver. It is the
+        // one that actually closes the class.
         const FIELD = /acordData\??\.(vehicle\??\.plateNumber|property\??\.address|pet\??\.name|marineVessel\??\.registryNumber)/
-        const offenders = ["lib/services/gap-engine", "lib/wallet"]
+        const LEAF = /\.(plateNumber|registryNumber|destinationScope)\b/
+        // WIDENED 2026-08-28 to app/ and components/. The previous scope stopped
+        // at lib/, and `app/(protected)/wallet/page.tsx` was reading
+        // `acordData.vehicle.plateNumber` and `property.address` straight into
+        // the wallet row's subtitle — a second identity path the guard could not
+        // see, which meant an extractor mask rendered there as though it were
+        // data. A guard scoped to known locations guards those locations, not
+        // the invariant.
+        const offenders = ["lib/services/gap-engine", "lib/wallet", "app", "components"]
             .flatMap(walk)
             .filter((f) => !ALLOWED.has(f) && !f.includes(".test."))
-            .filter((f) => FIELD.test(readFileSync(f, "utf-8")))
+            .filter((f) => {
+                const src = readFileSync(f, "utf-8")
+                    // Comments describe the rule; they do not break it.
+                    .replace(/\/\*[\s\S]*?\*\//g, "")
+                    .replace(/(^|[^:])\/\/.*$/gm, "$1")
+                    // `t.wallet.plateNumber` is an i18n LABEL key, not a data read.
+                    .replace(/\bt\.[A-Za-z.]*\.(plateNumber|registryNumber|destinationScope)\b/g, "")
+                return FIELD.test(src) || LEAF.test(src)
+            })
         expect(
             offenders,
             `these read an asset-identity field directly instead of using ` +

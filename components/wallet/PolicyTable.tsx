@@ -12,7 +12,7 @@ import { StatusPill } from '@/components/ui/StatusPill'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { getBranchIcon } from '@/lib/insurance/branch-icons'
 import { cn } from '@/lib/utils'
-import { displayInsurerName, displayPolicyNumber, policyAssetIdentifier } from '@/lib/wallet/policy-identity'
+import { displayInsurerName, displayPolicyNumber, policyAssetIdentifier, policyRowIdentity } from '@/lib/wallet/policy-identity'
 
 interface PolicyTableProps {
     policies: Policy[]
@@ -99,7 +99,19 @@ export function PolicyTable({
                             // the same identity the card renderer shows, so the two
                             // presentations of one wallet cannot disagree about
                             // which row is which (P5-wallet-01).
-                            const assetLabel = policyAssetIdentifier(policy)
+                            // EVERY line gets something, not just the ones insuring a thing.
+                            // `policyAssetIdentifier` answers for motor/home/pet/vessel/travel
+                            // and null for the rest, so two health policies at one insurer
+                            // rendered identically. `policyRowIdentity` falls through to the
+                            // insured person, then the policy number.
+                            // ...but NOT when it falls through to the policy
+                            // number: this row already renders that as
+                            // `policy.number` below, and printing it twice would
+                            // be a duplicate fact on the row the dup-facts metric
+                            // exists to catch. `kind` is what makes that
+                            // distinguishable without re-deriving it here.
+                            const rowIdentity = policyRowIdentity(policy)
+                            const assetLabel = rowIdentity.kind === 'number' ? null : rowIdentity.value
                             const isInsurerTitled = summary.assetTitle === displayInsurerName(policy.insurerName)
                             const secondaryIdentity = isInsurerTitled
                                 ? displayPolicyNumber(policy.policyNumber)

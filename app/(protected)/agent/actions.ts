@@ -198,6 +198,10 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
                 // in the agent's client view.
                 status: p.status as any,
                 hasAnalysis: p.hasAnalysis,
+                // Resolved by the service. Replaces `carPlate`, which this
+                // mapper never set — so the plate line in ClientPoliciesTab
+                // could not render for any client, on any policy.
+                assetLabel: p.assetLabel ?? undefined,
                 managedByAgent: p.createdByUserId === authResult.dbUser.id
             })),
             opportunities: (await (async () => {
